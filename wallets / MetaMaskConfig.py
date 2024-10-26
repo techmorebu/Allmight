@@ -8,12 +8,17 @@ load_dotenv()  # Load environment variables from .env file
 
 class MetaMaskConfig:
     def __init__(self, network):
-        # Load network configurations from wallet_config.json
+        # Fetch the current mode from the environment variable
+        mode = os.getenv("MODE", "TEST_FIRE")  # Default to TEST_FIRE if MODE is not set
+        
+        # Load mode-specific configuration from wallet_config.json
         with open("config/wallet_config.json", "r") as f:
-            config = json.load(f)
-        self.rpc_url = config["networks"][network]["rpc_url"]
-        self.chain_id = config["networks"][network]["chain_id"]
-        self.gas_price_limit = config["networks"][network]["gas_price_limit"]
+            config = json.load(f)["modes"][mode]
+        
+        # Set network-specific configurations
+        self.rpc_url = config[network]["rpc_url"]
+        self.chain_id = config[network]["chain_id"]
+        self.gas_price_limit = config[network]["gas_price_limit"]
 
         # Initialize Web3 connection
         self.web3 = Web3(Web3.HTTPProvider(self.rpc_url))
