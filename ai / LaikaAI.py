@@ -24,4 +24,12 @@ class LaikaAI:
         return self.model.predict(data_scaled)[0]
 
     def save_model(self, model_path='laika_model.pkl', scaler_path='laika_scaler.pkl'):
-        """Save the
+        """Save the model and scaler for later use."""
+        joblib.dump(self.model, model_path)
+        joblib.dump(self.scaler, scaler_path)
+
+    def load_model(self, model_path='laika_model.pkl', scaler_path='laika_scaler.pkl'):
+        """Load a saved model and scaler."""
+        self.model = joblib.load(model_path)
+        self.scaler = joblib.load(scaler_path)
+        self.is_trained = True
