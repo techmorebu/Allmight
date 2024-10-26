@@ -1,9 +1,13 @@
 // UnifiedFlashLoan.sol
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.0;
 
 interface IFlashLoanProvider {
-    function executeFlashLoan(address tokenIn, address tokenOut, uint256 amount) external;
+    function executeFlashLoan(
+        address tokenIn,
+        address tokenOut,
+        uint256 amount
+    ) external;
 }
 
 contract UnifiedFlashLoan {
@@ -31,11 +35,44 @@ contract UnifiedFlashLoan {
         _;
     }
 
-    function setFlashLoanProvider(
+    function updateProviderAddress(
         string memory protocol,
-        address providerAddress
+        address newAddress
     ) external onlyOwner {
         if (keccak256(bytes(protocol)) == keccak256(bytes("Aave"))) {
-            aave = IFlashLoanProvider(providerAddress);
+            aave = IFlashLoanProvider(newAddress);
         } else if (keccak256(bytes(protocol)) == keccak256(bytes("MakerDAO"))) {
-            makerDAO
+            makerDAO = IFlashLoanProvider(newAddress);
+        } else if (keccak256(bytes(protocol)) == keccak256(bytes("UniswapV3"))) {
+            uniswapV3 = IFlashLoanProvider(newAddress);
+        } else if (keccak256(bytes(protocol)) == keccak256(bytes("Balancer"))) {
+            balancer = IFlashLoanProvider(newAddress);
+        } else {
+            revert("Unsupported protocol");
+        }
+    }
+
+    function executeFlashLoan(
+        string memory protocol,
+        address tokenIn,
+        address tokenOut,
+        uint256 amount
+    ) external onlyOwner {
+        if (keccak256(bytes(protocol)) == keccak256(bytes("Aave"))) {
+            aave.executeFlashLoan(tokenIn, tokenOut, amount);
+        } else if (keccak256(bytes(protocol)) == keccak256(bytes("MakerDAO"))) {
+            makerDAO.executeFlashLoan(tokenIn, tokenOut, amount);
+        } else if (keccak256(bytes(protocol)) == keccak256(bytes("UniswapV3"))) {
+            uniswapV3.executeFlashLoan(tokenIn, tokenOut, amount);
+        } else if (keccak256(bytes(protocol)) == keccak256(bytes("Balancer"))) {
+            balancer.executeFlashLoan(tokenIn, tokenOut, amount);
+        } else {
+            revert("Unsupported protocol");
+        }
+    }
+
+    function transferOwnership(address newOwner) external onlyOwner {
+        require(newOwner != address(0), "New owner is the zero address");
+        owner = newOwner;
+    }
+}
