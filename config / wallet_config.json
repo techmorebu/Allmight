@@ -1,19 +1,28 @@
 {
-  "networks": {
-    "ethereum": {
-      "rpc_url": "https://mainnet.infura.io/v3/YOUR_INFURA_KEY",
-      "chain_id": 1,
-      "gas_price_limit": "high"
+  "modes": {
+    "LIVE_FIRE": {
+      "ethereum": {
+        "rpc_url": "https://eth-mainnet.alchemyapi.io/v2/YOUR_MAINNET_KEY",
+        "chain_id": 1,
+        "gas_price_limit": "high"
+      },
+      "polygon": {
+        "rpc_url": "https://polygon-rpc.com/",
+        "chain_id": 137,
+        "gas_price_limit": "low"
+      }
     },
-    "polygon": {
-      "rpc_url": "https://polygon-rpc.com/",
-      "chain_id": 137,
-      "gas_price_limit": "low"
-    },
-    "zksync": {
-      "rpc_url": "https://mainnet.era.zksync.io",
-      "chain_id": 324,
-      "gas_price_limit": "low"
+    "TEST_FIRE": {
+      "ethereum": {
+        "rpc_url": "https://eth-sepolia.alchemyapi.io/v2/YOUR_TEST_KEY",
+        "chain_id": 11155111,
+        "gas_price_limit": "low"
+      },
+      "polygon": {
+        "rpc_url": "https://rpc-mumbai.maticvigil.com/",
+        "chain_id": 80001,
+        "gas_price_limit": "low"
+      }
     }
   }
 }
