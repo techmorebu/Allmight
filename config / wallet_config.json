@@ -1,0 +1,19 @@
+{
+  "networks": {
+    "ethereum": {
+      "rpc_url": "https://mainnet.infura.io/v3/YOUR_INFURA_KEY",
+      "chain_id": 1,
+      "gas_price_limit": "high"
+    },
+    "polygon": {
+      "rpc_url": "https://polygon-rpc.com/",
+      "chain_id": 137,
+      "gas_price_limit": "low"
+    },
+    "zksync": {
+      "rpc_url": "https://mainnet.era.zksync.io",
+      "chain_id": 324,
+      "gas_price_limit": "low"
+    }
+  }
+}
