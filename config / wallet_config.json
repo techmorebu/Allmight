@@ -1,0 +1,57 @@
+# Mode of the Project
+MODE=TEST_FIRE  # Set to LIVE_FIRE when ready to go live
+
+# API Keys
+COINGECKO_API_KEY=your_coingecko_api_key
+CRYPTOCOMPARE_API_KEY=your_cryptocompare_api_key
+COINAPI_API_KEY=your_coinapi_api_key
+COINMARKETCAP_API_KEY=your_coinmarketcap_api_key
+
+# DeFi Protocols
+AAVE_API_KEY=your_aave_api_key
+UNISWAP_API_KEY=your_uniswap_api_key
+ZERO_X_API_KEY=your_0x_api_key
+FLASHBOTS_API_KEY=your_flashbots_api_key
+
+# Wallet Keys
+METAMASK_PRIVATE_KEY=your_metamask_private_key
+LEDGER_ADDRESS=your_ledger_address
+PHANTOM_PRIVATE_KEY=your_phantom_private_key
+YOROI_PRIVATE_KEY=your_yoroi_private_key
+XUMM_PRIVATE_KEY=your_xumm_private_key
+
+# Database and Caching
+POSTGRES_USER=your_postgres_user
+POSTGRES_PASSWORD=your_postgres_password
+POSTGRES_DB=ofa_database
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+REDIS_URL=redis://localhost:6379/0
+
+# Notifications
+SENDGRID_API_KEY=your_sendgrid_api_key
+
+# Blockchain Network Config
+ETHEREUM_RPC_URL=https://mainnet.infura.io/v3/your_infura_project_id
+POLYGON_RPC_URL=https://polygon-rpc.com
+ZKSYNC_RPC_URL=https://zksync2-testnet.zksync.dev
+ETHEREUM_CHAIN_ID=1
+POLYGON_CHAIN_ID=137
+ZKSYNC_CHAIN_ID=1000
+
+# Cross-Chain Bridge
+LAYERZERO_API_KEY=your_layerzero_api_key
+GRAIL_BRIDGE_API_KEY=your_grail_bridge_api_key
+
+# AI Model and File Paths
+MODEL_PATH=models/viability_model.pkl
+HISTORICAL_DATA_PATH=data/historical_data.csv
+
+# Gas Management and Profit Allocation
+GAS_TANK_ALLOCATION=0.4
+PROFIT_ASSET_ALLOCATION=BTC,ETH,XRP,ADA,LTC,SOL,MATIC,DAI,USDC,USDT
+
+# Miscellaneous
+CACHE_EXPIRY=60
+TRADE_PROFIT_MARGIN=0.02
+RETRAINING_INTERVAL_DAYS=7
