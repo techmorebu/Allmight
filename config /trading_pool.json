@@ -1,22 +1,10 @@
 {
-  "tokens": {
-    "ethereum": {
-      "name": "Ethereum",
-      "symbol": "ETH",
-      "minimum_liquidity": 10000,
-      "trading_volume": 5000
-    },
-    "bitcoin": {
-      "name": "Bitcoin",
-      "symbol": "BTC",
-      "minimum_liquidity": 15000,
-      "trading_volume": 7000
-    },
-    "cardano": {
-      "name": "Cardano",
-      "symbol": "ADA",
-      "minimum_liquidity": 5000,
-      "trading_volume": 3000
+    "tokens": ["BTC", "ETH", "ACX", "SOL", "XRP"],
+    "priority": {
+        "BTC": 1,
+        "ETH": 2,
+        "ACX": 3,
+        "SOL": 4,
+        "XRP": 5
     }
-  }
 }
