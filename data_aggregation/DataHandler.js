@@ -13,3 +13,11 @@ async function fetchPriceData(apiUrl) {
 module.exports = {
     fetchPriceData
 };
+
+
+async function testDataAggregation() {
+    const data = await fetchPriceData("https://api.uniswap.org");
+    console.log("Uniswap data:", data);
+}
+
+testDataAggregation();
