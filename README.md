@@ -1,14 +1,13 @@
 # OFA Project (Automated Arbitrage DeFi Crypto Trading Bot)
 
-The OFA project is an AI-driven arbitrage and accumulation bot designed for cross-chain DeFi trading, focusing on optimizing MATIC accumulation while dynamically toggling between arbitrage and pair trading strategies. This repository includes all necessary code, configurations, and setup details.
+The OFA project is an AI-driven arbitrage and accumulation bot for cross-chain DeFi trading. It optimizes MATIC accumulation and profit generation, dynamically toggling between arbitrage and pair trading strategies.
 
 ## Features
 - Real-time arbitrage and pair trading strategies.
-- Dynamic threshold adjustments based on AI analysis.
-- Integrated resource awareness for local deployment optimization.
-- Comprehensive MATIC accumulation strategy with adaptive risk management.
+- Adaptive thresholds controlled by AI for efficient resource use.
+- Integrated monitoring, logging, and feedback loop for strategy optimization.
 
 ## Project Setup
 1. Clone this repository.
 2. Follow setup instructions in the configuration files for API keys and environment variables.
-3. Run the main trading script and monitor via the included dashboard tools.
+3. Run the main trading script to initiate trading and monitoring.
