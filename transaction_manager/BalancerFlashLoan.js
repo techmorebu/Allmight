@@ -7,7 +7,7 @@ async function executeBalancerFlashLoan(asset, amount) {
         const signer = provider.getSigner();
         const balancerFlashLoanContract = new ethers.Contract(
             process.env.BALANCER_FLASH_LOAN_ADDRESS,
-            BALANCER_FLASH_LOAN_ABI,
+            0xBA12222222228d8Ba445958a75a0704d566BF2C8,
             signer
         );
 
