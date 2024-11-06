@@ -7,7 +7,7 @@ async function executeUniswapFlashLoan(asset, amount) {
         const signer = provider.getSigner();
         const uniswapV3Contract = new ethers.Contract(
             process.env.UNISWAP_V3_ADDRESS,
-            UNISWAP_V3_ABI,
+            0x68b3465833fb72a70ecdf485e0e4c7bd8665fc45,
             signer
         );
 
