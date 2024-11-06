@@ -1,28 +1,19 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+const { fetchPriceData } = require("../data_aggregation/DataHandler");
 
-contract ArbitrageLogic {
-    address public owner;
+async function evaluateAssets(pairs) {
+    const evaluatedPairs = [];
 
-    constructor() {
-        owner = msg.sender;
+    for (const pair of pairs) {
+        const priceData = await fetchPriceData(pair.apiUrl);
+
+        if (priceData && priceData.liquidity > 1000000 && priceData.volume24h > 500000) {
+            evaluatedPairs.push(pair);
+        }
     }
 
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Not authorized");
-        _;
-    }
-
-    function executeFlashLoanArbitrage(
-        address asset,
-        uint amount,
-        address[] calldata dexes
-    ) external onlyOwner {
-        // Placeholder for flash loan logic
-        // Integrate flash loan provider here (Aave, Uniswap V3, etc.)
-    }
-
-    function executeTrade(address dex, address asset, uint amount) internal {
-        // Placeholder for trade execution logic
-    }
+    return evaluatedPairs;
 }
+
+module.exports = {
+    evaluateAssets
+};
