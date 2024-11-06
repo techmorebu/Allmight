@@ -26,3 +26,17 @@ async function executeTrade(transactionDetails) {
 module.exports = {
     executeTrade
 };
+
+
+async function testTransactionHandler() {
+    const transactionDetails = {
+        // Sample transaction details for testing
+        profit: ethers.utils.parseUnits("0.05", "ether"), // Expected profit
+        execute: async () => {
+            console.log("Mock trade executed");
+        }
+    };
+    await executeTrade(transactionDetails);
+}
+
+testTransactionHandler();
