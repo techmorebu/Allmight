@@ -1,15 +1,34 @@
-const { fetchPriceData } = require('../data_aggregation/DataHandler');
+const { fetchPriceData } = require("../data_aggregation/DataHandler");
+const { executeTrade } = require("../transaction_manager/TransactionHandler");
+const { estimateGasCost } = require("../optimizations/gas_manager");
+const { sendProtectedTransaction } = require("../security/FrontRunningProtection");
+const { evaluateAssets } = require("../ai/OpportunityOptimizer");
 
 async function executeArbitrage() {
-    const ethereumPrice = await fetchPriceData("https://api.uniswap.org");
-    const polygonPrice = await fetchPriceData("https://api.quickswap.exchange");
+    const pairs = [
+        { name: "ETH/DAI", apiUrl: "https://api.uniswap.org" },
+        { name: "ETH/DAI", apiUrl: "https://api.sushiswap.com" }
+    ];
 
-    if (ethereumPrice && polygonPrice) {
-        if (ethereumPrice < polygonPrice) {
-            console.log("Arbitrage opportunity found on Polygon!");
-            // Implement trade execution logic here
+    const profitablePairs = await evaluateAssets(pairs);
+
+    for (const pair of profitablePairs) {
+        const priceData = await fetchPriceData(pair.apiUrl);
+        const transactionDetails = {
+            // Fill with necessary transaction details
+            profit: priceData.profit,
+            execute: () => {
+                // Placeholder for transaction execution
+            }
+        };
+
+        const gasCost = await estimateGasCost(transactionDetails);
+
+        if (priceData.profit.gt(gasCost)) {
+            console.log(`Executing trade for ${pair.name}`);
+            await executeTrade(transactionDetails);
         } else {
-            console.log("No arbitrage opportunity at this time.");
+            console.log(`Trade not profitable for ${pair.name}`);
         }
     }
 }
