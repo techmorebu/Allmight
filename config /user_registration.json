@@ -1,6 +1,0 @@
-{
-    "arbitrage_min_spread": 1.02,
-    "pair_trade_buy": 0.95,
-    "pair_trade_sell": 1.05,
-    "max_matic_utilization": 0.5
-}
