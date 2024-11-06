@@ -17,3 +17,15 @@ async function evaluateAssets(pairs) {
 module.exports = {
     evaluateAssets
 };
+
+
+async function testAssetEvaluation() {
+    const pairs = [
+        { name: "ETH/DAI", apiUrl: "https://api.uniswap.org" },
+        { name: "ETH/USDC", apiUrl: "https://api.sushiswap.com" }
+    ];
+    const filteredPairs = await evaluateAssets(pairs);
+    console.log("Filtered pairs:", filteredPairs);
+}
+
+testAssetEvaluation();
