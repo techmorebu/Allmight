@@ -34,3 +34,11 @@ async function executeArbitrage() {
 }
 
 executeArbitrage();
+
+async function testFullSystem() {
+    console.log("Running full system test in TEST_FIRE mode...");
+    await executeArbitrage();
+    console.log("Full system test completed.");
+}
+
+testFullSystem();
