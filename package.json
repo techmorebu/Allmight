@@ -1,0 +1,24 @@
+{
+  "name": "ofa-project",
+  "version": "1.0.0",
+  "description": "The OFA project is an AI-driven arbitrage and accumulation bot for cross-chain DeFi trading. It optimizes MATIC accumulation and profit generation, dynamically toggling between arbitrage and pair trading strategies.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/techmorebu/ofa-project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/techmorebu/ofa-project/issues"
+  },
+  "homepage": "https://github.com/techmorebu/ofa-project#readme",
+  "dependencies": {
+    "axios": "^1.7.7",
+    "dotenv": "^16.4.5"
+  }
+}
