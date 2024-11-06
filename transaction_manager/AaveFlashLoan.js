@@ -8,7 +8,7 @@ async function executeAaveFlashLoan(asset, amount) {
         const signer = provider.getSigner();
         const aaveFlashLoanContract = new ethers.Contract(
             process.env.AAVE_FLASH_LOAN_ADDRESS,
-            AAVE_FLASH_LOAN_ABI,
+            0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2,
             signer
         );
 
