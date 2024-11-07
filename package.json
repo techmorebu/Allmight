@@ -23,6 +23,8 @@
     "@uniswap/v3-sdk": "^3.18.1",
     "axios": "^1.7.7",
     "dotenv": "^16.4.5",
-    "ethers": "^5.7.2"
+    "ethers": "^6.7.1",
+    "hardhat": "^2.22.15",
+    "node-cron": "^3.0.3"
   }
 }
