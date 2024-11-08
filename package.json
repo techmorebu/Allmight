@@ -18,7 +18,12 @@
   },
   "homepage": "https://github.com/techmorebu/ofa-project#readme",
   "dependencies": {
-    "hardhat": "^2.22.15",
     "node-cron": "^3.0.3"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ethers": "^3.0.8",
+    "chai": "^5.1.2",
+    "hardhat": "^2.22.15",
+    "mocha": "^10.8.2"
   }
 }
