@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/techmorebu/ofa-project#readme",
   "dependencies": {
+    "@flashbots/ethers-provider-bundle": "^1.0.0",
+    "ethers": "^6.7.1",
     "node-cron": "^3.0.3"
   },
   "devDependencies": {
