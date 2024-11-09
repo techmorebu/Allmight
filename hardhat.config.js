@@ -1,28 +1,32 @@
 require("dotenv").config();
 require("@nomicfoundation/hardhat-ethers");
+require("hardhat-dependency-compiler");
 const { task } = require("hardhat/config");
 
 module.exports = {
   solidity: "0.8.20",
+  dependencyCompiler: {
+    paths: ["aave-deps/node_modules/@aave/core-v3/contracts"],
+  },
   networks: {
     mainnet: {
       url: process.env.ETHEREUM_MAINNET_RPC_URL_1,
-      accounts: [`0x${process.env.METAMASK_PRIVATE_KEY}`]
+      accounts: [`0x${process.env.METAMASK_PRIVATE_KEY}`],
     },
     sepolia: {
       url: process.env.ETHEREUM_TESTNET_SEPOLIA_RPC_URL,
-      accounts: [`0x${process.env.METAMASK_PRIVATE_KEY}`]
+      accounts: [`0x${process.env.METAMASK_PRIVATE_KEY}`],
     },
     polygon: {
       url: process.env.POLYGON_MAINNET_RPC_URL_1,
-      accounts: [`0x${process.env.METAMASK_PRIVATE_KEY}`]
+      accounts: [`0x${process.env.METAMASK_PRIVATE_KEY}`],
     },
     zksync: {
       url: process.env.ZKSYNC_MAINNET_RPC_URL,
-      accounts: [`0x${process.env.METAMASK_PRIVATE_KEY}`]
+      accounts: [`0x${process.env.METAMASK_PRIVATE_KEY}`],
     },
     // Add other networks as necessary
-  }
+  },
 };
 
 // Custom task to list accounts
