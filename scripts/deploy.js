@@ -1,14 +1,16 @@
-const hre = require("hardhat");
-
+// scripts/deployFlashLoan.js
 async function main() {
-  const OFABase = await hre.ethers.getContractFactory("OFABase");
-  const ofaBase = await OFABase.deploy();
+    const [deployer] = await ethers.getSigners();
+    console.log("Deploying contracts with the account:", deployer.address);
 
-  await ofaBase.deployed();
-  console.log("OFA Base deployed to:", ofaBase.address);
+    const FlashLoan = await ethers.getContractFactory("OFAFlashLoan");
+    const flashLoan = await FlashLoan.deploy(process.env.AAVE_POOL_ADDRESS_PROVIDER_ETHEREUM_TESTNET);
+    console.log("Flash Loan contract deployed to:", flashLoan.address);
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+main()
+    .then(() => process.exit(0))
+    .catch(error => {
+        console.error(error);
+        process.exit(1);
+    });
