@@ -5,7 +5,7 @@ async function main() {
     const provider = new ethers.JsonRpcProvider(process.env.ETHEREUM_TESTNET_SEPOLIA_RPC_URL);
     const signer = new ethers.Wallet(process.env.METAMASK_PRIVATE_KEY, provider);
 
-    const contractAddress = "0x2D049B8fF112fC990FeF9711D5f1A14989b6A140";
+    const contractAddress = "0x52F56Eba61EC93F52990c210C62859332fa2a8B7";
     const abi = [
         "function retrieve() public view returns (uint256)",
         "function store(uint256 _favoriteNumber) public",
