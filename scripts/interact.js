@@ -5,7 +5,7 @@ async function main() {
     const provider = new ethers.JsonRpcProvider(process.env.ETHEREUM_TESTNET_SEPOLIA_RPC_URL);
     const signer = new ethers.Wallet(process.env.METAMASK_PRIVATE_KEY, provider);
 
-    const contractAddress = "0x2D049B8fF112fC990FeF9711D5f1A14989b6A140"; // Replace with your deployed contract address
+    const contractAddress = "0x2D049B8fF112fC990FeF9711D5f1A14989b6A140";
     const abi = [
         "function retrieve() public view returns (uint256)",
         "function store(uint256 _favoriteNumber) public",
@@ -18,12 +18,18 @@ async function main() {
         const value = await simpleStorage.retrieve();
         console.log("Value retrieved:", value.toString());
     } catch (error) {
-        console.error("Error calling retrieve():", error);
+        console.error("Error retrieving value:", error);
     }
 
     try {
+        console.log("Estimating gas for `store`...");
+        const gasEstimateStore = await simpleStorage.estimateGas.store(42);
+        console.log("Gas estimate for `store`:", gasEstimateStore.toString());
+
         console.log("Storing value...");
-        const txResponse = await simpleStorage.store(42);
+        const txResponse = await simpleStorage.store(42, {
+            gasLimit: gasEstimateStore.add(10000), // Add buffer
+        });
         const txReceipt = await txResponse.wait();
         console.log("Transaction confirmed:", txReceipt.transactionHash);
     } catch (error) {
