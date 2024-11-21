@@ -16,6 +16,10 @@ async function main() {
   console.log("SimpleStorage deployed to:", simpleStorage.address);
 }
 
+console.log("Factory:", SimpleStorage);
+console.log("Deployed Contract:", simpleStorage);
+
+
 // Execute the script
 main()
   .then(() => process.exit(0))
