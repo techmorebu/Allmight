@@ -9,8 +9,8 @@ async function main() {
   // Deploy the contract
   const simpleStorage = await SimpleStorage.deploy();
 
-  // Wait for the deployment to be mined
-  await simpleStorage.deployed();
+  // Ensure the deployment is mined
+  await simpleStorage.deployTransaction.wait();
 
   console.log("SimpleStorage deployed to:", simpleStorage.address);
 }
