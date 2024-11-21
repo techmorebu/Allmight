@@ -2,7 +2,7 @@ require("dotenv").config();
 const axios = require("axios");
 const { logger } = require("../monitoring/logger");
 
-// Fetch token prices using CoinGecko
+// Fetch token prices using CoinGecko API
 async function fetchTokenPrices() {
     const url = `https://api.coingecko.com/api/v3/simple/price?ids=ethereum,polygon,zksync&vs_currencies=usd&x_cg_pro_api_key=${process.env.COINGECKO_API_KEY}`;
     try {
