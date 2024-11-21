@@ -9,9 +9,10 @@ async function main() {
   // Deploy the contract
   const simpleStorage = await SimpleStorage.deploy();
 
-  // Ensure the deployment is mined
-  await simpleStorage.deployTransaction.wait();
+  // Wait until the contract is deployed
+  await simpleStorage.deployed();
 
+  // Output the contract address
   console.log("SimpleStorage deployed to:", simpleStorage.address);
 }
 
@@ -19,6 +20,6 @@ async function main() {
 main()
   .then(() => process.exit(0))
   .catch((error) => {
-    console.error(error);
+    console.error("Error deploying contract:", error);
     process.exit(1);
   });
