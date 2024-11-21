@@ -7,7 +7,7 @@ async function main() {
     const signer = new ethers.Wallet(`0x${process.env.METAMASK_PRIVATE_KEY}`, provider);
 
     // Replace with your deployed contract address
-    const contractAddress = "your_contract_address_here";
+    const contractAddress = 0xF04c537BBd02395067323762B46fBc9f2cab254;
 
     const abi = [
         "function retrieve() public view returns (uint256)",
