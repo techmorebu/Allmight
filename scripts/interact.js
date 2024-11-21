@@ -40,3 +40,21 @@ main().catch((error) => {
     console.error(error);
     process.exitCode = 1;
 });
+
+
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npx hardhat run scripts/interact.js --network sepolia
+TypeError: invalid value for Contract target (argument="target", value=1.3718599140585089e+48, code=INVALID_ARGUMENT, version=6.13.4)
+    at makeError (/home/techbu/OFA_Project_Local/ofa-project/node_modules/ethers/src.ts/utils/errors.ts:687:21)
+    at assert (/home/techbu/OFA_Project_Local/ofa-project/node_modules/ethers/src.ts/utils/errors.ts:715:25)
+    at assertArgument (/home/techbu/OFA_Project_Local/ofa-project/node_modules/ethers/src.ts/utils/errors.ts:727:5)
+    at new BaseContract (/home/techbu/OFA_Project_Local/ofa-project/node_modules/ethers/src.ts/contract/contract.ts:686:23)
+    at new Contract (/home/techbu/OFA_Project_Local/ofa-project/node_modules/ethers/src.ts/contract/contract.ts:1120:1)
+    at main (/home/techbu/OFA_Project_Local/ofa-project/scripts/interact.js:20:27)
+    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/scripts/interact.js:39:1)
+    at Module._compile (node:internal/modules/cjs/loader:1356:14)
+    at Object.Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
+    at Module.load (node:internal/modules/cjs/loader:1197:32) {
+  code: 'INVALID_ARGUMENT',
+  argument: 'target',
+  value: 1.3718599140585089e+48,
+  shortMessage: 'invalid value for Contract target'
