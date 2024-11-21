@@ -1,25 +1,18 @@
-const { ethers } = require("hardhat");
+require("dotenv").config();
+const hre = require("hardhat");
 
 async function main() {
-  console.log("Deploying SimpleStorage contract...");
+    const SimpleStorage = await hre.ethers.getContractFactory("SimpleStorage");
+    const simpleStorage = await SimpleStorage.deploy();
 
-  // Get the contract factory
-  const SimpleStorage = await ethers.getContractFactory("SimpleStorage");
+    await simpleStorage.deployed();
 
-  // Deploy the contract
-  const simpleStorage = await SimpleStorage.deploy();
-
-  // Wait until the contract is deployed
-  await simpleStorage.deployed();
-
-  // Output the contract address
-  console.log("SimpleStorage deployed to:", simpleStorage.address);
+    console.log(`SimpleStorage deployed to: ${simpleStorage.address}`);
 }
 
-// Execute the script
 main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error("Error deploying contract:", error);
-    process.exit(1);
-  });
+    .then(() => process.exit(0))
+    .catch((error) => {
+        console.error(error);
+        process.exit(1);
+    });
