@@ -7,7 +7,7 @@ async function fetchTokenPrices() {
     const url = 'https://api.coingecko.com/api/v3/simple/price';
     const params = {
         ids: 'ethereum,polygon,zksync',
-        vs_currencies: 'usdt',
+        vs_currencies: 'usd',
         include_market_cap: true,
         include_24hr_vol: true,
         include_24hr_change: true,
