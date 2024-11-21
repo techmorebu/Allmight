@@ -10,43 +10,78 @@ async function main() {
         // Replace with your deployed contract address
         const contractAddress = "0x52F56Eba61EC93F52990c210C62859332fa2a8B7";
 
-        // Define the contract ABI
+        // Define the contract ABI (from the artifact)
         const abi = [
-            "function retrieve() public view returns (uint256)",
-            "function store(uint256 _favoriteNumber) public",
-            
+            {
+                "inputs": [],
+                "name": "get",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "x",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "set",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "storedData",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
         ];
 
         // Connect to the contract
         const simpleStorage = new ethers.Contract(contractAddress, abi, signer);
 
-        // Retrieve the current value
+        // Retrieve the current value using `get`
         console.log("Retrieving value...");
-        const currentValue = await simpleStorage.retrieve();
-        console.log("Value retrieved:", currentValue.toString());
+        const currentValue = await simpleStorage.get();
+        console.log("Current value:", currentValue.toString());
 
-        // Update the value
-        console.log("Estimating gas for `store`...");
-        const gasEstimateStore = await simpleStorage.estimateGas.store(42);
-        console.log("Gas estimate for `store`:", gasEstimateStore.toString());
+        // Estimate gas for `set`
+        console.log("Estimating gas for set...");
+        const gasEstimate = await simpleStorage.estimateGas.set(42);
+        console.log("Gas estimate:", gasEstimate.toString());
 
+        // Update the value using `set`
         console.log("Storing value...");
-        const txResponse = await simpleStorage.store(42, {
-            gasLimit: gasEstimateStore.add(10000), // Add buffer to ensure sufficient gas
+        const tx = await simpleStorage.set(42, {
+            gasLimit: gasEstimate.add(10000), // Adding a buffer to the gas limit
         });
-        const txReceipt = await txResponse.wait(); // Wait for transaction confirmation
-        console.log(`Transaction confirmed with hash: ${txReceipt.transactionHash}`);
+        console.log("Transaction sent. Waiting for confirmation...");
+        const receipt = await tx.wait();
+        console.log("Transaction confirmed:", receipt.transactionHash);
 
-        // Retrieve the updated value
+        // Retrieve the updated value using `get`
         console.log("Retrieving updated value...");
-        const updatedValue = await simpleStorage.retrieve();
+        const updatedValue = await simpleStorage.get();
         console.log("Updated value:", updatedValue.toString());
     } catch (error) {
         console.error("Error in main function:", error);
     }
 }
 
-main().catch((error) => {
-    console.error("Error in script execution:", error);
-    process.exitCode = 1;
-});
+main();
