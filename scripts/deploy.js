@@ -7,7 +7,6 @@ async function main() {
   // Deploy the contract
   const simpleStorage = await SimpleStorage.deploy();
   console.log("Deploying SimpleStorage...");
-  const simpleStorage = await SimpleStorage.deploy();
   console.log("Transaction hash:", simpleStorage.deployTransaction.hash);
   
   // Wait for deployment to be mined
