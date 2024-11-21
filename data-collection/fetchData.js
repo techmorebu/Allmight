@@ -6,17 +6,22 @@ const { logger } = require("../monitoring/logger");
 async function fetchTokenPrices() {
     const url = 'https://api.coingecko.com/api/v3/simple/price';
     const params = {
-        ids: 'bitcoin,ethereum,polygon',
-        vs_currencies: 'usd'
+        ids: 'ethereum,polygon,zksync',
+        vs_currencies: 'usdt',
+        include_market_cap: true,
+        include_24hr_vol: true,
+        include_24hr_change: true,
+        include_last_updated_at: true,
+        precision: 'full'
     };
 
-    // Include API key if using CoinGecko's Pro API
-    if (process.env.COINGECKO_API_KEY) {
-        params.x_cg_pro_api_key = process.env.COINGECKO_API_KEY;
-    }
+    const headers = {
+        accept: 'application/json',
+        'x-cg-demo-api-key': process.env.COINGECKO_API_KEY
+    };
 
     try {
-        const response = await axios.get(url, { params });
+        const response = await axios.get(url, { params, headers });
         logger.info("Fetched token prices successfully.");
         return response.data;
     } catch (error) {
