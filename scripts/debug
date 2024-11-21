@@ -1,26 +1,4 @@
-nteract.js --network sepolia
-Retrieving value...
-Error in main function: Error: missing revert data (action="call", data=null, reason=null, transaction={ "data": "0x2e64cec1", "from": "0xf001f42b90FC224168E5910aFdfB2F42718caB9C", "to": "0x52F56Eba61EC93F52990c210C62859332fa2a8B7" }, invocation=null, revert=null, code=CALL_EXCEPTION, version=6.13.4)
-    at makeError (/home/techbu/OFA_Project_Local/ofa-project/node_modules/ethers/src.ts/utils/errors.ts:694:21)
-    at getBuiltinCallException (/home/techbu/OFA_Project_Local/ofa-project/node_modules/ethers/src.ts/abi/abi-coder.ts:118:21)
-    at Function.getBuiltinCallException (/home/techbu/OFA_Project_Local/ofa-project/node_modules/ethers/src.ts/abi/abi-coder.ts:235:16)
-    at JsonRpcProvider.getRpcError (/home/techbu/OFA_Project_Local/ofa-project/node_modules/ethers/src.ts/providers/provider-jsonrpc.ts:989:32)
-    at /home/techbu/OFA_Project_Local/ofa-project/node_modules/ethers/src.ts/providers/provider-jsonrpc.ts:563:45
-    at processTicksAndRejections (node:internal/process/task_queues:95:5) {
-  code: 'CALL_EXCEPTION',
-  action: 'call',
-  data: null,
-  reason: null,
-  transaction: {
-    to: '0x52F56Eba61EC93F52990c210C62859332fa2a8B7',
-    data: '0x2e64cec1',
-    from: '0xf001f42b90FC224168E5910aFdfB2F42718caB9C'
-  },
-  invocation: null,
-  revert: null,
-  shortMessage: 'missing revert data',
-  info: {
-    error: { code: -32000, message: 'execution reverted' },
-    payload: { method: 'eth_call', params: [Array], id: 2, jsonrpc: '2.0' }
-  }
-}
+Estimating gas for set...
+Error in main function: TypeError: Cannot read properties of undefined (reading 'set')
+    at main (/home/techbu/OFA_Project_Local/ofa-project/scripts/interact.js:66:61)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
