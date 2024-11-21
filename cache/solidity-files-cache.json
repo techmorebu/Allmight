@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/home/techbu/OFA_Project_Local/ofa-project/contracts/SimpleStorage.sol": {
-      "lastModificationDate": 1732161898118,
-      "contentHash": "eed6174806bd483216951f825674e498",
+      "lastModificationDate": 1732163340342,
+      "contentHash": "713b16576403f8a80bc51d05c4be6aeb",
       "sourceName": "contracts/SimpleStorage.sol",
       "solcConfig": {
         "version": "0.8.20",
