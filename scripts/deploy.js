@@ -10,6 +10,7 @@ async function main() {
 
     // Wait for the transaction to be mined
     await simpleStorage.waitForDeployment();
+    console.log(simpleStorage.target)
 
     // Get the deployed contract address
     console.log(`SimpleStorage deployed to: ${simpleStorage.target}`);
