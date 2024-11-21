@@ -2,44 +2,58 @@ require("dotenv").config();
 const { ethers } = require("ethers");
 
 async function main() {
-    // Initialize provider and signer
+    // Set up provider and signer
     const provider = new ethers.JsonRpcProvider(process.env.ETHEREUM_TESTNET_SEPOLIA_RPC_URL);
     const signer = new ethers.Wallet(process.env.METAMASK_PRIVATE_KEY, provider);
 
     // Replace with your deployed contract address
     const contractAddress = "0xYourDeployedContractAddress";
 
-    // Define ABI
+    // Define the contract ABI
     const abi = [
         "function get() public view returns (uint256)",
-        "function set(uint256 x) public",
+        "function set(uint256 x) public"
     ];
 
-    // Connect to contract
+    // Connect to the contract
     const simpleStorage = new ethers.Contract(contractAddress, abi, signer);
 
-    // Retrieve current value
+    // Retrieve the current value
     console.log("Retrieving stored value...");
-    const currentValue = await simpleStorage.get();
-    console.log("Current stored value:", currentValue.toString());
-
-    // Set a new value
-    const newValue = 99;
-    console.log("Storing a new value...");
     try {
-        const txResponse = await simpleStorage.set(newValue, { gasLimit: 100000 });
-        console.log("Transaction sent. Waiting for confirmation...");
-        const txReceipt = await txResponse.wait();
-        console.log(`Transaction confirmed: ${txReceipt.transactionHash}`);
+        const currentValue = await simpleStorage.get();
+        console.log(`Current stored value: ${currentValue}`);
     } catch (error) {
-        console.error("Error during transaction:", error);
+        console.error("Error retrieving value:", error);
         return;
     }
 
-    // Retrieve updated value
+    // Store a new value
+    console.log("Storing a new value...");
+    try {
+        const txResponse = await simpleStorage.set(42);
+        console.log(`Transaction sent. Hash: ${txResponse.hash}`);
+        
+        // Wait for confirmation
+        const txReceipt = await txResponse.wait();
+        console.log(`Transaction confirmed. Block Number: ${txReceipt.blockNumber}`);
+    } catch (error) {
+        if (error.code === "INSUFFICIENT_FUNDS") {
+            console.error("Error: Insufficient funds to complete the transaction.");
+        } else {
+            console.error("Error storing value:", error);
+        }
+        return;
+    }
+
+    // Retrieve the updated value
     console.log("Retrieving updated value...");
-    const updatedValue = await simpleStorage.get();
-    console.log("Updated stored value:", updatedValue.toString());
+    try {
+        const updatedValue = await simpleStorage.get();
+        console.log(`Updated stored value: ${updatedValue}`);
+    } catch (error) {
+        console.error("Error retrieving updated value:", error);
+    }
 }
 
 main().catch((error) => {
