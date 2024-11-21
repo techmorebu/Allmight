@@ -1,0 +1,20 @@
+code: 'CALL_EXCEPTION',
+  action: 'estimateGas',
+  data: null,
+  reason: null,
+  transaction: {
+    to: '0x2D049B8fF112fC990FeF9711D5f1A14989b6A140',
+    data: '0x6057361d000000000000000000000000000000000000000000000000000000000000002a',
+    from: '0xf001f42b90FC224168E5910aFdfB2F42718caB9C'
+  },
+  invocation: null,
+  revert: null,
+  shortMessage: 'missing revert data',
+  info: {
+    error: { code: -32000, message: 'execution reverted' },
+    payload: {
+      method: 'eth_estimateGas',
+      params: [Array],
+      id: 5,
+      jsonrpc: '2.0'
+    }
