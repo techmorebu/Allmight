@@ -8,9 +8,9 @@ async function main() {
         const signer = new ethers.Wallet(process.env.METAMASK_PRIVATE_KEY, provider);
 
         // Replace with your deployed contract address
-        const contractAddress = "0x52F56Eba61EC93F52990c210C62859332fa2a8B7";
+        const contractAddress = "0xYourDeployedContractAddress";
 
-        // Define the contract ABI (from the artifact)
+        // Define the contract ABI
         const abi = [
             {
                 "inputs": [],
@@ -37,26 +37,14 @@ async function main() {
                 "outputs": [],
                 "stateMutability": "nonpayable",
                 "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "storedData",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
             }
         ];
 
         // Connect to the contract
+        console.log("Connecting to contract...");
         const simpleStorage = new ethers.Contract(contractAddress, abi, signer);
 
-        // Retrieve the current value using `get`
+        // Test retrieving value
         console.log("Retrieving value...");
         const currentValue = await simpleStorage.get();
         console.log("Current value:", currentValue.toString());
@@ -66,16 +54,14 @@ async function main() {
         const gasEstimate = await simpleStorage.estimateGas.set(42);
         console.log("Gas estimate:", gasEstimate.toString());
 
-        // Update the value using `set`
+        // Execute `set`
         console.log("Storing value...");
-        const tx = await simpleStorage.set(42, {
-            gasLimit: gasEstimate.add(10000), // Adding a buffer to the gas limit
-        });
+        const tx = await simpleStorage.set(42, { gasLimit: gasEstimate.add(10000) });
         console.log("Transaction sent. Waiting for confirmation...");
         const receipt = await tx.wait();
         console.log("Transaction confirmed:", receipt.transactionHash);
 
-        // Retrieve the updated value using `get`
+        // Retrieve the updated value
         console.log("Retrieving updated value...");
         const updatedValue = await simpleStorage.get();
         console.log("Updated value:", updatedValue.toString());
