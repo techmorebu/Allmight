@@ -26,7 +26,7 @@ async function main() {
 
         // Update the value
         console.log("Setting a new value...");
-        const tx = await simpleStorage.set(42); // Replace 42 with the desired value
+        const tx = await simpleStorage.set(42, { gasLimit: 50000 }); // Adjust gas limit as needed
         console.log(`Transaction sent: ${tx.hash}`);
 
         console.log("Waiting for transaction confirmation...");
