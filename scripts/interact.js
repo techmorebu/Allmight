@@ -2,20 +2,13 @@ require("dotenv").config();
 const { ethers } = require("ethers");
 
 async function main() {
-    // Set up provider and signer
     const provider = new ethers.JsonRpcProvider(process.env.ETHEREUM_TESTNET_SEPOLIA_RPC_URL);
     const signer = new ethers.Wallet(process.env.METAMASK_PRIVATE_KEY, provider);
-
-    // Replace this with your deployed contract address
-    const contractAddress = "0x52F56Eba61EC93F52990c210C62859332fa2a8B7"; // Replace with actual address
-
-    // Define the contract ABI
+    const contractAddress = "0x52F56Eba61EC93F52990c210C62859332fa2a8B7";
     const abi = [
         "function set(uint256 x) public",
         "function get() public view returns (uint256)"
     ];
-
-    // Connect to the contract
     const simpleStorage = new ethers.Contract(contractAddress, abi, signer);
 
     try {
@@ -26,19 +19,20 @@ async function main() {
 
         // Update the value
         console.log("Setting a new value...");
-        const tx = await simpleStorage.set(42, { gasLimit: 50000 }); // Adjust gas limit as needed
+        const tx = await simpleStorage.set(99, { gasLimit: 50000 }); // Explicit gas limit
         console.log(`Transaction sent: ${tx.hash}`);
 
         console.log("Waiting for transaction confirmation...");
         const receipt = await provider.getTransactionReceipt(tx.hash);
+        console.log("Transaction receipt:", receipt);
 
         if (receipt && receipt.status === 1) {
             console.log(`Transaction confirmed! Hash: ${receipt.transactionHash}`);
         } else {
-            console.error("Transaction failed or not confirmed yet.");
+            console.error("Transaction failed!");
         }
 
-        // Verify the new value
+        // Retrieve the updated value
         console.log("Retrieving updated value...");
         const updatedValue = await simpleStorage.get();
         console.log(`Updated value: ${updatedValue.toString()}`);
