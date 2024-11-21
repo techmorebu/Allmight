@@ -5,11 +5,7 @@ async function main() {
     // Set up provider and signer
     const provider = new ethers.JsonRpcProvider(process.env.ETHEREUM_TESTNET_SEPOLIA_RPC_URL);
     const signer = new ethers.Wallet(process.env.METAMASK_PRIVATE_KEY, provider);
-
-    // Replace with the deployed contract address
-    const contractAddress = "0xYourDeployedContractAddress";
-
-    // Define the contract ABI
+    const contractAddress = "0x52F56Eba61EC93F52990c210C62859332fa2a8B7";
     const abi = [
         "function set(uint256 x) public",
         "function get() public view returns (uint256)"
