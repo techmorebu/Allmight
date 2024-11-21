@@ -1,24 +1,24 @@
+const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-async function main() {
-  console.log("Deploying SimpleStorage contract...");
+describe("SimpleStorage", function () {
+  let simpleStorage;
 
-  // Get the contract factory
-  const SimpleStorage = await ethers.getContractFactory("SimpleStorage");
-
-  // Deploy the contract
-  const simpleStorage = await SimpleStorage.deploy();
-
-  // Wait for the deployment to be mined
-  await simpleStorage.deployed();
-
-  console.log("SimpleStorage deployed to:", simpleStorage.address);
-}
-
-// Execute the script
-main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
+  beforeEach(async () => {
+    const SimpleStorage = await ethers.getContractFactory("SimpleStorage");
+    simpleStorage = await SimpleStorage.deploy();
+    await simpleStorage.deployed();
   });
+
+  it("Should set and get the correct value", async () => {
+    await simpleStorage.set(42);
+    const value = await simpleStorage.get();
+    expect(value).to.equal(42);
+  });
+
+  it("Should emit an event on data update", async () => {
+    await expect(simpleStorage.set(42))
+      .to.emit(simpleStorage, "DataUpdated")
+      .withArgs(0, 42);
+  });
+});
