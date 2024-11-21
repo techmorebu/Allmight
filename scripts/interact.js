@@ -69,7 +69,7 @@ async function main() {
 
         // Execute `set`
         console.log("Storing value...");
-        const tx = await simpleStorage.set(42, { gasLimit: gasEstimate.add(10000) });
+        const tx = await simpleStorage.set(42, { gasLimit:10000});
         console.log("Transaction sent. Waiting for confirmation...");
         const receipt = await tx.wait();
         console.log("Transaction confirmed:", receipt.transactionHash);
