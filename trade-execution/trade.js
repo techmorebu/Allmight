@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { ethers, parseUnits } = require("ethers"); // Import parseUnits directly
+const { ethers, parseUnits } = require("ethers");
 
 async function main() {
     // Set up provider and signer
@@ -37,11 +37,11 @@ async function main() {
             to,
             deadline
         );
-        console.log("Transaction sent:", txResponse.hash);
+        console.log("Transaction sent:", txResponse.hash); // Correctly log the transaction hash
 
         // Wait for transaction confirmation
         const txReceipt = await txResponse.wait();
-        console.log("Transaction confirmed:", txReceipt.transactionHash);
+        console.log("Transaction confirmed:", txReceipt.transactionHash); // Ensure the hash is retrieved and logged
     } catch (error) {
         console.error("Error executing trade:", error.message);
     }
