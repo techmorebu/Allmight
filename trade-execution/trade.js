@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { ethers } = require("ethers");
+const { ethers, parseUnits } = require("ethers"); // Import parseUnits directly
 
 async function main() {
     // Set up provider and signer
@@ -22,8 +22,8 @@ async function main() {
     const dexContract = new ethers.Contract(dexAddress, uniswapAbi, signer);
 
     // Trade parameters
-    const amountIn = ethers.utils.parseUnits("1.0", 18); // 1 tokenA
-    const amountOutMin = ethers.utils.parseUnits("0.9", 18); // Expected minimum output
+    const amountIn = parseUnits("1.0", 18); // 1 tokenA
+    const amountOutMin = parseUnits("0.9", 18); // Expected minimum output
     const path = [tokenAAddress, tokenBAddress]; // TokenA -> TokenB swap path
     const to = signer.address; // Recipient of swapped tokens
     const deadline = Math.floor(Date.now() / 1000) + 60 * 10; // Transaction deadline (10 minutes from now)
