@@ -6,3 +6,5 @@
 {"level":"error","message":"Error in data collection: Request failed with status code 400"}
 {"level":"info","message":"Fetched token prices successfully."}
 {"ethereum":{"last_updated_at":1732185394},"level":"info","message":"Token Prices:","zksync":{"last_updated_at":1732185402}}
+{"level":"info","message":"Fetched token prices successfully."}
+{"ethereum":{"last_updated_at":1732185654,"usd":3134.028428859355,"usd_24h_change":0.3881249099942154,"usd_24h_vol":37249201484.36111,"usd_market_cap":377319961814.6587},"level":"info","message":"Token Prices:","zksync":{"last_updated_at":1732185653,"usd":0.1342795824974429,"usd_24h_change":-6.392853668518632,"usd_24h_vol":111783146.86692128,"usd_market_cap":493411289.0864252}}
