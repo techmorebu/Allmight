@@ -15,11 +15,11 @@ async function main() {
 
     const dexContract = new ethers.Contract(dexAddress, uniswapAbi, signer);
 
-    const amountIn = parseUnits("1.0", 18);
-    const amountOutMin = parseUnits("0.9", 18);
+    const amountIn = parseUnits("1.0", 18); // 1 TokenA
+    const amountOutMin = parseUnits("0.9", 18); // Minimum 0.9 TokenB
     const path = [tokenAAddress, tokenBAddress];
     const to = signer.address;
-    const deadline = Math.floor(Date.now() / 1000) + 60 * 10;
+    const deadline = Math.floor(Date.now() / 1000) + 60 * 10; // 10 minutes from now
 
     try {
         console.log("Initiating token swap...");
@@ -29,22 +29,27 @@ async function main() {
             path,
             to,
             deadline,
-            { gasLimit: 500000, gasPrice: ethers.parseUnits('10', 'gwei') }
+            { gasLimit: 500000, maxPriorityFeePerGas: parseUnits('10', 'gwei'), maxFeePerGas: parseUnits('20', 'gwei') }
         );
-        console.log("Transaction sent. Response:", txResponse);
 
+        // Log transaction hash
+        console.log(`Transaction sent. Hash: ${txResponse.hash}`);
+
+        // Wait for transaction confirmation
+        console.log("Waiting for transaction confirmation...");
         const txReceipt = await txResponse.wait();
-        console.log("Transaction confirmed. Receipt:", txReceipt);
 
         if (txReceipt) {
-            console.log("Transaction confirmed. Hash:", txReceipt.transactionHash);
+            console.log("Transaction confirmed.");
+            console.log(`Transaction Receipt: ${JSON.stringify(txReceipt, null, 2)}`);
         } else {
-            console.log("Transaction failed or receipt not found.");
+            console.log("Transaction failed or not confirmed yet.");
         }
     } catch (error) {
         console.error("Error executing trade:", error);
+
         if (error.receipt) {
-            console.log("Error Receipt:", error.receipt);
+            console.log("Transaction Error Receipt:", error.receipt);
         }
     }
 }
