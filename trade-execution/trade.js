@@ -2,31 +2,24 @@ require("dotenv").config();
 const { ethers, parseUnits } = require("ethers");
 
 async function main() {
-    // Set up provider and signer
     const provider = new ethers.JsonRpcProvider(process.env.ETHEREUM_TESTNET_SEPOLIA_RPC_URL);
     const signer = new ethers.Wallet(process.env.METAMASK_PRIVATE_KEY, provider);
 
-    // Define token addresses from .env
     const tokenAAddress = process.env.TOKEN_A_ADDRESS;
     const tokenBAddress = process.env.TOKEN_B_ADDRESS;
+    const dexAddress = process.env.UNISWAP_V3_ADDRESS;
 
-    // Example trade ABI (modify based on your DEX/contract interaction)
     const uniswapAbi = [
         "function swapExactTokensForTokens(uint256 amountIn, uint256 amountOutMin, address[] calldata path, address to, uint256 deadline) external returns (uint[] memory)"
     ];
 
-    // Define the DEX address (replace with your DEX address)
-    const dexAddress = process.env.UNISWAP_V3_ADDRESS;
-
-    // Connect to the DEX contract
     const dexContract = new ethers.Contract(dexAddress, uniswapAbi, signer);
 
-    // Trade parameters
-    const amountIn = parseUnits("1.0", 18); // 1 tokenA
-    const amountOutMin = parseUnits("0.9", 18); // Expected minimum output
-    const path = [tokenAAddress, tokenBAddress]; // TokenA -> TokenB swap path
-    const to = signer.address; // Recipient of swapped tokens
-    const deadline = Math.floor(Date.now() / 1000) + 60 * 10; // Transaction deadline (10 minutes from now)
+    const amountIn = parseUnits("1.0", 18);
+    const amountOutMin = parseUnits("0.9", 18);
+    const path = [tokenAAddress, tokenBAddress];
+    const to = signer.address;
+    const deadline = Math.floor(Date.now() / 1000) + 60 * 10;
 
     try {
         console.log("Initiating token swap...");
@@ -35,19 +28,28 @@ async function main() {
             amountOutMin,
             path,
             to,
-            deadline
+            deadline,
+            { gasLimit: 500000, gasPrice: ethers.parseUnits('10', 'gwei') }
         );
-        console.log("Transaction sent:", txResponse.hash); // Correctly log the transaction hash
+        console.log("Transaction sent. Response:", txResponse);
 
-        // Wait for transaction confirmation
         const txReceipt = await txResponse.wait();
-        console.log("Transaction confirmed:", txReceipt.transactionHash); // Ensure the hash is retrieved and logged
+        console.log("Transaction confirmed. Receipt:", txReceipt);
+
+        if (txReceipt) {
+            console.log("Transaction confirmed. Hash:", txReceipt.transactionHash);
+        } else {
+            console.log("Transaction failed or receipt not found.");
+        }
     } catch (error) {
-        console.error("Error executing trade:", error.message);
+        console.error("Error executing trade:", error);
+        if (error.receipt) {
+            console.log("Error Receipt:", error.receipt);
+        }
     }
 }
 
 main().catch((error) => {
-    console.error("Error in trade execution:", error.message);
+    console.error("Error in trade execution:", error);
     process.exitCode = 1;
 });
