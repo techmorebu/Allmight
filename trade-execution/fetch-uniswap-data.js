@@ -1,3 +1,4 @@
+const fs = require('fs');
 require('dotenv').config();
 const axios = require('axios');
 
@@ -32,6 +33,25 @@ async function sendDiscordAlert(message) {
   }
 }
 
+// Save data to a JSON file
+function saveDataToFile(data) {
+  const filePath = 'historical-data.json';
+  let existingData = [];
+
+  // Read existing data
+  if (fs.existsSync(filePath)) {
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+    existingData = JSON.parse(fileContent);
+  }
+
+  // Append new data
+  existingData.push(data);
+
+  // Write back to the file
+  fs.writeFileSync(filePath, JSON.stringify(existingData, null, 2));
+  console.log('Data saved to historical-data.json');
+}
+
 // Fetch data and monitor conditions
 async function fetchData() {
   try {
@@ -53,6 +73,13 @@ async function fetchData() {
       if (totalVolume > 1000000000) {
         await sendDiscordAlert(`🌟 Total volume exceeded $1B! Current volume: $${totalVolume}`);
       }
+
+      // Save data to file
+      saveDataToFile({
+        timestamp: new Date().toISOString(),
+        ethPrice,
+        totalVolume,
+      });
     } else {
       console.error('No data found in the response.');
     }
