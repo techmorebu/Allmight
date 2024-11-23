@@ -1,10 +1,10 @@
 require('dotenv').config();
 const axios = require('axios');
 
-// Get the subgraph endpoint from the environment variables
 const endpoint = process.env.UNISWAP_SUBGRAPH_URL;
+const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL;
 
-// Define the GraphQL query
+// GraphQL query
 const query = `
 {
   factories(first: 5) {
@@ -20,13 +20,39 @@ const query = `
 }
 `;
 
-// Function to fetch data using Axios
+// Send alert to Discord
+async function sendDiscordAlert(message) {
+  try {
+    await axios.post(discordWebhookUrl, {
+      content: message,
+    });
+    console.log('Alert sent to Discord:', message);
+  } catch (error) {
+    console.error('Error sending alert to Discord:', error.message);
+  }
+}
+
+// Fetch data and monitor conditions
 async function fetchData() {
   try {
     const response = await axios.post(endpoint, { query });
     if (response.data && response.data.data) {
-      console.log('Fetched Data:');
-      console.log(JSON.stringify(response.data.data, null, 2));
+      const { factories, bundles } = response.data.data;
+
+      const ethPrice = Number(bundles[0].ethPriceUSD);
+      const totalVolume = Number(factories[0].totalVolumeUSD);
+
+      console.log(`ETH Price: $${ethPrice}`);
+      console.log(`Total Volume: $${totalVolume}`);
+
+      // Alert conditions
+      if (ethPrice < 1800) {
+        await sendDiscordAlert(`🚨 ETH price dropped below $1800! Current price: $${ethPrice}`);
+      }
+
+      if (totalVolume > 1000000000) {
+        await sendDiscordAlert(`🌟 Total volume exceeded $1B! Current volume: $${totalVolume}`);
+      }
     } else {
       console.error('No data found in the response.');
     }
@@ -35,5 +61,5 @@ async function fetchData() {
   }
 }
 
-// Execute the function
-fetchData();
+// Schedule monitoring every minute
+setInterval(fetchData, 60000); // Fetch data every 60 seconds
