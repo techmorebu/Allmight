@@ -1,58 +1,39 @@
-
 require('dotenv').config();
 const axios = require('axios');
-const { fetchTradingPairs } = require('./pair-retrieval');
 
-// Fetch pair data
-async function fetchPairData(pairAddress) {
-    const url = process.env.UNISWAP_API_KEY; // Uniswap subgraph endpoint
-    const query = `
-    {
-        pair(id: "${pairAddress}") {
-            token0 {
-                symbol
-            }
-            token1 {
-                symbol
-            }
-            reserve0
-            reserve1
-            token0Price
-            token1Price
-        }
-    }`;
+// Get the subgraph endpoint from the environment variables
+const endpoint = process.env.UNISWAP_SUBGRAPH_URL;
 
-    try {
-        const response = await axios.post(url, { query });
-        const pairData = response.data.data.pair;
+// Define the GraphQL query
+const query = `
+{
+  factories(first: 5) {
+    id
+    poolCount
+    txCount
+    totalVolumeUSD
+  }
+  bundles(first: 5) {
+    id
+    ethPriceUSD
+  }
+}
+`;
 
-        if (pairData) {
-            console.log(`\nPair: ${pairData.token0.symbol}/${pairData.token1.symbol}`);
-            console.log(`Price: 1 ${pairData.token0.symbol} = ${pairData.token0Price} ${pairData.token1.symbol}`);
-            console.log(`Reserves: ${pairData.reserve0} / ${pairData.reserve1}`);
-        } else {
-            console.log('No data available for this pair.');
-        }
-    } catch (error) {
-        console.error('Error fetching pair data:', error.message);
+// Function to fetch data using Axios
+async function fetchData() {
+  try {
+    const response = await axios.post(endpoint, { query });
+    if (response.data && response.data.data) {
+      console.log('Fetched Data:');
+      console.log(JSON.stringify(response.data.data, null, 2));
+    } else {
+      console.error('No data found in the response.');
     }
+  } catch (error) {
+    console.error('Error fetching data:', error.message);
+  }
 }
 
-// Main monitoring function
-async function monitorTradingPairs() {
-    console.log('Discovering trading pairs...');
-    const pairs = await fetchTradingPairs();
-
-    if (pairs.length === 0) {
-        console.log('No pairs found. Exiting.');
-        return;
-    }
-
-    console.log('Starting monitoring for trading pairs...\n');
-    for (const pair of pairs) {
-        await fetchPairData(pair);
-    }
-}
-
-// Run the monitor
-monitorTradingPairs();
+// Execute the function
+fetchData();
