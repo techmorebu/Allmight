@@ -1,42 +1,39 @@
 require('dotenv').config();
 const axios = require('axios');
 
-// Fetch trading pairs dynamically from Uniswap Subgraph
-async function fetchTradingPairs() {
-    const url = process.env.UNISWAP_API_KEY; // Uniswap subgraph endpoint
-    const query = `
-    {
-        pairs(first: 5, orderBy: createdAtTimestamp, orderDirection: desc) {
-            id
-            token0 {
-                id
-                symbol
-            }
-            token1 {
-                id
-                symbol
-            }
-        }
-    }`;
+// Get the subgraph endpoint from the environment variables
+const endpoint = process.env.UNISWAP_SUBGRAPH_URL;
 
-    try {
-        const response = await axios.post(url, { query });
-        const pairs = response.data.data.pairs;
+// Define the GraphQL query
+const query = `
+{
+  factories(first: 5) {
+    id
+    poolCount
+    txCount
+    totalVolumeUSD
+  }
+  bundles(first: 5) {
+    id
+    ethPriceUSD
+  }
+}
+`;
 
-        console.log('Latest Trading Pairs:');
-        pairs.forEach(pair => {
-            console.log(`Pair ID: ${pair.id}`);
-            console.log(`Token0: ${pair.token0.symbol} (${pair.token0.id})`);
-            console.log(`Token1: ${pair.token1.symbol} (${pair.token1.id})`);
-            console.log('---');
-        });
-
-        return pairs.map(pair => pair.id); // Return pair IDs
-    } catch (error) {
-        console.error('Error fetching trading pairs:', error.message);
-        return [];
+// Function to fetch data using Axios
+async function fetchData() {
+  try {
+    const response = await axios.post(endpoint, { query });
+    if (response.data && response.data.data) {
+      console.log('Fetched Data:');
+      console.log(JSON.stringify(response.data.data, null, 2));
+    } else {
+      console.error('No data found in the response.');
     }
+  } catch (error) {
+    console.error('Error fetching data:', error.message);
+  }
 }
 
-module.exports = { fetchTradingPairs };
-
+// Execute the function
+fetchData();
