@@ -38,18 +38,22 @@ function saveDataToFile(data) {
   const filePath = 'historical-data.json';
   let existingData = [];
 
-  // Read existing data
-  if (fs.existsSync(filePath)) {
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-    existingData = JSON.parse(fileContent);
+  try {
+    // Read existing data
+    if (fs.existsSync(filePath)) {
+      const fileContent = fs.readFileSync(filePath, 'utf8');
+      existingData = JSON.parse(fileContent);
+    }
+
+    // Append new data
+    existingData.push(data);
+
+    // Write back to the file
+    fs.writeFileSync(filePath, JSON.stringify(existingData, null, 2));
+    console.log('Data successfully saved to historical-data.json');
+  } catch (error) {
+    console.error('Error saving data to file:', error.message);
   }
-
-  // Append new data
-  existingData.push(data);
-
-  // Write back to the file
-  fs.writeFileSync(filePath, JSON.stringify(existingData, null, 2));
-  console.log('Data saved to historical-data.json');
 }
 
 // Fetch data and monitor conditions
