@@ -11,7 +11,7 @@ function readHistoricalData() {
   return JSON.parse(fileContent);
 }
 
-// Analyze historical trends
+// Analyze trends and calculate metrics
 function analyzeTrends() {
   const data = readHistoricalData();
   if (data.length === 0) {
@@ -22,17 +22,27 @@ function analyzeTrends() {
   const prices = data.map(entry => entry.ethPrice);
   const volumes = data.map(entry => entry.totalVolume);
 
-  // Calculate average ETH price
+  // Calculate key metrics
   const avgPrice = prices.reduce((a, b) => a + b, 0) / prices.length;
-
-  // Calculate percentage change in ETH price
   const priceChange = ((prices[prices.length - 1] - prices[0]) / prices[0]) * 100;
+  const maxPrice = Math.max(...prices);
+  const minPrice = Math.min(...prices);
+  const volumeChange = ((volumes[volumes.length - 1] - volumes[0]) / volumes[0]) * 100;
 
-  // Display results
+  // Calculate volatility (standard deviation)
+  const priceMean = avgPrice;
+  const priceVariance = prices.reduce((acc, p) => acc + Math.pow(p - priceMean, 2), 0) / prices.length;
+  const priceStdDev = Math.sqrt(priceVariance);
+
+  // Display metrics
   console.log('--- Historical Trend Analysis ---');
   console.log(`Average ETH Price: $${avgPrice.toFixed(2)}`);
   console.log(`Price Change: ${priceChange.toFixed(2)}%`);
+  console.log(`Highest ETH Price: $${maxPrice.toFixed(2)}`);
+  console.log(`Lowest ETH Price: $${minPrice.toFixed(2)}`);
+  console.log(`Price Volatility (Std Dev): $${priceStdDev.toFixed(2)}`);
   console.log(`Latest Total Volume: $${volumes[volumes.length - 1].toLocaleString()}`);
+  console.log(`Volume Change: ${volumeChange.toFixed(2)}%`);
   console.log(`Number of Data Points: ${data.length}`);
 }
 
