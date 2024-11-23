@@ -1,26 +1,5 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node trade-execution/trade.js
-Initiating token swap...
-Transaction sent. Response: ContractTransactionResponse {
-  provider: JsonRpcProvider {},
-  blockNumber: null,
-  blockHash: null,
-  index: undefined,
-  hash: '0xf651e98d6c28d84dfd47a18eedcb64c061f605b0683a4dca6c33904545309684',
-  type: 2,
-  to: '0x1F98431c8aD98523631AE4a59f267346ea31F984',
-  from: '0xf001f42b90FC224168E5910aFdfB2F42718caB9C',
-  nonce: 33,
-  gasLimit: 500000n,
-  gasPrice: undefined,
-  maxPriorityFeePerGas: 10000000000n,
-  maxFeePerGas: 10000000000n,
-  maxFeePerBlobGas: null,
-  data: '0x38ed17390000000000000000000000000000000000000000000000000de0b6b3a76400000000000000000000000000000000000000000000000000000c7d713b49da000000000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000f001f42b90fc224168e5910afdfb2f42718cab9c0000000000000000000000000000000000000000000000000000000067402e4600000000000000000000000000000000000000000000000000000000000000020000000000000000000000002728dd8b45b788e26d12b13db5a244e5403e7eda00000000000000000000000082bcf47e4792c91c5da2b7c0a63a2f62319789b2',
-  value: 0n,
-  chainId: 11155111n,
-  signature: Signature { r: "0x36b9bfbce7a1ef1e7d08f7d4c72bd59020b4d65c623be8bd438a56be7c549ff6", s: "0x6c657e18d048b568212e9c26a2cb2f8d2a875c0bdd038f77c00fc9093cf26b3f", yParity: 0, networkV: null },
-  accessList: [],
-  blobVersionedHashes: null
-}
-
-
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node trade-execution/trade-monitor.js
+Discovering trading pairs...
+Error fetching trading pairs: Cannot read properties of null (reading 'pairs')
+No pairs found. Exiting.
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
