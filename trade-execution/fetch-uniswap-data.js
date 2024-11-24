@@ -83,32 +83,50 @@ async function fetchData() {
     const response = await axios.post(endpoint, { query });
 
     if (response.data && response.data.data) {
-      const { factories, bundles } = response.data.data;
+      const { factories, bundles, pools } = response.data.data;
 
       const ethPrice = Number(bundles[0].ethPriceUSD);
       const totalVolume = Number(factories[0].totalVolumeUSD);
+      const topPool = pools[0];
 
       console.log(`ETH Price: $${ethPrice}`);
       console.log(`Total Volume: $${totalVolume}`);
+      console.log(`Top Pool: ${topPool.token0.symbol}/${topPool.token1.symbol}`);
+      console.log(`Volume: $${topPool.volumeUSD}`);
+      console.log(`Liquidity: $${topPool.liquidity}`);
 
       const data = {
         timestamp: new Date().toISOString(),
         ethPrice,
         totalVolume,
+        topPool: {
+          pair: `${topPool.token0.symbol}/${topPool.token1.symbol}`,
+          volumeUSD: topPool.volumeUSD,
+          liquidity: topPool.liquidity,
+        },
       };
 
       saveDataToFile(data);
 
       // Analyze trends and include in the alert
-      const trendAnalysis = analyzeTrends(); // Ensure analyzeTrends is working
-      const alertMessage = `
+      const trendAnalysis = analyzeTrends();
+      let alertMessage = `
 🚨 New Data Synced:
 - ETH Price: $${ethPrice.toFixed(2)}
 - Total Volume: $${totalVolume.toLocaleString()}
 
-📊 Trend Analysis:
-${trendAnalysis}
+📊 Top Pool: ${topPool.token0.symbol}/${topPool.token1.symbol}
+- Volume: $${topPool.volumeUSD.toLocaleString()}
+- Liquidity: $${topPool.liquidity.toLocaleString()}
       `;
+
+      // Add trend highlights
+      if (topPool.volumeUSD > totalVolume * 0.1) {
+        alertMessage += `\n🚀 Significant Volume Detected in Pool ${topPool.token0.symbol}/${topPool.token1.symbol}!`;
+      }
+      if (topPool.liquidity < 1000000) {
+        alertMessage += `\n⚠️ Low Liquidity in Pool ${topPool.token0.symbol}/${topPool.token1.symbol}.`;
+      }
 
       await sendDiscordAlert(alertMessage);
     } else {
