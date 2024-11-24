@@ -33,5 +33,11 @@
     "signal": "Buy",
     "amount": 1,
     "priceAtSignal": 3422
+  },
+  {
+    "timestamp": "2024-11-24T08:55:15.733Z",
+    "signal": "Buy",
+    "amount": 1,
+    "priceAtSignal": 3422
   }
 ]
