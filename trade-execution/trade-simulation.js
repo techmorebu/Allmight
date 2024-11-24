@@ -1,11 +1,13 @@
 const { ethers } = require('ethers');
 const { Token, Pool, Route, Trade, CurrencyAmount, TradeType } = require('@uniswap/sdk-core');
-const { fetchPoolData } = require('./fetch-pool-data'); // Import fetchPoolData function
+const { Pool: V3Pool } = require('@uniswap/v3-sdk'); // Use Pool from Uniswap V3 SDK
+const { fetchPoolData } = require('./fetch-pool-data'); // Import pool fetching function
 require('dotenv').config({ path: '/home/techbu/OFA_Project_Local/ofa-project/.env' });
 const fs = require('fs');
 
 const MAX_TRADE_AMOUNT = 10; // Maximum trade size in ETH
 
+// Function to execute live trades
 async function executeLiveTrade(signal, amount = 1) {
   if (amount > MAX_TRADE_AMOUNT) {
     console.error(`Trade amount exceeds maximum limit of ${MAX_TRADE_AMOUNT} ETH.`);
@@ -15,6 +17,7 @@ async function executeLiveTrade(signal, amount = 1) {
   const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
   const wallet = new ethers.Wallet(process.env.METAMASK_PRIVATE_KEY, provider);
 
+  // Define token objects
   const token0 = new Token(1, "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48".toLowerCase(), 6, "USDC", "USD Coin");
   const token1 = new Token(1, "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2".toLowerCase(), 18, "WETH", "Wrapped Ethereum");
 
@@ -28,19 +31,21 @@ async function executeLiveTrade(signal, amount = 1) {
 
   try {
     // Create Pool instance using fetched data
-    const pool = new Pool(
+    const pool = new V3Pool(
       token0,
       token1,
       poolData.feeTier,
       poolData.sqrtPriceX96,
       poolData.liquidity,
-      poolData.tick
+      parseInt(poolData.tick, 10) // Ensure tick is parsed as an integer
     );
 
-    // Determine trade route
+    console.log('Pool successfully created:', pool);
+
+    // Create a Route instance
     const route = new Route([pool], signal === 'Buy' ? token0 : token1, signal === 'Buy' ? token1 : token0);
 
-    // Construct trade
+    // Construct trade details
     const trade = Trade.exactInput(
       CurrencyAmount.fromRawAmount(signal === 'Buy' ? token0 : token1, ethers.parseUnits(amount.toString(), 18)),
       route,
@@ -61,6 +66,7 @@ async function executeLiveTrade(signal, amount = 1) {
   }
 }
 
+// Function to log trade results
 function logTradeResult(signal, amount, priceAtSignal) {
   const filePath = '/home/techbu/OFA_Project_Local/ofa-project/logs/trade-log.json';
   const trade = {
@@ -103,6 +109,7 @@ function main() {
   }
 }
 
+// Run the script if executed directly
 if (require.main === module) {
   try {
     main();
