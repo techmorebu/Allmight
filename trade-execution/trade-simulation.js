@@ -66,4 +66,49 @@ function logTradeResult(signal, amount, priceAtSignal) {
   const trade = {
     timestamp: new Date().toISOString(),
     signal,
-    
+    amount,
+    priceAtSignal,
+  };
+
+  let existingTrades = [];
+  try {
+    if (fs.existsSync(filePath)) {
+      const fileContent = fs.readFileSync(filePath, 'utf8');
+      existingTrades = JSON.parse(fileContent);
+    }
+
+    existingTrades.push(trade);
+    fs.writeFileSync(filePath, JSON.stringify(existingTrades, null, 2));
+    console.log('Trade logged:', trade);
+  } catch (error) {
+    console.error('Error logging trade:', error.message);
+  }
+}
+
+// Main execution function
+function main() {
+  console.log(`--- Starting Trade Execution (${process.env.LIVE_FIRE === 'true' ? 'LIVE' : 'SIMULATION'} MODE) ---`);
+
+  const signal = 'Buy'; // Example signal
+  const tradeAmount = 1; // Example amount
+
+  console.log(`Generated Signal: ${signal}`);
+  console.log(`Trade Amount: ${tradeAmount} ETH`);
+
+  if (process.env.LIVE_FIRE === 'true') {
+    console.log('Executing in LIVE_FIRE mode...');
+    executeLiveTrade(signal, tradeAmount);
+  } else {
+    console.log('Simulation mode. No live trade executed.');
+  }
+}
+
+if (require.main === module) {
+  try {
+    main();
+  } catch (error) {
+    console.error('Error in script execution:', error.message);
+  }
+}
+
+module.exports = { executeLiveTrade };
