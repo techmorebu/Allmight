@@ -3,6 +3,7 @@ const fs = require('fs');
 require('dotenv').config({ path: '/home/techbu/OFA_Project_Local/ofa-project/.env' });
 
 const LIVE_FIRE = process.env.LIVE_FIRE === 'true';
+const MAX_TRADE_AMOUNT = 10; // Maximum trade size in ETH
 
 // Log trade results to a file
 function logTradeResult(signal, amount, priceAtSignal) {
@@ -33,47 +34,65 @@ function logTradeResult(signal, amount, priceAtSignal) {
 function simulateTrade(signal, amount = 1) {
   console.log('--- Simulated Trade Execution ---');
   if (signal === 'Buy') {
-    console.log(`Buying ${amount} ETH`);
+    console.log(`Simulating buy of ${amount} ETH.`);
   } else if (signal === 'Sell') {
-    console.log(`Selling ${amount} ETH`);
+    console.log(`Simulating sell of ${amount} ETH.`);
   } else {
-    console.log('Holding position. No trade executed.');
+    console.log('Simulating hold. No trade executed.');
   }
   logTradeResult(signal, amount, 3422); // Example ETH price at signal
 }
 
-// Execute a live trade (placeholder logic)
+// Execute a live trade
 async function executeLiveTrade(signal, amount = 1) {
+  if (amount > MAX_TRADE_AMOUNT) {
+    console.error(`Trade amount exceeds maximum limit of ${MAX_TRADE_AMOUNT} ETH.`);
+    return;
+  }
+
   console.log('--- Live Trade Execution ---');
   if (signal === 'Buy') {
     console.log(`Executing live buy of ${amount} ETH.`);
+    // Call DEX API for buy trade here
   } else if (signal === 'Sell') {
     console.log(`Executing live sell of ${amount} ETH.`);
+    // Call DEX API for sell trade here
   } else {
-    console.log('Holding position. No trade executed.');
+    console.log('Holding position. No live trade executed.');
   }
   logTradeResult(signal, amount, 3422); // Replace with real price from API
 }
 
+// Main function
 function main() {
   console.log(`--- Starting Trade Execution (${LIVE_FIRE ? 'LIVE' : 'SIMULATION'} MODE) ---`);
+
   const trends = {
-    avgPrice: 3000, // Replace with dynamic data
+    avgPrice: 3000, // Replace with real trends from analysis
     priceChange: 2,
     avgPoolVolume: 5000000,
     avgLiquidity: 20000000,
   };
 
   // Generate signal
-  const signal = generateSignals(trends);
+  const signalResult = generateSignals(trends);
+
+  if (!signalResult || !signalResult.signal) {
+    console.error('No valid signal generated.');
+    return;
+  }
+
+  const { signal } = signalResult;
+  const tradeAmount = 1; // Replace with dynamic amount if needed
 
   if (LIVE_FIRE) {
-    executeLiveTrade(signal.signal, 1); // Replace with dynamic amount
+    executeLiveTrade(signal, tradeAmount);
   } else {
-    simulateTrade(signal.signal, 1);
+    simulateTrade(signal, tradeAmount);
   }
 }
 
+// Execute if script is run directly
 if (require.main === module) {
   main();
 }
