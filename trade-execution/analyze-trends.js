@@ -22,9 +22,9 @@ function analyzeTrends() {
     return;
   }
 
-  // Filter out invalid or missing pool data
-  const validData = data.filter(entry => entry.topPool && !isNaN(entry.topPool.volumeUSD) && !isNaN(entry.topPool.liquidity));
-  const invalidEntries = data.filter(entry => !entry.topPool || isNaN(entry.topPool.volumeUSD) || isNaN(entry.topPool.liquidity));
+  // Separate valid and invalid entries
+  const validData = data.filter(entry => entry.topPool && !isNaN(parseFloat(entry.topPool.volumeUSD)) && !isNaN(parseFloat(entry.topPool.liquidity)));
+  const invalidEntries = data.filter(entry => !entry.topPool || isNaN(parseFloat(entry.topPool.volumeUSD)) || isNaN(parseFloat(entry.topPool.liquidity)));
 
   // Debug: Log invalid entries
   if (invalidEntries.length > 0) {
@@ -40,8 +40,8 @@ function analyzeTrends() {
   // Extract valid metrics
   const prices = validData.map(entry => entry.ethPrice);
   const volumes = validData.map(entry => entry.totalVolume);
-  const poolVolumes = validData.map(entry => entry.topPool.volumeUSD);
-  const poolLiquidity = validData.map(entry => entry.topPool.liquidity);
+  const poolVolumes = validData.map(entry => parseFloat(entry.topPool.volumeUSD));
+  const poolLiquidity = validData.map(entry => parseFloat(entry.topPool.liquidity));
 
   // Compute averages with safeguards
   const avgPrice = prices.length ? prices.reduce((a, b) => a + b, 0) / prices.length : 0;
