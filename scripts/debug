@@ -1,11 +1,58 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ tail -f /home/techbu/OFA_Project_Local/ofa-project/logs/fetch-uniswap-data.log
-Total Volume: $1428779413471.8528
-Data saved to historical-data.json
-No historical data found.
-DISCORD_WEBHOOK_URL is not set in the .env file or is invalid.
-Using endpoint: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV
-ETH Price: $3422.5049891549575
-Total Volume: $1428780029576.8728
-Data saved to historical-data.json
-No historical data found.
-DISCORD_WEBHOOK_URL is not set in the .env file or is invalid.
+echbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node trade-execution/trade-simulation.js
+--- Starting Trade Execution (LIVE MODE) ---
+Generated Signal: Buy
+Trade Amount: 1 ETH
+Executing in LIVE_FIRE mode...
+--- Fetching Pool Data ---
+Pool not found. Ensure the token pair and Subgraph URL are correct.
+Failed to fetch pool data. Trade execution aborted.
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node trade-execution/fetch-pool-data.js
+Sending Query to Subgraph: 
+    {
+      pools(
+        first: 1,
+        where: {
+          token0: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          token1: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+        }
+      ) {
+        id
+        feeTier
+        sqrtPrice
+        liquidity
+        tick
+      }
+    }
+  
+Fetched Pool Data: {
+  feeTier: '10000',
+  id: '0x7bea39867e4169dbe237d55c8242a8f2fcdcc387',
+  liquidity: '13468764814874888',
+  sqrtPrice: '1355053976747993894121834613483921',
+  tick: '194950'
+}
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node trade-execution/trade-simulation.js
+--- Starting Trade Execution (LIVE MODE) ---
+Generated Signal: Buy
+Trade Amount: 1 ETH
+Executing in LIVE_FIRE mode...
+--- Fetching Pool Data ---
+Sending Query to Subgraph: 
+    {
+      pools(
+        first: 1,
+        where: {
+          token0: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          token1: "0x0000000000000000000000000000000000000000"
+        }
+      ) {
+        id
+        feeTier
+        sqrtPrice
+        liquidity
+        tick
+      }
+    }
+  
+Pool not found. Ensure the token pair and Subgraph URL are correct.
+Failed to fetch pool data. Trade execution aborted.
