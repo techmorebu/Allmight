@@ -44,23 +44,53 @@ function simulateTrade(signal, amount = 1) {
 }
 
 // Execute a live trade
+const { ethers } = require('ethers');
+const { Token, CurrencyAmount, TradeType } = require('@uniswap/sdk-core');
+const { Pool, Route, Trade } = require('@uniswap/v3-sdk');
+
 async function executeLiveTrade(signal, amount = 1) {
   if (amount > MAX_TRADE_AMOUNT) {
     console.error(`Trade amount exceeds maximum limit of ${MAX_TRADE_AMOUNT} ETH.`);
     return;
   }
 
+  const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
+  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+
+  const ethToken = new Token(1, ethers.ZeroAddress, 18, 'ETH', 'Ethereum');
+  const usdcToken = new Token(1, '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', 6, 'USDC', 'USD Coin');
+  
   console.log('--- Live Trade Execution ---');
-  if (signal === 'Buy') {
-    console.log(`Executing live buy of ${amount} ETH.`);
-    // Call DEX API for buy trade here
-  } else if (signal === 'Sell') {
-    console.log(`Executing live sell of ${amount} ETH.`);
-    // Call DEX API for sell trade here
-  } else {
-    console.log('Holding position. No live trade executed.');
+
+  try {
+    const pool = new Pool(
+      ethToken,            // Token A
+      usdcToken,           // Token B
+      3000,                // Fee tier (Uniswap's 0.3%)
+      '123456789',         // Mock sqrtPriceX96
+      '1000000',           // Mock liquidity
+      '1'                  // Tick spacing
+    );
+
+    const route = new Route([pool], signal === 'Buy' ? usdcToken : ethToken, signal === 'Buy' ? ethToken : usdcToken);
+    const trade = Trade.exactInput(
+      new CurrencyAmount(signal === 'Buy' ? usdcToken : ethToken, ethers.parseUnits(amount.toString(), 18)),
+      route,
+      TradeType.EXACT_INPUT
+    );
+
+    console.log(`Executing live ${signal} trade...`);
+    console.log(`Route: ${JSON.stringify(route)}`);
+    console.log(`Trade details: ${JSON.stringify(trade)}`);
+
+    // Replace the following with actual trade execution logic:
+    console.log('Trade successfully simulated but not executed.');
+
+    // Log the trade result
+    logTradeResult(signal, amount, 3422); // Replace with actual price
+  } catch (error) {
+    console.error('Error executing trade:', error.message);
   }
-  logTradeResult(signal, amount, 3422); // Replace with real price from API
 }
 
 // Main function
