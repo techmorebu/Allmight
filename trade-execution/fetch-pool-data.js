@@ -3,11 +3,15 @@ require('dotenv').config({ path: '/home/techbu/OFA_Project_Local/ofa-project/.en
 
 async function fetchPoolData(token0, token1) {
   const endpoint = process.env.UNISWAP_SUBGRAPH_URL;
+
   const query = `
     {
       pools(
         first: 1,
-        where: { token0: "${token0.toLowerCase()}", token1: "${token1.toLowerCase()}" }
+        where: {
+          token0: "${token0.toLowerCase()}",
+          token1: "${token1.toLowerCase()}"
+        }
       ) {
         id
         feeTier
@@ -19,7 +23,14 @@ async function fetchPoolData(token0, token1) {
   `;
 
   try {
+    console.log('Sending Query to Subgraph:', query); // Log query for debugging
     const response = await axios.post(endpoint, { query });
+
+    if (response.data.errors) {
+      console.error('Subgraph returned errors:', response.data.errors);
+      return null;
+    }
+
     const poolData = response.data.data.pools[0];
 
     if (!poolData) {
@@ -44,7 +55,7 @@ module.exports = { fetchPoolData };
 
 // Test Example
 if (require.main === module) {
-const token0 = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'; // USDC
-const token1 = '0xC02aaa39b223FE8D0A0E5C4F27eAD9083C756Cc2'; // WETH
+  const token0 = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'; // USDC
+  const token1 = '0xC02aaa39b223FE8D0A0E5C4F27eAD9083C756Cc2'; // WETH
   fetchPoolData(token0, token1);
 }
