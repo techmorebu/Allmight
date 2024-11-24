@@ -26,6 +26,19 @@ const query = `
     id
     ethPriceUSD
   }
+  pools(first: 5, orderBy: volumeUSD, orderDirection: desc) {
+    id
+    token0 {
+      id
+      symbol
+    }
+    token1 {
+      id
+      symbol
+    }
+    volumeUSD
+    liquidity
+  }
 }
 `;
 
