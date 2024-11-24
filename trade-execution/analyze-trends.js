@@ -19,10 +19,17 @@ function analyzeTrends() {
     return;
   }
 
-  const prices = data.map(entry => entry.ethPrice);
-  const volumes = data.map(entry => entry.totalVolume);
-  const poolVolumes = data.map(entry => entry.topPool?.volumeUSD || 0);
-  const poolLiquidity = data.map(entry => entry.topPool?.liquidity || 0);
+  // Filter out invalid or missing pool data
+  const validData = data.filter(entry => entry.topPool && !isNaN(entry.topPool.volumeUSD));
+  if (validData.length === 0) {
+    console.log('No valid pool data found.');
+    return;
+  }
+
+  const prices = validData.map(entry => entry.ethPrice);
+  const volumes = validData.map(entry => entry.totalVolume);
+  const poolVolumes = validData.map(entry => entry.topPool.volumeUSD);
+  const poolLiquidity = validData.map(entry => entry.topPool.liquidity);
 
   const avgPrice = prices.reduce((a, b) => a + b, 0) / prices.length;
   const priceChange = ((prices[prices.length - 1] - prices[0]) / prices[0]) * 100;
