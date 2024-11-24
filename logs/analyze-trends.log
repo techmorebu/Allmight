@@ -103,3 +103,34 @@ Average ETH Price: $3422.33
 Price Change: -0.08%
 Average Pool Volume: $505908514051.96
 Average Pool Liquidity: $7939675472864344064.00
+--- Starting Trend Analysis ---
+Total data entries found: 41
+Invalid entries found: 15
+Examples of invalid entries: [
+  {
+    timestamp: '2024-11-24T07:14:01.875Z',
+    ethPrice: 3422.4821389009307,
+    totalVolume: 1428775259758.3098
+  },
+  {
+    timestamp: '2024-11-24T07:15:02.564Z',
+    ethPrice: 3422.4821389009307,
+    totalVolume: 1428775508314.3518
+  },
+  {
+    timestamp: '2024-11-24T07:16:02.378Z',
+    ethPrice: 3422.4821389009307,
+    totalVolume: 1428775735501.2725
+  }
+]
+--- Computed Metrics ---
+Average ETH Price: $3421.25
+Price Change: -0.22%
+Average Pool Volume: $505908841633.81
+Average Pool Liquidity: $7981241785587617792.00
+
+--- Final Summary ---
+Average ETH Price: $3421.25
+Price Change: -0.22%
+Average Pool Volume: $505908841633.81
+Average Pool Liquidity: $7981241785587617792.00
