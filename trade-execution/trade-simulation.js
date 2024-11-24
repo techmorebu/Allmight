@@ -1,24 +1,26 @@
 const { generateSignals } = require('./signal-generator');
 const fs = require('fs');
+require('dotenv').config({ path: '/home/techbu/OFA_Project_Local/ofa-project/.env' });
+
+const LIVE_FIRE = process.env.LIVE_FIRE === 'true';
 
 // Log trade results to a file
-function logTradeResult(signal, amount) {
+function logTradeResult(signal, amount, priceAtSignal) {
   const filePath = '/home/techbu/OFA_Project_Local/ofa-project/logs/trade-log.json';
   const trade = {
     timestamp: new Date().toISOString(),
     signal,
     amount,
+    priceAtSignal,
   };
 
   let existingTrades = [];
   try {
-    // Read existing trades if the file exists
     if (fs.existsSync(filePath)) {
       const fileContent = fs.readFileSync(filePath, 'utf8');
       existingTrades = JSON.parse(fileContent);
     }
 
-    // Add the new trade to the log
     existingTrades.push(trade);
     fs.writeFileSync(filePath, JSON.stringify(existingTrades, null, 2));
     console.log('Trade logged:', trade);
@@ -37,14 +39,24 @@ function simulateTrade(signal, amount = 1) {
   } else {
     console.log('Holding position. No trade executed.');
   }
-
-  // Log the trade result
-  logTradeResult(signal, amount);
+  logTradeResult(signal, amount, 3422); // Example ETH price at signal
 }
 
-// Main function to generate signal and execute simulation
+// Execute a live trade (placeholder logic)
+async function executeLiveTrade(signal, amount = 1) {
+  console.log('--- Live Trade Execution ---');
+  if (signal === 'Buy') {
+    console.log(`Executing live buy of ${amount} ETH.`);
+  } else if (signal === 'Sell') {
+    console.log(`Executing live sell of ${amount} ETH.`);
+  } else {
+    console.log('Holding position. No trade executed.');
+  }
+  logTradeResult(signal, amount, 3422); // Replace with real price from API
+}
+
 function main() {
-  console.log('--- Starting Trade Simulation ---');
+  console.log(`--- Starting Trade Execution (${LIVE_FIRE ? 'LIVE' : 'SIMULATION'} MODE) ---`);
   const trends = {
     avgPrice: 3000, // Replace with dynamic data
     priceChange: 2,
@@ -52,16 +64,18 @@ function main() {
     avgLiquidity: 20000000,
   };
 
-  // Generate signal based on trends
+  // Generate signal
   const signal = generateSignals(trends);
 
-  // Simulate a trade
-  simulateTrade(signal);
+  if (LIVE_FIRE) {
+    executeLiveTrade(signal.signal, 1); // Replace with dynamic amount
+  } else {
+    simulateTrade(signal.signal, 1);
+  }
 }
 
-// Execute if the script is run directly
 if (require.main === module) {
   main();
 }
 
-module.exports = { simulateTrade, logTradeResult };
+module.exports = { simulateTrade, executeLiveTrade };
