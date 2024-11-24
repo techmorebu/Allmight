@@ -44,7 +44,7 @@ module.exports = { fetchPoolData };
 
 // Test Example
 if (require.main === module) {
-  const token0 = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'; // USDC
-  const token1 = '0x0000000000000000000000000000000000000000'; // ETH (Zero Address)
+const token0 = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'; // USDC
+const token1 = '0xC02aaa39b223FE8D0A0E5C4F27eAD9083C756Cc2'; // WETH
   fetchPoolData(token0, token1);
 }
