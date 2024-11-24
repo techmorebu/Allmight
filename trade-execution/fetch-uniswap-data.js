@@ -1,5 +1,5 @@
 const fs = require('fs');
-require('dotenv').config({ path: '/path/to/your/project/.env' }); // Explicitly load .env file
+require('dotenv').config({ path: '/home/techbu/OFA_Project_Local/ofa-project.env' }); // Explicitly load .env file
 const axios = require('axios');
 const { analyzeTrends } = require('./analyze-trends'); // Import trend analysis function
 
@@ -47,7 +47,7 @@ async function sendDiscordAlert(message) {
 
 // Save data to JSON file
 function saveDataToFile(data) {
-  const filePath = '/path/to/your/project/logs/historical-data.json'; // Ensure full path for cron
+  const filePath = '/home/techbu/OFA_Project_Local/ofa-project/logs/historical-data.json'; // Ensure full path for cron
   let existingData = [];
 
   try {
