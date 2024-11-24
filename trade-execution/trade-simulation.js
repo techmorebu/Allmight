@@ -2,9 +2,11 @@ const { ethers } = require('ethers');
 const { Token, Pool, Route, Trade, CurrencyAmount, TradeType } = require('@uniswap/sdk-core');
 const { fetchPoolData } = require('./fetch-pool-data'); // Import fetchPoolData function
 require('dotenv').config({ path: '/home/techbu/OFA_Project_Local/ofa-project/.env' });
+const fs = require('fs');
 
 const MAX_TRADE_AMOUNT = 10; // Maximum trade size in ETH
 
+// Function to execute live trades
 async function executeLiveTrade(signal, amount = 1) {
   if (amount > MAX_TRADE_AMOUNT) {
     console.error(`Trade amount exceeds maximum limit of ${MAX_TRADE_AMOUNT} ETH.`);
@@ -60,7 +62,7 @@ async function executeLiveTrade(signal, amount = 1) {
   }
 }
 
-// Log trade results
+// Function to log trade results
 function logTradeResult(signal, amount, priceAtSignal) {
   const filePath = '/home/techbu/OFA_Project_Local/ofa-project/logs/trade-log.json';
   const trade = {
@@ -85,7 +87,7 @@ function logTradeResult(signal, amount, priceAtSignal) {
   }
 }
 
-// Main execution
+// Main execution function
 function main() {
   console.log(`--- Starting Trade Execution (${process.env.LIVE_FIRE === 'true' ? 'LIVE' : 'SIMULATION'} MODE) ---`);
 
@@ -98,9 +100,13 @@ function main() {
 
   // Example: Generate a "Buy" or "Sell" signal dynamically (replace with signal logic)
   const signal = 'Buy'; // Example signal
+  console.log(`Generated Signal: ${signal}`);
+
   const tradeAmount = 1; // Example amount
+  console.log(`Trade Amount: ${tradeAmount} ETH`);
 
   if (process.env.LIVE_FIRE === 'true') {
+    console.log('Executing in LIVE_FIRE mode...');
     executeLiveTrade(signal, tradeAmount);
   } else {
     console.log('Simulation mode. No live trade executed.');
@@ -109,7 +115,11 @@ function main() {
 
 // Run the script if executed directly
 if (require.main === module) {
-  main();
+  try {
+    main();
+  } catch (error) {
+    console.error('Error in script execution:', error.message);
+  }
 }
 
 module.exports = { executeLiveTrade };
