@@ -1,5 +1,11 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node trade-execution/trade-monitor.js
-Discovering trading pairs...
-Error fetching trading pairs: Cannot read properties of null (reading 'pairs')
-No pairs found. Exiting.
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ tail -f /home/techbu/OFA_Project_Local/ofa-project/logs/fetch-uniswap-data.log
+Total Volume: $1428779413471.8528
+Data saved to historical-data.json
+No historical data found.
+DISCORD_WEBHOOK_URL is not set in the .env file or is invalid.
+Using endpoint: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV
+ETH Price: $3422.5049891549575
+Total Volume: $1428780029576.8728
+Data saved to historical-data.json
+No historical data found.
+DISCORD_WEBHOOK_URL is not set in the .env file or is invalid.
