@@ -15,8 +15,8 @@ async function executeLiveTrade(signal, amount = 1) {
   const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
   const wallet = new ethers.Wallet(process.env.METAMASK_PRIVATE_KEY, provider);
 
-  const token0 = new Token(1, "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", 6, "USDC", "USD Coin");
-  const token1 = new Token(1, "0xC02aaa39b223FE8D0A0E5C4F27eAD9083C756Cc2", 18, "WETH", "Wrapped Ethereum");
+  const token0 = new Token(1, "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48".toLowerCase(), 6, "USDC", "USD Coin");
+  const token1 = new Token(1, "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2".toLowerCase(), 18, "WETH", "Wrapped Ethereum");
 
   console.log('--- Fetching Pool Data ---');
   const poolData = await fetchPoolData(token0.address, token1.address);
