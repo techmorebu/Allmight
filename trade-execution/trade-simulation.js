@@ -1,6 +1,6 @@
 const { ethers } = require('ethers');
 const { Token, Pool, Route, Trade, CurrencyAmount, TradeType } = require('@uniswap/sdk-core');
-const { Pool: V3Pool } = require('@uniswap/v3-sdk'); // Use Pool from Uniswap V3 SDK
+const { Pool: V3Pool } = require('@uniswap/v3-sdk'); // Import Pool from Uniswap V3 SDK
 const { fetchPoolData } = require('./fetch-pool-data'); // Import pool fetching function
 require('dotenv').config({ path: '/home/techbu/OFA_Project_Local/ofa-project/.env' });
 const fs = require('fs');
@@ -43,7 +43,11 @@ async function executeLiveTrade(signal, amount = 1) {
     console.log('Pool successfully created:', pool);
 
     // Create a Route instance
-    const route = new Route([pool], signal === 'Buy' ? token0 : token1, signal === 'Buy' ? token1 : token0);
+    const route = new Route(
+      [pool], // Array of pools (supports multi-hop routes)
+      signal === 'Buy' ? token0 : token1, // Input token
+      signal === 'Buy' ? token1 : token0  // Output token
+    );
 
     // Construct trade details
     const trade = Trade.exactInput(
