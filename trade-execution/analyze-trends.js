@@ -36,12 +36,30 @@ function analyzeTrends() {
   console.log(`Average Pool Volume: $${avgPoolVolume.toFixed(2)}`);
   console.log(`Average Pool Liquidity: $${avgLiquidity.toFixed(2)}`);
 
-  return `
-  - Average ETH Price: $${avgPrice.toFixed(2)}
-  - Price Change: ${priceChange.toFixed(2)}%
-  - Average Pool Volume: $${avgPoolVolume.toFixed(2)}
-  - Average Pool Liquidity: $${avgLiquidity.toFixed(2)}
-  `;
+  return {
+    avgPrice,
+    priceChange,
+    avgPoolVolume,
+    avgLiquidity,
+  };
+}
+
+// Main execution block
+function main() {
+  console.log('Starting trend analysis...');
+  const trends = analyzeTrends();
+  if (trends) {
+    console.log('\n--- Final Summary ---');
+    console.log(`Average ETH Price: $${trends.avgPrice.toFixed(2)}`);
+    console.log(`Price Change: ${trends.priceChange.toFixed(2)}%`);
+    console.log(`Average Pool Volume: $${trends.avgPoolVolume.toFixed(2)}`);
+    console.log(`Average Pool Liquidity: $${trends.avgLiquidity.toFixed(2)}`);
+  }
+}
+
+// Execute the script if run directly
+if (require.main === module) {
+  main();
 }
 
 module.exports = { analyzeTrends };
