@@ -55,7 +55,7 @@ async function executeLiveTrade(signal, amount = 1) {
   }
 
   const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
-  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+  const wallet = new ethers.Wallet(process.env.METAMASK_PRIVATE_KEY, provider);
 
   const ethToken = new Token(1, ethers.ZeroAddress, 18, 'ETH', 'Ethereum');
   const usdcToken = new Token(1, '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', 6, 'USDC', 'USD Coin');
