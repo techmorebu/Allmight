@@ -1,125 +1,44 @@
 const { ethers } = require('ethers');
-const { Token, Pool, Route, Trade, CurrencyAmount, TradeType } = require('@uniswap/sdk-core');
-const { Pool: V3Pool } = require('@uniswap/v3-sdk'); // Import Pool from Uniswap V3 SDK
-const { fetchPoolData } = require('./fetch-pool-data'); // Import pool fetching function
+const { fetchPoolDataLimited } = require('../modules/geckoTerminalData'); // GeckoTerminal API module
+const { executeLiveTrade } = require('./trade-live'); // Existing live trading function
 require('dotenv').config({ path: '/home/techbu/OFA_Project_Local/ofa-project/.env' });
-const fs = require('fs');
 
-const MAX_TRADE_AMOUNT = 10; // Maximum trade size in ETH
-
-// Function to execute live trades
-async function executeLiveTrade(signal, amount = 1) {
-  if (amount > MAX_TRADE_AMOUNT) {
-    console.error(`Trade amount exceeds maximum limit of ${MAX_TRADE_AMOUNT} ETH.`);
-    return;
-  }
-
-  const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
-  const wallet = new ethers.Wallet(process.env.METAMASK_PRIVATE_KEY, provider);
-
-  // Define token objects
-  const token0 = new Token(1, "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48".toLowerCase(), 6, "USDC", "USD Coin");
-  const token1 = new Token(1, "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2".toLowerCase(), 18, "WETH", "Wrapped Ethereum");
-
-  console.log('--- Fetching Pool Data ---');
-  const poolData = await fetchPoolData(token0.address, token1.address);
-
-  if (!poolData) {
-    console.error('Failed to fetch pool data. Trade execution aborted.');
-    return;
-  }
+async function simulateTrade() {
+  console.log('--- Starting Trade Simulation ---');
 
   try {
-    // Create Pool instance using fetched data
-    const pool = new V3Pool(
-      token0,
-      token1,
-      poolData.feeTier,
-      poolData.sqrtPriceX96,
-      poolData.liquidity,
-      parseInt(poolData.tick, 10) // Ensure tick is parsed as an integer
-    );
+    // Fetch pool data for the token pair (example: ETH/USDC) using GeckoTerminal API
+    console.log('Fetching pool data from GeckoTerminal API...');
+    const poolData = await fetchPoolDataLimited('ETH/USDC'); // Replace 'ETH/USDC' with dynamic pair as needed
 
-    console.log('Pool successfully created:', pool);
+    if (poolData.data && poolData.data.length > 0) {
+      const pool = poolData.data[0]; // Use the first pool in the response
+      console.log('Fetched Pool Data:', pool);
 
-    // Create a Route instance
-    const route = new Route(
-      [pool], // Array of pools (supports multi-hop routes)
-      signal === 'Buy' ? token0 : token1, // Input token
-      signal === 'Buy' ? token1 : token0  // Output token
-    );
+      // Extract useful information
+      const { volume_usd, token_0, token_1, liquidity_usd } = pool.attributes;
 
-    // Construct trade details
-    const trade = Trade.exactInput(
-      CurrencyAmount.fromRawAmount(signal === 'Buy' ? token0 : token1, ethers.parseUnits(amount.toString(), 18)),
-      route,
-      TradeType.EXACT_INPUT
-    );
+      console.log('Pool Summary:');
+      console.log(`Token Pair: ${token_0.symbol}/${token_1.symbol}`);
+      console.log(`Volume (USD): $${volume_usd}`);
+      console.log(`Liquidity (USD): $${liquidity_usd}`);
 
-    console.log(`Executing live ${signal} trade...`);
-    console.log(`Route: ${JSON.stringify(route)}`);
-    console.log(`Trade details: ${JSON.stringify(trade)}`);
+      // Define trade signal based on analysis (example: Buy if volume exceeds $1M)
+      const signal = volume_usd > 1000000 ? 'Buy' : 'Hold';
 
-    // Placeholder for actual trade execution
-    console.log('Trade successfully simulated but not executed.');
-
-    // Log trade results
-    logTradeResult(signal, amount, 3422); // Replace with real price from API
-  } catch (error) {
-    console.error('Error executing trade:', error.message);
-  }
-}
-
-// Function to log trade results
-function logTradeResult(signal, amount, priceAtSignal) {
-  const filePath = '/home/techbu/OFA_Project_Local/ofa-project/logs/trade-log.json';
-  const trade = {
-    timestamp: new Date().toISOString(),
-    signal,
-    amount,
-    priceAtSignal,
-  };
-
-  let existingTrades = [];
-  try {
-    if (fs.existsSync(filePath)) {
-      const fileContent = fs.readFileSync(filePath, 'utf8');
-      existingTrades = JSON.parse(fileContent);
+      if (signal === 'Buy') {
+        console.log(`Trade Signal: ${signal}`);
+        console.log(`Executing trade to purchase ${token_1.symbol}...`);
+        await executeLiveTrade(signal, 1); // Example: Buy 1 ETH
+      } else {
+        console.log(`Trade Signal: ${signal}. No trade executed.`);
+      }
+    } else {
+      console.log('No pool data found for the given token pair.');
     }
-
-    existingTrades.push(trade);
-    fs.writeFileSync(filePath, JSON.stringify(existingTrades, null, 2));
-    console.log('Trade logged:', trade);
   } catch (error) {
-    console.error('Error logging trade:', error.message);
+    console.error('Error during trade simulation:', error.message);
   }
 }
 
-// Main execution function
-function main() {
-  console.log(`--- Starting Trade Execution (${process.env.LIVE_FIRE === 'true' ? 'LIVE' : 'SIMULATION'} MODE) ---`);
-
-  const signal = 'Buy'; // Example signal
-  const tradeAmount = 1; // Example amount
-
-  console.log(`Generated Signal: ${signal}`);
-  console.log(`Trade Amount: ${tradeAmount} ETH`);
-
-  if (process.env.LIVE_FIRE === 'true') {
-    console.log('Executing in LIVE_FIRE mode...');
-    executeLiveTrade(signal, tradeAmount);
-  } else {
-    console.log('Simulation mode. No live trade executed.');
-  }
-}
-
-// Run the script if executed directly
-if (require.main === module) {
-  try {
-    main();
-  } catch (error) {
-    console.error('Error in script execution:', error.message);
-  }
-}
-
-module.exports = { executeLiveTrade };
+simulateTrade();
