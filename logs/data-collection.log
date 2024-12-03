@@ -15,3 +15,27 @@
 {"level":"info","message":"Processed zksync: Price: $0.2201225716776147, Market Cap: $809180091.7411994, 24h Volume: $256499776.6952585, 24h Change: 3.390656705096382%","timestamp":"2024-12-03T09:03:37.086Z"}
 {"level":"info","message":"Trends saved to ./logs/trends-log.json","timestamp":"2024-12-03T09:03:37.088Z"}
 {"level":"info","message":"Trend analysis completed.","timestamp":"2024-12-03T09:03:37.089Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-03T09:12:17.354Z"}
+{"level":"info","message":"Fetched token prices successfully.","timestamp":"2024-12-03T09:12:17.984Z"}
+{"level":"info","message":"Starting trend analysis...","timestamp":"2024-12-03T09:12:17.994Z"}
+{"level":"info","message":"Processed ethereum: Price: $3608.3339440286727, Market Cap: $434966488839.36237, 24h Volume: $41966952428.40781, 24h Change: -0.25314805475206276%","timestamp":"2024-12-03T09:12:17.995Z"}
+{"level":"info","message":"Processed zksync: Price: $0.21996314326719474, Market Cap: $808404677.4795581, 24h Volume: $255578847.85674232, 24h Change: 2.406283490307225%","timestamp":"2024-12-03T09:12:17.995Z"}
+{"level":"info","message":"Trends saved to ./logs/trends-log.json","timestamp":"2024-12-03T09:12:17.996Z"}
+{"level":"info","message":"Trend analysis completed.","timestamp":"2024-12-03T09:12:17.997Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-03T09:14:26.652Z"}
+{"level":"info","message":"Fetched token prices successfully.","timestamp":"2024-12-03T09:14:26.827Z"}
+{"level":"info","message":"Token Prices: {\"ethereum\":{\"usd\":3608.3339440286727,\"usd_market_cap\":434966488839.36237,\"usd_24h_vol\":41966952428.40781,\"usd_24h_change\":-0.25314805475206276,\"last_updated_at\":1733217132},\"zksync\":{\"usd\":0.21996314326719474,\"usd_market_cap\":808404677.4795581,\"usd_24h_vol\":255578847.85674232,\"usd_24h_change\":2.406283490307225,\"last_updated_at\":1733217135}}","timestamp":"2024-12-03T09:14:26.828Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-03T09:17:56.653Z"}
+{"level":"info","message":"Fetched token prices successfully.","timestamp":"2024-12-03T09:17:56.900Z"}
+{"level":"info","message":"Starting trend analysis...","timestamp":"2024-12-03T09:17:56.910Z"}
+{"level":"info","message":"Processed ethereum: Price: $3609.638379864945, Market Cap: $434655890908.75964, 24h Volume: $41563252878.897484, 24h Change: -0.13052573812525653%","timestamp":"2024-12-03T09:17:56.911Z"}
+{"level":"info","message":"Processed zksync: Price: $0.22006143464504638, Market Cap: $808460992.1645654, 24h Volume: $254937544.16659126, 24h Change: 3.0202791634918644%","timestamp":"2024-12-03T09:17:56.912Z"}
+{"level":"info","message":"Trends saved to ./logs/trends-log.json","timestamp":"2024-12-03T09:17:56.914Z"}
+{"level":"info","message":"Trend analysis completed.","timestamp":"2024-12-03T09:17:56.915Z"}
+{"level":"info","message":"Starting trend analysis...","timestamp":"2024-12-03T09:18:35.474Z"}
+{"level":"info","message":"Processed ethereum: Price: $3612.93, Market Cap: $435145092801.0696, 24h Volume: $44211393381.66678, 24h Change: 0.3199%","timestamp":"2024-12-03T09:18:35.479Z"}
+{"level":"info","message":"Processed zksync: Price: $0.2207, Market Cap: $811185501.2918984, 24h Volume: $261252014.8039644, 24h Change: 3.7264%","timestamp":"2024-12-03T09:18:35.480Z"}
+{"level":"info","message":"Trends saved to ./logs/trends-log.json","timestamp":"2024-12-03T09:18:35.483Z"}
+{"level":"info","message":"Trend analysis completed.","timestamp":"2024-12-03T09:18:35.483Z"}
+{"level":"info","message":"Starting trend analysis...","timestamp":"2024-12-03T09:19:35.032Z"}
+{"level":"error","message":"No data provided for analysis.","timestamp":"2024-12-03T09:19:35.038Z"}
