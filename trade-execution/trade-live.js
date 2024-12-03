@@ -1,39 +1,41 @@
 require('dotenv').config({ path: '../.env' });
 const ethers = require('ethers5');
 const { fetchPoolData } = require('./fetch-pool-data');
+const { logAndNotify } = require('../monitoring/logger');
 
 async function executeTrade(token0, token1, tradeAmountInEth) {
   const timestamp = new Date().toISOString();
-  console.log(`[${timestamp}] Querying pool for: ${token0} - ${token1}`);
-  
+  logAndNotify("info", `[${timestamp}] Querying pool for: ${token0} - ${token1}`);
+
   const poolData = await fetchPoolData(token0, token1);
   if (!poolData) {
-    console.error(`[${timestamp}] Pool data not found. Aborting trade.`);
+    logAndNotify("error", `[${timestamp}] Pool data not found for ${token0} - ${token1}. Aborting trade.`);
     return;
   }
 
-  console.log(`[${timestamp}] Fetched Pool Data:`);
-  console.log(`  - Pool ID: ${poolData.id}`);
-  console.log(`  - Fee Tier: ${poolData.feeTier} (${poolData.feeTier / 10000}%)`);
-  console.log(`  - SqrtPriceX96: ${poolData.sqrtPriceX96}`);
-  console.log(`  - Liquidity: ${poolData.liquidity}`);
-  console.log(`  - Tick: ${poolData.tick}`);
+  logAndNotify("info", `[${timestamp}] Fetched Pool Data:
+    - Pool ID: ${poolData.id}
+    - Fee Tier: ${poolData.feeTier} (${poolData.feeTier / 10000}%)
+    - SqrtPriceX96: ${poolData.sqrtPriceX96}
+    - Liquidity: ${poolData.liquidity}
+    - Tick: ${poolData.tick}
+  `);
 
   const provider = new ethers.providers.JsonRpcProvider(process.env.ETHEREUM_MAINNET_RPC_URL_1);
   const wallet = new ethers.Wallet(process.env.METAMASK_PRIVATE_KEY, provider);
   const walletAddress = wallet.address;
-  console.log(`[${timestamp}] Wallet connected: ${walletAddress}`);
+  logAndNotify("info", `[${timestamp}] Wallet connected: ${walletAddress}`);
 
   try {
     const tradeAmountWei = ethers.utils.parseUnits(tradeAmountInEth.toString(), 'ether');
-    console.log(`[${timestamp}] Trade Amount in Wei: ${tradeAmountWei.toString()}`);
+    logAndNotify("info", `[${timestamp}] Trade Amount in Wei: ${tradeAmountWei.toString()}`);
 
     const walletBalance = await wallet.getBalance();
     const walletBalanceEth = ethers.utils.formatEther(walletBalance);
-    console.log(`[${timestamp}] Wallet ETH Balance: ${walletBalanceEth} ETH`);
+    logAndNotify("info", `[${timestamp}] Wallet ETH Balance: ${walletBalanceEth} ETH`);
 
     if (walletBalance.isZero()) {
-      console.error(`[${timestamp}] Insufficient wallet balance: 0 ETH. Cannot execute the trade.`);
+      logAndNotify("error", `[${timestamp}] Insufficient wallet balance: 0 ETH. Cannot execute the trade.`);
       return;
     }
 
@@ -41,20 +43,21 @@ async function executeTrade(token0, token1, tradeAmountInEth) {
       to: poolData.id,
       value: tradeAmountWei,
     }).catch(() => {
-      console.warn(`[${timestamp}] Unable to estimate gas. Falling back to manual gas limit.`);
+      logAndNotify("warn", `[${timestamp}] Unable to estimate gas. Falling back to manual gas limit.`);
       return ethers.BigNumber.from(21000); // Default fallback gas limit
     });
 
     const gasPrice = await provider.getGasPrice();
     const estimatedCost = gasPrice.mul(gasEstimate).add(tradeAmountWei);
 
-    console.log(`[${timestamp}] Gas Price: ${ethers.utils.formatUnits(gasPrice, 'gwei')} Gwei`);
-    console.log(`[${timestamp}] Estimated Gas Limit: ${gasEstimate.toString()}`);
-    console.log(`[${timestamp}] Estimated Gas Fees: ${ethers.utils.formatEther(gasPrice.mul(gasEstimate))} ETH`);
-    console.log(`[${timestamp}] Estimated Total Transaction Cost: ${ethers.utils.formatEther(estimatedCost)} ETH`);
+    logAndNotify("info", `[${timestamp}] Gas Price: ${ethers.utils.formatUnits(gasPrice, 'gwei')} Gwei`);
+    logAndNotify("info", `[${timestamp}] Estimated Gas Limit: ${gasEstimate.toString()}`);
+    logAndNotify("info", `[${timestamp}] Estimated Gas Fees: ${ethers.utils.formatEther(gasPrice.mul(gasEstimate))} ETH`);
+    logAndNotify("info", `[${timestamp}] Estimated Total Transaction Cost: ${ethers.utils.formatEther(estimatedCost)} ETH`);
 
     if (walletBalance.lt(estimatedCost)) {
-      console.error(
+      logAndNotify(
+        "error",
         `[${timestamp}] Insufficient funds: Wallet balance is ${walletBalanceEth} ETH, ` +
         `but transaction requires ${ethers.utils.formatEther(estimatedCost)} ETH.`
       );
@@ -69,12 +72,12 @@ async function executeTrade(token0, token1, tradeAmountInEth) {
         gasPrice,
       });
 
-      console.log(`[${timestamp}] Trade executed successfully! Transaction Hash: ${tx.hash}`);
+      logAndNotify("success", `[${timestamp}] Trade executed successfully! Transaction Hash: ${tx.hash}`);
     } else {
-      console.log(`[${timestamp}] LIVE_FIRE Mode: Disabled (Simulation Mode). Trade not executed.`);
+      logAndNotify("info", `[${timestamp}] LIVE_FIRE Mode: Disabled (Simulation Mode). Trade not executed.`);
     }
   } catch (error) {
-    console.error(`[${timestamp}] Error executing trade: ${error.message}`);
+    logAndNotify("error", `[${timestamp}] Error executing trade: ${error.message}`);
   }
 }
 
