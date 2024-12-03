@@ -10,8 +10,8 @@ function generateSignals(trends) {
   const { avgPrice, priceChange, avgPoolVolume, avgLiquidity } = trends;
 
   // Simulated values (replace with real calculations if available)
-  const rsi = 25; // Example RSI value
-  const currentLiquidity = avgLiquidity * -40.9; // Simulated drop
+  const rsi = 59; // Example RSI value
+  const currentLiquidity = avgLiquidity * -50.9; // Simulated drop
   const currentVolume = avgPoolVolume * 1.5; // Simulated spike
   const stopLoss = avgPrice * 0.95; // 5% below average price
   const takeProfit = avgPrice * 1.05; // 5% above average price

@@ -1,0 +1,84 @@
+Backtest Results - 2024-12-03T08:21:52.940Z
+{
+  "trends": {
+    "avgPrice": 3585.427983900707,
+    "priceChange": 5.883935969448478,
+    "avgPoolVolume": 508039285104.4036,
+    "avgLiquidity": 10127658669393449000
+  },
+  "signal": {
+    "signal": "Buy",
+    "stopLoss": 3406.156584705672,
+    "takeProfit": 3764.6993830957426
+  },
+  "simulatedResult": {
+    "signal": "Buy",
+    "profit": 179.27139919503537,
+    "stopLoss": 3406.156584705672,
+    "takeProfit": 3764.6993830957426
+  }
+}
+
+Backtest Results - 2024-12-03T08:22:05.749Z
+{
+  "trends": {
+    "avgPrice": 3585.695029294892,
+    "priceChange": 5.883935969448478,
+    "avgPoolVolume": 508043384394.7026,
+    "avgLiquidity": 10131084772356133000
+  },
+  "signal": {
+    "signal": "Buy",
+    "stopLoss": 3406.410277830147,
+    "takeProfit": 3764.9797807596365
+  },
+  "simulatedResult": {
+    "signal": "Buy",
+    "profit": 179.2847514647446,
+    "stopLoss": 3406.410277830147,
+    "takeProfit": 3764.9797807596365
+  }
+}
+
+Backtest Results - 2024-12-03T08:22:33.039Z
+{
+  "trends": {
+    "avgPrice": 3585.695029294892,
+    "priceChange": 5.883935969448478,
+    "avgPoolVolume": 508043384394.7026,
+    "avgLiquidity": 10131084772356133000
+  },
+  "signal": {
+    "signal": "Buy",
+    "stopLoss": 3406.410277830147,
+    "takeProfit": 3764.9797807596365
+  },
+  "simulatedResult": {
+    "signal": "Buy",
+    "profit": 179.2847514647446,
+    "stopLoss": 3406.410277830147,
+    "takeProfit": 3764.9797807596365
+  }
+}
+
+Backtest Results - 2024-12-03T08:23:01.292Z
+{
+  "trends": {
+    "avgPrice": 3585.695029294892,
+    "priceChange": 5.883935969448478,
+    "avgPoolVolume": 508043384394.7026,
+    "avgLiquidity": 10131084772356133000
+  },
+  "signal": {
+    "signal": "Hold",
+    "stopLoss": 3406.410277830147,
+    "takeProfit": 3764.9797807596365
+  },
+  "simulatedResult": {
+    "signal": "Hold",
+    "profit": -179.2847514647446,
+    "stopLoss": 3406.410277830147,
+    "takeProfit": 3764.9797807596365
+  }
+}
+
