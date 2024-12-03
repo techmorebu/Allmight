@@ -208,3 +208,24 @@ Metrics:
   "avgTradeDuration": 60
 }
 
+Backtest Results - 2024-12-03T08:44:58.233Z
+Results:
+[
+  {
+    "signal": "Hold",
+    "profit": -179.52177092391906,
+    "stopLoss": 3410.913647554462,
+    "takeProfit": 3769.9571894023,
+    "tradeDuration": 60
+  }
+]
+Metrics:
+{
+  "totalTrades": 1,
+  "wins": 0,
+  "losses": 1,
+  "winLossRatio": 0,
+  "cumulativePnL": -179.52177092391906,
+  "avgTradeDuration": 60
+}
+
