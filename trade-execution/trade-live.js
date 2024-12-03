@@ -45,7 +45,7 @@ async function executeLiveTrade() {
     }
 
     // Execute trade
-    const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
+    const provider = new ethers.JsonRpcProvider(process.env.ETHEREUM_MAINNET_RPC_URL_1);
     const wallet = new ethers.Wallet(process.env.METAMASK_PRIVATE_KEY, provider);
 
     const tradeAmount = ethers.utils.parseUnits('1', 18); // 1 ETH (example)
