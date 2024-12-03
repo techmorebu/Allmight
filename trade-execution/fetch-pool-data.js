@@ -4,17 +4,15 @@ require('dotenv').config({ path: '/home/techbu/OFA_Project_Local/ofa-project/.en
 async function fetchPoolData(token0, token1) {
   const endpoint = process.env.UNISWAP_SUBGRAPH_URL;
 
-  // Ensure token0 and token1 are in the correct order
-  const [tokenA, tokenB] = [token0, token1].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+  const [sortedToken0, sortedToken1] = [token0, token1].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
 
-  // Construct GraphQL query
   const query = `
     {
       pools(
         first: 1,
         where: {
-          token0: "${tokenA.toLowerCase()}",
-          token1: "${tokenB.toLowerCase()}"
+          token0: "${sortedToken0.toLowerCase()}",
+          token1: "${sortedToken1.toLowerCase()}"
         }
       ) {
         id
@@ -27,52 +25,42 @@ async function fetchPoolData(token0, token1) {
   `;
 
   try {
-    console.log('Querying Subgraph:', endpoint);
-    console.log('Tokens:', { token0: tokenA, token1: tokenB });
-    console.log('Sending Query to Subgraph:', query); // Log query for debugging
-
+    console.log(`Querying pool for: ${sortedToken0} - ${sortedToken1}`);
     const response = await axios.post(endpoint, { query });
 
     if (response.data.errors) {
-      console.error('Subgraph returned errors:', response.data.errors);
+      console.error('Subgraph errors:', response.data.errors);
       return null;
     }
 
-    const poolData = response.data.data.pools[0];
-
-    if (!poolData) {
-      console.error('Pool not found. Ensure the token pair and Subgraph URL are correct.');
+    const pool = response.data.data.pools[0];
+    if (!pool) {
+      console.error('No pool data found for given pair:', { token0, token1 });
       return null;
     }
 
-    console.log('Fetched Pool Data:', poolData);
-    return {
-      feeTier: parseInt(poolData.feeTier, 10),
-      sqrtPriceX96: poolData.sqrtPrice,
-      liquidity: poolData.liquidity,
-      tick: poolData.tick,
-    };
+    return pool;
   } catch (error) {
     console.error('Error fetching pool data:', error.message);
     return null;
   }
 }
 
-module.exports = { fetchPoolData };
+async function fetchTokenPairsAndPools() {
+  const tokenPairs = [
+    { token0: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', token1: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' }, // USDC/WETH
+    { token0: '0x6b175474e89094c44da98b954eedeac495271d0f', token1: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' }, // DAI/WETH
+    // Add more pairs as needed
+  ];
 
-// Test Example
-if (require.main === module) {
-  const token0 = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'; // USDC
-  const token1 = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'; // WETH
-  fetchPoolData(token0, token1)
-    .then((data) => {
-      if (data) {
-        console.log('Test Successful: Pool Data:', data);
-      } else {
-        console.log('Test Failed: No Pool Data Found');
-      }
-    })
-    .catch((error) => {
-      console.error('Test Error:', error.message);
-    });
+  for (const { token0, token1 } of tokenPairs) {
+    const poolData = await fetchPoolData(token0, token1);
+    if (poolData) {
+      console.log('Fetched Pool Data:', poolData);
+    } else {
+      console.log(`No pool data found for pair: ${token0} - ${token1}`);
+    }
+  }
 }
+
+fetchTokenPairsAndPools();
