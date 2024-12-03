@@ -1,5 +1,28 @@
 echbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/backtest.js
-info: --- Starting Backtest --- {"timestamp":"2024-12-03T10:21:03.658Z"}
-info: Starting trend analysis... {"timestamp":"2024-12-03T10:21:03.664Z"}
-error: No data provided for analysis. {"timestamp":"2024-12-03T10:21:03.665Z"}
-error: No trends available for backtesting. {"timestamp":"2024-12-03T10:21:03.666Z"}
+info: --- Starting Backtest --- {"timestamp":"2024-12-03T10:30:24.262Z"}
+info: Generating trading signals... {"timestamp":"2024-12-03T10:30:24.269Z"}
+info: Generated signal for ethereum: Hold {"timestamp":"2024-12-03T10:30:24.270Z"}
+info: Generated signal for zksync: Buy {"timestamp":"2024-12-03T10:30:24.271Z"}
+info: Generated Signals: {"timestamp":"2024-12-03T10:30:24.272Z"}
+info: Simulated trade for ethereum: {
+  "signal": "Hold",
+  "entryPrice": 3612.41,
+  "profit": 0,
+  "timestamp": "2024-12-03T10:30:24.273Z"
+} {"timestamp":"2024-12-03T10:30:24.273Z"}
+info: Simulated trade for zksync: {
+  "signal": "Buy",
+  "entryPrice": 0.218905,
+  "profit": 0.01094525,
+  "timestamp": "2024-12-03T10:30:24.274Z"
+} {"timestamp":"2024-12-03T10:30:24.274Z"}
+info: --- Backtest Summary --- {"timestamp":"2024-12-03T10:30:24.274Z"}
+info: Backtest results saved to ./logs/backtest-results.log {"timestamp":"2024-12-03T10:30:24.277Z"}
+Backtest Summary: {
+  totalTrades: 2,
+  wins: 1,
+  losses: 0,
+  winLossRatio: 'Infinity',
+  totalProfit: 0.01094525,
+  averageProfit: '0.01'
+}

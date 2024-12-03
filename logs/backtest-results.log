@@ -1,231 +1,27 @@
-Backtest Results - 2024-12-03T08:21:52.940Z
 {
-  "trends": {
-    "avgPrice": 3585.427983900707,
-    "priceChange": 5.883935969448478,
-    "avgPoolVolume": 508039285104.4036,
-    "avgLiquidity": 10127658669393449000
-  },
-  "signal": {
-    "signal": "Buy",
-    "stopLoss": 3406.156584705672,
-    "takeProfit": 3764.6993830957426
-  },
-  "simulatedResult": {
-    "signal": "Buy",
-    "profit": 179.27139919503537,
-    "stopLoss": 3406.156584705672,
-    "takeProfit": 3764.6993830957426
+  "timestamp": "2024-12-03T10:30:24.275Z",
+  "results": [
+    {
+      "token": "ethereum",
+      "signal": "Hold",
+      "entryPrice": 3612.41,
+      "profit": 0,
+      "timestamp": "2024-12-03T10:30:24.273Z"
+    },
+    {
+      "token": "zksync",
+      "signal": "Buy",
+      "entryPrice": 0.218905,
+      "profit": 0.01094525,
+      "timestamp": "2024-12-03T10:30:24.274Z"
+    }
+  ],
+  "summary": {
+    "totalTrades": 2,
+    "wins": 1,
+    "losses": 0,
+    "winLossRatio": "Infinity",
+    "totalProfit": 0.01094525,
+    "averageProfit": "0.01"
   }
 }
-
-Backtest Results - 2024-12-03T08:22:05.749Z
-{
-  "trends": {
-    "avgPrice": 3585.695029294892,
-    "priceChange": 5.883935969448478,
-    "avgPoolVolume": 508043384394.7026,
-    "avgLiquidity": 10131084772356133000
-  },
-  "signal": {
-    "signal": "Buy",
-    "stopLoss": 3406.410277830147,
-    "takeProfit": 3764.9797807596365
-  },
-  "simulatedResult": {
-    "signal": "Buy",
-    "profit": 179.2847514647446,
-    "stopLoss": 3406.410277830147,
-    "takeProfit": 3764.9797807596365
-  }
-}
-
-Backtest Results - 2024-12-03T08:22:33.039Z
-{
-  "trends": {
-    "avgPrice": 3585.695029294892,
-    "priceChange": 5.883935969448478,
-    "avgPoolVolume": 508043384394.7026,
-    "avgLiquidity": 10131084772356133000
-  },
-  "signal": {
-    "signal": "Buy",
-    "stopLoss": 3406.410277830147,
-    "takeProfit": 3764.9797807596365
-  },
-  "simulatedResult": {
-    "signal": "Buy",
-    "profit": 179.2847514647446,
-    "stopLoss": 3406.410277830147,
-    "takeProfit": 3764.9797807596365
-  }
-}
-
-Backtest Results - 2024-12-03T08:23:01.292Z
-{
-  "trends": {
-    "avgPrice": 3585.695029294892,
-    "priceChange": 5.883935969448478,
-    "avgPoolVolume": 508043384394.7026,
-    "avgLiquidity": 10131084772356133000
-  },
-  "signal": {
-    "signal": "Hold",
-    "stopLoss": 3406.410277830147,
-    "takeProfit": 3764.9797807596365
-  },
-  "simulatedResult": {
-    "signal": "Hold",
-    "profit": -179.2847514647446,
-    "stopLoss": 3406.410277830147,
-    "takeProfit": 3764.9797807596365
-  }
-}
-
-Backtest Results - 2024-12-03T08:25:58.451Z
-{
-  "trends": {
-    "avgPrice": 3586.474365853431,
-    "priceChange": 5.883935969448478,
-    "avgPoolVolume": 508055626380.97406,
-    "avgLiquidity": 10141083399369677000
-  },
-  "signal": {
-    "signal": "Hold",
-    "stopLoss": 3407.1506475607594,
-    "takeProfit": 3765.798084146103
-  },
-  "simulatedResult": {
-    "signal": "Hold",
-    "profit": -179.32371829267157,
-    "stopLoss": 3407.1506475607594,
-    "takeProfit": 3765.798084146103
-  }
-}
-
-Backtest Results - 2024-12-03T08:26:07.557Z
-{
-  "trends": {
-    "avgPrice": 3586.727123656201,
-    "priceChange": 5.883935969448478,
-    "avgPoolVolume": 508059642773.1305,
-    "avgLiquidity": 10144326197320016000
-  },
-  "signal": {
-    "signal": "Hold",
-    "stopLoss": 3407.390767473391,
-    "takeProfit": 3766.063479839011
-  },
-  "simulatedResult": {
-    "signal": "Hold",
-    "profit": -179.33635618281005,
-    "stopLoss": 3407.390767473391,
-    "takeProfit": 3766.063479839011
-  }
-}
-
-Backtest Results - 2024-12-03T08:28:25.832Z
-Results:
-[
-  {
-    "signal": "Hold",
-    "profit": -179.36112644748147,
-    "stopLoss": 3407.8614025021475,
-    "takeProfit": 3766.5836553971108,
-    "tradeDuration": 60
-  }
-]
-Metrics:
-{
-  "totalTrades": 1,
-  "wins": 0,
-  "losses": 1,
-  "winLossRatio": 0,
-  "cumulativePnL": -179.36112644748147,
-  "avgTradeDuration": 60
-}
-
-Backtest Results - 2024-12-03T08:28:32.619Z
-Results:
-[
-  {
-    "signal": "Hold",
-    "profit": -179.36112644748147,
-    "stopLoss": 3407.8614025021475,
-    "takeProfit": 3766.5836553971108,
-    "tradeDuration": 60
-  }
-]
-Metrics:
-{
-  "totalTrades": 1,
-  "wins": 0,
-  "losses": 1,
-  "winLossRatio": 0,
-  "cumulativePnL": -179.36112644748147,
-  "avgTradeDuration": 60
-}
-
-Backtest Results - 2024-12-03T08:28:44.096Z
-Results:
-[
-  {
-    "signal": "Hold",
-    "profit": -179.36112644748147,
-    "stopLoss": 3407.8614025021475,
-    "takeProfit": 3766.5836553971108,
-    "tradeDuration": 60
-  }
-]
-Metrics:
-{
-  "totalTrades": 1,
-  "wins": 0,
-  "losses": 1,
-  "winLossRatio": 0,
-  "cumulativePnL": -179.36112644748147,
-  "avgTradeDuration": 60
-}
-
-Backtest Results - 2024-12-03T08:28:45.070Z
-Results:
-[
-  {
-    "signal": "Hold",
-    "profit": -179.36112644748147,
-    "stopLoss": 3407.8614025021475,
-    "takeProfit": 3766.5836553971108,
-    "tradeDuration": 60
-  }
-]
-Metrics:
-{
-  "totalTrades": 1,
-  "wins": 0,
-  "losses": 1,
-  "winLossRatio": 0,
-  "cumulativePnL": -179.36112644748147,
-  "avgTradeDuration": 60
-}
-
-Backtest Results - 2024-12-03T08:44:58.233Z
-Results:
-[
-  {
-    "signal": "Hold",
-    "profit": -179.52177092391906,
-    "stopLoss": 3410.913647554462,
-    "takeProfit": 3769.9571894023,
-    "tradeDuration": 60
-  }
-]
-Metrics:
-{
-  "totalTrades": 1,
-  "wins": 0,
-  "losses": 1,
-  "winLossRatio": 0,
-  "cumulativePnL": -179.52177092391906,
-  "avgTradeDuration": 60
-}
-
