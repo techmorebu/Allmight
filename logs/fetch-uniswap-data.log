@@ -4677,3 +4677,79 @@ Alert sent to Discord:
 - Liquidity: $10618804087321340653
       
 🚀 Significant Volume Detected in Pool USDC/WETH!
+Using endpoint: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV
+ETH Price: $3613.0378381223004
+Total Volume: $1443879985597.989
+Top Pool: USDC/WETH
+Volume: $508656583907.7096175793196823491286
+Liquidity: $10618804087321340653
+Data saved to historical-data.json
+{"level":"info","message":"Starting trend analysis...","timestamp":"2024-12-03T09:03:02.504Z"}
+{"level":"error","message":"No data provided for analysis.","timestamp":"2024-12-03T09:03:02.507Z"}
+Alert sent to Discord: 
+🚨 New Data Synced:
+- ETH Price: $3613.04
+- Total Volume: $1,443,879,985,597.989
+
+📊 Top Pool: USDC/WETH
+- Volume: $508656583907.7096175793196823491286
+- Liquidity: $10618804087321340653
+      
+🚀 Significant Volume Detected in Pool USDC/WETH!
+Using endpoint: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV
+ETH Price: $3613.0378381223004
+Total Volume: $1443863602866.0164
+Top Pool: USDC/WETH
+Volume: $508636213910.7127658735117652611669
+Liquidity: $10618804087321340653
+Data saved to historical-data.json
+{"level":"info","message":"Starting trend analysis...","timestamp":"2024-12-03T09:04:02.407Z"}
+{"level":"error","message":"No data provided for analysis.","timestamp":"2024-12-03T09:04:02.410Z"}
+Alert sent to Discord: 
+🚨 New Data Synced:
+- ETH Price: $3613.04
+- Total Volume: $1,443,863,602,866.016
+
+📊 Top Pool: USDC/WETH
+- Volume: $508636213910.7127658735117652611669
+- Liquidity: $10618804087321340653
+      
+🚀 Significant Volume Detected in Pool USDC/WETH!
+Using endpoint: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV
+ETH Price: $3613.0378381223004
+Total Volume: $1443881634690.4766
+Top Pool: USDC/WETH
+Volume: $508656721847.188966553644697263647
+Liquidity: $10618804087321340653
+Data saved to historical-data.json
+{"level":"info","message":"Starting trend analysis...","timestamp":"2024-12-03T09:05:02.917Z"}
+{"level":"error","message":"No data provided for analysis.","timestamp":"2024-12-03T09:05:02.921Z"}
+Alert sent to Discord: 
+🚨 New Data Synced:
+- ETH Price: $3613.04
+- Total Volume: $1,443,881,634,690.477
+
+📊 Top Pool: USDC/WETH
+- Volume: $508656721847.188966553644697263647
+- Liquidity: $10618804087321340653
+      
+🚀 Significant Volume Detected in Pool USDC/WETH!
+Using endpoint: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV
+ETH Price: $3613.0378381223004
+Total Volume: $1443865425861.7612
+Top Pool: USDC/WETH
+Volume: $508636578590.9382574350052350401486
+Liquidity: $10583632757142205388
+Data saved to historical-data.json
+{"level":"info","message":"Starting trend analysis...","timestamp":"2024-12-03T09:06:02.511Z"}
+{"level":"error","message":"No data provided for analysis.","timestamp":"2024-12-03T09:06:02.514Z"}
+Alert sent to Discord: 
+🚨 New Data Synced:
+- ETH Price: $3613.04
+- Total Volume: $1,443,865,425,861.761
+
+📊 Top Pool: USDC/WETH
+- Volume: $508636578590.9382574350052350401486
+- Liquidity: $10583632757142205388
+      
+🚀 Significant Volume Detected in Pool USDC/WETH!
