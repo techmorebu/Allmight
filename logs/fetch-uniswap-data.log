@@ -3149,3 +3149,49 @@ Alert sent to Discord:
 - Liquidity: $10583632757142205388
       
 🚀 Significant Volume Detected in Pool USDC/WETH!
+Using endpoint: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV
+ETH Price: $3612.063165713715
+Total Volume: $1443797028493.2856
+Top Pool: USDC/WETH
+Volume: $508625021963.0953942711268643246437
+Liquidity: $10583632757142205388
+Data saved to historical-data.json
+Total data entries found: 132
+--- Computed Metrics ---
+Average ETH Price: $3578.18
+Price Change: 5.54%
+Average Pool Volume: $507906472667.97
+Average Pool Liquidity: $10021058654240231424.00
+Alert sent to Discord: 
+🚨 New Data Synced:
+- ETH Price: $3612.06
+- Total Volume: $1,443,797,028,493.286
+
+📊 Top Pool: USDC/WETH
+- Volume: $508625021963.0953942711268643246437
+- Liquidity: $10583632757142205388
+      
+🚀 Significant Volume Detected in Pool USDC/WETH!
+Using endpoint: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV
+ETH Price: $3612.063165713715
+Total Volume: $1443814468589.5806
+Top Pool: USDC/WETH
+Volume: $508645413280.436302008228659438084
+Liquidity: $10583632757142205388
+Data saved to historical-data.json
+Total data entries found: 133
+--- Computed Metrics ---
+Average ETH Price: $3578.47
+Price Change: 5.54%
+Average Pool Volume: $507912734876.55
+Average Pool Liquidity: $10025826231383468032.00
+Alert sent to Discord: 
+🚨 New Data Synced:
+- ETH Price: $3612.06
+- Total Volume: $1,443,814,468,589.581
+
+📊 Top Pool: USDC/WETH
+- Volume: $508645413280.436302008228659438084
+- Liquidity: $10583632757142205388
+      
+🚀 Significant Volume Detected in Pool USDC/WETH!
