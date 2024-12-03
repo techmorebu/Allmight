@@ -1,76 +1,70 @@
 const fs = require('fs');
+const { logger } = require('../monitoring/logger');
 
-// Read historical data from logs
-function readHistoricalData() {
-  const filePath = '/home/techbu/OFA_Project_Local/ofa-project/logs/historical-data.json';
-  if (!fs.existsSync(filePath)) {
-    console.error('No historical data found.');
-    return [];
-  }
-  const fileContent = fs.readFileSync(filePath, 'utf8');
-  return JSON.parse(fileContent);
-}
+// Analyze trends from fetched CoinGecko data
+function analyzeTrends(tokenData) {
+  logger.info('Starting trend analysis...');
 
-// Analyze trends based on historical data
-function analyzeTrends() {
-  const data = readHistoricalData();
-
-  console.log(`Total data entries found: ${data.length}`);
-  if (data.length === 0) {
-    console.log('No data to analyze.');
+  if (!tokenData || Object.keys(tokenData).length === 0) {
+    logger.error('No data provided for analysis.');
     return null;
   }
 
-  // Filter valid entries
-  const validData = data.filter(entry =>
-    entry.topPool &&
-    !isNaN(parseFloat(entry.topPool.volumeUSD)) &&
-    !isNaN(parseFloat(entry.topPool.liquidity))
-  );
+  // Process data
+  const trends = {};
+  for (const [token, data] of Object.entries(tokenData)) {
+    const {
+      usd: price,
+      usd_market_cap: marketCap,
+      usd_24h_vol: volume24h,
+      usd_24h_change: priceChange24h,
+    } = data;
 
-  if (validData.length === 0) {
-    console.error('No valid data available for analysis.');
-    return null;
+    trends[token] = {
+      price,
+      marketCap,
+      volume24h,
+      priceChange24h,
+    };
+
+    logger.info(
+      `Processed ${token}: Price: $${price}, Market Cap: $${marketCap}, 24h Volume: $${volume24h}, 24h Change: ${priceChange24h}%`
+    );
   }
 
-  // Extract metrics from valid data
-  const prices = validData.map(entry => entry.ethPrice);
-  const poolVolumes = validData.map(entry => parseFloat(entry.topPool.volumeUSD));
-  const poolLiquidity = validData.map(entry => parseFloat(entry.topPool.liquidity));
+  // Save trends to a log file
+  saveTrends(trends);
 
-  // Compute averages and price change
-  const avgPrice = prices.reduce((a, b) => a + b, 0) / prices.length;
-  const priceChange = ((prices[prices.length - 1] - prices[0]) / prices[0]) * 100;
-
-  const avgPoolVolume = poolVolumes.reduce((a, b) => a + b, 0) / poolVolumes.length;
-  const avgLiquidity = poolLiquidity.reduce((a, b) => a + b, 0) / poolLiquidity.length;
-
-  console.log('--- Computed Metrics ---');
-  console.log(`Average ETH Price: $${avgPrice.toFixed(2)}`);
-  console.log(`Price Change: ${priceChange.toFixed(2)}%`);
-  console.log(`Average Pool Volume: $${avgPoolVolume.toFixed(2)}`);
-  console.log(`Average Pool Liquidity: $${avgLiquidity.toFixed(2)}`);
-
-  // Return analysis results
-  return {
-    avgPrice,
-    priceChange,
-    avgPoolVolume,
-    avgLiquidity,
-  };
+  logger.info('Trend analysis completed.');
+  return trends;
 }
 
-// Execute analysis if run directly
-if (require.main === module) {
-  console.log('--- Starting Trend Analysis ---');
-  const trends = analyzeTrends();
-  if (trends) {
-    console.log('\n--- Final Summary ---');
-    console.log(`Average ETH Price: $${trends.avgPrice.toFixed(2)}`);
-    console.log(`Price Change: ${trends.priceChange.toFixed(2)}%`);
-    console.log(`Average Pool Volume: $${trends.avgPoolVolume.toFixed(2)}`);
-    console.log(`Average Pool Liquidity: $${trends.avgLiquidity.toFixed(2)}`);
-  }
+// Save trends to a JSON log file
+function saveTrends(trends) {
+  const logPath = './logs/trends-log.json';
+  fs.writeFileSync(logPath, JSON.stringify(trends, null, 2), 'utf8');
+  logger.info(`Trends saved to ${logPath}`);
 }
 
 module.exports = { analyzeTrends };
+
+// Test Example
+if (require.main === module) {
+  const testData = {
+    ethereum: {
+      usd: 3612.93,
+      usd_market_cap: 435145092801.0696,
+      usd_24h_vol: 44211393381.66678,
+      usd_24h_change: 0.3199,
+    },
+    zksync: {
+      usd: 0.2207,
+      usd_market_cap: 811185501.2918984,
+      usd_24h_vol: 261252014.8039644,
+      usd_24h_change: 3.7264,
+    },
+  };
+
+  const trends = analyzeTrends(testData);
+  console.log('Trends:', trends);
+}
