@@ -7,6 +7,9 @@ async function simulateTrade() {
   console.log('--- Starting Trade Simulation ---');
 
   try {
+    // Initialize Ethereum provider
+    const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
+
     // Fetch pool data for the token pair (example: ETH/USDC) using GeckoTerminal API
     console.log('Fetching pool data from GeckoTerminal API...');
     const poolData = await fetchPoolDataLimited('ETH/USDC'); // Replace 'ETH/USDC' with dynamic pair as needed
