@@ -1,31 +1,39 @@
-require('dotenv').config(); // Load environment variables
-const ethers = require('ethers5'); // Import ethers version 5.7.2 using alias
+require('dotenv').config({ path: '../.env' });
+const ethers = require('ethers');
 const { fetchPoolData } = require('./fetch-pool-data');
 
 async function executeTrade(token0, token1, tradeAmountInEth) {
-  console.log(`Querying pool for: ${token0} - ${token1}`);
+  const timestamp = new Date().toISOString();
+  console.log(`[${timestamp}] Querying pool for: ${token0} - ${token1}`);
   
   const poolData = await fetchPoolData(token0, token1);
   if (!poolData) {
-    console.error('Pool data not found. Aborting trade.');
+    console.error(`[${timestamp}] Pool data not found. Aborting trade.`);
     return;
   }
-  
-  console.log('Fetched Pool Data:', poolData);
+
+  console.log(`[${timestamp}] Fetched Pool Data:`);
+  console.log(`  - Pool ID: ${poolData.id}`);
+  console.log(`  - Fee Tier: ${poolData.feeTier} (${poolData.feeTier / 10000}%)`);
+  console.log(`  - SqrtPriceX96: ${poolData.sqrtPriceX96}`);
+  console.log(`  - Liquidity: ${poolData.liquidity}`);
+  console.log(`  - Tick: ${poolData.tick}`);
 
   const provider = new ethers.providers.JsonRpcProvider(process.env.ETHEREUM_MAINNET_RPC_URL_1);
   const wallet = new ethers.Wallet(process.env.METAMASK_PRIVATE_KEY, provider);
-  console.log(`Wallet connected: ${wallet.address}`);
-  
+  const walletAddress = wallet.address;
+  console.log(`[${timestamp}] Wallet connected: ${walletAddress}`);
+
   try {
     const tradeAmountWei = ethers.utils.parseUnits(tradeAmountInEth.toString(), 'ether');
-    console.log(`Trade Amount in Wei: ${tradeAmountWei.toString()}`);
-    
+    console.log(`[${timestamp}] Trade Amount in Wei: ${tradeAmountWei.toString()}`);
+
     const walletBalance = await wallet.getBalance();
-    console.log(`Current Wallet Balance: ${ethers.utils.formatEther(walletBalance)} ETH`);
+    const walletBalanceEth = ethers.utils.formatEther(walletBalance);
+    console.log(`[${timestamp}] Wallet ETH Balance: ${walletBalanceEth} ETH`);
 
     if (walletBalance.isZero()) {
-      console.error('Insufficient wallet balance: 0 ETH. Cannot execute the trade.');
+      console.error(`[${timestamp}] Insufficient wallet balance: 0 ETH. Cannot execute the trade.`);
       return;
     }
 
@@ -33,34 +41,40 @@ async function executeTrade(token0, token1, tradeAmountInEth) {
       to: poolData.id,
       value: tradeAmountWei,
     }).catch(() => {
-      console.warn('Unable to estimate gas. Falling back to manual gas limit.');
+      console.warn(`[${timestamp}] Unable to estimate gas. Falling back to manual gas limit.`);
       return ethers.BigNumber.from(21000); // Default fallback gas limit
     });
 
     const gasPrice = await provider.getGasPrice();
     const estimatedCost = gasPrice.mul(gasEstimate).add(tradeAmountWei);
 
-    console.log(`Estimated Gas Fees: ${ethers.utils.formatEther(gasPrice.mul(gasEstimate))} ETH`);
-    console.log(`Estimated Total Transaction Cost: ${ethers.utils.formatEther(estimatedCost)} ETH`);
+    console.log(`[${timestamp}] Gas Price: ${ethers.utils.formatUnits(gasPrice, 'gwei')} Gwei`);
+    console.log(`[${timestamp}] Estimated Gas Limit: ${gasEstimate.toString()}`);
+    console.log(`[${timestamp}] Estimated Gas Fees: ${ethers.utils.formatEther(gasPrice.mul(gasEstimate))} ETH`);
+    console.log(`[${timestamp}] Estimated Total Transaction Cost: ${ethers.utils.formatEther(estimatedCost)} ETH`);
 
     if (walletBalance.lt(estimatedCost)) {
       console.error(
-        `Insufficient funds: Wallet balance is ${ethers.utils.formatEther(walletBalance)} ETH, ` +
+        `[${timestamp}] Insufficient funds: Wallet balance is ${walletBalanceEth} ETH, ` +
         `but transaction requires ${ethers.utils.formatEther(estimatedCost)} ETH.`
       );
       return;
     }
 
-    const tx = await wallet.sendTransaction({
-      to: poolData.id,
-      value: tradeAmountWei,
-      gasLimit: gasEstimate,
-      gasPrice,
-    });
+    if (process.env.LIVE_FIRE === 'true') {
+      const tx = await wallet.sendTransaction({
+        to: poolData.id,
+        value: tradeAmountWei,
+        gasLimit: gasEstimate,
+        gasPrice,
+      });
 
-    console.log('Trade executed:', tx.hash);
+      console.log(`[${timestamp}] Trade executed successfully! Transaction Hash: ${tx.hash}`);
+    } else {
+      console.log(`[${timestamp}] LIVE_FIRE Mode: Disabled (Simulation Mode). Trade not executed.`);
+    }
   } catch (error) {
-    console.error('Error executing trade:', error.message);
+    console.error(`[${timestamp}] Error executing trade: ${error.message}`);
   }
 }
 
