@@ -1,4 +1,4 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npm install ethers@5.7.2 --save ethers5
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npm install ethers@npm:ethers@5.7.2 --save ethers5
 npm warn ERESOLVE overriding peer dependency
 npm warn While resolving: ofa-project@1.0.0
 npm warn Found: ethers@6.13.4
@@ -19,4 +19,29 @@ npm error 404  'ethers5@*' is not in this registry.
 npm error 404
 npm error 404 Note that you can also install from a
 npm error 404 tarball, folder, http url, or git url.
-npm error A complete log of this run can be found in: /home/techbu/.npm/_logs/2024-12-03T07_16_23_886Z-debug-0.log
+npm error A complete log of this run can be found in: /home/techbu/.npm/_logs/2024-12-03T07_20_46_211Z-debug-0.log
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npm install ethers5@npm:ethers@5.7.2
+
+added 8 packages, and audited 357 packages in 29s
+
+72 packages are looking for funding
+  run `npm fund` for details
+
+22 vulnerabilities (19 low, 3 high)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npm ls ethers
+ofa-project@1.0.0 /home/techbu/OFA_Project_Local/ofa-project
+├─┬ @nomicfoundation/hardhat-ethers@3.0.8
+│ └── ethers@6.13.4 deduped
+└── ethers@6.13.4
+
