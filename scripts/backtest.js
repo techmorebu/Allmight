@@ -1,13 +1,20 @@
 const fs = require('fs');
-const { analyzeTrends } = require('../trade-execution/analyze-trends');
-const { generateSignals } = require('../trade-execution/signal-generator');
 const { logger } = require('../monitoring/logger');
+const { generateSignals } = require('../trade-execution/signal-generator');
 
 function backtest() {
     logger.info('--- Starting Backtest ---');
-    
-    const trends = analyzeTrends();
-    if (!trends) {
+
+    // Read analyzed trends from the JSON file
+    const trendsPath = './logs/analyzed-trends.json';
+    if (!fs.existsSync(trendsPath)) {
+        logger.error('No trends data file found for backtesting.');
+        return;
+    }
+
+    const trends = JSON.parse(fs.readFileSync(trendsPath, 'utf8'));
+
+    if (!trends || Object.keys(trends).length === 0) {
         logger.error('No trends available for backtesting.');
         return;
     }
