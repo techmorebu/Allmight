@@ -82,3 +82,45 @@ Backtest Results - 2024-12-03T08:23:01.292Z
   }
 }
 
+Backtest Results - 2024-12-03T08:25:58.451Z
+{
+  "trends": {
+    "avgPrice": 3586.474365853431,
+    "priceChange": 5.883935969448478,
+    "avgPoolVolume": 508055626380.97406,
+    "avgLiquidity": 10141083399369677000
+  },
+  "signal": {
+    "signal": "Hold",
+    "stopLoss": 3407.1506475607594,
+    "takeProfit": 3765.798084146103
+  },
+  "simulatedResult": {
+    "signal": "Hold",
+    "profit": -179.32371829267157,
+    "stopLoss": 3407.1506475607594,
+    "takeProfit": 3765.798084146103
+  }
+}
+
+Backtest Results - 2024-12-03T08:26:07.557Z
+{
+  "trends": {
+    "avgPrice": 3586.727123656201,
+    "priceChange": 5.883935969448478,
+    "avgPoolVolume": 508059642773.1305,
+    "avgLiquidity": 10144326197320016000
+  },
+  "signal": {
+    "signal": "Hold",
+    "stopLoss": 3407.390767473391,
+    "takeProfit": 3766.063479839011
+  },
+  "simulatedResult": {
+    "signal": "Hold",
+    "profit": -179.33635618281005,
+    "stopLoss": 3407.390767473391,
+    "takeProfit": 3766.063479839011
+  }
+}
+
