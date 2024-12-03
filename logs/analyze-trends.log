@@ -625,3 +625,41 @@ Trends: {
     priceChange24h: 3.7264
   }
 }
+[32minfo[39m: Starting trend analysis... {"timestamp":"2024-12-03T09:25:01.475Z"}
+[32minfo[39m: Processed ethereum: Price: $3612.93, Market Cap: $435145092801.0696, 24h Volume: $44211393381.66678, 24h Change: 0.3199% {"timestamp":"2024-12-03T09:25:01.482Z"}
+[32minfo[39m: Processed zksync: Price: $0.2207, Market Cap: $811185501.2918984, 24h Volume: $261252014.8039644, 24h Change: 3.7264% {"timestamp":"2024-12-03T09:25:01.483Z"}
+[32minfo[39m: Trends saved to ./logs/trends-log.json {"timestamp":"2024-12-03T09:25:01.484Z"}
+[32minfo[39m: Trend analysis completed. {"timestamp":"2024-12-03T09:25:01.484Z"}
+Trends: {
+  ethereum: {
+    price: 3612.93,
+    marketCap: 435145092801.0696,
+    volume24h: 44211393381.66678,
+    priceChange24h: 0.3199
+  },
+  zksync: {
+    price: 0.2207,
+    marketCap: 811185501.2918984,
+    volume24h: 261252014.8039644,
+    priceChange24h: 3.7264
+  }
+}
+[32minfo[39m: Starting trend analysis... {"timestamp":"2024-12-03T09:30:01.613Z"}
+[32minfo[39m: Processed ethereum: Price: $3612.93, Market Cap: $435145092801.0696, 24h Volume: $44211393381.66678, 24h Change: 0.3199% {"timestamp":"2024-12-03T09:30:01.620Z"}
+[32minfo[39m: Processed zksync: Price: $0.2207, Market Cap: $811185501.2918984, 24h Volume: $261252014.8039644, 24h Change: 3.7264% {"timestamp":"2024-12-03T09:30:01.621Z"}
+[32minfo[39m: Trends saved to ./logs/trends-log.json {"timestamp":"2024-12-03T09:30:01.622Z"}
+[32minfo[39m: Trend analysis completed. {"timestamp":"2024-12-03T09:30:01.622Z"}
+Trends: {
+  ethereum: {
+    price: 3612.93,
+    marketCap: 435145092801.0696,
+    volume24h: 44211393381.66678,
+    priceChange24h: 0.3199
+  },
+  zksync: {
+    price: 0.2207,
+    marketCap: 811185501.2918984,
+    volume24h: 261252014.8039644,
+    priceChange24h: 3.7264
+  }
+}
