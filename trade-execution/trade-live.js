@@ -1,6 +1,5 @@
-const { ethers } = require('ethers5');
+const ethers = require('ethers');
 const { fetchPoolData } = require('./fetch-pool-data');
-require('dotenv').config({ path: '/home/techbu/OFA_Project_Local/ofa-project/.env' });
 
 async function executeTrade(token0, token1, tradeAmountInEth) {
   console.log(`Querying pool for: ${token0} - ${token1}`);
@@ -13,32 +12,36 @@ async function executeTrade(token0, token1, tradeAmountInEth) {
   
   console.log('Fetched Pool Data:', poolData);
 
-  // Connect wallet
   const provider = new ethers.providers.JsonRpcProvider(process.env.ETHEREUM_MAINNET_RPC_URL_1);
   const wallet = new ethers.Wallet(process.env.METAMASK_PRIVATE_KEY, provider);
   console.log(`Wallet connected: ${wallet.address}`);
   
   try {
-    // Convert trade amount to Wei
     const tradeAmountWei = ethers.utils.parseUnits(tradeAmountInEth.toString(), 'ether');
     console.log(`Trade Amount in Wei: ${tradeAmountWei.toString()}`);
     
-    // Get current wallet balance
     const walletBalance = await wallet.getBalance();
     console.log(`Current Wallet Balance: ${ethers.utils.formatEther(walletBalance)} ETH`);
-    
-    // Estimate gas fees
+
+    if (walletBalance.isZero()) {
+      console.error('Insufficient wallet balance: 0 ETH. Cannot execute the trade.');
+      return;
+    }
+
     const gasEstimate = await provider.estimateGas({
       to: poolData.id,
       value: tradeAmountWei,
+    }).catch(() => {
+      console.warn('Unable to estimate gas. Falling back to manual gas limit.');
+      return ethers.BigNumber.from(21000); // Default fallback gas limit
     });
+
     const gasPrice = await provider.getGasPrice();
     const estimatedCost = gasPrice.mul(gasEstimate).add(tradeAmountWei);
 
     console.log(`Estimated Gas Fees: ${ethers.utils.formatEther(gasPrice.mul(gasEstimate))} ETH`);
     console.log(`Estimated Total Transaction Cost: ${ethers.utils.formatEther(estimatedCost)} ETH`);
 
-    // Check for sufficient funds
     if (walletBalance.lt(estimatedCost)) {
       console.error(
         `Insufficient funds: Wallet balance is ${ethers.utils.formatEther(walletBalance)} ETH, ` +
@@ -47,24 +50,26 @@ async function executeTrade(token0, token1, tradeAmountInEth) {
       return;
     }
 
-    // Execute trade (dummy example, replace with actual trade logic)
     const tx = await wallet.sendTransaction({
       to: poolData.id,
       value: tradeAmountWei,
       gasLimit: gasEstimate,
       gasPrice,
     });
+
     console.log('Trade executed:', tx.hash);
   } catch (error) {
     console.error('Error executing trade:', error.message);
   }
 }
 
-// Example execution
 (async () => {
-  const token0 = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'; // USDC
-  const token1 = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'; // WETH
-  const tradeAmountInEth = 1; // Trade 1 ETH
-  
-  await executeTrade(token0, token1, tradeAmountInEth);
+  const tokenPairs = [
+    { token0: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', token1: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', tradeAmount: 1 }, // USDC/WETH
+    { token0: '0x6b175474e89094c44da98b954eedeac495271d0f', token1: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', tradeAmount: 0.5 }, // DAI/WETH
+  ];
+
+  for (const { token0, token1, tradeAmount } of tokenPairs) {
+    await executeTrade(token0, token1, tradeAmount);
+  }
 })();
