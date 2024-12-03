@@ -1,13 +1,4 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node trade-execution/trade-simulation.js
-info: --- Starting Trade Simulation --- {"timestamp":"2024-12-03T09:39:11.134Z"}
-info: Starting trend analysis... {"timestamp":"2024-12-03T09:39:11.140Z"}
-info: Processed ethereum: Price: $undefined, Market Cap: $undefined, 24h Volume: $undefined, 24h Change: undefined% {"timestamp":"2024-12-03T09:39:11.141Z"}
-info: Processed zksync: Price: $undefined, Market Cap: $undefined, 24h Volume: $undefined, 24h Change: undefined% {"timestamp":"2024-12-03T09:39:11.142Z"}
-info: Trends saved to ./logs/trends-log.json {"timestamp":"2024-12-03T09:39:11.145Z"}
-info: Trend analysis completed. {"timestamp":"2024-12-03T09:39:11.145Z"}
-info: Generating trading signals... {"timestamp":"2024-12-03T09:39:11.145Z"}
-info: Generated signal for ethereum: Hold {"timestamp":"2024-12-03T09:39:11.146Z"}
-info: Generated signal for zksync: Hold {"timestamp":"2024-12-03T09:39:11.146Z"}
-info: Generated Signal: {"ethereum":{"token":"ethereum","signal":"Hold"},"zksync":{"token":"zksync","signal":"Hold"}} {"timestamp":"2024-12-03T09:39:11.147Z"}
-info: Simulating trade execution... {"timestamp":"2024-12-03T09:39:11.148Z"}
-info: Simulated Trade Result: {"profit":null} {"timestamp":"2024-12-03T09:39:11.148Z"}
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ cat logs/trends-log.json
+{
+  "ethereum": {},
+  "zksync": {}
