@@ -1,47 +1,29 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npm install ethers@npm:ethers@5.7.2 --save ethers5
-npm warn ERESOLVE overriding peer dependency
-npm warn While resolving: ofa-project@1.0.0
-npm warn Found: ethers@6.13.4
-npm warn node_modules/ethers
-npm warn   peer ethers@"^6.1.0" from @nomicfoundation/hardhat-ethers@3.0.8
-npm warn   node_modules/@nomicfoundation/hardhat-ethers
-npm warn     @nomicfoundation/hardhat-ethers@"^3.0.8" from the root project
-npm warn   1 more (the root project)
-npm warn
-npm warn Could not resolve dependency:
-npm warn peer ethers@"^6.1.0" from @nomicfoundation/hardhat-ethers@3.0.8
-npm warn node_modules/@nomicfoundation/hardhat-ethers
-npm warn   @nomicfoundation/hardhat-ethers@"^3.0.8" from the root project
-npm error code E404
-npm error 404 Not Found - GET https://registry.npmjs.org/ethers5 - Not found
-npm error 404
-npm error 404  'ethers5@*' is not in this registry.
-npm error 404
-npm error 404 Note that you can also install from a
-npm error 404 tarball, folder, http url, or git url.
-npm error A complete log of this run can be found in: /home/techbu/.npm/_logs/2024-12-03T07_20_46_211Z-debug-0.log
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npm install ethers5@npm:ethers@5.7.2
-
-added 8 packages, and audited 357 packages in 29s
-
-72 packages are looking for funding
-  run `npm fund` for details
-
-22 vulnerabilities (19 low, 3 high)
-
-To address issues that do not require attention, run:
-  npm audit fix
-
-To address all issues possible (including breaking changes), run:
-  npm audit fix --force
-
-Some issues need review, and may require choosing
-a different dependency.
-
-Run `npm audit` for details.
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npm ls ethers
-ofa-project@1.0.0 /home/techbu/OFA_Project_Local/ofa-project
-├─┬ @nomicfoundation/hardhat-ethers@3.0.8
-│ └── ethers@6.13.4 deduped
-└── ethers@6.13.4
-
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project/trade-execution$ node trade-live.js
+Querying pool for: 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48 - 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+--- Starting Live Trade Execution ---
+Fetching Pool Data...
+Querying pool for: 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48 - 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+Fetched Pool Data: {
+  id: '0x7bea39867e4169dbe237d55c8242a8f2fcdcc387',
+  feeTier: 10000,
+  sqrtPriceX96: '1314731319793402235553046081828130',
+  liquidity: '12269118885980027',
+  tick: 194345
+}
+Wallet connected: 0xf001f42b90FC224168E5910aFdfB2F42718caB9C
+Trade Amount in Wei: 1000000000000000000
+Error executing trade: insufficient funds for intrinsic transaction cost [ See: https://links.ethers.org/v5-errors-INSUFFICIENT_FUNDS ] (error={"reason":"processing response error","code":"SERVER_ERROR","body":"{\"jsonrpc\":\"2.0\",\"id\":49,\"error\":{\"code\":-32000,\"message\":\"insufficient funds for transfer\"}}","error":{"code":-32000},"requestBody":"{\"method\":\"eth_estimateGas\",\"params\":[{\"type\":\"0x2\",\"maxFeePerGas\":\"0x79ace9614\",\"maxPriorityFeePerGas\":\"0x59682f00\",\"value\":\"0xde0b6b3a7640000\",\"from\":\"0xf001f42b90fc224168e5910afdfb2f42718cab9c\",\"to\":\"0x7bea39867e4169dbe237d55c8242a8f2fcdcc387\"}],\"id\":49,\"jsonrpc\":\"2.0\"}","requestMethod":"POST","url":"https://mainnet.infura.io/v3/8e7234907efc4e92a78de29f031c55da"}, method="estimateGas", transaction={"from":"0xf001f42b90FC224168E5910aFdfB2F42718caB9C","maxPriorityFeePerGas":{"type":"BigNumber","hex":"0x59682f00"},"maxFeePerGas":{"type":"BigNumber","hex":"0x079ace9614"},"to":"0x7BeA39867e4169DBe237d55C8242a8f2fcDcc387","value":{"type":"BigNumber","hex":"0x0de0b6b3a7640000"},"type":2,"accessList":null}, code=INSUFFICIENT_FUNDS, version=providers/5.7.2)
+Querying pool for: 0x6b175474e89094c44da98b954eedeac495271d0f - 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+--- Starting Live Trade Execution ---
+Fetching Pool Data...
+Querying pool for: 0x6b175474e89094c44da98b954eedeac495271d0f - 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+Fetched Pool Data: {
+  id: '0x60594a405d53811d3bc4766596efd80fd545a270',
+  feeTier: 500,
+  sqrtPriceX96: '1316025660234666603795997412',
+  liquidity: '147226603584111404055078',
+  tick: -81959
+}
+Wallet connected: 0xf001f42b90FC224168E5910aFdfB2F42718caB9C
+Trade Amount in Wei: 500000000000000000
+Error executing trade: insufficient funds for intrinsic transaction cost [ See: https://links.ethers.org/v5-errors-INSUFFICIENT_FUNDS ] (error={"reason":"processing response error","code":"SERVER_ERROR","body":"{\"jsonrpc\":\"2.0\",\"id\":49,\"error\":{\"code\":-32000,\"message\":\"insufficient funds for transfer\"}}","error":{"code":-32000},"requestBody":"{\"method\":\"eth_estimateGas\",\"params\":[{\"type\":\"0x2\",\"maxFeePerGas\":\"0x72c5c433a\",\"maxPriorityFeePerGas\":\"0x59682f00\",\"value\":\"0x6f05b59d3b20000\",\"from\":\"0xf001f42b90fc224168e5910afdfb2f42718cab9c\",\"to\":\"0x60594a405d53811d3bc4766596efd80fd545a270\"}],\"id\":49,\"jsonrpc\":\"2.0\"}","requestMethod":"POST","url":"https://mainnet.infura.io/v3/8e7234907efc4e92a78de29f031c55da"}, method="estimateGas", transaction={"from":"0xf001f42b90FC224168E5910aFdfB2F42718caB9C","maxPriorityFeePerGas":{"type":"BigNumber","hex":"0x59682f00"},"maxFeePerGas":{"type":"BigNumber","hex":"0x072c5c433a"},"to":"0x60594a405d53811d3BC4766596EFD80fd545A270","value":{"type":"BigNumber","hex":"0x06f05b59d3b20000"},"type":2,"accessList":null}, code=INSUFFICIENT_FUNDS, version=providers/5.7.2)
