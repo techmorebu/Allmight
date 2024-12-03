@@ -1,131 +1,106 @@
 const fs = require('fs');
-const path = require('path');
 const { analyzeTrends } = require('../trade-execution/analyze-trends');
 const { generateSignals } = require('../trade-execution/signal-generator');
-
-// Initialize metrics
-let totalTrades = 0;
-let wins = 0;
-let losses = 0;
-let cumulativePnL = 0;
-const tradeDurations = []; // Array to track trade durations
+const { logger } = require('../monitoring/logger');
 
 function backtest() {
-  console.log('--- Starting Backtest ---');
-  const results = [];
-
-  try {
+    logger.info('--- Starting Backtest ---');
+    
     const trends = analyzeTrends();
     if (!trends) {
-      console.error('No trends available for backtesting.');
-      return null;
+        logger.error('No trends available for backtesting.');
+        return;
     }
 
-    console.log('Analyzed Trends:', trends);
+    const signals = generateSignals(trends);
+    logger.info('Generated Signals:', JSON.stringify(signals, null, 2));
 
-    const signal = generateSignals(trends);
-    console.log('Generated Signal:', signal);
+    const simulatedResults = [];
+    let totalProfit = 0;
+    let wins = 0;
+    let losses = 0;
 
-    // Simulate trade execution
-    const simulatedResult = simulateTrade(signal, trends);
-    console.log('Simulated Trade Result:', simulatedResult);
+    // Simulate trades for each token signal
+    for (const [token, signalData] of Object.entries(signals)) {
+        const result = simulateTrade(signalData, trends[token]);
+        simulatedResults.push({ token, ...result });
 
-    if (simulatedResult) {
-      results.push(simulatedResult);
+        totalProfit += result.profit;
+        if (result.profit > 0) wins++;
+        if (result.profit < 0) losses++;
+
+        logger.info(`Simulated trade for ${token}: ${JSON.stringify(result, null, 2)}`);
     }
 
-    return results;
-  } catch (error) {
-    console.error('Error during backtest:', error.message);
-    return null;
-  }
-}
+    const winLossRatio = losses > 0 ? (wins / losses).toFixed(2) : 'Infinity';
 
-function simulateTrade(signal, trends) {
-  try {
-    const tradeStartTime = new Date(); // Simulated trade start time
-
-    // Simulate profit/loss (P&L)
-    const profit =
-      signal.signal === 'Buy' ? trends.avgPrice * 0.05 : -trends.avgPrice * 0.05;
-
-    // Track metrics
-    totalTrades++;
-    if (profit > 0) {
-      wins++;
-    } else {
-      losses++;
-    }
-    cumulativePnL += profit;
-
-    // Simulate trade end time (example: trade takes 1 hour)
-    const tradeEndTime = new Date(tradeStartTime.getTime() + 60 * 60 * 1000);
-    const tradeDuration = (tradeEndTime - tradeStartTime) / (60 * 1000); // Duration in minutes
-    tradeDurations.push(tradeDuration);
-
-    return {
-      signal: signal.signal,
-      profit,
-      stopLoss: signal.stopLoss,
-      takeProfit: signal.takeProfit,
-      tradeDuration,
+    const summary = {
+        totalTrades: simulatedResults.length,
+        wins,
+        losses,
+        winLossRatio,
+        totalProfit,
+        averageProfit: simulatedResults.length ? (totalProfit / simulatedResults.length).toFixed(2) : 0,
     };
-  } catch (error) {
-    console.error('Error during trade simulation:', error.message);
-    return null;
-  }
+
+    logger.info('--- Backtest Summary ---', JSON.stringify(summary, null, 2));
+
+    saveResults(simulatedResults, summary);
+    return { simulatedResults, summary };
 }
 
-function calculateMetrics() {
-  const winLossRatio = wins / (losses || 1);
-  const avgTradeDuration =
-    tradeDurations.reduce((sum, duration) => sum + duration, 0) /
-    (tradeDurations.length || 1);
+function simulateTrade(signalData, trendData) {
+    const { signal, stopLoss, takeProfit } = signalData;
+    const entryPrice = trendData.price || 0;
 
-  return {
-    totalTrades,
-    wins,
-    losses,
-    winLossRatio,
-    cumulativePnL,
-    avgTradeDuration,
-  };
-}
-
-function logResults(results, metrics) {
-  const logDir = path.join(__dirname, '../logs');
-  const logPath = path.join(logDir, 'backtest-results.log');
-
-  try {
-    if (!fs.existsSync(logDir)) {
-      fs.mkdirSync(logDir, { recursive: true });
-      console.log('Logs directory created:', logDir);
+    if (signal === 'Buy') {
+        return {
+            signal,
+            entryPrice,
+            profit: entryPrice * 0.05, // Simulated 5% gain
+            stopLoss,
+            takeProfit,
+            timestamp: new Date().toISOString(),
+        };
+    } else if (signal === 'Sell') {
+        return {
+            signal,
+            entryPrice,
+            profit: -entryPrice * 0.05, // Simulated 5% loss
+            stopLoss,
+            takeProfit,
+            timestamp: new Date().toISOString(),
+        };
+    } else {
+        return {
+            signal,
+            entryPrice,
+            profit: 0,
+            stopLoss,
+            takeProfit,
+            timestamp: new Date().toISOString(),
+        };
     }
+}
 
-    const logData = `Backtest Results - ${new Date().toISOString()}\nResults:\n${JSON.stringify(
-      results,
-      null,
-      2
-    )}\nMetrics:\n${JSON.stringify(metrics, null, 2)}\n\n`;
-    fs.appendFileSync(logPath, logData, 'utf8');
-    console.log('Backtest results saved to logs/backtest-results.log');
-  } catch (error) {
-    console.error('Error logging backtest results:', error.message);
-  }
+function saveResults(results, summary) {
+    const logPath = './logs/backtest-results.log';
+    const logData = {
+        timestamp: new Date().toISOString(),
+        results,
+        summary,
+    };
+
+    fs.writeFileSync(logPath, JSON.stringify(logData, null, 2), 'utf8');
+    logger.info(`Backtest results saved to ${logPath}`);
 }
 
 // Main Execution
 if (require.main === module) {
-  const results = backtest();
-  const metrics = calculateMetrics();
-  if (results) logResults(results, metrics);
-
-  // Display metrics in console
-  console.log('--- Backtest Summary ---');
-  console.log(`Total Trades: ${metrics.totalTrades}`);
-  console.log(`Wins: ${metrics.wins}`);
-  console.log(`Losses: ${metrics.losses}`);
-  console.log(`Win/Loss Ratio: ${metrics.winLossRatio.toFixed(2)}`);
-  console.log(`Cumulative P&L: ${metrics.cumulativePnL.toFixed(2)} USD`);
-  console.log(`Average Trade Duration: ${metrics.avgTradeDuration.toFixed(2)} minutes`);
+    const backtestResults = backtest();
+    if (backtestResults) {
+        console.log('Backtest Summary:', backtestResults.summary);
+    }
 }
+
+module.exports = { backtest };
