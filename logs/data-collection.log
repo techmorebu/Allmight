@@ -175,3 +175,20 @@
 {"level":"info","message":"Generated signal for zksync: Hold","timestamp":"2024-12-03T10:06:51.795Z"}
 {"level":"info","message":"Generated Signal:","timestamp":"2024-12-03T10:06:51.795Z"}
 {"level":"info","message":"--- Data Pipeline Complete ---","timestamp":"2024-12-03T10:06:51.796Z"}
+{"level":"info","message":"--- Starting Data Pipeline ---","timestamp":"2024-12-03T10:11:28.206Z"}
+{"level":"info","message":"Fetching token prices...","timestamp":"2024-12-03T10:11:28.212Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-03T10:11:28.213Z"}
+{"level":"info","message":"Fetched token prices successfully.","timestamp":"2024-12-03T10:11:28.490Z"}
+{"level":"info","message":"Fetched token data:","timestamp":"2024-12-03T10:11:28.492Z"}
+{"level":"info","message":"Analyzing trends...","timestamp":"2024-12-03T10:11:28.493Z"}
+{"level":"info","message":"Starting trend analysis...","timestamp":"2024-12-03T10:11:28.494Z"}
+{"level":"info","message":"Processed ethereum: Price: $3612.83, Market Cap: $435089329363.65173, 24h Volume: $42296568990.69984, 24h Change: 0.11094043940956769%","timestamp":"2024-12-03T10:11:28.494Z"}
+{"level":"info","message":"Processed zksync: Price: $0.218552, Market Cap: $803124039.03515, 24h Volume: $254506870.38704523, 24h Change: 2.5913518867125696%","timestamp":"2024-12-03T10:11:28.495Z"}
+{"level":"info","message":"Trends saved to ./logs/trends-log.json","timestamp":"2024-12-03T10:11:28.497Z"}
+{"level":"info","message":"Trend analysis completed.","timestamp":"2024-12-03T10:11:28.498Z"}
+{"level":"info","message":"Trends analysis result:","timestamp":"2024-12-03T10:11:28.499Z"}
+{"level":"info","message":"Generating trading signals...","timestamp":"2024-12-03T10:11:28.500Z"}
+{"level":"info","message":"Generating trading signals...","timestamp":"2024-12-03T10:11:28.500Z"}
+{"level":"info","message":"Generated signal for ethereum: Hold","timestamp":"2024-12-03T10:11:28.501Z"}
+{"level":"info","message":"Generated signal for zksync: Buy","timestamp":"2024-12-03T10:11:28.501Z"}
+{"level":"info","message":"Generated Signal:","timestamp":"2024-12-03T10:11:28.502Z"}
