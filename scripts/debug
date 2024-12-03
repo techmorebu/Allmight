@@ -1,20 +1,22 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project/trade-execution$ node trade-live.js
-Querying pool for: 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48 - 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
---- Starting Live Trade Execution ---
-Fetching Pool Data...
-Error executing trade: fetchPoolData is not a function
-Fetched Pool Data: {
-  feeTier: '10000',
-  id: '0x7bea39867e4169dbe237d55c8242a8f2fcdcc387',
-  liquidity: '12269118885980027',
-  sqrtPrice: '1314731319793402235553046081828130',
-  tick: '194345'
-}
-Querying pool for: 0x6b175474e89094c44da98b954eedeac495271d0f - 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
-Fetched Pool Data: {
-  feeTier: '500',
-  id: '0x60594a405d53811d3bc4766596efd80fd545a270',
-  liquidity: '147226603584111404055078',
-  sqrtPrice: '1314705830042918939912305468',
-  tick: '-81979'
-}
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npm install ethers@5.7.2 --save ethers5
+npm warn ERESOLVE overriding peer dependency
+npm warn While resolving: ofa-project@1.0.0
+npm warn Found: ethers@6.13.4
+npm warn node_modules/ethers
+npm warn   peer ethers@"^6.1.0" from @nomicfoundation/hardhat-ethers@3.0.8
+npm warn   node_modules/@nomicfoundation/hardhat-ethers
+npm warn     @nomicfoundation/hardhat-ethers@"^3.0.8" from the root project
+npm warn   1 more (the root project)
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer ethers@"^6.1.0" from @nomicfoundation/hardhat-ethers@3.0.8
+npm warn node_modules/@nomicfoundation/hardhat-ethers
+npm warn   @nomicfoundation/hardhat-ethers@"^3.0.8" from the root project
+npm error code E404
+npm error 404 Not Found - GET https://registry.npmjs.org/ethers5 - Not found
+npm error 404
+npm error 404  'ethers5@*' is not in this registry.
+npm error 404
+npm error 404 Note that you can also install from a
+npm error 404 tarball, folder, http url, or git url.
+npm error A complete log of this run can be found in: /home/techbu/.npm/_logs/2024-12-03T07_16_23_886Z-debug-0.log
