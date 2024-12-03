@@ -47,24 +47,3 @@ function saveTrends(trends) {
 }
 
 module.exports = { analyzeTrends };
-
-// Test Example
-if (require.main === module) {
-  const testData = {
-    ethereum: {
-      usd: 3612.93,
-      usd_market_cap: 435145092801.0696,
-      usd_24h_vol: 44211393381.66678,
-      usd_24h_change: 0.3199,
-    },
-    zksync: {
-      usd: 0.2207,
-      usd_market_cap: 811185501.2918984,
-      usd_24h_vol: 261252014.8039644,
-      usd_24h_change: 3.7264,
-    },
-  };
-
-  const trends = analyzeTrends(testData);
-  console.log('Trends:', trends);
-}
