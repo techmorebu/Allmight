@@ -1,48 +1,5 @@
-echbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node trade-execution/data-pipeline.js
-info: --- Starting Data Pipeline --- {"timestamp":"2024-12-03T10:11:28.206Z"}
-info: Fetching token prices... {"timestamp":"2024-12-03T10:11:28.212Z"}
-info: Fetching token prices from CoinGecko... {"timestamp":"2024-12-03T10:11:28.213Z"}
-info: Fetched token prices successfully. {"timestamp":"2024-12-03T10:11:28.490Z"}
-Raw Token Data: {
-  "ethereum": {
-    "usd": 3612.83,
-    "usd_market_cap": 435089329363.65173,
-    "usd_24h_vol": 42296568990.69984,
-    "usd_24h_change": 0.11094043940956769,
-    "last_updated_at": 1733220678
-  },
-  "zksync": {
-    "usd": 0.218552,
-    "usd_market_cap": 803124039.03515,
-    "usd_24h_vol": 254506870.38704523,
-    "usd_24h_change": 2.5913518867125696,
-    "last_updated_at": 1733220676
-  }
-}
-info: Fetched token data: {"timestamp":"2024-12-03T10:11:28.492Z"}
-info: Analyzing trends... {"timestamp":"2024-12-03T10:11:28.493Z"}
-info: Starting trend analysis... {"timestamp":"2024-12-03T10:11:28.494Z"}
-info: Processed ethereum: Price: $3612.83, Market Cap: $435089329363.65173, 24h Volume: $42296568990.69984, 24h Change: 0.11094043940956769% {"timestamp":"2024-12-03T10:11:28.494Z"}
-info: Processed zksync: Price: $0.218552, Market Cap: $803124039.03515, 24h Volume: $254506870.38704523, 24h Change: 2.5913518867125696% {"timestamp":"2024-12-03T10:11:28.495Z"}
-info: Trends saved to ./logs/trends-log.json {"timestamp":"2024-12-03T10:11:28.497Z"}
-info: Trend analysis completed. {"timestamp":"2024-12-03T10:11:28.498Z"}
-Analyzed Trends: {
-  "ethereum": {
-    "price": 3612.83,
-    "marketCap": 435089329363.65173,
-    "volume24h": 42296568990.69984,
-    "priceChange24h": 0.11094043940956769
-  },
-  "zksync": {
-    "price": 0.218552,
-    "marketCap": 803124039.03515,
-    "volume24h": 254506870.38704523,
-    "priceChange24h": 2.5913518867125696
-  }
-}
-info: Trends analysis result: {"timestamp":"2024-12-03T10:11:28.499Z"}
-info: Generating trading signals... {"timestamp":"2024-12-03T10:11:28.500Z"}
-info: Generating trading signals... {"timestamp":"2024-12-03T10:11:28.500Z"}
-info: Generated signal for ethereum: Hold {"timestamp":"2024-12-03T10:11:28.501Z"}
-info: Generated signal for zksync: Buy {"timestamp":"2024-12-03T10:11:28.501Z"}
-info: Generated Signal: {"timestamp":"2024-12-03T10:11:28.502Z"}
+echbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/backtest.js
+info: --- Starting Backtest --- {"timestamp":"2024-12-03T10:21:03.658Z"}
+info: Starting trend analysis... {"timestamp":"2024-12-03T10:21:03.664Z"}
+error: No data provided for analysis. {"timestamp":"2024-12-03T10:21:03.665Z"}
+error: No trends available for backtesting. {"timestamp":"2024-12-03T10:21:03.666Z"}

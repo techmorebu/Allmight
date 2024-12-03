@@ -192,3 +192,7 @@
 {"level":"info","message":"Generated signal for ethereum: Hold","timestamp":"2024-12-03T10:11:28.501Z"}
 {"level":"info","message":"Generated signal for zksync: Buy","timestamp":"2024-12-03T10:11:28.501Z"}
 {"level":"info","message":"Generated Signal:","timestamp":"2024-12-03T10:11:28.502Z"}
+{"level":"info","message":"--- Starting Backtest ---","timestamp":"2024-12-03T10:21:03.658Z"}
+{"level":"info","message":"Starting trend analysis...","timestamp":"2024-12-03T10:21:03.664Z"}
+{"level":"error","message":"No data provided for analysis.","timestamp":"2024-12-03T10:21:03.665Z"}
+{"level":"error","message":"No trends available for backtesting.","timestamp":"2024-12-03T10:21:03.666Z"}
