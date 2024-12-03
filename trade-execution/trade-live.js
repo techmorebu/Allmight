@@ -1,3 +1,4 @@
+require('dotenv').config(); // Load environment variables
 const ethers = require('ethers');
 const { fetchPoolData } = require('./fetch-pool-data');
 
