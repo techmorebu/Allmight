@@ -1,6 +1,6 @@
 require("dotenv").config();
 const axios = require("axios");
-const { logger } = require("../monitoring/logger");
+const { logAndNotify } = require("../monitoring/logger");
 
 // Fetch token prices using CoinGecko API
 async function fetchTokenPrices() {
@@ -21,13 +21,21 @@ async function fetchTokenPrices() {
     };
 
     try {
+        logAndNotify("info", "Fetching token prices from CoinGecko...");
         const response = await axios.get(url, { params, headers });
-        logger.info("Fetched token prices successfully.");
+        logAndNotify("info", "Fetched token prices successfully.");
         return response.data;
     } catch (error) {
-        logger.error(`Error fetching token prices: ${error.message}`);
-        throw error;
+        logAndNotify("error", `Error fetching token prices: ${error.message}`);
+        throw error; // Rethrow the error for higher-level handling
     }
+}
+
+// Test the function
+if (require.main === module) {
+    fetchTokenPrices()
+        .then(data => logAndNotify("info", `Token Prices: ${JSON.stringify(data)}`))
+        .catch(error => logAndNotify("error", `Fetch failed: ${error.message}`));
 }
 
 module.exports = { fetchTokenPrices };
