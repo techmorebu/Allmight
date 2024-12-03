@@ -1,0 +1,109 @@
+require('dotenv').config({ path: '../.env' });
+const axios = require('axios');
+const { logger } = require('../monitoring/logger');
+
+// GMX API Configuration
+const GMX_CONFIG = {
+  ARBITRUM: {
+    TOKENS_URL: process.env.GMX_ARBITRUM_TOKENS_URL,
+    PRICES_URL: process.env.GMX_ARBITRUM_PRICES_URL,
+    PAIRS_URL: process.env.GMX_ARBITRUM_PAIRS_URL,
+  },
+  AVALANCHE: {
+    TOKENS_URL: process.env.GMX_AVALANCHE_TOKENS_URL,
+    PRICES_URL: process.env.GMX_AVALANCHE_PRICES_URL,
+    PAIRS_URL: process.env.GMX_AVALANCHE_PAIRS_URL,
+  },
+  RATE_LIMIT: parseInt(process.env.GMX_API_RATE_LIMIT, 10) || 5,
+  TIMEOUT: parseInt(process.env.GMX_API_TIMEOUT, 10) || 3000,
+};
+
+// Fetch token data from GMX
+async function fetchTokens(network = 'ARBITRUM') {
+  const url = GMX_CONFIG[network]?.TOKENS_URL;
+  if (!url) {
+    logger.error(`Invalid network or missing GMX tokens URL for ${network}.`);
+    return null;
+  }
+
+  try {
+    const response = await axios.get(url, { timeout: GMX_CONFIG.TIMEOUT });
+    logger.info(`Fetched token data from GMX (${network}):`, response.data);
+    return response.data;
+  } catch (error) {
+    logger.error(`Error fetching GMX token data (${network}): ${error.message}`);
+    return null;
+  }
+}
+
+// Fetch price data from GMX
+async function fetchPrices(network = 'ARBITRUM') {
+  const url = GMX_CONFIG[network]?.PRICES_URL;
+  if (!url) {
+    logger.error(`Invalid network or missing GMX prices URL for ${network}.`);
+    return null;
+  }
+
+  try {
+    const response = await axios.get(url, { timeout: GMX_CONFIG.TIMEOUT });
+    logger.info(`Fetched price data from GMX (${network}):`, response.data);
+    return response.data;
+  } catch (error) {
+    logger.error(`Error fetching GMX price data (${network}): ${error.message}`);
+    return null;
+  }
+}
+
+// Fetch pair data from GMX
+async function fetchPairs(network = 'ARBITRUM') {
+  const url = GMX_CONFIG[network]?.PAIRS_URL;
+  if (!url) {
+    logger.error(`Invalid network or missing GMX pairs URL for ${network}.`);
+    return null;
+  }
+
+  try {
+    const response = await axios.get(url, { timeout: GMX_CONFIG.TIMEOUT });
+    logger.info(`Fetched pair data from GMX (${network}):`, response.data);
+    return response.data;
+  } catch (error) {
+    logger.error(`Error fetching GMX pair data (${network}): ${error.message}`);
+    return null;
+  }
+}
+
+// Main GMX Integration
+async function gmxIntegration() {
+  try {
+    logger.info('--- Starting GMX Integration ---');
+
+    // Fetch token, price, and pair data for both Arbitrum and Avalanche
+    for (const network of ['ARBITRUM', 'AVALANCHE']) {
+      logger.info(`Fetching data for ${network} network...`);
+
+      const tokens = await fetchTokens(network);
+      const prices = await fetchPrices(network);
+      const pairs = await fetchPairs(network);
+
+      if (tokens && prices && pairs) {
+        logger.info(`GMX Integration Successful (${network})`);
+        logger.info(`Tokens: ${JSON.stringify(tokens, null, 2)}`);
+        logger.info(`Prices: ${JSON.stringify(prices, null, 2)}`);
+        logger.info(`Pairs: ${JSON.stringify(pairs, null, 2)}`);
+      } else {
+        logger.warn(`Some data is missing for ${network}.`);
+      }
+    }
+
+    logger.info('--- GMX Integration Completed ---');
+  } catch (error) {
+    logger.error(`Error during GMX integration: ${error.message}`);
+  }
+}
+
+// Run the GMX Integration if the script is executed directly
+if (require.main === module) {
+  gmxIntegration();
+}
+
+module.exports = { fetchTokens, fetchPrices, fetchPairs, gmxIntegration };
