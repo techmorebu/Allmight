@@ -5570,3 +5570,60 @@ Alert sent to Discord:
 - Liquidity: $10607994864961189093
       
 🚀 Significant Volume Detected in Pool USDC/WETH!
+Using endpoint: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV
+ETH Price: $3608.6202330407527
+Total Volume: $1443907324525.3047
+Top Pool: USDC/WETH
+Volume: $508640760403.9344811797769704430348
+Liquidity: $10607348742749105187
+Data saved to historical-data.json
+[32minfo[39m: Starting trend analysis... {"timestamp":"2024-12-03T09:50:02.396Z"}
+[31merror[39m: No data provided for analysis. {"timestamp":"2024-12-03T09:50:02.400Z"}
+Alert sent to Discord: 
+🚨 New Data Synced:
+- ETH Price: $3608.62
+- Total Volume: $1,443,907,324,525.305
+
+📊 Top Pool: USDC/WETH
+- Volume: $508640760403.9344811797769704430348
+- Liquidity: $10607348742749105187
+      
+🚀 Significant Volume Detected in Pool USDC/WETH!
+Using endpoint: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV
+ETH Price: $3608.6202330407527
+Total Volume: $1443907767113.6294
+Top Pool: USDC/WETH
+Volume: $508640763991.7328150033003542162855
+Liquidity: $10607348742749105187
+Data saved to historical-data.json
+[32minfo[39m: Starting trend analysis... {"timestamp":"2024-12-03T09:51:02.940Z"}
+[31merror[39m: No data provided for analysis. {"timestamp":"2024-12-03T09:51:02.943Z"}
+Alert sent to Discord: 
+🚨 New Data Synced:
+- ETH Price: $3608.62
+- Total Volume: $1,443,907,767,113.629
+
+📊 Top Pool: USDC/WETH
+- Volume: $508640763991.7328150033003542162855
+- Liquidity: $10607348742749105187
+      
+🚀 Significant Volume Detected in Pool USDC/WETH!
+Using endpoint: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV
+ETH Price: $3608.6202330407527
+Total Volume: $1443908149783.716
+Top Pool: USDC/WETH
+Volume: $508640778061.2200067537467295051214
+Liquidity: $10607348742749105187
+Data saved to historical-data.json
+[32minfo[39m: Starting trend analysis... {"timestamp":"2024-12-03T09:52:02.522Z"}
+[31merror[39m: No data provided for analysis. {"timestamp":"2024-12-03T09:52:02.526Z"}
+Alert sent to Discord: 
+🚨 New Data Synced:
+- ETH Price: $3608.62
+- Total Volume: $1,443,908,149,783.716
+
+📊 Top Pool: USDC/WETH
+- Volume: $508640778061.2200067537467295051214
+- Liquidity: $10607348742749105187
+      
+🚀 Significant Volume Detected in Pool USDC/WETH!

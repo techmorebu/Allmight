@@ -1,4 +1,44 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ cat logs/trends-log.json
-{
-  "ethereum": {},
-  "zksync": {}
+echbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node trade-execution/trade-simulation.js
+info: --- Starting Trade Simulation --- {"timestamp":"2024-12-03T09:49:56.226Z"}
+info: Starting trend analysis... {"timestamp":"2024-12-03T09:49:56.232Z"}
+info: Processed ethereum: Price: $undefined, Market Cap: $undefined, 24h Volume: $undefined, 24h Change: undefined% {"timestamp":"2024-12-03T09:49:56.233Z"}
+info: Processed zksync: Price: $undefined, Market Cap: $undefined, 24h Volume: $undefined, 24h Change: undefined% {"timestamp":"2024-12-03T09:49:56.235Z"}
+info: Trends saved to ./logs/trends-log.json {"timestamp":"2024-12-03T09:49:56.237Z"}
+info: Trend analysis completed. {"timestamp":"2024-12-03T09:49:56.238Z"}
+info: Generating trading signals... {"timestamp":"2024-12-03T09:49:56.238Z"}
+info: Generated signal for ethereum: Hold {"timestamp":"2024-12-03T09:49:56.239Z"}
+info: Generated signal for zksync: Hold {"timestamp":"2024-12-03T09:49:56.239Z"}
+info: Generated Signal: {"ethereum":{"token":"ethereum","signal":"Hold"},"zksync":{"token":"zksync","signal":"Hold"}} {"timestamp":"2024-12-03T09:49:56.240Z"}
+info: Simulating trade execution... {"timestamp":"2024-12-03T09:49:56.241Z"}
+info: Simulated Trade Result: {"profit":null} {"timestamp":"2024-12-03T09:49:56.241Z"}
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node trade-execution/trade-live.js
+info: [2024-12-03T09:50:29.146Z] Querying pool for: 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48 - 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2 {"timestamp":"2024-12-03T09:50:29.147Z"}
+Querying pool for: 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48 - 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+info: [2024-12-03T09:50:29.146Z] Fetched Pool Data:
+    - Pool ID: 0x7bea39867e4169dbe237d55c8242a8f2fcdcc387
+    - Fee Tier: 10000 (1%)
+    - SqrtPriceX96: 1315270335852207152549914027447697
+    - Liquidity: 12269118885980027
+    - Tick: 194354
+   {"timestamp":"2024-12-03T09:50:30.042Z"}
+info: [2024-12-03T09:50:29.146Z] Wallet connected: 0xf001f42b90FC224168E5910aFdfB2F42718caB9C {"timestamp":"2024-12-03T09:50:30.119Z"}
+info: [2024-12-03T09:50:29.146Z] Trade Amount in Wei: 1000000000000000000 {"timestamp":"2024-12-03T09:50:30.121Z"}
+info: [2024-12-03T09:50:29.146Z] Wallet ETH Balance: 0.0 ETH {"timestamp":"2024-12-03T09:50:30.960Z"}
+error: [2024-12-03T09:50:29.146Z] Insufficient wallet balance: 0 ETH. Cannot execute the trade. {"timestamp":"2024-12-03T09:50:30.962Z"}
+info: [2024-12-03T09:50:30.972Z] Querying pool for: 0x6b175474e89094c44da98b954eedeac495271d0f - 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2 {"timestamp":"2024-12-03T09:50:30.972Z"}
+Querying pool for: 0x6b175474e89094c44da98b954eedeac495271d0f - 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+info: Notification sent to Discord. {"timestamp":"2024-12-03T09:50:31.155Z"}
+info: [2024-12-03T09:50:30.972Z] Fetched Pool Data:
+    - Pool ID: 0x60594a405d53811d3bc4766596efd80fd545a270
+    - Fee Tier: 500 (0.05%)
+    - SqrtPriceX96: 1318710407142988606681562960
+    - Liquidity: 147226603584111404055078
+    - Tick: -81918
+   {"timestamp":"2024-12-03T09:50:31.563Z"}
+info: [2024-12-03T09:50:30.972Z] Wallet connected: 0xf001f42b90FC224168E5910aFdfB2F42718caB9C {"timestamp":"2024-12-03T09:50:31.573Z"}
+info: [2024-12-03T09:50:30.972Z] Trade Amount in Wei: 500000000000000000 {"timestamp":"2024-12-03T09:50:31.574Z"}
+info: [2024-12-03T09:50:30.972Z] Wallet ETH Balance: 0.0 ETH {"timestamp":"2024-12-03T09:50:32.449Z"}
+error: [2024-12-03T09:50:30.972Z] Insufficient wallet balance: 0 ETH. Cannot execute the trade. {"timestamp":"2024-12-03T09:50:32.451Z"}
+info: Notification sent to Discord. {"timestamp":"2024-12-03T09:50:32.789Z"}
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
+
