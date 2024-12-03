@@ -124,3 +124,87 @@ Backtest Results - 2024-12-03T08:26:07.557Z
   }
 }
 
+Backtest Results - 2024-12-03T08:28:25.832Z
+Results:
+[
+  {
+    "signal": "Hold",
+    "profit": -179.36112644748147,
+    "stopLoss": 3407.8614025021475,
+    "takeProfit": 3766.5836553971108,
+    "tradeDuration": 60
+  }
+]
+Metrics:
+{
+  "totalTrades": 1,
+  "wins": 0,
+  "losses": 1,
+  "winLossRatio": 0,
+  "cumulativePnL": -179.36112644748147,
+  "avgTradeDuration": 60
+}
+
+Backtest Results - 2024-12-03T08:28:32.619Z
+Results:
+[
+  {
+    "signal": "Hold",
+    "profit": -179.36112644748147,
+    "stopLoss": 3407.8614025021475,
+    "takeProfit": 3766.5836553971108,
+    "tradeDuration": 60
+  }
+]
+Metrics:
+{
+  "totalTrades": 1,
+  "wins": 0,
+  "losses": 1,
+  "winLossRatio": 0,
+  "cumulativePnL": -179.36112644748147,
+  "avgTradeDuration": 60
+}
+
+Backtest Results - 2024-12-03T08:28:44.096Z
+Results:
+[
+  {
+    "signal": "Hold",
+    "profit": -179.36112644748147,
+    "stopLoss": 3407.8614025021475,
+    "takeProfit": 3766.5836553971108,
+    "tradeDuration": 60
+  }
+]
+Metrics:
+{
+  "totalTrades": 1,
+  "wins": 0,
+  "losses": 1,
+  "winLossRatio": 0,
+  "cumulativePnL": -179.36112644748147,
+  "avgTradeDuration": 60
+}
+
+Backtest Results - 2024-12-03T08:28:45.070Z
+Results:
+[
+  {
+    "signal": "Hold",
+    "profit": -179.36112644748147,
+    "stopLoss": 3407.8614025021475,
+    "takeProfit": 3766.5836553971108,
+    "tradeDuration": 60
+  }
+]
+Metrics:
+{
+  "totalTrades": 1,
+  "wins": 0,
+  "losses": 1,
+  "winLossRatio": 0,
+  "cumulativePnL": -179.36112644748147,
+  "avgTradeDuration": 60
+}
+
