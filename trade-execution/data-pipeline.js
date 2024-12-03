@@ -1,20 +1,27 @@
-const { fetchTokenPrices } = require('../data-collection/fetchData');
-const { analyzeTrends } = require('../trade-execution/analyze-trends');
-
-async function main() {
+async function runDataPipeline() {
   try {
-    console.log('--- Starting Data Pipeline ---');
+    // Step 1: Fetch token prices
+    logger.info('Fetching token prices...');
+    const tokenData = await fetchTokenPrices();
+    logger.info('Fetched token data:', tokenData);
 
-    // Fetch data
-    const tokenPrices = await fetchTokenPrices();
-    console.log('Token Prices Fetched:', tokenPrices);
+    // Step 2: Analyze trends
+    logger.info('Analyzing trends...');
+    const trends = analyzeTrends(tokenData);
+    logger.info('Trends analysis result:', trends);
 
-    // Analyze trends
-    const trends = analyzeTrends(tokenPrices);
-    console.log('Trends Analyzed:', trends);
+    if (!trends || Object.keys(trends).length === 0) {
+      logger.error('No trends generated from analysis. Aborting pipeline.');
+      return;
+    }
+
+    // Step 3: Generate trading signals
+    logger.info('Generating trading signals...');
+    const signal = generateSignals(trends);
+    logger.info('Generated Signal:', signal);
   } catch (error) {
-    console.error('Error in data pipeline:', error.message);
+    logger.error('Error in data pipeline:', error.message);
   }
 }
 
-main();
+runDataPipeline();
