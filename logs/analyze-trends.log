@@ -511,3 +511,22 @@ Average ETH Price: $3591.20
 Price Change: 5.67%
 Average Pool Volume: $508138556358.06
 Average Pool Liquidity: $10206529068123463680.00
+{"level":"info","message":"Starting trend analysis...","timestamp":"2024-12-03T08:55:02.506Z"}
+{"level":"info","message":"Processed ethereum: Price: $3612.93, Market Cap: $435145092801.0696, 24h Volume: $44211393381.66678, 24h Change: 0.3199%","timestamp":"2024-12-03T08:55:02.514Z"}
+{"level":"info","message":"Processed zksync: Price: $0.2207, Market Cap: $811185501.2918984, 24h Volume: $261252014.8039644, 24h Change: 3.7264%","timestamp":"2024-12-03T08:55:02.514Z"}
+{"level":"info","message":"Trends saved to ./logs/trends-log.json","timestamp":"2024-12-03T08:55:02.515Z"}
+{"level":"info","message":"Trend analysis completed.","timestamp":"2024-12-03T08:55:02.516Z"}
+Trends: {
+  ethereum: {
+    price: 3612.93,
+    marketCap: 435145092801.0696,
+    volume24h: 44211393381.66678,
+    priceChange24h: 0.3199
+  },
+  zksync: {
+    price: 0.2207,
+    marketCap: 811185501.2918984,
+    volume24h: 261252014.8039644,
+    priceChange24h: 3.7264
+  }
+}
