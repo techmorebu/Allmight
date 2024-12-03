@@ -1,184 +1,100 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node trade-execution/trade-simulation.js
---- Starting Trade Execution (LIVE MODE) ---
-Generated Signal: Buy
-Trade Amount: 1 ETH
-Executing in LIVE_FIRE mode...
---- Fetching Pool Data ---
-Sending Query to Subgraph: 
-    {
-      pools(
-        first: 1,
-        where: {
-          token0: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-          token1: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
-        }
-      ) {
-        id
-        feeTier
-        sqrtPrice
-        liquidity
-        tick
-      }
-    }
-  
-Fetched Pool Data: {
-  feeTier: '10000',
-  id: '0x7bea39867e4169dbe237d55c8242a8f2fcdcc387',
-  liquidity: '13468764814874888',
-  sqrtPrice: '1355053976747993894121834613483921',
-  tick: '194950'
-}
-Pool successfully created: Pool {
-  token0: Token {
-    chainId: 1,
-    decimals: 6,
-    symbol: 'USDC',
-    name: 'USD Coin',
-    isNative: false,
-    isToken: true,
-    address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
-    buyFeeBps: undefined,
-    sellFeeBps: undefined
-  },
-  token1: Token {
-    chainId: 1,
-    decimals: 18,
-    symbol: 'WETH',
-    name: 'Wrapped Ethereum',
-    isNative: false,
-    isToken: true,
-    address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
-    buyFeeBps: undefined,
-    sellFeeBps: undefined
-  },
-  fee: 10000,
-  sqrtRatioX96: JSBI(4) [ 30583185, 808038151, 950564365, 1094603, sign: false ],
-  liquidity: JSBI(2) [ 777689352, 12543764, sign: false ],
-  tickCurrent: 194950,
-  tickDataProvider: NoTickDataProvider {}
-}
-Error executing trade: Route is not a constructor
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npm install @uniswap/v3-sdk@3.0.0  @uniswap/sdk-core@3.0.0 ethers@5.7.2
-npm warn ERESOLVE overriding peer dependency
-npm warn While resolving: ofa-project@1.0.0
-npm warn Found: ethers@6.13.4
-npm warn node_modules/ethers
-npm warn   peer ethers@"^6.1.0" from @nomicfoundation/hardhat-ethers@3.0.8
-npm warn   node_modules/@nomicfoundation/hardhat-ethers
-npm warn     @nomicfoundation/hardhat-ethers@"^3.0.8" from the root project
-npm warn   1 more (the root project)
-npm warn
-npm warn Could not resolve dependency:
-npm warn peer ethers@"^6.1.0" from @nomicfoundation/hardhat-ethers@3.0.8
-npm warn node_modules/@nomicfoundation/hardhat-ethers
-npm warn   @nomicfoundation/hardhat-ethers@"^3.0.8" from the root project
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npm install ethers@6.13.4
 
-added 6 packages, removed 14 packages, changed 7 packages, and audited 340 packages in 40s
+added 5 packages, removed 6 packages, changed 2 packages, and audited 339 packages in 40s
 
-69 packages are looking for funding
+65 packages are looking for funding
   run `npm fund` for details
 
-20 vulnerabilities (17 low, 3 high)
-
-To address issues that do not require attention, run:
-  npm audit fix
-
-To address all issues possible (including breaking changes), run:
-  npm audit fix --force
+14 vulnerabilities (12 low, 2 high)
 
 Some issues need review, and may require choosing
 a different dependency.
 
 Run `npm audit` for details.
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node trade-execution/trade-simulation.js
---- Starting Trade Execution (LIVE MODE) ---
-Generated Signal: Buy
-Trade Amount: 1 ETH
-Executing in LIVE_FIRE mode...
-/home/techbu/OFA_Project_Local/ofa-project/trade-execution/trade-simulation.js:17
-  const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
-                   ^
+npm notice
+npm notice New patch version of npm available! 10.9.0 -> 10.9.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v10.9.1
+npm notice To update run: npm install -g npm@10.9.1
+npm notice
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npm audit fix
+npm warn deprecated @uniswap/v3-staker@1.0.0: Please upgrade to 1.0.1
 
-TypeError: ethers.JsonRpcProvider is not a constructor
-    at executeLiveTrade (/home/techbu/OFA_Project_Local/ofa-project/trade-execution/trade-simulation.js:17:20)
-    at main (/home/techbu/OFA_Project_Local/ofa-project/trade-execution/trade-simulation.js:110:5)
-    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/trade-execution/trade-simulation.js:119:5)
-    at Module._compile (node:internal/modules/cjs/loader:1356:14)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
-    at Module.load (node:internal/modules/cjs/loader:1197:32)
-    at Module._load (node:internal/modules/cjs/loader:1013:12)
-    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
-    at node:internal/main/run_main_module:28:49
+added 10 packages, changed 4 packages, and audited 349 packages in 36s
 
-Node.js v18.19.1
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node trade-execution/trade-simulation.js
---- Starting Trade Execution (LIVE MODE) ---
-Generated Signal: Buy
-Trade Amount: 1 ETH
-Executing in LIVE_FIRE mode...
-/home/techbu/OFA_Project_Local/ofa-project/trade-execution/trade-simulation.js:17
-  const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
-                   ^
+65 packages are looking for funding
+  run `npm fund` for details
 
-TypeError: ethers.JsonRpcProvider is not a constructor
-    at executeLiveTrade (/home/techbu/OFA_Project_Local/ofa-project/trade-execution/trade-simulation.js:17:20)
-    at main (/home/techbu/OFA_Project_Local/ofa-project/trade-execution/trade-simulation.js:110:5)
-    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/trade-execution/trade-simulation.js:119:5)
-    at Module._compile (node:internal/modules/cjs/loader:1356:14)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
-    at Module.load (node:internal/modules/cjs/loader:1197:32)
-    at Module._load (node:internal/modules/cjs/loader:1013:12)
-    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
-    at node:internal/main/run_main_module:28:49
+# npm audit report
 
-Node.js v18.19.1
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node trade-execution/trade-simulation.js
---- Starting Trade Execution (LIVE MODE) ---
-Generated Signal: Buy
-Trade Amount: 1 ETH
-Executing in LIVE_FIRE mode...
-/home/techbu/OFA_Project_Local/ofa-project/trade-execution/trade-simulation.js:17
-  const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
-                   ^
+cookie  <0.7.0
+cookie accepts cookie name, path, and domain with out of bounds characters - https://github.com/advisories/GHSA-pxg6-pf52-xh8x
+No fix available
+node_modules/cookie
+  @sentry/node  4.0.0-beta.0 - 7.74.2-alpha.1
+  Depends on vulnerable versions of cookie
+  node_modules/@sentry/node
+    hardhat  >=0.1.0-rc.0
+    Depends on vulnerable versions of @ethersproject/abi
+    Depends on vulnerable versions of @sentry/node
+    node_modules/hardhat
+      @nomicfoundation/hardhat-ethers  *
+      Depends on vulnerable versions of hardhat
+      node_modules/@nomicfoundation/hardhat-ethers
+      hardhat-watcher  *
+      Depends on vulnerable versions of hardhat
+      node_modules/hardhat-watcher
+        @uniswap/swap-router-contracts  *
+        Depends on vulnerable versions of hardhat-watcher
+        node_modules/@uniswap/swap-router-contracts
+          @uniswap/v3-sdk  *
+          Depends on vulnerable versions of @ethersproject/abi
+          Depends on vulnerable versions of @uniswap/swap-router-contracts
+          node_modules/@uniswap/v3-sdk
 
-TypeError: ethers.JsonRpcProvider is not a constructor
-    at executeLiveTrade (/home/techbu/OFA_Project_Local/ofa-project/trade-execution/trade-simulation.js:17:20)
-    at main (/home/techbu/OFA_Project_Local/ofa-project/trade-execution/trade-simulation.js:110:5)
-    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/trade-execution/trade-simulation.js:119:5)
-    at Module._compile (node:internal/modules/cjs/loader:1356:14)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
-    at Module.load (node:internal/modules/cjs/loader:1197:32)
-    at Module._load (node:internal/modules/cjs/loader:1013:12)
-    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
-    at node:internal/main/run_main_module:28:49
+elliptic  <=6.5.7
+Elliptic's EDDSA missing signature length check - https://github.com/advisories/GHSA-f7q4-pwc6-w24p
+Elliptic's ECDSA missing check for whether leading bit of r and s is zero - https://github.com/advisories/GHSA-977x-g7h5-7qgw
+Elliptic allows BER-encoded signatures - https://github.com/advisories/GHSA-49q7-c7j4-3p7m
+Elliptic's verify function omits uniqueness validation - https://github.com/advisories/GHSA-434g-2637-qmqr
+Valid ECDSA signatures erroneously rejected in Elliptic - https://github.com/advisories/GHSA-fc9h-whq2-v747
+No fix available
+node_modules/elliptic
+  @ethersproject/signing-key  <=5.7.0
+  Depends on vulnerable versions of elliptic
+  node_modules/@ethersproject/signing-key
+    @ethersproject/transactions  <=5.7.0
+    Depends on vulnerable versions of @ethersproject/signing-key
+    node_modules/@ethersproject/transactions
+      @ethersproject/abstract-provider  *
+      Depends on vulnerable versions of @ethersproject/transactions
+      node_modules/@ethersproject/abstract-provider
+        @ethersproject/abstract-signer  *
+        Depends on vulnerable versions of @ethersproject/abstract-provider
+        node_modules/@ethersproject/abstract-signer
+          @ethersproject/hash  5.0.6 - 5.7.0
+          Depends on vulnerable versions of @ethersproject/abstract-signer
+          node_modules/@ethersproject/hash
+            @ethersproject/abi  5.0.10 - 5.7.0
+            Depends on vulnerable versions of @ethersproject/hash
+            node_modules/@ethersproject/abi
+            @ethersproject/providers  <=5.7.2
+            Depends on vulnerable versions of @ethersproject/abstract-provider
+            Depends on vulnerable versions of @ethersproject/abstract-signer
+            Depends on vulnerable versions of @ethersproject/hash
+            Depends on vulnerable versions of @ethersproject/transactions
+            Depends on vulnerable versions of ws
+            node_modules/@ethersproject/providers
 
-Node.js v18.19.1
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node trade-execution/trade-simulation.js
-node:internal/modules/cjs/loader:1137
-  throw err;
-  ^
+ws  7.0.0 - 7.5.9
+Severity: high
+ws affected by a DoS when handling a request with many HTTP headers - https://github.com/advisories/GHSA-3h5v-q93c-6h6q
+No fix available
+node_modules/@ethersproject/providers/node_modules/ws
 
-Error: Cannot find module 'bottleneck'
-Require stack:
-- /home/techbu/OFA_Project_Local/ofa-project/modules/geckoTerminalData.js
-- /home/techbu/OFA_Project_Local/ofa-project/trade-execution/trade-simulation.js
-    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
-    at Module._load (node:internal/modules/cjs/loader:975:27)
-    at Module.require (node:internal/modules/cjs/loader:1225:19)
-    at require (node:internal/modules/helpers:177:18)
-    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/modules/geckoTerminalData.js:2:20)
-    at Module._compile (node:internal/modules/cjs/loader:1356:14)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
-    at Module.load (node:internal/modules/cjs/loader:1197:32)
-    at Module._load (node:internal/modules/cjs/loader:1013:12)
-    at Module.require (node:internal/modules/cjs/loader:1225:19) {
-  code: 'MODULE_NOT_FOUND',
-  requireStack: [
-    '/home/techbu/OFA_Project_Local/ofa-project/modules/geckoTerminalData.js',
-    '/home/techbu/OFA_Project_Local/ofa-project/trade-execution/trade-simulation.js'
-  ]
-}
+16 vulnerabilities (14 low, 2 high)
 
-Node.js v18.19.1
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
+To address issues that do not require attention, run:
+  npm audit fix
 
+Some issues need review, and may require choosing
+a different dependency.
