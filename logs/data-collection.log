@@ -89,3 +89,20 @@
 {"level":"info","message":"Generated Signal: {\"ethereum\":{\"token\":\"ethereum\",\"signal\":\"Hold\"},\"zksync\":{\"token\":\"zksync\",\"signal\":\"Hold\"}}","timestamp":"2024-12-03T09:39:11.147Z"}
 {"level":"info","message":"Simulating trade execution...","timestamp":"2024-12-03T09:39:11.148Z"}
 {"level":"info","message":"Simulated Trade Result: {\"profit\":null}","timestamp":"2024-12-03T09:39:11.148Z"}
+{"level":"info","message":"--- Starting Data Pipeline ---","timestamp":"2024-12-03T09:45:08.725Z"}
+{"level":"info","message":"Fetching token prices...","timestamp":"2024-12-03T09:45:08.730Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-03T09:45:08.731Z"}
+{"level":"info","message":"Fetched token prices successfully.","timestamp":"2024-12-03T09:45:08.998Z"}
+{"level":"info","message":"Fetched token data:","timestamp":"2024-12-03T09:45:09.000Z"}
+{"level":"info","message":"Analyzing trends...","timestamp":"2024-12-03T09:45:09.001Z"}
+{"level":"info","message":"Starting trend analysis...","timestamp":"2024-12-03T09:45:09.002Z"}
+{"level":"info","message":"Processed ethereum: Price: $3610.08, Market Cap: $435103514184.3686, 24h Volume: $42158148345.89349, 24h Change: 0.05299575378715295%","timestamp":"2024-12-03T09:45:09.003Z"}
+{"level":"info","message":"Processed zksync: Price: $0.219622, Market Cap: $807962294.1517277, 24h Volume: $254973272.6676807, 24h Change: 3.359315012165535%","timestamp":"2024-12-03T09:45:09.005Z"}
+{"level":"info","message":"Trends saved to ./logs/trends-log.json","timestamp":"2024-12-03T09:45:09.007Z"}
+{"level":"info","message":"Trend analysis completed.","timestamp":"2024-12-03T09:45:09.008Z"}
+{"level":"info","message":"Trends analysis result:","timestamp":"2024-12-03T09:45:09.010Z"}
+{"level":"info","message":"Generating trading signals...","timestamp":"2024-12-03T09:45:09.010Z"}
+{"level":"info","message":"Generating trading signals...","timestamp":"2024-12-03T09:45:09.011Z"}
+{"level":"info","message":"Generated signal for ethereum: Hold","timestamp":"2024-12-03T09:45:09.011Z"}
+{"level":"info","message":"Generated signal for zksync: Buy","timestamp":"2024-12-03T09:45:09.012Z"}
+{"level":"info","message":"Generated Signal:","timestamp":"2024-12-03T09:45:09.012Z"}
