@@ -2,16 +2,20 @@ const { ethers } = require('ethers');
 
 async function executeLiveTrade(signal, amount) {
   console.log('--- Executing Live Trade ---');
-  const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
+  
+  // Initialize Ethereum provider
+  const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
+
+  // Initialize Wallet with private key and provider
   const wallet = new ethers.Wallet(process.env.METAMASK_PRIVATE_KEY, provider);
 
   console.log(`Signal: ${signal}`);
   console.log(`Amount: ${amount} ETH`);
 
-  // Example: Send transaction (adjust logic based on trading needs)
+  // Example: Send transaction (adjust based on your trading logic)
   const tx = await wallet.sendTransaction({
-    to: '<target_wallet_or_contract>',
-    value: ethers.utils.parseEther(amount.toString()),
+    to: '<target_wallet_or_contract>', // Replace with target address
+    value: ethers.parseEther(amount.toString()), // Updated for ethers@6.x
   });
 
   console.log('Transaction sent:', tx.hash);
