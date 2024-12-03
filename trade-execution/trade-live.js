@@ -1,5 +1,5 @@
 require('dotenv').config(); // Load environment variables
-const ethers = require('ethers');
+const ethers = require('ethers5'); // Import ethers version 5.7.2 using alias
 const { fetchPoolData } = require('./fetch-pool-data');
 
 async function executeTrade(token0, token1, tradeAmountInEth) {
