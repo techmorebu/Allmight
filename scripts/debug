@@ -8,7 +8,13 @@ Fetched Pool Data: {
   liquidity: '12269118885980027',
   tick: 194345
 }
-Wallet connected: 0xf001f42b90FC224168E5910aFdfB2F42718caB9C
-Trade Amount in Wei: 1000000000000000000
-Current Wallet Balance: 0.0 ETH
-Error executing trade: cannot estimate gas; transaction may fail or may require manual gas limit [ See: https://links.ethers.org/v5-errors-UNPREDICTABLE_GAS_LIMIT ] (reason="execution reverted", method="estimateGas", transaction={"to":"0x7BeA39867e4169DBe237d55C8242a8f2fcDcc387","value":{"type":"BigNumber","hex":"0x0de0b6b3a7640000"},"accessList":null}, error={"reason":"processing response error","code":"SERVER_ERROR","body":"{\"jsonrpc\":\"2.0\",\"id\":46,\"error\":{\"code\":-32000,\"message\":\"execution reverted\"}}","error":{"code":-32000},"requestBody":"{\"method\":\"eth_estimateGas\",\"params\":[{\"value\":\"0xde0b6b3a7640000\",\"to\":\"0x7bea39867e4169dbe237d55c8242a8f2fcdcc387\"}],\"id\":46,\"jsonrpc\":\"2.0\"}","requestMethod":"POST","url":"https://mainnet.infura.io/v3/8e7234907efc4e92a78de29f031c55da"}, code=UNPREDICTABLE_GAS_LIMIT, version=providers/5.7.2)
+/home/techbu/OFA_Project_Local/ofa-project/trade-execution/trade-live.js:16
+  const provider = new ethers.providers.JsonRpcProvider(process.env.ETHEREUM_MAINNET_RPC_URL_1);
+                                        ^
+
+TypeError: Cannot read properties of undefined (reading 'JsonRpcProvider')
+    at executeTrade (/home/techbu/OFA_Project_Local/ofa-project/trade-execution/trade-live.js:16:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async /home/techbu/OFA_Project_Local/ofa-project/trade-execution/trade-live.js:74:5
+
+Node.js v18.19.1
