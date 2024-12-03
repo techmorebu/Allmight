@@ -58,3 +58,22 @@
 {"level":"info","message":"Trend analysis completed.","timestamp":"2024-12-03T09:24:35.304Z"}
 {"level":"info","message":"Starting trend analysis...","timestamp":"2024-12-03T09:25:11.437Z"}
 {"level":"error","message":"No data provided for analysis.","timestamp":"2024-12-03T09:25:11.443Z"}
+{"level":"info","message":"--- Starting Data Pipeline ---","timestamp":"2024-12-03T09:32:57.678Z"}
+{"level":"info","message":"Fetching token prices...","timestamp":"2024-12-03T09:32:57.684Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-03T09:32:57.685Z"}
+{"level":"info","message":"Fetched token prices successfully.","timestamp":"2024-12-03T09:32:57.956Z"}
+{"level":"info","message":"Fetched token data:","timestamp":"2024-12-03T09:32:57.958Z"}
+{"level":"info","message":"Analyzing trends...","timestamp":"2024-12-03T09:32:57.958Z"}
+{"level":"info","message":"Starting trend analysis...","timestamp":"2024-12-03T09:32:57.960Z"}
+{"level":"info","message":"Processed ethereum: Price: $3604.15, Market Cap: $433482734492.3567, 24h Volume: $42176374514.05156, 24h Change: -0.37633271625533504%","timestamp":"2024-12-03T09:32:57.961Z"}
+{"level":"info","message":"Processed zksync: Price: $0.219377, Market Cap: $803751660.9203311, 24h Volume: $255094105.87734252, 24h Change: 2.885728871799174%","timestamp":"2024-12-03T09:32:57.962Z"}
+{"level":"info","message":"Trends saved to ./logs/trends-log.json","timestamp":"2024-12-03T09:32:57.965Z"}
+{"level":"info","message":"Trend analysis completed.","timestamp":"2024-12-03T09:32:57.967Z"}
+{"level":"info","message":"Trends analysis result:","timestamp":"2024-12-03T09:32:57.968Z"}
+{"level":"info","message":"Generating trading signals...","timestamp":"2024-12-03T09:32:57.968Z"}
+{"level":"info","message":"Generating trading signals...","timestamp":"2024-12-03T09:32:57.969Z"}
+{"level":"info","message":"Generated signal for ethereum: Hold","timestamp":"2024-12-03T09:32:57.969Z"}
+{"level":"info","message":"Generated signal for zksync: Buy","timestamp":"2024-12-03T09:32:57.970Z"}
+{"level":"info","message":"Generated Signal:","timestamp":"2024-12-03T09:32:57.970Z"}
+{"level":"info","message":"Starting trend analysis...","timestamp":"2024-12-03T09:36:44.861Z"}
+{"level":"error","message":"No data provided for analysis.","timestamp":"2024-12-03T09:36:44.867Z"}

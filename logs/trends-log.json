@@ -1,14 +1,14 @@
 {
   "ethereum": {
-    "price": 3612.93,
-    "marketCap": 435145092801.0696,
-    "volume24h": 44211393381.66678,
-    "priceChange24h": 0.3199
+    "price": 3604.15,
+    "marketCap": 433482734492.3567,
+    "volume24h": 42176374514.05156,
+    "priceChange24h": -0.37633271625533504
   },
   "zksync": {
-    "price": 0.2207,
-    "marketCap": 811185501.2918984,
-    "volume24h": 261252014.8039644,
-    "priceChange24h": 3.7264
+    "price": 0.219377,
+    "marketCap": 803751660.9203311,
+    "volume24h": 255094105.87734252,
+    "priceChange24h": 2.885728871799174
   }
 }
