@@ -1,3 +1,77 @@
-npm install @ethersproject/providers@latest @ethersproject/abstract-provider@latest
-npm install @uniswap/v3-sdk@latest
-npm install hardhat@latest
+echbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npm audit
+# npm audit report
+
+cookie  <0.7.0
+cookie accepts cookie name, path, and domain with out of bounds characters - https://github.com/advisories/GHSA-pxg6-pf52-xh8x
+fix available via `npm audit fix --force`
+Will install @uniswap/v3-sdk@3.8.3, which is a breaking change
+node_modules/cookie
+  @sentry/node  4.0.0-beta.0 - 7.74.2-alpha.1
+  Depends on vulnerable versions of cookie
+  node_modules/@sentry/node
+    hardhat  >=0.1.0-rc.0
+    Depends on vulnerable versions of @ethersproject/abi
+    Depends on vulnerable versions of @sentry/node
+    node_modules/hardhat
+      @nomicfoundation/hardhat-ethers  *
+      Depends on vulnerable versions of hardhat
+      node_modules/@nomicfoundation/hardhat-ethers
+      hardhat-watcher  *
+      Depends on vulnerable versions of hardhat
+      node_modules/hardhat-watcher
+        @uniswap/swap-router-contracts  *
+        Depends on vulnerable versions of hardhat-watcher
+        node_modules/@uniswap/swap-router-contracts
+          @uniswap/v3-sdk  *
+          Depends on vulnerable versions of @ethersproject/abi
+          Depends on vulnerable versions of @uniswap/swap-router-contracts
+          node_modules/@uniswap/v3-sdk
+
+elliptic  <=6.5.7
+Elliptic's EDDSA missing signature length check - https://github.com/advisories/GHSA-f7q4-pwc6-w24p
+Elliptic's ECDSA missing check for whether leading bit of r and s is zero - https://github.com/advisories/GHSA-977x-g7h5-7qgw
+Elliptic allows BER-encoded signatures - https://github.com/advisories/GHSA-49q7-c7j4-3p7m
+Elliptic's verify function omits uniqueness validation - https://github.com/advisories/GHSA-434g-2637-qmqr
+Valid ECDSA signatures erroneously rejected in Elliptic - https://github.com/advisories/GHSA-fc9h-whq2-v747
+fix available via `npm audit fix --force`
+Will install @uniswap/v3-sdk@3.8.3, which is a breaking change
+node_modules/elliptic
+  @ethersproject/signing-key  <=5.7.0
+  Depends on vulnerable versions of elliptic
+  node_modules/@ethersproject/signing-key
+    @ethersproject/transactions  <=5.7.0
+    Depends on vulnerable versions of @ethersproject/signing-key
+    node_modules/@ethersproject/transactions
+      @ethersproject/abstract-provider  *
+      Depends on vulnerable versions of @ethersproject/transactions
+      node_modules/@ethersproject/abstract-provider
+        @ethersproject/abstract-signer  *
+        Depends on vulnerable versions of @ethersproject/abstract-provider
+        node_modules/@ethersproject/abstract-signer
+          @ethersproject/hash  5.0.6 - 5.7.0
+          Depends on vulnerable versions of @ethersproject/abstract-signer
+          node_modules/@ethersproject/hash
+            @ethersproject/abi  5.0.10 - 5.7.0
+            Depends on vulnerable versions of @ethersproject/hash
+            node_modules/@ethersproject/abi
+            @ethersproject/providers  <=5.7.2
+            Depends on vulnerable versions of @ethersproject/abstract-provider
+            Depends on vulnerable versions of @ethersproject/abstract-signer
+            Depends on vulnerable versions of @ethersproject/hash
+            Depends on vulnerable versions of @ethersproject/transactions
+            Depends on vulnerable versions of ws
+            node_modules/@ethersproject/providers
+
+ws  7.0.0 - 7.5.9
+Severity: high
+ws affected by a DoS when handling a request with many HTTP headers - https://github.com/advisories/GHSA-3h5v-q93c-6h6q
+No fix available
+node_modules/ws
+
+16 vulnerabilities (14 low, 2 high)
+
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
+
+Some issues need review, and may require choosing
+a different dependency.
