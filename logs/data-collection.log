@@ -196,3 +196,7 @@
 {"level":"info","message":"Starting trend analysis...","timestamp":"2024-12-03T10:21:03.664Z"}
 {"level":"error","message":"No data provided for analysis.","timestamp":"2024-12-03T10:21:03.665Z"}
 {"level":"error","message":"No trends available for backtesting.","timestamp":"2024-12-03T10:21:03.666Z"}
+{"level":"info","message":"--- Starting Backtest ---","timestamp":"2024-12-03T10:25:51.743Z"}
+{"level":"error","message":"No trends data file found for backtesting.","timestamp":"2024-12-03T10:25:51.748Z"}
+{"level":"info","message":"--- Starting Backtest ---","timestamp":"2024-12-03T10:25:55.809Z"}
+{"level":"error","message":"No trends data file found for backtesting.","timestamp":"2024-12-03T10:25:55.815Z"}
