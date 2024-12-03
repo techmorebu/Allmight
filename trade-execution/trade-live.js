@@ -1,5 +1,5 @@
 require('dotenv').config({ path: '../.env' });
-const ethers = require('ethers');
+const ethers = require('ethers5');
 const { fetchPoolData } = require('./fetch-pool-data');
 
 async function executeTrade(token0, token1, tradeAmountInEth) {
