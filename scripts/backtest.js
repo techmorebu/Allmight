@@ -1,95 +1,50 @@
+const fs = require('fs');
 const { analyzeTrends } = require('../trade-execution/analyze-trends');
 const { generateSignals } = require('../trade-execution/signal-generator');
-const fs = require('fs');
 
-// Read historical data
-function readHistoricalData() {
-  const filePath = '/home/techbu/OFA_Project_Local/ofa-project/logs/historical-data.json';
-  if (!fs.existsSync(filePath)) {
-    console.error('No historical data found.');
-    return [];
-  }
-  const fileContent = fs.readFileSync(filePath, 'utf8');
-  return JSON.parse(fileContent);
-}
-
-// Simulate trades based on historical data
 function backtest() {
-  console.log('--- Starting Backtesting ---');
-
-  const historicalData = readHistoricalData();
-
-  if (!historicalData || historicalData.length === 0) {
-    console.error('No historical data available for backtesting.');
+  console.log('--- Starting Backtest ---');
+  
+  const trends = analyzeTrends();
+  if (!trends) {
+    console.error('No trends available for backtesting.');
     return;
   }
 
-  let wins = 0;
-  let losses = 0;
-  let totalProfit = 0;
-  let totalLoss = 0;
+  const signal = generateSignals(trends);
+  console.log('Generated Signal:', signal);
 
-  console.log(`Total historical entries: ${historicalData.length}`);
+  // Simulate trade execution
+  const simulatedResult = simulateTrade(signal, trends);
+  console.log('Simulated Trade Result:', simulatedResult);
 
-  historicalData.forEach((dataPoint, index) => {
-    // Analyze trends for the current data point
-    const trends = analyzeTrends([dataPoint]); // Pass a single entry as an array
-
-    if (!trends) {
-      console.log(`Skipping entry ${index + 1}: Invalid trends.`);
-      return;
-    }
-
-    // Generate signal
-    const { signal, stopLoss, takeProfit } = generateSignals(trends);
-
-    // Simulate trade
-    const entryPrice = dataPoint.ethPrice;
-    let exitPrice = entryPrice;
-
-    // Mock price movement
-    if (signal === 'Buy') {
-      exitPrice = Math.min(takeProfit, entryPrice * 1.02); // Simulate upward price movement
-    } else if (signal === 'Sell') {
-      exitPrice = Math.max(stopLoss, entryPrice * 0.98); // Simulate downward price movement
-    }
-
-    // Evaluate trade outcome
-    const profitOrLoss = exitPrice - entryPrice;
-    if (profitOrLoss > 0) {
-      wins++;
-      totalProfit += profitOrLoss;
-    } else {
-      losses++;
-      totalLoss += Math.abs(profitOrLoss);
-    }
-
-    console.log(`Trade ${index + 1}: ${signal}`);
-    console.log(`Entry Price: $${entryPrice.toFixed(2)}`);
-    console.log(`Exit Price: $${exitPrice.toFixed(2)}`);
-    console.log(`Profit/Loss: $${profitOrLoss.toFixed(2)}`);
-  });
-
-  // Calculate performance metrics
-  const totalTrades = wins + losses;
-  const winRate = (wins / totalTrades) * 100;
-  const riskRewardRatio = totalProfit / (totalLoss || 1); // Avoid division by zero
-  const sharpeRatio = totalProfit / totalTrades; // Simplified Sharpe ratio
-
-  console.log('--- Backtesting Results ---');
-  console.log(`Total Trades: ${totalTrades}`);
-  console.log(`Wins: ${wins}`);
-  console.log(`Losses: ${losses}`);
-  console.log(`Win Rate: ${winRate.toFixed(2)}%`);
-  console.log(`Total Profit: $${totalProfit.toFixed(2)}`);
-  console.log(`Total Loss: $${totalLoss.toFixed(2)}`);
-  console.log(`Risk-Reward Ratio: ${riskRewardRatio.toFixed(2)}`);
-  console.log(`Sharpe Ratio: ${sharpeRatio.toFixed(2)}`);
+  return {
+    trends,
+    signal,
+    simulatedResult,
+  };
 }
 
-// Execute the script if run directly
+function simulateTrade(signal, trends) {
+  const profit = signal.signal === 'Buy' ? trends.avgPrice * 0.05 : -trends.avgPrice * 0.05; // Example logic
+  return {
+    signal: signal.signal,
+    profit,
+    stopLoss: signal.stopLoss,
+    takeProfit: signal.takeProfit,
+  };
+}
+
+function logResults(results) {
+  const logPath = './logs/backtest-results.log';
+  const logData = `Backtest Results - ${new Date().toISOString()}\n${JSON.stringify(results, null, 2)}\n\n`;
+
+  fs.appendFileSync(logPath, logData, 'utf8');
+  console.log('Backtest results saved to logs/backtest-results.log');
+}
+
+// Main Execution
 if (require.main === module) {
-  backtest();
+  const results = backtest();
+  if (results) logResults(results);
 }
-
-module.exports = { backtest };
