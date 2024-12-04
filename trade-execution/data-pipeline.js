@@ -12,7 +12,7 @@ async function runDataPipeline() {
         // Step 1: Fetch CoinGecko Token Prices
         logger.info('Fetching token prices from CoinGecko...');
         const tokenData = await fetchTokenPrices();
-        logger.info('Fetched CoinGecko data successfully.');
+        logger.info('Fetched CoinGecko data successfully:', JSON.stringify(tokenData, null, 2));
 
         // Step 2: Fetch GMX Data
         logger.info('Fetching GMX token prices...');
@@ -22,13 +22,23 @@ async function runDataPipeline() {
 
         // Step 3: Combine data and analyze trends
         const combinedData = { ...tokenData, gmx: { prices: gmxPrices, pairs: gmxPairs } };
-        logger.info('Analyzing trends from combined data...');
+        logger.info('Combined Data for Trend Analysis:', JSON.stringify(combinedData, null, 2));
+
         const trends = analyzeTrends(combinedData);
+        if (!trends || Object.keys(trends).length === 0) {
+            logger.error('No trends data generated. Aborting.');
+            return;
+        }
+        logger.info('Trends Analysis Result:', JSON.stringify(trends, null, 2));
 
         // Step 4: Generate trading signals
         logger.info('Generating trading signals...');
         const signal = generateSignals(trends);
-        logger.info('Generated signals:', JSON.stringify(signal, null, 2));
+        if (!signal) {
+            logger.error('No signals generated. Aborting.');
+            return;
+        }
+        logger.info('Generated Signals:', JSON.stringify(signal, null, 2));
 
     } catch (error) {
         logger.error('Error in data pipeline:', error.message);
