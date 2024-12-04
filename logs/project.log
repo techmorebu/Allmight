@@ -1,0 +1,19 @@
+{"level":"info","message":"--- Starting Data Pipeline ---","timestamp":"2024-12-04T07:41:15.389Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-04T07:41:15.393Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-04T07:41:15.394Z"}
+{"level":"info","message":"Fetched token prices successfully.","timestamp":"2024-12-04T07:41:15.651Z"}
+{"level":"info","message":"Fetched CoinGecko data successfully.","timestamp":"2024-12-04T07:41:15.652Z"}
+{"level":"info","message":"Fetching GMX token prices...","timestamp":"2024-12-04T07:41:15.653Z"}
+{"level":"info","message":"Fetching GMX token prices from arbitrum...","timestamp":"2024-12-04T07:41:15.653Z"}
+{"level":"info","message":"Token prices fetched successfully.","timestamp":"2024-12-04T07:41:15.860Z"}
+{"level":"info","message":"Fetching GMX pairs from arbitrum...","timestamp":"2024-12-04T07:41:15.863Z"}
+{"level":"info","message":"Pairs fetched successfully.","timestamp":"2024-12-04T07:41:17.362Z"}
+{"level":"info","message":"Fetched GMX data successfully.","timestamp":"2024-12-04T07:41:17.362Z"}
+{"level":"info","message":"Analyzing trends from combined data...","timestamp":"2024-12-04T07:41:17.363Z"}
+{"level":"info","message":"Starting trend analysis...","timestamp":"2024-12-04T07:41:17.364Z"}
+{"level":"info","message":"Trends saved to ./logs/trends-log.json","timestamp":"2024-12-04T07:41:17.365Z"}
+{"level":"info","message":"Trend analysis completed.","timestamp":"2024-12-04T07:41:17.365Z"}
+{"level":"info","message":"Generating trading signals...","timestamp":"2024-12-04T07:41:17.366Z"}
+{"level":"info","message":"Generating trading signals...","timestamp":"2024-12-04T07:41:17.366Z"}
+{"level":"error","message":"No trends data provided for signal generation.","timestamp":"2024-12-04T07:41:17.367Z"}
+{"level":"info","message":"Generated signals:","timestamp":"2024-12-04T07:41:17.368Z"}
