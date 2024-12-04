@@ -66,3 +66,7 @@
 {"level":"info","message":"Generated signal for GMX-Avalanche: Hold","timestamp":"2024-12-04T08:13:01.510Z"}
 {"level":"info","message":"Signals saved to /home/techbu/OFA_Project_Local/ofa-project/logs/signals-log.json","timestamp":"2024-12-04T08:13:01.513Z"}
 {"level":"info","message":"Signal generation completed successfully.","timestamp":"2024-12-04T08:13:01.513Z"}
+{"level":"info","message":"--- Starting Trade Simulation ---","timestamp":"2024-12-04T08:38:32.150Z"}
+{"level":"info","message":"Starting trend analysis...","timestamp":"2024-12-04T08:38:32.156Z"}
+{"level":"error","message":"No data provided for analysis.","timestamp":"2024-12-04T08:38:32.157Z"}
+{"level":"error","message":"Error during trade simulation: No trends available for simulation.","timestamp":"2024-12-04T08:38:32.157Z"}
