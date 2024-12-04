@@ -2,6 +2,7 @@ require('dotenv').config();
 const axios = require('axios');
 const { logger } = require('../monitoring/logger');
 
+// Fetch GMX Token Prices
 async function fetchGmxTokenPrices(network) {
     const pricesUrl = network === 'arbitrum'
         ? process.env.GMX_ARBITRUM_PRICES_URL
@@ -18,6 +19,7 @@ async function fetchGmxTokenPrices(network) {
     }
 }
 
+// Fetch GMX Pairs
 async function fetchGmxPairs(network) {
     const pairsUrl = network === 'arbitrum'
         ? process.env.GMX_ARBITRUM_PAIRS_URL
