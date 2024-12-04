@@ -58,3 +58,11 @@
 {"level":"info","message":"Trends summary: 4 trend(s) processed.","timestamp":"2024-12-04T07:59:12.574Z"}
 {"level":"info","message":"Trend analysis completed.","timestamp":"2024-12-04T07:59:12.575Z"}
 {"level":"info","message":"Trends analysis result:","timestamp":"2024-12-04T07:59:12.575Z"}
+{"level":"info","message":"--- Starting Signal Generation ---","timestamp":"2024-12-04T08:13:01.503Z"}
+{"level":"info","message":"Generating trading signals...","timestamp":"2024-12-04T08:13:01.508Z"}
+{"level":"info","message":"Generated signal for ethereum: Buy","timestamp":"2024-12-04T08:13:01.509Z"}
+{"level":"info","message":"Generated signal for zksync: Buy","timestamp":"2024-12-04T08:13:01.509Z"}
+{"level":"info","message":"Generated signal for GMX-Arbitrum: Hold","timestamp":"2024-12-04T08:13:01.510Z"}
+{"level":"info","message":"Generated signal for GMX-Avalanche: Hold","timestamp":"2024-12-04T08:13:01.510Z"}
+{"level":"info","message":"Signals saved to /home/techbu/OFA_Project_Local/ofa-project/logs/signals-log.json","timestamp":"2024-12-04T08:13:01.513Z"}
+{"level":"info","message":"Signal generation completed successfully.","timestamp":"2024-12-04T08:13:01.513Z"}
