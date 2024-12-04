@@ -163,3 +163,5 @@
 {"level":"error","message":"Error fetching candles for AVALANCHE (ETH_USD): Request failed with status code 400","timestamp":"2024-12-04T09:20:30.072Z"}
 {"level":"info","message":"--- GMX Integration Completed ---","timestamp":"2024-12-04T09:20:30.078Z"}
 {"level":"info","message":"Notification sent to Discord.","timestamp":"2024-12-04T09:20:30.251Z"}
+{"level":"info","message":"Fetching candles for ARBITRUM (ETH_USD) with params: {\"market\":\"ETH_USD\",\"resolution\":\"1h\",\"from\":1733218158,\"to\":1733304558}","timestamp":"2024-12-04T09:29:18.843Z"}
+{"level":"error","message":"Error fetching candles for ARBITRUM (ETH_USD): Request failed with status code 400","timestamp":"2024-12-04T09:29:19.388Z"}
