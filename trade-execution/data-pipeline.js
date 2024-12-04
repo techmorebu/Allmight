@@ -1,52 +1,52 @@
-require('dotenv').config();
+require('dotenv').config({ path: '../.env' });
 const { fetchTokenPrices } = require('../data-collection/fetchData');
-const { fetchGmxTokenPrices, fetchGmxPairs } = require('../data-collection/fetch-gmx-data');
+const { fetchGmxTokenPrices, fetchGmxPairs } = require('../trade-execution/gmx-fetch');
 const { analyzeTrends } = require('../trade-execution/analyze-trends');
-const { generateSignals } = require('../trade-execution/signal-generator');
 const { logger } = require('../monitoring/logger');
 
 async function runDataPipeline() {
     try {
         logger.info('--- Starting Data Pipeline ---');
 
-        // Step 1: Fetch CoinGecko Token Prices
+        // Step 1: Fetch CoinGecko data
         logger.info('Fetching token prices from CoinGecko...');
-        const tokenData = await fetchTokenPrices();
-        logger.info('Fetched CoinGecko data successfully:', JSON.stringify(tokenData, null, 2));
+        const coingeckoData = await fetchTokenPrices();
+        logger.info('Fetched CoinGecko data successfully:', JSON.stringify(coingeckoData, null, 2));
 
-        // Step 2: Fetch GMX Data
+        // Step 2: Fetch GMX data (Arbitrum and Avalanche)
         logger.info('Fetching GMX token prices...');
-        const gmxPrices = await fetchGmxTokenPrices('arbitrum');
-        const gmxPairs = await fetchGmxPairs('arbitrum');
+        const arbitrumPrices = await fetchGmxTokenPrices('arbitrum');
+        const arbitrumPairs = await fetchGmxPairs('arbitrum');
+        const avalanchePrices = await fetchGmxTokenPrices('avalanche');
+        const avalanchePairs = await fetchGmxPairs('avalanche');
+
         logger.info('Fetched GMX data successfully.');
 
-        // Step 3: Combine data and analyze trends
-        const combinedData = { ...tokenData, gmx: { prices: gmxPrices, pairs: gmxPairs } };
+        // Step 3: Combine all data
+        const combinedData = {
+            coingecko: coingeckoData,
+            arbitrum: {
+                prices: arbitrumPrices,
+                pairs: arbitrumPairs,
+            },
+            avalanche: {
+                prices: avalanchePrices,
+                pairs: avalanchePairs,
+            },
+        };
         logger.info('Combined Data for Trend Analysis:', JSON.stringify(combinedData, null, 2));
 
+        // Step 4: Analyze trends
         const trends = analyzeTrends(combinedData);
         if (!trends || Object.keys(trends).length === 0) {
             logger.error('No trends data generated. Aborting.');
             return;
         }
-        logger.info('Trends Analysis Result:', JSON.stringify(trends, null, 2));
 
-        // Step 4: Generate trading signals
-        logger.info('Generating trading signals...');
-        const signal = generateSignals(trends);
-        if (!signal) {
-            logger.error('No signals generated. Aborting.');
-            return;
-        }
-        logger.info('Generated Signals:', JSON.stringify(signal, null, 2));
-
+        logger.info('Trends analysis result:', JSON.stringify(trends, null, 2));
     } catch (error) {
-        logger.error('Error in data pipeline:', error.message);
+        logger.error(`Error in data pipeline: ${error.message}`);
     }
 }
 
-if (require.main === module) {
-    runDataPipeline();
-}
-
-module.exports = { runDataPipeline };
+runDataPipeline();
