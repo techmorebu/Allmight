@@ -38,8 +38,17 @@ async function tradeSimulation() {
   try {
     logger.info('--- Starting Trade Simulation ---');
 
-    // Step 1: Analyze trends
-    const trends = analyzeTrends();
+    // Step 1: Load trends from file
+    logger.info('Loading trends data...');
+    let trends;
+    try {
+      const trendsData = fs.readFileSync('./logs/trends-log.json', 'utf8');
+      trends = JSON.parse(trendsData);
+      logger.info('Trends data loaded successfully.');
+    } catch (error) {
+      throw new Error(`Failed to load trends data: ${error.message}`);
+    }
+
     if (!trends || Object.keys(trends).length === 0) {
       throw new Error('No trends available for simulation.');
     }
@@ -53,14 +62,14 @@ async function tradeSimulation() {
     }
 
     // Step 3: Generate signals
-    const signal = generateSignals(trends);
-    if (!signal || Object.keys(signal).length === 0) {
+    const signals = generateSignals(trends);
+    if (!signals || Object.keys(signals).length === 0) {
       throw new Error('No signals generated for simulation.');
     }
-    logger.info('Generated Signals:', JSON.stringify(signal, null, 2));
+    logger.info('Generated Signals:', JSON.stringify(signals, null, 2));
 
     // Step 4: Simulate trades
-    const simulationResults = await simulateTrade(signal, trends, tokenPrices || trends);
+    const simulationResults = await simulateTrade(signals, trends, tokenPrices || trends);
 
     // Step 5: Calculate and log summary
     const totalTrades = Object.keys(simulationResults).length;
