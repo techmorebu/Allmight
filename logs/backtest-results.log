@@ -24,4 +24,79 @@
     "totalProfit": 0.01094525,
     "averageProfit": "0.01"
   }
+}Backtest Results - 2024-12-04T08:46:16.529Z
+{
+  "ethereum": {
+    "token": "ethereum",
+    "signal": "Buy",
+    "entryPrice": 3703.76,
+    "profit": 185.18800000000002,
+    "timestamp": "2024-12-04T08:46:16.527Z"
+  },
+  "zksync": {
+    "token": "zksync",
+    "signal": "Buy",
+    "entryPrice": 0.229815,
+    "profit": 0.011490750000000001,
+    "timestamp": "2024-12-04T08:46:16.527Z"
+  },
+  "GMX-Arbitrum": {
+    "token": "GMX-Arbitrum",
+    "signal": "Hold",
+    "profit": 0,
+    "timestamp": "2024-12-04T08:46:16.527Z"
+  },
+  "GMX-Avalanche": {
+    "token": "GMX-Avalanche",
+    "signal": "Hold",
+    "profit": 0,
+    "timestamp": "2024-12-04T08:46:16.528Z"
+  }
 }
+Summary: {
+  "totalTrades": 4,
+  "wins": 2,
+  "losses": 2,
+  "winLossRatio": "1.00",
+  "totalProfit": "185.20",
+  "averageProfit": "46.30"
+}
+
+Backtest Results - 2024-12-04T08:46:43.184Z
+{
+  "ethereum": {
+    "token": "ethereum",
+    "signal": "Buy",
+    "entryPrice": 3703.76,
+    "profit": 185.18800000000002,
+    "timestamp": "2024-12-04T08:46:43.182Z"
+  },
+  "zksync": {
+    "token": "zksync",
+    "signal": "Buy",
+    "entryPrice": 0.229815,
+    "profit": 0.011490750000000001,
+    "timestamp": "2024-12-04T08:46:43.183Z"
+  },
+  "GMX-Arbitrum": {
+    "token": "GMX-Arbitrum",
+    "signal": "Hold",
+    "profit": 0,
+    "timestamp": "2024-12-04T08:46:43.183Z"
+  },
+  "GMX-Avalanche": {
+    "token": "GMX-Avalanche",
+    "signal": "Hold",
+    "profit": 0,
+    "timestamp": "2024-12-04T08:46:43.183Z"
+  }
+}
+Summary: {
+  "totalTrades": 4,
+  "wins": 2,
+  "losses": 2,
+  "winLossRatio": "1.00",
+  "totalProfit": "185.20",
+  "averageProfit": "46.30"
+}
+

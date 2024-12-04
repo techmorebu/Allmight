@@ -91,3 +91,41 @@
 {"level":"info","message":"Trends summary: 4 trend(s) processed.","timestamp":"2024-12-04T08:41:10.156Z"}
 {"level":"info","message":"Trend analysis completed.","timestamp":"2024-12-04T08:41:10.157Z"}
 {"level":"info","message":"Trends analysis result:","timestamp":"2024-12-04T08:41:10.157Z"}
+{"level":"info","message":"--- Starting Trade Simulation ---","timestamp":"2024-12-04T08:46:16.508Z"}
+{"level":"info","message":"Loading trends data...","timestamp":"2024-12-04T08:46:16.513Z"}
+{"level":"info","message":"Trends data loaded successfully.","timestamp":"2024-12-04T08:46:16.515Z"}
+{"level":"error","message":"prices for ARBITRUM URL is missing in the configuration.","timestamp":"2024-12-04T08:46:16.516Z"}
+{"level":"warn","message":"No GMX price data fetched. Using trends data for simulation.","timestamp":"2024-12-04T08:46:16.523Z"}
+{"level":"info","message":"Generating trading signals...","timestamp":"2024-12-04T08:46:16.524Z"}
+{"level":"info","message":"Generated signal for ethereum: Buy","timestamp":"2024-12-04T08:46:16.524Z"}
+{"level":"info","message":"Generated signal for zksync: Buy","timestamp":"2024-12-04T08:46:16.524Z"}
+{"level":"info","message":"Generated signal for GMX-Arbitrum: Hold","timestamp":"2024-12-04T08:46:16.525Z"}
+{"level":"info","message":"Generated signal for GMX-Avalanche: Hold","timestamp":"2024-12-04T08:46:16.525Z"}
+{"level":"info","message":"Generated Signals:","timestamp":"2024-12-04T08:46:16.526Z"}
+{"level":"info","message":"Simulating trade execution...","timestamp":"2024-12-04T08:46:16.526Z"}
+{"level":"info","message":"Simulated trade for ethereum: {\n  \"token\": \"ethereum\",\n  \"signal\": \"Buy\",\n  \"entryPrice\": 3703.76,\n  \"profit\": 185.18800000000002,\n  \"timestamp\": \"2024-12-04T08:46:16.527Z\"\n}","timestamp":"2024-12-04T08:46:16.527Z"}
+{"level":"info","message":"Simulated trade for zksync: {\n  \"token\": \"zksync\",\n  \"signal\": \"Buy\",\n  \"entryPrice\": 0.229815,\n  \"profit\": 0.011490750000000001,\n  \"timestamp\": \"2024-12-04T08:46:16.527Z\"\n}","timestamp":"2024-12-04T08:46:16.527Z"}
+{"level":"info","message":"Simulated trade for GMX-Arbitrum: {\n  \"token\": \"GMX-Arbitrum\",\n  \"signal\": \"Hold\",\n  \"profit\": 0,\n  \"timestamp\": \"2024-12-04T08:46:16.527Z\"\n}","timestamp":"2024-12-04T08:46:16.527Z"}
+{"level":"info","message":"Simulated trade for GMX-Avalanche: {\n  \"token\": \"GMX-Avalanche\",\n  \"signal\": \"Hold\",\n  \"profit\": 0,\n  \"timestamp\": \"2024-12-04T08:46:16.528Z\"\n}","timestamp":"2024-12-04T08:46:16.528Z"}
+{"level":"info","message":"--- Backtest Summary ---","timestamp":"2024-12-04T08:46:16.528Z"}
+{"level":"info","message":"{\n  \"totalTrades\": 4,\n  \"wins\": 2,\n  \"losses\": 2,\n  \"winLossRatio\": \"1.00\",\n  \"totalProfit\": \"185.20\",\n  \"averageProfit\": \"46.30\"\n}","timestamp":"2024-12-04T08:46:16.528Z"}
+{"level":"info","message":"Backtest results saved to ./logs/backtest-results.log","timestamp":"2024-12-04T08:46:16.548Z"}
+{"level":"info","message":"--- Starting Trade Simulation ---","timestamp":"2024-12-04T08:46:43.163Z"}
+{"level":"info","message":"Loading trends data...","timestamp":"2024-12-04T08:46:43.167Z"}
+{"level":"info","message":"Trends data loaded successfully.","timestamp":"2024-12-04T08:46:43.169Z"}
+{"level":"error","message":"prices for ARBITRUM URL is missing in the configuration.","timestamp":"2024-12-04T08:46:43.170Z"}
+{"level":"warn","message":"No GMX price data fetched. Using trends data for simulation.","timestamp":"2024-12-04T08:46:43.176Z"}
+{"level":"info","message":"Generating trading signals...","timestamp":"2024-12-04T08:46:43.178Z"}
+{"level":"info","message":"Generated signal for ethereum: Buy","timestamp":"2024-12-04T08:46:43.178Z"}
+{"level":"info","message":"Generated signal for zksync: Buy","timestamp":"2024-12-04T08:46:43.179Z"}
+{"level":"info","message":"Generated signal for GMX-Arbitrum: Hold","timestamp":"2024-12-04T08:46:43.179Z"}
+{"level":"info","message":"Generated signal for GMX-Avalanche: Hold","timestamp":"2024-12-04T08:46:43.180Z"}
+{"level":"info","message":"Generated Signals:","timestamp":"2024-12-04T08:46:43.180Z"}
+{"level":"info","message":"Simulating trade execution...","timestamp":"2024-12-04T08:46:43.182Z"}
+{"level":"info","message":"Simulated trade for ethereum: {\n  \"token\": \"ethereum\",\n  \"signal\": \"Buy\",\n  \"entryPrice\": 3703.76,\n  \"profit\": 185.18800000000002,\n  \"timestamp\": \"2024-12-04T08:46:43.182Z\"\n}","timestamp":"2024-12-04T08:46:43.182Z"}
+{"level":"info","message":"Simulated trade for zksync: {\n  \"token\": \"zksync\",\n  \"signal\": \"Buy\",\n  \"entryPrice\": 0.229815,\n  \"profit\": 0.011490750000000001,\n  \"timestamp\": \"2024-12-04T08:46:43.183Z\"\n}","timestamp":"2024-12-04T08:46:43.183Z"}
+{"level":"info","message":"Simulated trade for GMX-Arbitrum: {\n  \"token\": \"GMX-Arbitrum\",\n  \"signal\": \"Hold\",\n  \"profit\": 0,\n  \"timestamp\": \"2024-12-04T08:46:43.183Z\"\n}","timestamp":"2024-12-04T08:46:43.183Z"}
+{"level":"info","message":"Simulated trade for GMX-Avalanche: {\n  \"token\": \"GMX-Avalanche\",\n  \"signal\": \"Hold\",\n  \"profit\": 0,\n  \"timestamp\": \"2024-12-04T08:46:43.183Z\"\n}","timestamp":"2024-12-04T08:46:43.183Z"}
+{"level":"info","message":"--- Backtest Summary ---","timestamp":"2024-12-04T08:46:43.184Z"}
+{"level":"info","message":"{\n  \"totalTrades\": 4,\n  \"wins\": 2,\n  \"losses\": 2,\n  \"winLossRatio\": \"1.00\",\n  \"totalProfit\": \"185.20\",\n  \"averageProfit\": \"46.30\"\n}","timestamp":"2024-12-04T08:46:43.184Z"}
+{"level":"info","message":"Backtest results saved to ./logs/backtest-results.log","timestamp":"2024-12-04T08:46:43.185Z"}
