@@ -1,28 +1,33 @@
-echbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/backtest.js
-info: --- Starting Backtest --- {"timestamp":"2024-12-03T10:30:24.262Z"}
-info: Generating trading signals... {"timestamp":"2024-12-03T10:30:24.269Z"}
-info: Generated signal for ethereum: Hold {"timestamp":"2024-12-03T10:30:24.270Z"}
-info: Generated signal for zksync: Buy {"timestamp":"2024-12-03T10:30:24.271Z"}
-info: Generated Signals: {"timestamp":"2024-12-03T10:30:24.272Z"}
-info: Simulated trade for ethereum: {
-  "signal": "Hold",
-  "entryPrice": 3612.41,
-  "profit": 0,
-  "timestamp": "2024-12-03T10:30:24.273Z"
-} {"timestamp":"2024-12-03T10:30:24.273Z"}
-info: Simulated trade for zksync: {
-  "signal": "Buy",
-  "entryPrice": 0.218905,
-  "profit": 0.01094525,
-  "timestamp": "2024-12-03T10:30:24.274Z"
-} {"timestamp":"2024-12-03T10:30:24.274Z"}
-info: --- Backtest Summary --- {"timestamp":"2024-12-03T10:30:24.274Z"}
-info: Backtest results saved to ./logs/backtest-results.log {"timestamp":"2024-12-03T10:30:24.277Z"}
-Backtest Summary: {
-  totalTrades: 2,
-  wins: 1,
-  losses: 0,
-  winLossRatio: 'Infinity',
-  totalProfit: 0.01094525,
-  averageProfit: '0.01'
-}
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ ps aux | grep fetch-uniswap-data.js
+techbu     44035  0.0  1.2 11104512 47840 ?      Sl   Nov24   0:02 node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js
+techbu     44066  0.0  0.0   2800  1536 ?        Ss   Nov24   0:00 /bin/sh -c node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js >> /home/techbu/OFA_Project_Local/ofa-project/logs/fetch-data.log 2>&1
+techbu     44067  0.0  1.2 11104560 48924 ?      Sl   Nov24   0:01 node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js
+techbu     44080  0.0  0.0   2800  1536 ?        Ss   Nov24   0:00 /bin/sh -c node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js >> /home/techbu/OFA_Project_Local/ofa-project/logs/fetch-data.log 2>&1
+techbu     44081  0.0  1.2 11104292 48164 ?      Sl   Nov24   0:01 node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js
+techbu     44093  0.0  0.0   2800  1536 ?        Ss   Nov24   0:00 /bin/sh -c node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js >> /home/techbu/OFA_Project_Local/ofa-project/logs/fetch-data.log 2>&1
+techbu     44094  0.0  1.2 11104492 48264 ?      Sl   Nov24   0:01 node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js
+techbu     44172  0.0  0.0   2800  1536 ?        Ss   Nov24   0:00 /bin/sh -c node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js >> /home/techbu/OFA_Project_Local/ofa-project/logs/fetch-data.log 2>&1
+techbu     44174  0.0  1.2 11104768 48428 ?      Sl   Nov24   0:02 node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js
+techbu     44378  0.0  0.0   2800  1536 ?        Ss   Nov24   0:00 /bin/sh -c node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js >> /home/techbu/OFA_Project_Local/ofa-project/logs/fetch-data.log 2>&1
+techbu     44380  0.0  1.2 11104232 46752 ?      Sl   Nov24   0:02 node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js
+techbu     44406  0.0  0.0   2800  1536 ?        Ss   Nov24   0:00 /bin/sh -c node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js >> /home/techbu/OFA_Project_Local/ofa-project/logs/fetch-data.log 2>&1
+techbu     44407  0.0  1.2 11104528 48336 ?      Sl   Nov24   0:02 node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js
+techbu     44422  0.0  0.0   2800  1536 ?        Ss   Nov24   0:00 /bin/sh -c node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js >> /home/techbu/OFA_Project_Local/ofa-project/logs/fetch-data.log 2>&1
+techbu     44423  0.0  1.2 11104556 47880 ?      Sl   Nov24   0:02 node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js
+techbu     44435  0.0  0.0   2800  1536 ?        Ss   Nov24   0:00 /bin/sh -c node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js >> /home/techbu/OFA_Project_Local/ofa-project/logs/fetch-data.log 2>&1
+techbu     44436  0.0  1.2 11104236 48292 ?      Sl   Nov24   0:02 node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js
+techbu     44457  0.0  0.0   2800  1536 ?        Ss   Nov24   0:00 /bin/sh -c node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js >> /home/techbu/OFA_Project_Local/ofa-project/logs/fetch-data.log 2>&1
+techbu     44458  0.0  1.2 11104280 47036 ?      Sl   Nov24   0:02 node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js
+techbu     44473  0.0  0.0   2800  1536 ?        Ss   Nov24   0:00 /bin/sh -c node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js >> /home/techbu/OFA_Project_Local/ofa-project/logs/fetch-data.log 2>&1
+techbu     44475  0.0  1.2 11104764 47624 ?      Sl   Nov24   0:02 node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js
+techbu     44498  0.0  0.0   2800  1536 ?        Ss   Nov24   0:00 /bin/sh -c node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js >> /home/techbu/OFA_Project_Local/ofa-project/logs/fetch-data.log 2>&1
+techbu     44499  0.0  1.2 11104316 46748 ?      Sl   Nov24   0:02 node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js
+techbu     44516  0.0  0.0   2800  1536 ?        Ss   Nov24   0:00 /bin/sh -c node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js >> /home/techbu/OFA_Project_Local/ofa-project/logs/fetch-data.log 2>&1
+techbu     44517  0.0  1.2 11104548 48140 ?      Sl   Nov24   0:02 node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js
+techbu     44529  0.0  0.0   2800  1536 ?        Ss   Nov24   0:00 /bin/sh -c node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js >> /home/techbu/OFA_Project_Local/ofa-project/logs/fetch-data.log 2>&1
+techbu     44530  0.0  1.2 11104240 48084 ?      Sl   Nov24   0:02 node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js
+techbu     44543  0.0  0.0   2800  1536 ?        Ss   Nov24   0:00 /bin/sh -c node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js >> /home/techbu/OFA_Project_Local/ofa-project/logs/fetch-data.log 2>&1
+techbu     44544  0.0  1.2 11104244 48196 ?      Sl   Nov24   0:02 node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js
+techbu     44563  0.0  0.0   2800  1536 ?        Ss   Nov24   0:00 /bin/sh -c node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js >> /home/techbu/OFA_Project_Local/ofa-project/logs/fetch-data.log 2>&1
+techbu     44565  0.0  1.2 11104488 47600 ?      Sl   Nov24   0:01 node /home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js
+techbu     74766  0.0  0.0  17952  2176 pts/0    S+   00:09   0:00 grep --color=auto fetch-uniswap-data.js
