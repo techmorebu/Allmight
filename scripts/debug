@@ -1,1 +1,21 @@
-kill -9 44035 44066 44067 44080 44081 44093 44094 44172 44174 44378 44380 44406 44407 44422 44423 44435 44436 44457 44458 44473 44475 44498 44499 44516 44517 44529 44530 44543 44544 44563 44565
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node trade-execution/data-pipeline.js
+{"level":"info","message":"--- Starting Data Pipeline ---","timestamp":"2024-12-04T07:46:43.248Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-04T07:46:43.252Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-04T07:46:43.253Z"}
+{"level":"info","message":"Fetched token prices successfully.","timestamp":"2024-12-04T07:46:43.746Z"}
+{"level":"info","message":"Fetched CoinGecko data successfully:","timestamp":"2024-12-04T07:46:43.747Z"}
+{"level":"info","message":"Fetching GMX token prices...","timestamp":"2024-12-04T07:46:43.748Z"}
+{"level":"info","message":"Fetching GMX token prices from arbitrum...","timestamp":"2024-12-04T07:46:43.748Z"}
+{"level":"info","message":"Token prices fetched successfully.","timestamp":"2024-12-04T07:46:44.547Z"}
+{"level":"info","message":"Fetching GMX pairs from arbitrum...","timestamp":"2024-12-04T07:46:44.547Z"}
+{"level":"info","message":"Pairs fetched successfully.","timestamp":"2024-12-04T07:46:50.077Z"}
+{"level":"info","message":"Fetched GMX data successfully.","timestamp":"2024-12-04T07:46:50.078Z"}
+{"level":"info","message":"Combined Data for Trend Analysis:","timestamp":"2024-12-04T07:46:50.079Z"}
+{"level":"info","message":"Starting trend analysis...","timestamp":"2024-12-04T07:46:50.080Z"}
+{"level":"warn","message":"No CoinGecko data provided.","timestamp":"2024-12-04T07:46:50.080Z"}
+{"level":"warn","message":"No GMX Arbitrum data provided.","timestamp":"2024-12-04T07:46:50.081Z"}
+{"level":"warn","message":"No GMX Avalanche data provided.","timestamp":"2024-12-04T07:46:50.081Z"}
+{"level":"info","message":"Trends summary: 0 trend(s) processed.","timestamp":"2024-12-04T07:46:50.081Z"}
+{"level":"info","message":"Trends saved to ./logs/trends-log.json","timestamp":"2024-12-04T07:46:50.083Z"}
+{"level":"info","message":"Trend analysis completed.","timestamp":"2024-12-04T07:46:50.083Z"}
+{"level":"error","message":"No trends data generated. Aborting.","timestamp":"2024-12-04T07:46:50.083Z"}
