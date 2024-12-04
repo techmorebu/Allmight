@@ -1,45 +1,55 @@
-const fs = require('fs');
 const { logger } = require('../monitoring/logger');
+const fs = require('fs');
 
-// Analyze trends from fetched CoinGecko data
-function analyzeTrends(tokenData) {
+function analyzeTrends(data) {
   logger.info('Starting trend analysis...');
 
-  if (!tokenData || Object.keys(tokenData).length === 0) {
+  if (!data) {
     logger.error('No data provided for analysis.');
     return null;
   }
 
-  // Process data
   const trends = {};
-  for (const [token, data] of Object.entries(tokenData)) {
-    const {
-      usd: price,
-      usd_market_cap: marketCap,
-      usd_24h_vol: volume24h,
-      usd_24h_change: priceChange24h,
-    } = data;
 
-    trends[token] = {
-      price,
-      marketCap,
-      volume24h,
-      priceChange24h,
-    };
-
-    logger.info(
-      `Processed ${token}: Price: $${price}, Market Cap: $${marketCap}, 24h Volume: $${volume24h}, 24h Change: ${priceChange24h}%`
-    );
+  // Process CoinGecko data
+  if (data.coingecko) {
+    for (const [token, metrics] of Object.entries(data.coingecko)) {
+      trends[token] = {
+        source: 'CoinGecko',
+        price: metrics.usd,
+        marketCap: metrics.usd_market_cap,
+        volume24h: metrics.usd_24h_vol,
+        priceChange24h: metrics.usd_24h_change,
+      };
+    }
   }
 
-  // Save trends to a log file
-  saveTrends(trends);
+  // Process GMX data (Arbitrum)
+  if (data.arbitrum) {
+    trends['GMX-Arbitrum'] = {
+      source: 'GMX Arbitrum',
+      tokens: data.arbitrum.tokens,
+      prices: data.arbitrum.prices,
+      pairs: data.arbitrum.pairs,
+    };
+  }
 
+  // Process GMX data (Avalanche)
+  if (data.avalanche) {
+    trends['GMX-Avalanche'] = {
+      source: 'GMX Avalanche',
+      tokens: data.avalanche.tokens,
+      prices: data.avalanche.prices,
+      pairs: data.avalanche.pairs,
+    };
+  }
+
+  // Save trends to a file
+  saveTrends(trends);
   logger.info('Trend analysis completed.');
   return trends;
 }
 
-// Save trends to a JSON log file
 function saveTrends(trends) {
   const logPath = './logs/trends-log.json';
   fs.writeFileSync(logPath, JSON.stringify(trends, null, 2), 'utf8');
