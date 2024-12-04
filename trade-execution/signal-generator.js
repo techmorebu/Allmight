@@ -1,4 +1,6 @@
 const { logger } = require('../monitoring/logger');
+const fs = require('fs');
+const path = require('path');
 
 // Generate trade signals based on trends
 function generateSignals(trends) {
@@ -29,6 +31,38 @@ function generateSignals(trends) {
   }
 
   return signals;
+}
+
+// Save generated signals to a log file
+function saveSignals(signals) {
+  const logPath = path.join(__dirname, '../logs/signals-log.json');
+  fs.writeFileSync(logPath, JSON.stringify(signals, null, 2), 'utf8');
+  logger.info(`Signals saved to ${logPath}`);
+}
+
+// Main execution block for standalone use
+if (require.main === module) {
+  try {
+    logger.info('--- Starting Signal Generation ---');
+
+    // Load trends data from file (assumes trends-log.json exists)
+    const trendsPath = path.join(__dirname, '../logs/trends-log.json');
+    if (!fs.existsSync(trendsPath)) {
+      throw new Error('Trends data file not found. Aborting signal generation.');
+    }
+
+    const trends = JSON.parse(fs.readFileSync(trendsPath, 'utf8'));
+    const signals = generateSignals(trends);
+
+    if (signals) {
+      saveSignals(signals);
+      logger.info('Signal generation completed successfully.');
+    } else {
+      logger.error('Signal generation failed. No signals generated.');
+    }
+  } catch (error) {
+    logger.error(`Error during signal generation: ${error.message}`);
+  }
 }
 
 module.exports = { generateSignals };
