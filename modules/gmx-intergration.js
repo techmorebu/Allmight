@@ -21,118 +21,61 @@ const GMX_CONFIG = {
 };
 
 /**
- * Fetch data from a specified GMX API endpoint.
- * @param {string} url - The GMX API endpoint URL.
- * @param {string} description - Description of the data being fetched.
- * @param {Object} [params] - Optional query parameters for the request.
- * @returns {Promise<Object|null>} - Fetched data or null if an error occurs.
- */
-async function fetchGMXData(url, description, params = {}) {
-  if (!url) {
-    logger.error(`${description} URL is missing in the configuration.`);
-    return null;
-  }
-
-  try {
-    logger.info(`Fetching ${description} with params: ${JSON.stringify(params)}`);
-    const response = await axios.get(url, { params, timeout: GMX_CONFIG.TIMEOUT });
-    logger.info(`Fetched ${description}:`, response.data);
-    return response.data;
-  } catch (error) {
-    logAndNotify('error', `Error fetching ${description}: ${error.message}`);
-    return null;
-  }
-}
-
-/**
  * Fetch candle data from GMX.
  * @param {string} network - The network to fetch data from ('ARBITRUM' or 'AVALANCHE').
- * @param {Object} options - Query parameters including market, resolution, from, and to.
+ * @param {string} market - The market ticker (e.g., 'ETH_USD').
+ * @param {string} resolution - The candle resolution (e.g., '1h', '4h').
+ * @param {number} from - Unix timestamp (seconds) for start of the range.
+ * @param {number} to - Unix timestamp (seconds) for end of the range.
  * @returns {Promise<Object|null>} - Candle data or null if an error occurs.
  */
-async function fetchCandles(network = 'ARBITRUM', options = {}) {
+async function fetchCandles(network = 'ARBITRUM', market, resolution = '1h', from, to) {
   const url = GMX_CONFIG[network]?.CANDLES_URL;
-  const { market = 'ETH_USD', resolution = '1h', from, to } = options;
 
-  if (!from || !to) {
-    logger.error(`Missing 'from' or 'to' timestamp for fetching candles (${network}).`);
+  if (!url) {
+    logger.error(`Candle data URL is missing in the configuration for ${network}.`);
     return null;
   }
 
-  return fetchGMXData(url, `candles for ${network} (${market})`, { market, resolution, from, to });
-}
+  const params = {
+    market,
+    resolution,
+    from: Math.floor(from), // Ensure timestamps are in seconds
+    to: Math.floor(to),
+  };
 
-/**
- * Fetch token data from GMX.
- * @param {string} network - The network to fetch data from ('ARBITRUM' or 'AVALANCHE').
- * @returns {Promise<Object|null>} - Token data or null if an error occurs.
- */
-async function fetchTokens(network = 'ARBITRUM') {
-  return fetchGMXData(GMX_CONFIG[network]?.TOKENS_URL, `tokens for ${network}`);
-}
-
-/**
- * Fetch price data from GMX.
- * @param {string} network - The network to fetch data from ('ARBITRUM' or 'AVALANCHE').
- * @returns {Promise<Object|null>} - Price data or null if an error occurs.
- */
-async function fetchPrices(network = 'ARBITRUM') {
-  return fetchGMXData(GMX_CONFIG[network]?.PRICES_URL, `prices for ${network}`);
-}
-
-/**
- * Fetch pair data from GMX.
- * @param {string} network - The network to fetch data from ('ARBITRUM' or 'AVALANCHE').
- * @returns {Promise<Object|null>} - Pair data or null if an error occurs.
- */
-async function fetchPairs(network = 'ARBITRUM') {
-  return fetchGMXData(GMX_CONFIG[network]?.PAIRS_URL, `pairs for ${network}`);
-}
-
-/**
- * Main GMX Integration Function.
- * Fetches token, price, and pair data for both Arbitrum and Avalanche networks.
- */
-async function gmxIntegration() {
   try {
-    logger.info('--- Starting GMX Integration ---');
-
-    const networks = ['ARBITRUM', 'AVALANCHE'];
-    for (const network of networks) {
-      logger.info(`Fetching GMX data for ${network} network...`);
-
-      const tokens = await fetchTokens(network);
-      const prices = await fetchPrices(network);
-      const pairs = await fetchPairs(network);
-
-      if (tokens && prices && pairs) {
-        logger.info(`GMX Integration Successful (${network})`);
-        logger.info(`Tokens: ${JSON.stringify(tokens, null, 2)}`);
-        logger.info(`Prices: ${JSON.stringify(prices, null, 2)}`);
-        logger.info(`Pairs: ${JSON.stringify(pairs, null, 2)}`);
-      } else {
-        logger.warn(`Some data is missing for ${network}.`);
-      }
-
-      // Fetch candles for example markets
-      const from = Math.floor(Date.now() / 1000) - 3600 * 24; // 24 hours ago
-      const to = Math.floor(Date.now() / 1000); // Current time
-      const candleData = await fetchCandles(network, { market: 'ETH_USD', resolution: '1h', from, to });
-      if (candleData) {
-        logger.info(`Candle data for ${network}: ${JSON.stringify(candleData, null, 2)}`);
-      }
-    }
-
-    logger.info('--- GMX Integration Completed ---');
+    logger.info(`Fetching candles for ${network} (${market}) with params: ${JSON.stringify(params)}`);
+    const response = await axios.get(url, { params, timeout: GMX_CONFIG.TIMEOUT });
+    logger.info(`Fetched candles for ${network} (${market}): ${JSON.stringify(response.data)}`);
+    return response.data;
   } catch (error) {
-    logAndNotify('error', `Error during GMX integration: ${error.message}`);
+    logger.error(
+      `Error fetching candles for ${network} (${market}): ${error.response?.data?.message || error.message}`
+    );
+    return null;
   }
 }
 
-// Export functions for reuse in the project
-module.exports = { fetchTokens, fetchPrices, fetchPairs, fetchCandles, gmxIntegration };
+/**
+ * Example function to test fetchCandles
+ */
+async function testFetchCandles() {
+  const now = Math.floor(Date.now() / 1000);
+  const oneDayAgo = now - 24 * 3600;
 
-// Run the GMX Integration if executed directly
+  const candles = await fetchCandles('ARBITRUM', 'ETH_USD', '1h', oneDayAgo, now);
+  if (candles) {
+    console.log('Candles fetched:', candles);
+  } else {
+    console.log('Failed to fetch candles.');
+  }
+}
+
+// Export the function
+module.exports = { fetchCandles };
+
+// Run the test function if executed directly
 if (require.main === module) {
-  gmxIntegration();
+  testFetchCandles();
 }
