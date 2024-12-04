@@ -37,3 +37,24 @@
 {"level":"info","message":"Trends saved to ./logs/trends-log.json","timestamp":"2024-12-04T07:46:50.083Z"}
 {"level":"info","message":"Trend analysis completed.","timestamp":"2024-12-04T07:46:50.083Z"}
 {"level":"error","message":"No trends data generated. Aborting.","timestamp":"2024-12-04T07:46:50.083Z"}
+{"level":"info","message":"--- Starting Data Pipeline ---","timestamp":"2024-12-04T07:59:09.880Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-04T07:59:09.885Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-04T07:59:09.886Z"}
+{"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-04T07:59:10.150Z"}
+{"level":"info","message":"Fetched CoinGecko data successfully:","timestamp":"2024-12-04T07:59:10.151Z"}
+{"level":"info","message":"Fetching GMX token prices...","timestamp":"2024-12-04T07:59:10.152Z"}
+{"level":"info","message":"Fetching GMX token prices from arbitrum...","timestamp":"2024-12-04T07:59:10.153Z"}
+{"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-04T07:59:10.358Z"}
+{"level":"info","message":"Fetching GMX pairs from arbitrum...","timestamp":"2024-12-04T07:59:10.360Z"}
+{"level":"info","message":"Pairs fetched successfully:","timestamp":"2024-12-04T07:59:11.649Z"}
+{"level":"info","message":"Fetching GMX token prices from avalanche...","timestamp":"2024-12-04T07:59:11.650Z"}
+{"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-04T07:59:11.787Z"}
+{"level":"info","message":"Fetching GMX pairs from avalanche...","timestamp":"2024-12-04T07:59:11.789Z"}
+{"level":"info","message":"Pairs fetched successfully:","timestamp":"2024-12-04T07:59:12.569Z"}
+{"level":"info","message":"Fetched GMX data successfully.","timestamp":"2024-12-04T07:59:12.569Z"}
+{"level":"info","message":"Combined Data for Trend Analysis:","timestamp":"2024-12-04T07:59:12.570Z"}
+{"level":"info","message":"Starting trend analysis...","timestamp":"2024-12-04T07:59:12.571Z"}
+{"level":"info","message":"Trends saved to ./logs/trends-log.json","timestamp":"2024-12-04T07:59:12.574Z"}
+{"level":"info","message":"Trends summary: 4 trend(s) processed.","timestamp":"2024-12-04T07:59:12.574Z"}
+{"level":"info","message":"Trend analysis completed.","timestamp":"2024-12-04T07:59:12.575Z"}
+{"level":"info","message":"Trends analysis result:","timestamp":"2024-12-04T07:59:12.575Z"}
