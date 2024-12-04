@@ -293,3 +293,34 @@
 {"level":"info","message":"Simulated trade for zksync: {\n  \"signal\": \"Buy\",\n  \"entryPrice\": 0.218905,\n  \"profit\": 0.01094525,\n  \"timestamp\": \"2024-12-03T10:30:24.274Z\"\n}","timestamp":"2024-12-03T10:30:24.274Z"}
 {"level":"info","message":"--- Backtest Summary ---","timestamp":"2024-12-03T10:30:24.274Z"}
 {"level":"info","message":"Backtest results saved to ./logs/backtest-results.log","timestamp":"2024-12-03T10:30:24.277Z"}
+{"level":"info","message":"--- Starting Data Pipeline ---","timestamp":"2024-12-03T10:34:53.832Z"}
+{"level":"info","message":"Fetching token prices...","timestamp":"2024-12-03T10:34:53.838Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-03T10:34:53.839Z"}
+{"level":"info","message":"Fetched token prices successfully.","timestamp":"2024-12-03T10:34:54.094Z"}
+{"level":"info","message":"Fetched token data:","timestamp":"2024-12-03T10:34:54.095Z"}
+{"level":"info","message":"Token data saved to logs/fetched-token-data.json","timestamp":"2024-12-03T10:34:54.097Z"}
+{"level":"info","message":"Analyzing trends...","timestamp":"2024-12-03T10:34:54.098Z"}
+{"level":"info","message":"Starting trend analysis...","timestamp":"2024-12-03T10:34:54.099Z"}
+{"level":"info","message":"Processed ethereum: Price: $3612.15, Market Cap: $435019457861.8186, 24h Volume: $41994208881.518845, 24h Change: 0.4910164422422757%","timestamp":"2024-12-03T10:34:54.099Z"}
+{"level":"info","message":"Processed zksync: Price: $0.219033, Market Cap: $804247057.7157365, 24h Volume: $255865107.33369797, 24h Change: 3.904329839758871%","timestamp":"2024-12-03T10:34:54.101Z"}
+{"level":"info","message":"Trends saved to ./logs/trends-log.json","timestamp":"2024-12-03T10:34:54.103Z"}
+{"level":"info","message":"Trend analysis completed.","timestamp":"2024-12-03T10:34:54.103Z"}
+{"level":"info","message":"Trends analysis result:","timestamp":"2024-12-03T10:34:54.104Z"}
+{"level":"info","message":"Trends saved to logs/analyzed-trends.json","timestamp":"2024-12-03T10:34:54.105Z"}
+{"level":"info","message":"Generating trading signals...","timestamp":"2024-12-03T10:34:54.105Z"}
+{"level":"info","message":"Generating trading signals...","timestamp":"2024-12-03T10:34:54.106Z"}
+{"level":"info","message":"Generated signal for ethereum: Hold","timestamp":"2024-12-03T10:34:54.106Z"}
+{"level":"info","message":"Generated signal for zksync: Buy","timestamp":"2024-12-03T10:34:54.107Z"}
+{"level":"info","message":"Generated Signal:","timestamp":"2024-12-03T10:34:54.107Z"}
+{"level":"info","message":"--- Starting Trade Simulation ---","timestamp":"2024-12-03T10:35:05.326Z"}
+{"level":"info","message":"Starting trend analysis...","timestamp":"2024-12-03T10:35:05.332Z"}
+{"level":"info","message":"Processed ethereum: Price: $undefined, Market Cap: $undefined, 24h Volume: $undefined, 24h Change: undefined%","timestamp":"2024-12-03T10:35:05.333Z"}
+{"level":"info","message":"Processed zksync: Price: $undefined, Market Cap: $undefined, 24h Volume: $undefined, 24h Change: undefined%","timestamp":"2024-12-03T10:35:05.334Z"}
+{"level":"info","message":"Trends saved to ./logs/trends-log.json","timestamp":"2024-12-03T10:35:05.335Z"}
+{"level":"info","message":"Trend analysis completed.","timestamp":"2024-12-03T10:35:05.336Z"}
+{"level":"info","message":"Generating trading signals...","timestamp":"2024-12-03T10:35:05.337Z"}
+{"level":"info","message":"Generated signal for ethereum: Hold","timestamp":"2024-12-03T10:35:05.338Z"}
+{"level":"info","message":"Generated signal for zksync: Hold","timestamp":"2024-12-03T10:35:05.338Z"}
+{"level":"info","message":"Generated Signal: {\"ethereum\":{\"token\":\"ethereum\",\"signal\":\"Hold\"},\"zksync\":{\"token\":\"zksync\",\"signal\":\"Hold\"}}","timestamp":"2024-12-03T10:35:05.339Z"}
+{"level":"info","message":"Simulating trade execution...","timestamp":"2024-12-03T10:35:05.339Z"}
+{"level":"info","message":"Simulated Trade Result: {\"profit\":null}","timestamp":"2024-12-03T10:35:05.340Z"}
