@@ -24,7 +24,7 @@ const GMX_CONFIG = {
  * Fetch data from a specified GMX API endpoint.
  * @param {string} url - The GMX API endpoint URL.
  * @param {string} description - Description of the data being fetched.
- * @param {Object} params - Optional query parameters.
+ * @param {Object} [params] - Optional query parameters for the request.
  * @returns {Promise<Object|null>} - Fetched data or null if an error occurs.
  */
 async function fetchGMXData(url, description, params = {}) {
@@ -40,9 +40,26 @@ async function fetchGMXData(url, description, params = {}) {
     return response.data;
   } catch (error) {
     logAndNotify('error', `Error fetching ${description}: ${error.message}`);
-    logger.error(`Request params: ${JSON.stringify(params)}`);
     return null;
   }
+}
+
+/**
+ * Fetch candle data from GMX.
+ * @param {string} network - The network to fetch data from ('ARBITRUM' or 'AVALANCHE').
+ * @param {Object} options - Query parameters including market, resolution, from, and to.
+ * @returns {Promise<Object|null>} - Candle data or null if an error occurs.
+ */
+async function fetchCandles(network = 'ARBITRUM', options = {}) {
+  const url = GMX_CONFIG[network]?.CANDLES_URL;
+  const { market = 'ETH_USD', resolution = '1h', from, to } = options;
+
+  if (!from || !to) {
+    logger.error(`Missing 'from' or 'to' timestamp for fetching candles (${network}).`);
+    return null;
+  }
+
+  return fetchGMXData(url, `candles for ${network} (${market})`, { market, resolution, from, to });
 }
 
 /**
@@ -73,38 +90,12 @@ async function fetchPairs(network = 'ARBITRUM') {
 }
 
 /**
- * Fetch candle data from GMX.
- * @param {string} network - The network to fetch data from ('ARBITRUM' or 'AVALANCHE').
- * @param {Object} options - Options including market, resolution, from, and to.
- * @returns {Promise<Object|null>} - Candle data or null if an error occurs.
- */
-async function fetchCandles(network = 'ARBITRUM', options = {}) {
-  const url = GMX_CONFIG[network]?.CANDLES_URL;
-  const { market = 'ETH_USD', resolution = '1h', from, to } = options;
-
-  if (!from || !to) {
-    logger.error(`Missing 'from' or 'to' timestamp for fetching candles (${network}).`);
-    return null;
-  }
-
-  return fetchGMXData(url, `candles for ${network} (${market})`, {
-    market,
-    resolution,
-    from,
-    to,
-  });
-}
-
-/**
  * Main GMX Integration Function.
- * Fetches token, price, pair, and candle data for both Arbitrum and Avalanche networks.
+ * Fetches token, price, and pair data for both Arbitrum and Avalanche networks.
  */
 async function gmxIntegration() {
   try {
     logger.info('--- Starting GMX Integration ---');
-
-    const now = Math.floor(Date.now() / 1000);
-    const oneDayAgo = now - 86400;
 
     const networks = ['ARBITRUM', 'AVALANCHE'];
     for (const network of networks) {
@@ -113,21 +104,22 @@ async function gmxIntegration() {
       const tokens = await fetchTokens(network);
       const prices = await fetchPrices(network);
       const pairs = await fetchPairs(network);
-      const candles = await fetchCandles(network, {
-        market: 'ETH_USD',
-        resolution: '1h',
-        from: oneDayAgo,
-        to: now,
-      });
 
-      if (tokens && prices && pairs && candles) {
+      if (tokens && prices && pairs) {
         logger.info(`GMX Integration Successful (${network})`);
         logger.info(`Tokens: ${JSON.stringify(tokens, null, 2)}`);
         logger.info(`Prices: ${JSON.stringify(prices, null, 2)}`);
         logger.info(`Pairs: ${JSON.stringify(pairs, null, 2)}`);
-        logger.info(`Candles: ${JSON.stringify(candles, null, 2)}`);
       } else {
         logger.warn(`Some data is missing for ${network}.`);
+      }
+
+      // Fetch candles for example markets
+      const from = Math.floor(Date.now() / 1000) - 3600 * 24; // 24 hours ago
+      const to = Math.floor(Date.now() / 1000); // Current time
+      const candleData = await fetchCandles(network, { market: 'ETH_USD', resolution: '1h', from, to });
+      if (candleData) {
+        logger.info(`Candle data for ${network}: ${JSON.stringify(candleData, null, 2)}`);
       }
     }
 
