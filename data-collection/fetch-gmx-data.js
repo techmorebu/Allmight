@@ -2,7 +2,6 @@ require('dotenv').config();
 const axios = require('axios');
 const { logger } = require('../monitoring/logger');
 
-// Fetch GMX Token Prices
 async function fetchGmxTokenPrices(network) {
     const pricesUrl = network === 'arbitrum'
         ? process.env.GMX_ARBITRUM_PRICES_URL
@@ -11,15 +10,14 @@ async function fetchGmxTokenPrices(network) {
     try {
         logger.info(`Fetching GMX token prices from ${network}...`);
         const response = await axios.get(pricesUrl);
-        logger.info('Token prices fetched successfully.');
+        logger.info('Token prices fetched successfully:', JSON.stringify(response.data, null, 2));
         return response.data;
     } catch (error) {
-        logger.error(`Error fetching token prices: ${error.message}`);
-        throw error;
+        logger.error(`Error fetching GMX token prices: ${error.message}`);
+        return null;
     }
 }
 
-// Fetch GMX Pairs
 async function fetchGmxPairs(network) {
     const pairsUrl = network === 'arbitrum'
         ? process.env.GMX_ARBITRUM_PAIRS_URL
@@ -28,23 +26,12 @@ async function fetchGmxPairs(network) {
     try {
         logger.info(`Fetching GMX pairs from ${network}...`);
         const response = await axios.get(pairsUrl);
-        logger.info('Pairs fetched successfully.');
+        logger.info('Pairs fetched successfully:', JSON.stringify(response.data, null, 2));
         return response.data;
     } catch (error) {
-        logger.error(`Error fetching pairs: ${error.message}`);
-        throw error;
+        logger.error(`Error fetching GMX pairs: ${error.message}`);
+        return null;
     }
 }
 
 module.exports = { fetchGmxTokenPrices, fetchGmxPairs };
-
-// Test Example
-if (require.main === module) {
-    (async () => {
-        const prices = await fetchGmxTokenPrices('arbitrum');
-        console.log('Token Prices:', prices);
-
-        const pairs = await fetchGmxPairs('avalanche');
-        console.log('Pairs:', pairs);
-    })();
-}
