@@ -1,8 +1,25 @@
 require('dotenv').config({ path: '../.env' });
 const { fetchTokenPrices } = require('../data-collection/fetchData');
 const { fetchGmxTokenPrices, fetchGmxPairs } = require('../data-collection/fetch-gmx-data');
+const { fetchUniswapData } = require('../data-collection/fetch-uniswap-data'); // New source
 const { analyzeTrends } = require('../trade-execution/analyze-trends');
 const { logger } = require('../monitoring/logger');
+
+async function normalizeData(rawData) {
+    try {
+        logger.info('Normalizing data for AI integration...');
+        // Normalize data structure
+        return {
+            coingecko: rawData.coingecko,
+            arbitrum: rawData.arbitrum.prices,
+            avalanche: rawData.avalanche.prices,
+            uniswap: rawData.uniswap, // Include Uniswap data
+        };
+    } catch (error) {
+        logger.error(`Error normalizing data: ${error.message}`);
+        throw error;
+    }
+}
 
 async function runDataPipeline() {
     try {
@@ -11,7 +28,7 @@ async function runDataPipeline() {
         // Step 1: Fetch CoinGecko data
         logger.info('Fetching token prices from CoinGecko...');
         const coingeckoData = await fetchTokenPrices();
-        logger.info('Fetched CoinGecko data successfully:', JSON.stringify(coingeckoData, null, 2));
+        logger.info('Fetched CoinGecko data successfully.');
 
         // Step 2: Fetch GMX data (Arbitrum and Avalanche)
         logger.info('Fetching GMX token prices...');
@@ -22,8 +39,13 @@ async function runDataPipeline() {
 
         logger.info('Fetched GMX data successfully.');
 
-        // Step 3: Combine all data
-        const combinedData = {
+        // Step 3: Fetch Uniswap data
+        logger.info('Fetching Uniswap data...');
+        const uniswapData = await fetchUniswapData();
+        logger.info('Fetched Uniswap data successfully.');
+
+        // Step 4: Combine all data
+        const rawData = {
             coingecko: coingeckoData,
             arbitrum: {
                 prices: arbitrumPrices,
@@ -33,11 +55,16 @@ async function runDataPipeline() {
                 prices: avalanchePrices,
                 pairs: avalanchePairs,
             },
+            uniswap: uniswapData,
         };
-        logger.info('Combined Data for Trend Analysis:', JSON.stringify(combinedData, null, 2));
 
-        // Step 4: Analyze trends
-        const trends = analyzeTrends(combinedData);
+        logger.info('Combined Data for Normalization:', JSON.stringify(rawData, null, 2));
+
+        // Step 5: Normalize data
+        const normalizedData = await normalizeData(rawData);
+
+        // Step 6: Analyze trends
+        const trends = analyzeTrends(normalizedData);
         if (!trends || Object.keys(trends).length === 0) {
             logger.error('No trends data generated. Aborting.');
             return;
