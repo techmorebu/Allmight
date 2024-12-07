@@ -1,6 +1,6 @@
 const { logger } = require('../monitoring/logger');
 
-// Mock AI Model (Replace with actual AI model logic later)
+// Mock Ai Model (Replace with actual AI model logic later)
 async function mockAiModel(trends) {
   logger.info('Using mock AI model for predictions...');
 
