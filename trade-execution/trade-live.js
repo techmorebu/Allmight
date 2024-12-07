@@ -1,93 +1,58 @@
-require('dotenv').config({ path: '../.env' });
-const ethers = require('ethers5');
-const { fetchPoolData } = require('./fetch-pool-data');
-const { logAndNotify } = require('../monitoring/logger');
+const { logger } = require('../monitoring/logger');
+const { generateSignals } = require('../signal-generator');
+const { executeTrade } = require('./trade-utils'); // Assumes a utility for trade execution
+const fs = require('fs');
+const path = require('path');
 
-async function executeTrade(token0, token1, tradeAmountInEth) {
-  const timestamp = new Date().toISOString();
-  logAndNotify("info", `[${timestamp}] Querying pool for: ${token0} - ${token1}`);
+// Confidence threshold for AI signals
+const CONFIDENCE_THRESHOLD = 0.7;
 
-  const poolData = await fetchPoolData(token0, token1);
-  if (!poolData) {
-    logAndNotify("error", `[${timestamp}] Pool data not found for ${token0} - ${token1}. Aborting trade.`);
-    return;
-  }
-
-  logAndNotify("info", `[${timestamp}] Fetched Pool Data:
-    - Pool ID: ${poolData.id}
-    - Fee Tier: ${poolData.feeTier} (${poolData.feeTier / 10000}%)
-    - SqrtPriceX96: ${poolData.sqrtPriceX96}
-    - Liquidity: ${poolData.liquidity}
-    - Tick: ${poolData.tick}
-  `);
-
-  const provider = new ethers.providers.JsonRpcProvider(process.env.ETHEREUM_MAINNET_RPC_URL_1);
-  const wallet = new ethers.Wallet(process.env.METAMASK_PRIVATE_KEY, provider);
-  const walletAddress = wallet.address;
-  logAndNotify("info", `[${timestamp}] Wallet connected: ${walletAddress}`);
-
+async function runLiveTrading() {
   try {
-    const tradeAmountWei = ethers.utils.parseUnits(tradeAmountInEth.toString(), 'ether');
-    logAndNotify("info", `[${timestamp}] Trade Amount in Wei: ${tradeAmountWei.toString()}`);
+    logger.info('--- Starting Live Trading ---');
 
-    const walletBalance = await wallet.getBalance();
-    const walletBalanceEth = ethers.utils.formatEther(walletBalance);
-    logAndNotify("info", `[${timestamp}] Wallet ETH Balance: ${walletBalanceEth} ETH`);
+    // Step 1: Load trends data from file
+    const trendsPath = path.join(__dirname, '../logs/trends-log.json');
+    if (!fs.existsSync(trendsPath)) {
+      throw new Error('Trends data file not found. Aborting live trading.');
+    }
 
-    if (walletBalance.isZero()) {
-      logAndNotify("error", `[${timestamp}] Insufficient wallet balance: 0 ETH. Cannot execute the trade.`);
+    const trends = JSON.parse(fs.readFileSync(trendsPath, 'utf8'));
+
+    // Step 2: Generate signals using the updated signal generator
+    const signals = await generateSignals(trends);
+    if (!signals || Object.keys(signals).length === 0) {
+      logger.error('No signals generated. Aborting live trading.');
       return;
     }
 
-    const gasEstimate = await provider.estimateGas({
-      to: poolData.id,
-      value: tradeAmountWei,
-    }).catch(() => {
-      logAndNotify("warn", `[${timestamp}] Unable to estimate gas. Falling back to manual gas limit.`);
-      return ethers.BigNumber.from(21000); // Default fallback gas limit
-    });
+    // Step 3: Process each signal and execute trades
+    for (const [token, { signal, confidence, price }] of Object.entries(signals)) {
+      // Skip low-confidence signals
+      if (confidence < CONFIDENCE_THRESHOLD) {
+        logger.warn(`Skipping trade for ${token}: Low confidence (${confidence}).`);
+        continue;
+      }
 
-    const gasPrice = await provider.getGasPrice();
-    const estimatedCost = gasPrice.mul(gasEstimate).add(tradeAmountWei);
+      logger.info(`Executing trade for ${token}: Signal - ${signal}, Confidence - ${confidence}, Price - ${price}`);
 
-    logAndNotify("info", `[${timestamp}] Gas Price: ${ethers.utils.formatUnits(gasPrice, 'gwei')} Gwei`);
-    logAndNotify("info", `[${timestamp}] Estimated Gas Limit: ${gasEstimate.toString()}`);
-    logAndNotify("info", `[${timestamp}] Estimated Gas Fees: ${ethers.utils.formatEther(gasPrice.mul(gasEstimate))} ETH`);
-    logAndNotify("info", `[${timestamp}] Estimated Total Transaction Cost: ${ethers.utils.formatEther(estimatedCost)} ETH`);
-
-    if (walletBalance.lt(estimatedCost)) {
-      logAndNotify(
-        "error",
-        `[${timestamp}] Insufficient funds: Wallet balance is ${walletBalanceEth} ETH, ` +
-        `but transaction requires ${ethers.utils.formatEther(estimatedCost)} ETH.`
-      );
-      return;
+      // Execute trade based on signal
+      const tradeResult = await executeTrade(token, signal, price);
+      if (tradeResult.success) {
+        logger.info(`Trade successful for ${token}: ${JSON.stringify(tradeResult)}`);
+      } else {
+        logger.error(`Trade failed for ${token}: ${tradeResult.error}`);
+      }
     }
 
-    if (process.env.LIVE_FIRE === 'true') {
-      const tx = await wallet.sendTransaction({
-        to: poolData.id,
-        value: tradeAmountWei,
-        gasLimit: gasEstimate,
-        gasPrice,
-      });
-
-      logAndNotify("success", `[${timestamp}] Trade executed successfully! Transaction Hash: ${tx.hash}`);
-    } else {
-      logAndNotify("info", `[${timestamp}] LIVE_FIRE Mode: Disabled (Simulation Mode). Trade not executed.`);
-    }
+    logger.info('Live trading session completed successfully.');
   } catch (error) {
-    logAndNotify("error", `[${timestamp}] Error executing trade: ${error.message}`);
+    logger.error(`Error during live trading: ${error.message}`);
   }
 }
 
-(async () => {
-  const tokenPairs = [
-    { token0: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', token1: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', tradeAmount: 1 }, // USDC/WETH
-    { token0: '0x6b175474e89094c44da98b954eedeac495271d0f', token1: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', tradeAmount: 0.5 }, // DAI/WETH
-  ];
+if (require.main === module) {
+  runLiveTrading();
+}
 
-  for (const { token0, token1, tradeAmount } of tokenPairs) {
-    await executeTrade(token0, token1, tradeAmount);
-  }
-})();
+module.exports = { runLiveTrading };
