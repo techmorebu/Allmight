@@ -1,6 +1,6 @@
 const { logger } = require('../monitoring/logger');
 const { generateSignals } = require('../signal-generator');
-const { executeTrade } = require('./trade-utils'); // Assumes a utility for trade execution
+const { executeTrade } = require('./trade-utils');
 const fs = require('fs');
 const path = require('path');
 
