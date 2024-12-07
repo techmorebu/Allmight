@@ -1,9 +1,10 @@
 const { logger } = require('../monitoring/logger');
 const fs = require('fs');
 const path = require('path');
+const { predictSignals } = require('../ai-models/predict-signals'); // Import AI model
 
-// Generate trade signals based on trends
-function generateSignals(trends) {
+// Generate trade signals using AI or fallback logic
+async function generateSignals(trends) {
   logger.info('Generating trading signals...');
 
   if (!trends || Object.keys(trends).length === 0) {
@@ -11,26 +12,41 @@ function generateSignals(trends) {
     return null;
   }
 
-  const signals = {};
-  for (const [token, { price, priceChange24h }] of Object.entries(trends)) {
-    const signal =
-      priceChange24h > 2
-        ? 'Buy'
-        : priceChange24h < -2
-        ? 'Sell'
-        : 'Hold';
+  try {
+    // Attempt to use AI for signal generation
+    logger.info('Using AI model for signal generation...');
+    const aiSignals = await predictSignals(trends);
 
-    signals[token] = {
-      token,
-      price,
-      signal,
-      priceChange24h,
-    };
+    if (aiSignals && Object.keys(aiSignals).length > 0) {
+      logger.info('AI signals generated successfully:', JSON.stringify(aiSignals, null, 2));
+      return aiSignals;
+    } else {
+      throw new Error('AI signal generation returned no results.');
+    }
+  } catch (error) {
+    logger.warn(`AI signal generation failed: ${error.message}. Falling back to static logic.`);
 
-    logger.info(`Generated signal for ${token}: ${signal}`);
+    // Fallback to static logic
+    const fallbackSignals = {};
+    for (const [token, { price, priceChange24h }] of Object.entries(trends)) {
+      const signal =
+        priceChange24h > 2
+          ? 'Buy'
+          : priceChange24h < -2
+          ? 'Sell'
+          : 'Hold';
+
+      fallbackSignals[token] = {
+        token,
+        price,
+        signal,
+        priceChange24h,
+      };
+
+      logger.info(`Fallback signal for ${token}: ${signal}`);
+    }
+    return fallbackSignals;
   }
-
-  return signals;
 }
 
 // Save generated signals to a log file
@@ -42,27 +58,29 @@ function saveSignals(signals) {
 
 // Main execution block for standalone use
 if (require.main === module) {
-  try {
-    logger.info('--- Starting Signal Generation ---');
+  (async () => {
+    try {
+      logger.info('--- Starting Signal Generation ---');
 
-    // Load trends data from file (assumes trends-log.json exists)
-    const trendsPath = path.join(__dirname, '../logs/trends-log.json');
-    if (!fs.existsSync(trendsPath)) {
-      throw new Error('Trends data file not found. Aborting signal generation.');
+      // Load trends data from file (assumes trends-log.json exists)
+      const trendsPath = path.join(__dirname, '../logs/trends-log.json');
+      if (!fs.existsSync(trendsPath)) {
+        throw new Error('Trends data file not found. Aborting signal generation.');
+      }
+
+      const trends = JSON.parse(fs.readFileSync(trendsPath, 'utf8'));
+      const signals = await generateSignals(trends);
+
+      if (signals) {
+        saveSignals(signals);
+        logger.info('Signal generation completed successfully.');
+      } else {
+        logger.error('Signal generation failed. No signals generated.');
+      }
+    } catch (error) {
+      logger.error(`Error during signal generation: ${error.message}`);
     }
-
-    const trends = JSON.parse(fs.readFileSync(trendsPath, 'utf8'));
-    const signals = generateSignals(trends);
-
-    if (signals) {
-      saveSignals(signals);
-      logger.info('Signal generation completed successfully.');
-    } else {
-      logger.error('Signal generation failed. No signals generated.');
-    }
-  } catch (error) {
-    logger.error(`Error during signal generation: ${error.message}`);
-  }
+  })();
 }
 
 module.exports = { generateSignals };
