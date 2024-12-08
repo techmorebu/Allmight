@@ -1,7 +1,9 @@
-const { logger } = require('../monitoring/logger');
+// Corrected paths
+const { logger } = require('../monitoring/logger'); // No change
 const fs = require('fs');
 const path = require('path');
-const { predictSignals } = require('../ai-models/predict-signals'); // Import AI model
+const { predictSignals } = require('../ai-models/predict-signals'); // Assuming ai-models is a sibling folder to trade-execution
+
 
 // Generate trade signals using AI or fallback logic
 async function generateSignals(trends) {
