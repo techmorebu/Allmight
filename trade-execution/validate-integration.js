@@ -8,6 +8,10 @@ async function validateIntegration() {
     try {
         logger.info('--- Starting Integration Validation ---');
 
+        // Debugging: Log environment variables
+        logger.info(`Loaded GMX_ARBITRUM_TICKERS_URL: ${process.env.GMX_ARBITRUM_TICKERS_URL}`);
+        logger.info(`Loaded GMX_AVALANCHE_TICKERS_URL: ${process.env.GMX_AVALANCHE_TICKERS_URL}`);
+
         // Step 1: Fetch GMX Tickers
         logger.info('Fetching GMX tickers for Arbitrum...');
         const arbitrumTickers = await fetchGmxData('arbitrum', 'tickers');
