@@ -1,5 +1,5 @@
 const fs = require('fs');
-require('dotenv').config({ path: '/home/techbu/OFA_Project_Local/ofa-project/.env' }); 
+require('dotenv').config({ path: '/home/techbu/OFA_Project_Local/ofa-project/.env' }); // Load environment variables
 const axios = require('axios');
 const { analyzeTrends } = require('../trade-execution/analyze-trends');
 
@@ -78,7 +78,7 @@ function saveDataToFile(data) {
 }
 
 // Fetch data and analyze trends
-async function fetchData() {
+async function fetchUniswapData() {
   try {
     const response = await axios.post(endpoint, { query });
 
@@ -143,5 +143,5 @@ async function fetchData() {
   }
 }
 
-// Export fetchData for use in other modules
-module.exports = { fetchData };
+// Export fetchUniswapData for use in other modules
+module.exports = { fetchUniswapData };
