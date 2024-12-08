@@ -1,32 +1,27 @@
-const { runDataPipeline } = require('./data-pipeline'); // Adjust if needed
-const { generateSignals } = require('./signal-generator'); // Adjust if needed
-const { runLiveTrading } = require('./trade-live'); // Adjust if needed
+const { fetchGmxTokenPrices } = require('./fetch-gmx-data'); // Update the path if needed.
+const logger = require('./logger'); // Assuming a logger module is used.
 
-async function validateIntegration() {
-  try {
-    console.log('--- Starting Integration Validation ---');
+(async () => {
+    logger.info('--- Starting Integration Validation ---');
 
-    // Step 1: Test Data Pipeline
-    console.log('Running data pipeline...');
-    await runDataPipeline();
-    console.log('Data pipeline completed successfully.');
+    try {
+        const arbitrumPrices = await fetchGmxTokenPrices('https://api.gmx.io/arbitrum', 'Arbitrum');
+        const avalanchePrices = await fetchGmxTokenPrices('https://api.gmx.io/avalanche', 'Avalanche');
 
-    // Step 2: Test Signal Generator
-    console.log('Generating signals...');
-    const trendsPath = '../logs/trends-log.json';
-    const trends = require(trendsPath);
-    const signals = await generateSignals(trends);
-    console.log('Signals generated successfully:', signals);
+        if (Object.keys(arbitrumPrices).length === 0) {
+            logger.warn('No prices fetched for GMX Arbitrum.');
+        }
+        if (Object.keys(avalanchePrices).length === 0) {
+            logger.warn('No prices fetched for GMX Avalanche.');
+        }
 
-    // Step 3: Test Live Trading
-    console.log('Executing live trading...');
-    await runLiveTrading();
-    console.log('Live trading completed successfully.');
+        logger.info('GMX Token Prices:', {
+            arbitrum: arbitrumPrices,
+            avalanche: avalanchePrices,
+        });
+    } catch (error) {
+        logger.error('Error during integration validation:', error.message);
+    }
 
-    console.log('--- Integration Validation Successful ---');
-  } catch (error) {
-    console.error('Integration Validation Failed:', error.message);
-  }
-}
-
-validateIntegration();
+    logger.info('--- Integration Validation Completed ---');
+})();
