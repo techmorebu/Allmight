@@ -1,5 +1,5 @@
 const fs = require('fs');
-require('dotenv').config({ path: '/home/techbu/OFA_Project_Local/ofa-project/.env' }); // Explicitly load .env file
+require('dotenv').config({ path: '/home/techbu/OFA_Project_Local/ofa-project/.env' }); 
 const axios = require('axios');
 const { analyzeTrends } = require('../trade-execution/analyze-trends');
 
