@@ -97,3 +97,12 @@
 {"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-08T07:32:43.777Z"}
 {"level":"error","message":"GMX pairs URL not found for network: arbitrum","timestamp":"2024-12-08T07:32:43.778Z"}
 {"level":"error","message":"Error in data pipeline: Missing URL for GMX pairs on arbitrum","timestamp":"2024-12-08T07:32:43.780Z"}
+{"level":"info","message":"--- Starting Data Pipeline ---","timestamp":"2024-12-08T07:39:36.996Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T07:39:37.001Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T07:39:37.002Z"}
+{"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-08T07:39:37.612Z"}
+{"level":"info","message":"Fetched CoinGecko data successfully.","timestamp":"2024-12-08T07:39:37.613Z"}
+{"level":"info","message":"Fetching GMX token prices...","timestamp":"2024-12-08T07:39:37.614Z"}
+{"level":"info","message":"Fetching GMX token prices from arbitrum...","timestamp":"2024-12-08T07:39:37.616Z"}
+{"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-08T07:39:38.214Z"}
+{"level":"error","message":"Error in data pipeline: fetchGmxPairs is not a function","timestamp":"2024-12-08T07:39:38.215Z"}
