@@ -1,22 +1,23 @@
-async function fetchGmxPrices(apiUrl, chainName) {
+const axios = require('axios');
+const logger = require('./logger'); // Adjust the path to your logger if necessary.
+
+async function fetchGmxTokenPrices(apiUrl, chainName) {
     try {
         if (!apiUrl) {
-            throw new Error(`API URL for ${chainName} is not set or invalid.`);
+            throw new Error(`API URL for ${chainName} is not set.`);
         }
 
-        logger.info(`Fetching GMX token prices from ${chainName} API: ${apiUrl}`);
+        logger.info(`Fetching GMX token prices from ${chainName} (${apiUrl})...`);
 
         const response = await axios.get(apiUrl);
         const data = response.data;
 
-        // Log raw response for debugging
-        logger.debug(`Raw API response from ${chainName}: ${JSON.stringify(data, null, 2)}`);
+        // Debug raw response
+        logger.debug(`Raw response from ${chainName}: ${JSON.stringify(data, null, 2)}`);
 
         if (!data || typeof data !== 'object') {
-            throw new Error(`Invalid data format received from ${chainName} API.`);
+            throw new Error(`Invalid response format from ${chainName}.`);
         }
-
-        logger.info(`Successfully fetched data from ${chainName}. Validating response structure...`);
 
         const prices = {};
         for (const [token, metrics] of Object.entries(data.prices || {})) {
@@ -27,14 +28,16 @@ async function fetchGmxPrices(apiUrl, chainName) {
                     priceChange24h: metrics.usd_24h_change || 0,
                 };
             } else {
-                logger.warn(`Price data missing or invalid for token ${token} on ${chainName}.`);
+                logger.warn(`Missing or invalid price data for ${token} in ${chainName}.`);
             }
         }
 
-        logger.info(`${Object.keys(prices).length} valid token prices extracted from ${chainName}.`);
+        logger.info(`${Object.keys(prices).length} token prices fetched from ${chainName}.`);
         return prices;
     } catch (error) {
         logger.error(`Error fetching GMX token prices from ${chainName}: ${error.message}`);
-        return null;
+        return {};
     }
 }
+
+module.exports = { fetchGmxTokenPrices };
