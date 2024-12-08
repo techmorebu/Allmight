@@ -1,57 +1,60 @@
-require('dotenv').config({ path: '../.env' });
-const { fetchTokenPrices } = require('../data-collection/fetchData');
-const { fetchGmxData, fetchGmxCandlesticks } = require('../data-collection/fetch-gmx-data');
-const { fetchUniswapData } = require('../data-collection/fetch-uniswap-data');
-const { analyzeTrends } = require('./analyze-trends');
+require('dotenv').config();
+const { fetchGmxData, fetchGmxCandlesticks } = require('./fetch-gmx-data');
+const { analyzeTrends } = require('../trade-execution/analyze-trends');
+const { generateSignals } = require('../trade-execution/signal-generator');
 const { logger } = require('../monitoring/logger');
 
 async function runDataPipeline() {
     try {
         logger.info('--- Starting Data Pipeline ---');
 
-        // Step 1: Fetch CoinGecko data
-        logger.info('Fetching token prices from CoinGecko...');
-        const coingeckoData = await fetchTokenPrices();
-        logger.info('Fetched CoinGecko data successfully.');
+        // Step 1: Fetch GMX token prices (Tickers)
+        logger.info('Fetching GMX token prices (Tickers)...');
+        const gmxTickers = await fetchGmxData('arbitrum', 'tickers');
 
-        // Step 2: Fetch GMX token data
-        logger.info('Fetching GMX token data...');
-        const arbitrumTickers = await fetchGmxData('arbitrum', 'tickers');
-        const avalancheTickers = await fetchGmxData('avalanche', 'tickers');
-        const arbitrumCandlesticks = await fetchGmxCandlesticks('arbitrum', 'ETH', '1d');
-        const avalancheCandlesticks = await fetchGmxCandlesticks('avalanche', 'AVAX', '1d');
-        logger.info('Fetched GMX token data successfully.');
+        if (!gmxTickers || gmxTickers.length === 0) {
+            logger.error('Failed to fetch GMX tickers. Aborting pipeline.');
+            return;
+        }
+        logger.info('GMX token prices (Tickers) fetched successfully.');
 
-        // Step 3: Fetch Uniswap data
-        logger.info('Fetching Uniswap data...');
-        const uniswapData = await fetchUniswapData();
-        logger.info('Fetched Uniswap data successfully.');
+        // Step 2: Fetch GMX candlestick data
+        logger.info('Fetching GMX candlestick data...');
+        const gmxCandlesticks = await fetchGmxCandlesticks('arbitrum', 'ETH', '1d');
 
-        // Step 4: Combine all data
+        if (!gmxCandlesticks || gmxCandlesticks.length === 0) {
+            logger.error('Failed to fetch GMX candlestick data. Aborting pipeline.');
+            return;
+        }
+        logger.info('GMX candlestick data fetched successfully.');
+
+        // Combine data for analysis
         const combinedData = {
-            coingecko: coingeckoData,
-            gmx: {
-                arbitrum: {
-                    tickers: arbitrumTickers,
-                    candlesticks: arbitrumCandlesticks,
-                },
-                avalanche: {
-                    tickers: avalancheTickers,
-                    candlesticks: avalancheCandlesticks,
-                },
-            },
-            uniswap: uniswapData,
+            tickers: gmxTickers,
+            candlesticks: gmxCandlesticks,
         };
+        logger.info('Combined GMX data for analysis:', JSON.stringify(combinedData, null, 2));
 
-        logger.info('Combined Data for Trend Analysis:', JSON.stringify(combinedData, null, 2));
-
-        // Step 5: Analyze trends
+        // Step 3: Analyze trends
+        logger.info('Analyzing trends...');
         const trends = analyzeTrends(combinedData);
+
         if (!trends || Object.keys(trends).length === 0) {
-            throw new Error('No trends data generated. Aborting.');
+            logger.error('No trends generated from analysis. Aborting pipeline.');
+            return;
+        }
+        logger.info('Trends generated successfully:', JSON.stringify(trends, null, 2));
+
+        // Step 4: Generate trading signals
+        logger.info('Generating trading signals...');
+        const signals = generateSignals(trends);
+
+        if (!signals || Object.keys(signals).length === 0) {
+            logger.error('No trading signals generated. Aborting pipeline.');
+            return;
         }
 
-        logger.info('Trends analysis result:', JSON.stringify(trends, null, 2));
+        logger.info('Generated trading signals:', JSON.stringify(signals, null, 2));
     } catch (error) {
         logger.error(`Error in data pipeline: ${error.message}`);
     }
