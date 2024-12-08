@@ -1,33 +1,33 @@
-require('dotenv').config();
 const axios = require('axios');
+const { logger } = require('../monitoring/logger');
 
-const GMX_ARBITRUM_API = process.env.GMX_ARBITRUM_API;
-const GMX_AVALANCHE_API = process.env.GMX_AVALANCHE_API;
-
-const fetchGmxData = async () => {
+/**
+ * Fetch GMX token prices for the given network.
+ * @param {string} network - The network to fetch prices for ('arbitrum' or 'avalanche').
+ * @returns {Promise<Object>} - The GMX token price data.
+ */
+async function fetchGmxTokenPrices(network) {
     try {
-        console.log('Fetching GMX data from Arbitrum API...');
-        const arbitrumResponse = await axios.get(GMX_ARBITRUM_API);
-        const arbitrumPrices = arbitrumResponse.data;
+        logger.info(`Fetching GMX prices for ${network}...`);
 
-        console.log('Fetching GMX data from Avalanche API...');
-        const avalancheResponse = await axios.get(GMX_AVALANCHE_API);
-        const avalanchePrices = avalancheResponse.data;
+        // Replace with actual GMX API endpoint and parameters
+        const endpoint = network === 'arbitrum'
+            ? 'https://api.gmx-arbitrum.com/prices'
+            : 'https://api.gmx-avalanche.com/prices';
 
-        return {
-            arbitrum: {
-                prices: arbitrumPrices,
-            },
-            avalanche: {
-                prices: avalanchePrices,
-            },
-        };
+        const response = await axios.get(endpoint);
+        const prices = response.data;
+
+        if (!prices || Object.keys(prices).length === 0) {
+            throw new Error(`No price data returned for ${network}.`);
+        }
+
+        logger.info(`GMX prices fetched for ${network}:`, prices);
+        return prices;
     } catch (error) {
-        console.error('Error fetching GMX data:', error.message);
+        logger.error(`Error fetching GMX prices for ${network}: ${error.message}`);
         throw error;
     }
-};
+}
 
-module.exports = {
-    fetchGmxData,
-};
+module.exports = { fetchGmxTokenPrices };
