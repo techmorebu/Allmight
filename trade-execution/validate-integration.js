@@ -1,4 +1,4 @@
-const { fetchGmxTokenPrices } = require('./fetch-gmx-data'); // Update the path if needed.
+const { fetchGmxTokenPrices } = require('../data-collection/fetch-gmx-data'); // Update the path if needed.
 const logger = require('./logger'); // Assuming a logger module is used.
 
 (async () => {
