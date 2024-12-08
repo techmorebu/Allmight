@@ -1,5 +1,4 @@
-require('dotenv').config({ path: '../.env' });
-const { fetchGmxTokenPrices } = require('../data-collection/fetch-gmx-data');
+const { fetchGmxData, fetchGmxCandlesticks } = require('../data-collection/fetch-gmx-data');
 const { analyzeTrends } = require('./analyze-trends');
 const { generateSignals } = require('./signal-generator');
 const { logger } = require('../monitoring/logger');
@@ -8,32 +7,36 @@ async function validateIntegration() {
     try {
         logger.info('--- Starting Integration Validation ---');
 
-        // Step 1: Fetch GMX data
-        logger.info('Fetching GMX token prices...');
-        const tokenPrices = await fetchGmxTokenPrices('arbitrum');
+        // Fetch tickers for Arbitrum and Avalanche
+        const arbitrumTickers = await fetchGmxData('arbitrum', 'tickers');
+        const avalancheTickers = await fetchGmxData('avalanche', 'tickers');
 
-        if (!tokenPrices || Object.keys(tokenPrices).length === 0) {
-            throw new Error('Failed to fetch GMX token prices or data is empty.');
-        }
-        logger.info(`Fetched GMX token prices successfully: ${JSON.stringify(tokenPrices, null, 2)}`);
+        // Fetch candlestick data
+        const arbitrumCandles = await fetchGmxCandlesticks('arbitrum', 'ETH', '1d');
+        const avalancheCandles = await fetchGmxCandlesticks('avalanche', 'AVAX', '1d');
 
-        // Step 2: Analyze trends
-        logger.info('Analyzing trends...');
-        const trends = analyzeTrends(tokenPrices);
+        const combinedData = {
+            arbitrum: { tickers: arbitrumTickers, candles: arbitrumCandles },
+            avalanche: { tickers: avalancheTickers, candles: avalancheCandles },
+        };
 
+        logger.info('Combined GMX data:', JSON.stringify(combinedData, null, 2));
+
+        // Analyze trends
+        const trends = analyzeTrends(combinedData);
         if (!trends || Object.keys(trends).length === 0) {
-            throw new Error('No trends generated from analysis.');
+            throw new Error('Trend analysis failed or returned empty results.');
         }
-        logger.info(`Trends analysis completed successfully: ${JSON.stringify(trends, null, 2)}`);
 
-        // Step 3: Generate trading signals
-        logger.info('Generating trading signals...');
+        logger.info('Trends analysis result:', JSON.stringify(trends, null, 2));
+
+        // Generate trading signals
         const signals = generateSignals(trends);
-
         if (!signals || Object.keys(signals).length === 0) {
-            throw new Error('No trading signals generated.');
+            throw new Error('Signal generation failed or returned empty results.');
         }
-        logger.info(`Trading signals generated successfully: ${JSON.stringify(signals, null, 2)}`);
+
+        logger.info('Generated trading signals:', JSON.stringify(signals, null, 2));
 
         logger.info('--- Integration Validation Successful ---');
     } catch (error) {
@@ -41,5 +44,4 @@ async function validateIntegration() {
     }
 }
 
-// Execute the validation process
 validateIntegration();
