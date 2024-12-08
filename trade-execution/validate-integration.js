@@ -1,3 +1,4 @@
+require('dotenv').config({ path: '../.env' });
 const { fetchGmxData, fetchGmxCandlesticks } = require('../data-collection/fetch-gmx-data');
 const { analyzeTrends } = require('./analyze-trends');
 const { generateSignals } = require('./signal-generator');
