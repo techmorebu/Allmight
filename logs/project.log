@@ -219,3 +219,6 @@
 {"level":"info","message":"Avalanche GMX Candlesticks fetched successfully:","timestamp":"2024-12-08T09:40:21.430Z"}
 {"level":"info","message":"GMX data validation completed successfully.","timestamp":"2024-12-08T09:40:21.431Z"}
 {"level":"info","message":"--- Integration Validation Successful ---","timestamp":"2024-12-08T09:40:21.431Z"}
+{"level":"info","message":"--- Starting Integration Validation ---","timestamp":"2024-12-08T09:50:38.723Z"}
+{"level":"info","message":"Fetching GMX token prices...","timestamp":"2024-12-08T09:50:38.728Z"}
+{"level":"error","message":"Integration validation failed: fetchGmxTokenPrices is not a function","timestamp":"2024-12-08T09:50:38.729Z"}
