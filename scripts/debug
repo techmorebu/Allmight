@@ -1,5 +1,7 @@
-ode trade-execution/validate-integration.js
-{"level":"info","message":"--- Starting Integration Validation ---","timestamp":"2024-12-08T10:30:40.133Z"}
-{"level":"info","message":"Fetching GMX tickers for Arbitrum...","timestamp":"2024-12-08T10:30:40.138Z"}
-{"level":"error","message":"Error fetching GMX data (arbitrum, tickers): Missing API endpoint for arbitrum and tickers in .env","timestamp":"2024-12-08T10:30:40.139Z"}
-{"level":"error","message":"Integration validation failed: Missing API endpoint for arbitrum and tickers in .env","timestamp":"2024-12-08T10:30:40.144Z"}
+echbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node trade-execution/validate-integration.js
+{"level":"info","message":"--- Starting Integration Validation ---","timestamp":"2024-12-08T10:36:49.583Z"}
+{"level":"info","message":"Loaded GMX_ARBITRUM_TICKERS_URL: undefined","timestamp":"2024-12-08T10:36:49.588Z"}
+{"level":"info","message":"Loaded GMX_AVALANCHE_TICKERS_URL: undefined","timestamp":"2024-12-08T10:36:49.588Z"}
+{"level":"info","message":"Fetching GMX tickers for Arbitrum...","timestamp":"2024-12-08T10:36:49.588Z"}
+{"level":"error","message":"Error fetching GMX data (arbitrum, tickers): Missing API endpoint for arbitrum and tickers in .env","timestamp":"2024-12-08T10:36:49.589Z"}
+{"level":"error","message":"Integration validation failed: Missing API endpoint for arbitrum and tickers in .env","timestamp":"2024-12-08T10:36:49.596Z"}
