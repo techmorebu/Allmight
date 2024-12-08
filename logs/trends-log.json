@@ -1,650 +1,424 @@
 {
   "ethereum": {
     "source": "CoinGecko",
-    "price": 3703.76,
-    "marketCap": 446708645543.0141,
-    "volume24h": 43836348043.9223,
-    "priceChange24h": 2.426650667081501
+    "price": 3980.3,
+    "marketCap": 479517502412.57355,
+    "volume24h": 18765030955.744946,
+    "priceChange24h": -0.3545710541570351
   },
   "zksync": {
     "source": "CoinGecko",
-    "price": 0.229815,
-    "marketCap": 845264991.5404309,
-    "volume24h": 236123558.4708213,
-    "priceChange24h": 4.194382310257648
+    "price": 0.253063,
+    "marketCap": 930318379.1624067,
+    "volume24h": 173873360.43522626,
+    "priceChange24h": -4.918948128090072
   },
-  "GMX-Arbitrum": {
+  "GMX-Arbitrum-0": {
     "source": "GMX Arbitrum",
-    "prices": {
-      "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f": "96756945768550000000000000000000000",
-      "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1": "3704565439625000000000000000000000",
-      "0xf97f4df75117a78c1A5a0DBb814Af92458539FB4": "24214000000000000000000000000000",
-      "0xFa7F8980b0f1E64A2062791cc3b0871572f1F7f0": "15299265042175000000000000000000"
-    },
-    "pairs": [
-      {
-        "ticker_id": "ETH_USD",
-        "base_currency": "ETH",
-        "target_currency": "USD",
-        "product_type": "Perpetual",
-        "last_price": 3705.2400000000002,
-        "low": 3504.53,
-        "high": 3723.315,
-        "base_volume": 2242.43966128287,
-        "target_volume": 8104003.146802544,
-        "open_interest": 11450484.264843784
-      },
-      {
-        "ticker_id": "BTC_USD",
-        "base_currency": "BTC",
-        "target_currency": "USD",
-        "product_type": "Perpetual",
-        "last_price": 96756.94576855,
-        "low": 93593.83,
-        "high": 96832.007,
-        "base_volume": 34.56066749953021,
-        "target_volume": 3290622.017938369,
-        "open_interest": 6756433.258834392
-      },
-      {
-        "ticker_id": "LINK_USD",
-        "base_currency": "LINK",
-        "target_currency": "USD",
-        "product_type": "Perpetual",
-        "last_price": 24.214,
-        "low": 22.574,
-        "high": 26.136,
-        "base_volume": 3412.958909920276,
-        "target_volume": 83122.61425110832,
-        "open_interest": 120044.08068376013
-      },
-      {
-        "ticker_id": "UNI_USD",
-        "base_currency": "UNI",
-        "target_currency": "USD",
-        "product_type": "Perpetual",
-        "last_price": 15.299265042175,
-        "low": 13.189,
-        "high": 15.428,
-        "base_volume": 2665.0810362717434,
-        "target_volume": 38133.31200749424,
-        "open_interest": 478767.4589922318
-      },
-      {
-        "ticker_id": "WETH_BTC",
-        "base_currency": "WETH",
-        "target_currency": "BTC",
-        "product_type": "Spot",
-        "last_price": 0.038291576841637386,
-        "low": 3504.53,
-        "high": 3723.315,
-        "base_volume": 112.63859884080938,
-        "target_volume": 4.275335460064434,
-        "volume_usd": 407067.16671927494
-      },
-      {
-        "ticker_id": "WETH_LINK",
-        "base_currency": "WETH",
-        "target_currency": "LINK",
-        "product_type": "Spot",
-        "last_price": 153.0237266231942,
-        "low": 3504.53,
-        "high": 3723.315,
-        "base_volume": 644.7702238817571,
-        "target_volume": 95674.38388077683,
-        "volume_usd": 2330149.6194163198
-      },
-      {
-        "ticker_id": "WETH_UNI",
-        "base_currency": "WETH",
-        "target_currency": "UNI",
-        "product_type": "Spot",
-        "last_price": 242.1841826902065,
-        "low": 3504.53,
-        "high": 3723.315,
-        "base_volume": 19.66663128960626,
-        "target_volume": 4967.234952420735,
-        "volume_usd": 71073.68131671209
-      },
-      {
-        "ticker_id": "WETH_USDC",
-        "base_currency": "WETH",
-        "target_currency": "USDC",
-        "product_type": "Spot",
-        "last_price": 3705.2400000000002,
-        "low": 3504.53,
-        "high": 3723.315,
-        "base_volume": 0.0202199989402097,
-        "target_volume": 73.07350912,
-        "volume_usd": 73.07350912
-      },
-      {
-        "ticker_id": "WETH_USDT",
-        "base_currency": "WETH",
-        "target_currency": "USDT",
-        "product_type": "Spot",
-        "last_price": 3705.2400000000002,
-        "low": 3504.53,
-        "high": 3723.315,
-        "base_volume": 0.2624370204397023,
-        "target_volume": 948.427053,
-        "volume_usd": 948.427053
-      },
-      {
-        "ticker_id": "WETH_DAI",
-        "base_currency": "WETH",
-        "target_currency": "DAI",
-        "product_type": "Spot",
-        "last_price": 3705.2400000000002,
-        "low": 3504.53,
-        "high": 3723.315,
-        "base_volume": 245.9524609329022,
-        "target_volume": 888853.1324957863,
-        "volume_usd": 888853.1324957863
-      },
-      {
-        "ticker_id": "WETH_FRAX",
-        "base_currency": "WETH",
-        "target_currency": "FRAX",
-        "product_type": "Spot",
-        "last_price": 3705.2400000000002,
-        "low": 3504.53,
-        "high": 3723.315,
-        "base_volume": 0.9465471973572236,
-        "target_volume": 3420.748213841211,
-        "volume_usd": 3420.748213841211
-      },
-      {
-        "ticker_id": "BTC_LINK",
-        "base_currency": "BTC",
-        "target_currency": "LINK",
-        "product_type": "Spot",
-        "last_price": 3996.276446280992,
-        "low": 93593.83,
-        "high": 96832.007,
-        "base_volume": 0.6521299583765537,
-        "target_volume": 2549.422975911115,
-        "volume_usd": 62091.196578315205
-      },
-      {
-        "ticker_id": "BTC_UNI",
-        "base_currency": "BTC",
-        "target_currency": "UNI",
-        "product_type": "Spot",
-        "last_price": 6324.287179928133,
-        "low": 93593.83,
-        "high": 96832.007,
-        "base_volume": 0,
-        "target_volume": 0,
-        "volume_usd": 0
-      },
-      {
-        "ticker_id": "BTC_USDC",
-        "base_currency": "BTC",
-        "target_currency": "USDC",
-        "product_type": "Spot",
-        "last_price": 96763.8396121365,
-        "low": 93593.83,
-        "high": 96832.007,
-        "base_volume": 0.076966084620865,
-        "target_volume": 7328.165542270523,
-        "volume_usd": 7328.165542270523
-      },
-      {
-        "ticker_id": "BTC_USDT",
-        "base_currency": "BTC",
-        "target_currency": "USDT",
-        "product_type": "Spot",
-        "last_price": 96763.8396121365,
-        "low": 93593.83,
-        "high": 96832.007,
-        "base_volume": 0.000201056277883132,
-        "target_volume": 19.143155,
-        "volume_usd": 19.143155
-      },
-      {
-        "ticker_id": "BTC_DAI",
-        "base_currency": "BTC",
-        "target_currency": "DAI",
-        "product_type": "Spot",
-        "last_price": 96763.8396121365,
-        "low": 93593.83,
-        "high": 96832.007,
-        "base_volume": 0,
-        "target_volume": 0,
-        "volume_usd": 0
-      },
-      {
-        "ticker_id": "BTC_FRAX",
-        "base_currency": "BTC",
-        "target_currency": "FRAX",
-        "product_type": "Spot",
-        "last_price": 96756.94576855,
-        "low": 93593.83,
-        "high": 96832.007,
-        "base_volume": 0,
-        "target_volume": 0,
-        "volume_usd": 0
-      },
-      {
-        "ticker_id": "LINK_UNI",
-        "base_currency": "LINK",
-        "target_currency": "UNI",
-        "product_type": "Spot",
-        "last_price": 1.5826577226586642,
-        "low": 22.574,
-        "high": 26.136,
-        "base_volume": 15.376958194965583,
-        "target_volume": 26.173660190682938,
-        "volume_usd": 374.5058168383868
-      },
-      {
-        "ticker_id": "LINK_USDC",
-        "base_currency": "LINK",
-        "target_currency": "USDC",
-        "product_type": "Spot",
-        "last_price": 24.214,
-        "low": 22.574,
-        "high": 26.136,
-        "base_volume": 14327.756858151619,
-        "target_volume": 348952.5182802827,
-        "volume_usd": 348952.5182802827
-      },
-      {
-        "ticker_id": "LINK_USDT",
-        "base_currency": "LINK",
-        "target_currency": "USDT",
-        "product_type": "Spot",
-        "last_price": 24.213499969999997,
-        "low": 22.574,
-        "high": 26.136,
-        "base_volume": 4760.930538449135,
-        "target_volume": 115952.4632639287,
-        "volume_usd": 115952.4632639287
-      },
-      {
-        "ticker_id": "LINK_DAI",
-        "base_currency": "LINK",
-        "target_currency": "DAI",
-        "product_type": "Spot",
-        "last_price": 24.213499969999997,
-        "low": 22.574,
-        "high": 26.136,
-        "base_volume": 11472.516609813429,
-        "target_volume": 279413.14203200606,
-        "volume_usd": 279413.14203200606
-      },
-      {
-        "ticker_id": "LINK_FRAX",
-        "base_currency": "LINK",
-        "target_currency": "FRAX",
-        "product_type": "Spot",
-        "last_price": 24.213499969999997,
-        "low": 22.574,
-        "high": 26.136,
-        "base_volume": 4.025398896325189,
-        "target_volume": 98.03859012,
-        "volume_usd": 98.03859012
-      },
-      {
-        "ticker_id": "UNI_USDC",
-        "base_currency": "UNI",
-        "target_currency": "USDC",
-        "product_type": "Spot",
-        "last_price": 15.299265042175,
-        "low": 13.189,
-        "high": 15.428,
-        "base_volume": 1785.3485772242507,
-        "target_volume": 25545.660117213192,
-        "volume_usd": 25545.660117213192
-      },
-      {
-        "ticker_id": "UNI_USDT",
-        "base_currency": "UNI",
-        "target_currency": "USDT",
-        "product_type": "Spot",
-        "last_price": 15.299265042175,
-        "low": 13.189,
-        "high": 15.428,
-        "base_volume": 80.23837005316842,
-        "target_volume": 1148.0907179057604,
-        "volume_usd": 1148.0907179057604
-      },
-      {
-        "ticker_id": "UNI_DAI",
-        "base_currency": "UNI",
-        "target_currency": "DAI",
-        "product_type": "Spot",
-        "last_price": 15.299265042175,
-        "low": 13.189,
-        "high": 15.428,
-        "base_volume": 0,
-        "target_volume": 0,
-        "volume_usd": 0
-      },
-      {
-        "ticker_id": "UNI_FRAX",
-        "base_currency": "UNI",
-        "target_currency": "FRAX",
-        "product_type": "Spot",
-        "last_price": 15.299265042175,
-        "low": 13.189,
-        "high": 15.428,
-        "base_volume": 0,
-        "target_volume": 0,
-        "volume_usd": 0
-      },
-      {
-        "ticker_id": "USDC_USDT",
-        "base_currency": "USDC",
-        "target_currency": "USDT",
-        "product_type": "Spot",
-        "last_price": 1,
-        "low": 1,
-        "high": 1,
-        "base_volume": 3631.932288,
-        "target_volume": 3631.932288,
-        "volume_usd": 3631.932288
-      },
-      {
-        "ticker_id": "USDC_DAI",
-        "base_currency": "USDC",
-        "target_currency": "DAI",
-        "product_type": "Spot",
-        "last_price": 1,
-        "low": 1,
-        "high": 1,
-        "base_volume": 230921.73049924368,
-        "target_volume": 230921.73049924368,
-        "volume_usd": 230921.73049924368
-      },
-      {
-        "ticker_id": "USDC_FRAX",
-        "base_currency": "USDC",
-        "target_currency": "FRAX",
-        "product_type": "Spot",
-        "last_price": 1,
-        "low": 1,
-        "high": 1,
-        "base_volume": 0,
-        "target_volume": 0,
-        "volume_usd": 0
-      },
-      {
-        "ticker_id": "USDT_DAI",
-        "base_currency": "USDT",
-        "target_currency": "DAI",
-        "product_type": "Spot",
-        "last_price": 1,
-        "low": 1,
-        "high": 1,
-        "base_volume": 110346.71171530089,
-        "target_volume": 110346.71171530089,
-        "volume_usd": 110346.71171530089
-      },
-      {
-        "ticker_id": "USDT_FRAX",
-        "base_currency": "USDT",
-        "target_currency": "FRAX",
-        "product_type": "Spot",
-        "last_price": 1,
-        "low": 1,
-        "high": 1,
-        "base_volume": 0,
-        "target_volume": 0,
-        "volume_usd": 0
-      },
-      {
-        "ticker_id": "DAI_FRAX",
-        "base_currency": "DAI",
-        "target_currency": "FRAX",
-        "product_type": "Spot",
-        "last_price": 1,
-        "low": 1,
-        "high": 1,
-        "base_volume": 0,
-        "target_volume": 0,
-        "volume_usd": 0
-      }
-    ]
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
   },
-  "GMX-Avalanche": {
+  "GMX-Arbitrum-1": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-2": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-3": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-4": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-5": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-6": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-7": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-8": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-9": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-10": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-11": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-12": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-13": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-14": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-15": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-16": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-17": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-18": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-19": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-20": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-21": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-22": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-23": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-24": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-25": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-26": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-27": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-28": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-29": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-30": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-31": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-32": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-33": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-34": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-35": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-36": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-37": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-38": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-39": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-40": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-41": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-42": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-43": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-44": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-45": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-46": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-47": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-48": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-49": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-50": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-51": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-52": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Arbitrum-53": {
+    "source": "GMX Arbitrum",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Avalanche-0": {
     "source": "GMX Avalanche",
-    "prices": {
-      "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7": "54680000000000000000000000000000",
-      "0x50b7545627a5162F82A992c33b87aDc75187B218": "96757277846100000000000000000000000",
-      "0x152b9d0FdC40C096757F570A51E494bd4b943E50": "96757277846100000000000000000000000",
-      "0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB": "3705280000000000000000000000000000"
-    },
-    "pairs": [
-      {
-        "ticker_id": "AVAX_USD",
-        "base_currency": "AVAX",
-        "target_currency": "USD",
-        "product_type": "Perpetual",
-        "last_price": 54.68,
-        "low": 47.88,
-        "high": 54.916,
-        "base_volume": 117320.13102872268,
-        "target_volume": 6030020.094614288,
-        "open_interest": 1034170.7300833279
-      },
-      {
-        "ticker_id": "ETH_USD",
-        "base_currency": "ETH",
-        "target_currency": "USD",
-        "product_type": "Perpetual",
-        "last_price": 3705.28,
-        "low": 3503.33,
-        "high": 3720.592,
-        "base_volume": 85.41378078431963,
-        "target_volume": 308511.24505551194,
-        "open_interest": 196678.64878465116
-      },
-      {
-        "ticker_id": "BTC_USD",
-        "base_currency": "BTC",
-        "target_currency": "USD",
-        "product_type": "Perpetual",
-        "last_price": 96757.27784609998,
-        "low": 93581.9,
-        "high": 96809.68,
-        "base_volume": 3.229397754808112,
-        "target_volume": 307425.0704931845,
-        "open_interest": 15573451.366741883
-      },
-      {
-        "ticker_id": "WBTC_USD",
-        "base_currency": "WBTC",
-        "target_currency": "USD",
-        "product_type": "Perpetual",
-        "last_price": 96757.27784609998,
-        "low": 93581.9,
-        "high": 96809.68,
-        "base_volume": 1.1673018334192276,
-        "target_volume": 111122.22020079175,
-        "open_interest": 685829.5671616693
-      },
-      {
-        "ticker_id": "WAVAX_ETH",
-        "base_currency": "WAVAX",
-        "target_currency": "ETH",
-        "product_type": "Spot",
-        "last_price": 0.01475731928491234,
-        "low": 47.88,
-        "high": 54.916,
-        "base_volume": 2557.574170611367,
-        "target_volume": 36.39413526920225,
-        "volume_usd": 131454.19722108304
-      },
-      {
-        "ticker_id": "WAVAX_BTC",
-        "base_currency": "WAVAX",
-        "target_currency": "BTC",
-        "product_type": "Spot",
-        "last_price": 0.0005651254481029615,
-        "low": 47.88,
-        "high": 54.916,
-        "base_volume": 0,
-        "target_volume": 0,
-        "volume_usd": 0
-      },
-      {
-        "ticker_id": "WAVAX_WBTC",
-        "base_currency": "WAVAX",
-        "target_currency": "WBTC",
-        "product_type": "Spot",
-        "last_price": 0.0005651254481029615,
-        "low": 47.88,
-        "high": 54.916,
-        "base_volume": 14662.01635412708,
-        "target_volume": 7.916298783480063,
-        "volume_usd": 753598.3165694235
-      },
-      {
-        "ticker_id": "WAVAX_USDC",
-        "base_currency": "WAVAX",
-        "target_currency": "USDC",
-        "product_type": "Spot",
-        "last_price": 54.68,
-        "low": 47.88,
-        "high": 54.916,
-        "base_volume": 37361.11484783355,
-        "target_volume": 1920286.5809489486,
-        "volume_usd": 1920286.5809489486
-      },
-      {
-        "ticker_id": "WAVAX_USDC.e",
-        "base_currency": "WAVAX",
-        "target_currency": "USDC.e",
-        "product_type": "Spot",
-        "last_price": 54.68,
-        "low": 47.88,
-        "high": 54.916,
-        "base_volume": 491.97440487910166,
-        "target_volume": 25286.500461976066,
-        "volume_usd": 25286.500461976066
-      },
-      {
-        "ticker_id": "ETH_BTC",
-        "base_currency": "ETH",
-        "target_currency": "BTC",
-        "product_type": "Spot",
-        "last_price": 0.03829458705828349,
-        "low": 3503.33,
-        "high": 3720.592,
-        "base_volume": 0,
-        "target_volume": 0,
-        "volume_usd": 0
-      },
-      {
-        "ticker_id": "ETH_WBTC",
-        "base_currency": "ETH",
-        "target_currency": "WBTC",
-        "product_type": "Spot",
-        "last_price": 0.03829458705828349,
-        "low": 3503.33,
-        "high": 3720.592,
-        "base_volume": 0.002570976132765629,
-        "target_volume": 0.00009754911980330513,
-        "volume_usd": 9.286265523480276
-      },
-      {
-        "ticker_id": "ETH_USDC",
-        "base_currency": "ETH",
-        "target_currency": "USDC",
-        "product_type": "Spot",
-        "last_price": 3705.28,
-        "low": 3503.33,
-        "high": 3720.592,
-        "base_volume": 11.092975098687521,
-        "target_volume": 40067.39343043048,
-        "volume_usd": 40067.39343043048
-      },
-      {
-        "ticker_id": "ETH_USDC.e",
-        "base_currency": "ETH",
-        "target_currency": "USDC.e",
-        "product_type": "Spot",
-        "last_price": 3705.28,
-        "low": 3503.33,
-        "high": 3720.592,
-        "base_volume": 0.4335481315828161,
-        "target_volume": 1565.9589429,
-        "volume_usd": 1565.9589429
-      },
-      {
-        "ticker_id": "BTC_WBTC",
-        "base_currency": "BTC",
-        "target_currency": "WBTC",
-        "product_type": "Spot",
-        "last_price": 1,
-        "low": 93581.9,
-        "high": 96809.68,
-        "base_volume": 0,
-        "target_volume": 0,
-        "volume_usd": 0
-      },
-      {
-        "ticker_id": "BTC_USDC",
-        "base_currency": "BTC",
-        "target_currency": "USDC",
-        "product_type": "Spot",
-        "last_price": 96757.27784609998,
-        "low": 93581.9,
-        "high": 96809.68,
-        "base_volume": 0,
-        "target_volume": 0,
-        "volume_usd": 0
-      },
-      {
-        "ticker_id": "BTC_USDC.e",
-        "base_currency": "BTC",
-        "target_currency": "USDC.e",
-        "product_type": "Spot",
-        "last_price": 96757.27784609998,
-        "low": 93581.9,
-        "high": 96809.68,
-        "base_volume": 0,
-        "target_volume": 0,
-        "volume_usd": 0
-      },
-      {
-        "ticker_id": "WBTC_USDC",
-        "base_currency": "WBTC",
-        "target_currency": "USDC",
-        "product_type": "Spot",
-        "last_price": 96757.27784609998,
-        "low": 93581.9,
-        "high": 96809.68,
-        "base_volume": 0.003117728965582863,
-        "target_volume": 296.79467188454345,
-        "volume_usd": 296.79467188454345
-      },
-      {
-        "ticker_id": "WBTC_USDC.e",
-        "base_currency": "WBTC",
-        "target_currency": "USDC.e",
-        "product_type": "Spot",
-        "last_price": 96757.27784609998,
-        "low": 93581.9,
-        "high": 96809.68,
-        "base_volume": 0.00020743468802559442,
-        "target_volume": 19.746909,
-        "volume_usd": 19.746909
-      },
-      {
-        "ticker_id": "USDC_USDC.e",
-        "base_currency": "USDC",
-        "target_currency": "USDC.e",
-        "product_type": "Spot",
-        "last_price": 1,
-        "low": 1,
-        "high": 1,
-        "base_volume": 13650.028764,
-        "target_volume": 13650.028764,
-        "volume_usd": 13650.028764
-      }
-    ]
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Avalanche-1": {
+    "source": "GMX Avalanche",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Avalanche-2": {
+    "source": "GMX Avalanche",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Avalanche-3": {
+    "source": "GMX Avalanche",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Avalanche-4": {
+    "source": "GMX Avalanche",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Avalanche-5": {
+    "source": "GMX Avalanche",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Avalanche-6": {
+    "source": "GMX Avalanche",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Avalanche-7": {
+    "source": "GMX Avalanche",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Avalanche-8": {
+    "source": "GMX Avalanche",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Avalanche-9": {
+    "source": "GMX Avalanche",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Avalanche-10": {
+    "source": "GMX Avalanche",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Avalanche-11": {
+    "source": "GMX Avalanche",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Avalanche-12": {
+    "source": "GMX Avalanche",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
+  },
+  "GMX-Avalanche-13": {
+    "source": "GMX Avalanche",
+    "price": 0,
+    "volume24h": 0,
+    "priceChange24h": 0
   }
 }
