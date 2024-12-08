@@ -77,3 +77,4 @@ function analyzeTrends(data) {
         return null;
     }
 }
+module.exports = { analyzeTrends };
