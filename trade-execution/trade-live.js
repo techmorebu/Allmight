@@ -25,22 +25,28 @@ async function runLiveTrading() {
 
         for (const [token, { signal, confidence, price }] of Object.entries(signals)) {
             if (confidence < CONFIDENCE_THRESHOLD) {
-                logger.warn(`Skipping trade for ${token}: Low confidence (${confidence}).`);
+                logger.warn(`Skipping trade for ${token}: Low confidence (${confidence}). Required: >= ${CONFIDENCE_THRESHOLD}`);
                 continue;
             }
 
-            if (!price) {
-                logger.warn(`Skipping trade for ${token}: Price data is unavailable.`);
+            if (!price || isNaN(price)) {
+                logger.warn(`Skipping trade for ${token}: Price data is unavailable or invalid (price: ${price}).`);
                 continue;
             }
 
-            logger.info(`Executing trade for ${token}: Signal - ${signal}, Confidence - ${confidence}, Price - ${price}`);
-            const tradeResult = await executeTrade(token, signal, price);
+            logger.info(`Preparing to execute trade for ${token}...`);
+            logger.info(`Details: Signal - ${signal}, Confidence - ${confidence}, Price - ${price}`);
 
-            if (tradeResult.success) {
-                logger.info(`Trade successful for ${token}: ${JSON.stringify(tradeResult)}`);
-            } else {
-                logger.error(`Trade failed for ${token}: ${tradeResult.error}`);
+            try {
+                const tradeResult = await executeTrade(token, signal, price);
+
+                if (tradeResult.success) {
+                    logger.info(`Trade successful for ${token}: ${JSON.stringify(tradeResult)}`);
+                } else {
+                    logger.error(`Trade failed for ${token}: ${tradeResult.error}`);
+                }
+            } catch (tradeError) {
+                logger.error(`Unexpected error executing trade for ${token}: ${tradeError.message}`);
             }
         }
 
