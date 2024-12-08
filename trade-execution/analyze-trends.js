@@ -19,31 +19,40 @@ function analyzeTrends(data) {
             for (const [token, metrics] of Object.entries(data.coingecko)) {
                 trends[token] = {
                     source: 'CoinGecko',
-                    price: metrics.usd || null,
-                    marketCap: metrics.usd_market_cap || null,
-                    volume24h: metrics.usd_24h_vol || null,
-                    priceChange24h: metrics.usd_24h_change || null,
+                    price: metrics?.usd || 0,
+                    marketCap: metrics?.usd_market_cap || 0,
+                    volume24h: metrics?.usd_24h_vol || 0,
+                    priceChange24h: metrics?.usd_24h_change || 0,
                 };
             }
         } else {
             logger.warn('No CoinGecko data provided.');
         }
 
-        // Process GMX data
+        // Process GMX data (Arbitrum)
         if (data.arbitrum?.prices) {
-            trends['GMX-Arbitrum'] = {
-                source: 'GMX Arbitrum',
-                prices: data.arbitrum.prices,
-            };
+            for (const [token, metrics] of Object.entries(data.arbitrum.prices)) {
+                trends[`GMX-Arbitrum-${token}`] = {
+                    source: 'GMX Arbitrum',
+                    price: metrics?.usd || 0,
+                    volume24h: metrics?.usd_24h_vol || 0,
+                    priceChange24h: metrics?.usd_24h_change || 0,
+                };
+            }
         } else {
             logger.warn('No GMX Arbitrum data provided.');
         }
 
+        // Process GMX data (Avalanche)
         if (data.avalanche?.prices) {
-            trends['GMX-Avalanche'] = {
-                source: 'GMX Avalanche',
-                prices: data.avalanche.prices,
-            };
+            for (const [token, metrics] of Object.entries(data.avalanche.prices)) {
+                trends[`GMX-Avalanche-${token}`] = {
+                    source: 'GMX Avalanche',
+                    price: metrics?.usd || 0,
+                    volume24h: metrics?.usd_24h_vol || 0,
+                    priceChange24h: metrics?.usd_24h_change || 0,
+                };
+            }
         } else {
             logger.warn('No GMX Avalanche data provided.');
         }
