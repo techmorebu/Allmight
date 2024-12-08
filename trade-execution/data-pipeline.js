@@ -1,5 +1,5 @@
 require('dotenv').config({ path: '../.env' });
-const { fetchGmxData, fetchGmxCandlesticks } = require('./fetch-gmx-data');
+const { fetchGmxData, fetchGmxCandlesticks } = require('../data-collection/fetch-gmx-data');
 const { analyzeTrends } = require('../trade-execution/analyze-trends');
 const { generateSignals } = require('../trade-execution/signal-generator');
 const { logger } = require('../monitoring/logger');
