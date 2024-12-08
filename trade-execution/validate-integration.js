@@ -13,7 +13,7 @@ async function validateIntegration() {
 
     // Step 2: Test Signal Generator
     console.log('Generating signals...');
-    const trendsPath = './logs/trends-log.json';
+    const trendsPath = '../logs/trends-log.json';
     const trends = require(trendsPath);
     const signals = await generateSignals(trends);
     console.log('Signals generated successfully:', signals);
