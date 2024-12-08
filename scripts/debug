@@ -2,71 +2,694 @@ techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project/trade-execution$ node vali
 Using endpoint: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV
 --- Starting Integration Validation ---
 Running data pipeline...
-{"level":"info","message":"--- Starting Data Pipeline ---","timestamp":"2024-12-08T07:53:38.830Z"}
-{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T07:53:38.835Z"}
-{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T07:53:38.837Z"}
-{"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-08T07:53:39.088Z"}
-{"level":"info","message":"Fetched CoinGecko data successfully.","timestamp":"2024-12-08T07:53:39.089Z"}
-{"level":"info","message":"Fetching GMX token prices...","timestamp":"2024-12-08T07:53:39.090Z"}
-{"level":"info","message":"Fetching GMX token prices from arbitrum...","timestamp":"2024-12-08T07:53:39.091Z"}
-{"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-08T07:53:39.652Z"}
-{"level":"info","message":"Fetching GMX token prices from avalanche...","timestamp":"2024-12-08T07:53:39.653Z"}
-{"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-08T07:53:40.573Z"}
-{"level":"info","message":"Fetched GMX token prices successfully.","timestamp":"2024-12-08T07:53:40.573Z"}
-{"level":"info","message":"Fetching Uniswap data...","timestamp":"2024-12-08T07:53:40.575Z"}
-{"level":"error","message":"Error in data pipeline: fetchUniswapData is not a function","timestamp":"2024-12-08T07:53:40.576Z"}
+{"level":"info","message":"--- Starting Data Pipeline ---","timestamp":"2024-12-08T08:04:26.767Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T08:04:26.773Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T08:04:26.774Z"}
+{"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-08T08:04:27.049Z"}
+{"level":"info","message":"Fetched CoinGecko data successfully.","timestamp":"2024-12-08T08:04:27.051Z"}
+{"level":"info","message":"Fetching GMX token prices...","timestamp":"2024-12-08T08:04:27.052Z"}
+{"level":"info","message":"Fetching GMX token prices from arbitrum...","timestamp":"2024-12-08T08:04:27.053Z"}
+{"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-08T08:04:27.660Z"}
+{"level":"info","message":"Fetching GMX token prices from avalanche...","timestamp":"2024-12-08T08:04:27.661Z"}
+{"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-08T08:04:28.275Z"}
+{"level":"info","message":"Fetched GMX token prices successfully.","timestamp":"2024-12-08T08:04:28.276Z"}
+{"level":"info","message":"Fetching Uniswap data...","timestamp":"2024-12-08T08:04:28.276Z"}
+ETH Price: $3976.92143553783
+Total Volume: $1454375926686.4844
+Top Pool: USDC/WETH
+Volume: $510390485321.1996834360086186355477
+Liquidity: $7219821500266397260
+Data saved to historical-data.json
+{"level":"info","message":"Starting trend analysis...","timestamp":"2024-12-08T08:04:28.896Z"}
+{"level":"warn","message":"No CoinGecko data provided.","timestamp":"2024-12-08T08:04:28.897Z"}
+{"level":"warn","message":"No GMX Arbitrum data provided.","timestamp":"2024-12-08T08:04:28.897Z"}
+{"level":"warn","message":"No GMX Avalanche data provided.","timestamp":"2024-12-08T08:04:28.897Z"}
+{"level":"info","message":"Trends saved to /home/techbu/OFA_Project_Local/ofa-project/logs/trends-log.json","timestamp":"2024-12-08T08:04:28.898Z"}
+{"level":"info","message":"Trends summary: 0 trend(s) processed.","timestamp":"2024-12-08T08:04:28.899Z"}
+{"level":"info","message":"Trend analysis completed.","timestamp":"2024-12-08T08:04:28.899Z"}
+Alert sent to Discord: 
+🚨 New Data Synced:
+- ETH Price: $3976.92
+- Total Volume: $1,454,375,926,686.484
+
+📊 Top Pool: USDC/WETH
+- Volume: $510390485321.1996834360086186355477
+- Liquidity: $7219821500266397260
+      
+🚀 Significant Volume Detected in Pool USDC/WETH!
+{"level":"info","message":"Fetched Uniswap data successfully.","timestamp":"2024-12-08T08:04:29.105Z"}
+{"level":"info","message":"Combined Data for Trend Analysis:","timestamp":"2024-12-08T08:04:29.107Z"}
+{"level":"info","message":"Starting trend analysis...","timestamp":"2024-12-08T08:04:29.107Z"}
+{"level":"info","message":"Trends saved to /home/techbu/OFA_Project_Local/ofa-project/logs/trends-log.json","timestamp":"2024-12-08T08:04:29.112Z"}
+{"level":"info","message":"Trends summary: 70 trend(s) processed.","timestamp":"2024-12-08T08:04:29.113Z"}
+{"level":"info","message":"Trend analysis completed.","timestamp":"2024-12-08T08:04:29.113Z"}
+{"level":"info","message":"Trends analysis result:","timestamp":"2024-12-08T08:04:29.116Z"}
 Data pipeline completed successfully.
 Generating signals...
-{"level":"info","message":"Generating trading signals...","timestamp":"2024-12-08T07:53:40.579Z"}
-{"level":"info","message":"Using AI model for signal generation...","timestamp":"2024-12-08T07:53:40.580Z"}
-{"level":"info","message":"Generating signals using AI model...","timestamp":"2024-12-08T07:53:40.580Z"}
-{"level":"info","message":"Using mock AI model for predictions...","timestamp":"2024-12-08T07:53:40.581Z"}
-{"level":"info","message":"Mock signal for ethereum: Hold (Confidence: 0.43)","timestamp":"2024-12-08T07:53:40.582Z"}
-{"level":"info","message":"Mock signal for zksync: Buy (Confidence: 0.89)","timestamp":"2024-12-08T07:53:40.582Z"}
-{"level":"info","message":"Mock signal for GMX-Arbitrum: Buy (Confidence: 0.80)","timestamp":"2024-12-08T07:53:40.583Z"}
-{"level":"info","message":"Mock signal for GMX-Avalanche: Hold (Confidence: 0.64)","timestamp":"2024-12-08T07:53:40.584Z"}
-{"level":"info","message":"AI signals generated successfully:","timestamp":"2024-12-08T07:53:40.585Z"}
+{"level":"info","message":"Generating trading signals...","timestamp":"2024-12-08T08:04:29.120Z"}
+{"level":"info","message":"Using AI model for signal generation...","timestamp":"2024-12-08T08:04:29.121Z"}
+{"level":"info","message":"Generating signals using AI model...","timestamp":"2024-12-08T08:04:29.122Z"}
+{"level":"info","message":"Using mock AI model for predictions...","timestamp":"2024-12-08T08:04:29.123Z"}
+{"level":"info","message":"Mock signal for ethereum: Hold (Confidence: 0.59)","timestamp":"2024-12-08T08:04:29.123Z"}
+{"level":"info","message":"Mock signal for zksync: Sell (Confidence: 0.23)","timestamp":"2024-12-08T08:04:29.124Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-0: Buy (Confidence: 0.76)","timestamp":"2024-12-08T08:04:29.124Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-1: Hold (Confidence: 0.54)","timestamp":"2024-12-08T08:04:29.125Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-2: Sell (Confidence: 0.16)","timestamp":"2024-12-08T08:04:29.125Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-3: Hold (Confidence: 0.49)","timestamp":"2024-12-08T08:04:29.126Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-4: Hold (Confidence: 0.35)","timestamp":"2024-12-08T08:04:29.126Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-5: Sell (Confidence: 0.26)","timestamp":"2024-12-08T08:04:29.127Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-6: Hold (Confidence: 0.67)","timestamp":"2024-12-08T08:04:29.127Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-7: Buy (Confidence: 0.94)","timestamp":"2024-12-08T08:04:29.128Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-8: Sell (Confidence: 0.24)","timestamp":"2024-12-08T08:04:29.128Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-9: Hold (Confidence: 0.34)","timestamp":"2024-12-08T08:04:29.128Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-10: Buy (Confidence: 0.79)","timestamp":"2024-12-08T08:04:29.129Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-11: Sell (Confidence: 0.22)","timestamp":"2024-12-08T08:04:29.129Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-12: Buy (Confidence: 0.80)","timestamp":"2024-12-08T08:04:29.130Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-13: Sell (Confidence: 0.28)","timestamp":"2024-12-08T08:04:29.131Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-14: Buy (Confidence: 0.75)","timestamp":"2024-12-08T08:04:29.131Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-15: Buy (Confidence: 0.97)","timestamp":"2024-12-08T08:04:29.131Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-16: Hold (Confidence: 0.41)","timestamp":"2024-12-08T08:04:29.131Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-17: Sell (Confidence: 0.01)","timestamp":"2024-12-08T08:04:29.132Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-18: Buy (Confidence: 0.74)","timestamp":"2024-12-08T08:04:29.132Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-19: Sell (Confidence: 0.07)","timestamp":"2024-12-08T08:04:29.132Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-20: Sell (Confidence: 0.18)","timestamp":"2024-12-08T08:04:29.132Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-21: Hold (Confidence: 0.53)","timestamp":"2024-12-08T08:04:29.132Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-22: Sell (Confidence: 0.01)","timestamp":"2024-12-08T08:04:29.132Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-23: Sell (Confidence: 0.29)","timestamp":"2024-12-08T08:04:29.133Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-24: Sell (Confidence: 0.27)","timestamp":"2024-12-08T08:04:29.133Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-25: Sell (Confidence: 0.04)","timestamp":"2024-12-08T08:04:29.133Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-26: Hold (Confidence: 0.37)","timestamp":"2024-12-08T08:04:29.133Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-27: Hold (Confidence: 0.66)","timestamp":"2024-12-08T08:04:29.133Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-28: Sell (Confidence: 0.06)","timestamp":"2024-12-08T08:04:29.134Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-29: Buy (Confidence: 0.88)","timestamp":"2024-12-08T08:04:29.134Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-30: Hold (Confidence: 0.30)","timestamp":"2024-12-08T08:04:29.134Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-31: Buy (Confidence: 0.72)","timestamp":"2024-12-08T08:04:29.134Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-32: Hold (Confidence: 0.61)","timestamp":"2024-12-08T08:04:29.134Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-33: Buy (Confidence: 0.71)","timestamp":"2024-12-08T08:04:29.134Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-34: Hold (Confidence: 0.40)","timestamp":"2024-12-08T08:04:29.135Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-35: Sell (Confidence: 0.04)","timestamp":"2024-12-08T08:04:29.135Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-36: Buy (Confidence: 0.97)","timestamp":"2024-12-08T08:04:29.135Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-37: Sell (Confidence: 0.11)","timestamp":"2024-12-08T08:04:29.135Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-38: Hold (Confidence: 0.62)","timestamp":"2024-12-08T08:04:29.135Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-39: Hold (Confidence: 0.55)","timestamp":"2024-12-08T08:04:29.135Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-40: Hold (Confidence: 0.63)","timestamp":"2024-12-08T08:04:29.136Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-41: Hold (Confidence: 0.40)","timestamp":"2024-12-08T08:04:29.136Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-42: Hold (Confidence: 0.60)","timestamp":"2024-12-08T08:04:29.136Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-43: Sell (Confidence: 0.23)","timestamp":"2024-12-08T08:04:29.136Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-44: Hold (Confidence: 0.43)","timestamp":"2024-12-08T08:04:29.136Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-45: Hold (Confidence: 0.33)","timestamp":"2024-12-08T08:04:29.136Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-46: Sell (Confidence: 0.18)","timestamp":"2024-12-08T08:04:29.136Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-47: Buy (Confidence: 0.79)","timestamp":"2024-12-08T08:04:29.136Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-48: Hold (Confidence: 0.68)","timestamp":"2024-12-08T08:04:29.137Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-49: Buy (Confidence: 0.99)","timestamp":"2024-12-08T08:04:29.137Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-50: Hold (Confidence: 0.57)","timestamp":"2024-12-08T08:04:29.137Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-51: Buy (Confidence: 0.92)","timestamp":"2024-12-08T08:04:29.137Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-52: Buy (Confidence: 0.94)","timestamp":"2024-12-08T08:04:29.137Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-53: Hold (Confidence: 0.35)","timestamp":"2024-12-08T08:04:29.137Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-0: Sell (Confidence: 0.00)","timestamp":"2024-12-08T08:04:29.137Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-1: Buy (Confidence: 0.87)","timestamp":"2024-12-08T08:04:29.138Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-2: Buy (Confidence: 0.81)","timestamp":"2024-12-08T08:04:29.138Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-3: Sell (Confidence: 0.09)","timestamp":"2024-12-08T08:04:29.138Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-4: Hold (Confidence: 0.47)","timestamp":"2024-12-08T08:04:29.138Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-5: Buy (Confidence: 0.98)","timestamp":"2024-12-08T08:04:29.138Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-6: Hold (Confidence: 0.69)","timestamp":"2024-12-08T08:04:29.138Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-7: Hold (Confidence: 0.38)","timestamp":"2024-12-08T08:04:29.138Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-8: Hold (Confidence: 0.48)","timestamp":"2024-12-08T08:04:29.138Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-9: Hold (Confidence: 0.50)","timestamp":"2024-12-08T08:04:29.139Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-10: Hold (Confidence: 0.66)","timestamp":"2024-12-08T08:04:29.139Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-11: Hold (Confidence: 0.48)","timestamp":"2024-12-08T08:04:29.139Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-12: Hold (Confidence: 0.61)","timestamp":"2024-12-08T08:04:29.139Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-13: Buy (Confidence: 0.96)","timestamp":"2024-12-08T08:04:29.139Z"}
+{"level":"info","message":"AI signals generated successfully:","timestamp":"2024-12-08T08:04:29.139Z"}
 Signals generated successfully: {
   ethereum: {
     token: 'ethereum',
     signal: 'Hold',
-    confidence: '0.43',
-    price: 3703.76
+    confidence: '0.59',
+    price: 3980.3
   },
   zksync: {
     token: 'zksync',
-    signal: 'Buy',
-    confidence: '0.89',
-    price: 0.229815
+    signal: 'Sell',
+    confidence: '0.23',
+    price: 0.253063
   },
-  'GMX-Arbitrum': {
-    token: 'GMX-Arbitrum',
+  'GMX-Arbitrum-0': {
+    token: 'GMX-Arbitrum-0',
+    signal: 'Buy',
+    confidence: '0.76',
+    price: 0
+  },
+  'GMX-Arbitrum-1': {
+    token: 'GMX-Arbitrum-1',
+    signal: 'Hold',
+    confidence: '0.54',
+    price: 0
+  },
+  'GMX-Arbitrum-2': {
+    token: 'GMX-Arbitrum-2',
+    signal: 'Sell',
+    confidence: '0.16',
+    price: 0
+  },
+  'GMX-Arbitrum-3': {
+    token: 'GMX-Arbitrum-3',
+    signal: 'Hold',
+    confidence: '0.49',
+    price: 0
+  },
+  'GMX-Arbitrum-4': {
+    token: 'GMX-Arbitrum-4',
+    signal: 'Hold',
+    confidence: '0.35',
+    price: 0
+  },
+  'GMX-Arbitrum-5': {
+    token: 'GMX-Arbitrum-5',
+    signal: 'Sell',
+    confidence: '0.26',
+    price: 0
+  },
+  'GMX-Arbitrum-6': {
+    token: 'GMX-Arbitrum-6',
+    signal: 'Hold',
+    confidence: '0.67',
+    price: 0
+  },
+  'GMX-Arbitrum-7': {
+    token: 'GMX-Arbitrum-7',
+    signal: 'Buy',
+    confidence: '0.94',
+    price: 0
+  },
+  'GMX-Arbitrum-8': {
+    token: 'GMX-Arbitrum-8',
+    signal: 'Sell',
+    confidence: '0.24',
+    price: 0
+  },
+  'GMX-Arbitrum-9': {
+    token: 'GMX-Arbitrum-9',
+    signal: 'Hold',
+    confidence: '0.34',
+    price: 0
+  },
+  'GMX-Arbitrum-10': {
+    token: 'GMX-Arbitrum-10',
+    signal: 'Buy',
+    confidence: '0.79',
+    price: 0
+  },
+  'GMX-Arbitrum-11': {
+    token: 'GMX-Arbitrum-11',
+    signal: 'Sell',
+    confidence: '0.22',
+    price: 0
+  },
+  'GMX-Arbitrum-12': {
+    token: 'GMX-Arbitrum-12',
     signal: 'Buy',
     confidence: '0.80',
-    price: undefined
+    price: 0
   },
-  'GMX-Avalanche': {
-    token: 'GMX-Avalanche',
+  'GMX-Arbitrum-13': {
+    token: 'GMX-Arbitrum-13',
+    signal: 'Sell',
+    confidence: '0.28',
+    price: 0
+  },
+  'GMX-Arbitrum-14': {
+    token: 'GMX-Arbitrum-14',
+    signal: 'Buy',
+    confidence: '0.75',
+    price: 0
+  },
+  'GMX-Arbitrum-15': {
+    token: 'GMX-Arbitrum-15',
+    signal: 'Buy',
+    confidence: '0.97',
+    price: 0
+  },
+  'GMX-Arbitrum-16': {
+    token: 'GMX-Arbitrum-16',
     signal: 'Hold',
-    confidence: '0.64',
-    price: undefined
+    confidence: '0.41',
+    price: 0
+  },
+  'GMX-Arbitrum-17': {
+    token: 'GMX-Arbitrum-17',
+    signal: 'Sell',
+    confidence: '0.01',
+    price: 0
+  },
+  'GMX-Arbitrum-18': {
+    token: 'GMX-Arbitrum-18',
+    signal: 'Buy',
+    confidence: '0.74',
+    price: 0
+  },
+  'GMX-Arbitrum-19': {
+    token: 'GMX-Arbitrum-19',
+    signal: 'Sell',
+    confidence: '0.07',
+    price: 0
+  },
+  'GMX-Arbitrum-20': {
+    token: 'GMX-Arbitrum-20',
+    signal: 'Sell',
+    confidence: '0.18',
+    price: 0
+  },
+  'GMX-Arbitrum-21': {
+    token: 'GMX-Arbitrum-21',
+    signal: 'Hold',
+    confidence: '0.53',
+    price: 0
+  },
+  'GMX-Arbitrum-22': {
+    token: 'GMX-Arbitrum-22',
+    signal: 'Sell',
+    confidence: '0.01',
+    price: 0
+  },
+  'GMX-Arbitrum-23': {
+    token: 'GMX-Arbitrum-23',
+    signal: 'Sell',
+    confidence: '0.29',
+    price: 0
+  },
+  'GMX-Arbitrum-24': {
+    token: 'GMX-Arbitrum-24',
+    signal: 'Sell',
+    confidence: '0.27',
+    price: 0
+  },
+  'GMX-Arbitrum-25': {
+    token: 'GMX-Arbitrum-25',
+    signal: 'Sell',
+    confidence: '0.04',
+    price: 0
+  },
+  'GMX-Arbitrum-26': {
+    token: 'GMX-Arbitrum-26',
+    signal: 'Hold',
+    confidence: '0.37',
+    price: 0
+  },
+  'GMX-Arbitrum-27': {
+    token: 'GMX-Arbitrum-27',
+    signal: 'Hold',
+    confidence: '0.66',
+    price: 0
+  },
+  'GMX-Arbitrum-28': {
+    token: 'GMX-Arbitrum-28',
+    signal: 'Sell',
+    confidence: '0.06',
+    price: 0
+  },
+  'GMX-Arbitrum-29': {
+    token: 'GMX-Arbitrum-29',
+    signal: 'Buy',
+    confidence: '0.88',
+    price: 0
+  },
+  'GMX-Arbitrum-30': {
+    token: 'GMX-Arbitrum-30',
+    signal: 'Hold',
+    confidence: '0.30',
+    price: 0
+  },
+  'GMX-Arbitrum-31': {
+    token: 'GMX-Arbitrum-31',
+    signal: 'Buy',
+    confidence: '0.72',
+    price: 0
+  },
+  'GMX-Arbitrum-32': {
+    token: 'GMX-Arbitrum-32',
+    signal: 'Hold',
+    confidence: '0.61',
+    price: 0
+  },
+  'GMX-Arbitrum-33': {
+    token: 'GMX-Arbitrum-33',
+    signal: 'Buy',
+    confidence: '0.71',
+    price: 0
+  },
+  'GMX-Arbitrum-34': {
+    token: 'GMX-Arbitrum-34',
+    signal: 'Hold',
+    confidence: '0.40',
+    price: 0
+  },
+  'GMX-Arbitrum-35': {
+    token: 'GMX-Arbitrum-35',
+    signal: 'Sell',
+    confidence: '0.04',
+    price: 0
+  },
+  'GMX-Arbitrum-36': {
+    token: 'GMX-Arbitrum-36',
+    signal: 'Buy',
+    confidence: '0.97',
+    price: 0
+  },
+  'GMX-Arbitrum-37': {
+    token: 'GMX-Arbitrum-37',
+    signal: 'Sell',
+    confidence: '0.11',
+    price: 0
+  },
+  'GMX-Arbitrum-38': {
+    token: 'GMX-Arbitrum-38',
+    signal: 'Hold',
+    confidence: '0.62',
+    price: 0
+  },
+  'GMX-Arbitrum-39': {
+    token: 'GMX-Arbitrum-39',
+    signal: 'Hold',
+    confidence: '0.55',
+    price: 0
+  },
+  'GMX-Arbitrum-40': {
+    token: 'GMX-Arbitrum-40',
+    signal: 'Hold',
+    confidence: '0.63',
+    price: 0
+  },
+  'GMX-Arbitrum-41': {
+    token: 'GMX-Arbitrum-41',
+    signal: 'Hold',
+    confidence: '0.40',
+    price: 0
+  },
+  'GMX-Arbitrum-42': {
+    token: 'GMX-Arbitrum-42',
+    signal: 'Hold',
+    confidence: '0.60',
+    price: 0
+  },
+  'GMX-Arbitrum-43': {
+    token: 'GMX-Arbitrum-43',
+    signal: 'Sell',
+    confidence: '0.23',
+    price: 0
+  },
+  'GMX-Arbitrum-44': {
+    token: 'GMX-Arbitrum-44',
+    signal: 'Hold',
+    confidence: '0.43',
+    price: 0
+  },
+  'GMX-Arbitrum-45': {
+    token: 'GMX-Arbitrum-45',
+    signal: 'Hold',
+    confidence: '0.33',
+    price: 0
+  },
+  'GMX-Arbitrum-46': {
+    token: 'GMX-Arbitrum-46',
+    signal: 'Sell',
+    confidence: '0.18',
+    price: 0
+  },
+  'GMX-Arbitrum-47': {
+    token: 'GMX-Arbitrum-47',
+    signal: 'Buy',
+    confidence: '0.79',
+    price: 0
+  },
+  'GMX-Arbitrum-48': {
+    token: 'GMX-Arbitrum-48',
+    signal: 'Hold',
+    confidence: '0.68',
+    price: 0
+  },
+  'GMX-Arbitrum-49': {
+    token: 'GMX-Arbitrum-49',
+    signal: 'Buy',
+    confidence: '0.99',
+    price: 0
+  },
+  'GMX-Arbitrum-50': {
+    token: 'GMX-Arbitrum-50',
+    signal: 'Hold',
+    confidence: '0.57',
+    price: 0
+  },
+  'GMX-Arbitrum-51': {
+    token: 'GMX-Arbitrum-51',
+    signal: 'Buy',
+    confidence: '0.92',
+    price: 0
+  },
+  'GMX-Arbitrum-52': {
+    token: 'GMX-Arbitrum-52',
+    signal: 'Buy',
+    confidence: '0.94',
+    price: 0
+  },
+  'GMX-Arbitrum-53': {
+    token: 'GMX-Arbitrum-53',
+    signal: 'Hold',
+    confidence: '0.35',
+    price: 0
+  },
+  'GMX-Avalanche-0': {
+    token: 'GMX-Avalanche-0',
+    signal: 'Sell',
+    confidence: '0.00',
+    price: 0
+  },
+  'GMX-Avalanche-1': {
+    token: 'GMX-Avalanche-1',
+    signal: 'Buy',
+    confidence: '0.87',
+    price: 0
+  },
+  'GMX-Avalanche-2': {
+    token: 'GMX-Avalanche-2',
+    signal: 'Buy',
+    confidence: '0.81',
+    price: 0
+  },
+  'GMX-Avalanche-3': {
+    token: 'GMX-Avalanche-3',
+    signal: 'Sell',
+    confidence: '0.09',
+    price: 0
+  },
+  'GMX-Avalanche-4': {
+    token: 'GMX-Avalanche-4',
+    signal: 'Hold',
+    confidence: '0.47',
+    price: 0
+  },
+  'GMX-Avalanche-5': {
+    token: 'GMX-Avalanche-5',
+    signal: 'Buy',
+    confidence: '0.98',
+    price: 0
+  },
+  'GMX-Avalanche-6': {
+    token: 'GMX-Avalanche-6',
+    signal: 'Hold',
+    confidence: '0.69',
+    price: 0
+  },
+  'GMX-Avalanche-7': {
+    token: 'GMX-Avalanche-7',
+    signal: 'Hold',
+    confidence: '0.38',
+    price: 0
+  },
+  'GMX-Avalanche-8': {
+    token: 'GMX-Avalanche-8',
+    signal: 'Hold',
+    confidence: '0.48',
+    price: 0
+  },
+  'GMX-Avalanche-9': {
+    token: 'GMX-Avalanche-9',
+    signal: 'Hold',
+    confidence: '0.50',
+    price: 0
+  },
+  'GMX-Avalanche-10': {
+    token: 'GMX-Avalanche-10',
+    signal: 'Hold',
+    confidence: '0.66',
+    price: 0
+  },
+  'GMX-Avalanche-11': {
+    token: 'GMX-Avalanche-11',
+    signal: 'Hold',
+    confidence: '0.48',
+    price: 0
+  },
+  'GMX-Avalanche-12': {
+    token: 'GMX-Avalanche-12',
+    signal: 'Hold',
+    confidence: '0.61',
+    price: 0
+  },
+  'GMX-Avalanche-13': {
+    token: 'GMX-Avalanche-13',
+    signal: 'Buy',
+    confidence: '0.96',
+    price: 0
   }
 }
 Executing live trading...
-{"level":"info","message":"--- Starting Live Trading ---","timestamp":"2024-12-08T07:53:40.590Z"}
-{"level":"info","message":"Generating trading signals...","timestamp":"2024-12-08T07:53:40.590Z"}
-{"level":"info","message":"Using AI model for signal generation...","timestamp":"2024-12-08T07:53:40.590Z"}
-{"level":"info","message":"Generating signals using AI model...","timestamp":"2024-12-08T07:53:40.591Z"}
-{"level":"info","message":"Using mock AI model for predictions...","timestamp":"2024-12-08T07:53:40.591Z"}
-{"level":"info","message":"Mock signal for ethereum: Hold (Confidence: 0.58)","timestamp":"2024-12-08T07:53:40.591Z"}
-{"level":"info","message":"Mock signal for zksync: Hold (Confidence: 0.60)","timestamp":"2024-12-08T07:53:40.591Z"}
-{"level":"info","message":"Mock signal for GMX-Arbitrum: Hold (Confidence: 0.41)","timestamp":"2024-12-08T07:53:40.591Z"}
-{"level":"info","message":"Mock signal for GMX-Avalanche: Sell (Confidence: 0.26)","timestamp":"2024-12-08T07:53:40.591Z"}
-{"level":"info","message":"AI signals generated successfully:","timestamp":"2024-12-08T07:53:40.591Z"}
-{"level":"warn","message":"Skipping trade for ethereum: Low confidence (0.58).","timestamp":"2024-12-08T07:53:40.592Z"}
-{"level":"warn","message":"Skipping trade for zksync: Low confidence (0.60).","timestamp":"2024-12-08T07:53:40.592Z"}
-{"level":"warn","message":"Skipping trade for GMX-Arbitrum: Low confidence (0.41).","timestamp":"2024-12-08T07:53:40.592Z"}
-{"level":"warn","message":"Skipping trade for GMX-Avalanche: Low confidence (0.26).","timestamp":"2024-12-08T07:53:40.592Z"}
-{"level":"info","message":"Live trading session completed successfully.","timestamp":"2024-12-08T07:53:40.592Z"}
+{"level":"info","message":"--- Starting Live Trading ---","timestamp":"2024-12-08T08:04:29.148Z"}
+{"level":"info","message":"Generating trading signals...","timestamp":"2024-12-08T08:04:29.148Z"}
+{"level":"info","message":"Using AI model for signal generation...","timestamp":"2024-12-08T08:04:29.148Z"}
+{"level":"info","message":"Generating signals using AI model...","timestamp":"2024-12-08T08:04:29.149Z"}
+{"level":"info","message":"Using mock AI model for predictions...","timestamp":"2024-12-08T08:04:29.149Z"}
+{"level":"info","message":"Mock signal for ethereum: Hold (Confidence: 0.46)","timestamp":"2024-12-08T08:04:29.149Z"}
+{"level":"info","message":"Mock signal for zksync: Hold (Confidence: 0.50)","timestamp":"2024-12-08T08:04:29.149Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-0: Hold (Confidence: 0.42)","timestamp":"2024-12-08T08:04:29.149Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-1: Sell (Confidence: 0.08)","timestamp":"2024-12-08T08:04:29.149Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-2: Sell (Confidence: 0.28)","timestamp":"2024-12-08T08:04:29.149Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-3: Hold (Confidence: 0.61)","timestamp":"2024-12-08T08:04:29.149Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-4: Sell (Confidence: 0.29)","timestamp":"2024-12-08T08:04:29.149Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-5: Hold (Confidence: 0.66)","timestamp":"2024-12-08T08:04:29.149Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-6: Sell (Confidence: 0.06)","timestamp":"2024-12-08T08:04:29.150Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-7: Buy (Confidence: 0.78)","timestamp":"2024-12-08T08:04:29.150Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-8: Hold (Confidence: 0.45)","timestamp":"2024-12-08T08:04:29.150Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-9: Sell (Confidence: 0.05)","timestamp":"2024-12-08T08:04:29.150Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-10: Hold (Confidence: 0.64)","timestamp":"2024-12-08T08:04:29.150Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-11: Buy (Confidence: 1.00)","timestamp":"2024-12-08T08:04:29.150Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-12: Hold (Confidence: 0.62)","timestamp":"2024-12-08T08:04:29.150Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-13: Buy (Confidence: 0.95)","timestamp":"2024-12-08T08:04:29.150Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-14: Hold (Confidence: 0.57)","timestamp":"2024-12-08T08:04:29.150Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-15: Hold (Confidence: 0.36)","timestamp":"2024-12-08T08:04:29.150Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-16: Hold (Confidence: 0.55)","timestamp":"2024-12-08T08:04:29.150Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-17: Hold (Confidence: 0.33)","timestamp":"2024-12-08T08:04:29.150Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-18: Buy (Confidence: 0.88)","timestamp":"2024-12-08T08:04:29.151Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-19: Sell (Confidence: 0.28)","timestamp":"2024-12-08T08:04:29.151Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-20: Buy (Confidence: 0.73)","timestamp":"2024-12-08T08:04:29.151Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-21: Buy (Confidence: 0.90)","timestamp":"2024-12-08T08:04:29.151Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-22: Sell (Confidence: 0.30)","timestamp":"2024-12-08T08:04:29.151Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-23: Hold (Confidence: 0.31)","timestamp":"2024-12-08T08:04:29.151Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-24: Hold (Confidence: 0.65)","timestamp":"2024-12-08T08:04:29.151Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-25: Hold (Confidence: 0.33)","timestamp":"2024-12-08T08:04:29.151Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-26: Buy (Confidence: 0.97)","timestamp":"2024-12-08T08:04:29.151Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-27: Sell (Confidence: 0.07)","timestamp":"2024-12-08T08:04:29.151Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-28: Hold (Confidence: 0.50)","timestamp":"2024-12-08T08:04:29.151Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-29: Buy (Confidence: 0.98)","timestamp":"2024-12-08T08:04:29.152Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-30: Buy (Confidence: 0.81)","timestamp":"2024-12-08T08:04:29.152Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-31: Sell (Confidence: 0.19)","timestamp":"2024-12-08T08:04:29.152Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-32: Hold (Confidence: 0.54)","timestamp":"2024-12-08T08:04:29.152Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-33: Hold (Confidence: 0.33)","timestamp":"2024-12-08T08:04:29.152Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-34: Hold (Confidence: 0.39)","timestamp":"2024-12-08T08:04:29.152Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-35: Hold (Confidence: 0.42)","timestamp":"2024-12-08T08:04:29.152Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-36: Sell (Confidence: 0.24)","timestamp":"2024-12-08T08:04:29.152Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-37: Buy (Confidence: 0.80)","timestamp":"2024-12-08T08:04:29.152Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-38: Buy (Confidence: 0.76)","timestamp":"2024-12-08T08:04:29.152Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-39: Hold (Confidence: 0.70)","timestamp":"2024-12-08T08:04:29.153Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-40: Hold (Confidence: 0.39)","timestamp":"2024-12-08T08:04:29.153Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-41: Hold (Confidence: 0.50)","timestamp":"2024-12-08T08:04:29.153Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-42: Sell (Confidence: 0.24)","timestamp":"2024-12-08T08:04:29.153Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-43: Hold (Confidence: 0.62)","timestamp":"2024-12-08T08:04:29.153Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-44: Buy (Confidence: 0.82)","timestamp":"2024-12-08T08:04:29.153Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-45: Hold (Confidence: 0.52)","timestamp":"2024-12-08T08:04:29.153Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-46: Buy (Confidence: 0.70)","timestamp":"2024-12-08T08:04:29.153Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-47: Buy (Confidence: 0.92)","timestamp":"2024-12-08T08:04:29.154Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-48: Buy (Confidence: 0.75)","timestamp":"2024-12-08T08:04:29.154Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-49: Sell (Confidence: 0.05)","timestamp":"2024-12-08T08:04:29.154Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-50: Hold (Confidence: 0.61)","timestamp":"2024-12-08T08:04:29.154Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-51: Sell (Confidence: 0.02)","timestamp":"2024-12-08T08:04:29.154Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-52: Buy (Confidence: 0.75)","timestamp":"2024-12-08T08:04:29.154Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum-53: Hold (Confidence: 0.57)","timestamp":"2024-12-08T08:04:29.154Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-0: Buy (Confidence: 0.89)","timestamp":"2024-12-08T08:04:29.154Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-1: Sell (Confidence: 0.26)","timestamp":"2024-12-08T08:04:29.154Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-2: Hold (Confidence: 0.64)","timestamp":"2024-12-08T08:04:29.155Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-3: Buy (Confidence: 0.70)","timestamp":"2024-12-08T08:04:29.155Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-4: Buy (Confidence: 0.73)","timestamp":"2024-12-08T08:04:29.155Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-5: Buy (Confidence: 0.81)","timestamp":"2024-12-08T08:04:29.155Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-6: Hold (Confidence: 0.42)","timestamp":"2024-12-08T08:04:29.155Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-7: Sell (Confidence: 0.27)","timestamp":"2024-12-08T08:04:29.155Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-8: Buy (Confidence: 0.71)","timestamp":"2024-12-08T08:04:29.156Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-9: Buy (Confidence: 0.95)","timestamp":"2024-12-08T08:04:29.156Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-10: Hold (Confidence: 0.47)","timestamp":"2024-12-08T08:04:29.156Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-11: Buy (Confidence: 0.70)","timestamp":"2024-12-08T08:04:29.156Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-12: Hold (Confidence: 0.47)","timestamp":"2024-12-08T08:04:29.156Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche-13: Buy (Confidence: 0.79)","timestamp":"2024-12-08T08:04:29.156Z"}
+{"level":"info","message":"AI signals generated successfully:","timestamp":"2024-12-08T08:04:29.157Z"}
+{"level":"warn","message":"Skipping trade for ethereum: Low confidence (0.46). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.157Z"}
+{"level":"warn","message":"Skipping trade for zksync: Low confidence (0.50). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.157Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-0: Low confidence (0.42). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.157Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-1: Low confidence (0.08). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.157Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-2: Low confidence (0.28). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.157Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-3: Low confidence (0.61). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.157Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-4: Low confidence (0.29). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.157Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-5: Low confidence (0.66). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.158Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-6: Low confidence (0.06). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.158Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-7: Price data is unavailable or invalid (price: 0).","timestamp":"2024-12-08T08:04:29.158Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-8: Low confidence (0.45). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.158Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-9: Low confidence (0.05). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.158Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-10: Low confidence (0.64). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.158Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-11: Price data is unavailable or invalid (price: 0).","timestamp":"2024-12-08T08:04:29.158Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-12: Low confidence (0.62). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.158Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-13: Price data is unavailable or invalid (price: 0).","timestamp":"2024-12-08T08:04:29.158Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-14: Low confidence (0.57). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.158Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-15: Low confidence (0.36). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.159Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-16: Low confidence (0.55). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.159Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-17: Low confidence (0.33). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.159Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-18: Price data is unavailable or invalid (price: 0).","timestamp":"2024-12-08T08:04:29.159Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-19: Low confidence (0.28). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.159Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-20: Price data is unavailable or invalid (price: 0).","timestamp":"2024-12-08T08:04:29.159Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-21: Price data is unavailable or invalid (price: 0).","timestamp":"2024-12-08T08:04:29.159Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-22: Low confidence (0.30). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.159Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-23: Low confidence (0.31). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.159Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-24: Low confidence (0.65). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.160Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-25: Low confidence (0.33). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.160Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-26: Price data is unavailable or invalid (price: 0).","timestamp":"2024-12-08T08:04:29.160Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-27: Low confidence (0.07). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.160Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-28: Low confidence (0.50). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.160Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-29: Price data is unavailable or invalid (price: 0).","timestamp":"2024-12-08T08:04:29.160Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-30: Price data is unavailable or invalid (price: 0).","timestamp":"2024-12-08T08:04:29.160Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-31: Low confidence (0.19). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.160Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-32: Low confidence (0.54). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.160Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-33: Low confidence (0.33). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.161Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-34: Low confidence (0.39). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.161Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-35: Low confidence (0.42). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.161Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-36: Low confidence (0.24). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.161Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-37: Price data is unavailable or invalid (price: 0).","timestamp":"2024-12-08T08:04:29.162Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-38: Price data is unavailable or invalid (price: 0).","timestamp":"2024-12-08T08:04:29.162Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-39: Price data is unavailable or invalid (price: 0).","timestamp":"2024-12-08T08:04:29.162Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-40: Low confidence (0.39). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.162Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-41: Low confidence (0.50). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.162Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-42: Low confidence (0.24). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.162Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-43: Low confidence (0.62). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.162Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-44: Price data is unavailable or invalid (price: 0).","timestamp":"2024-12-08T08:04:29.162Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-45: Low confidence (0.52). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.162Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-46: Price data is unavailable or invalid (price: 0).","timestamp":"2024-12-08T08:04:29.162Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-47: Price data is unavailable or invalid (price: 0).","timestamp":"2024-12-08T08:04:29.162Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-48: Price data is unavailable or invalid (price: 0).","timestamp":"2024-12-08T08:04:29.162Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-49: Low confidence (0.05). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.162Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-50: Low confidence (0.61). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.163Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-51: Low confidence (0.02). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.163Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-52: Price data is unavailable or invalid (price: 0).","timestamp":"2024-12-08T08:04:29.163Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum-53: Low confidence (0.57). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.163Z"}
+{"level":"warn","message":"Skipping trade for GMX-Avalanche-0: Price data is unavailable or invalid (price: 0).","timestamp":"2024-12-08T08:04:29.163Z"}
+{"level":"warn","message":"Skipping trade for GMX-Avalanche-1: Low confidence (0.26). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.163Z"}
+{"level":"warn","message":"Skipping trade for GMX-Avalanche-2: Low confidence (0.64). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.163Z"}
+{"level":"warn","message":"Skipping trade for GMX-Avalanche-3: Price data is unavailable or invalid (price: 0).","timestamp":"2024-12-08T08:04:29.163Z"}
+{"level":"warn","message":"Skipping trade for GMX-Avalanche-4: Price data is unavailable or invalid (price: 0).","timestamp":"2024-12-08T08:04:29.163Z"}
+{"level":"warn","message":"Skipping trade for GMX-Avalanche-5: Price data is unavailable or invalid (price: 0).","timestamp":"2024-12-08T08:04:29.163Z"}
+{"level":"warn","message":"Skipping trade for GMX-Avalanche-6: Low confidence (0.42). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.163Z"}
+{"level":"warn","message":"Skipping trade for GMX-Avalanche-7: Low confidence (0.27). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.163Z"}
+{"level":"warn","message":"Skipping trade for GMX-Avalanche-8: Price data is unavailable or invalid (price: 0).","timestamp":"2024-12-08T08:04:29.163Z"}
+{"level":"warn","message":"Skipping trade for GMX-Avalanche-9: Price data is unavailable or invalid (price: 0).","timestamp":"2024-12-08T08:04:29.164Z"}
+{"level":"warn","message":"Skipping trade for GMX-Avalanche-10: Low confidence (0.47). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.164Z"}
+{"level":"warn","message":"Skipping trade for GMX-Avalanche-11: Price data is unavailable or invalid (price: 0).","timestamp":"2024-12-08T08:04:29.164Z"}
+{"level":"warn","message":"Skipping trade for GMX-Avalanche-12: Low confidence (0.47). Required: >= 0.7","timestamp":"2024-12-08T08:04:29.164Z"}
+{"level":"warn","message":"Skipping trade for GMX-Avalanche-13: Price data is unavailable or invalid (price: 0).","timestamp":"2024-12-08T08:04:29.164Z"}
+{"level":"info","message":"Live trading session completed successfully.","timestamp":"2024-12-08T08:04:29.164Z"}
 Live trading completed successfully.
 --- Integration Validation Successful ---
