@@ -1,0 +1,5 @@
+{"level":"info","message":"--- Starting GMX Data Fetch Test ---","timestamp":"2024-12-08T08:47:50.918Z"}
+{"level":"info","message":"Testing GMX Arbitrum endpoint...","timestamp":"2024-12-08T08:47:50.922Z"}
+{"level":"info","message":"Fetching GMX prices for arbitrum...","timestamp":"2024-12-08T08:47:50.923Z"}
+{"level":"error","message":"Error fetching GMX prices for arbitrum: Missing API endpoint for arbitrum in .env","timestamp":"2024-12-08T08:47:50.924Z"}
+{"level":"error","message":"Test failed: Missing API endpoint for arbitrum in .env","timestamp":"2024-12-08T08:47:50.930Z"}
