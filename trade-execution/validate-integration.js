@@ -1,6 +1,7 @@
-const { runDataPipeline } = require('./data-pipeline');
-const { generateSignals } = require('./signal-generator');
-const { runLiveTrading } = require('./trade-execution/trade-live');
+const { runDataPipeline } = require('./trade-execution/data-pipeline'); // Adjust if needed
+const { generateSignals } = require('./trade-execution/signal-generator'); // Adjust if needed
+const { runLiveTrading } = require('./trade-execution/trade-live'); // Adjust if needed
+
 
 async function validateIntegration() {
   try {
