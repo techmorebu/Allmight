@@ -1,5 +1,5 @@
 const { fetchGmxTokenPrices } = require('../data-collection/fetch-gmx-data'); // Update the path if needed.
-const logger = require('./logger'); // Assuming a logger module is used.
+const logger = require('../monitoring/logger'); // Assuming a logger module is used.
 
 (async () => {
     logger.info('--- Starting Integration Validation ---');
