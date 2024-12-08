@@ -1,6 +1,6 @@
 echbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project/data-collection$ node test-fetch-gmx.js
-{"level":"info","message":"Testing GMX fetch for Arbitrum - Tickers","timestamp":"2024-12-08T08:54:39.761Z"}
-{"level":"info","message":"Fetching GMX prices for arbitrum using tickers endpoint...","timestamp":"2024-12-08T08:54:39.767Z"}
-{"level":"error","message":"Error fetching GMX prices for arbitrum: Missing API endpoint for arbitrum and endpoint type tickers in .env","timestamp":"2024-12-08T08:54:39.768Z"}
+{"level":"info","message":"Testing GMX fetch for Arbitrum - Tickers","timestamp":"2024-12-08T09:04:38.909Z"}
+{"level":"info","message":"Fetching GMX prices for arbitrum using tickers endpoint...","timestamp":"2024-12-08T09:04:38.914Z"}
+Loaded endpoint: GMX_ARBITRUM_TICKERS_URL = undefined
+{"level":"error","message":"Error fetching GMX prices for arbitrum: Missing API endpoint for arbitrum and endpoint type tickers in .env","timestamp":"2024-12-08T09:04:38.916Z"}
 Error testing fetch-gmx-data: Missing API endpoint for arbitrum and endpoint type tickers in .env
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project/data-collection$ 
