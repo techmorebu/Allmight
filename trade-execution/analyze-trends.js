@@ -29,23 +29,20 @@ function analyzeTrends(data) {
             logger.warn('No CoinGecko data provided.');
         }
 
-        // Process GMX data (Arbitrum)
-        if (data.arbitrum && data.arbitrum.prices && data.arbitrum.pairs) {
+        // Process GMX data
+        if (data.arbitrum?.prices) {
             trends['GMX-Arbitrum'] = {
                 source: 'GMX Arbitrum',
                 prices: data.arbitrum.prices,
-                pairs: data.arbitrum.pairs,
             };
         } else {
             logger.warn('No GMX Arbitrum data provided.');
         }
 
-        // Process GMX data (Avalanche)
-        if (data.avalanche && data.avalanche.prices && data.avalanche.pairs) {
+        if (data.avalanche?.prices) {
             trends['GMX-Avalanche'] = {
                 source: 'GMX Avalanche',
                 prices: data.avalanche.prices,
-                pairs: data.avalanche.pairs,
             };
         } else {
             logger.warn('No GMX Avalanche data provided.');
