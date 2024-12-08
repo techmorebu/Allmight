@@ -1,8 +1,9 @@
-const { logger } = require('../monitoring/logger');
-const { generateSignals } = require('../signal-generator');
-const { executeTrade } = require('./trade-utils');
+const { logger } = require('../monitoring/logger'); // No change
+const { generateSignals } = require('./signal-generator'); // Adjusted for relative location
+const { executeTrade } = require('./trade-utils'); // Adjusted for relative location
 const fs = require('fs');
 const path = require('path');
+
 
 // Confidence threshold for AI signals
 const CONFIDENCE_THRESHOLD = 0.7;
