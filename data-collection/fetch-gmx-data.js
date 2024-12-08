@@ -2,10 +2,11 @@ require('dotenv').config();
 const axios = require('axios');
 const { logger } = require('../monitoring/logger');
 
+// Fetch token prices from GMX API
 async function fetchGmxTokenPrices(network) {
     const pricesUrl = network === 'arbitrum'
-        ? process.env.GMX_ARBITRUM_PRICES_URL
-        : process.env.GMX_AVALANCHE_PRICES_URL;
+        ? process.env.GMX_ARBITRUM_TICKERS_URL
+        : process.env.GMX_AVALANCHE_TICKERS_URL;
 
     if (!pricesUrl) {
         logger.error(`GMX token prices URL not found for network: ${network}`);
@@ -28,6 +29,7 @@ async function fetchGmxTokenPrices(network) {
     }
 }
 
+// Fetch trading pairs from GMX API
 async function fetchGmxPairs(network) {
     const pairsUrl = network === 'arbitrum'
         ? process.env.GMX_ARBITRUM_PAIRS_URL
@@ -54,4 +56,5 @@ async function fetchGmxPairs(network) {
     }
 }
 
+// Export the fetch functions
 module.exports = { fetchGmxTokenPrices, fetchGmxPairs };
