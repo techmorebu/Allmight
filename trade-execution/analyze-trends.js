@@ -1,5 +1,6 @@
 const { logger } = require('../monitoring/logger');
 const fs = require('fs');
+const path = require('path');
 
 function analyzeTrends(data) {
     logger.info('Starting trend analysis...');
@@ -63,7 +64,7 @@ function analyzeTrends(data) {
 }
 
 function saveTrends(trends) {
-    const logPath = './logs/trends-log.json';
+    const logPath = path.resolve(__dirname, '../logs/trends-log.json');
 
     try {
         fs.writeFileSync(logPath, JSON.stringify(trends, null, 2), 'utf8');
