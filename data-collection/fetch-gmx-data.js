@@ -1,11 +1,3 @@
-const axios = require('axios');
-const { logger } = require('../monitoring/logger');
-
-require('dotenv').config({ path: '/home/techbu/OFA_Project_Local/ofa-project/.env' });
-
-const GMX_ARBITRUM_API = process.env.GMX_ARBITRUM_API;
-const GMX_AVALANCHE_API = process.env.GMX_AVALANCHE_API;
-
 async function fetchGmxPrices(apiUrl, chainName) {
     try {
         if (!apiUrl) {
@@ -16,6 +8,9 @@ async function fetchGmxPrices(apiUrl, chainName) {
 
         const response = await axios.get(apiUrl);
         const data = response.data;
+
+        // Log raw response for debugging
+        logger.debug(`Raw API response from ${chainName}: ${JSON.stringify(data, null, 2)}`);
 
         if (!data || typeof data !== 'object') {
             throw new Error(`Invalid data format received from ${chainName} API.`);
@@ -43,20 +38,3 @@ async function fetchGmxPrices(apiUrl, chainName) {
         return null;
     }
 }
-
-async function fetchGmxData() {
-    logger.info('--- Starting GMX Data Fetch ---');
-
-    const arbitrumPrices = await fetchGmxPrices(GMX_ARBITRUM_API, 'Arbitrum');
-    const avalanchePrices = await fetchGmxPrices(GMX_AVALANCHE_API, 'Avalanche');
-
-    const data = {
-        arbitrum: { prices: arbitrumPrices || {} },
-        avalanche: { prices: avalanchePrices || {} },
-    };
-
-    logger.info('GMX Data Fetch completed.');
-    return data;
-}
-
-module.exports = { fetchGmxData };
