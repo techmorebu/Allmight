@@ -1,25 +1,25 @@
 require('dotenv').config({ path: '../../.env' });
 const { fetchGmxTokenPrices } = require('./fetch-gmx-data');
-const { logger } = require('../monitoring/logger'); // Ensure this points to the logger module in your project
+const { logger } = require('../monitoring/logger');
 
-async function testFetchGmxData() {
+(async () => {
     try {
-        logger.info('--- Starting GMX Data Fetch Test ---');
+        // Test fetching tickers data for Arbitrum
+        logger.info('Testing GMX fetch for Arbitrum - Tickers');
+        const arbitrumTickers = await fetchGmxTokenPrices('arbitrum', 'tickers');
+        console.log('Arbitrum Tickers:', arbitrumTickers);
 
-        // Test Arbitrum endpoint
-        logger.info('Testing GMX Arbitrum endpoint...');
-        const arbitrumPrices = await fetchGmxTokenPrices('arbitrum');
-        logger.info(`Arbitrum Prices: ${JSON.stringify(arbitrumPrices, null, 2)}`);
+        // Test fetching tickers data for Avalanche
+        logger.info('Testing GMX fetch for Avalanche - Tickers');
+        const avalancheTickers = await fetchGmxTokenPrices('avalanche', 'tickers');
+        console.log('Avalanche Tickers:', avalancheTickers);
 
-        // Test Avalanche endpoint
-        logger.info('Testing GMX Avalanche endpoint...');
-        const avalanchePrices = await fetchGmxTokenPrices('avalanche');
-        logger.info(`Avalanche Prices: ${JSON.stringify(avalanchePrices, null, 2)}`);
+        // Add tests for other endpoint types if needed
+        logger.info('Testing GMX fetch for Arbitrum - Candles');
+        const arbitrumCandles = await fetchGmxTokenPrices('arbitrum', 'candles');
+        console.log('Arbitrum Candles:', arbitrumCandles);
 
-        logger.info('--- GMX Data Fetch Test Completed Successfully ---');
     } catch (error) {
-        logger.error(`Test failed: ${error.message}`);
+        console.error('Error testing fetch-gmx-data:', error.message);
     }
-}
-
-testFetchGmxData();
+})();
