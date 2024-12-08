@@ -53,3 +53,27 @@
 {"level":"info","message":"Fetched GMX data successfully.","timestamp":"2024-12-08T06:58:31.836Z"}
 {"level":"info","message":"Fetching Uniswap data...","timestamp":"2024-12-08T06:58:31.836Z"}
 {"level":"error","message":"Error in data pipeline: fetchUniswapData is not a function","timestamp":"2024-12-08T06:58:31.837Z"}
+{"level":"info","message":"--- Starting Data Pipeline ---","timestamp":"2024-12-08T07:22:51.888Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T07:22:51.894Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T07:22:51.895Z"}
+{"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-08T07:22:52.236Z"}
+{"level":"info","message":"Fetched CoinGecko data successfully.","timestamp":"2024-12-08T07:22:52.237Z"}
+{"level":"info","message":"Fetching GMX token prices...","timestamp":"2024-12-08T07:22:52.238Z"}
+{"level":"error","message":"GMX token prices URL not found for network: arbitrum","timestamp":"2024-12-08T07:22:52.239Z"}
+{"level":"error","message":"Error in data pipeline: Missing URL for GMX token prices on arbitrum","timestamp":"2024-12-08T07:22:52.240Z"}
+{"level":"info","message":"--- Starting Data Pipeline ---","timestamp":"2024-12-08T07:22:59.014Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T07:22:59.020Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T07:22:59.020Z"}
+{"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-08T07:22:59.230Z"}
+{"level":"info","message":"Fetched CoinGecko data successfully.","timestamp":"2024-12-08T07:22:59.231Z"}
+{"level":"info","message":"Fetching GMX token prices...","timestamp":"2024-12-08T07:22:59.231Z"}
+{"level":"error","message":"GMX token prices URL not found for network: arbitrum","timestamp":"2024-12-08T07:22:59.232Z"}
+{"level":"error","message":"Error in data pipeline: Missing URL for GMX token prices on arbitrum","timestamp":"2024-12-08T07:22:59.233Z"}
+{"level":"info","message":"--- Starting Data Pipeline ---","timestamp":"2024-12-08T07:23:08.292Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T07:23:08.297Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T07:23:08.298Z"}
+{"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-08T07:23:08.473Z"}
+{"level":"info","message":"Fetched CoinGecko data successfully.","timestamp":"2024-12-08T07:23:08.474Z"}
+{"level":"info","message":"Fetching GMX token prices...","timestamp":"2024-12-08T07:23:08.475Z"}
+{"level":"error","message":"GMX token prices URL not found for network: arbitrum","timestamp":"2024-12-08T07:23:08.476Z"}
+{"level":"error","message":"Error in data pipeline: Missing URL for GMX token prices on arbitrum","timestamp":"2024-12-08T07:23:08.477Z"}
