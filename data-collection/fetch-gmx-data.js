@@ -1,43 +1,33 @@
+require('dotenv').config();
 const axios = require('axios');
-const logger = require('../monitoring/logger'); // Adjust the path to your logger if necessary.
 
-async function fetchGmxTokenPrices(apiUrl, chainName) {
+const GMX_ARBITRUM_API = process.env.GMX_ARBITRUM_API;
+const GMX_AVALANCHE_API = process.env.GMX_AVALANCHE_API;
+
+const fetchGmxData = async () => {
     try {
-        if (!apiUrl) {
-            throw new Error(`API URL for ${chainName} is not set.`);
-        }
+        console.log('Fetching GMX data from Arbitrum API...');
+        const arbitrumResponse = await axios.get(GMX_ARBITRUM_API);
+        const arbitrumPrices = arbitrumResponse.data;
 
-        logger.info(`Fetching GMX token prices from ${chainName} (${apiUrl})...`);
+        console.log('Fetching GMX data from Avalanche API...');
+        const avalancheResponse = await axios.get(GMX_AVALANCHE_API);
+        const avalanchePrices = avalancheResponse.data;
 
-        const response = await axios.get(apiUrl);
-        const data = response.data;
-
-        // Debug raw response
-        logger.debug(`Raw response from ${chainName}: ${JSON.stringify(data, null, 2)}`);
-
-        if (!data || typeof data !== 'object') {
-            throw new Error(`Invalid response format from ${chainName}.`);
-        }
-
-        const prices = {};
-        for (const [token, metrics] of Object.entries(data.prices || {})) {
-            if (metrics && metrics.usd) {
-                prices[token] = {
-                    usd: metrics.usd,
-                    volume24h: metrics.usd_24h_vol || 0,
-                    priceChange24h: metrics.usd_24h_change || 0,
-                };
-            } else {
-                logger.warn(`Missing or invalid price data for ${token} in ${chainName}.`);
-            }
-        }
-
-        logger.info(`${Object.keys(prices).length} token prices fetched from ${chainName}.`);
-        return prices;
+        return {
+            arbitrum: {
+                prices: arbitrumPrices,
+            },
+            avalanche: {
+                prices: avalanchePrices,
+            },
+        };
     } catch (error) {
-        logger.error(`Error fetching GMX token prices from ${chainName}: ${error.message}`);
-        return {};
+        console.error('Error fetching GMX data:', error.message);
+        throw error;
     }
-}
+};
 
-module.exports = { fetchGmxTokenPrices };
+module.exports = {
+    fetchGmxData,
+};
