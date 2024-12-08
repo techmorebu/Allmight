@@ -1,62 +1,44 @@
 require('dotenv').config({ path: '../.env' });
 const { fetchGmxData, fetchGmxCandlesticks } = require('../data-collection/fetch-gmx-data');
-const { analyzeTrends } = require('../trade-execution/analyze-trends');
-const { generateSignals } = require('../trade-execution/signal-generator');
+const { analyzeTrends } = require('./analyze-trends');
+const { generateSignals } = require('./signal-generator');
 const { logger } = require('../monitoring/logger');
 
 async function runDataPipeline() {
     try {
         logger.info('--- Starting Data Pipeline ---');
 
-        // Step 1: Fetch GMX token prices (Tickers)
-        logger.info('Fetching GMX token prices (Tickers)...');
-        const gmxTickers = await fetchGmxData('arbitrum', 'tickers');
-
-        if (!gmxTickers || gmxTickers.length === 0) {
-            logger.error('Failed to fetch GMX tickers. Aborting pipeline.');
-            return;
-        }
-        logger.info('GMX token prices (Tickers) fetched successfully.');
-
-        // Step 2: Fetch GMX candlestick data
+        // Fetch GMX data
+        logger.info('Fetching GMX tickers...');
+        const arbitrumTickers = await fetchGmxData('arbitrum', 'tickers');
+        const avalancheTickers = await fetchGmxData('avalanche', 'tickers');
         logger.info('Fetching GMX candlestick data...');
-        const gmxCandlesticks = await fetchGmxCandlesticks('arbitrum', 'ETH', '1d');
+        const arbitrumCandles = await fetchGmxCandlesticks('arbitrum', 'ETH', '1d');
+        const avalancheCandles = await fetchGmxCandlesticks('avalanche', 'AVAX', '1d');
 
-        if (!gmxCandlesticks || gmxCandlesticks.length === 0) {
-            logger.error('Failed to fetch GMX candlestick data. Aborting pipeline.');
-            return;
-        }
-        logger.info('GMX candlestick data fetched successfully.');
-
-        // Combine data for analysis
+        // Combine data
         const combinedData = {
-            tickers: gmxTickers,
-            candlesticks: gmxCandlesticks,
+            arbitrum: { tickers: arbitrumTickers, candles: arbitrumCandles },
+            avalanche: { tickers: avalancheTickers, candles: avalancheCandles },
         };
-        logger.info('Combined GMX data for analysis:', JSON.stringify(combinedData, null, 2));
 
-        // Step 3: Analyze trends
         logger.info('Analyzing trends...');
         const trends = analyzeTrends(combinedData);
 
         if (!trends || Object.keys(trends).length === 0) {
-            logger.error('No trends generated from analysis. Aborting pipeline.');
-            return;
+            throw new Error('Trend analysis failed or returned empty results.');
         }
-        logger.info('Trends generated successfully:', JSON.stringify(trends, null, 2));
+        logger.info(`Trends analysis completed: ${JSON.stringify(trends, null, 2)}`);
 
-        // Step 4: Generate trading signals
         logger.info('Generating trading signals...');
         const signals = generateSignals(trends);
 
         if (!signals || Object.keys(signals).length === 0) {
-            logger.error('No trading signals generated. Aborting pipeline.');
-            return;
+            throw new Error('Signal generation failed or returned empty results.');
         }
-
-        logger.info('Generated trading signals:', JSON.stringify(signals, null, 2));
+        logger.info(`Trading signals generated: ${JSON.stringify(signals, null, 2)}`);
     } catch (error) {
-        logger.error(`Error in data pipeline: ${error.message}`);
+        logger.error(`Data pipeline failed: ${error.message}`);
     }
 }
 
