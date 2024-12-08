@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '../../.env' });
+require('dotenv').config({ path: '../.env' });
 const { runDataPipeline } = require('./data-pipeline');
 const { logger } = require('../monitoring/logger');
 
