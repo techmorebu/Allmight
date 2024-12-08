@@ -1,28 +1,37 @@
+require('dotenv').config({ path: '../../.env' });
 const axios = require('axios');
 const { logger } = require('../monitoring/logger');
 
-/**
- * Fetch GMX token prices for the given network.
- * @param {string} network - The network to fetch prices for ('arbitrum' or 'avalanche').
- * @returns {Promise<Object>} - The GMX token price data.
- */
 async function fetchGmxTokenPrices(network) {
     try {
         logger.info(`Fetching GMX prices for ${network}...`);
-
-        // Replace with actual GMX API endpoint and parameters
+        
+        // Load the appropriate endpoint from .env
         const endpoint = network === 'arbitrum'
-            ? 'https://api.gmx-arbitrum.com/prices'
-            : 'https://api.gmx-avalanche.com/prices';
+            ? process.env.GMX_ARBITRUM_ENDPOINT
+            : process.env.GMX_AVALANCHE_ENDPOINT;
 
-        const response = await axios.get(endpoint);
-        const prices = response.data;
-
-        if (!prices || Object.keys(prices).length === 0) {
-            throw new Error(`No price data returned for ${network}.`);
+        if (!endpoint) {
+            throw new Error(`Missing API endpoint for ${network} in .env`);
         }
 
-        logger.info(`GMX prices fetched for ${network}:`, prices);
+        // Make the API request
+        const response = await axios.get(endpoint);
+
+        if (response.status !== 200) {
+            throw new Error(`Unexpected response status: ${response.status}`);
+        }
+
+        // Assuming the API returns data in JSON format
+        const prices = response.data;
+
+        logger.info(`Fetched GMX prices for ${network}: ${JSON.stringify(prices)}`);
+
+        // Validate the structure of the fetched data
+        if (!prices || typeof prices !== 'object') {
+            throw new Error(`Invalid response format for ${network}: ${JSON.stringify(prices)}`);
+        }
+
         return prices;
     } catch (error) {
         logger.error(`Error fetching GMX prices for ${network}: ${error.message}`);
