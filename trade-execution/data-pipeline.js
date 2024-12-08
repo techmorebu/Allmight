@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '../../.env' });
+require('dotenv').config({ path: '../.env' });
 const { fetchTokenPrices } = require('../data-collection/fetchData');
 const { fetchGmxData, fetchGmxCandlesticks } = require('../data-collection/fetch-gmx-data');
 const { fetchUniswapData } = require('../data-collection/fetch-uniswap-data');
