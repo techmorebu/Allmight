@@ -106,3 +106,39 @@
 {"level":"info","message":"Fetching GMX token prices from arbitrum...","timestamp":"2024-12-08T07:39:37.616Z"}
 {"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-08T07:39:38.214Z"}
 {"level":"error","message":"Error in data pipeline: fetchGmxPairs is not a function","timestamp":"2024-12-08T07:39:38.215Z"}
+{"level":"info","message":"--- Starting Data Pipeline ---","timestamp":"2024-12-08T07:43:20.180Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T07:43:20.183Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T07:43:20.184Z"}
+{"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-08T07:43:20.572Z"}
+{"level":"info","message":"Fetched CoinGecko data successfully.","timestamp":"2024-12-08T07:43:20.572Z"}
+{"level":"info","message":"Fetching GMX token prices...","timestamp":"2024-12-08T07:43:20.573Z"}
+{"level":"info","message":"Fetching GMX token prices from arbitrum...","timestamp":"2024-12-08T07:43:20.574Z"}
+{"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-08T07:43:21.137Z"}
+{"level":"error","message":"Error in data pipeline: fetchGmxPairs is not a function","timestamp":"2024-12-08T07:43:21.139Z"}
+{"level":"info","message":"Generating trading signals...","timestamp":"2024-12-08T07:43:21.166Z"}
+{"level":"info","message":"Using AI model for signal generation...","timestamp":"2024-12-08T07:43:21.166Z"}
+{"level":"info","message":"Generating signals using AI model...","timestamp":"2024-12-08T07:43:21.167Z"}
+{"level":"info","message":"Using mock AI model for predictions...","timestamp":"2024-12-08T07:43:21.168Z"}
+{"level":"info","message":"Mock signal for ethereum: Buy (Confidence: 0.78)","timestamp":"2024-12-08T07:43:21.169Z"}
+{"level":"info","message":"Mock signal for zksync: Sell (Confidence: 0.27)","timestamp":"2024-12-08T07:43:21.169Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum: Buy (Confidence: 0.88)","timestamp":"2024-12-08T07:43:21.169Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche: Hold (Confidence: 0.50)","timestamp":"2024-12-08T07:43:21.170Z"}
+{"level":"info","message":"AI signals generated successfully:","timestamp":"2024-12-08T07:43:21.170Z"}
+{"level":"info","message":"--- Starting Live Trading ---","timestamp":"2024-12-08T07:43:21.174Z"}
+{"level":"info","message":"Generating trading signals...","timestamp":"2024-12-08T07:43:21.175Z"}
+{"level":"info","message":"Using AI model for signal generation...","timestamp":"2024-12-08T07:43:21.175Z"}
+{"level":"info","message":"Generating signals using AI model...","timestamp":"2024-12-08T07:43:21.175Z"}
+{"level":"info","message":"Using mock AI model for predictions...","timestamp":"2024-12-08T07:43:21.175Z"}
+{"level":"info","message":"Mock signal for ethereum: Sell (Confidence: 0.12)","timestamp":"2024-12-08T07:43:21.175Z"}
+{"level":"info","message":"Mock signal for zksync: Hold (Confidence: 0.31)","timestamp":"2024-12-08T07:43:21.175Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum: Hold (Confidence: 0.61)","timestamp":"2024-12-08T07:43:21.176Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche: Buy (Confidence: 0.95)","timestamp":"2024-12-08T07:43:21.176Z"}
+{"level":"info","message":"AI signals generated successfully:","timestamp":"2024-12-08T07:43:21.176Z"}
+{"level":"warn","message":"Skipping trade for ethereum: Low confidence (0.12).","timestamp":"2024-12-08T07:43:21.176Z"}
+{"level":"warn","message":"Skipping trade for zksync: Low confidence (0.31).","timestamp":"2024-12-08T07:43:21.176Z"}
+{"level":"warn","message":"Skipping trade for GMX-Arbitrum: Low confidence (0.61).","timestamp":"2024-12-08T07:43:21.176Z"}
+{"level":"info","message":"Executing trade for GMX-Avalanche: Signal - Buy, Confidence - 0.95, Price - undefined","timestamp":"2024-12-08T07:43:21.177Z"}
+{"level":"info","message":"Preparing to execute Buy trade for GMX-Avalanche at price undefined...","timestamp":"2024-12-08T07:43:21.177Z"}
+{"level":"error","message":"Trade execution failed for GMX-Avalanche: getDexContract is not a function","timestamp":"2024-12-08T07:43:21.177Z"}
+{"level":"error","message":"Trade failed for GMX-Avalanche: getDexContract is not a function","timestamp":"2024-12-08T07:43:21.177Z"}
+{"level":"info","message":"Live trading session completed successfully.","timestamp":"2024-12-08T07:43:21.178Z"}
