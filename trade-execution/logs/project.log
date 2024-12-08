@@ -36,3 +36,20 @@
 {"level":"info","message":"Fetched GMX data successfully.","timestamp":"2024-12-08T06:49:24.343Z"}
 {"level":"info","message":"Fetching Uniswap data...","timestamp":"2024-12-08T06:49:24.343Z"}
 {"level":"error","message":"Error in data pipeline: fetchUniswapData is not a function","timestamp":"2024-12-08T06:49:24.344Z"}
+{"level":"info","message":"--- Starting Data Pipeline ---","timestamp":"2024-12-08T06:58:29.113Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T06:58:29.119Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T06:58:29.120Z"}
+{"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-08T06:58:29.432Z"}
+{"level":"info","message":"Fetched CoinGecko data successfully.","timestamp":"2024-12-08T06:58:29.433Z"}
+{"level":"info","message":"Fetching GMX token prices...","timestamp":"2024-12-08T06:58:29.433Z"}
+{"level":"info","message":"Fetching GMX token prices from arbitrum...","timestamp":"2024-12-08T06:58:29.434Z"}
+{"level":"error","message":"Error fetching GMX token prices: Invalid URL","timestamp":"2024-12-08T06:58:29.438Z"}
+{"level":"info","message":"Fetching GMX pairs from arbitrum...","timestamp":"2024-12-08T06:58:29.439Z"}
+{"level":"info","message":"Pairs fetched successfully:","timestamp":"2024-12-08T06:58:30.895Z"}
+{"level":"info","message":"Fetching GMX token prices from avalanche...","timestamp":"2024-12-08T06:58:30.896Z"}
+{"level":"error","message":"Error fetching GMX token prices: Invalid URL","timestamp":"2024-12-08T06:58:30.898Z"}
+{"level":"info","message":"Fetching GMX pairs from avalanche...","timestamp":"2024-12-08T06:58:30.898Z"}
+{"level":"info","message":"Pairs fetched successfully:","timestamp":"2024-12-08T06:58:31.835Z"}
+{"level":"info","message":"Fetched GMX data successfully.","timestamp":"2024-12-08T06:58:31.836Z"}
+{"level":"info","message":"Fetching Uniswap data...","timestamp":"2024-12-08T06:58:31.836Z"}
+{"level":"error","message":"Error in data pipeline: fetchUniswapData is not a function","timestamp":"2024-12-08T06:58:31.837Z"}
