@@ -1,33 +1,62 @@
-require('dotenv').config();
 const axios = require('axios');
 const { logger } = require('../monitoring/logger');
 
-// Fetch token prices from GMX API
-async function fetchGmxTokenPrices(network) {
-    const pricesUrl = network === 'arbitrum'
-        ? process.env.GMX_ARBITRUM_TICKERS_URL
-        : process.env.GMX_AVALANCHE_TICKERS_URL;
+require('dotenv').config({ path: '/home/techbu/OFA_Project_Local/ofa-project/.env' });
 
-    if (!pricesUrl) {
-        logger.error(`GMX token prices URL not found for network: ${network}`);
-        throw new Error(`Missing URL for GMX token prices on ${network}`);
-    }
+const GMX_ARBITRUM_API = process.env.GMX_ARBITRUM_API;
+const GMX_AVALANCHE_API = process.env.GMX_AVALANCHE_API;
 
+async function fetchGmxPrices(apiUrl, chainName) {
     try {
-        logger.info(`Fetching GMX token prices from ${network}...`);
-        const response = await axios.get(pricesUrl);
-
-        if (response.status !== 200 || !response.data) {
-            throw new Error(`Unexpected response from GMX token prices API (${response.status}): ${response.data}`);
+        if (!apiUrl) {
+            throw new Error(`API URL for ${chainName} is not set or invalid.`);
         }
 
-        logger.info('Token prices fetched successfully:', JSON.stringify(response.data, null, 2));
-        return response.data;
+        logger.info(`Fetching GMX token prices from ${chainName} API: ${apiUrl}`);
+
+        const response = await axios.get(apiUrl);
+        const data = response.data;
+
+        if (!data || typeof data !== 'object') {
+            throw new Error(`Invalid data format received from ${chainName} API.`);
+        }
+
+        logger.info(`Successfully fetched data from ${chainName}. Validating response structure...`);
+
+        const prices = {};
+        for (const [token, metrics] of Object.entries(data.prices || {})) {
+            if (metrics && metrics.usd) {
+                prices[token] = {
+                    usd: metrics.usd,
+                    volume24h: metrics.usd_24h_vol || 0,
+                    priceChange24h: metrics.usd_24h_change || 0,
+                };
+            } else {
+                logger.warn(`Price data missing or invalid for token ${token} on ${chainName}.`);
+            }
+        }
+
+        logger.info(`${Object.keys(prices).length} valid token prices extracted from ${chainName}.`);
+        return prices;
     } catch (error) {
-        logger.error(`Error fetching GMX token prices for ${network}: ${error.message}`);
+        logger.error(`Error fetching GMX token prices from ${chainName}: ${error.message}`);
         return null;
     }
 }
 
-// Export the fetch function
-module.exports = { fetchGmxTokenPrices };
+async function fetchGmxData() {
+    logger.info('--- Starting GMX Data Fetch ---');
+
+    const arbitrumPrices = await fetchGmxPrices(GMX_ARBITRUM_API, 'Arbitrum');
+    const avalanchePrices = await fetchGmxPrices(GMX_AVALANCHE_API, 'Avalanche');
+
+    const data = {
+        arbitrum: { prices: arbitrumPrices || {} },
+        avalanche: { prices: avalanchePrices || {} },
+    };
+
+    logger.info('GMX Data Fetch completed.');
+    return data;
+}
+
+module.exports = { fetchGmxData };
