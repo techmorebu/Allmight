@@ -1,5 +1,5 @@
 const axios = require('axios');
-const logger = require('./logger'); // Adjust the path to your logger if necessary.
+const logger = require('../monitoring/logger'); // Adjust the path to your logger if necessary.
 
 async function fetchGmxTokenPrices(apiUrl, chainName) {
     try {
