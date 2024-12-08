@@ -1,41 +1,33 @@
 require('dotenv').config();
-const { fetchGmxTokenPrices, fetchGmxPairs } = require('./fetch-gmx-data');
-const { analyzeTrends } = require('../trade-execution/analyze-trends');
-const { generateSignals } = require('../trade-execution/signal-generator');
+const axios = require('axios');
 const { logger } = require('../monitoring/logger');
 
-async function runDataPipeline() {
+// Fetch token prices from GMX API
+async function fetchGmxTokenPrices(network) {
+    const pricesUrl = network === 'arbitrum'
+        ? process.env.GMX_ARBITRUM_TICKERS_URL
+        : process.env.GMX_AVALANCHE_TICKERS_URL;
+
+    if (!pricesUrl) {
+        logger.error(`GMX token prices URL not found for network: ${network}`);
+        throw new Error(`Missing URL for GMX token prices on ${network}`);
+    }
+
     try {
-        logger.info('--- Starting Data Pipeline ---');
+        logger.info(`Fetching GMX token prices from ${network}...`);
+        const response = await axios.get(pricesUrl);
 
-        // Step 1: Fetch GMX token prices and pairs
-        logger.info('Fetching GMX token prices...');
-        const tokenPrices = await fetchGmxTokenPrices('arbitrum');
-        const pairs = await fetchGmxPairs('arbitrum');
-
-        if (!tokenPrices || !pairs) {
-            logger.error('Failed to fetch GMX data. Aborting pipeline.');
-            return;
+        if (response.status !== 200 || !response.data) {
+            throw new Error(`Unexpected response from GMX token prices API (${response.status}): ${response.data}`);
         }
 
-        logger.info('GMX token prices and pairs fetched successfully.');
-
-        // Step 2: Analyze trends
-        logger.info('Analyzing trends...');
-        const trends = analyzeTrends(tokenPrices);
-
-        if (!trends || Object.keys(trends).length === 0) {
-            logger.error('No trends generated from analysis. Aborting pipeline.');
-            return;
-        }
-
-        // Step 3: Generate trading signals
-        logger.info('Generating trading signals...');
-        const signal = generateSignals(trends);
-        logger.info('Generated Signals:', JSON.stringify(signal, null, 2));
+        logger.info('Token prices fetched successfully:', JSON.stringify(response.data, null, 2));
+        return response.data;
     } catch (error) {
-        logger.error(`Error in data pipeline: ${error.message}`);
+        logger.error(`Error fetching GMX token prices for ${network}: ${error.message}`);
+        return null;
     }
 }
 
-runDataPipeline();
+// Export the fetch function
+module.exports = { fetchGmxTokenPrices };
