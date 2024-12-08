@@ -246,3 +246,7 @@
 {"level":"info","message":"Fetching GMX token prices...","timestamp":"2024-12-08T10:14:15.026Z"}
 {"level":"error","message":"Error fetching GMX data for arbitrum: Missing API endpoint for arbitrum and endpoint type tickers in .env","timestamp":"2024-12-08T10:14:15.027Z"}
 {"level":"error","message":"Integration validation failed: Missing API endpoint for arbitrum and endpoint type tickers in .env","timestamp":"2024-12-08T10:14:15.033Z"}
+{"level":"info","message":"--- Starting Integration Validation ---","timestamp":"2024-12-08T10:15:09.502Z"}
+{"level":"info","message":"Fetching GMX token prices...","timestamp":"2024-12-08T10:15:09.508Z"}
+{"level":"error","message":"Error fetching GMX data for arbitrum: Missing API endpoint for arbitrum and endpoint type tickers in .env","timestamp":"2024-12-08T10:15:09.509Z"}
+{"level":"error","message":"Integration validation failed: Missing API endpoint for arbitrum and endpoint type tickers in .env","timestamp":"2024-12-08T10:15:09.514Z"}
