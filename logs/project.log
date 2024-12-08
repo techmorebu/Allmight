@@ -129,3 +129,13 @@
 {"level":"info","message":"--- Backtest Summary ---","timestamp":"2024-12-04T08:46:43.184Z"}
 {"level":"info","message":"{\n  \"totalTrades\": 4,\n  \"wins\": 2,\n  \"losses\": 2,\n  \"winLossRatio\": \"1.00\",\n  \"totalProfit\": \"185.20\",\n  \"averageProfit\": \"46.30\"\n}","timestamp":"2024-12-04T08:46:43.184Z"}
 {"level":"info","message":"Backtest results saved to ./logs/backtest-results.log","timestamp":"2024-12-04T08:46:43.185Z"}
+{"level":"info","message":"--- Starting Integration Validation ---","timestamp":"2024-12-08T09:19:54.757Z"}
+{"level":"info","message":"Running data pipeline...","timestamp":"2024-12-08T09:19:54.762Z"}
+{"level":"info","message":"--- Starting Data Pipeline ---","timestamp":"2024-12-08T09:19:54.763Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T09:19:54.764Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T09:19:54.765Z"}
+{"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-08T09:19:55.030Z"}
+{"level":"info","message":"Fetched CoinGecko data successfully.","timestamp":"2024-12-08T09:19:55.031Z"}
+{"level":"info","message":"Fetching GMX token prices...","timestamp":"2024-12-08T09:19:55.031Z"}
+{"level":"error","message":"Error in data pipeline: fetchGmxTokenPrices is not a function","timestamp":"2024-12-08T09:19:55.032Z"}
+{"level":"error","message":"Integration validation failed: fetchGmxTokenPrices is not a function","timestamp":"2024-12-08T09:19:55.032Z"}
