@@ -5,6 +5,9 @@ const { fetchUniswapData } = require('../data-collection/fetch-uniswap-data');
 const { analyzeTrends } = require('./analyze-trends');
 const { logger } = require('../monitoring/logger');
 
+/**
+ * Run the data pipeline to fetch, combine, and analyze token data.
+ */
 async function runDataPipeline() {
     try {
         logger.info('--- Starting Data Pipeline ---');
@@ -44,6 +47,7 @@ async function runDataPipeline() {
         logger.info('Trends analysis result:', JSON.stringify(trends, null, 2));
     } catch (error) {
         logger.error(`Error in data pipeline: ${error.message}`);
+        throw error;
     }
 }
 
