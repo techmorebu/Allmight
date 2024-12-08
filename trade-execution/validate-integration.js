@@ -1,41 +1,45 @@
 require('dotenv').config({ path: '../.env' });
-const { runDataPipeline } = require('./data-pipeline');
+const { fetchGmxTokenPrices } = require('../data-collection/fetch-gmx-data');
+const { analyzeTrends } = require('./analyze-trends');
+const { generateSignals } = require('./signal-generator');
 const { logger } = require('../monitoring/logger');
 
 async function validateIntegration() {
     try {
         logger.info('--- Starting Integration Validation ---');
 
-        // Step 1: Run the data pipeline
-        logger.info('Running data pipeline...');
-        await runDataPipeline();
-        logger.info('Data pipeline completed successfully.');
+        // Step 1: Fetch GMX data
+        logger.info('Fetching GMX token prices...');
+        const tokenPrices = await fetchGmxTokenPrices('arbitrum');
 
-        // Step 2: Validate data fetching for GMX
-        logger.info('Validating GMX data fetching...');
-        const { fetchGmxData, fetchGmxCandlesticks } = require('../data-collection/fetch-gmx-data');
+        if (!tokenPrices || Object.keys(tokenPrices).length === 0) {
+            throw new Error('Failed to fetch GMX token prices or data is empty.');
+        }
+        logger.info(`Fetched GMX token prices successfully: ${JSON.stringify(tokenPrices, null, 2)}`);
 
-        // Test fetching GMX tickers for Arbitrum and Avalanche
-        const arbitrumTickers = await fetchGmxData('arbitrum', 'tickers');
-        logger.info('Arbitrum GMX Tickers fetched successfully:', JSON.stringify(arbitrumTickers, null, 2));
+        // Step 2: Analyze trends
+        logger.info('Analyzing trends...');
+        const trends = analyzeTrends(tokenPrices);
 
-        const avalancheTickers = await fetchGmxData('avalanche', 'tickers');
-        logger.info('Avalanche GMX Tickers fetched successfully:', JSON.stringify(avalancheTickers, null, 2));
+        if (!trends || Object.keys(trends).length === 0) {
+            throw new Error('No trends generated from analysis.');
+        }
+        logger.info(`Trends analysis completed successfully: ${JSON.stringify(trends, null, 2)}`);
 
-        // Test fetching GMX candlesticks for specific tokens
-        const arbitrumCandlesticks = await fetchGmxCandlesticks('arbitrum', 'ETH', '1d');
-        logger.info('Arbitrum GMX Candlesticks fetched successfully:', JSON.stringify(arbitrumCandlesticks, null, 2));
+        // Step 3: Generate trading signals
+        logger.info('Generating trading signals...');
+        const signals = generateSignals(trends);
 
-        const avalancheCandlesticks = await fetchGmxCandlesticks('avalanche', 'AVAX', '1d');
-        logger.info('Avalanche GMX Candlesticks fetched successfully:', JSON.stringify(avalancheCandlesticks, null, 2));
+        if (!signals || Object.keys(signals).length === 0) {
+            throw new Error('No trading signals generated.');
+        }
+        logger.info(`Trading signals generated successfully: ${JSON.stringify(signals, null, 2)}`);
 
-        logger.info('GMX data validation completed successfully.');
-
-        // Final validation message
         logger.info('--- Integration Validation Successful ---');
     } catch (error) {
         logger.error(`Integration validation failed: ${error.message}`);
     }
 }
 
+// Execute the validation process
 validateIntegration();
