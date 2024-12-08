@@ -44,7 +44,7 @@ const query = `
 
 // Send alert to Discord
 async function sendDiscordAlert(message) {
-  const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL; // Ensure Discord URL is also loaded
+  const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL;
   if (!discordWebhookUrl) {
     console.error("DISCORD_WEBHOOK_URL is not set in the .env file or is invalid.");
     return;
@@ -60,7 +60,7 @@ async function sendDiscordAlert(message) {
 
 // Save data to JSON file
 function saveDataToFile(data) {
-  const filePath = '/home/techbu/OFA_Project_Local/ofa-project/logs/historical-data.json'; // Ensure full path for cron
+  const filePath = '/home/techbu/OFA_Project_Local/ofa-project/logs/historical-data.json';
   let existingData = [];
 
   try {
@@ -108,8 +108,14 @@ async function fetchData() {
 
       saveDataToFile(data);
 
-      // Analyze trends and include in the alert
-      const trendAnalysis = analyzeTrends();
+      // Analyze trends
+      const trendAnalysis = analyzeTrends({
+        ethPrice,
+        totalVolume,
+        topPool: data.topPool,
+      });
+
+      // Build and send alert
       let alertMessage = `
 🚨 New Data Synced:
 - ETH Price: $${ethPrice.toFixed(2)}
@@ -137,5 +143,5 @@ async function fetchData() {
   }
 }
 
-// Execute fetch function
-fetchData();
+// Export fetchData for use in other modules
+module.exports = { fetchData };
