@@ -1,9 +1,11 @@
-// Corrected paths
-require('dotenv').config({ path: '../../.env' }); // Adjusted to locate .env in the project root
-const { fetchTokenPrices } = require('../data-collection/fetchData'); // No change
-const { fetchGmxTokenPrices, fetchGmxPairs } = require('../data-collection/fetch-gmx-data'); // No change
-const { analyzeTrends } = require('./analyze-trends'); // Adjusted to point to analyze-trends.js in the same directory
-const { logger } = require('../monitoring/logger'); // No change
+// Correct paths for modules
+require('dotenv').config({ path: '../../.env' }); // Adjusted for relative location to project root
+const { fetchTokenPrices } = require('../data-collection/fetchData'); // Fetch token prices
+const { fetchGmxTokenPrices, fetchGmxPairs } = require('../data-collection/fetch-gmx-data'); // GMX-specific data
+const { fetchUniswapData } = require('../data-collection/fetch-uniswap-data'); // Corrected to point to Uniswap fetcher
+const { analyzeTrends } = require('./analyze-trends'); // Located in the same folder
+const { logger } = require('../monitoring/logger'); // Logger for centralized logging
+
 
 
 async function normalizeData(rawData) {
