@@ -1,147 +1,65 @@
-const fs = require('fs');
-require('dotenv').config({ path: '/home/techbu/OFA_Project_Local/ofa-project/.env' }); // Load environment variables
 const axios = require('axios');
-const { analyzeTrends } = require('../trade-execution/analyze-trends');
+const fs = require('fs');
+const { logger } = require('../monitoring/logger');
 
-// Debug: Verify environment variables are loaded
-const endpoint = process.env.UNISWAP_SUBGRAPH_URL;
+require('dotenv').config({ path: '/home/techbu/OFA_Project_Local/ofa-project/.env' });
 
-if (!endpoint) {
-  console.error("UNISWAP_SUBGRAPH_URL is not set in the .env file or is invalid.");
-  process.exit(1); // Exit if the URL is not loaded
-}
+const UNISWAP_SUBGRAPH_URL = process.env.UNISWAP_SUBGRAPH_URL;
 
-console.log("Using endpoint:", endpoint); // Debug log
-
-// GraphQL query
-const query = `
-{
-  factories(first: 5) {
-    id
-    poolCount
-    txCount
-    totalVolumeUSD
-  }
-  bundles(first: 5) {
-    id
-    ethPriceUSD
-  }
-  pools(first: 5, orderBy: volumeUSD, orderDirection: desc) {
-    id
-    token0 {
-      id
-      symbol
-    }
-    token1 {
-      id
-      symbol
-    }
-    volumeUSD
-    liquidity
-  }
-}
-`;
-
-// Send alert to Discord
-async function sendDiscordAlert(message) {
-  const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL;
-  if (!discordWebhookUrl) {
-    console.error("DISCORD_WEBHOOK_URL is not set in the .env file or is invalid.");
-    return;
-  }
-
-  try {
-    await axios.post(discordWebhookUrl, { content: message });
-    console.log('Alert sent to Discord:', message);
-  } catch (error) {
-    console.error('Error sending alert to Discord:', error.message);
-  }
-}
-
-// Save data to JSON file
-function saveDataToFile(data) {
-  const filePath = '/home/techbu/OFA_Project_Local/ofa-project/logs/historical-data.json';
-  let existingData = [];
-
-  try {
-    if (fs.existsSync(filePath)) {
-      const fileContent = fs.readFileSync(filePath, 'utf8');
-      existingData = JSON.parse(fileContent);
-    }
-
-    existingData.push(data);
-    fs.writeFileSync(filePath, JSON.stringify(existingData, null, 2));
-    console.log('Data saved to historical-data.json');
-  } catch (error) {
-    console.error('Error saving data to file:', error.message);
-  }
-}
-
-// Fetch data and analyze trends
 async function fetchUniswapData() {
-  try {
-    const response = await axios.post(endpoint, { query });
+    try {
+        if (!UNISWAP_SUBGRAPH_URL) {
+            throw new Error('Uniswap Subgraph URL is not set or invalid.');
+        }
 
-    if (response.data && response.data.data) {
-      const { factories, bundles, pools } = response.data.data;
+        logger.info(`Fetching Uniswap data from: ${UNISWAP_SUBGRAPH_URL}`);
 
-      const ethPrice = Number(bundles[0].ethPriceUSD);
-      const totalVolume = Number(factories[0].totalVolumeUSD);
-      const topPool = pools[0];
+        const query = `
+        {
+            pools(first: 10, orderBy: volumeUSD, orderDirection: desc) {
+                id
+                token0 { symbol }
+                token1 { symbol }
+                volumeUSD
+                liquidity
+            }
+        }`;
 
-      console.log(`ETH Price: $${ethPrice}`);
-      console.log(`Total Volume: $${totalVolume}`);
-      console.log(`Top Pool: ${topPool.token0.symbol}/${topPool.token1.symbol}`);
-      console.log(`Volume: $${topPool.volumeUSD}`);
-      console.log(`Liquidity: $${topPool.liquidity}`);
+        const response = await axios.post(UNISWAP_SUBGRAPH_URL, { query });
+        const data = response.data;
 
-      const data = {
-        timestamp: new Date().toISOString(),
-        ethPrice,
-        totalVolume,
-        topPool: {
-          pair: `${topPool.token0.symbol}/${topPool.token1.symbol}`,
-          volumeUSD: topPool.volumeUSD,
-          liquidity: topPool.liquidity,
-        },
-      };
+        if (!data || !data.data || !data.data.pools) {
+            throw new Error('Invalid or empty response from Uniswap Subgraph.');
+        }
 
-      saveDataToFile(data);
+        logger.info(`Uniswap API returned ${data.data.pools.length} pools. Validating data...`);
 
-      // Analyze trends
-      const trendAnalysis = analyzeTrends({
-        ethPrice,
-        totalVolume,
-        topPool: data.topPool,
-      });
+        const pools = data.data.pools.map((pool) => {
+            if (
+                pool &&
+                pool.token0 &&
+                pool.token1 &&
+                pool.volumeUSD &&
+                pool.liquidity
+            ) {
+                return {
+                    id: pool.id,
+                    pair: `${pool.token0.symbol}/${pool.token1.symbol}`,
+                    volumeUSD: parseFloat(pool.volumeUSD),
+                    liquidity: parseFloat(pool.liquidity),
+                };
+            } else {
+                logger.warn(`Skipping invalid pool data: ${JSON.stringify(pool)}`);
+                return null;
+            }
+        }).filter(Boolean);
 
-      // Build and send alert
-      let alertMessage = `
-🚨 New Data Synced:
-- ETH Price: $${ethPrice.toFixed(2)}
-- Total Volume: $${totalVolume.toLocaleString()}
-
-📊 Top Pool: ${topPool.token0.symbol}/${topPool.token1.symbol}
-- Volume: $${topPool.volumeUSD.toLocaleString()}
-- Liquidity: $${topPool.liquidity.toLocaleString()}
-      `;
-
-      // Add trend highlights
-      if (topPool.volumeUSD > totalVolume * 0.1) {
-        alertMessage += `\n🚀 Significant Volume Detected in Pool ${topPool.token0.symbol}/${topPool.token1.symbol}!`;
-      }
-      if (topPool.liquidity < 1000000) {
-        alertMessage += `\n⚠️ Low Liquidity in Pool ${topPool.token0.symbol}/${topPool.token1.symbol}.`;
-      }
-
-      await sendDiscordAlert(alertMessage);
-    } else {
-      console.error('No data found in the response.');
+        logger.info(`${pools.length} valid pools processed from Uniswap.`);
+        return pools;
+    } catch (error) {
+        logger.error(`Error fetching Uniswap data: ${error.message}`);
+        return null;
     }
-  } catch (error) {
-    console.error('Error fetching data:', error.message);
-  }
 }
 
-// Export fetchUniswapData for use in other modules
 module.exports = { fetchUniswapData };
