@@ -1,16 +1,13 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project/trade-execution$ node validate-integration
-{"level":"info","message":"--- Starting Integration Validation ---","timestamp":"2024-12-08T08:36:13.391Z"}
-{"level":"info","message":"Running data pipeline...","timestamp":"2024-12-08T08:36:13.396Z"}
-{"level":"info","message":"--- Starting Data Pipeline ---","timestamp":"2024-12-08T08:36:13.398Z"}
-{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T08:36:13.398Z"}
-{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T08:36:13.399Z"}
-{"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-08T08:36:13.659Z"}
-{"level":"info","message":"Fetched CoinGecko data successfully.","timestamp":"2024-12-08T08:36:13.660Z"}
-{"level":"info","message":"Fetching GMX token prices...","timestamp":"2024-12-08T08:36:13.661Z"}
-{"level":"error","message":"Error in data pipeline: fetchGmxTokenPrices is not a function","timestamp":"2024-12-08T08:36:13.662Z"}
-{"level":"info","message":"Data pipeline completed successfully.","timestamp":"2024-12-08T08:36:13.662Z"}
-{"level":"info","message":"Generating signals...","timestamp":"2024-12-08T08:36:13.663Z"}
-{"level":"info","message":"Signals generated successfully.","timestamp":"2024-12-08T08:36:13.663Z"}
-{"level":"info","message":"Executing live trading...","timestamp":"2024-12-08T08:36:13.664Z"}
-{"level":"info","message":"Live trading completed successfully.","timestamp":"2024-12-08T08:36:13.664Z"}
-{"level":"info","message":"--- Integration Validation Successful ---","timestamp":"2024-12-08T08:36:13.664Z"}
+echbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project/trade-execution$ node validate-integration
+{"level":"info","message":"--- Starting Integration Validation ---","timestamp":"2024-12-08T08:39:57.616Z"}
+{"level":"info","message":"Running data pipeline...","timestamp":"2024-12-08T08:39:57.620Z"}
+{"level":"info","message":"--- Starting Data Pipeline ---","timestamp":"2024-12-08T08:39:57.621Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T08:39:57.621Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T08:39:57.622Z"}
+{"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-08T08:39:57.816Z"}
+{"level":"info","message":"Fetched CoinGecko data successfully.","timestamp":"2024-12-08T08:39:57.817Z"}
+{"level":"info","message":"Fetching GMX token prices...","timestamp":"2024-12-08T08:39:57.818Z"}
+{"level":"info","message":"Fetching GMX prices for arbitrum...","timestamp":"2024-12-08T08:39:57.818Z"}
+{"level":"error","message":"Error fetching GMX prices for arbitrum: getaddrinfo ENOTFOUND api.gmx-arbitrum.com","timestamp":"2024-12-08T08:39:57.861Z"}
+{"level":"error","message":"Error in data pipeline: getaddrinfo ENOTFOUND api.gmx-arbitrum.com","timestamp":"2024-12-08T08:39:57.862Z"}
+{"level":"error","message":"Integration validation failed: getaddrinfo ENOTFOUND api.gmx-arbitrum.com","timestamp":"2024-12-08T08:39:57.862Z"}
