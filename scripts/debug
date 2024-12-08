@@ -1,6 +1,562 @@
-echbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project/data-collection$ node test-fetch-gmx.js
-{"level":"info","message":"Testing GMX fetch for Arbitrum - Tickers","timestamp":"2024-12-08T09:04:38.909Z"}
-{"level":"info","message":"Fetching GMX prices for arbitrum using tickers endpoint...","timestamp":"2024-12-08T09:04:38.914Z"}
-Loaded endpoint: GMX_ARBITRUM_TICKERS_URL = undefined
-{"level":"error","message":"Error fetching GMX prices for arbitrum: Missing API endpoint for arbitrum and endpoint type tickers in .env","timestamp":"2024-12-08T09:04:38.916Z"}
-Error testing fetch-gmx-data: Missing API endpoint for arbitrum and endpoint type tickers in .env
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project/data-collection$ node test-fetch-gmx.js
+{"level":"info","message":"Testing GMX fetch for Arbitrum - Tickers","timestamp":"2024-12-08T09:07:53.366Z"}
+{"level":"info","message":"Fetching GMX prices for arbitrum using tickers endpoint...","timestamp":"2024-12-08T09:07:53.370Z"}
+Loaded endpoint: GMX_ARBITRUM_TICKERS_URL = https://arbitrum-api.gmxinfra.io/prices/tickers
+{"level":"info","message":"Fetched data for arbitrum: [{\"tokenAddress\":\"0x7f9FBf9bDd3F4105C478b996B648FE6e828a1e98\",\"tokenSymbol\":\"APE\",\"minPrice\":\"1828170359000\",\"maxPrice\":\"1829012372412\",\"updatedAt\":1733648872839,\"timestamp\":1733648872},{\"tokenAddress\":\"0x74885b4D524d497261259B38900f54e6dbAd2210\",\"tokenSymbol\":\"APE_deprecated\",\"minPrice\":\"1828170359000\",\"maxPrice\":\"1829012372412\",\"updatedAt\":1733648872839,\"timestamp\":1733648872},{\"tokenAddress\":\"0x3f8f0dCE4dCE4d0D1d0871941e79CDA82cA50d0B\",\"tokenSymbol\":\"APT\",\"minPrice\":\"143099761086698540000000\",\"maxPrice\":\"143179559080824210000000\",\"updatedAt\":1733648872738,\"timestamp\":1733648872},{\"tokenAddress\":\"0x3Eea56A1ccCdbfB70A26aD381C71Ee17E4c8A15F\",\"tokenSymbol\":\"BOME\",\"minPrice\":\"10350868616461499000000\",\"maxPrice\":\"10352620024094605000000\",\"updatedAt\":1733648872738,\"timestamp\":1733648872},{\"tokenAddress\":\"0xaF770F03518686a365300ab35AD860e99967B2f0\",\"tokenSymbol\":\"MEME\",\"minPrice\":\"17589423000\",\"maxPrice\":\"17600421356\",\"updatedAt\":1733648872738,\"timestamp\":1733648872},{\"tokenAddress\":\"0x6792c5B8962ffbDD020c6b6FD0Be7b182e0e33a3\",\"tokenSymbol\":\"FLOKI\",\"minPrice\":\"253095320419168000\",\"maxPrice\":\"253130675138328000\",\"updatedAt\":1733648872991,\"timestamp\":1733648872},{\"tokenAddress\":\"0x5503CF72f54b6d692d36BBCD391516A7dE068687\",\"tokenSymbol\":\"MEW\",\"minPrice\":\"96795299300263760000000\",\"maxPrice\":\"96829340414461600000000\",\"updatedAt\":1733648872637,\"timestamp\":1733648872},{\"tokenAddress\":\"0x82aF49447D8a07e3bd95BD0d56f35241523fBab1\",\"tokenSymbol\":\"ETH\",\"minPrice\":\"3955176900000000\",\"maxPrice\":\"3955399269794918\",\"updatedAt\":1733648872637,\"timestamp\":1733648872},{\"tokenAddress\":\"0x938aef36CAaFbcB37815251B602168087eC14648\",\"tokenSymbol\":\"TAO\",\"minPrice\":\"691980470091799700000000\",\"maxPrice\":\"692108109136716250000000\",\"updatedAt\":1733648872637,\"timestamp\":1733648872},{\"tokenAddress\":\"0x1FD10E767187A92f0AB2ABDEEF4505e319cA06B2\",\"tokenSymbol\":\"BONK\",\"minPrice\":\"452140390000000000000\",\"maxPrice\":\"452275913296590000000\",\"updatedAt\":1733648872587,\"timestamp\":1733648872},{\"tokenAddress\":\"0x75B9AdD873641b253718810E6c65dB6d72311FD0\",\"tokenSymbol\":\"WLD\",\"minPrice\":\"3715943994156\",\"maxPrice\":\"3716990863134\",\"updatedAt\":1733648871783,\"timestamp\":1733648871},{\"tokenAddress\":\"0x47904963fc8b2340414262125aF798B9655E58Cd\",\"tokenSymbol\":\"BTC\",\"minPrice\":\"991887953741874700000000000\",\"maxPrice\":\"991929780000000000000000000\",\"updatedAt\":1733648872839,\"timestamp\":1733648872},{\"tokenAddress\":\"0x6c84a8f1c29108F47a79964b5Fe888D4f4D0dE40\",\"tokenSymbol\":\"tBTC\",\"minPrice\":\"99188795374187470\",\"maxPrice\":\"99192978000000000\",\"updatedAt\":1733648872839,\"timestamp\":1733648872},{\"tokenAddress\":\"0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f\",\"tokenSymbol\":\"WBTC.b\",\"minPrice\":\"991887953741874700000000000\",\"maxPrice\":\"991929780000000000000000000\",\"updatedAt\":1733648872839,\"timestamp\":1733648872},{\"tokenAddress\":\"0xC4da4c24fd591125c3F47b340b6f4f76111883d8\",\"tokenSymbol\":\"DOGE\",\"minPrice\":\"4567212700000000000000\",\"maxPrice\":\"4567938943660236000000\",\"updatedAt\":1733648872738,\"timestamp\":1733648872},{\"tokenAddress\":\"0x606C3e5075e5555e79Aa15F1E9FACB776F96C248\",\"tokenSymbol\":\"EIGEN\",\"minPrice\":\"4512002304195\",\"maxPrice\":\"4514421500000\",\"updatedAt\":1733648872738,\"timestamp\":1733648872},{\"tokenAddress\":\"0xB46A094Bc4B0adBD801E14b9DB95e05E28962764\",\"tokenSymbol\":\"LTC\",\"minPrice\":\"1315410176156069600000000\",\"maxPrice\":\"1315569189177451800000000\",\"updatedAt\":1733648872890,\"timestamp\":1733648872},{\"tokenAddress\":\"0x3E57D02f9d196873e55727382974b02EdebE6bfd\",\"tokenSymbol\":\"SHIB\",\"minPrice\":\"31689370\",\"maxPrice\":\"31699681\",\"updatedAt\":1733648872789,\"timestamp\":1733648872},{\"tokenAddress\":\"0x2bcC6D6CdBbDC0a4071e48bb3B969b06B3330c07\",\"tokenSymbol\":\"SOL\",\"minPrice\":\"236001837831834730000000\",\"maxPrice\":\"236014700000000000000000\",\"updatedAt\":1733648872487,\"timestamp\":1733648872},{\"tokenAddress\":\"0x197aa2DE1313c7AD50184234490E12409B2a1f95\",\"tokenSymbol\":\"SUI\",\"minPrice\":\"4193686289490220500000\",\"maxPrice\":\"4193981710603875500000\",\"updatedAt\":1733648872537,\"timestamp\":1733648872},{\"tokenAddress\":\"0x55e85A147a1029b985384822c0B2262dF8023452\",\"tokenSymbol\":\"SEI\",\"minPrice\":\"676215196953\",\"maxPrice\":\"676322126293\",\"updatedAt\":1733648872637,\"timestamp\":1733648872},{\"tokenAddress\":\"0xBaf07cF91D413C0aCB2b7444B9Bf13b4e03c9D71\",\"tokenSymbol\":\"STX\",\"minPrice\":\"2606315098458807000000000\",\"maxPrice\":\"2607359020151312000000000\",\"updatedAt\":1733648872738,\"timestamp\":1733648872},{\"tokenAddress\":\"0xFa7F8980b0f1E64A2062791cc3b0871572f1F7f0\",\"tokenSymbol\":\"UNI\",\"minPrice\":\"18225930732130\",\"maxPrice\":\"18237750000000\",\"updatedAt\":1733648872587,\"timestamp\":1733648872},{\"tokenAddress\":\"0xf97f4df75117a78c1A5a0DBb814Af92458539FB4\",\"tokenSymbol\":\"LINK\",\"minPrice\":\"25686002090298\",\"maxPrice\":\"25695653350998\",\"updatedAt\":1733648872537,\"timestamp\":1733648872},{\"tokenAddress\":\"0x912CE59144191C1204E64559FE8253a0e49E6548\",\"tokenSymbol\":\"ARB\",\"minPrice\":\"1152347950000\",\"maxPrice\":\"1152831877422\",\"updatedAt\":1733648872587,\"timestamp\":1733648872},{\"tokenAddress\":\"0xc14e065b0067dE91534e032868f5Ac6ecf2c6868\",\"tokenSymbol\":\"XRP\",\"minPrice\":\"2530920133880078600000000\",\"maxPrice\":\"2531144084609439300000000\",\"updatedAt\":1733648872991,\"timestamp\":1733648872},{\"tokenAddress\":\"0xaf88d065e77c8cC2239327C5EDb3A432268e5831\",\"tokenSymbol\":\"USDC\",\"minPrice\":\"999804225615028500000000\",\"maxPrice\":\"999940000000000000000000\",\"updatedAt\":1733648872699,\"timestamp\":1733648872},{\"tokenAddress\":\"0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8\",\"tokenSymbol\":\"USDC.e\",\"minPrice\":\"999804225615028500000000\",\"maxPrice\":\"999940000000000000000000\",\"updatedAt\":1733648872699,\"timestamp\":1733648872},{\"tokenAddress\":\"0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9\",\"tokenSymbol\":\"USDT\",\"minPrice\":\"1000490000000000000000000\",\"maxPrice\":\"1000540000000000000000000\",\"updatedAt\":1733648872738,\"timestamp\":1733648872},{\"tokenAddress\":\"0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1\",\"tokenSymbol\":\"DAI\",\"minPrice\":\"999762528442\",\"maxPrice\":\"1000078900000\",\"updatedAt\":1733648872789,\"timestamp\":1733648872},{\"tokenAddress\":\"0xa9004A5421372E1D83fB1f85b0fc986c912f91f3\",\"tokenSymbol\":\"BNB\",\"minPrice\":\"742295756651099\",\"maxPrice\":\"742312834473115\",\"updatedAt\":1733648872587,\"timestamp\":1733648872},{\"tokenAddress\":\"0x7D7F1765aCbaF847b9A1f7137FE8Ed4931FbfEbA\",\"tokenSymbol\":\"ATOM\",\"minPrice\":\"9973114233252428500000000\",\"maxPrice\":\"9975596165939660500000000\",\"updatedAt\":1733648872537,\"timestamp\":1733648872},{\"tokenAddress\":\"0x1FF7F3EFBb9481Cbd7db4F932cBCD4467144237C\",\"tokenSymbol\":\"NEAR\",\"minPrice\":\"7610429\",\"maxPrice\":\"7611712\",\"updatedAt\":1733648872839,\"timestamp\":1733648872},{\"tokenAddress\":\"0xba5DdD1f9d7F570dc94a51479a000E3BCE967196\",\"tokenSymbol\":\"AAVE\",\"minPrice\":\"278100088768885\",\"maxPrice\":\"278138323579917\",\"updatedAt\":1733648872436,\"timestamp\":1733648872},{\"tokenAddress\":\"0x565609fAF65B92F7be02468acF86f8979423e514\",\"tokenSymbol\":\"AVAX\",\"minPrice\":\"50926906568355\",\"maxPrice\":\"50940616500000\",\"updatedAt\":1733648872738,\"timestamp\":1733648872},{\"tokenAddress\":\"0xaC800FD6159c2a2CB8fC31EF74621eB430287a5A\",\"tokenSymbol\":\"OP\",\"minPrice\":\"2647987900000\",\"maxPrice\":\"2649044590811\",\"updatedAt\":1733648872587,\"timestamp\":1733648872},{\"tokenAddress\":\"0x1E15d08f3CA46853B692EE28AE9C7a0b88a9c994\",\"tokenSymbol\":\"ORDI\",\"minPrice\":\"47614915579172\",\"maxPrice\":\"47625277070308\",\"updatedAt\":1733648872789,\"timestamp\":1733648872},{\"tokenAddress\":\"0x38676f62d166f5CE7De8433F51c6B3D6D9d66C19\",\"tokenSymbol\":\"TIA\",\"minPrice\":\"8272447154467068000000000\",\"maxPrice\":\"8274097800000000000000000\",\"updatedAt\":1733648871696,\"timestamp\":1733648871},{\"tokenAddress\":\"0xb06aa7E4af937C130dDade66f6ed7642716fe07A\",\"tokenSymbol\":\"TRX\",\"minPrice\":\"312771593948606540000000\",\"maxPrice\":\"312862860000000000000000\",\"updatedAt\":1733648872537,\"timestamp\":1733648872},{\"tokenAddress\":\"0xB2f7cefaeEb08Aa347705ac829a7b8bE2FB560f3\",\"tokenSymbol\":\"TON\",\"minPrice\":\"6726375327086980250000\",\"maxPrice\":\"6727385393599093500000\",\"updatedAt\":1733648872890,\"timestamp\":1733648872},{\"tokenAddress\":\"0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a\",\"tokenSymbol\":\"GMX\",\"minPrice\":\"40739360719463\",\"maxPrice\":\"40760099569598\",\"updatedAt\":1733648872487,\"timestamp\":1733648872},{\"tokenAddress\":\"0xA1b91fe9FD52141Ff8cac388Ce3F10BFDc1dE79d\",\"tokenSymbol\":\"WIF\",\"minPrice\":\"3729772567724244750000000\",\"maxPrice\":\"3730937996734642500000000\",\"updatedAt\":1733648872537,\"timestamp\":1733648872},{\"tokenAddress\":\"0x25d887Ce7a35172C62FeBFD67a1856F20FaEbB00\",\"tokenSymbol\":\"PEPE\",\"minPrice\":\"24615512\",\"maxPrice\":\"24625501\",\"updatedAt\":1733648872487,\"timestamp\":1733648872},{\"tokenAddress\":\"0x0c880f6761F1af8d9Aa9C466984b80DAb9a8c9e8\",\"tokenSymbol\":\"PENDLE\",\"minPrice\":\"6644172711614\",\"maxPrice\":\"6645945218594\",\"updatedAt\":1733648872839,\"timestamp\":1733648872},{\"tokenAddress\":\"0x5979D7b546E38E414F7E9822514be443A4800529\",\"tokenSymbol\":\"wstETH\",\"minPrice\":\"4691159894923080\",\"maxPrice\":\"4692236158177556\",\"updatedAt\":1733648872890,\"timestamp\":1733648872},{\"tokenAddress\":\"0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34\",\"tokenSymbol\":\"USDe\",\"minPrice\":\"1001890700000\",\"maxPrice\":\"1002004200000\",\"updatedAt\":1733648871631,\"timestamp\":1733648871},{\"tokenAddress\":\"0x2cD2eB61D17b78239Fcd19aafF72981B5D5eF319\",\"tokenSymbol\":\"SATS\",\"minPrice\":\"307655446254000000\",\"maxPrice\":\"307782110991000000\",\"updatedAt\":1733648872699,\"timestamp\":1733648872},{\"tokenAddress\":\"0x9c74772b713a1B032aEB173E28683D937E51921c\",\"tokenSymbol\":\"POL\",\"minPrice\":\"687196000000\",\"maxPrice\":\"687325240000\",\"updatedAt\":1733648871731,\"timestamp\":1733648871},{\"tokenAddress\":\"0x53186c8419BEB83fE4Da74F7875041a1287337ED\",\"tokenSymbol\":\"ADA\",\"minPrice\":\"1190818697884955900000000\",\"maxPrice\":\"1190994940341826300000000\",\"updatedAt\":1733648872537,\"timestamp\":1733648872},{\"tokenAddress\":\"0xc5dbD52Ae5a927Cf585B884011d0C7631C9974c6\",\"tokenSymbol\":\"XLM\",\"minPrice\":\"48184601422410520000000\",\"maxPrice\":\"48196600000000000000000\",\"updatedAt\":1733648872738,\"timestamp\":1733648872},{\"tokenAddress\":\"0xc33D9C096e74aa4f571E9417b69a19C4A1e72ef2\",\"tokenSymbol\":\"BCH\",\"minPrice\":\"6093205830789757000000000\",\"maxPrice\":\"6094348405684791000000000\",\"updatedAt\":1733648872587,\"timestamp\":1733648872},{\"tokenAddress\":\"0xE958f107b467d5172573F761d26931D658C1b436\",\"tokenSymbol\":\"DOT\",\"minPrice\":\"1034588000000000000000\",\"maxPrice\":\"1034765718707678000000\",\"updatedAt\":1733648872940,\"timestamp\":1733648872},{\"tokenAddress\":\"0xdaf0A71608938F762e37eC5F72F670Cc44703454\",\"tokenSymbol\":\"ICP\",\"minPrice\":\"143324800434306990000000\",\"maxPrice\":\"143348370000000000000000\",\"updatedAt\":1733648872487,\"timestamp\":1733648872},{\"tokenAddress\":\"0x82BB89fcc64c5d4016C5Ed1AB016bB0D1C20D6C3\",\"tokenSymbol\":\"RENDER\",\"minPrice\":\"10134922860312\",\"maxPrice\":\"10136841260148\",\"updatedAt\":1733648872738,\"timestamp\":1733648872}]","timestamp":"2024-12-08T09:07:53.937Z"}
+Arbitrum Tickers: [
+  {
+    tokenAddress: '0x7f9FBf9bDd3F4105C478b996B648FE6e828a1e98',
+    tokenSymbol: 'APE',
+    minPrice: '1828170359000',
+    maxPrice: '1829012372412',
+    updatedAt: 1733648872839,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x74885b4D524d497261259B38900f54e6dbAd2210',
+    tokenSymbol: 'APE_deprecated',
+    minPrice: '1828170359000',
+    maxPrice: '1829012372412',
+    updatedAt: 1733648872839,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x3f8f0dCE4dCE4d0D1d0871941e79CDA82cA50d0B',
+    tokenSymbol: 'APT',
+    minPrice: '143099761086698540000000',
+    maxPrice: '143179559080824210000000',
+    updatedAt: 1733648872738,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x3Eea56A1ccCdbfB70A26aD381C71Ee17E4c8A15F',
+    tokenSymbol: 'BOME',
+    minPrice: '10350868616461499000000',
+    maxPrice: '10352620024094605000000',
+    updatedAt: 1733648872738,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0xaF770F03518686a365300ab35AD860e99967B2f0',
+    tokenSymbol: 'MEME',
+    minPrice: '17589423000',
+    maxPrice: '17600421356',
+    updatedAt: 1733648872738,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x6792c5B8962ffbDD020c6b6FD0Be7b182e0e33a3',
+    tokenSymbol: 'FLOKI',
+    minPrice: '253095320419168000',
+    maxPrice: '253130675138328000',
+    updatedAt: 1733648872991,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x5503CF72f54b6d692d36BBCD391516A7dE068687',
+    tokenSymbol: 'MEW',
+    minPrice: '96795299300263760000000',
+    maxPrice: '96829340414461600000000',
+    updatedAt: 1733648872637,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
+    tokenSymbol: 'ETH',
+    minPrice: '3955176900000000',
+    maxPrice: '3955399269794918',
+    updatedAt: 1733648872637,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x938aef36CAaFbcB37815251B602168087eC14648',
+    tokenSymbol: 'TAO',
+    minPrice: '691980470091799700000000',
+    maxPrice: '692108109136716250000000',
+    updatedAt: 1733648872637,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x1FD10E767187A92f0AB2ABDEEF4505e319cA06B2',
+    tokenSymbol: 'BONK',
+    minPrice: '452140390000000000000',
+    maxPrice: '452275913296590000000',
+    updatedAt: 1733648872587,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x75B9AdD873641b253718810E6c65dB6d72311FD0',
+    tokenSymbol: 'WLD',
+    minPrice: '3715943994156',
+    maxPrice: '3716990863134',
+    updatedAt: 1733648871783,
+    timestamp: 1733648871
+  },
+  {
+    tokenAddress: '0x47904963fc8b2340414262125aF798B9655E58Cd',
+    tokenSymbol: 'BTC',
+    minPrice: '991887953741874700000000000',
+    maxPrice: '991929780000000000000000000',
+    updatedAt: 1733648872839,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x6c84a8f1c29108F47a79964b5Fe888D4f4D0dE40',
+    tokenSymbol: 'tBTC',
+    minPrice: '99188795374187470',
+    maxPrice: '99192978000000000',
+    updatedAt: 1733648872839,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f',
+    tokenSymbol: 'WBTC.b',
+    minPrice: '991887953741874700000000000',
+    maxPrice: '991929780000000000000000000',
+    updatedAt: 1733648872839,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0xC4da4c24fd591125c3F47b340b6f4f76111883d8',
+    tokenSymbol: 'DOGE',
+    minPrice: '4567212700000000000000',
+    maxPrice: '4567938943660236000000',
+    updatedAt: 1733648872738,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x606C3e5075e5555e79Aa15F1E9FACB776F96C248',
+    tokenSymbol: 'EIGEN',
+    minPrice: '4512002304195',
+    maxPrice: '4514421500000',
+    updatedAt: 1733648872738,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0xB46A094Bc4B0adBD801E14b9DB95e05E28962764',
+    tokenSymbol: 'LTC',
+    minPrice: '1315410176156069600000000',
+    maxPrice: '1315569189177451800000000',
+    updatedAt: 1733648872890,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x3E57D02f9d196873e55727382974b02EdebE6bfd',
+    tokenSymbol: 'SHIB',
+    minPrice: '31689370',
+    maxPrice: '31699681',
+    updatedAt: 1733648872789,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x2bcC6D6CdBbDC0a4071e48bb3B969b06B3330c07',
+    tokenSymbol: 'SOL',
+    minPrice: '236001837831834730000000',
+    maxPrice: '236014700000000000000000',
+    updatedAt: 1733648872487,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x197aa2DE1313c7AD50184234490E12409B2a1f95',
+    tokenSymbol: 'SUI',
+    minPrice: '4193686289490220500000',
+    maxPrice: '4193981710603875500000',
+    updatedAt: 1733648872537,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x55e85A147a1029b985384822c0B2262dF8023452',
+    tokenSymbol: 'SEI',
+    minPrice: '676215196953',
+    maxPrice: '676322126293',
+    updatedAt: 1733648872637,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0xBaf07cF91D413C0aCB2b7444B9Bf13b4e03c9D71',
+    tokenSymbol: 'STX',
+    minPrice: '2606315098458807000000000',
+    maxPrice: '2607359020151312000000000',
+    updatedAt: 1733648872738,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0xFa7F8980b0f1E64A2062791cc3b0871572f1F7f0',
+    tokenSymbol: 'UNI',
+    minPrice: '18225930732130',
+    maxPrice: '18237750000000',
+    updatedAt: 1733648872587,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0xf97f4df75117a78c1A5a0DBb814Af92458539FB4',
+    tokenSymbol: 'LINK',
+    minPrice: '25686002090298',
+    maxPrice: '25695653350998',
+    updatedAt: 1733648872537,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x912CE59144191C1204E64559FE8253a0e49E6548',
+    tokenSymbol: 'ARB',
+    minPrice: '1152347950000',
+    maxPrice: '1152831877422',
+    updatedAt: 1733648872587,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0xc14e065b0067dE91534e032868f5Ac6ecf2c6868',
+    tokenSymbol: 'XRP',
+    minPrice: '2530920133880078600000000',
+    maxPrice: '2531144084609439300000000',
+    updatedAt: 1733648872991,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+    tokenSymbol: 'USDC',
+    minPrice: '999804225615028500000000',
+    maxPrice: '999940000000000000000000',
+    updatedAt: 1733648872699,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
+    tokenSymbol: 'USDC.e',
+    minPrice: '999804225615028500000000',
+    maxPrice: '999940000000000000000000',
+    updatedAt: 1733648872699,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
+    tokenSymbol: 'USDT',
+    minPrice: '1000490000000000000000000',
+    maxPrice: '1000540000000000000000000',
+    updatedAt: 1733648872738,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1',
+    tokenSymbol: 'DAI',
+    minPrice: '999762528442',
+    maxPrice: '1000078900000',
+    updatedAt: 1733648872789,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0xa9004A5421372E1D83fB1f85b0fc986c912f91f3',
+    tokenSymbol: 'BNB',
+    minPrice: '742295756651099',
+    maxPrice: '742312834473115',
+    updatedAt: 1733648872587,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x7D7F1765aCbaF847b9A1f7137FE8Ed4931FbfEbA',
+    tokenSymbol: 'ATOM',
+    minPrice: '9973114233252428500000000',
+    maxPrice: '9975596165939660500000000',
+    updatedAt: 1733648872537,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x1FF7F3EFBb9481Cbd7db4F932cBCD4467144237C',
+    tokenSymbol: 'NEAR',
+    minPrice: '7610429',
+    maxPrice: '7611712',
+    updatedAt: 1733648872839,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0xba5DdD1f9d7F570dc94a51479a000E3BCE967196',
+    tokenSymbol: 'AAVE',
+    minPrice: '278100088768885',
+    maxPrice: '278138323579917',
+    updatedAt: 1733648872436,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x565609fAF65B92F7be02468acF86f8979423e514',
+    tokenSymbol: 'AVAX',
+    minPrice: '50926906568355',
+    maxPrice: '50940616500000',
+    updatedAt: 1733648872738,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0xaC800FD6159c2a2CB8fC31EF74621eB430287a5A',
+    tokenSymbol: 'OP',
+    minPrice: '2647987900000',
+    maxPrice: '2649044590811',
+    updatedAt: 1733648872587,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x1E15d08f3CA46853B692EE28AE9C7a0b88a9c994',
+    tokenSymbol: 'ORDI',
+    minPrice: '47614915579172',
+    maxPrice: '47625277070308',
+    updatedAt: 1733648872789,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x38676f62d166f5CE7De8433F51c6B3D6D9d66C19',
+    tokenSymbol: 'TIA',
+    minPrice: '8272447154467068000000000',
+    maxPrice: '8274097800000000000000000',
+    updatedAt: 1733648871696,
+    timestamp: 1733648871
+  },
+  {
+    tokenAddress: '0xb06aa7E4af937C130dDade66f6ed7642716fe07A',
+    tokenSymbol: 'TRX',
+    minPrice: '312771593948606540000000',
+    maxPrice: '312862860000000000000000',
+    updatedAt: 1733648872537,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0xB2f7cefaeEb08Aa347705ac829a7b8bE2FB560f3',
+    tokenSymbol: 'TON',
+    minPrice: '6726375327086980250000',
+    maxPrice: '6727385393599093500000',
+    updatedAt: 1733648872890,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a',
+    tokenSymbol: 'GMX',
+    minPrice: '40739360719463',
+    maxPrice: '40760099569598',
+    updatedAt: 1733648872487,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0xA1b91fe9FD52141Ff8cac388Ce3F10BFDc1dE79d',
+    tokenSymbol: 'WIF',
+    minPrice: '3729772567724244750000000',
+    maxPrice: '3730937996734642500000000',
+    updatedAt: 1733648872537,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x25d887Ce7a35172C62FeBFD67a1856F20FaEbB00',
+    tokenSymbol: 'PEPE',
+    minPrice: '24615512',
+    maxPrice: '24625501',
+    updatedAt: 1733648872487,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x0c880f6761F1af8d9Aa9C466984b80DAb9a8c9e8',
+    tokenSymbol: 'PENDLE',
+    minPrice: '6644172711614',
+    maxPrice: '6645945218594',
+    updatedAt: 1733648872839,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x5979D7b546E38E414F7E9822514be443A4800529',
+    tokenSymbol: 'wstETH',
+    minPrice: '4691159894923080',
+    maxPrice: '4692236158177556',
+    updatedAt: 1733648872890,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34',
+    tokenSymbol: 'USDe',
+    minPrice: '1001890700000',
+    maxPrice: '1002004200000',
+    updatedAt: 1733648871631,
+    timestamp: 1733648871
+  },
+  {
+    tokenAddress: '0x2cD2eB61D17b78239Fcd19aafF72981B5D5eF319',
+    tokenSymbol: 'SATS',
+    minPrice: '307655446254000000',
+    maxPrice: '307782110991000000',
+    updatedAt: 1733648872699,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x9c74772b713a1B032aEB173E28683D937E51921c',
+    tokenSymbol: 'POL',
+    minPrice: '687196000000',
+    maxPrice: '687325240000',
+    updatedAt: 1733648871731,
+    timestamp: 1733648871
+  },
+  {
+    tokenAddress: '0x53186c8419BEB83fE4Da74F7875041a1287337ED',
+    tokenSymbol: 'ADA',
+    minPrice: '1190818697884955900000000',
+    maxPrice: '1190994940341826300000000',
+    updatedAt: 1733648872537,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0xc5dbD52Ae5a927Cf585B884011d0C7631C9974c6',
+    tokenSymbol: 'XLM',
+    minPrice: '48184601422410520000000',
+    maxPrice: '48196600000000000000000',
+    updatedAt: 1733648872738,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0xc33D9C096e74aa4f571E9417b69a19C4A1e72ef2',
+    tokenSymbol: 'BCH',
+    minPrice: '6093205830789757000000000',
+    maxPrice: '6094348405684791000000000',
+    updatedAt: 1733648872587,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0xE958f107b467d5172573F761d26931D658C1b436',
+    tokenSymbol: 'DOT',
+    minPrice: '1034588000000000000000',
+    maxPrice: '1034765718707678000000',
+    updatedAt: 1733648872940,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0xdaf0A71608938F762e37eC5F72F670Cc44703454',
+    tokenSymbol: 'ICP',
+    minPrice: '143324800434306990000000',
+    maxPrice: '143348370000000000000000',
+    updatedAt: 1733648872487,
+    timestamp: 1733648872
+  },
+  {
+    tokenAddress: '0x82BB89fcc64c5d4016C5Ed1AB016bB0D1C20D6C3',
+    tokenSymbol: 'RENDER',
+    minPrice: '10134922860312',
+    maxPrice: '10136841260148',
+    updatedAt: 1733648872738,
+    timestamp: 1733648872
+  }
+]
+{"level":"info","message":"Testing GMX fetch for Avalanche - Tickers","timestamp":"2024-12-08T09:07:53.951Z"}
+{"level":"info","message":"Fetching GMX prices for avalanche using tickers endpoint...","timestamp":"2024-12-08T09:07:53.952Z"}
+Loaded endpoint: GMX_AVALANCHE_TICKERS_URL = https://avalanche-api.gmxinfra.io/prices/tickers
+{"level":"info","message":"Fetched data for avalanche: [{\"tokenAddress\":\"0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7\",\"tokenSymbol\":\"AVAX\",\"minPrice\":\"50926856722866\",\"maxPrice\":\"50939669802446\",\"updatedAt\":1733648873811,\"timestamp\":1733648873},{\"tokenAddress\":\"0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB\",\"tokenSymbol\":\"ETH\",\"minPrice\":\"3955203280315701\",\"maxPrice\":\"3955368819059744\",\"updatedAt\":1733648873712,\"timestamp\":1733648873},{\"tokenAddress\":\"0x152b9d0FdC40C096757F570A51E494bd4b943E50\",\"tokenSymbol\":\"BTC\",\"minPrice\":\"991885861170777400000000000\",\"maxPrice\":\"991929720000000000000000000\",\"updatedAt\":1733648873510,\"timestamp\":1733648873},{\"tokenAddress\":\"0x5947BB275c521040051D82396192181b413227A3\",\"tokenSymbol\":\"LINK\",\"minPrice\":\"25683033996855\",\"maxPrice\":\"25693507216950\",\"updatedAt\":1733648873561,\"timestamp\":1733648873},{\"tokenAddress\":\"0xFE6B19286885a4F7F55AdAD09C3Cd1f906D2478F\",\"tokenSymbol\":\"SOL\",\"minPrice\":\"236001301638946400000000\",\"maxPrice\":\"236021749710854150000000\",\"updatedAt\":1733648873561,\"timestamp\":1733648873},{\"tokenAddress\":\"0xC301E6fe31062C557aEE806cc6A841aE989A3ac6\",\"tokenSymbol\":\"DOGE\",\"minPrice\":\"4567289800000000000000\",\"maxPrice\":\"4567829820543196600000\",\"updatedAt\":1733648873912,\"timestamp\":1733648873},{\"tokenAddress\":\"0x8E9C35235C38C44b5a53B56A41eaf6dB9a430cD6\",\"tokenSymbol\":\"LTC\",\"minPrice\":\"1315337900296476600000000\",\"maxPrice\":\"1315549864389930400000000\",\"updatedAt\":1733648873510,\"timestamp\":1733648873},{\"tokenAddress\":\"0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E\",\"tokenSymbol\":\"USDC\",\"minPrice\":\"999800311107959100000000\",\"maxPrice\":\"999937270000000000000000\",\"updatedAt\":1733648873712,\"timestamp\":1733648873},{\"tokenAddress\":\"0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664\",\"tokenSymbol\":\"USDC.e\",\"minPrice\":\"999800311107959100000000\",\"maxPrice\":\"999937270000000000000000\",\"updatedAt\":1733648873712,\"timestamp\":1733648873},{\"tokenAddress\":\"0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7\",\"tokenSymbol\":\"USDT\",\"minPrice\":\"1000490000000000000000000\",\"maxPrice\":\"1000540000000000000000000\",\"updatedAt\":1733648873712,\"timestamp\":1733648873},{\"tokenAddress\":\"0xc7198437980c041c805A1EDcbA50c1Ce5db95118\",\"tokenSymbol\":\"USDT.e\",\"minPrice\":\"1000490000000000000000000\",\"maxPrice\":\"1000540000000000000000000\",\"updatedAt\":1733648873712,\"timestamp\":1733648873},{\"tokenAddress\":\"0xd586E7F844cEa2F87f50152665BCbc2C279D8d70\",\"tokenSymbol\":\"DAI.e\",\"minPrice\":\"999762528442\",\"maxPrice\":\"1000070800000\",\"updatedAt\":1733648873611,\"timestamp\":1733648873},{\"tokenAddress\":\"0x34B2885D617cE2ddeD4F60cCB49809fc17bb58Af\",\"tokenSymbol\":\"XRP\",\"minPrice\":\"2530599100000000000000000\",\"maxPrice\":\"2530803276334540450000000\",\"updatedAt\":1733648873611,\"timestamp\":1733648873},{\"tokenAddress\":\"0x62edc0692BD897D2295872a9FFCac5425011c661\",\"tokenSymbol\":\"GMX\",\"minPrice\":\"40738584684885\",\"maxPrice\":\"40759318041696\",\"updatedAt\":1733648873461,\"timestamp\":1733648873}]","timestamp":"2024-12-08T09:07:54.567Z"}
+Avalanche Tickers: [
+  {
+    tokenAddress: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7',
+    tokenSymbol: 'AVAX',
+    minPrice: '50926856722866',
+    maxPrice: '50939669802446',
+    updatedAt: 1733648873811,
+    timestamp: 1733648873
+  },
+  {
+    tokenAddress: '0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB',
+    tokenSymbol: 'ETH',
+    minPrice: '3955203280315701',
+    maxPrice: '3955368819059744',
+    updatedAt: 1733648873712,
+    timestamp: 1733648873
+  },
+  {
+    tokenAddress: '0x152b9d0FdC40C096757F570A51E494bd4b943E50',
+    tokenSymbol: 'BTC',
+    minPrice: '991885861170777400000000000',
+    maxPrice: '991929720000000000000000000',
+    updatedAt: 1733648873510,
+    timestamp: 1733648873
+  },
+  {
+    tokenAddress: '0x5947BB275c521040051D82396192181b413227A3',
+    tokenSymbol: 'LINK',
+    minPrice: '25683033996855',
+    maxPrice: '25693507216950',
+    updatedAt: 1733648873561,
+    timestamp: 1733648873
+  },
+  {
+    tokenAddress: '0xFE6B19286885a4F7F55AdAD09C3Cd1f906D2478F',
+    tokenSymbol: 'SOL',
+    minPrice: '236001301638946400000000',
+    maxPrice: '236021749710854150000000',
+    updatedAt: 1733648873561,
+    timestamp: 1733648873
+  },
+  {
+    tokenAddress: '0xC301E6fe31062C557aEE806cc6A841aE989A3ac6',
+    tokenSymbol: 'DOGE',
+    minPrice: '4567289800000000000000',
+    maxPrice: '4567829820543196600000',
+    updatedAt: 1733648873912,
+    timestamp: 1733648873
+  },
+  {
+    tokenAddress: '0x8E9C35235C38C44b5a53B56A41eaf6dB9a430cD6',
+    tokenSymbol: 'LTC',
+    minPrice: '1315337900296476600000000',
+    maxPrice: '1315549864389930400000000',
+    updatedAt: 1733648873510,
+    timestamp: 1733648873
+  },
+  {
+    tokenAddress: '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
+    tokenSymbol: 'USDC',
+    minPrice: '999800311107959100000000',
+    maxPrice: '999937270000000000000000',
+    updatedAt: 1733648873712,
+    timestamp: 1733648873
+  },
+  {
+    tokenAddress: '0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664',
+    tokenSymbol: 'USDC.e',
+    minPrice: '999800311107959100000000',
+    maxPrice: '999937270000000000000000',
+    updatedAt: 1733648873712,
+    timestamp: 1733648873
+  },
+  {
+    tokenAddress: '0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7',
+    tokenSymbol: 'USDT',
+    minPrice: '1000490000000000000000000',
+    maxPrice: '1000540000000000000000000',
+    updatedAt: 1733648873712,
+    timestamp: 1733648873
+  },
+  {
+    tokenAddress: '0xc7198437980c041c805A1EDcbA50c1Ce5db95118',
+    tokenSymbol: 'USDT.e',
+    minPrice: '1000490000000000000000000',
+    maxPrice: '1000540000000000000000000',
+    updatedAt: 1733648873712,
+    timestamp: 1733648873
+  },
+  {
+    tokenAddress: '0xd586E7F844cEa2F87f50152665BCbc2C279D8d70',
+    tokenSymbol: 'DAI.e',
+    minPrice: '999762528442',
+    maxPrice: '1000070800000',
+    updatedAt: 1733648873611,
+    timestamp: 1733648873
+  },
+  {
+    tokenAddress: '0x34B2885D617cE2ddeD4F60cCB49809fc17bb58Af',
+    tokenSymbol: 'XRP',
+    minPrice: '2530599100000000000000000',
+    maxPrice: '2530803276334540450000000',
+    updatedAt: 1733648873611,
+    timestamp: 1733648873
+  },
+  {
+    tokenAddress: '0x62edc0692BD897D2295872a9FFCac5425011c661',
+    tokenSymbol: 'GMX',
+    minPrice: '40738584684885',
+    maxPrice: '40759318041696',
+    updatedAt: 1733648873461,
+    timestamp: 1733648873
+  }
+]
+{"level":"info","message":"Testing GMX fetch for Arbitrum - Candles","timestamp":"2024-12-08T09:07:54.570Z"}
+{"level":"info","message":"Fetching GMX prices for arbitrum using candles endpoint...","timestamp":"2024-12-08T09:07:54.571Z"}
+Loaded endpoint: GMX_ARBITRUM_CANDLES_URL = https://arbitrum-api.gmxinfra.io/prices/candles
+{"level":"error","message":"Error fetching GMX prices for arbitrum: Request failed with status code 400","timestamp":"2024-12-08T09:07:55.437Z"}
+Error testing fetch-gmx-data: Request failed with status code 400
