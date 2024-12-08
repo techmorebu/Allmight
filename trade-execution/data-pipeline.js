@@ -1,9 +1,10 @@
-require('dotenv').config({ path: '../.env' });
-const { fetchTokenPrices } = require('../data-collection/fetchData');
-const { fetchGmxTokenPrices, fetchGmxPairs } = require('../data-collection/fetch-gmx-data');
-const { fetchUniswapData } = require('../data-collection/fetch-uniswap-data'); // New source
-const { analyzeTrends } = require('../trade-execution/analyze-trends');
-const { logger } = require('../monitoring/logger');
+// Corrected paths
+require('dotenv').config({ path: '../../.env' }); // Adjusted to locate .env in the project root
+const { fetchTokenPrices } = require('../data-collection/fetchData'); // No change
+const { fetchGmxTokenPrices, fetchGmxPairs } = require('../data-collection/fetch-gmx-data'); // No change
+const { analyzeTrends } = require('./analyze-trends'); // Adjusted to point to analyze-trends.js in the same directory
+const { logger } = require('../monitoring/logger'); // No change
+
 
 async function normalizeData(rawData) {
     try {
