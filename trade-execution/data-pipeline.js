@@ -1,13 +1,10 @@
 require('dotenv').config({ path: '../../.env' });
 const { fetchTokenPrices } = require('../data-collection/fetchData');
-const { fetchGmxTokenPrices } = require('../data-collection/fetch-gmx-data');
+const { fetchGmxData, fetchGmxCandlesticks } = require('../data-collection/fetch-gmx-data');
 const { fetchUniswapData } = require('../data-collection/fetch-uniswap-data');
 const { analyzeTrends } = require('./analyze-trends');
 const { logger } = require('../monitoring/logger');
 
-/**
- * Run the data pipeline to fetch, combine, and analyze token data.
- */
 async function runDataPipeline() {
     try {
         logger.info('--- Starting Data Pipeline ---');
@@ -17,11 +14,13 @@ async function runDataPipeline() {
         const coingeckoData = await fetchTokenPrices();
         logger.info('Fetched CoinGecko data successfully.');
 
-        // Step 2: Fetch GMX token prices
-        logger.info('Fetching GMX token prices...');
-        const arbitrumPrices = await fetchGmxTokenPrices('arbitrum');
-        const avalanchePrices = await fetchGmxTokenPrices('avalanche');
-        logger.info('Fetched GMX token prices successfully.');
+        // Step 2: Fetch GMX token data
+        logger.info('Fetching GMX token data...');
+        const arbitrumTickers = await fetchGmxData('arbitrum', 'tickers');
+        const avalancheTickers = await fetchGmxData('avalanche', 'tickers');
+        const arbitrumCandlesticks = await fetchGmxCandlesticks('arbitrum', 'ETH', '1d');
+        const avalancheCandlesticks = await fetchGmxCandlesticks('avalanche', 'AVAX', '1d');
+        logger.info('Fetched GMX token data successfully.');
 
         // Step 3: Fetch Uniswap data
         logger.info('Fetching Uniswap data...');
@@ -31,8 +30,16 @@ async function runDataPipeline() {
         // Step 4: Combine all data
         const combinedData = {
             coingecko: coingeckoData,
-            arbitrum: { prices: arbitrumPrices },
-            avalanche: { prices: avalanchePrices },
+            gmx: {
+                arbitrum: {
+                    tickers: arbitrumTickers,
+                    candlesticks: arbitrumCandlesticks,
+                },
+                avalanche: {
+                    tickers: avalancheTickers,
+                    candlesticks: avalancheCandlesticks,
+                },
+            },
             uniswap: uniswapData,
         };
 
@@ -47,7 +54,6 @@ async function runDataPipeline() {
         logger.info('Trends analysis result:', JSON.stringify(trends, null, 2));
     } catch (error) {
         logger.error(`Error in data pipeline: ${error.message}`);
-        throw error;
     }
 }
 
