@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '../../.env' });
+require('dotenv').config({ path: '../.env' });
 const axios = require('axios');
 const { logger } = require('../monitoring/logger');
 
