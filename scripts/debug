@@ -2,70 +2,76 @@ techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project/trade-execution$ node vali
 Using endpoint: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV
 --- Starting Integration Validation ---
 Running data pipeline...
-{"level":"info","message":"--- Starting Data Pipeline ---","timestamp":"2024-12-08T07:43:20.180Z"}
-{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T07:43:20.183Z"}
-{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T07:43:20.184Z"}
-{"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-08T07:43:20.572Z"}
-{"level":"info","message":"Fetched CoinGecko data successfully.","timestamp":"2024-12-08T07:43:20.572Z"}
-{"level":"info","message":"Fetching GMX token prices...","timestamp":"2024-12-08T07:43:20.573Z"}
-{"level":"info","message":"Fetching GMX token prices from arbitrum...","timestamp":"2024-12-08T07:43:20.574Z"}
-{"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-08T07:43:21.137Z"}
-{"level":"error","message":"Error in data pipeline: fetchGmxPairs is not a function","timestamp":"2024-12-08T07:43:21.139Z"}
+{"level":"info","message":"--- Starting Data Pipeline ---","timestamp":"2024-12-08T07:48:17.753Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T07:48:17.758Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T07:48:17.759Z"}
+{"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-08T07:48:18.085Z"}
+{"level":"info","message":"Fetched CoinGecko data successfully.","timestamp":"2024-12-08T07:48:18.086Z"}
+{"level":"info","message":"Fetching GMX token prices...","timestamp":"2024-12-08T07:48:18.087Z"}
+{"level":"info","message":"Fetching GMX token prices from arbitrum...","timestamp":"2024-12-08T07:48:18.088Z"}
+{"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-08T07:48:18.814Z"}
+{"level":"error","message":"Error in data pipeline: fetchGmxPairs is not a function","timestamp":"2024-12-08T07:48:18.817Z"}
 Data pipeline completed successfully.
 Generating signals...
-{"level":"info","message":"Generating trading signals...","timestamp":"2024-12-08T07:43:21.166Z"}
-{"level":"info","message":"Using AI model for signal generation...","timestamp":"2024-12-08T07:43:21.166Z"}
-{"level":"info","message":"Generating signals using AI model...","timestamp":"2024-12-08T07:43:21.167Z"}
-{"level":"info","message":"Using mock AI model for predictions...","timestamp":"2024-12-08T07:43:21.168Z"}
-{"level":"info","message":"Mock signal for ethereum: Buy (Confidence: 0.78)","timestamp":"2024-12-08T07:43:21.169Z"}
-{"level":"info","message":"Mock signal for zksync: Sell (Confidence: 0.27)","timestamp":"2024-12-08T07:43:21.169Z"}
-{"level":"info","message":"Mock signal for GMX-Arbitrum: Buy (Confidence: 0.88)","timestamp":"2024-12-08T07:43:21.169Z"}
-{"level":"info","message":"Mock signal for GMX-Avalanche: Hold (Confidence: 0.50)","timestamp":"2024-12-08T07:43:21.170Z"}
-{"level":"info","message":"AI signals generated successfully:","timestamp":"2024-12-08T07:43:21.170Z"}
+{"level":"info","message":"Generating trading signals...","timestamp":"2024-12-08T07:48:18.822Z"}
+{"level":"info","message":"Using AI model for signal generation...","timestamp":"2024-12-08T07:48:18.822Z"}
+{"level":"info","message":"Generating signals using AI model...","timestamp":"2024-12-08T07:48:18.823Z"}
+{"level":"info","message":"Using mock AI model for predictions...","timestamp":"2024-12-08T07:48:18.824Z"}
+{"level":"info","message":"Mock signal for ethereum: Buy (Confidence: 0.95)","timestamp":"2024-12-08T07:48:18.824Z"}
+{"level":"info","message":"Mock signal for zksync: Sell (Confidence: 0.11)","timestamp":"2024-12-08T07:48:18.825Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum: Buy (Confidence: 0.85)","timestamp":"2024-12-08T07:48:18.825Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche: Hold (Confidence: 0.52)","timestamp":"2024-12-08T07:48:18.826Z"}
+{"level":"info","message":"AI signals generated successfully:","timestamp":"2024-12-08T07:48:18.826Z"}
 Signals generated successfully: {
   ethereum: {
     token: 'ethereum',
     signal: 'Buy',
-    confidence: '0.78',
+    confidence: '0.95',
     price: 3703.76
   },
   zksync: {
     token: 'zksync',
     signal: 'Sell',
-    confidence: '0.27',
+    confidence: '0.11',
     price: 0.229815
   },
   'GMX-Arbitrum': {
     token: 'GMX-Arbitrum',
     signal: 'Buy',
-    confidence: '0.88',
+    confidence: '0.85',
     price: undefined
   },
   'GMX-Avalanche': {
     token: 'GMX-Avalanche',
     signal: 'Hold',
-    confidence: '0.50',
+    confidence: '0.52',
     price: undefined
   }
 }
 Executing live trading...
-{"level":"info","message":"--- Starting Live Trading ---","timestamp":"2024-12-08T07:43:21.174Z"}
-{"level":"info","message":"Generating trading signals...","timestamp":"2024-12-08T07:43:21.175Z"}
-{"level":"info","message":"Using AI model for signal generation...","timestamp":"2024-12-08T07:43:21.175Z"}
-{"level":"info","message":"Generating signals using AI model...","timestamp":"2024-12-08T07:43:21.175Z"}
-{"level":"info","message":"Using mock AI model for predictions...","timestamp":"2024-12-08T07:43:21.175Z"}
-{"level":"info","message":"Mock signal for ethereum: Sell (Confidence: 0.12)","timestamp":"2024-12-08T07:43:21.175Z"}
-{"level":"info","message":"Mock signal for zksync: Hold (Confidence: 0.31)","timestamp":"2024-12-08T07:43:21.175Z"}
-{"level":"info","message":"Mock signal for GMX-Arbitrum: Hold (Confidence: 0.61)","timestamp":"2024-12-08T07:43:21.176Z"}
-{"level":"info","message":"Mock signal for GMX-Avalanche: Buy (Confidence: 0.95)","timestamp":"2024-12-08T07:43:21.176Z"}
-{"level":"info","message":"AI signals generated successfully:","timestamp":"2024-12-08T07:43:21.176Z"}
-{"level":"warn","message":"Skipping trade for ethereum: Low confidence (0.12).","timestamp":"2024-12-08T07:43:21.176Z"}
-{"level":"warn","message":"Skipping trade for zksync: Low confidence (0.31).","timestamp":"2024-12-08T07:43:21.176Z"}
-{"level":"warn","message":"Skipping trade for GMX-Arbitrum: Low confidence (0.61).","timestamp":"2024-12-08T07:43:21.176Z"}
-{"level":"info","message":"Executing trade for GMX-Avalanche: Signal - Buy, Confidence - 0.95, Price - undefined","timestamp":"2024-12-08T07:43:21.177Z"}
-{"level":"info","message":"Preparing to execute Buy trade for GMX-Avalanche at price undefined...","timestamp":"2024-12-08T07:43:21.177Z"}
-{"level":"error","message":"Trade execution failed for GMX-Avalanche: getDexContract is not a function","timestamp":"2024-12-08T07:43:21.177Z"}
-{"level":"error","message":"Trade failed for GMX-Avalanche: getDexContract is not a function","timestamp":"2024-12-08T07:43:21.177Z"}
-{"level":"info","message":"Live trading session completed successfully.","timestamp":"2024-12-08T07:43:21.178Z"}
+{"level":"info","message":"--- Starting Live Trading ---","timestamp":"2024-12-08T07:48:18.833Z"}
+{"level":"info","message":"Generating trading signals...","timestamp":"2024-12-08T07:48:18.834Z"}
+{"level":"info","message":"Using AI model for signal generation...","timestamp":"2024-12-08T07:48:18.834Z"}
+{"level":"info","message":"Generating signals using AI model...","timestamp":"2024-12-08T07:48:18.834Z"}
+{"level":"info","message":"Using mock AI model for predictions...","timestamp":"2024-12-08T07:48:18.834Z"}
+{"level":"info","message":"Mock signal for ethereum: Buy (Confidence: 0.86)","timestamp":"2024-12-08T07:48:18.834Z"}
+{"level":"info","message":"Mock signal for zksync: Hold (Confidence: 0.43)","timestamp":"2024-12-08T07:48:18.834Z"}
+{"level":"info","message":"Mock signal for GMX-Arbitrum: Buy (Confidence: 1.00)","timestamp":"2024-12-08T07:48:18.835Z"}
+{"level":"info","message":"Mock signal for GMX-Avalanche: Buy (Confidence: 0.90)","timestamp":"2024-12-08T07:48:18.835Z"}
+{"level":"info","message":"AI signals generated successfully:","timestamp":"2024-12-08T07:48:18.835Z"}
+{"level":"info","message":"Executing trade for ethereum: Signal - Buy, Confidence - 0.86, Price - 3703.76","timestamp":"2024-12-08T07:48:18.835Z"}
+{"level":"info","message":"Preparing to execute Buy trade for ethereum at price 3703.76...","timestamp":"2024-12-08T07:48:18.836Z"}
+{"level":"error","message":"Trade execution failed for ethereum: getDexContract is not a function","timestamp":"2024-12-08T07:48:18.836Z"}
+{"level":"error","message":"Trade failed for ethereum: getDexContract is not a function","timestamp":"2024-12-08T07:48:18.836Z"}
+{"level":"warn","message":"Skipping trade for zksync: Low confidence (0.43).","timestamp":"2024-12-08T07:48:18.836Z"}
+{"level":"info","message":"Executing trade for GMX-Arbitrum: Signal - Buy, Confidence - 1.00, Price - undefined","timestamp":"2024-12-08T07:48:18.836Z"}
+{"level":"info","message":"Preparing to execute Buy trade for GMX-Arbitrum at price undefined...","timestamp":"2024-12-08T07:48:18.837Z"}
+{"level":"error","message":"Trade execution failed for GMX-Arbitrum: getDexContract is not a function","timestamp":"2024-12-08T07:48:18.837Z"}
+{"level":"error","message":"Trade failed for GMX-Arbitrum: getDexContract is not a function","timestamp":"2024-12-08T07:48:18.837Z"}
+{"level":"info","message":"Executing trade for GMX-Avalanche: Signal - Buy, Confidence - 0.90, Price - undefined","timestamp":"2024-12-08T07:48:18.837Z"}
+{"level":"info","message":"Preparing to execute Buy trade for GMX-Avalanche at price undefined...","timestamp":"2024-12-08T07:48:18.837Z"}
+{"level":"error","message":"Trade execution failed for GMX-Avalanche: getDexContract is not a function","timestamp":"2024-12-08T07:48:18.837Z"}
+{"level":"error","message":"Trade failed for GMX-Avalanche: getDexContract is not a function","timestamp":"2024-12-08T07:48:18.838Z"}
+{"level":"info","message":"Live trading session completed successfully.","timestamp":"2024-12-08T07:48:18.838Z"}
 Live trading completed successfully.
 --- Integration Validation Successful ---
