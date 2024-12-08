@@ -1,35 +1,33 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project/trade-execution$ node validate-integration
-Using endpoint: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV
+{"level":"info","message":"--- Starting Data Pipeline ---","timestamp":"2024-12-08T06:49:09.870Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T06:49:09.873Z"}
+{"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T06:49:09.875Z"}
+{"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-08T06:49:11.198Z"}
+{"level":"info","message":"Fetched CoinGecko data successfully.","timestamp":"2024-12-08T06:49:11.199Z"}
+{"level":"info","message":"Fetching GMX token prices...","timestamp":"2024-12-08T06:49:11.199Z"}
+{"level":"info","message":"Fetching GMX token prices from arbitrum...","timestamp":"2024-12-08T06:49:11.200Z"}
+{"level":"error","message":"Error fetching GMX token prices: Invalid URL","timestamp":"2024-12-08T06:49:11.204Z"}
+{"level":"info","message":"Fetching GMX pairs from arbitrum...","timestamp":"2024-12-08T06:49:11.206Z"}
+{"level":"info","message":"Starting trend analysis...","timestamp":"2024-12-08T06:49:11.754Z"}
+{"level":"error","message":"No data provided for analysis.","timestamp":"2024-12-08T06:49:11.756Z"}
+{"level":"info","message":"Pairs fetched successfully:","timestamp":"2024-12-08T06:49:12.367Z"}
+{"level":"info","message":"Fetching GMX token prices from avalanche...","timestamp":"2024-12-08T06:49:12.368Z"}
+{"level":"error","message":"Error fetching GMX token prices: Invalid URL","timestamp":"2024-12-08T06:49:12.369Z"}
+{"level":"info","message":"Fetching GMX pairs from avalanche...","timestamp":"2024-12-08T06:49:12.370Z"}
+{"level":"info","message":"Pairs fetched successfully:","timestamp":"2024-12-08T06:49:13.590Z"}
+{"level":"info","message":"Fetched GMX data successfully.","timestamp":"2024-12-08T06:49:13.591Z"}
+{"level":"info","message":"Fetching Uniswap data...","timestamp":"2024-12-08T06:49:13.592Z"}
+{"level":"error","message":"Error in data pipeline: fetchUniswapData is not a function","timestamp":"2024-12-08T06:49:13.593Z"}
 {"level":"info","message":"--- Starting Data Pipeline ---","timestamp":"2024-12-08T06:49:22.248Z"}
 {"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T06:49:22.252Z"}
 {"level":"info","message":"Fetching token prices from CoinGecko...","timestamp":"2024-12-08T06:49:22.253Z"}
---- Starting Integration Validation ---
-Running data pipeline...
-Integration Validation Failed: runDataPipeline is not a function
 {"level":"info","message":"Token prices fetched successfully:","timestamp":"2024-12-08T06:49:22.549Z"}
 {"level":"info","message":"Fetched CoinGecko data successfully.","timestamp":"2024-12-08T06:49:22.550Z"}
 {"level":"info","message":"Fetching GMX token prices...","timestamp":"2024-12-08T06:49:22.551Z"}
 {"level":"info","message":"Fetching GMX token prices from arbitrum...","timestamp":"2024-12-08T06:49:22.552Z"}
 {"level":"error","message":"Error fetching GMX token prices: Invalid URL","timestamp":"2024-12-08T06:49:22.555Z"}
 {"level":"info","message":"Fetching GMX pairs from arbitrum...","timestamp":"2024-12-08T06:49:22.557Z"}
-ETH Price: $3974.8956997480022
-Total Volume: $1454334718596.631
-Top Pool: USDC/WETH
-Volume: $510385757647.5013153503332485422535
-Liquidity: $7158007537209427059
-Data saved to historical-data.json
 {"level":"info","message":"Starting trend analysis...","timestamp":"2024-12-08T06:49:23.121Z"}
 {"level":"error","message":"No data provided for analysis.","timestamp":"2024-12-08T06:49:23.122Z"}
-Alert sent to Discord: 
-🚨 New Data Synced:
-- ETH Price: $3974.90
-- Total Volume: $1,454,334,718,596.631
-
-📊 Top Pool: USDC/WETH
-- Volume: $510385757647.5013153503332485422535
-- Liquidity: $7158007537209427059
-      
-🚀 Significant Volume Detected in Pool USDC/WETH!
 {"level":"info","message":"Pairs fetched successfully:","timestamp":"2024-12-08T06:49:23.729Z"}
 {"level":"info","message":"Fetching GMX token prices from avalanche...","timestamp":"2024-12-08T06:49:23.730Z"}
 {"level":"error","message":"Error fetching GMX token prices: Invalid URL","timestamp":"2024-12-08T06:49:23.731Z"}
