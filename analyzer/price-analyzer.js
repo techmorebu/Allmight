@@ -1,11 +1,15 @@
 const { fetchCachedData } = require('../utils/fetch-cached-data');
+require('dotenv').config();
 
 /**
  * Analyze prices from multiple DEXs and detect arbitrage opportunities.
- * @param {number} profitThreshold - Minimum price difference to trigger arbitrage
  */
-async function analyzePrices(profitThreshold = 0.01) {
+async function analyzePrices() {
     try {
+        // Load profit threshold dynamically from .env or use default
+        const profitThreshold = parseFloat(process.env.ARBITRAGE_PROFIT_THRESHOLD) || 0.01;
+        console.log(`Using Profit Threshold: ${(profitThreshold * 100).toFixed(2)}%`);
+
         console.log('Fetching cached price data...');
         
         // Fetch cached data for all DEXs
@@ -30,14 +34,16 @@ async function analyzePrices(profitThreshold = 0.01) {
                     const priceDifference = Math.abs((priceA - priceB) / priceB);
                     if (priceDifference >= profitThreshold) {
                         console.log(
-                            `Arbitrage Opportunity Detected! ${dexA} -> ${dexB}: Price Diff = ${(priceDifference * 100).toFixed(2)}%`
+                            `✅ Arbitrage Opportunity Detected: ${dexA} -> ${dexB}`
                         );
+                        console.log(`   Price Difference: ${(priceDifference * 100).toFixed(2)}%`);
+                        console.log(`   ${dexA} Price: ${priceA}, ${dexB} Price: ${priceB}`);
                     }
                 }
             }
         }
     } catch (error) {
-        console.error('Error analyzing prices:', error.message);
+        console.error('❌ Error analyzing prices:', error.message);
     }
 }
 
