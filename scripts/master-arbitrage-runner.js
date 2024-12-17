@@ -3,6 +3,8 @@ const { startUniswapWebSocket } = require('../data-collection/fetch-uniswap-webs
 const { startDydxWebSocket } = require('../data-collection/fetch-dydx-websocket');
 const { startXrplWebSocket } = require('../data-collection/fetch-xrpl-websocket');
 const { analyzePrices } = require('../analyzers/price-analyzer');
+const logger = require('../monitoring/logger');
+const { sendNotification } = require('../monitoring/notifier');
 
 require('dotenv').config();
 
@@ -10,25 +12,30 @@ require('dotenv').config();
  * Master function to run the arbitrage detection system
  */
 async function startArbitrageSystem() {
-    console.log('🚀 Starting Allmight Arbitrage System...');
+    logger.info('🚀 Starting Allmight Arbitrage System...');
 
     // Step 1: Start Real-Time Data Fetchers
-    console.log('⏳ Connecting to WebSocket fetchers...');
+    logger.info('⏳ Connecting to WebSocket fetchers...');
     startGmxWebSocket();
     startUniswapWebSocket();
     startDydxWebSocket();
     startXrplWebSocket();
 
-    console.log('✅ WebSocket connections established.');
+    logger.info('✅ WebSocket connections established.');
+
+    // Send notification for startup
+    await sendNotification('🚀 Allmight Arbitrage System Started.');
 
     // Step 2: Run Price Analyzer Continuously
-    console.log('🔍 Monitoring for arbitrage opportunities...');
+    logger.info('🔍 Monitoring for arbitrage opportunities...');
 
     setInterval(async () => {
         try {
             await analyzePrices();
+            logger.info('✅ Price analysis completed.');
         } catch (error) {
-            console.error('❌ Error in price analysis loop:', error.message);
+            logger.error(`❌ Error in price analysis loop: ${error.message}`);
+            await sendNotification(`❌ Error in price analysis: ${error.message}`);
         }
     }, parseInt(process.env.ANALYZER_INTERVAL_MS) || 10000); // Default 10 seconds
 }
