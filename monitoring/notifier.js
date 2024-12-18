@@ -1,24 +1,43 @@
 const axios = require('axios');
 require('dotenv').config();
 
-const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
+const GENERAL_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
+const PROFIT_WEBHOOK_URL = process.env.DISCORD_PROFIT_WEBHOOK_URL;
 
 /**
- * Send a notification to Discord
+ * Send a general notification to Discord
  * @param {string} message - Notification message
  */
-async function sendNotification(message) {
-    if (!DISCORD_WEBHOOK_URL) {
-        console.warn('❌ Discord Webhook URL not set. Skipping notification.');
+async function sendGeneralNotification(message) {
+    if (!GENERAL_WEBHOOK_URL) {
+        console.warn('❌ General Discord Webhook URL not set. Skipping notification.');
         return;
     }
 
     try {
-        await axios.post(DISCORD_WEBHOOK_URL, { content: message });
-        console.log('✅ Notification sent to Discord.');
+        await axios.post(GENERAL_WEBHOOK_URL, { content: message });
+        console.log('✅ General notification sent to Discord.');
     } catch (error) {
-        console.error('❌ Failed to send Discord notification:', error.message);
+        console.error('❌ Failed to send general Discord notification:', error.message);
     }
 }
 
-module.exports = { sendNotification };
+/**
+ * Send a profit notification to Discord
+ * @param {string} message - Notification message
+ */
+async function sendProfitNotification(message) {
+    if (!PROFIT_WEBHOOK_URL) {
+        console.warn('❌ Profit Discord Webhook URL not set. Skipping profit notification.');
+        return;
+    }
+
+    try {
+        await axios.post(PROFIT_WEBHOOK_URL, { content: message });
+        console.log('✅ Profit notification sent to Discord.');
+    } catch (error) {
+        console.error('❌ Failed to send profit Discord notification:', error.message);
+    }
+}
+
+module.exports = { sendGeneralNotification, sendProfitNotification };
