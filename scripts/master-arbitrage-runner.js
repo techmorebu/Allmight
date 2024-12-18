@@ -9,31 +9,29 @@ const logger = require('../monitoring/logger');
 require('dotenv').config();
 
 /**
- * Master function to run the arbitrage detection system
+ * Simulate arbitrage system without executing trades.
  */
-async function startArbitrageSystem() {
+async function startArbitrageSystemSimulation() {
     try {
-        // Step 1: Log and Notify System Startup
-        logger.info('🚀 Starting Allmight Arbitrage System...');
-        await sendGeneralNotification('🚀 **Allmight Arbitrage System Started**.');
+        logger.info('🚀 Starting Allmight Arbitrage System (Simulation Mode)...');
+        await sendGeneralNotification('🚀 **Allmight Arbitrage System Started (Simulation Mode)**.');
 
-        // Step 2: Start Real-Time Data Fetchers
+        // Step 1: Start Real-Time Data Fetchers
         logger.info('⏳ Connecting to WebSocket fetchers...');
         startGmxWebSocket();
         startUniswapWebSocket();
         startDydxWebSocket();
         startXrplWebSocket();
-        logger.info('✅ WebSocket connections established.');
-        await sendGeneralNotification('✅ **WebSocket connections established for GMX, Uniswap, dYdX, and XRPL.**');
+        logger.info('✅ WebSocket connections established (Simulation Mode).');
+        await sendGeneralNotification('✅ **WebSocket connections established (Simulation Mode).**');
 
-        // Step 3: Run Price Analyzer Continuously
-        logger.info('🔍 Monitoring for arbitrage opportunities...');
-        await sendGeneralNotification('🔍 **Monitoring for arbitrage opportunities...**');
+        // Step 2: Run Price Analyzer Continuously
+        logger.info('🔍 Monitoring for arbitrage opportunities (Simulation Mode)...');
 
         setInterval(async () => {
             try {
-                await analyzePrices();
-                logger.info('✅ Price analysis completed.');
+                await analyzePrices(); // Analyze prices but skip trade execution
+                logger.info('✅ Price analysis completed (Simulation Mode).');
             } catch (error) {
                 logger.error(`❌ Error in price analysis loop: ${error.message}`);
                 await sendGeneralNotification(`❌ **Error in price analysis:** ${error.message}`);
@@ -45,4 +43,4 @@ async function startArbitrageSystem() {
     }
 }
 
-startArbitrageSystem();
+startArbitrageSystemSimulation();
