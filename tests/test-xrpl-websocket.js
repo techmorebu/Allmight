@@ -1,4 +1,4 @@
-const { startXrplWebSocket } = require('../data-collection/fetch-xrpl-websocket');
+const { startXrplWebSocket } = require('../data-collection/fetch-xrpl-websockets');
 
 (async () => {
     console.log('Starting XRPL WebSocket test...');
