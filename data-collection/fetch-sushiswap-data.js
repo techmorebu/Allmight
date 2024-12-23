@@ -22,8 +22,13 @@ async function fetchSushiSwapPairData() {
 
         const response = await axios.post(SUSHISWAP_SUBGRAPH_URL, { query });
 
-        // Ensure response structure is valid
-        if (!response.data || !response.data.data || !response.data.data.pairs) {
+        // Validate response structure
+        if (
+            !response ||
+            !response.data ||
+            !response.data.data ||
+            !response.data.data.pairs
+        ) {
             throw new Error('Invalid response structure from SushiSwap API');
         }
 
@@ -33,9 +38,11 @@ async function fetchSushiSwapPairData() {
             volumeUSD: parseFloat(pair.volumeUSD),
             reserveUSD: parseFloat(pair.reserveUSD),
         }));
-    } catch (error) {
-        logger.error(`Error fetching SushiSwap pair data: ${error.message}`);
-        throw new Error(`Fetcher failed: ${error.message}`);
+    } catch (err) {
+        // Ensure `err` is an object before attempting to access properties
+        const errorMessage = err?.message || 'Unknown error occurred';
+        logger.error(`Error fetching SushiSwap pair data: ${errorMessage}`);
+        throw new Error(`Fetcher failed: ${errorMessage}`);
     }
 }
 
