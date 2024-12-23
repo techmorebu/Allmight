@@ -13,7 +13,7 @@ async function testSushiSwapDataFetcher() {
         console.log('Fetched Pair Data:', JSON.stringify(data, null, 2));
     } catch (error) {
         logger.error(`Error during test: ${error.message}`);
-        console.error('Error stack:', error.stack); // Ensure the full error stack is logged
+        console.error('Error stack:', error.stack);
     }
 }
 
