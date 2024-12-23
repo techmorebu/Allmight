@@ -1,4 +1,4 @@
-const { fetchSushiSwapPairData } = require('../data-collection/fetch-sushiswap-data');
+const { fetchSushiSwapPairData } = require('../data-collection/sushiswap-fetcher');
 
 (async () => {
     console.log('Testing SushiSwap Pair-Level Data Fetcher...');
@@ -13,6 +13,8 @@ const { fetchSushiSwapPairData } = require('../data-collection/fetch-sushiswap-d
         console.log('Test Passed: SushiSwap fetcher returned valid data');
         console.log(JSON.stringify(pairs, null, 2));
     } catch (err) {
-        console.error(`Error during test: ${err.message || err}`);
+        // Ensure `err` is an object before accessing properties
+        const errorMessage = err?.message || 'Unknown error during test';
+        console.error(`Error during test: ${errorMessage}`);
     }
 })();
