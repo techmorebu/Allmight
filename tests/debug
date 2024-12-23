@@ -1,18 +1,155 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-sushiswap-data.js
-/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-sushiswap-data.js:12
-logger.info(`Using SushiSwap API URL: ${SUSHISWAP_API_URL}`);
-       ^
-
-TypeError: Cannot read properties of undefined (reading 'info')
-    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-sushiswap-data.js:12:8)
-    at Module._compile (node:internal/modules/cjs/loader:1356:14)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
-    at Module.load (node:internal/modules/cjs/loader:1197:32)
-    at Module._load (node:internal/modules/cjs/loader:1013:12)
-    at Module.require (node:internal/modules/cjs/loader:1225:19)
-    at require (node:internal/modules/helpers:177:18)
-    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/tests/test-fetch-sushiswap-data.js:1:36)
-    at Module._compile (node:internal/modules/cjs/loader:1356:14)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
-
-Node.js v18.19.1
+[2024-12-23T22:40:16.651Z] INFO: Using SushiSwap API URL: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/3oHCddbQGTi42kPZBwyGzD2JzZR33zK2MwXtxAerNJy2
+[2024-12-23T22:40:16.656Z] INFO: Starting SushiSwap pair data fetcher test...
+[2024-12-23T22:40:17.390Z] INFO: Fetched pair data: [
+  {
+    "id": "0x87a55586a089cb4eefd41f091731a5f229ae8936",
+    "name": "Sushiswap V3 McFlurry/WETH 1%",
+    "tokens": [
+      {
+        "symbol": "McFlurry",
+        "decimals": 18
+      },
+      {
+        "symbol": "WETH",
+        "decimals": 18
+      }
+    ],
+    "totalValueLockedUSD": 2214348.1833788217
+  },
+  {
+    "id": "0xe68baa6891971e5c118ac64d86a1f5a79ce06757",
+    "name": "Sushiswap V3 WETH/CHIA 1%",
+    "tokens": [
+      {
+        "symbol": "WETH",
+        "decimals": 18
+      },
+      {
+        "symbol": "XCH",
+        "decimals": 18
+      }
+    ],
+    "totalValueLockedUSD": 450436.4370667467
+  },
+  {
+    "id": "0x8d11274ddeb8b141a24ca8a36c63699214e0d221",
+    "name": "Sushiswap V3 Sensay/WETH 1%",
+    "tokens": [
+      {
+        "symbol": "SNSY",
+        "decimals": 18
+      },
+      {
+        "symbol": "WETH",
+        "decimals": 18
+      }
+    ],
+    "totalValueLockedUSD": 221495.13181257094
+  },
+  {
+    "id": "0xb3942c9ffa04efbc1fa746e146be7565c76e3dc1",
+    "name": "Sushiswap V3 WETH/Arbitrum 0.3%",
+    "tokens": [
+      {
+        "symbol": "WETH",
+        "decimals": 18
+      },
+      {
+        "symbol": "ARB",
+        "decimals": 18
+      }
+    ],
+    "totalValueLockedUSD": 202073.32066488723
+  },
+  {
+    "id": "0x1797538dd80c041cc2f0c5901d5700868186a9a8",
+    "name": "Sushiswap V3 LayerZero/WETH 0.3%",
+    "tokens": [
+      {
+        "symbol": "ZRO",
+        "decimals": 18
+      },
+      {
+        "symbol": "WETH",
+        "decimals": 18
+      }
+    ],
+    "totalValueLockedUSD": 144662.2133169268
+  },
+  {
+    "id": "0x8bd39fa8608fd949c253987767540c26a0d974cf",
+    "name": "Sushiswap V3 Wrapped liquid staked Ether 2.0/WETH 0.01%",
+    "tokens": [
+      {
+        "symbol": "wstETH",
+        "decimals": 18
+      },
+      {
+        "symbol": "WETH",
+        "decimals": 18
+      }
+    ],
+    "totalValueLockedUSD": 141132.116257791
+  },
+  {
+    "id": "0x15e444da5b343c5a0931f5d3e85d158d1efc3d40",
+    "name": "Sushiswap V3 WETH/USDC 0.05%",
+    "tokens": [
+      {
+        "symbol": "WETH",
+        "decimals": 18
+      },
+      {
+        "symbol": "USDC",
+        "decimals": 6
+      }
+    ],
+    "totalValueLockedUSD": 97349.2201487871
+  },
+  {
+    "id": "0x753d81a2d6c61dd7c3510729c9df310659f9003b",
+    "name": "Sushiswap V3 ZTX/WETH 0.3%",
+    "tokens": [
+      {
+        "symbol": "ZTX",
+        "decimals": 18
+      },
+      {
+        "symbol": "WETH",
+        "decimals": 18
+      }
+    ],
+    "totalValueLockedUSD": 72498.25989401083
+  },
+  {
+    "id": "0xb1aeb76b4e3e628ee54753ad4b8ef68c41e67a9f",
+    "name": "Sushiswap V3 MAGIC/WETH 0.3%",
+    "tokens": [
+      {
+        "symbol": "MAGIC",
+        "decimals": 18
+      },
+      {
+        "symbol": "WETH",
+        "decimals": 18
+      }
+    ],
+    "totalValueLockedUSD": 57911.929188274466
+  },
+  {
+    "id": "0x65f7a98d87bc21a3748545047632fef4d3ff9a67",
+    "name": "Sushiswap V3 WETH/Donut 1%",
+    "tokens": [
+      {
+        "symbol": "WETH",
+        "decimals": 18
+      },
+      {
+        "symbol": "DONUT",
+        "decimals": 18
+      }
+    ],
+    "totalValueLockedUSD": 48433.9587782741
+  }
+]
