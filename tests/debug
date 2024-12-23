@@ -1,5 +1,20 @@
-[2024-12-23T22:30:25.374Z] ERROR: Error during test: Cannot read properties of undefined (reading 'error')
-Error stack: TypeError: Cannot read properties of undefined (reading 'error')
-    at fetchSushiSwapPairData (/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-sushiswap-data.js:62:16)
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-sushiswap-data.js
+[2024-12-23T22:33:02.850Z] INFO: Starting SushiSwap pair data fetcher test...
+[2024-12-23T22:33:02.854Z] INFO: Fetching SushiSwap pair data...
+[2024-12-23T22:33:02.870Z] ERROR: Error fetching SushiSwap pair data: Invalid URL
+[2024-12-23T22:33:02.870Z] ERROR: Error during test: Invalid URL
+Error stack: TypeError [ERR_INVALID_URL]: Invalid URL
+    at new NodeError (node:internal/errors:405:5)
+    at new URL (node:internal/url:676:13)
+    at dispatchHttpRequest (/home/techbu/OFA_Project_Local/ofa-project/node_modules/axios/dist/node/axios.cjs:2777:20)
+    at /home/techbu/OFA_Project_Local/ofa-project/node_modules/axios/dist/node/axios.cjs:2697:5
+    at new Promise (<anonymous>)
+    at wrapAsync (/home/techbu/OFA_Project_Local/ofa-project/node_modules/axios/dist/node/axios.cjs:2677:10)
+    at http (/home/techbu/OFA_Project_Local/ofa-project/node_modules/axios/dist/node/axios.cjs:2715:10)
+    at Axios.dispatchRequest (/home/techbu/OFA_Project_Local/ofa-project/node_modules/axios/dist/node/axios.cjs:4092:10)
+    at Axios._request (/home/techbu/OFA_Project_Local/ofa-project/node_modules/axios/dist/node/axios.cjs:4385:33)
+    at Axios.request (/home/techbu/OFA_Project_Local/ofa-project/node_modules/axios/dist/node/axios.cjs:4247:25)
+    at Axios.request (/home/techbu/OFA_Project_Local/ofa-project/node_modules/axios/dist/node/axios.cjs:4252:41)
     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async fetchSushiSwapPairData (/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-sushiswap-data.js:22:26)
     at async testSushiSwapDataFetcher (/home/techbu/OFA_Project_Local/ofa-project/tests/test-fetch-sushiswap-data.js:9:22)
