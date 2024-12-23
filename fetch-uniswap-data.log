@@ -1,3 +1,6 @@
 {"level":"error","message":"Error fetching Uniswap data (Attempt 1 of 3): Invalid response structure","timestamp":"2024-12-23T05:50:45.160Z"}
 {"level":"error","message":"Error fetching Uniswap data (Attempt 2 of 3): Invalid response structure","timestamp":"2024-12-23T05:50:45.345Z"}
 {"level":"error","message":"Error fetching Uniswap data (Attempt 3 of 3): Invalid response structure","timestamp":"2024-12-23T05:50:45.519Z"}
+{"level":"error","message":"Error fetching Uniswap data (Attempt 1 of 3): Invalid response structure","timestamp":"2024-12-23T05:58:55.911Z"}
+{"level":"error","message":"Error fetching Uniswap data (Attempt 2 of 3): Invalid response structure","timestamp":"2024-12-23T05:58:56.031Z"}
+{"level":"error","message":"Error fetching Uniswap data (Attempt 3 of 3): Invalid response structure","timestamp":"2024-12-23T05:58:56.172Z"}
