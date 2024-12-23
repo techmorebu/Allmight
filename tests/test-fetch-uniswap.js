@@ -1,5 +1,5 @@
 // Required libraries
-const { fetchUniswapData } = require('..data-collection/fetch-uniswap-data.js');
+const { fetchUniswapData } = require('../data-collection/fetch-uniswap-data.js');
 const winston = require('winston');
 
 // Logger configuration
