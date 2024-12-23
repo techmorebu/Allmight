@@ -1,39 +1,74 @@
+// Required libraries
 const axios = require('axios');
-const { logger } = require('../monitoring/logger');
-require('dotenv').config();
+const dotenv = require('dotenv');
+const winston = require('winston');
 
-// Uniswap Subgraph URL
-const UNISWAP_SUBGRAPH_URL = process.env.UNISWAP_SUBGRAPH_URL;
+dotenv.config();
 
+// Logger configuration
+const logger = winston.createLogger({
+    level: 'info',
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json()
+    ),
+    transports: [
+        new winston.transports.Console(),
+        new winston.transports.File({ filename: 'fetch-uniswap-data.log' })
+    ]
+});
+
+const UNISWAP_API_URL = process.env.UNISWAP_API_URL || 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3';
+
+/**
+ * Fetch Uniswap pool data from The Graph API
+ */
 async function fetchUniswapData() {
-    try {
-        const query = `
-        {
-            pools(first: 10, orderBy: volumeUSD, orderDirection: desc) {
-                id
-                token0 { symbol }
-                token1 { symbol }
-                volumeUSD
-                liquidity
+    const query = `{
+        pools(first: 10) {
+            id
+            token0 {
+                symbol
             }
-        }`;
+            token1 {
+                symbol
+            }
+            feeTier
+            liquidity
+            sqrtPrice
+        }
+    }`;
 
-        const response = await axios.post(UNISWAP_SUBGRAPH_URL, { query });
-        const normalizedData = response.data.data.pools.map(pool => ({
-            id: pool.id,
-            pair: `${pool.token0.symbol}/${pool.token1.symbol}`,
-            volumeUSD: parseFloat(pool.volumeUSD),
-            liquidity: parseFloat(pool.liquidity),
-            timestamp: new Date().toISOString(),
-        }));
+    let attempts = 0;
+    const maxAttempts = 3;
 
-        logger.info('Successfully fetched Uniswap data:', normalizedData);
+    while (attempts < maxAttempts) {
+        try {
+            const response = await axios.post(UNISWAP_API_URL, { query });
+            if (response.data && response.data.data && response.data.data.pools) {
+                const pools = response.data.data.pools.map(pool => ({
+                    id: pool.id,
+                    token0: pool.token0.symbol,
+                    token1: pool.token1.symbol,
+                    feeTier: pool.feeTier,
+                    liquidity: pool.liquidity,
+                    sqrtPrice: pool.sqrtPrice
+                }));
 
-        return normalizedData;
-    } catch (error) {
-        logger.error(`Error fetching Uniswap data: ${error.message}`);
-        throw error;
+                logger.info('Successfully fetched Uniswap data', { poolCount: pools.length });
+                return pools;
+            } else {
+                throw new Error('Invalid response structure');
+            }
+        } catch (error) {
+            attempts++;
+            logger.error(`Error fetching Uniswap data (Attempt ${attempts} of ${maxAttempts}): ${error.message}`);
+            if (attempts >= maxAttempts) {
+                throw new Error('Max retry attempts reached for fetching Uniswap data');
+            }
+        }
     }
 }
 
+// Export the fetch function
 module.exports = { fetchUniswapData };
