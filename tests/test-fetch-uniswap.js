@@ -6,6 +6,6 @@ const { fetchUniswapPairData } = require('../data-collection/fetch-uniswap-data'
         const pairs = await fetchUniswapPairData();
         console.log('Fetched Pair-Level Data:', pairs);
     } catch (error) {
-        console.error('Error during test:', error.message);
+        console.error('Error during test:', error.message || error);
     }
 })();
