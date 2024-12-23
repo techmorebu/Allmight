@@ -3,7 +3,7 @@ const { fetchSushiswapPairData } = require('../data-collection/fetch-sushiswap-d
 (async () => {
     console.log('Testing SushiSwap Pair-Level Data Fetcher...');
     try {
-        const pairs = await fetchSushiSwapPairData();
+        const pairs = await fetchSushiswapPairData();
 
         // Validate output
         if (!Array.isArray(pairs) || pairs.length === 0) {
