@@ -1,6 +1,6 @@
-require('dotenv').config({ path: './.env' });
+require('dotenv').config();
 const axios = require('axios');
-const { logger } = require('../monitoring/logger');
+const logger = require('../monitoring/logger');
 
 /**
  * Fetch GMX data using the specified endpoint type (tickers, signed_prices, or candles).
