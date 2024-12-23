@@ -1,12 +1,8 @@
 const axios = require('axios');
-const axiosRetry = require('axios-retry');
 const { logger } = require('../monitoring/logger');
 require('dotenv').config();
 
 const SUSHISWAP_API_URL = process.env.SUSHISWAP_API_URL || 'https://api.thegraph.com/subgraphs/name/sushiswap/exchange';
-
-// Retry setup for Axios
-axiosRetry(axios, { retries: 3, retryDelay: axiosRetry.exponentialDelay });
 
 /**
  * Fetch pair-level data from SushiSwap REST API
