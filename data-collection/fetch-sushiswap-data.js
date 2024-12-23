@@ -1,14 +1,18 @@
+// Required libraries
 const axios = require('axios');
 const { logger } = require('../monitoring/logger');
 require('dotenv').config();
 
 const SUSHISWAP_SUBGRAPH_URL = process.env.SUSHISWAP_SUBGRAPH_URL || 'https://api.thegraph.com/subgraphs/name/sushiswap/exchange';
 
+/**
+ * Fetch pair-level data from SushiSwap using The Graph API
+ */
 async function fetchSushiSwapData() {
     try {
         const query = `
         {
-            pairs(first: 50, orderBy: volumeUSD, orderDirection: desc) {
+            pairs(first: 10, orderBy: volumeUSD, orderDirection: desc) {
                 id
                 token0 { symbol }
                 token1 { symbol }
@@ -30,4 +34,5 @@ async function fetchSushiSwapData() {
     }
 }
 
+// Export the fetch function
 module.exports = { fetchSushiSwapData };
