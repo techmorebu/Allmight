@@ -1,4 +1,4 @@
-const { fetchSushiSwapPairData } = require('../data-collection/fetch-sushiswap-data');
+const { fetchSushiswapPairData } = require('../data-collection/fetch-sushiswap-data');
 
 (async () => {
     console.log('Testing SushiSwap Pair-Level Data Fetcher...');
