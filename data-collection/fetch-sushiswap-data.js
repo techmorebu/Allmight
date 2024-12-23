@@ -35,7 +35,7 @@ async function fetchSushiSwapPairData(limit = 10, orderBy = 'totalValueLockedUSD
         });
 
         if (response.data && response.data.data && response.data.data.liquidityPools) {
-            return response.data.data.liquidityPools.map(pool => ({
+            const parsedData = response.data.data.liquidityPools.map(pool => ({
                 id: pool.id,
                 name: pool.name,
                 tokens: pool.inputTokens.map(token => ({
@@ -48,61 +48,18 @@ async function fetchSushiSwapPairData(limit = 10, orderBy = 'totalValueLockedUSD
                     percentage: parseFloat(fee.feePercentage || 0),
                 })),
             }));
+
+            logger.info('Fetched SushiSwap pair data successfully', { pairCount: parsedData.length });
+            console.log('Parsed Pair Data:', JSON.stringify(parsedData, null, 2)); // Expanded logging
+            return parsedData;
         } else {
             throw new Error('Invalid response structure');
         }
     } catch (error) {
         logger.error(`Error fetching SushiSwap pair data: ${error.message}`);
+        console.error('Error stack:', error.stack); // Log the error stack for debugging
         throw error;
     }
 }
 
-/**
- * Fetch recent swaps from SushiSwap subgraph using Axios
- * @param {number} limit - Number of swaps to fetch
- */
-async function fetchSushiSwapRecentSwaps(limit = 10) {
-    try {
-        const query = `
-        query FetchRecentSwaps($limit: Int!) {
-            swaps(first: $limit, orderBy: timestamp, orderDirection: desc) {
-                id
-                transaction {
-                    id
-                }
-                pair {
-                    token0 {
-                        symbol
-                    }
-                    token1 {
-                        symbol
-                    }
-                }
-                amountUSD
-                timestamp
-            }
-        }`;
-
-        const response = await axios.post(SUSHISWAP_API_URL, {
-            query,
-            variables: { limit }
-        });
-
-        if (response.data && response.data.data && response.data.data.swaps) {
-            return response.data.data.swaps.map(swap => ({
-                id: swap.id,
-                transactionId: swap.transaction.id,
-                pair: `${swap.pair.token0.symbol}/${swap.pair.token1.symbol}`,
-                amountUSD: parseFloat(swap.amountUSD || 0),
-                timestamp: new Date(swap.timestamp * 1000),
-            }));
-        } else {
-            throw new Error('Invalid response structure');
-        }
-    } catch (error) {
-        logger.error(`Error fetching SushiSwap swaps: ${error.message}`);
-        throw error;
-    }
-}
-
-module.exports = { fetchSushiSwapPairData, fetchSushiSwapRecentSwaps };
+module.exports = { fetchSushiSwapPairData };
