@@ -1,47 +1,24 @@
-// Required libraries
-const axios = require('axios');
+const { fetchSushiSwapPairData } = require('../data-collection/fetch-sushiswap-data');
 const { logger } = require('../monitoring/logger');
-require('dotenv').config();
-
-const SUSHISWAP_SUBGRAPH_URL = process.env.SUSHISWAP_SUBGRAPH_URL;
 
 /**
- * Fetch pair-level data from SushiSwap Subgraph
+ * Test SushiSwap pair data fetcher
  */
-async function fetchSushiSwapPairData() {
+async function testSushiSwapDataFetcher() {
     try {
-        const query = `{
-            liquidityPools(first: 10, orderBy: totalValueLockedUSD, orderDirection: desc) {
-                id
-                name
-                inputTokens {
-                    symbol
-                    decimals
-                }
-                totalValueLockedUSD
-            }
-        }`;
-
-        const response = await axios.post(SUSHISWAP_SUBGRAPH_URL, { query });
-
-        // Ensure the response contains the expected data
-        if (response.data && response.data.data && response.data.data.liquidityPools) {
-            return response.data.data.liquidityPools.map(pool => ({
-                id: pool.id,
-                name: pool.name,
-                tokens: pool.inputTokens.map(token => ({
-                    symbol: token.symbol,
-                    decimals: parseInt(token.decimals, 10),
-                })),
-                totalValueLockedUSD: parseFloat(pool.totalValueLockedUSD),
-            }));
-        } else {
-            throw new Error('Invalid response structure or missing liquidityPools data');
-        }
+        logger.info('Testing SushiSwap pair data fetcher...');
+        console.log('Starting test...');
+        
+        // Fetch the pair data
+        const pairData = await fetchSushiSwapPairData();
+        
+        logger.info('Successfully fetched SushiSwap pair data.');
+        console.log('Fetched Pair Data:', JSON.stringify(pairData, null, 2)); // Pretty print the data
     } catch (error) {
-        logger.error(`Error fetching SushiSwap pair data: ${error.message}`);
-        throw error; // Re-throw error for further handling
+        logger.error(`Error during test: ${error.message}`);
+        console.error('Error during test:', error.message);
     }
 }
 
-module.exports = { fetchSushiSwapPairData };
+// Execute the test
+testSushiSwapDataFetcher();
