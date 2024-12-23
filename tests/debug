@@ -1,20 +1,18 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-sushiswap-data.js
-[2024-12-23T22:33:02.850Z] INFO: Starting SushiSwap pair data fetcher test...
-[2024-12-23T22:33:02.854Z] INFO: Fetching SushiSwap pair data...
-[2024-12-23T22:33:02.870Z] ERROR: Error fetching SushiSwap pair data: Invalid URL
-[2024-12-23T22:33:02.870Z] ERROR: Error during test: Invalid URL
-Error stack: TypeError [ERR_INVALID_URL]: Invalid URL
-    at new NodeError (node:internal/errors:405:5)
-    at new URL (node:internal/url:676:13)
-    at dispatchHttpRequest (/home/techbu/OFA_Project_Local/ofa-project/node_modules/axios/dist/node/axios.cjs:2777:20)
-    at /home/techbu/OFA_Project_Local/ofa-project/node_modules/axios/dist/node/axios.cjs:2697:5
-    at new Promise (<anonymous>)
-    at wrapAsync (/home/techbu/OFA_Project_Local/ofa-project/node_modules/axios/dist/node/axios.cjs:2677:10)
-    at http (/home/techbu/OFA_Project_Local/ofa-project/node_modules/axios/dist/node/axios.cjs:2715:10)
-    at Axios.dispatchRequest (/home/techbu/OFA_Project_Local/ofa-project/node_modules/axios/dist/node/axios.cjs:4092:10)
-    at Axios._request (/home/techbu/OFA_Project_Local/ofa-project/node_modules/axios/dist/node/axios.cjs:4385:33)
-    at Axios.request (/home/techbu/OFA_Project_Local/ofa-project/node_modules/axios/dist/node/axios.cjs:4247:25)
-    at Axios.request (/home/techbu/OFA_Project_Local/ofa-project/node_modules/axios/dist/node/axios.cjs:4252:41)
-    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at async fetchSushiSwapPairData (/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-sushiswap-data.js:22:26)
-    at async testSushiSwapDataFetcher (/home/techbu/OFA_Project_Local/ofa-project/tests/test-fetch-sushiswap-data.js:9:22)
+/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-sushiswap-data.js:12
+logger.info(`Using SushiSwap API URL: ${SUSHISWAP_API_URL}`);
+       ^
+
+TypeError: Cannot read properties of undefined (reading 'info')
+    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-sushiswap-data.js:12:8)
+    at Module._compile (node:internal/modules/cjs/loader:1356:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
+    at Module.load (node:internal/modules/cjs/loader:1197:32)
+    at Module._load (node:internal/modules/cjs/loader:1013:12)
+    at Module.require (node:internal/modules/cjs/loader:1225:19)
+    at require (node:internal/modules/helpers:177:18)
+    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/tests/test-fetch-sushiswap-data.js:1:36)
+    at Module._compile (node:internal/modules/cjs/loader:1356:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
+
+Node.js v18.19.1
