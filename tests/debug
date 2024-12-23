@@ -1,26 +1,301 @@
-echbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-sushiswap-data.js
-Error during test: logger.info is not a function
-Error during test: Cannot read properties of undefined (reading 'info')
-(node:27962) Warning: Accessing non-existent property 'fetchSushiSwapPairData' of module exports inside circular dependency
-(Use `node --trace-warnings ...` to show where the warning was created)
-(node:27962) Warning: Accessing non-existent property 'info' of module exports inside circular dependency
-(node:27962) Warning: Accessing non-existent property 'error' of module exports inside circular dependency
-/home/techbu/OFA_Project_Local/ofa-project/monitoring/logger.js:19
-        logger.error(`Error during test: ${error.message}`); // Properly log the error
-               ^
-
-TypeError: logger.error is not a function
-    at testSushiSwapDataFetcher (/home/techbu/OFA_Project_Local/ofa-project/monitoring/logger.js:19:16)
-    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/monitoring/logger.js:24:1)
-    at Module._compile (node:internal/modules/cjs/loader:1356:14)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
-    at Module.load (node:internal/modules/cjs/loader:1197:32)
-    at Module._load (node:internal/modules/cjs/loader:1013:12)
-    at Module.require (node:internal/modules/cjs/loader:1225:19)
-    at require (node:internal/modules/helpers:177:18)
-    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-sushiswap-data.js:2:20)
-    at Module._compile (node:internal/modules/cjs/loader:1356:14)
-
-Node.js v18.19.1
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
-
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-sushiswap-data.js
+[2024-12-23T22:24:14.176Z] INFO: Starting SushiSwap pair data fetcher test...
+Testing SushiSwap Pair Data Fetcher...
+Raw Response: {
+  "data": {
+    "liquidityPools": [
+      {
+        "fees": [
+          {
+            "feePercentage": "0",
+            "feeType": "FIXED_PROTOCOL_FEE"
+          },
+          {
+            "feePercentage": "1",
+            "feeType": "FIXED_LP_FEE"
+          },
+          {
+            "feePercentage": "1",
+            "feeType": "FIXED_TRADING_FEE"
+          }
+        ],
+        "id": "0x87a55586a089cb4eefd41f091731a5f229ae8936",
+        "inputTokens": [
+          {
+            "name": "McFlurry",
+            "symbol": "McFlurry"
+          },
+          {
+            "name": "WETH",
+            "symbol": "WETH"
+          }
+        ],
+        "name": "Sushiswap V3 McFlurry/WETH 1%",
+        "totalValueLockedUSD": "2214348.183378821773748142250279526"
+      },
+      {
+        "fees": [
+          {
+            "feePercentage": "0",
+            "feeType": "FIXED_PROTOCOL_FEE"
+          },
+          {
+            "feePercentage": "1",
+            "feeType": "FIXED_LP_FEE"
+          },
+          {
+            "feePercentage": "1",
+            "feeType": "FIXED_TRADING_FEE"
+          }
+        ],
+        "id": "0xe68baa6891971e5c118ac64d86a1f5a79ce06757",
+        "inputTokens": [
+          {
+            "name": "WETH",
+            "symbol": "WETH"
+          },
+          {
+            "name": "CHIA",
+            "symbol": "XCH"
+          }
+        ],
+        "name": "Sushiswap V3 WETH/CHIA 1%",
+        "totalValueLockedUSD": "450436.4370667467024198206729670089"
+      },
+      {
+        "fees": [
+          {
+            "feePercentage": "0",
+            "feeType": "FIXED_PROTOCOL_FEE"
+          },
+          {
+            "feePercentage": "1",
+            "feeType": "FIXED_LP_FEE"
+          },
+          {
+            "feePercentage": "1",
+            "feeType": "FIXED_TRADING_FEE"
+          }
+        ],
+        "id": "0x8d11274ddeb8b141a24ca8a36c63699214e0d221",
+        "inputTokens": [
+          {
+            "name": "Sensay",
+            "symbol": "SNSY"
+          },
+          {
+            "name": "WETH",
+            "symbol": "WETH"
+          }
+        ],
+        "name": "Sushiswap V3 Sensay/WETH 1%",
+        "totalValueLockedUSD": "221495.1318125709232147798348380444"
+      },
+      {
+        "fees": [
+          {
+            "feePercentage": "0",
+            "feeType": "FIXED_PROTOCOL_FEE"
+          },
+          {
+            "feePercentage": "0.3",
+            "feeType": "FIXED_LP_FEE"
+          },
+          {
+            "feePercentage": "0.3",
+            "feeType": "FIXED_TRADING_FEE"
+          }
+        ],
+        "id": "0xb3942c9ffa04efbc1fa746e146be7565c76e3dc1",
+        "inputTokens": [
+          {
+            "name": "WETH",
+            "symbol": "WETH"
+          },
+          {
+            "name": "Arbitrum",
+            "symbol": "ARB"
+          }
+        ],
+        "name": "Sushiswap V3 WETH/Arbitrum 0.3%",
+        "totalValueLockedUSD": "200636.5627294547029355166387648278"
+      },
+      {
+        "fees": [
+          {
+            "feePercentage": "0",
+            "feeType": "FIXED_PROTOCOL_FEE"
+          },
+          {
+            "feePercentage": "0.3",
+            "feeType": "FIXED_LP_FEE"
+          },
+          {
+            "feePercentage": "0.3",
+            "feeType": "FIXED_TRADING_FEE"
+          }
+        ],
+        "id": "0x1797538dd80c041cc2f0c5901d5700868186a9a8",
+        "inputTokens": [
+          {
+            "name": "LayerZero",
+            "symbol": "ZRO"
+          },
+          {
+            "name": "WETH",
+            "symbol": "WETH"
+          }
+        ],
+        "name": "Sushiswap V3 LayerZero/WETH 0.3%",
+        "totalValueLockedUSD": "144256.1474462669125443084309783549"
+      },
+      {
+        "fees": [
+          {
+            "feePercentage": "0",
+            "feeType": "FIXED_PROTOCOL_FEE"
+          },
+          {
+            "feePercentage": "0.01",
+            "feeType": "FIXED_LP_FEE"
+          },
+          {
+            "feePercentage": "0.01",
+            "feeType": "FIXED_TRADING_FEE"
+          }
+        ],
+        "id": "0x8bd39fa8608fd949c253987767540c26a0d974cf",
+        "inputTokens": [
+          {
+            "name": "Wrapped liquid staked Ether 2.0",
+            "symbol": "wstETH"
+          },
+          {
+            "name": "WETH",
+            "symbol": "WETH"
+          }
+        ],
+        "name": "Sushiswap V3 Wrapped liquid staked Ether 2.0/WETH 0.01%",
+        "totalValueLockedUSD": "140821.8716446505416608179517641684"
+      },
+      {
+        "fees": [
+          {
+            "feePercentage": "0",
+            "feeType": "FIXED_PROTOCOL_FEE"
+          },
+          {
+            "feePercentage": "0.05",
+            "feeType": "FIXED_LP_FEE"
+          },
+          {
+            "feePercentage": "0.05",
+            "feeType": "FIXED_TRADING_FEE"
+          }
+        ],
+        "id": "0x15e444da5b343c5a0931f5d3e85d158d1efc3d40",
+        "inputTokens": [
+          {
+            "name": "WETH",
+            "symbol": "WETH"
+          },
+          {
+            "name": "USDC",
+            "symbol": "USDC"
+          }
+        ],
+        "name": "Sushiswap V3 WETH/USDC 0.05%",
+        "totalValueLockedUSD": "97450.19337836377848558022057"
+      },
+      {
+        "fees": [
+          {
+            "feePercentage": "0",
+            "feeType": "FIXED_PROTOCOL_FEE"
+          },
+          {
+            "feePercentage": "0.3",
+            "feeType": "FIXED_LP_FEE"
+          },
+          {
+            "feePercentage": "0.3",
+            "feeType": "FIXED_TRADING_FEE"
+          }
+        ],
+        "id": "0x753d81a2d6c61dd7c3510729c9df310659f9003b",
+        "inputTokens": [
+          {
+            "name": "ZTX",
+            "symbol": "ZTX"
+          },
+          {
+            "name": "WETH",
+            "symbol": "WETH"
+          }
+        ],
+        "name": "Sushiswap V3 ZTX/WETH 0.3%",
+        "totalValueLockedUSD": "72776.05151936436426441952990608884"
+      },
+      {
+        "fees": [
+          {
+            "feePercentage": "0",
+            "feeType": "FIXED_PROTOCOL_FEE"
+          },
+          {
+            "feePercentage": "0.3",
+            "feeType": "FIXED_LP_FEE"
+          },
+          {
+            "feePercentage": "0.3",
+            "feeType": "FIXED_TRADING_FEE"
+          }
+        ],
+        "id": "0xb1aeb76b4e3e628ee54753ad4b8ef68c41e67a9f",
+        "inputTokens": [
+          {
+            "name": "MAGIC",
+            "symbol": "MAGIC"
+          },
+          {
+            "name": "WETH",
+            "symbol": "WETH"
+          }
+        ],
+        "name": "Sushiswap V3 MAGIC/WETH 0.3%",
+        "totalValueLockedUSD": "57730.12855886095823264194422552904"
+      },
+      {
+        "fees": [
+          {
+            "feePercentage": "0",
+            "feeType": "FIXED_PROTOCOL_FEE"
+          },
+          {
+            "feePercentage": "1",
+            "feeType": "FIXED_LP_FEE"
+          },
+          {
+            "feePercentage": "1",
+            "feeType": "FIXED_TRADING_FEE"
+          }
+        ],
+        "id": "0x65f7a98d87bc21a3748545047632fef4d3ff9a67",
+        "inputTokens": [
+          {
+            "name": "WETH",
+            "symbol": "WETH"
+          },
+          {
+            "name": "Donut",
+            "symbol": "DONUT"
+          }
+        ],
+        "name": "Sushiswap V3 WETH/Donut 1%",
+        "totalValueLockedUSD": "48433.9587782741027605565542572801"
+      }
+    ]
+  }
+}
+Error during test: Cannot read properties of undefined (reading 'error')
+[2024-12-23T22:24:21.321Z] ERROR: Error during test: Cannot read properties of undefined (reading 'error')
