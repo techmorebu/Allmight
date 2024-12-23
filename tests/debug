@@ -1,5 +1,26 @@
-at require (node:internal/modules/helpers:177:18)
-at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-sushiswap-data.js:2:20)
-at Module._compile (node:internal/modules/cjs/loader:1356:14)
+echbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-sushiswap-data.js
+Error during test: logger.info is not a function
+Error during test: Cannot read properties of undefined (reading 'info')
+(node:27962) Warning: Accessing non-existent property 'fetchSushiSwapPairData' of module exports inside circular dependency
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:27962) Warning: Accessing non-existent property 'info' of module exports inside circular dependency
+(node:27962) Warning: Accessing non-existent property 'error' of module exports inside circular dependency
+/home/techbu/OFA_Project_Local/ofa-project/monitoring/logger.js:19
+        logger.error(`Error during test: ${error.message}`); // Properly log the error
+               ^
+
+TypeError: logger.error is not a function
+    at testSushiSwapDataFetcher (/home/techbu/OFA_Project_Local/ofa-project/monitoring/logger.js:19:16)
+    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/monitoring/logger.js:24:1)
+    at Module._compile (node:internal/modules/cjs/loader:1356:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
+    at Module.load (node:internal/modules/cjs/loader:1197:32)
+    at Module._load (node:internal/modules/cjs/loader:1013:12)
+    at Module.require (node:internal/modules/cjs/loader:1225:19)
+    at require (node:internal/modules/helpers:177:18)
+    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-sushiswap-data.js:2:20)
+    at Module._compile (node:internal/modules/cjs/loader:1356:14)
 
 Node.js v18.19.1
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
+
