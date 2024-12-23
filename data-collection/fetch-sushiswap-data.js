@@ -2,47 +2,40 @@ const axios = require('axios');
 const { logger } = require('../monitoring/logger');
 require('dotenv').config();
 
-const SUSHISWAP_SUBGRAPH_URL = process.env.SUSHISWAP_SUBGRAPH_URL;
+const SUSHISWAP_API_URL = process.env.SUSHISWAP_API_URL;
 
-async function fetchSushiswapPairData() {
+/**
+ * Fetch pair-level data from SushiSwap REST API
+ */
+async function fetchSushiSwapPairData() {
     try {
-        const query = `
-        {
-            pools(first: 10, orderBy: volumeUSD, orderDirection: desc) {
-                id
-                token0 { symbol decimals }
-                token1 { symbol decimals }
-                token0Price
-                token1Price
-                volumeUSD
-                liquidity
-            }
-        }`;
+        const endpoint = `${SUSHISWAP_API_URL}/pairs?limit=10&order=desc&sort=volumeUSD`;
 
-        const response = await axios.post(SUSHISWAP_SUBGRAPH_URL, { query });
-        if (response.data && response.data.data && response.data.data.pools) {
-            return response.data.data.pools.map(pool => ({
-                pair: `${pool.token0.symbol}/${pool.token1.symbol}`,
-                token0: {
-                    symbol: pool.token0.symbol,
-                    price: parseFloat(pool.token0Price),
-                    decimals: parseInt(pool.token0.decimals),
-                },
-                token1: {
-                    symbol: pool.token1.symbol,
-                    price: parseFloat(pool.token1Price),
-                    decimals: parseInt(pool.token1.decimals),
-                },
-                volumeUSD: parseFloat(pool.volumeUSD),
-                liquidity: parseFloat(pool.liquidity),
-            }));
-        } else {
+        // Fetch data from the API
+        const response = await axios.get(endpoint);
+
+        if (!response.data || !response.data.data) {
             throw new Error('Invalid response structure');
         }
+
+        // Map the response data to a usable format
+        return response.data.data.map(pair => ({
+            pair: `${pair.token0.symbol}/${pair.token1.symbol}`,
+            token0: {
+                symbol: pair.token0.symbol,
+                decimals: parseInt(pair.token0.decimals || 0),
+            },
+            token1: {
+                symbol: pair.token1.symbol,
+                decimals: parseInt(pair.token1.decimals || 0),
+            },
+            volumeUSD: parseFloat(pair.volumeUSD || 0),
+            reserveUSD: parseFloat(pair.reserveUSD || 0),
+        }));
     } catch (error) {
-        logger.error(`Error fetching Sushiswap pair data: ${error.message}`);
-        throw error; // Ensure the error is re-thrown for testing.
+        logger.error(`Error fetching SushiSwap pair data: ${error.message}`);
+        throw error;
     }
 }
 
-module.exports = { fetchSushiswapPairData };
+module.exports = { fetchSushiSwapPairData };
