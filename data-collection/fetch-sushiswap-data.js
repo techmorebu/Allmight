@@ -4,43 +4,45 @@ require('dotenv').config();
 
 const SUSHISWAP_SUBGRAPH_URL = process.env.SUSHISWAP_SUBGRAPH_URL;
 
-async function fetchSushiSwapPairData() {
+async function fetchSushiswapPairData() {
     try {
         const query = `
         {
-            pairs(first: 10, orderBy: volumeUSD, orderDirection: desc) {
+            pools(first: 10, orderBy: volumeUSD, orderDirection: desc) {
                 id
                 token0 { symbol decimals }
                 token1 { symbol decimals }
-                reserve0
-                reserve1
+                token0Price
+                token1Price
                 volumeUSD
+                liquidity
             }
         }`;
 
         const response = await axios.post(SUSHISWAP_SUBGRAPH_URL, { query });
-        if (response.data && response.data.data && response.data.data.pairs) {
-            return response.data.data.pairs.map(pair => ({
-                pair: `${pair.token0.symbol}/${pair.token1.symbol}`,
+        if (response.data && response.data.data && response.data.data.pools) {
+            return response.data.data.pools.map(pool => ({
+                pair: `${pool.token0.symbol}/${pool.token1.symbol}`,
                 token0: {
-                    symbol: pair.token0.symbol,
-                    decimals: parseInt(pair.token0.decimals),
-                    reserve: parseFloat(pair.reserve0),
+                    symbol: pool.token0.symbol,
+                    price: parseFloat(pool.token0Price),
+                    decimals: parseInt(pool.token0.decimals),
                 },
                 token1: {
-                    symbol: pair.token1.symbol,
-                    decimals: parseInt(pair.token1.decimals),
-                    reserve: parseFloat(pair.reserve1),
+                    symbol: pool.token1.symbol,
+                    price: parseFloat(pool.token1Price),
+                    decimals: parseInt(pool.token1.decimals),
                 },
-                volumeUSD: parseFloat(pair.volumeUSD),
+                volumeUSD: parseFloat(pool.volumeUSD),
+                liquidity: parseFloat(pool.liquidity),
             }));
         } else {
             throw new Error('Invalid response structure');
         }
     } catch (error) {
-        logger.error(`Error fetching SushiSwap pair data: ${error.message}`);
-        throw error;
+        logger.error(`Error fetching Sushiswap pair data: ${error.message}`);
+        throw error; // Ensure the error is re-thrown for testing.
     }
 }
 
-module.exports = { fetchSushiSwapPairData };
+module.exports = { fetchSushiswapPairData };
