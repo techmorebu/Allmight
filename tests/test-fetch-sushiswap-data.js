@@ -1,4 +1,4 @@
-const { fetchSushiSwapPairData } = require('../fetchers/fetch-sushiswap-pair-data');
+const { fetchSushiSwapPairData } = require('../data-collection/fetch-sushiswap-data');
 
 (async () => {
     try {
