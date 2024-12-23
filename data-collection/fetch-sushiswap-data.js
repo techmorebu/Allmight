@@ -1,12 +1,21 @@
 const axios = require('axios');
-const logger = require('../monitoring/logger');
+const { logger } = require('../monitoring/logger');
 require('dotenv').config();
 
-const SUSHISWAP_SUBGRAPH_URL = process.env.SUSHISWAP_SUBGRAPH_URL;
+const SUSHISWAP_API_URL = process.env.SUSHISWAP_API_URL;
 
+if (!SUSHISWAP_API_URL) {
+    logger.error('SUSHISWAP_API_URL is not defined in the environment variables');
+    process.exit(1); // Exit if the URL is missing
+}
+
+logger.info(`Using SushiSwap API URL: ${SUSHISWAP_API_URL}`);
+
+/**
+ * Fetch pair-level data from SushiSwap Subgraph
+ */
 async function fetchSushiSwapPairData() {
     try {
-        logger.info('Fetching SushiSwap pair data...');
         const query = `{
             liquidityPools(first: 10, orderBy: totalValueLockedUSD, orderDirection: desc) {
                 id
@@ -19,27 +28,25 @@ async function fetchSushiSwapPairData() {
             }
         }`;
 
-        const response = await axios.post(SUSHISWAP_SUBGRAPH_URL, { query });
+        const response = await axios.post(SUSHISWAP_API_URL, { query });
 
-        // Check for valid structure in response
-        if (!response || !response.data || !response.data.data || !response.data.data.liquidityPools) {
-            logger.error('Invalid response structure or missing data');
-            throw new Error('Response data is missing required fields');
+        // Validate the response structure
+        if (response.data && response.data.data && response.data.data.liquidityPools) {
+            return response.data.data.liquidityPools.map(pool => ({
+                id: pool.id,
+                name: pool.name,
+                tokens: pool.inputTokens.map(token => ({
+                    symbol: token.symbol,
+                    decimals: parseInt(token.decimals, 10),
+                })),
+                totalValueLockedUSD: parseFloat(pool.totalValueLockedUSD),
+            }));
+        } else {
+            throw new Error('Invalid response structure or missing liquidityPools data');
         }
-
-        logger.info('SushiSwap pair data fetched successfully');
-        return response.data.data.liquidityPools.map(pool => ({
-            id: pool.id,
-            name: pool.name,
-            tokens: pool.inputTokens.map(token => ({
-                symbol: token.symbol,
-                decimals: parseInt(token.decimals, 10),
-            })),
-            totalValueLockedUSD: parseFloat(pool.totalValueLockedUSD),
-        }));
     } catch (error) {
         logger.error(`Error fetching SushiSwap pair data: ${error.message}`);
-        throw error; // Ensure the error propagates correctly for higher-level handling
+        throw error;
     }
 }
 
