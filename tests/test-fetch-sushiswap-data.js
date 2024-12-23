@@ -15,8 +15,8 @@ async function testSushiSwapDataFetcher() {
         logger.info('Successfully fetched SushiSwap pair data.');
         console.log('Fetched Pair Data:', JSON.stringify(pairData, null, 2)); // Pretty print the data
     } catch (error) {
-        logger.error(`Error during test: ${error.message}`);
-        console.error('Error during test:', error.message);
+        console.error(`Error during test: ${error.message}`);
+        logger?.error?.(`Error during test: ${error.message}`); // Use optional chaining to ensure logger works
     }
 }
 
