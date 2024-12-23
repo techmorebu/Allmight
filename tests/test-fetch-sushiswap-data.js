@@ -1,24 +1,21 @@
 const { fetchSushiSwapPairData } = require('../data-collection/fetch-sushiswap-data');
-const logger = require('../monitoring/logger'); // Ensure correct import
+const logger = require('../monitoring/logger');
 
-/**
- * Test SushiSwap pair data fetcher
- */
 async function testSushiSwapDataFetcher() {
     try {
         logger.info('Starting SushiSwap pair data fetcher test...');
-        console.log('Testing SushiSwap Pair Data Fetcher...');
-        
-        // Fetch the pair data
-        const pairData = await fetchSushiSwapPairData();
-        
-        logger.info('Successfully fetched SushiSwap pair data.');
-        console.log('Fetched Pair Data:', JSON.stringify(pairData, null, 2));
+
+        // Fetch data
+        const data = await fetchSushiSwapPairData();
+
+        // Log and display the results
+        logger.info('Fetched pair data successfully', { pairCount: data.length });
+        console.log('Fetched Pair Data:', JSON.stringify(data, null, 2));
     } catch (error) {
-        console.error(`Error during test: ${error.message}`);
         logger.error(`Error during test: ${error.message}`);
+        console.error('Error stack:', error.stack); // Ensure the full error stack is logged
     }
 }
 
-// Execute the test
+// Execute the test function
 testSushiSwapDataFetcher();
