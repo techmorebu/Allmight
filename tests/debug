@@ -1,27 +1,13 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-sushiswap-data.js
-node:internal/modules/cjs/loader:1137
-  throw err;
-  ^
+/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-sushiswap-data.js:1
+const { gql, GraphQLClient } = require('graphql-request');
+                               ^
 
-Error: Cannot find module 'gql-request'
-Require stack:
-- /home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-sushiswap-data.js
-- /home/techbu/OFA_Project_Local/ofa-project/tests/test-fetch-sushiswap-data.js
-    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
-    at Module._load (node:internal/modules/cjs/loader:975:27)
-    at Module.require (node:internal/modules/cjs/loader:1225:19)
-    at require (node:internal/modules/helpers:177:18)
-    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-sushiswap-data.js:1:25)
-    at Module._compile (node:internal/modules/cjs/loader:1356:14)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
-    at Module.load (node:internal/modules/cjs/loader:1197:32)
-    at Module._load (node:internal/modules/cjs/loader:1013:12)
-    at Module.require (node:internal/modules/cjs/loader:1225:19) {
-  code: 'MODULE_NOT_FOUND',
-  requireStack: [
-    '/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-sushiswap-data.js',
-    '/home/techbu/OFA_Project_Local/ofa-project/tests/test-fetch-sushiswap-data.js'
-  ]
+Error [ERR_REQUIRE_ESM]: require() of ES Module /home/techbu/OFA_Project_Local/ofa-project/node_modules/graphql-request/build/entrypoints/main.js from /home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-sushiswap-data.js not supported.
+Instead change the require of main.js in /home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-sushiswap-data.js to a dynamic import() which is available in all CommonJS modules.
+    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-sushiswap-data.js:1:32)
+    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/tests/test-fetch-sushiswap-data.js:1:36) {
+  code: 'ERR_REQUIRE_ESM'
 }
 
 Node.js v18.19.1
