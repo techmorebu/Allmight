@@ -10,8 +10,8 @@ async function fetchUniswapPairData() {
         {
             pools(first: 10, orderBy: volumeUSD, orderDirection: desc) {
                 id
-                token0 { symbol, decimals }
-                token1 { symbol, decimals }
+                token0 { symbol decimals }
+                token1 { symbol decimals }
                 token0Price
                 token1Price
                 volumeUSD
@@ -20,9 +20,8 @@ async function fetchUniswapPairData() {
         }`;
 
         const response = await axios.post(UNISWAP_SUBGRAPH_URL, { query });
-
         if (response.data && response.data.data && response.data.data.pools) {
-            const pairs = response.data.data.pools.map(pool => ({
+            return response.data.data.pools.map(pool => ({
                 pair: `${pool.token0.symbol}/${pool.token1.symbol}`,
                 token0: {
                     symbol: pool.token0.symbol,
@@ -37,15 +36,12 @@ async function fetchUniswapPairData() {
                 volumeUSD: parseFloat(pool.volumeUSD),
                 liquidity: parseFloat(pool.liquidity),
             }));
-
-            logger.info('Successfully fetched Uniswap pair-level data', { pairCount: pairs.length });
-            return pairs;
         } else {
             throw new Error('Invalid response structure');
         }
     } catch (error) {
-        logger.error(`Error fetching Uniswap pair-level data: ${error.message}`);
-        throw error;
+        logger.error(`Error fetching Uniswap pair data: ${error.message}`);
+        throw error; // Ensure the error is re-thrown for testing.
     }
 }
 
