@@ -3,15 +3,16 @@ const { logger } = require('../monitoring/logger');
 
 async function testSushiSwapDataFetcher() {
     console.log('Testing SushiSwap REST API Pair Data Fetcher...');
-
+    
     try {
-        // Call the fetcher and display the data
+        // Fetch the pair data
         const pairData = await fetchSushiSwapPairData();
         console.log('Fetched pair data:', pairData);
     } catch (error) {
-        // Log the entire error object to debug the issue
-        logger.error(`Error during test: ${error.message}`);
-        console.error('Error details:', error); // Log the full error object
+        // Ensure the error is logged properly
+        const errorMessage = error.message || 'Unknown error occurred';
+        logger.error(`Error during test: ${errorMessage}`);
+        console.error('Error details:', error); // Log the full error object for debugging
     }
 }
 
