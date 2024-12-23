@@ -1,11 +1,11 @@
-const { fetchUniswapData } = require('../data-collection/fetch-uniswap-data');
+const { fetchUniswapPairData } = require('../data-collection/fetch-uniswap-data');
 
 (async () => {
+    console.log('Testing Uniswap Pair-Level Data Fetcher...');
     try {
-        console.log('Testing Uniswap Pool Data...');
-        const pools = await  fetchUniswapPairData();
-        console.log('Fetched Uniswap Pair Data cuh..:', pools);
+        const pairs = await fetchUniswapPairData();
+        console.log('Fetched Pair-Level Data:', pairs);
     } catch (error) {
-        console.error('Error fetching Uniswap data:', error.message);
+        console.error('Error during test:', error.message);
     }
 })();
