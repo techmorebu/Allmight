@@ -1,4 +1,5 @@
 const { createLogger, transports, format } = require('winston');
+require('winston-daily-rotate-file');
 
 const logger = createLogger({
     level: 'info',
@@ -10,7 +11,12 @@ const logger = createLogger({
     ),
     transports: [
         new transports.Console(),
-        new transports.File({ filename: 'arbitrage-system.log' }) // Save logs to file
+        new transports.DailyRotateFile({
+            filename: 'arbitrage-system-%DATE%.log',
+            datePattern: 'YYYY-MM-DD',
+            maxSize: '20m',
+            maxFiles: '14d', // Keep logs for 14 days
+        }),
     ],
 });
 
