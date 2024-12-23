@@ -1,55 +1,45 @@
-const WebSocket = require('ws');
-const redis = require('ioredis');
+require('dotenv').config({ path: './.env' });
+const axios = require('axios');
+const { logger } = require('../monitoring/logger');
 
-// Initialize Redis
-const redisClient = new redis();
-
-// GMX WebSocket URL
-const GMX_WS_URL = 'wss://api.gmx.io/ws';
-
-function connectGMXWebSocket() {
-    const ws = new WebSocket(GMX_WS_URL);
-
-    ws.on('open', () => {
-        console.log('Connected to GMX WebSocket');
-        ws.send(JSON.stringify({
-            type: 'subscribe',
-            topic: 'prices',
-        }));
-    });
-
-    ws.on('message', (data) => {
-        try {
-            const message = JSON.parse(data);
-            if (message.type === 'update' && message.prices) {
-                message.prices.forEach((priceData) => {
-                    const normalizedData = {
-                        token: priceData.symbol,
-                        price: priceData.price,
-                        volume: priceData.volume || 0,
-                        timestamp: new Date().toISOString(),
-                    };
-
-                    // Store in Redis
-                    const redisKey = `gmx:${normalizedData.token}`;
-                    redisClient.set(redisKey, JSON.stringify(normalizedData));
-                    console.log('Stored data:', normalizedData);
-                });
-            }
-        } catch (err) {
-            console.error('Error processing message:', err.message);
+/**
+ * Fetch GMX data using the specified endpoint type (tickers, signed_prices, or candles).
+ * @param {string} network - The blockchain network (arbitrum or avalanche).
+ * @param {string} endpointType - The endpoint type (e.g., tickers, signed_prices, candles).
+ * @param {Object} [queryParams={}] - Optional query parameters for the endpoint.
+ * @returns {Object} - The fetched data.
+ */
+async function fetchGmxData(network, endpointType, queryParams = {}) {
+    try {
+        const endpoint = process.env[`GMX_${network.toUpperCase()}_${endpointType.toUpperCase()}_URL`];
+        if (!endpoint) {
+            throw new Error(`Missing API endpoint for ${network} and ${endpointType} in .env`);
         }
-    });
 
-    ws.on('close', () => {
-        console.log('WebSocket connection closed. Reconnecting...');
-        setTimeout(connectGMXWebSocket, 5000);
-    });
+        logger.info(`Fetching GMX data for ${network} (${endpointType}) with params: ${JSON.stringify(queryParams)}`);
+        const response = await axios.get(endpoint, { params: queryParams });
 
-    ws.on('error', (err) => {
-        console.error('WebSocket error:', err.message);
-    });
+        if (response.status !== 200) {
+            throw new Error(`Unexpected response status: ${response.status}`);
+        }
+
+        logger.info(`Fetched GMX data: ${JSON.stringify(response.data)}`);
+        return response.data;
+    } catch (error) {
+        logger.error(`Error fetching GMX data (${network}, ${endpointType}): ${error.message}`);
+        throw error;
+    }
 }
 
-// Start GMX WebSocket connection
-connectGMXWebSocket();
+/**
+ * Fetch candlestick data for GMX tokens.
+ * @param {string} network - The blockchain network (arbitrum or avalanche).
+ * @param {string} tokenSymbol - The token symbol (e.g., ETH, AVAX).
+ * @param {string} period - The candlestick period (e.g., 1m, 1d).
+ * @returns {Object} - The candlestick data.
+ */
+async function fetchGmxCandlesticks(network, tokenSymbol, period) {
+    return await fetchGmxData(network, 'candles', { tokenSymbol, period });
+}
+
+module.exports = { fetchGmxData, fetchGmxCandlesticks };
