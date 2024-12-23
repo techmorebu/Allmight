@@ -50,7 +50,7 @@ query FetchRecentSwaps($limit: Int!) {
  */
 async function fetchSushiSwapPairData(limit = 10, orderBy = 'totalValueLockedUSD', orderDirection = 'desc') {
     try {
-        const client = new Client({ url: SUSHISWAP_API_URL });
+        const client = new GraphQLClient(SUSHISWAP_API_URL);
         const variables = { limit, orderBy, orderDirection };
         
         const response = await client.request(PAIR_QUERY, variables);
@@ -84,7 +84,7 @@ async function fetchSushiSwapPairData(limit = 10, orderBy = 'totalValueLockedUSD
  */
 async function fetchSushiSwapRecentSwaps(limit = 10) {
     try {
-        const client = new Client({ url: SUSHISWAP_API_URL });
+        const client = new GraphQLClient(SUSHISWAP_API_URL);
         const variables = { limit };
 
         const response = await client.request(SWAP_QUERY, variables);
