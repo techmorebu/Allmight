@@ -1,4 +1,4 @@
-const { Client, gql } = require('gql-request');
+const { gql, GraphQLClient } = require('graphql-request');
 const { logger } = require('../monitoring/logger');
 require('dotenv').config();
 
