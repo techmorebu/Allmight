@@ -1,21 +1,21 @@
 require('dotenv').config();
 const { fetchGmxData } = require('../data-collection/fetch-gmx-data');
-const { logger } = require('../monitoring/logger');
+const logger = require('../monitoring/logger');
 
 (async () => {
     try {
         logger.info('Testing GMX fetch for Arbitrum - Tickers...');
         const arbitrumTickers = await fetchGmxData('arbitrum', 'tickers');
-        console.log('Arbitrum Tickers:', arbitrumTickers);
+        logger.info(`Fetched Arbitrum Tickers: ${JSON.stringify(arbitrumTickers)}`);
 
         logger.info('Testing GMX fetch for Avalanche - Tickers...');
         const avalancheTickers = await fetchGmxData('avalanche', 'tickers');
-        console.log('Avalanche Tickers:', avalancheTickers);
+        logger.info(`Fetched Avalanche Tickers: ${JSON.stringify(avalancheTickers)}`);
 
         logger.info('Testing GMX fetch for Arbitrum - Candles...');
-        const arbitrumCandles = await fetchGmxData('arbitrum', 'candles');
-        console.log('Arbitrum Candles:', arbitrumCandles);
+        const arbitrumCandles = await fetchGmxData('arbitrum', 'candles', { tokenSymbol: 'ETH', period: '1m' });
+        logger.info(`Fetched Arbitrum Candles: ${JSON.stringify(arbitrumCandles)}`);
     } catch (error) {
-        console.error('Error testing fetchGmxData:', error.message);
+        logger.error(`Error testing fetchGmxData: ${error.message}`);
     }
 })();
