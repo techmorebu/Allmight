@@ -31,8 +31,11 @@ async function fetchSushiSwapPairData(limit = 10, orderBy = 'totalValueLockedUSD
 
         const response = await axios.post(SUSHISWAP_API_URL, {
             query,
-            variables: { limit, orderBy, orderDirection }
+            variables: { limit, orderBy, orderDirection },
         });
+
+        // Log the raw response for debugging
+        console.log('Raw Response:', JSON.stringify(response.data, null, 2));
 
         if (response.data && response.data.data && response.data.data.liquidityPools) {
             const parsedData = response.data.data.liquidityPools.map(pool => ({
@@ -61,5 +64,6 @@ async function fetchSushiSwapPairData(limit = 10, orderBy = 'totalValueLockedUSD
         throw error;
     }
 }
+
 
 module.exports = { fetchSushiSwapPairData };
