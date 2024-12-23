@@ -6,7 +6,7 @@ const SUSHISWAP_SUBGRAPH_URL = process.env.SUSHISWAP_SUBGRAPH_URL;
 
 async function fetchSushiswapPairData() {
     try {
-        const query = 
+        const query = `
         {
             pools(first: 10, orderBy: volumeUSD, orderDirection: desc) {
                 id
