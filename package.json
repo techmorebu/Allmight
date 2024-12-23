@@ -28,7 +28,9 @@
     "ethers5": "npm:ethers@^5.7.2",
     "ioredis": "^5.4.2",
     "node-cache": "^5.1.2",
+    "npm-force-resolutions": "^0.0.10",
     "redis": "^4.7.0",
-    "winston": "^3.17.0"
+    "winston": "^3.17.0",
+    "ws": "^8.18.0"
   }
 }
