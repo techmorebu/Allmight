@@ -1,13 +1,73 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-sushiswap-data.js
-/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-sushiswap-data.js:1
-const { gql, GraphQLClient } = require('graphql-request');
-                               ^
-
-Error [ERR_REQUIRE_ESM]: require() of ES Module /home/techbu/OFA_Project_Local/ofa-project/node_modules/graphql-request/build/entrypoints/main.js from /home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-sushiswap-data.js not supported.
-Instead change the require of main.js in /home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-sushiswap-data.js to a dynamic import() which is available in all CommonJS modules.
-    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-sushiswap-data.js:1:32)
-    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/tests/test-fetch-sushiswap-data.js:1:36) {
-  code: 'ERR_REQUIRE_ESM'
-}
-
-Node.js v18.19.1
+Testing SushiSwap REST API Pair Data Fetcher...
+Fetched pair data: [
+  {
+    id: '0x87a55586a089cb4eefd41f091731a5f229ae8936',
+    name: 'Sushiswap V3 McFlurry/WETH 1%',
+    tokens: [ [Object], [Object] ],
+    totalValueLockedUSD: 2214348.1833788217,
+    fees: [ [Object], [Object], [Object] ]
+  },
+  {
+    id: '0xe68baa6891971e5c118ac64d86a1f5a79ce06757',
+    name: 'Sushiswap V3 WETH/CHIA 1%',
+    tokens: [ [Object], [Object] ],
+    totalValueLockedUSD: 450436.4370667467,
+    fees: [ [Object], [Object], [Object] ]
+  },
+  {
+    id: '0x8d11274ddeb8b141a24ca8a36c63699214e0d221',
+    name: 'Sushiswap V3 Sensay/WETH 1%',
+    tokens: [ [Object], [Object] ],
+    totalValueLockedUSD: 219389.52281623185,
+    fees: [ [Object], [Object], [Object] ]
+  },
+  {
+    id: '0xb3942c9ffa04efbc1fa746e146be7565c76e3dc1',
+    name: 'Sushiswap V3 WETH/Arbitrum 0.3%',
+    tokens: [ [Object], [Object] ],
+    totalValueLockedUSD: 200636.56272945472,
+    fees: [ [Object], [Object], [Object] ]
+  },
+  {
+    id: '0x1797538dd80c041cc2f0c5901d5700868186a9a8',
+    name: 'Sushiswap V3 LayerZero/WETH 0.3%',
+    tokens: [ [Object], [Object] ],
+    totalValueLockedUSD: 143391.88388583934,
+    fees: [ [Object], [Object], [Object] ]
+  },
+  {
+    id: '0x8bd39fa8608fd949c253987767540c26a0d974cf',
+    name: 'Sushiswap V3 Wrapped liquid staked Ether 2.0/WETH 0.01%',
+    tokens: [ [Object], [Object] ],
+    totalValueLockedUSD: 140537.86815728387,
+    fees: [ [Object], [Object], [Object] ]
+  },
+  {
+    id: '0x15e444da5b343c5a0931f5d3e85d158d1efc3d40',
+    name: 'Sushiswap V3 WETH/USDC 0.05%',
+    tokens: [ [Object], [Object] ],
+    totalValueLockedUSD: 97097.24524891625,
+    fees: [ [Object], [Object], [Object] ]
+  },
+  {
+    id: '0x753d81a2d6c61dd7c3510729c9df310659f9003b',
+    name: 'Sushiswap V3 ZTX/WETH 0.3%',
+    tokens: [ [Object], [Object] ],
+    totalValueLockedUSD: 72833.46832188255,
+    fees: [ [Object], [Object], [Object] ]
+  },
+  {
+    id: '0xb1aeb76b4e3e628ee54753ad4b8ef68c41e67a9f',
+    name: 'Sushiswap V3 MAGIC/WETH 0.3%',
+    tokens: [ [Object], [Object] ],
+    totalValueLockedUSD: 57828.57966820463,
+    fees: [ [Object], [Object], [Object] ]
+  },
+  {
+    id: '0x65f7a98d87bc21a3748545047632fef4d3ff9a67',
+    name: 'Sushiswap V3 WETH/Donut 1%',
+    tokens: [ [Object], [Object] ],
+    totalValueLockedUSD: 48433.9587782741,
+    fees: [ [Object], [Object], [Object] ]
+  }
