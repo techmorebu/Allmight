@@ -1,22 +1,20 @@
-// Importing the logger as a named export
+const { connectToDYDX, startFetcher } = require('../data-collection/fetch-dydx-data');
 const { logger } = require('../monitoring/logger');
-const { connectToDYDX } = require('../data-collection/fetch-dydx-data');
 
-// Function to test dYdX integration
-async function startIntegrationTest() {
+async function testDYDXIntegration() {
     try {
         logger.info('Starting dYdX Integration Test...');
-
         logger.info('Testing WebSocket connection...');
-        await connectToDYDX();
 
-        logger.info('WebSocket connection successful. Integration Test Passed.');
+        const ws = await connectToDYDX();
+
+        logger.info('WebSocket connection successful. Proceeding with fetcher...');
+        startFetcher(['BTC-USD', 'ETH-USD']);
+
+        logger.info('Integration Test Completed.');
     } catch (error) {
         logger.error(`Test Failed: ${error.message}`);
-    } finally {
-        logger.info('Integration Test Completed.');
     }
 }
 
-// Run the integration test
-startIntegrationTest();
+testDYDXIntegration();
