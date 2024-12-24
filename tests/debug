@@ -1,11 +1,6 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-dydx-websocket.js
-[2024-12-24T06:56:16.659Z] INFO: Starting dYdX WebSocket fetcher test...
-[2024-12-24T06:56:16.663Z] INFO: Testing enhanced orderbook parsing...
-[2024-12-24T06:56:16.664Z] INFO: Parsed Data: {"market":"BTC-USD","bestBid":{"price":"30000","size":"0.1"},"bestAsk":{"price":"30010","size":"0.1"}}
-[2024-12-24T06:56:16.726Z] INFO: Test completed.
-[2024-12-24T06:56:17.110Z] INFO: Connected to dYdX WebSocket
-[2024-12-24T06:56:17.117Z] INFO: Subscribed to market: BTC-USD
-[2024-12-24T06:56:17.119Z] INFO: Subscribed to market: ETH-USD
-[2024-12-24T06:56:17.130Z] INFO: Unhandled message type: {"type":"connected","connection_id":"e1bd54ad-2e92-4345-bf8f-b6cff00ec0bd","message_id":0}
-[2024-12-24T06:56:17.405Z] ERROR: Error from dYdX: Invalid subscription id for channel: (v3_orderbook-orderbook-BTC-USD-0) (Details: {"type":"error","message":"Invalid subscription id for channel: (v3_orderbook-orderbook-BTC-USD-0)","connection_id":"e1bd54ad-2e92-4345-bf8f-b6cff00ec0bd","message_id":1})
-[2024-12-24T06:56:17.408Z] ERROR: Error from dYdX: Invalid subscription id for channel: (v3_orderbook-orderbook-ETH-USD-1) (Details: {"type":"error","message":"Invalid subscription id for channel: (v3_orderbook-orderbook-ETH-USD-1)","connection_id":"e1bd54ad-2e92-4345-bf8f-b6cff00ec0bd","message_id":2})
+hbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/start-dydx-integration.js
+[2024-12-24T07:21:31.956Z] INFO: Starting dYdX Integration Test...
+[2024-12-24T07:21:31.959Z] INFO: Testing WebSocket connection...
+[2024-12-24T07:21:31.960Z] ERROR: Test Failed: startFetcher is not defined
+[2024-12-24T07:21:31.960Z] INFO: Integration Test Completed.
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 

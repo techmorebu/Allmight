@@ -2312,3 +2312,7 @@
 [2024-12-24T07:03:36.716Z] INFO: Unhandled message type: {"type":"connected","connection_id":"1b401017-78cf-4031-a95e-2d5de9221b85","message_id":0}
 [2024-12-24T07:03:37.007Z] ERROR: Error from dYdX: Invalid id: undefined (Details: {"type":"error","message":"Invalid id: undefined","connection_id":"1b401017-78cf-4031-a95e-2d5de9221b85","message_id":1})
 [2024-12-24T07:03:37.012Z] ERROR: Error from dYdX: Invalid id: undefined (Details: {"type":"error","message":"Invalid id: undefined","connection_id":"1b401017-78cf-4031-a95e-2d5de9221b85","message_id":2})
+[2024-12-24T07:21:31.956Z] INFO: Starting dYdX Integration Test...
+[2024-12-24T07:21:31.959Z] INFO: Testing WebSocket connection...
+[2024-12-24T07:21:31.960Z] ERROR: Test Failed: startFetcher is not defined
+[2024-12-24T07:21:31.960Z] INFO: Integration Test Completed.
