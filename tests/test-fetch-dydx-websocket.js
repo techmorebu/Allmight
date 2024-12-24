@@ -1,34 +1,36 @@
-const { connectToDYDX, parseOrderbookMessage } = require('../data-collection/fetch-dydx-data');
+const { connectToDYDX } = require('../data-collection/fetch-dydx-data');
 const { logger } = require('../monitoring/logger');
 
-// Test the orderbook parsing logic
-function testOrderbookParsing() {
-    logger.info('Testing enhanced orderbook parsing...');
-    const mockMessage = {
-        type: 'channel_data',
-        contents: {
-            market: 'BTC-USD',
-            bids: [{ price: '30000', size: '0.1' }],
-            asks: [{ price: '30010', size: '0.1' }],
-        },
+/**
+ * Mock handler to process incoming orderbook data
+ */
+function handleOrderbookData(message) {
+    const { id, bids, asks } = message.contents || {};
+
+    if (!id || !bids || !asks) {
+        logger.warn(`Incomplete orderbook data: ${JSON.stringify(message)}`);
+        return;
+    }
+
+    const bestBid = bids[0];
+    const bestAsk = asks[0];
+
+    const parsedData = {
+        market: id,
+        bestBid: { price: bestBid[0], size: bestBid[1] },
+        bestAsk: { price: bestAsk[0], size: bestAsk[1] },
     };
-    const parsedData = parseOrderbookMessage(mockMessage);
-    logger.info(`Parsed Data: ${JSON.stringify(parsedData)}`);
+
+    logger.info(`Parsed Orderbook Data: ${JSON.stringify(parsedData)}`);
 }
 
-// Test the WebSocket connection and subscription
+/**
+ * Test the dYdX WebSocket implementation
+ */
 async function testDYDXWebSocket() {
     logger.info('Starting dYdX WebSocket fetcher test...');
-    try {
-        await connectToDYDX();
-    } catch (error) {
-        logger.error(`Error during test: ${error.message}`);
-    }
+    connectToDYDX(['BTC-USD', 'ETH-USD'], handleOrderbookData);
     logger.info('Test completed.');
 }
 
-// Run all tests
-(async () => {
-    testOrderbookParsing();
-    await testDYDXWebSocket();
-})();
+testDYDXWebSocket();
