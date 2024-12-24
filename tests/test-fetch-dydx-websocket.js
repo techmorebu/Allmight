@@ -6,7 +6,7 @@ const Redis = require('ioredis');
     try {
         logger.info('Starting dYdX WebSocket fetcher test...');
         
-        // Mock parsing orderbook data
+        // Simulate enhanced orderbook parsing
         logger.info('Testing enhanced orderbook parsing...');
         const mockOrderbook = {
             asks: [{ price: '30010', size: '0.1' }, { price: '30020', size: '0.2' }],
@@ -31,11 +31,11 @@ const Redis = require('ioredis');
         const websocket = await connectToDYDXWebSocket();
         logger.info('Connected to dYdX WebSocket');
 
-        // Simulate subscriptions
-        markets.forEach((market) => {
+        // Mock storing orderbook data in Redis
+        for (const market of markets) {
             redis.set(`dydx:test:${market}`, JSON.stringify(mockOrderbook));
             logger.info(`Test: Stored mock data for market ${market}`);
-        });
+        }
 
         logger.info('Test completed.');
         redis.disconnect();
