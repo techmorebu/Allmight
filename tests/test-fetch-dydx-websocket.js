@@ -1,6 +1,10 @@
-const { startDydxWebSocket } = require('../data-collection/fetch-dydx-websocket');
+const { connectDYDXWebSocket } = require('../data-collection/fetch-dydx-websocket');
+const { logger } = require('../monitoring/logger');
 
-(async () => {
-    console.log('Starting dYdX WebSocket test...');
-    startDydxWebSocket();
-})();
+function testDYDXWebSocket() {
+    const pair = 'BTC-USD'; // Example pair
+    logger.info('Testing dYdX WebSocket connection...');
+    connectDYDXWebSocket(pair);
+}
+
+testDYDXWebSocket();
