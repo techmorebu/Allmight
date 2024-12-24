@@ -1,7 +1,7 @@
 const WebSocket = require('ws');
 const { logger } = require('../monitoring/logger');
 
-const DYDX_WEBSOCKET_URL = 'wss://api.dydx.exchange/v4/ws'; // Ensure this URL is correct
+const DYDX_WEBSOCKET_URL = 'wss://api.dydx.exchange/v3/ws'; // Ensure this URL is correct
 
 /**
  * Connect to the dYdX WebSocket and handle data
