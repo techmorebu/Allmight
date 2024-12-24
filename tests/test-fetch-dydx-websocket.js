@@ -1,46 +1,47 @@
-const { connectToDYDXWebSocket, subscribeToMarkets, handleWebSocketMessages } = require('../data-collection/fetch-dydx-data');
-const { logger } = require('../monitoring/logger');
+const { connectToDYDXWebSocket } = require('../data-collection/fetch-dydx-data');
+const { logger } = require('../utils/logger');
 const Redis = require('ioredis');
 
-const redis = new Redis();
-
 (async () => {
+    logger.info('Starting dYdX WebSocket fetcher test...');
+    const redis = new Redis();
+
     try {
-        logger.info('Starting dYdX WebSocket fetcher test...');
-
-        // Mock parsing test
+        // Mock parsed orderbook parsing test
         logger.info('Testing enhanced orderbook parsing...');
-        const mockOrderbookData = {
-            market: 'BTC-USD',
-            bestBid: { price: '30000', size: '0.1' },
-            bestAsk: { price: '30010', size: '0.1' },
+        const sampleOrderBook = {
+            asks: [
+                { price: '30010', size: '0.1' },
+                { price: '30020', size: '0.2' },
+            ],
+            bids: [
+                { price: '30000', size: '0.1' },
+                { price: '29990', size: '0.2' },
+            ],
         };
-        logger.info(`Parsed Data: ${JSON.stringify(mockOrderbookData)}`);
+        const parsedData = {
+            asks: sampleOrderBook.asks.slice(0, 10),
+            bids: sampleOrderBook.bids.slice(0, 10),
+            timestamp: Date.now(),
+        };
+        logger.info(`Parsed Data: ${JSON.stringify(parsedData)}`);
 
-        // Connect to WebSocket
-        const socket = await connectToDYDXWebSocket();
+        // WebSocket test
+        await connectToDYDXWebSocket();
 
-        // Subscribe to markets and handle messages
-        const markets = ['BTC-USD', 'ETH-USD'];
-        await subscribeToMarkets(socket, markets);
-        handleWebSocketMessages(socket);
-
-        // Verify Redis storage
+        // Data retrieval test
         setTimeout(async () => {
-            try {
-                for (const market of markets) {
-                    const data = await redis.get(`${market}:orderbook`);
-                    logger.info(data ? `Data for ${market}: ${data}` : `No data for ${market}`);
-                }
-            } catch (err) {
-                logger.error(`Error retrieving data: ${err.message}`);
-            } finally {
-                redis.quit();
+            const storedData = await redis.get('orderbook:BTC-USD');
+            if (storedData) {
+                logger.info(`Retrieved stored data for BTC-USD: ${storedData}`);
+            } else {
+                logger.warn('No data for BTC-USD');
             }
+            redis.disconnect();
         }, 5000);
-
+    } catch (error) {
+        logger.error('Test failed:', error);
+    } finally {
         logger.info('Test completed.');
-    } catch (err) {
-        logger.error(`Test Failed: ${err.message}`);
     }
 })();
