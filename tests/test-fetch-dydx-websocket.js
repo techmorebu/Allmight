@@ -4,21 +4,20 @@ const { logger } = require('../monitoring/logger');
 
 const redis = new Redis();
 
-// Test function for dYdX WebSocket fetcher
 async function testDYDXFetcher() {
     try {
         logger.info('Starting dYdX WebSocket fetcher test...');
 
-        // Start WebSocket connection
+        // Establish WebSocket connection
         connectToDYDX();
 
-        // Delay to allow data to populate in Redis
+        // Wait for data population
         logger.info('Waiting for data...');
         await new Promise(resolve => setTimeout(resolve, 10000));
 
-        // Fetch data from Redis to validate
+        // Fetch and validate data
         const markets = ['BTC-USD', 'ETH-USD'];
-        markets.forEach(async (market) => {
+        for (const market of markets) {
             const marketData = await redis.hgetall(`dydx:${market}`);
             if (marketData && marketData.topAskPrice && marketData.topBidPrice) {
                 logger.info(`Market: ${market}`);
@@ -27,15 +26,13 @@ async function testDYDXFetcher() {
             } else {
                 logger.error(`No data found for market: ${market}`);
             }
-        });
+        }
     } catch (error) {
         logger.error(`Error during test: ${error.message}`);
     } finally {
-        // Cleanup and close Redis connection
         redis.quit();
         logger.info('Test completed.');
     }
 }
 
-// Execute the test
 testDYDXFetcher();
