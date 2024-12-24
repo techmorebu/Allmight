@@ -2240,3 +2240,11 @@
 [2024-12-24T06:12:07.774Z] WARN: WebSocket connection closed. Attempting to reconnect...
 [2024-12-24T06:12:13.296Z] ERROR: WebSocket error: Unexpected server response: 404
 [2024-12-24T06:12:13.297Z] WARN: WebSocket connection closed. Attempting to reconnect...
+[2024-12-24T06:14:12.873Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-24T06:14:12.936Z] INFO: Test completed.
+[2024-12-24T06:14:13.722Z] INFO: Connected to dYdX WebSocket
+[2024-12-24T06:14:13.726Z] INFO: Subscribed to market: BTC-USD
+[2024-12-24T06:14:13.726Z] INFO: Subscribed to market: ETH-USD
+[2024-12-24T06:14:13.730Z] INFO: Unhandled message type: {"type":"connected","connection_id":"e4c3776d-2218-4fad-a7fc-aa1679640f5d","message_id":0}
+[2024-12-24T06:14:14.023Z] INFO: Subscription confirmed for channel: v3_orderbook, market: BTC-USD
+[2024-12-24T06:14:14.027Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ETH-USD
