@@ -2234,3 +2234,9 @@
 [2024-12-24T06:09:45.550Z] INFO: Unhandled message type: {"type":"connected","connection_id":"e421dd52-fe37-4664-a1be-8d11a0495071","message_id":0}
 [2024-12-24T06:09:45.844Z] ERROR: Error from dYdX: Invalid subscription id for channel: (v3_orderbook-orderbook-BTC-USD) (Details: {"type":"error","message":"Invalid subscription id for channel: (v3_orderbook-orderbook-BTC-USD)","connection_id":"e421dd52-fe37-4664-a1be-8d11a0495071","message_id":1})
 [2024-12-24T06:09:45.846Z] ERROR: Error from dYdX: Invalid subscription id for channel: (v3_orderbook-orderbook-ETH-USD) (Details: {"type":"error","message":"Invalid subscription id for channel: (v3_orderbook-orderbook-ETH-USD)","connection_id":"e421dd52-fe37-4664-a1be-8d11a0495071","message_id":2})
+[2024-12-24T06:12:07.147Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-24T06:12:07.209Z] INFO: Test completed.
+[2024-12-24T06:12:07.772Z] ERROR: WebSocket error: Unexpected server response: 404
+[2024-12-24T06:12:07.774Z] WARN: WebSocket connection closed. Attempting to reconnect...
+[2024-12-24T06:12:13.296Z] ERROR: WebSocket error: Unexpected server response: 404
+[2024-12-24T06:12:13.297Z] WARN: WebSocket connection closed. Attempting to reconnect...
