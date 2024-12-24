@@ -1,51 +1,17 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-dydx-websocket.js
-[2024-12-24T08:37:37.540Z] INFO: Starting dYdX WebSocket fetcher test...
-[2024-12-24T08:37:37.544Z] INFO: Testing enhanced orderbook parsing...
-[2024-12-24T08:37:37.545Z] INFO: Parsed Data: {"asks":[{"price":"30010","size":"0.1"},{"price":"30020","size":"0.2"}],"bids":[{"price":"30000","size":"0.1"},{"price":"29990","size":"0.2"}],"timestamp":1735029457544}
-[2024-12-24T08:37:37.545Z] INFO: Connected to Redis
-[2024-12-24T08:37:37.546Z] INFO: Fetching active markets from dYdX...
-[2024-12-24T08:37:38.416Z] INFO: Fetched 38 active markets.
-[2024-12-24T08:37:38.417Z] INFO: Connecting to dYdX WebSocket...
-[2024-12-24T08:37:38.899Z] INFO: Connected to dYdX WebSocket
-[2024-12-24T08:37:38.900Z] INFO: Connected to dYdX WebSocket
-[2024-12-24T08:37:38.901Z] INFO: Test: Stored mock data for market ZEC-USD
-[2024-12-24T08:37:38.902Z] INFO: Test: Stored mock data for market EOS-USD
-[2024-12-24T08:37:38.902Z] INFO: Test: Stored mock data for market COMP-USD
-[2024-12-24T08:37:38.903Z] INFO: Test: Stored mock data for market ETC-USD
-[2024-12-24T08:37:38.903Z] INFO: Test: Stored mock data for market SOL-USD
-[2024-12-24T08:37:38.903Z] INFO: Test: Stored mock data for market ENJ-USD
-[2024-12-24T08:37:38.904Z] INFO: Test: Stored mock data for market BTC-USD
-[2024-12-24T08:37:38.905Z] INFO: Test: Stored mock data for market ADA-USD
-[2024-12-24T08:37:38.905Z] INFO: Test: Stored mock data for market CELO-USD
-[2024-12-24T08:37:38.906Z] INFO: Test: Stored mock data for market FIL-USD
-[2024-12-24T08:37:38.906Z] INFO: Test: Stored mock data for market ALGO-USD
-[2024-12-24T08:37:38.907Z] INFO: Test: Stored mock data for market 1INCH-USD
-[2024-12-24T08:37:38.908Z] INFO: Test: Stored mock data for market TRX-USD
-[2024-12-24T08:37:38.908Z] INFO: Test: Stored mock data for market MKR-USD
-[2024-12-24T08:37:38.909Z] INFO: Test: Stored mock data for market XTZ-USD
-[2024-12-24T08:37:38.909Z] INFO: Test: Stored mock data for market SUSHI-USD
-[2024-12-24T08:37:38.909Z] INFO: Test: Stored mock data for market XMR-USD
-[2024-12-24T08:37:38.909Z] INFO: Test: Stored mock data for market LTC-USD
-[2024-12-24T08:37:38.909Z] INFO: Test: Stored mock data for market LUNA-USD
-[2024-12-24T08:37:38.910Z] INFO: Test: Stored mock data for market ICP-USD
-[2024-12-24T08:37:38.910Z] INFO: Test: Stored mock data for market LINK-USD
-[2024-12-24T08:37:38.910Z] INFO: Test: Stored mock data for market ATOM-USD
-[2024-12-24T08:37:38.911Z] INFO: Test: Stored mock data for market CRV-USD
-[2024-12-24T08:37:38.911Z] INFO: Test: Stored mock data for market DOT-USD
-[2024-12-24T08:37:38.911Z] INFO: Test: Stored mock data for market BCH-USD
-[2024-12-24T08:37:38.911Z] INFO: Test: Stored mock data for market ETH-USD
-[2024-12-24T08:37:38.912Z] INFO: Test: Stored mock data for market ZRX-USD
-[2024-12-24T08:37:38.912Z] INFO: Test: Stored mock data for market SNX-USD
-[2024-12-24T08:37:38.912Z] INFO: Test: Stored mock data for market YFI-USD
-[2024-12-24T08:37:38.912Z] INFO: Test: Stored mock data for market DOGE-USD
-[2024-12-24T08:37:38.912Z] INFO: Test: Stored mock data for market XLM-USD
-[2024-12-24T08:37:38.913Z] INFO: Test: Stored mock data for market AAVE-USD
-[2024-12-24T08:37:38.913Z] INFO: Test: Stored mock data for market NEAR-USD
-[2024-12-24T08:37:38.913Z] INFO: Test: Stored mock data for market MATIC-USD
-[2024-12-24T08:37:38.913Z] INFO: Test: Stored mock data for market RUNE-USD
-[2024-12-24T08:37:38.913Z] INFO: Test: Stored mock data for market UMA-USD
-[2024-12-24T08:37:38.913Z] INFO: Test: Stored mock data for market UNI-USD
-[2024-12-24T08:37:38.913Z] INFO: Test: Stored mock data for market AVAX-USD
-[2024-12-24T08:37:38.913Z] INFO: Test completed.
-[2024-12-24T08:37:38.919Z] INFO: Unhandled message type: {"type":"connected","connection_id":"341bf9f7-3d8e-4014-ac44-5ad0b892bde6","message_id":0}
-
+echbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-dydx-websocket.js
+[2024-12-24T08:44:17.384Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-24T08:44:17.389Z] INFO: Testing enhanced orderbook parsing...
+[2024-12-24T08:44:17.390Z] INFO: Parsed Data: {"asks":[{"price":"30010","size":"0.1"},{"price":"30020","size":"0.2"}],"bids":[{"price":"30000","size":"0.1"},{"price":"29990","size":"0.2"}],"timestamp":1735029857390}
+[2024-12-24T08:44:17.390Z] INFO: Connected to Redis
+[2024-12-24T08:44:18.042Z] INFO: Connected to dYdX WebSocket
+[2024-12-24T08:44:18.046Z] INFO: Subscribed to market: BTC-USD
+[2024-12-24T08:44:18.046Z] INFO: Subscribed to market: ETH-USD
+[2024-12-24T08:44:18.047Z] INFO: Stored order book for BTC-USD
+[2024-12-24T08:44:18.048Z] INFO: Stored orderbook for BTC-USD
+[2024-12-24T08:44:18.048Z] INFO: Stored order book for ETH-USD
+[2024-12-24T08:44:18.049Z] INFO: Stored orderbook for ETH-USD
+[2024-12-24T08:44:18.049Z] INFO: Test completed successfully.
+[2024-12-24T08:44:18.054Z] INFO: Unhandled message type: {"type":"connected","connection_id":"31f93612-edcf-41e4-84d8-004715635037","message_id":0}
+[2024-12-24T08:44:18.348Z] INFO: Stored order book for BTC-USD
+[2024-12-24T08:44:18.354Z] INFO: Stored order book for ETH-USD
+^C
