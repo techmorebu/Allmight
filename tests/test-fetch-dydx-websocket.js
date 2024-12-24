@@ -2,36 +2,43 @@ const { connectToDYDX } = require('../data-collection/fetch-dydx-data');
 const { logger } = require('../monitoring/logger');
 
 /**
- * Test enhanced order book parsing.
+ * Simulate parsing orderbook data
  */
 function testOrderbookParsing() {
     logger.info('Testing enhanced orderbook parsing...');
-    const mockOrderbookMessage = {
-        type: 'v3_orderbook',
-        contents: {
-            market: 'BTC-USD',
-            bids: [{ price: '30000', size: '0.1' }],
-            asks: [{ price: '30010', size: '0.1' }],
+    const testMessage = {
+        market: 'BTC-USD',
+        bids: [{ price: '30000', size: '0.1' }],
+        asks: [{ price: '30010', size: '0.1' }],
+    };
+
+    const bestBid = testMessage.bids[0] || { price: 'N/A', size: 'N/A' };
+    const bestAsk = testMessage.asks[0] || { price: 'N/A', size: 'N/A' };
+
+    const parsedData = {
+        market: testMessage.market,
+        bestBid: {
+            price: bestBid.price,
+            size: bestBid.size,
+        },
+        bestAsk: {
+            price: bestAsk.price,
+            size: bestAsk.size,
         },
     };
 
-    const { market, bids, asks } = mockOrderbookMessage.contents;
-    const bestBid = bids[0] || { price: 'N/A', size: 'N/A' };
-    const bestAsk = asks[0] || { price: 'N/A', size: 'N/A' };
-
-    logger.info(`Parsed Data: ${JSON.stringify({ market, bestBid, bestAsk })}`);
+    logger.info(`Parsed Data: ${JSON.stringify(parsedData)}`);
 }
 
-// Main Test
-(async function testDYDXWebSocket() {
+/**
+ * Main test function
+ */
+function testDYDXWebSocket() {
     logger.info('Starting dYdX WebSocket fetcher test...');
     testOrderbookParsing();
-
-    try {
-        connectToDYDX();
-    } catch (error) {
-        logger.error(`Error during test: ${error.message}`);
-    }
-
+    connectToDYDX();
     logger.info('Test completed.');
-})();
+}
+
+// Run the test
+testDYDXWebSocket();
