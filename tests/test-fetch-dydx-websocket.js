@@ -1,13 +1,9 @@
-// Required libraries
-const Redis = require('ioredis');
-const { connectToDYDXWebSocket, subscribeToMarkets } = require('../data-collection/fetch-dydx-data');
+const { connectToDYDXWebSocket, subscribeToMarkets, handleWebSocketMessages } = require('../data-collection/fetch-dydx-data');
 const { logger } = require('../monitoring/logger');
+const Redis = require('ioredis');
 
 // Initialize Redis client
 const redis = new Redis();
-
-redis.on('error', (err) => logger.error(`Redis error: ${err.message}`));
-redis.on('connect', () => logger.info('Connected to Redis'));
 
 (async () => {
     try {
@@ -25,9 +21,10 @@ redis.on('connect', () => logger.info('Connected to Redis'));
         // Connect to WebSocket
         const socket = await connectToDYDXWebSocket();
 
-        // Subscribe to markets
+        // Subscribe to markets and handle messages
         const markets = ['BTC-USD', 'ETH-USD'];
         await subscribeToMarkets(socket, markets);
+        handleWebSocketMessages(socket);
 
         // Retrieve data from Redis after a delay
         setTimeout(async () => {
