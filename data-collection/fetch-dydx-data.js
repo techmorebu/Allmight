@@ -31,7 +31,7 @@ function connectToDYDX() {
     });
 }
 
-**
+/**
  * Subscribe to market order books.
  */
 function subscribeToMarkets() {
