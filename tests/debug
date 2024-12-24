@@ -1,5 +1,14 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-dydx-websocket.js
-[2024-12-24T08:54:12.000Z] INFO: Starting dYdX WebSocket fetcher test...
-[2024-12-24T08:54:12.671Z] INFO: Fetched 38 active markets.
-[2024-12-24T08:54:12.686Z] ERROR: Test failed: WebSocket is not open: readyState 0 (CONNECTING)
-[2024-12-24T08:54:13.097Z] INFO: Connected to dYdX WebSocket
+[2024-12-24T08:57:09.182Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-24T08:57:09.741Z] INFO: Fetched 38 active markets.
+[2024-12-24T08:57:09.743Z] ERROR: Test failed: ws.send is not a function
+/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-dydx-data.js:40
+    const websocket = new WebSocket(DYDX_WS_URL);
+                                    ^
+
+ReferenceError: DYDX_WS_URL is not defined
+    at connectToDYDXWebSocket (/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-dydx-data.js:40:37)
+    at /home/techbu/OFA_Project_Local/ofa-project/tests/test-fetch-dydx-websocket.js:15:20
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+Node.js v18.19.1

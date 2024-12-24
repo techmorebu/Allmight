@@ -2556,3 +2556,5 @@
 [2024-12-24T08:54:12.671Z] INFO: Fetched 38 active markets.
 [2024-12-24T08:54:12.686Z] ERROR: Test failed: WebSocket is not open: readyState 0 (CONNECTING)
 [2024-12-24T08:54:13.097Z] INFO: Connected to dYdX WebSocket
+[2024-12-24T08:57:09.182Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-24T08:57:09.741Z] INFO: Fetched 38 active markets.
