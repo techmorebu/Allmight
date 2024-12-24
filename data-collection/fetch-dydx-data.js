@@ -35,17 +35,15 @@ function connectToDYDX() {
  * Subscribe to market order books.
  */
 function subscribeToMarkets() {
-    markets.forEach((market, index) => {
-        const subscriptionId = `ticker-${index}`;
+    markets.forEach((market) => {
         const subscriptionMessage = {
             type: 'subscribe',
             channel: 'v3_orderbook',
-            id: market,
-            market: market,
+            market: market, // Ensure market is correctly specified
         };
 
         ws.send(JSON.stringify(subscriptionMessage));
-        logger.info(`Subscribed to market: ${market} with id: ${subscriptionId}`);
+        logger.info(`Subscribed to market: ${market}`);
     });
 }
 
@@ -57,8 +55,8 @@ function handleWebSocketMessage(data) {
     try {
         const message = JSON.parse(data);
 
-        if (message.type === 'subscribed') {
-            logger.info(`Subscription confirmed for channel: ${message.channel}, market: ${message.market}`);
+        if (message.type === 'subscribed' && message.channel === 'v3_orderbook') {
+            logger.info(`Subscription confirmed for channel: ${message.channel}, market: ${message.market || 'unknown'}`);
         } else if (message.type === 'v3_orderbook') {
             const { market, bids, asks } = message.contents;
             const bestBid = bids[0] || { price: 'N/A', size: 'N/A' };
@@ -74,5 +72,6 @@ function handleWebSocketMessage(data) {
         logger.error(`Error parsing WebSocket message: ${error.message}`);
     }
 }
+
 
 module.exports = { connectToDYDX };
