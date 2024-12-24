@@ -2471,3 +2471,8 @@
 [2024-12-24T08:16:31.301Z] INFO: Subscription confirmed for channel: v3_orderbook, market: AVAX-USD
 [2024-12-24T08:16:31.302Z] INFO: Subscription confirmed for channel: v3_orderbook, market: UNI-USD
 [2024-12-24T08:16:35.197Z] WARN: No data for BTC-USD
+[2024-12-24T08:23:06.377Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-24T08:23:06.381Z] INFO: Testing enhanced orderbook parsing...
+[2024-12-24T08:23:06.382Z] INFO: Parsed Data: {"asks":[{"price":"30010","size":"0.1"},{"price":"30020","size":"0.2"}],"bids":[{"price":"30000","size":"0.1"},{"price":"29990","size":"0.2"}],"timestamp":1735028586382}
+[2024-12-24T08:23:06.384Z] ERROR: Test failed: connectToDYDXWebSocket is not a function
+[2024-12-24T08:23:06.384Z] INFO: Test completed.
