@@ -2352,3 +2352,13 @@
 [2024-12-24T07:54:14.450Z] INFO: Parsed Data: {"market":"BTC-USD","bestBid":{"price":"30000","size":"0.1"},"bestAsk":{"price":"30010","size":"0.1"}}
 [2024-12-24T07:54:14.450Z] ERROR: Test Failed: connectToDYDXWebSocket is not a function
 [2024-12-24T07:54:14.479Z] INFO: Connected to Redis
+[2024-12-24T07:57:14.173Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-24T07:57:14.177Z] INFO: Testing enhanced orderbook parsing...
+[2024-12-24T07:57:14.178Z] INFO: Parsed Data: {"market":"BTC-USD","bestBid":{"price":"30000","size":"0.1"},"bestAsk":{"price":"30010","size":"0.1"}}
+[2024-12-24T07:57:14.258Z] INFO: Connected to Redis
+[2024-12-24T07:57:15.058Z] INFO: Connected to dYdX WebSocket
+[2024-12-24T07:57:15.063Z] INFO: Subscribed to market: BTC-USD
+[2024-12-24T07:57:15.064Z] INFO: Subscribed to market: ETH-USD
+[2024-12-24T07:57:15.066Z] INFO: Test completed.
+[2024-12-24T07:57:20.074Z] INFO: No data for BTC-USD
+[2024-12-24T07:57:20.077Z] INFO: No data for ETH-USD
