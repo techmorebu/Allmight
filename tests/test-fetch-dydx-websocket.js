@@ -1,49 +1,30 @@
 // File: tests/test-fetch-dydx-websocket.js
-
-const {
-    connectToDYDXWebSocket,
-    subscribeToMarkets,
-    parseOrderBook,
-    saveOrderBookToRedis,
-} = require('../data-collection/fetch-dydx-data');
+const { fetchActiveMarkets, connectToDYDXWebSocket, subscribeToMarkets } = require('../data-collection/fetch-dydx-data');
 const { logger } = require('../monitoring/logger');
 const Redis = require('ioredis');
 
 (async () => {
     try {
         logger.info('Starting dYdX WebSocket fetcher test...');
-
-        // Simulate enhanced orderbook parsing
-        logger.info('Testing enhanced orderbook parsing...');
-        const mockOrderbook = {
-            asks: [
-                { price: '30010', size: '0.1' },
-                { price: '30020', size: '0.2' },
-            ],
-            bids: [
-                { price: '30000', size: '0.1' },
-                { price: '29990', size: '0.2' },
-            ],
-            timestamp: Date.now(),
-        };
-        const parsedOrderbook = parseOrderBook(mockOrderbook);
-        logger.info(`Parsed Data: ${JSON.stringify(parsedOrderbook)}`);
-
-        // Connect to Redis
         const redis = new Redis();
-        logger.info('Connected to Redis');
 
-        // Connect to dYdX WebSocket
-        const websocket = await connectToDYDXWebSocket();
+        // Fetch active markets
+        const markets = await fetchActiveMarkets();
 
-        // Subscribe to markets
-        const markets = ['BTC-USD', 'ETH-USD'];
-        await subscribeToMarkets(websocket, markets);
+        // Connect to WebSocket
+        const ws = connectToDYDXWebSocket();
 
-        // Mock storing orderbook data in Redis
+        // Subscribe to all active markets
+        await subscribeToMarkets(ws, markets);
+
+        // Verify data storage in Redis
         for (const market of markets) {
-            saveOrderBookToRedis(market, parsedOrderbook);
-            logger.info(`Stored orderbook for ${market}`);
+            const orderBook = await redis.get(`dydx:orderbook:${market}`);
+            if (orderBook) {
+                logger.info(`Verified stored order book for market: ${market}`);
+            } else {
+                logger.warn(`No data stored for market: ${market}`);
+            }
         }
 
         logger.info('Test completed successfully.');
