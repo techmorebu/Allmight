@@ -20,32 +20,12 @@ async function fetchActiveMarkets() {
     }
 }
 
-function waitForWebSocketOpen(websocket) {
-    return new Promise((resolve, reject) => {
-        const interval = setInterval(() => {
-            if (websocket.readyState === WebSocket.OPEN) {
-                clearInterval(interval);
-                resolve();
-            }
-        }, 50); // Check every 50ms
-
-        setTimeout(() => {
-            clearInterval(interval);
-            reject(new Error('WebSocket connection timed out.'));
-        }, 5000); // Timeout after 5 seconds
-    });
-}
-
-async function connectToDYDXWebSocket() {
-    const websocket = new WebSocket(DYDX_WS_URL);
-
-    websocket.onopen = () => logger.info('Connected to dYdX WebSocket');
-    websocket.onerror = (error) => logger.error(`WebSocket error: ${error.message}`);
-    websocket.onclose = () => logger.info('WebSocket connection closed');
-
-    await waitForWebSocketOpen(websocket); // Wait for WebSocket to fully open
-
-    return websocket;
+function connectToDYDXWebSocket() {
+    const ws = new WebSocket('wss://api.dydx.exchange/v3/ws');
+    ws.on('open', () => logger.info('Connected to dYdX WebSocket'));
+    ws.on('error', (error) => logger.error(`WebSocket error: ${error.message}`));
+    ws.on('close', () => logger.warn('WebSocket connection closed.'));
+    return ws;
 }
 
 async function subscribeToMarkets(ws, markets) {
