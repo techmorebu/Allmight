@@ -2,14 +2,13 @@ const { connectToDYDXWebSocket, subscribeToMarkets, handleWebSocketMessages } = 
 const { logger } = require('../monitoring/logger');
 const Redis = require('ioredis');
 
-// Initialize Redis client
 const redis = new Redis();
 
 (async () => {
     try {
         logger.info('Starting dYdX WebSocket fetcher test...');
 
-        // Test enhanced orderbook parsing
+        // Mock parsing test
         logger.info('Testing enhanced orderbook parsing...');
         const mockOrderbookData = {
             market: 'BTC-USD',
@@ -26,7 +25,7 @@ const redis = new Redis();
         await subscribeToMarkets(socket, markets);
         handleWebSocketMessages(socket);
 
-        // Retrieve data from Redis after a delay
+        // Verify Redis storage
         setTimeout(async () => {
             try {
                 for (const market of markets) {
