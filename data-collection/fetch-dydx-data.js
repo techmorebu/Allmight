@@ -1,98 +1,90 @@
 const WebSocket = require('ws');
+const axios = require('axios');
 const Redis = require('ioredis');
 const { logger } = require('../monitoring/logger');
-const axios = require('axios');
-require('dotenv').config();
 
-const DYDX_API_URL = process.env.DYDX_API_URL || 'https://api.dydx.exchange/v3/markets';
-const WEBSOCKET_URL = process.env.DYDX_WEBSOCKET_URL || 'wss://api.dydx.exchange/v3/ws';
+const DYDX_WS_URL = 'wss://api.dydx.exchange/v3/ws';
+const DYDX_API_URL = 'https://api.dydx.exchange/v3/markets';
 const redis = new Redis();
 
-const MAX_ORDERBOOK_LEVELS = 10; // Limit order book depth for optimization
-const ALERT_THRESHOLD = 0.05; // 5% price change for alerts
+let ws;
 
-let socket;
-
-const parseOrderBook = (orderBook) => {
-    const topAsks = orderBook.asks.slice(0, MAX_ORDERBOOK_LEVELS);
-    const topBids = orderBook.bids.slice(0, MAX_ORDERBOOK_LEVELS);
-
-    return {
-        asks: topAsks,
-        bids: topBids,
-        timestamp: Date.now(),
-    };
-};
-
-const monitorSignificantChanges = (market, newOrderBook, prevOrderBook) => {
-    if (!prevOrderBook) return;
-
-    const prevBestAsk = prevOrderBook.asks[0]?.price || 0;
-    const prevBestBid = prevOrderBook.bids[0]?.price || 0;
-    const newBestAsk = newOrderBook.asks[0]?.price || 0;
-    const newBestBid = newOrderBook.bids[0]?.price || 0;
-
-    const askChange = Math.abs((newBestAsk - prevBestAsk) / prevBestAsk);
-    const bidChange = Math.abs((newBestBid - prevBestBid) / prevBestBid);
-
-    if (askChange > ALERT_THRESHOLD || bidChange > ALERT_THRESHOLD) {
-        logger.warn(`Significant price change detected for ${market}: Ask: ${askChange * 100}%, Bid: ${bidChange * 100}%`);
-    }
-};
-
-const fetchMarkets = async () => {
+async function fetchActiveMarkets() {
     try {
+        logger.info('Fetching active markets from dYdX...');
         const response = await axios.get(DYDX_API_URL);
-        const markets = Object.keys(response.data.markets);
-        logger.info(`Fetched active markets: ${markets.join(', ')}`);
-        return markets;
+        const markets = response.data.markets || {};
+        logger.info(`Fetched ${Object.keys(markets).length} active markets.`);
+        return Object.keys(markets);
     } catch (error) {
-        logger.error('Error fetching markets:', error);
+        logger.error(`Error fetching active markets: ${error.message}`);
         return [];
     }
-};
+}
 
-const connectToDYDXWebSocket = async () => {
-    const markets = await fetchMarkets();
-    if (!markets.length) return;
+function connectToDYDXWebSocket() {
+    return new Promise((resolve, reject) => {
+        logger.info('Connecting to dYdX WebSocket...');
+        ws = new WebSocket(DYDX_WS_URL);
 
-    socket = new WebSocket(WEBSOCKET_URL);
+        ws.on('open', () => {
+            logger.info('Connected to dYdX WebSocket');
+            resolve();
+        });
 
-    socket.on('open', () => {
-        logger.info('Connected to dYdX WebSocket');
-        markets.forEach((market, index) => {
-            const subscriptionMessage = JSON.stringify({
-                type: 'subscribe',
-                channel: 'v3_orderbook',
-                id: market,
-            });
-            socket.send(subscriptionMessage);
-            logger.info(`Subscribed to market: ${market}`);
+        ws.on('error', (error) => {
+            logger.error(`WebSocket error: ${error.message}`);
+            reject(error);
+        });
+
+        ws.on('close', () => {
+            logger.warn('WebSocket connection closed.');
+        });
+
+        ws.on('message', (data) => {
+            const message = JSON.parse(data);
+            handleWebSocketMessage(message);
         });
     });
+}
 
-    socket.on('message', async (data) => {
-        const message = JSON.parse(data);
-        if (message.type === 'subscribed' && message.channel === 'v3_orderbook') {
-            logger.info(`Subscription confirmed for channel: ${message.channel}, market: ${message.id}`);
-        } else if (message.type === 'v3_orderbook') {
-            const market = message.id;
-            const parsedData = parseOrderBook(message.contents);
-            const prevOrderBook = await redis.get(`orderbook:${market}`);
-            monitorSignificantChanges(market, parsedData, JSON.parse(prevOrderBook));
-            await redis.set(`orderbook:${market}`, JSON.stringify(parsedData));
-            logger.info(`Stored order book for ${market}`);
+function subscribeToMarketOrderBooks(markets) {
+    markets.forEach((market, index) => {
+        const subscriptionMessage = {
+            type: 'subscribe',
+            channel: 'v3_orderbook',
+            id: market,
+        };
+        ws.send(JSON.stringify(subscriptionMessage));
+        logger.info(`Subscribed to market: ${market}`);
+    });
+}
+
+function handleWebSocketMessage(message) {
+    if (message.type === 'subscribed') {
+        logger.info(`Subscription confirmed for market: ${message.id}`);
+    } else if (message.type === 'v3_orderbook_snapshot') {
+        const { id: market, contents } = message;
+        redis.set(`orderbook:${market}`, JSON.stringify(contents));
+        logger.info(`Stored order book for ${market}`);
+    } else {
+        logger.info(`Unhandled message type: ${JSON.stringify(message)}`);
+    }
+}
+
+async function startFetcher() {
+    try {
+        const markets = await fetchActiveMarkets();
+        if (markets.length === 0) {
+            logger.warn('No active markets available.');
+            return;
         }
-    });
 
-    socket.on('close', () => {
-        logger.error('WebSocket connection closed. Reconnecting...');
-        setTimeout(connectToDYDXWebSocket, 5000);
-    });
+        await connectToDYDXWebSocket();
+        subscribeToMarketOrderBooks(markets);
+    } catch (error) {
+        logger.error(`Error in fetcher: ${error.message}`);
+    }
+}
 
-    socket.on('error', (err) => {
-        logger.error('WebSocket error:', err);
-    });
-};
-
-module.exports = { connectToDYDXWebSocket };
+module.exports = { startFetcher, fetchActiveMarkets };
