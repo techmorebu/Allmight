@@ -2150,3 +2150,13 @@
 [2024-12-24T05:20:52.288Z] INFO: Subscription confirmed for channel: v3_orderbook, market: DOGE-USD
 [2024-12-24T05:20:52.290Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ETH-USD
 [2024-12-24T05:20:52.291Z] INFO: Subscription confirmed for channel: v3_orderbook, market: UMA-USD
+[2024-12-24T05:29:09.489Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-24T05:29:09.553Z] INFO: Test completed.
+[2024-12-24T05:29:09.554Z] INFO: Testing enhanced orderbook parsing...
+[2024-12-24T05:29:09.554Z] INFO: Parsed Data: {"market":"BTC-USD","bestBid":{"price":"30000","size":"0.1"},"bestAsk":{"price":"30010","size":"0.1"}}
+[2024-12-24T05:29:10.071Z] INFO: Connected to dYdX WebSocket
+[2024-12-24T05:29:10.074Z] INFO: Subscribed to market: BTC-USD
+[2024-12-24T05:29:10.075Z] INFO: Subscribed to market: ETH-USD
+[2024-12-24T05:29:10.078Z] INFO: Unhandled message type: {"type":"connected","connection_id":"5c3df944-a981-4ab9-8597-26f8f218c376","message_id":0}
+[2024-12-24T05:29:10.372Z] INFO: Unhandled message type: {"type":"error","message":"Invalid id: undefined","connection_id":"5c3df944-a981-4ab9-8597-26f8f218c376","message_id":1}
+[2024-12-24T05:29:10.373Z] INFO: Unhandled message type: {"type":"error","message":"Invalid id: undefined","connection_id":"5c3df944-a981-4ab9-8597-26f8f218c376","message_id":2}
