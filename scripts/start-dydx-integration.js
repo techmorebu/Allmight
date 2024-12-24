@@ -1,30 +1,36 @@
-const { logger } = require('../monitoring/logger');
+const { connectToDYDXWebSocket } = require('../data-collection/fetch-dydx-data');
+const { parseDYDXOrderBook } = require('../data-collection/parse-dydx-data');
+const { analyzeOrderBookData } = require('../data-collection/analyze-dydx-data');
+const logger = require('../monitoring/logger');
 
-async function testFetcherAndParser() {
+(async () => {
     logger.info('Starting dYdX Integration Test...');
 
     try {
-        // Simulate fetcher behavior
         logger.info('Testing WebSocket connection...');
-        await startFetcher(); // Ensure the fetcher script is running
 
-        // Simulate parser behavior
-        logger.info('Testing data parsing...');
-        parseRawData(); // Ensure raw data is parsed correctly
+        // Define markets to test
+        const markets = ['BTC-USD', 'ETH-USD'];
 
-        // Simulate analysis behavior
-        logger.info('Testing data analysis...');
-        analyzeData({
-            type: 'orderbook',
-            market: 'BTC-USD',
-            bestBid: { price: '30000', size: '0.1' },
-            bestAsk: { price: '30010', size: '0.1' },
+        // Start WebSocket connection
+        await connectToDYDXWebSocket(markets, (rawMessage) => {
+            try {
+                // Parse raw message
+                const parsedData = parseDYDXOrderBook(rawMessage);
+                logger.info(`Parsed Data: ${JSON.stringify(parsedData)}`);
+
+                // Analyze parsed data
+                const insights = analyzeOrderBookData(parsedData);
+                logger.info(`Trading Insights: ${JSON.stringify(insights)}`);
+            } catch (error) {
+                logger.error(`Error during data parsing or analysis: ${error.message}`);
+            }
         });
+
+        logger.info('WebSocket connection successful and data processing tested.');
     } catch (error) {
         logger.error(`Test Failed: ${error.message}`);
+    } finally {
+        logger.info('Integration Test Completed.');
     }
-
-    logger.info('Integration Test Completed.');
-}
-
-testFetcherAndParser();
+})();
