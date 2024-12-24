@@ -2069,3 +2069,84 @@
 [2024-12-24T05:10:14.476Z] INFO: Unhandled message type: {"type":"connected","connection_id":"4d3b4f53-e2ad-448f-a4a2-bfa664aa37d9","message_id":0}
 [2024-12-24T05:10:14.766Z] INFO: Subscription confirmed for channel: v3_orderbook, market: BTC-USD
 [2024-12-24T05:10:14.770Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ETH-USD
+[2024-12-24T05:20:50.750Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-24T05:20:50.755Z] ERROR: Error during test: fetchMarkets is not a function
+[2024-12-24T05:20:51.232Z] INFO: Markets to subscribe: ZEC-USD, EOS-USD, COMP-USD, ETC-USD, SOL-USD, ENJ-USD, BTC-USD, ADA-USD, CELO-USD, FIL-USD, ALGO-USD, 1INCH-USD, TRX-USD, MKR-USD, XTZ-USD, SUSHI-USD, XMR-USD, LTC-USD, LUNA-USD, ICP-USD, LINK-USD, ATOM-USD, CRV-USD, DOT-USD, BCH-USD, ETH-USD, ZRX-USD, SNX-USD, YFI-USD, DOGE-USD, XLM-USD, AAVE-USD, NEAR-USD, MATIC-USD, RUNE-USD, UMA-USD, UNI-USD, AVAX-USD
+[2024-12-24T05:20:51.829Z] INFO: Connected to dYdX WebSocket
+[2024-12-24T05:20:51.832Z] INFO: Subscribed to market: ZEC-USD
+[2024-12-24T05:20:51.833Z] INFO: Subscribed to market: EOS-USD
+[2024-12-24T05:20:51.834Z] INFO: Subscribed to market: COMP-USD
+[2024-12-24T05:20:51.835Z] INFO: Subscribed to market: ETC-USD
+[2024-12-24T05:20:51.835Z] INFO: Subscribed to market: SOL-USD
+[2024-12-24T05:20:51.836Z] INFO: Subscribed to market: ENJ-USD
+[2024-12-24T05:20:51.836Z] INFO: Subscribed to market: BTC-USD
+[2024-12-24T05:20:51.837Z] INFO: Subscribed to market: ADA-USD
+[2024-12-24T05:20:51.838Z] INFO: Subscribed to market: CELO-USD
+[2024-12-24T05:20:51.839Z] INFO: Subscribed to market: FIL-USD
+[2024-12-24T05:20:51.839Z] INFO: Subscribed to market: ALGO-USD
+[2024-12-24T05:20:51.839Z] INFO: Subscribed to market: 1INCH-USD
+[2024-12-24T05:20:51.840Z] INFO: Subscribed to market: TRX-USD
+[2024-12-24T05:20:51.840Z] INFO: Subscribed to market: MKR-USD
+[2024-12-24T05:20:51.840Z] INFO: Subscribed to market: XTZ-USD
+[2024-12-24T05:20:51.841Z] INFO: Subscribed to market: SUSHI-USD
+[2024-12-24T05:20:51.841Z] INFO: Subscribed to market: XMR-USD
+[2024-12-24T05:20:51.841Z] INFO: Subscribed to market: LTC-USD
+[2024-12-24T05:20:51.842Z] INFO: Subscribed to market: LUNA-USD
+[2024-12-24T05:20:51.842Z] INFO: Subscribed to market: ICP-USD
+[2024-12-24T05:20:51.842Z] INFO: Subscribed to market: LINK-USD
+[2024-12-24T05:20:51.842Z] INFO: Subscribed to market: ATOM-USD
+[2024-12-24T05:20:51.842Z] INFO: Subscribed to market: CRV-USD
+[2024-12-24T05:20:51.842Z] INFO: Subscribed to market: DOT-USD
+[2024-12-24T05:20:51.843Z] INFO: Subscribed to market: BCH-USD
+[2024-12-24T05:20:51.843Z] INFO: Subscribed to market: ETH-USD
+[2024-12-24T05:20:51.843Z] INFO: Subscribed to market: ZRX-USD
+[2024-12-24T05:20:51.843Z] INFO: Subscribed to market: SNX-USD
+[2024-12-24T05:20:51.844Z] INFO: Subscribed to market: YFI-USD
+[2024-12-24T05:20:51.844Z] INFO: Subscribed to market: DOGE-USD
+[2024-12-24T05:20:51.844Z] INFO: Subscribed to market: XLM-USD
+[2024-12-24T05:20:51.844Z] INFO: Subscribed to market: AAVE-USD
+[2024-12-24T05:20:51.844Z] INFO: Subscribed to market: NEAR-USD
+[2024-12-24T05:20:51.844Z] INFO: Subscribed to market: MATIC-USD
+[2024-12-24T05:20:51.844Z] INFO: Subscribed to market: RUNE-USD
+[2024-12-24T05:20:51.845Z] INFO: Subscribed to market: UMA-USD
+[2024-12-24T05:20:51.845Z] INFO: Subscribed to market: UNI-USD
+[2024-12-24T05:20:51.845Z] INFO: Subscribed to market: AVAX-USD
+[2024-12-24T05:20:51.849Z] INFO: Unhandled message type: {"type":"connected","connection_id":"3594e4d3-3397-4990-8b08-046aebd24088","message_id":0}
+[2024-12-24T05:20:52.132Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ZEC-USD
+[2024-12-24T05:20:52.134Z] INFO: Subscription confirmed for channel: v3_orderbook, market: EOS-USD
+[2024-12-24T05:20:52.136Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ETC-USD
+[2024-12-24T05:20:52.137Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ENJ-USD
+[2024-12-24T05:20:52.142Z] INFO: Subscription confirmed for channel: v3_orderbook, market: SOL-USD
+[2024-12-24T05:20:52.143Z] INFO: Subscription confirmed for channel: v3_orderbook, market: COMP-USD
+[2024-12-24T05:20:52.146Z] INFO: Subscription confirmed for channel: v3_orderbook, market: BTC-USD
+[2024-12-24T05:20:52.148Z] INFO: Subscription confirmed for channel: v3_orderbook, market: CELO-USD
+[2024-12-24T05:20:52.148Z] INFO: Subscription confirmed for channel: v3_orderbook, market: TRX-USD
+[2024-12-24T05:20:52.149Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ALGO-USD
+[2024-12-24T05:20:52.150Z] INFO: Subscription confirmed for channel: v3_orderbook, market: CRV-USD
+[2024-12-24T05:20:52.151Z] INFO: Subscription confirmed for channel: v3_orderbook, market: XLM-USD
+[2024-12-24T05:20:52.153Z] INFO: Subscription confirmed for channel: v3_orderbook, market: XTZ-USD
+[2024-12-24T05:20:52.153Z] INFO: Subscription confirmed for channel: v3_orderbook, market: NEAR-USD
+[2024-12-24T05:20:52.154Z] INFO: Subscription confirmed for channel: v3_orderbook, market: XMR-USD
+[2024-12-24T05:20:52.240Z] INFO: Subscription confirmed for channel: v3_orderbook, market: UNI-USD
+[2024-12-24T05:20:52.241Z] INFO: Subscription confirmed for channel: v3_orderbook, market: LUNA-USD
+[2024-12-24T05:20:52.242Z] INFO: Subscription confirmed for channel: v3_orderbook, market: LINK-USD
+[2024-12-24T05:20:52.243Z] INFO: Subscription confirmed for channel: v3_orderbook, market: BCH-USD
+[2024-12-24T05:20:52.245Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ADA-USD
+[2024-12-24T05:20:52.266Z] INFO: Subscription confirmed for channel: v3_orderbook, market: FIL-USD
+[2024-12-24T05:20:52.268Z] INFO: Subscription confirmed for channel: v3_orderbook, market: SUSHI-USD
+[2024-12-24T05:20:52.269Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ZRX-USD
+[2024-12-24T05:20:52.275Z] INFO: Subscription confirmed for channel: v3_orderbook, market: MKR-USD
+[2024-12-24T05:20:52.276Z] INFO: Subscription confirmed for channel: v3_orderbook, market: YFI-USD
+[2024-12-24T05:20:52.277Z] INFO: Subscription confirmed for channel: v3_orderbook, market: DOT-USD
+[2024-12-24T05:20:52.279Z] INFO: Subscription confirmed for channel: v3_orderbook, market: 1INCH-USD
+[2024-12-24T05:20:52.280Z] INFO: Subscription confirmed for channel: v3_orderbook, market: RUNE-USD
+[2024-12-24T05:20:52.281Z] INFO: Subscription confirmed for channel: v3_orderbook, market: AAVE-USD
+[2024-12-24T05:20:52.282Z] INFO: Subscription confirmed for channel: v3_orderbook, market: LTC-USD
+[2024-12-24T05:20:52.283Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ICP-USD
+[2024-12-24T05:20:52.284Z] INFO: Subscription confirmed for channel: v3_orderbook, market: AVAX-USD
+[2024-12-24T05:20:52.286Z] INFO: Subscription confirmed for channel: v3_orderbook, market: MATIC-USD
+[2024-12-24T05:20:52.287Z] INFO: Subscription confirmed for channel: v3_orderbook, market: SNX-USD
+[2024-12-24T05:20:52.288Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ATOM-USD
+[2024-12-24T05:20:52.288Z] INFO: Subscription confirmed for channel: v3_orderbook, market: DOGE-USD
+[2024-12-24T05:20:52.290Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ETH-USD
+[2024-12-24T05:20:52.291Z] INFO: Subscription confirmed for channel: v3_orderbook, market: UMA-USD
