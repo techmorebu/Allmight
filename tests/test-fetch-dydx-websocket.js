@@ -16,6 +16,12 @@ const { logger } = require('../monitoring/logger');
         // Connect to WebSocket
         const websocket = connectToDYDXWebSocket();
 
+        // Wait for the WebSocket connection to open
+        await new Promise((resolve, reject) => {
+            websocket.on('open', resolve);
+            websocket.on('error', (err) => reject(new Error(`WebSocket error: ${err.message}`)));
+        });
+
         // Subscribe to markets
         await subscribeToMarkets(websocket, testMarkets);
 
