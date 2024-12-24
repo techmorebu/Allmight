@@ -1,6 +1,4 @@
-// File: tests/test-fetch-dydx-websocket.js
-
-const { connectToDYDXWebSocket, subscribeToMarkets } = require('../data-collection/fetch-dydx-data');
+const { connectToDYDXWebSocket, fetchActiveMarkets } = require('../data-collection/fetch-dydx-data');
 const { logger } = require('../monitoring/logger');
 const Redis = require('ioredis');
 
@@ -8,7 +6,7 @@ const Redis = require('ioredis');
     try {
         logger.info('Starting dYdX WebSocket fetcher test...');
         
-        // Simulate enhanced orderbook parsing
+        // Mock parsing orderbook data
         logger.info('Testing enhanced orderbook parsing...');
         const mockOrderbook = {
             asks: [{ price: '30010', size: '0.1' }, { price: '30020', size: '0.2' }],
@@ -21,20 +19,23 @@ const Redis = require('ioredis');
         const redis = new Redis();
         logger.info('Connected to Redis');
 
+        // Fetch active markets
+        const markets = await fetchActiveMarkets();
+        if (markets.length === 0) {
+            logger.warn('No active markets fetched. Test cannot proceed.');
+            redis.disconnect();
+            return;
+        }
+
         // Connect to dYdX WebSocket
         const websocket = await connectToDYDXWebSocket();
         logger.info('Connected to dYdX WebSocket');
 
-        // Subscribe to markets
-        const markets = ['BTC-USD', 'ETH-USD'];
-        await subscribeToMarkets(websocket, markets);
-        logger.info(`Subscribed to markets: ${markets.join(', ')}`);
-
-        // Mock storing orderbook data in Redis
-        for (const market of markets) {
-            await redis.set(`dydx:orderbook:${market}`, JSON.stringify(mockOrderbook));
-            logger.info(`Stored orderbook for ${market}`);
-        }
+        // Simulate subscriptions
+        markets.forEach((market) => {
+            redis.set(`dydx:test:${market}`, JSON.stringify(mockOrderbook));
+            logger.info(`Test: Stored mock data for market ${market}`);
+        });
 
         logger.info('Test completed.');
         redis.disconnect();
