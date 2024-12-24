@@ -2051,3 +2051,12 @@
     ]
   }
 }
+[2024-12-24T05:08:28.177Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-24T05:08:28.182Z] ERROR: Error during test: connectToDYDX is not a function
+[2024-12-24T05:08:28.184Z] INFO: Test completed.
+[2024-12-24T05:08:28.795Z] INFO: Connected to dYdX WebSocket
+[2024-12-24T05:08:28.799Z] INFO: Subscribed to market: BTC-USD
+[2024-12-24T05:08:28.799Z] INFO: Subscribed to market: ETH-USD
+[2024-12-24T05:08:28.802Z] INFO: Unhandled message type: {"type":"connected","connection_id":"bc2e07f5-c8cf-4863-9da4-2d933e2633ef","message_id":0}
+[2024-12-24T05:08:29.097Z] INFO: Subscription confirmed for channel: v3_orderbook, market: BTC-USD
+[2024-12-24T05:08:29.100Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ETH-USD
