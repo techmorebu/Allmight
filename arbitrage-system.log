@@ -2282,3 +2282,13 @@
 [2024-12-24T06:45:18.482Z] INFO: Unhandled message type: {"type":"connected","connection_id":"ac46f00e-8523-4329-aa99-e5e15d365b86","message_id":0}
 [2024-12-24T06:45:18.774Z] INFO: Subscription confirmed for channel: v3_orderbook, market: undefined
 [2024-12-24T06:45:18.778Z] INFO: Subscription confirmed for channel: v3_orderbook, market: undefined
+[2024-12-24T06:52:13.856Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-24T06:52:13.862Z] INFO: Testing enhanced orderbook parsing...
+[2024-12-24T06:52:13.863Z] INFO: Parsed Data: {"market":"BTC-USD","bestBid":{"price":"30000","size":"0.1"},"bestAsk":{"price":"30010","size":"0.1"}}
+[2024-12-24T06:52:13.924Z] INFO: Test completed.
+[2024-12-24T06:52:14.417Z] INFO: Connected to dYdX WebSocket
+[2024-12-24T06:52:14.420Z] INFO: Subscribed to market: BTC-USD
+[2024-12-24T06:52:14.420Z] INFO: Subscribed to market: ETH-USD
+[2024-12-24T06:52:14.423Z] INFO: Unhandled message type: {"type":"connected","connection_id":"56ed0c3c-2bc0-4db5-b9ac-c9b24e245881","message_id":0}
+[2024-12-24T06:52:14.716Z] ERROR: Error from dYdX: Invalid id: undefined (Details: {"type":"error","message":"Invalid id: undefined","connection_id":"56ed0c3c-2bc0-4db5-b9ac-c9b24e245881","message_id":1})
+[2024-12-24T06:52:14.717Z] ERROR: Error from dYdX: Invalid id: undefined (Details: {"type":"error","message":"Invalid id: undefined","connection_id":"56ed0c3c-2bc0-4db5-b9ac-c9b24e245881","message_id":2})
