@@ -22,24 +22,6 @@ function subscribeToMarkets() {
     });
 }
 
-
-/**
- * Subscribe to market order books.
- */
-function subscribeToMarkets() {
-    markets.forEach((market, index) => {
-        const subscriptionMessage = {
-            type: 'subscribe',
-            channel: 'v3_orderbook',
-            id: `orderbook-${market}-${index}`, // Unique and descriptive subscription ID
-            market: market,
-        };
-
-        ws.send(JSON.stringify(subscriptionMessage));
-        logger.info(`Subscribed to market: ${market}`);
-    });
-}
-
 /**
  * Handle incoming WebSocket messages.
  * @param {string} data - Incoming message data
@@ -65,6 +47,5 @@ function handleWebSocketMessage(data) {
         logger.error(`Error parsing WebSocket message: ${error.message}`);
     }
 }
-
 
 module.exports = { connectToDYDX };
