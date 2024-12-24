@@ -2564,3 +2564,14 @@
 [2024-12-24T09:03:49.095Z] INFO: Fetched 38 active markets.
 [2024-12-24T09:03:49.104Z] ERROR: Test failed: WebSocket is not open: readyState 0 (CONNECTING)
 [2024-12-24T09:03:49.693Z] INFO: Connected to dYdX WebSocket
+[2024-12-24T09:07:02.983Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-24T09:07:03.559Z] INFO: Fetched 38 active markets.
+[2024-12-24T09:07:03.559Z] INFO: Connected to Redis
+[2024-12-24T09:07:03.571Z] INFO: Subscribed to markets: ZEC-USD, EOS-USD
+[2024-12-24T09:07:03.571Z] INFO: Test completed successfully.
+[2024-12-24T09:07:04.150Z] INFO: WebSocket connected successfully.
+[2024-12-24T09:07:04.153Z] INFO: Subscribed to market: ZEC-USD
+[2024-12-24T09:07:04.154Z] INFO: Subscribed to market: EOS-USD
+[2024-12-24T09:07:04.156Z] INFO: Unhandled message: {"type":"connected","connection_id":"a469da85-8118-4216-8d2c-db3df65b8ff3","message_id":0}
+[2024-12-24T09:07:04.454Z] INFO: Subscription confirmed for market: ZEC-USD
+[2024-12-24T09:07:04.458Z] INFO: Subscription confirmed for market: EOS-USD
