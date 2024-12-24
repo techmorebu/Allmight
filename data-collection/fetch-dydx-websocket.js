@@ -1,72 +1,78 @@
 const WebSocket = require('ws');
 const { logger } = require('../monitoring/logger');
-require('dotenv').config();
+const Redis = require('ioredis');
 
-const DYDX_WEBSOCKET_URL = process.env.DYDX_WEBSOCKET_URL || 'wss://api.dydx.exchange/v3/ws';
+// Initialize Redis client for caching real-time data
+const redis = new Redis();
 
-/**
- * Connect to dYdX WebSocket and subscribe to a trading pair
- * @param {string} pair - The trading pair to subscribe to (e.g., 'BTC-USD')
- */
-function connectDYDXWebSocket(pair) {
+const DYDX_WEBSOCKET_URL = 'wss://api.dydx.exchange/v3/ws';
+
+function connectToDYDX() {
     const ws = new WebSocket(DYDX_WEBSOCKET_URL);
 
     ws.on('open', () => {
         logger.info('Connected to dYdX WebSocket');
-
-        const subscriptionMessage = JSON.stringify({
-            type: 'subscribe',
-            channel: 'v3_orderbook', // Replace 'v3_orderbook' with your desired channel
-            id: pair,
+        // Subscribe to the order book of relevant markets
+        const markets = ['BTC-USD', 'ETH-USD']; // Add other markets relevant to Allmight
+        markets.forEach((market) => {
+            const subscriptionMessage = {
+                type: 'subscribe',
+                channel: 'v3_orderbook',
+                id: market,
+            };
+            ws.send(JSON.stringify(subscriptionMessage));
+            logger.info(`Subscribed to market: ${market}`);
         });
-
-        logger.info(`Sending subscription message: ${subscriptionMessage}`);
-        ws.send(subscriptionMessage);
     });
 
-    ws.on('message', (data) => {
-        logger.info(`Raw message received: ${data}`);
+    ws.on('message', (message) => {
         try {
-            const parsedData = JSON.parse(data);
+            const data = JSON.parse(message);
 
-            if (parsedData.type === 'channel_data') {
-                logger.info(`Processed data: ${JSON.stringify(parsedData, null, 2)}`);
+            if (data.type === 'subscribed') {
+                logger.info(`Subscription confirmed for channel: ${data.channel}, market: ${data.id}`);
+            } else if (data.type === 'channel_data' && data.channel === 'v3_orderbook') {
+                const { asks, bids } = data.contents;
+                if (asks.length > 0 && bids.length > 0) {
+                    const market = data.id;
+
+                    // Extract top ask and bid prices
+                    const topAsk = { price: parseFloat(asks[0][0]), size: parseFloat(asks[0][1]) };
+                    const topBid = { price: parseFloat(bids[0][0]), size: parseFloat(bids[0][1]) };
+
+                    // Log data for debugging
+                    logger.info(`Market: ${market}, Top Ask: ${topAsk.price} @ ${topAsk.size}, Top Bid: ${topBid.price} @ ${topBid.size}`);
+
+                    // Save data to Redis for arbitrage analysis
+                    redis.hset(`dydx:${market}`, {
+                        topAskPrice: topAsk.price,
+                        topAskSize: topAsk.size,
+                        topBidPrice: topBid.price,
+                        topBidSize: topBid.size,
+                        timestamp: Date.now(),
+                    });
+
+                    // Emit event or push to further processing pipeline if required
+                } else {
+                    logger.warn(`Empty order book data for market: ${data.id}`);
+                }
             } else {
-                logger.info(`Unhandled message type: ${JSON.stringify(parsedData, null, 2)}`);
+                logger.info(`Unhandled message type: ${JSON.stringify(data)}`);
             }
         } catch (error) {
-            logger.error(`Error processing message: ${error.message}`);
+            logger.error(`Error processing WebSocket message: ${error.message}`);
         }
+    });
+
+    ws.on('close', () => {
+        logger.warn('Disconnected from dYdX WebSocket. Reconnecting...');
+        setTimeout(connectToDYDX, 5000); // Reconnect after 5 seconds
     });
 
     ws.on('error', (error) => {
         logger.error(`WebSocket error: ${error.message}`);
     });
-
-    ws.on('close', (code, reason) => {
-        logger.error(`WebSocket closed. Code: ${code}, Reason: ${reason}`);
-        // Retry connection after a delay
-        setTimeout(() => connectDYDXWebSocket(pair), 5000);
-    });
 }
 
-/**
- * Fetch and log supported trading pairs from dYdX REST API
- */
-async function getDYDXMarkets() {
-    const axios = require('axios');
-    try {
-        const response = await axios.get('https://api.dydx.exchange/v3/markets');
-        logger.info(`Available markets: ${JSON.stringify(response.data, null, 2)}`);
-    } catch (error) {
-        logger.error(`Error fetching markets: ${error.message}`);
-    }
-}
-
-// Start WebSocket connection for a specific trading pair
-const pair = 'BTC-USD'; // Replace with the desired trading pair
-logger.info(`Starting WebSocket connection for pair: ${pair}`);
-connectDYDXWebSocket(pair);
-
-// Fetch and log dYdX supported markets (optional for debugging)
-getDYDXMarkets();
+// Start WebSocket connection
+connectToDYDX();
