@@ -7,29 +7,21 @@ const markets = ['BTC-USD', 'ETH-USD']; // Markets to subscribe
 let ws;
 
 /**
- * Connect to dYdX WebSocket.
+ * Subscribe to market order books.
  */
-function connectToDYDX() {
-    ws = new WebSocket(DYDX_WEBSOCKET_URL);
+function subscribeToMarkets() {
+    markets.forEach((market) => {
+        const subscriptionMessage = {
+            type: 'subscribe',
+            channel: 'v3_orderbook',
+            market: market, // Ensure market field matches dYdX API expectations
+        };
 
-    ws.on('open', () => {
-        logger.info('Connected to dYdX WebSocket');
-        subscribeToMarkets();
-    });
-
-    ws.on('message', (data) => {
-        handleWebSocketMessage(data);
-    });
-
-    ws.on('close', () => {
-        logger.warn('Disconnected from dYdX WebSocket. Reconnecting...');
-        setTimeout(connectToDYDX, 5000); // Reconnect after 5 seconds
-    });
-
-    ws.on('error', (error) => {
-        logger.error(`WebSocket Error: ${error.message}`);
+        ws.send(JSON.stringify(subscriptionMessage));
+        logger.info(`Subscribed to market: ${market}`);
     });
 }
+
 
 /**
  * Subscribe to market order books.
