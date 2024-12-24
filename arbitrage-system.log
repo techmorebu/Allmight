@@ -2190,3 +2190,23 @@
 [2024-12-24T05:39:09.990Z] INFO: Unhandled message type: {"type":"connected","connection_id":"594d0bce-a13b-417f-9c92-ee9751de55ac","message_id":0}
 [2024-12-24T05:39:10.285Z] ERROR: Error from dYdX: Invalid subscription id for channel: (v3_orderbook-subscription-0) (Details: {"type":"error","message":"Invalid subscription id for channel: (v3_orderbook-subscription-0)","connection_id":"594d0bce-a13b-417f-9c92-ee9751de55ac","message_id":1})
 [2024-12-24T05:39:10.288Z] ERROR: Error from dYdX: Invalid subscription id for channel: (v3_orderbook-subscription-1) (Details: {"type":"error","message":"Invalid subscription id for channel: (v3_orderbook-subscription-1)","connection_id":"594d0bce-a13b-417f-9c92-ee9751de55ac","message_id":2})
+[2024-12-24T05:45:26.307Z] INFO: Testing enhanced orderbook parsing...
+[2024-12-24T05:45:26.312Z] INFO: Parsed Data: {"market":"BTC-USD","bestBid":{"price":"30000","size":"0.1"},"bestAsk":{"price":"30010","size":"0.1"}}
+[2024-12-24T05:45:26.312Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-24T05:45:26.379Z] INFO: Test completed.
+[2024-12-24T05:45:26.976Z] INFO: Connected to dYdX WebSocket
+[2024-12-24T05:45:26.979Z] INFO: Subscribed to market: BTC-USD with id: orderbook-BTC-USD
+[2024-12-24T05:45:26.980Z] INFO: Subscribed to market: ETH-USD with id: orderbook-ETH-USD
+[2024-12-24T05:45:26.982Z] INFO: Unhandled message type: {"type":"connected","connection_id":"12787198-c1ab-4f1a-8daf-932e49ff7528","message_id":0}
+[2024-12-24T05:45:27.239Z] ERROR: Error from dYdX: Invalid subscription id for channel: (v3_orderbook-orderbook-BTC-USD) (Details: {"type":"error","message":"Invalid subscription id for channel: (v3_orderbook-orderbook-BTC-USD)","connection_id":"12787198-c1ab-4f1a-8daf-932e49ff7528","message_id":1})
+[2024-12-24T05:45:27.240Z] ERROR: Error from dYdX: Invalid subscription id for channel: (v3_orderbook-orderbook-ETH-USD) (Details: {"type":"error","message":"Invalid subscription id for channel: (v3_orderbook-orderbook-ETH-USD)","connection_id":"12787198-c1ab-4f1a-8daf-932e49ff7528","message_id":2})
+[2024-12-24T05:45:33.271Z] INFO: Testing enhanced orderbook parsing...
+[2024-12-24T05:45:33.275Z] INFO: Parsed Data: {"market":"BTC-USD","bestBid":{"price":"30000","size":"0.1"},"bestAsk":{"price":"30010","size":"0.1"}}
+[2024-12-24T05:45:33.276Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-24T05:45:33.341Z] INFO: Test completed.
+[2024-12-24T05:45:34.006Z] INFO: Connected to dYdX WebSocket
+[2024-12-24T05:45:34.009Z] INFO: Subscribed to market: BTC-USD with id: orderbook-BTC-USD
+[2024-12-24T05:45:34.009Z] INFO: Subscribed to market: ETH-USD with id: orderbook-ETH-USD
+[2024-12-24T05:45:34.012Z] INFO: Unhandled message type: {"type":"connected","connection_id":"ef132437-0ac2-4016-9747-cc58fcdec98e","message_id":0}
+[2024-12-24T05:45:34.306Z] ERROR: Error from dYdX: Invalid subscription id for channel: (v3_orderbook-orderbook-BTC-USD) (Details: {"type":"error","message":"Invalid subscription id for channel: (v3_orderbook-orderbook-BTC-USD)","connection_id":"ef132437-0ac2-4016-9747-cc58fcdec98e","message_id":1})
+[2024-12-24T05:45:34.308Z] ERROR: Error from dYdX: Invalid subscription id for channel: (v3_orderbook-orderbook-ETH-USD) (Details: {"type":"error","message":"Invalid subscription id for channel: (v3_orderbook-orderbook-ETH-USD)","connection_id":"ef132437-0ac2-4016-9747-cc58fcdec98e","message_id":2})
