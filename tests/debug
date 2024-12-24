@@ -1,12 +1,11 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-dydx-websocket.js
-[2024-12-24T05:45:33.271Z] INFO: Testing enhanced orderbook parsing...
-[2024-12-24T05:45:33.275Z] INFO: Parsed Data: {"market":"BTC-USD","bestBid":{"price":"30000","size":"0.1"},"bestAsk":{"price":"30010","size":"0.1"}}
-[2024-12-24T05:45:33.276Z] INFO: Starting dYdX WebSocket fetcher test...
-[2024-12-24T05:45:33.341Z] INFO: Test completed.
-[2024-12-24T05:45:34.006Z] INFO: Connected to dYdX WebSocket
-[2024-12-24T05:45:34.009Z] INFO: Subscribed to market: BTC-USD with id: orderbook-BTC-USD
-[2024-12-24T05:45:34.009Z] INFO: Subscribed to market: ETH-USD with id: orderbook-ETH-USD
-[2024-12-24T05:45:34.012Z] INFO: Unhandled message type: {"type":"connected","connection_id":"ef132437-0ac2-4016-9747-cc58fcdec98e","message_id":0}
-[2024-12-24T05:45:34.306Z] ERROR: Error from dYdX: Invalid subscription id for channel: (v3_orderbook-orderbook-BTC-USD) (Details: {"type":"error","message":"Invalid subscription id for channel: (v3_orderbook-orderbook-BTC-USD)","connection_id":"ef132437-0ac2-4016-9747-cc58fcdec98e","message_id":1})
-[2024-12-24T05:45:34.308Z] ERROR: Error from dYdX: Invalid subscription id for channel: (v3_orderbook-orderbook-ETH-USD) (Details: {"type":"error","message":"Invalid subscription id for channel: (v3_orderbook-orderbook-ETH-USD)","connection_id":"ef132437-0ac2-4016-9747-cc58fcdec98e","message_id":2})
+[2024-12-24T06:09:44.931Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-24T06:09:44.993Z] INFO: Test completed.
+[2024-12-24T06:09:45.544Z] INFO: Connected to dYdX WebSocket
+[2024-12-24T06:09:45.547Z] INFO: Subscribed to market: BTC-USD with id: orderbook-BTC-USD
+[2024-12-24T06:09:45.548Z] INFO: Subscribed to market: ETH-USD with id: orderbook-ETH-USD
+[2024-12-24T06:09:45.550Z] INFO: Unhandled message type: {"type":"connected","connection_id":"e421dd52-fe37-4664-a1be-8d11a0495071","message_id":0}
+[2024-12-24T06:09:45.844Z] ERROR: Error from dYdX: Invalid subscription id for channel: (v3_orderbook-orderbook-BTC-USD) (Details: {"type":"error","message":"Invalid subscription id for channel: (v3_orderbook-orderbook-BTC-USD)","connection_id":"e421dd52-fe37-4664-a1be-8d11a0495071","message_id":1})
+[2024-12-24T06:09:45.846Z] ERROR: Error from dYdX: Invalid subscription id for channel: (v3_orderbook-orderbook-ETH-USD) (Details: {"type":"error","message":"Invalid subscription id for channel: (v3_orderbook-orderbook-ETH-USD)","connection_id":"e421dd52-fe37-4664-a1be-8d11a0495071","message_id":2})
+
 
