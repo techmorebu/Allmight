@@ -1,7 +1,7 @@
 const { connectToDYDXWebSocket } = require('../data-collection/fetch-dydx-data');
 const { parseDYDXOrderBook } = require('../data-collection/parse-dydx-data');
 const { analyzeOrderBookData } = require('../data-collection/analyze-dydx-data');
-const logger = require('../monitoring/logger');
+const logger = require('../monitoring/logger'); // Ensure this path is correct
 
 (async () => {
     logger.info('Starting dYdX Integration Test...');
