@@ -6,14 +6,8 @@ const { logger } = require('../monitoring/logger');
 // Initialize Redis client
 const redis = new Redis();
 
-// Handle Redis connection events
-redis.on('error', (err) => {
-    logger.error(`Redis error: ${err.message}`);
-});
-
-redis.on('connect', () => {
-    logger.info('Connected to Redis');
-});
+redis.on('error', (err) => logger.error(`Redis error: ${err.message}`));
+redis.on('connect', () => logger.info('Connected to Redis'));
 
 (async () => {
     try {
@@ -28,32 +22,26 @@ redis.on('connect', () => {
         };
         logger.info(`Parsed Data: ${JSON.stringify(mockOrderbookData)}`);
 
-        // Test WebSocket connection
+        // Connect to WebSocket
         const socket = await connectToDYDXWebSocket();
-        logger.info('Connected to dYdX WebSocket');
 
         // Subscribe to markets
         const markets = ['BTC-USD', 'ETH-USD'];
         await subscribeToMarkets(socket, markets);
 
-        // Wait for data to be written to Redis
+        // Retrieve data from Redis after a delay
         setTimeout(async () => {
             try {
-                // Retrieve data from Redis
                 for (const market of markets) {
                     const data = await redis.get(`${market}:orderbook`);
-                    if (data) {
-                        logger.info(`Data from Redis for ${market}: ${data}`);
-                    } else {
-                        logger.warn(`No data found in Redis for ${market}`);
-                    }
+                    logger.info(data ? `Data for ${market}: ${data}` : `No data for ${market}`);
                 }
             } catch (err) {
-                logger.error(`Error retrieving data from Redis: ${err.message}`);
+                logger.error(`Error retrieving data: ${err.message}`);
             } finally {
                 redis.quit();
             }
-        }, 5000); // Adjust timeout as necessary
+        }, 5000);
 
         logger.info('Test completed.');
     } catch (err) {
