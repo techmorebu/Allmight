@@ -1,27 +1,86 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-dydx-websocket.js
-node:internal/modules/cjs/loader:1137
-  throw err;
-  ^
+[2024-12-24T08:16:29.665Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-24T08:16:29.669Z] INFO: Testing enhanced orderbook parsing...
+[2024-12-24T08:16:29.669Z] INFO: Parsed Data: {"asks":[{"price":"30010","size":"0.1"},{"price":"30020","size":"0.2"}],"bids":[{"price":"30000","size":"0.1"},{"price":"29990","size":"0.2"}],"timestamp":1735028189669}
+[2024-12-24T08:16:30.178Z] INFO: Fetched active markets: ZEC-USD, EOS-USD, COMP-USD, ETC-USD, SOL-USD, ENJ-USD, BTC-USD, ADA-USD, CELO-USD, FIL-USD, ALGO-USD, 1INCH-USD, TRX-USD, MKR-USD, XTZ-USD, SUSHI-USD, XMR-USD, LTC-USD, LUNA-USD, ICP-USD, LINK-USD, ATOM-USD, CRV-USD, DOT-USD, BCH-USD, ETH-USD, ZRX-USD, SNX-USD, YFI-USD, DOGE-USD, XLM-USD, AAVE-USD, NEAR-USD, MATIC-USD, RUNE-USD, UMA-USD, UNI-USD, AVAX-USD
+[2024-12-24T08:16:30.189Z] INFO: Test completed.
+[2024-12-24T08:16:30.753Z] INFO: Connected to dYdX WebSocket
+[2024-12-24T08:16:30.756Z] INFO: Subscribed to market: ZEC-USD
+[2024-12-24T08:16:30.757Z] INFO: Subscribed to market: EOS-USD
+[2024-12-24T08:16:30.758Z] INFO: Subscribed to market: COMP-USD
+[2024-12-24T08:16:30.758Z] INFO: Subscribed to market: ETC-USD
+[2024-12-24T08:16:30.759Z] INFO: Subscribed to market: SOL-USD
+[2024-12-24T08:16:30.759Z] INFO: Subscribed to market: ENJ-USD
+[2024-12-24T08:16:30.760Z] INFO: Subscribed to market: BTC-USD
+[2024-12-24T08:16:30.760Z] INFO: Subscribed to market: ADA-USD
+[2024-12-24T08:16:30.760Z] INFO: Subscribed to market: CELO-USD
+[2024-12-24T08:16:30.761Z] INFO: Subscribed to market: FIL-USD
+[2024-12-24T08:16:30.761Z] INFO: Subscribed to market: ALGO-USD
+[2024-12-24T08:16:30.762Z] INFO: Subscribed to market: 1INCH-USD
+[2024-12-24T08:16:30.763Z] INFO: Subscribed to market: TRX-USD
+[2024-12-24T08:16:30.763Z] INFO: Subscribed to market: MKR-USD
+[2024-12-24T08:16:30.763Z] INFO: Subscribed to market: XTZ-USD
+[2024-12-24T08:16:30.764Z] INFO: Subscribed to market: SUSHI-USD
+[2024-12-24T08:16:30.764Z] INFO: Subscribed to market: XMR-USD
+[2024-12-24T08:16:30.764Z] INFO: Subscribed to market: LTC-USD
+[2024-12-24T08:16:30.764Z] INFO: Subscribed to market: LUNA-USD
+[2024-12-24T08:16:30.764Z] INFO: Subscribed to market: ICP-USD
+[2024-12-24T08:16:30.765Z] INFO: Subscribed to market: LINK-USD
+[2024-12-24T08:16:30.765Z] INFO: Subscribed to market: ATOM-USD
+[2024-12-24T08:16:30.765Z] INFO: Subscribed to market: CRV-USD
+[2024-12-24T08:16:30.765Z] INFO: Subscribed to market: DOT-USD
+[2024-12-24T08:16:30.765Z] INFO: Subscribed to market: BCH-USD
+[2024-12-24T08:16:30.765Z] INFO: Subscribed to market: ETH-USD
+[2024-12-24T08:16:30.766Z] INFO: Subscribed to market: ZRX-USD
+[2024-12-24T08:16:30.766Z] INFO: Subscribed to market: SNX-USD
+[2024-12-24T08:16:30.766Z] INFO: Subscribed to market: YFI-USD
+[2024-12-24T08:16:30.766Z] INFO: Subscribed to market: DOGE-USD
+[2024-12-24T08:16:30.766Z] INFO: Subscribed to market: XLM-USD
+[2024-12-24T08:16:30.766Z] INFO: Subscribed to market: AAVE-USD
+[2024-12-24T08:16:30.766Z] INFO: Subscribed to market: NEAR-USD
+[2024-12-24T08:16:30.767Z] INFO: Subscribed to market: MATIC-USD
+[2024-12-24T08:16:30.767Z] INFO: Subscribed to market: RUNE-USD
+[2024-12-24T08:16:30.767Z] INFO: Subscribed to market: UMA-USD
+[2024-12-24T08:16:30.767Z] INFO: Subscribed to market: UNI-USD
+[2024-12-24T08:16:30.767Z] INFO: Subscribed to market: AVAX-USD
+[2024-12-24T08:16:30.926Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ZEC-USD
+[2024-12-24T08:16:31.015Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ALGO-USD
+[2024-12-24T08:16:31.019Z] INFO: Subscription confirmed for channel: v3_orderbook, market: SOL-USD
+[2024-12-24T08:16:31.021Z] INFO: Subscription confirmed for channel: v3_orderbook, market: COMP-USD
+[2024-12-24T08:16:31.069Z] INFO: Subscription confirmed for channel: v3_orderbook, market: CELO-USD
+[2024-12-24T08:16:31.070Z] INFO: Subscription confirmed for channel: v3_orderbook, market: TRX-USD
+[2024-12-24T08:16:31.150Z] INFO: Subscription confirmed for channel: v3_orderbook, market: BTC-USD
+[2024-12-24T08:16:31.152Z] INFO: Subscription confirmed for channel: v3_orderbook, market: XTZ-USD
+[2024-12-24T08:16:31.153Z] INFO: Subscription confirmed for channel: v3_orderbook, market: LINK-USD
+[2024-12-24T08:16:31.154Z] INFO: Subscription confirmed for channel: v3_orderbook, market: EOS-USD
+[2024-12-24T08:16:31.155Z] INFO: Subscription confirmed for channel: v3_orderbook, market: XMR-USD
+[2024-12-24T08:16:31.155Z] INFO: Subscription confirmed for channel: v3_orderbook, market: LUNA-USD
+[2024-12-24T08:16:31.157Z] INFO: Subscription confirmed for channel: v3_orderbook, market: CRV-USD
+[2024-12-24T08:16:31.158Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ADA-USD
+[2024-12-24T08:16:31.159Z] INFO: Subscription confirmed for channel: v3_orderbook, market: YFI-USD
+[2024-12-24T08:16:31.164Z] INFO: Subscription confirmed for channel: v3_orderbook, market: FIL-USD
+[2024-12-24T08:16:31.202Z] INFO: Subscription confirmed for channel: v3_orderbook, market: NEAR-USD
+[2024-12-24T08:16:31.204Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ENJ-USD
+[2024-12-24T08:16:31.204Z] INFO: Subscription confirmed for channel: v3_orderbook, market: BCH-USD
+[2024-12-24T08:16:31.206Z] INFO: Subscription confirmed for channel: v3_orderbook, market: 1INCH-USD
+[2024-12-24T08:16:31.207Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ETC-USD
+[2024-12-24T08:16:31.285Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ZRX-USD
+[2024-12-24T08:16:31.287Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ATOM-USD
+[2024-12-24T08:16:31.287Z] INFO: Subscription confirmed for channel: v3_orderbook, market: MKR-USD
+[2024-12-24T08:16:31.288Z] INFO: Subscription confirmed for channel: v3_orderbook, market: DOT-USD
+[2024-12-24T08:16:31.288Z] INFO: Subscription confirmed for channel: v3_orderbook, market: XLM-USD
+[2024-12-24T08:16:31.291Z] INFO: Subscription confirmed for channel: v3_orderbook, market: SUSHI-USD
+[2024-12-24T08:16:31.291Z] INFO: Subscription confirmed for channel: v3_orderbook, market: LTC-USD
+[2024-12-24T08:16:31.292Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ETH-USD
+[2024-12-24T08:16:31.293Z] INFO: Subscription confirmed for channel: v3_orderbook, market: DOGE-USD
+[2024-12-24T08:16:31.294Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ICP-USD
+[2024-12-24T08:16:31.294Z] INFO: Subscription confirmed for channel: v3_orderbook, market: MATIC-USD
+[2024-12-24T08:16:31.296Z] INFO: Subscription confirmed for channel: v3_orderbook, market: SNX-USD
+[2024-12-24T08:16:31.297Z] INFO: Subscription confirmed for channel: v3_orderbook, market: AAVE-USD
+[2024-12-24T08:16:31.299Z] INFO: Subscription confirmed for channel: v3_orderbook, market: UMA-USD
+[2024-12-24T08:16:31.300Z] INFO: Subscription confirmed for channel: v3_orderbook, market: RUNE-USD
+[2024-12-24T08:16:31.301Z] INFO: Subscription confirmed for channel: v3_orderbook, market: AVAX-USD
+[2024-12-24T08:16:31.302Z] INFO: Subscription confirmed for channel: v3_orderbook, market: UNI-USD
+[2024-12-24T08:16:35.197Z] WARN: No data for BTC-USD
 
-Error: Cannot find module '../utils/logger'
-Require stack:
-- /home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-dydx-data.js
-- /home/techbu/OFA_Project_Local/ofa-project/tests/test-fetch-dydx-websocket.js
-    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
-    at Module._load (node:internal/modules/cjs/loader:975:27)
-    at Module.require (node:internal/modules/cjs/loader:1225:19)
-    at require (node:internal/modules/helpers:177:18)
-    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-dydx-data.js:3:20)
-    at Module._compile (node:internal/modules/cjs/loader:1356:14)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
-    at Module.load (node:internal/modules/cjs/loader:1197:32)
-    at Module._load (node:internal/modules/cjs/loader:1013:12)
-    at Module.require (node:internal/modules/cjs/loader:1225:19) {
-  code: 'MODULE_NOT_FOUND',
-  requireStack: [
-    '/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-dydx-data.js',
-    '/home/techbu/OFA_Project_Local/ofa-project/tests/test-fetch-dydx-websocket.js'
-  ]
-}
 
-Node.js v18.19.1
