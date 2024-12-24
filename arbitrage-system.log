@@ -172,3 +172,9 @@
     "totalValueLockedUSD": 48433.9587782741
   }
 ]
+[2024-12-24T04:51:19.468Z] INFO: Testing dYdX WebSocket connection...
+[2024-12-24T04:51:20.249Z] INFO: Connected to dYdX WebSocket
+[2024-12-24T04:53:04.341Z] INFO: Testing dYdX WebSocket connection...
+[2024-12-24T04:53:05.401Z] INFO: Connected to dYdX WebSocket
+[2024-12-24T04:56:59.580Z] INFO: Testing dYdX WebSocket connection...
+[2024-12-24T04:57:00.333Z] INFO: Connected to dYdX WebSocket
