@@ -2552,3 +2552,7 @@
 [2024-12-24T08:44:18.054Z] INFO: Unhandled message type: {"type":"connected","connection_id":"31f93612-edcf-41e4-84d8-004715635037","message_id":0}
 [2024-12-24T08:44:18.348Z] INFO: Stored order book for BTC-USD
 [2024-12-24T08:44:18.354Z] INFO: Stored order book for ETH-USD
+[2024-12-24T08:54:12.000Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-24T08:54:12.671Z] INFO: Fetched 38 active markets.
+[2024-12-24T08:54:12.686Z] ERROR: Test failed: WebSocket is not open: readyState 0 (CONNECTING)
+[2024-12-24T08:54:13.097Z] INFO: Connected to dYdX WebSocket

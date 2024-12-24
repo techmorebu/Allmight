@@ -1,17 +1,5 @@
-echbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-dydx-websocket.js
-[2024-12-24T08:44:17.384Z] INFO: Starting dYdX WebSocket fetcher test...
-[2024-12-24T08:44:17.389Z] INFO: Testing enhanced orderbook parsing...
-[2024-12-24T08:44:17.390Z] INFO: Parsed Data: {"asks":[{"price":"30010","size":"0.1"},{"price":"30020","size":"0.2"}],"bids":[{"price":"30000","size":"0.1"},{"price":"29990","size":"0.2"}],"timestamp":1735029857390}
-[2024-12-24T08:44:17.390Z] INFO: Connected to Redis
-[2024-12-24T08:44:18.042Z] INFO: Connected to dYdX WebSocket
-[2024-12-24T08:44:18.046Z] INFO: Subscribed to market: BTC-USD
-[2024-12-24T08:44:18.046Z] INFO: Subscribed to market: ETH-USD
-[2024-12-24T08:44:18.047Z] INFO: Stored order book for BTC-USD
-[2024-12-24T08:44:18.048Z] INFO: Stored orderbook for BTC-USD
-[2024-12-24T08:44:18.048Z] INFO: Stored order book for ETH-USD
-[2024-12-24T08:44:18.049Z] INFO: Stored orderbook for ETH-USD
-[2024-12-24T08:44:18.049Z] INFO: Test completed successfully.
-[2024-12-24T08:44:18.054Z] INFO: Unhandled message type: {"type":"connected","connection_id":"31f93612-edcf-41e4-84d8-004715635037","message_id":0}
-[2024-12-24T08:44:18.348Z] INFO: Stored order book for BTC-USD
-[2024-12-24T08:44:18.354Z] INFO: Stored order book for ETH-USD
-^C
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-dydx-websocket.js
+[2024-12-24T08:54:12.000Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-24T08:54:12.671Z] INFO: Fetched 38 active markets.
+[2024-12-24T08:54:12.686Z] ERROR: Test failed: WebSocket is not open: readyState 0 (CONNECTING)
+[2024-12-24T08:54:13.097Z] INFO: Connected to dYdX WebSocket
