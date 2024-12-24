@@ -1,71 +1,78 @@
 const WebSocket = require('ws');
 const { logger } = require('../monitoring/logger');
-require('dotenv').config();
 
-const DYDX_WEBSOCKET_URL = process.env.DYDX_WEBSOCKET_URL;
+const DYDX_WEBSOCKET_URL = 'wss://api.dydx.exchange/v3/ws';
+const markets = ['BTC-USD', 'ETH-USD']; // Markets to subscribe
 
+let ws;
+
+/**
+ * Connect to dYdX WebSocket.
+ */
 function connectToDYDX() {
-    const ws = new WebSocket(DYDX_WEBSOCKET_URL);
+    ws = new WebSocket(DYDX_WEBSOCKET_URL);
 
     ws.on('open', () => {
         logger.info('Connected to dYdX WebSocket');
-        subscribeToMarkets(ws, ['BTC-USD', 'ETH-USD']);
+        subscribeToMarkets();
     });
 
-    ws.on('message', (message) => {
-        handleMessage(JSON.parse(message));
-    });
-
-    ws.on('error', (error) => {
-        logger.error(`WebSocket error: ${error.message}`);
+    ws.on('message', (data) => {
+        handleWebSocketMessage(data);
     });
 
     ws.on('close', () => {
-        logger.warn('WebSocket connection closed');
+        logger.warn('Disconnected from dYdX WebSocket. Reconnecting...');
+        setTimeout(connectToDYDX, 5000); // Reconnect after 5 seconds
+    });
+
+    ws.on('error', (error) => {
+        logger.error(`WebSocket Error: ${error.message}`);
     });
 }
 
-function subscribeToMarkets(ws, markets) {
-    markets.forEach((market) => {
+/**
+ * Subscribe to market order books.
+ */
+function subscribeToMarkets() {
+    markets.forEach((market, index) => {
+        const subscriptionId = `ticker-${index}`;
         const subscriptionMessage = {
             type: 'subscribe',
             channel: 'v3_orderbook',
-            market,
+            id: market,
+            market: market,
         };
+
         ws.send(JSON.stringify(subscriptionMessage));
-        logger.info(`Subscribed to market: ${market}`);
+        logger.info(`Subscribed to market: ${market} with id: ${subscriptionId}`);
     });
 }
 
-function handleMessage(data) {
-    if (data.type === 'subscribed') {
-        logger.info(`Subscription confirmed for channel: ${data.channel}, market: ${data.market}`);
-    } else if (data.type === 'snapshot' || data.type === 'update') {
-        const parsedData = parseOrderbook(data);
-        logger.info(`Parsed Data: ${JSON.stringify(parsedData)}`);
-    } else if (data.type === 'error') {
-        logger.error(`Error from dYdX: ${data.message} (Details: ${JSON.stringify(data)})`);
-    } else {
-        logger.info(`Unhandled message type: ${JSON.stringify(data)}`);
+/**
+ * Handle incoming WebSocket messages.
+ * @param {string} data - Incoming message data
+ */
+function handleWebSocketMessage(data) {
+    try {
+        const message = JSON.parse(data);
+
+        if (message.type === 'subscribed') {
+            logger.info(`Subscription confirmed for channel: ${message.channel}, market: ${message.market}`);
+        } else if (message.type === 'v3_orderbook') {
+            const { market, bids, asks } = message.contents;
+            const bestBid = bids[0] || { price: 'N/A', size: 'N/A' };
+            const bestAsk = asks[0] || { price: 'N/A', size: 'N/A' };
+
+            logger.info(`Market: ${market}, Best Bid: ${bestBid.price}, Best Ask: ${bestAsk.price}`);
+        } else if (message.type === 'error') {
+            logger.error(`Error from dYdX: ${message.message} (Details: ${JSON.stringify(message)})`);
+        } else {
+            logger.info(`Unhandled message type: ${JSON.stringify(message)}`);
+        }
+    } catch (error) {
+        logger.error(`Error parsing WebSocket message: ${error.message}`);
     }
-}
-
-function parseOrderbook(data) {
-    const market = data.market;
-    const bestBid = data.bids[0];
-    const bestAsk = data.asks[0];
-
-    return {
-        market,
-        bestBid: {
-            price: bestBid[0],
-            size: bestBid[1],
-        },
-        bestAsk: {
-            price: bestAsk[0],
-            size: bestAsk[1],
-        },
-    };
 }
 
 module.exports = { connectToDYDX };
