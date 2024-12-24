@@ -2160,3 +2160,13 @@
 [2024-12-24T05:29:10.078Z] INFO: Unhandled message type: {"type":"connected","connection_id":"5c3df944-a981-4ab9-8597-26f8f218c376","message_id":0}
 [2024-12-24T05:29:10.372Z] INFO: Unhandled message type: {"type":"error","message":"Invalid id: undefined","connection_id":"5c3df944-a981-4ab9-8597-26f8f218c376","message_id":1}
 [2024-12-24T05:29:10.373Z] INFO: Unhandled message type: {"type":"error","message":"Invalid id: undefined","connection_id":"5c3df944-a981-4ab9-8597-26f8f218c376","message_id":2}
+[2024-12-24T05:32:29.998Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-24T05:32:30.001Z] INFO: Testing enhanced orderbook parsing...
+[2024-12-24T05:32:30.002Z] INFO: Parsed Data: {"market":"BTC-USD","bestBid":{"price":"30000","size":"0.1"},"bestAsk":{"price":"30010","size":"0.1"}}
+[2024-12-24T05:32:30.065Z] INFO: Test completed.
+[2024-12-24T05:32:30.441Z] INFO: Connected to dYdX WebSocket
+[2024-12-24T05:32:30.451Z] INFO: Subscribed to market: BTC-USD with id: 1
+[2024-12-24T05:32:30.454Z] INFO: Subscribed to market: ETH-USD with id: 2
+[2024-12-24T05:32:30.462Z] INFO: Unhandled message type: {"type":"connected","connection_id":"4ba3e506-47c9-41b2-881d-0b0fb8f44ef5","message_id":0}
+[2024-12-24T05:32:30.643Z] ERROR: Error from dYdX: Invalid id: 1 (Details: {"type":"error","message":"Invalid id: 1","connection_id":"4ba3e506-47c9-41b2-881d-0b0fb8f44ef5","message_id":1})
+[2024-12-24T05:32:30.647Z] ERROR: Error from dYdX: Invalid id: 2 (Details: {"type":"error","message":"Invalid id: 2","connection_id":"4ba3e506-47c9-41b2-881d-0b0fb8f44ef5","message_id":2})
