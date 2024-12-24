@@ -1,37 +1,28 @@
-const { fetchActiveMarkets, connectToDYDXWebSocket, subscribeToMarkets } = require('../data-collection/fetch-dydx-data');
+const { fetchActiveMarkets, connectToDYDXWebSocket, subscribeToMarkets, cleanupRedis } = require('../data-collection/fetch-dydx-data');
 const { logger } = require('../monitoring/logger');
-const Redis = require('ioredis');
 
 (async () => {
     try {
         logger.info('Starting dYdX WebSocket fetcher test...');
 
         // Fetch active markets
-        const markets = await fetchActiveMarkets();
+        const activeMarkets = await fetchActiveMarkets();
+        logger.info(`Fetched ${activeMarkets.length} active markets.`);
 
-        // Connect to Redis
-        const redis = new Redis();
-        logger.info('Connected to Redis');
+        // Select a subset of markets for testing (e.g., BTC-USD and ETH-USD)
+        const testMarkets = activeMarkets.slice(0, 2);
+        logger.info(`Testing with markets: ${testMarkets.join(', ')}`);
 
-        // Connect to dYdX WebSocket
-        const ws = connectToDYDXWebSocket();
+        // Connect to WebSocket
+        const websocket = connectToDYDXWebSocket();
 
         // Subscribe to markets
-        await subscribeToMarkets(ws, markets.slice(0, 2)); // Test with the first two markets
-        logger.info(`Subscribed to markets: ${markets.slice(0, 2).join(', ')}`);
-
-        // Mock storing orderbook data in Redis
-        ws.on('message', async (data) => {
-            const message = JSON.parse(data);
-            if (message.type === 'snapshot') {
-                await redis.set(`dydx:orderbook:${message.id}`, JSON.stringify(message.contents));
-                logger.info(`Stored order book for ${message.id}`);
-            }
-        });
+        await subscribeToMarkets(websocket, testMarkets);
 
         logger.info('Test completed successfully.');
-        redis.disconnect();
     } catch (error) {
         logger.error(`Test failed: ${error.message}`);
+    } finally {
+        cleanupRedis();
     }
 })();
