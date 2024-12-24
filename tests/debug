@@ -1,12 +1,45 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-dydx-websocket.js
-[2024-12-24T09:20:24.601Z] INFO: Starting dYdX WebSocket fetcher test...
-[2024-12-24T09:20:24.922Z] INFO: Fetched 38 active markets.
-[2024-12-24T09:20:24.922Z] INFO: Fetched 38 active markets.
-[2024-12-24T09:20:24.923Z] INFO: Testing with markets: ZEC-USD, EOS-USD
-[2024-12-24T09:20:25.340Z] INFO: Connected to dYdX WebSocket
-[2024-12-24T09:20:25.344Z] INFO: Subscribed to market: ZEC-USD
-[2024-12-24T09:20:25.346Z] INFO: Subscribed to market: EOS-USD
-[2024-12-24T09:20:26.351Z] INFO: Test completed successfully.
-[2024-12-24T09:20:26.354Z] INFO: Disconnected from Redis
-^C
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
+[2024-12-24T09:27:45.269Z] INFO: Starting expanded dYdX market coverage test...
+[2024-12-24T09:27:45.895Z] INFO: Connected to dYdX WebSocket
+[2024-12-24T09:27:45.906Z] INFO: Fetched 38 active markets.
+[2024-12-24T09:27:45.908Z] INFO: Subscribed to market: ZEC-USD
+[2024-12-24T09:27:45.909Z] INFO: Subscribed to market: EOS-USD
+[2024-12-24T09:27:45.909Z] INFO: Subscribed to market: COMP-USD
+[2024-12-24T09:27:45.910Z] INFO: Subscribed to market: ETC-USD
+[2024-12-24T09:27:45.910Z] INFO: Subscribed to market: SOL-USD
+[2024-12-24T09:27:45.910Z] INFO: Subscribed to market: ENJ-USD
+[2024-12-24T09:27:45.910Z] INFO: Subscribed to market: BTC-USD
+[2024-12-24T09:27:45.911Z] INFO: Subscribed to market: ADA-USD
+[2024-12-24T09:27:45.911Z] INFO: Subscribed to market: CELO-USD
+[2024-12-24T09:27:45.912Z] INFO: Subscribed to market: FIL-USD
+[2024-12-24T09:27:46.919Z] INFO: Subscribed to market: ALGO-USD
+[2024-12-24T09:27:46.919Z] INFO: Subscribed to market: 1INCH-USD
+[2024-12-24T09:27:46.920Z] INFO: Subscribed to market: TRX-USD
+[2024-12-24T09:27:46.921Z] INFO: Subscribed to market: MKR-USD
+[2024-12-24T09:27:46.921Z] INFO: Subscribed to market: XTZ-USD
+[2024-12-24T09:27:46.921Z] INFO: Subscribed to market: SUSHI-USD
+[2024-12-24T09:27:46.922Z] INFO: Subscribed to market: XMR-USD
+[2024-12-24T09:27:46.922Z] INFO: Subscribed to market: LTC-USD
+[2024-12-24T09:27:46.923Z] INFO: Subscribed to market: LUNA-USD
+[2024-12-24T09:27:46.923Z] INFO: Subscribed to market: ICP-USD
+[2024-12-24T09:27:47.928Z] INFO: Subscribed to market: LINK-USD
+[2024-12-24T09:27:47.929Z] INFO: Subscribed to market: ATOM-USD
+[2024-12-24T09:27:47.930Z] INFO: Subscribed to market: CRV-USD
+[2024-12-24T09:27:47.930Z] INFO: Subscribed to market: DOT-USD
+[2024-12-24T09:27:47.931Z] INFO: Subscribed to market: BCH-USD
+[2024-12-24T09:27:47.932Z] INFO: Subscribed to market: ETH-USD
+[2024-12-24T09:27:47.932Z] INFO: Subscribed to market: ZRX-USD
+[2024-12-24T09:27:47.932Z] INFO: Subscribed to market: SNX-USD
+[2024-12-24T09:27:47.932Z] INFO: Subscribed to market: YFI-USD
+[2024-12-24T09:27:47.932Z] INFO: Subscribed to market: DOGE-USD
+[2024-12-24T09:27:48.937Z] INFO: Subscribed to market: XLM-USD
+[2024-12-24T09:27:48.938Z] INFO: Subscribed to market: AAVE-USD
+[2024-12-24T09:27:48.939Z] INFO: Subscribed to market: NEAR-USD
+[2024-12-24T09:27:48.940Z] INFO: Subscribed to market: MATIC-USD
+[2024-12-24T09:27:48.941Z] INFO: Subscribed to market: RUNE-USD
+[2024-12-24T09:27:48.941Z] INFO: Subscribed to market: UMA-USD
+[2024-12-24T09:27:48.942Z] INFO: Subscribed to market: UNI-USD
+[2024-12-24T09:27:48.943Z] INFO: Subscribed to market: AVAX-USD
+[2024-12-24T09:27:49.945Z] INFO: Waiting for data collection...
+[2024-12-24T09:27:54.949Z] INFO: Test completed successfully.
+
