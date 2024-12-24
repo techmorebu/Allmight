@@ -1,20 +1,49 @@
-// Existing imports and setup
 const WebSocket = require("ws");
 const { logger } = require("../monitoring/logger");
 
-// Function to connect to dYdX WebSocket
+/**
+ * Parses incoming orderbook messages to extract relevant data.
+ * @param {Object} message - The WebSocket message.
+ * @returns {Object|null} - Parsed orderbook data or null if the message is not relevant.
+ */
+function parseOrderbookMessage(message) {
+    if (!message.market || !message.bids || !message.asks) {
+        return null;
+    }
+    const bestBid = message.bids[0] || { price: "0", size: "0" };
+    const bestAsk = message.asks[0] || { price: "0", size: "0" };
+
+    return {
+        market: message.market,
+        bestBid: {
+            price: bestBid.price,
+            size: bestBid.size,
+        },
+        bestAsk: {
+            price: bestAsk.price,
+            size: bestAsk.size,
+        },
+    };
+}
+
+/**
+ * Connects to dYdX WebSocket and subscribes to specified markets.
+ * @param {Array<string>} markets - List of markets to subscribe to.
+ */
 function connectToDYDX(markets) {
     const ws = new WebSocket("wss://api.dydx.exchange/v3/ws");
+
     ws.on("open", () => {
         logger.info("Connected to dYdX WebSocket");
-        markets.forEach((market) => {
+        markets.forEach((market, index) => {
             const subscriptionMessage = {
                 type: "subscribe",
                 channel: "v3_orderbook",
                 market,
+                id: index + 1, // Adding unique id for each subscription
             };
             ws.send(JSON.stringify(subscriptionMessage));
-            logger.info(`Subscribed to market: ${market}`);
+            logger.info(`Subscribed to market: ${market} with id: ${subscriptionMessage.id}`);
         });
     });
 
@@ -32,6 +61,10 @@ function connectToDYDX(markets) {
                         `Received orderbook data for market: ${parsed.market}`
                     );
                 }
+            } else if (message.type === "error") {
+                logger.error(
+                    `Error from dYdX: ${message.message} (Details: ${JSON.stringify(message)})`
+                );
             } else {
                 logger.info(`Unhandled message type: ${JSON.stringify(message)}`);
             }
@@ -47,22 +80,6 @@ function connectToDYDX(markets) {
     ws.on("close", () => {
         logger.info("dYdX WebSocket connection closed");
     });
-}
-
-// Adding best bid and ask parsing for v3_orderbook channel
-function parseOrderbookMessage(message) {
-    try {
-        const bestBid = message.bids?.[0];
-        const bestAsk = message.asks?.[0];
-        return {
-            market: message.market,
-            bestBid: bestBid ? { price: bestBid.price, size: bestBid.size } : null,
-            bestAsk: bestAsk ? { price: bestAsk.price, size: bestAsk.size } : null,
-        };
-    } catch (err) {
-        logger.error(`Error parsing orderbook message: ${err.message}`);
-        return null;
-    }
 }
 
 module.exports = { connectToDYDX, parseOrderbookMessage };
