@@ -1,92 +1,76 @@
 const WebSocket = require('ws');
-const axios = require('axios');
 const Redis = require('ioredis');
 const { logger } = require('../monitoring/logger');
 
-const DYDX_WS_URL = 'wss://api.dydx.exchange/v3/ws';
-const DYDX_API_URL = 'https://api.dydx.exchange/v3/markets';
 const redis = new Redis();
 
-let ws;
-
-async function fetchActiveMarkets() {
-    try {
-        logger.info('Fetching active markets from dYdX...');
-        const response = await axios.get(DYDX_API_URL);
-        const markets = response.data.markets || {};
-        logger.info(`Fetched ${Object.keys(markets).length} active markets.`);
-        return Object.keys(markets);
-    } catch (error) {
-        logger.error(`Error fetching active markets: ${error.message}`);
-        return [];
-    }
-}
-
-function connectToDYDXWebSocket() {
+async function connectToDYDXWebSocket() {
     return new Promise((resolve, reject) => {
-        logger.info('Connecting to dYdX WebSocket...');
-        const ws = new WebSocket(DYDX_WS_URL);
+        const ws = new WebSocket('wss://api.dydx.exchange/v3/ws');
 
         ws.on('open', () => {
             logger.info('Connected to dYdX WebSocket');
-            resolve(ws); // Resolve with the WebSocket instance
+            resolve(ws);
         });
 
         ws.on('error', (error) => {
             logger.error(`WebSocket error: ${error.message}`);
             reject(error);
         });
-
-        ws.on('close', () => {
-            logger.warn('WebSocket connection closed.');
-        });
-
-        ws.on('message', (data) => {
-            const message = JSON.parse(data);
-            handleWebSocketMessage(message);
-        });
     });
 }
 
-function subscribeToMarketOrderBooks(markets) {
+async function subscribeToMarkets(ws, markets) {
+    let subscriptionId = 0;
+
     markets.forEach((market) => {
-        const subscriptionMessage = {
+        const message = {
             type: 'subscribe',
             channel: 'v3_orderbook',
             id: market,
+            message_id: subscriptionId++,
         };
-        ws.send(JSON.stringify(subscriptionMessage));
+
+        ws.send(JSON.stringify(message));
         logger.info(`Subscribed to market: ${market}`);
     });
+
+    ws.on('message', (data) => handleWebSocketMessage(JSON.parse(data)));
 }
 
 function handleWebSocketMessage(message) {
-    if (message.type === 'subscribed') {
-        logger.info(`Subscription confirmed for market: ${message.id}`);
-    } else if (message.type === 'v3_orderbook_snapshot') {
-        const { id: market, contents } = message;
-        redis.set(`orderbook:${market}`, JSON.stringify(contents));
-        logger.info(`Stored order book for ${market}`);
+    if (message.type === 'subscribed' && message.channel === 'v3_orderbook') {
+        const market = message.id;
+        const orderBook = parseOrderBook(message.contents);
+        saveOrderBookToRedis(market, orderBook);
+    } else if (message.type === 'error') {
+        logger.error(`WebSocket error: ${message.message}`);
     } else {
         logger.info(`Unhandled message type: ${JSON.stringify(message)}`);
     }
 }
 
-async function startFetcher() {
-    try {
-        const markets = await fetchActiveMarkets();
-        if (markets.length === 0) {
-            logger.warn('No active markets available.');
-            return;
-        }
+function parseOrderBook(contents) {
+    const { asks, bids } = contents;
+    const topAsks = asks.slice(0, 10).map((ask) => ({ price: ask.price, size: ask.size }));
+    const topBids = bids.slice(0, 10).map((bid) => ({ price: bid.price, size: bid.size }));
 
-        await connectToDYDXWebSocket();
-        subscribeToMarketOrderBooks(markets);
-    } catch (error) {
-        logger.error(`Error in fetcher: ${error.message}`);
-    }
+    return {
+        asks: topAsks,
+        bids: topBids,
+        timestamp: Date.now(),
+    };
 }
 
-module.exports = {startFetcher,
-    fetchActiveMarkets,
-    connectToDYDXWebSocket};
+function saveOrderBookToRedis(market, orderBook) {
+    const key = `dydx:orderbook:${market}`;
+    redis.set(key, JSON.stringify(orderBook));
+    logger.info(`Stored order book for ${market}`);
+}
+
+module.exports = {
+    connectToDYDXWebSocket,
+    subscribeToMarkets,
+    parseOrderBook,
+    saveOrderBookToRedis,
+};
