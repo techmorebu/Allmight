@@ -6,44 +6,19 @@ const { logger } = require("../monitoring/logger");
  * @param {Object} message - The WebSocket message.
  * @returns {Object|null} - Parsed orderbook data or null if the message is not relevant.
  */
-function parseOrderbookMessage(message) {
-    if (!message.market || !message.bids || !message.asks) {
-        return null;
-    }
-    const bestBid = message.bids[0] || { price: "0", size: "0" };
-    const bestAsk = message.asks[0] || { price: "0", size: "0" };
-
-    return {
-        market: message.market,
-        bestBid: {
-            price: bestBid.price,
-            size: bestBid.size,
-        },
-        bestAsk: {
-            price: bestAsk.price,
-            size: bestAsk.size,
-        },
-    };
-}
-
-/**
- * Connects to dYdX WebSocket and subscribes to specified markets.
- * @param {Array<string>} markets - List of markets to subscribe to.
- */
 function connectToDYDX(markets) {
     const ws = new WebSocket("wss://api.dydx.exchange/v3/ws");
 
     ws.on("open", () => {
         logger.info("Connected to dYdX WebSocket");
-        markets.forEach((market, index) => {
+        markets.forEach((market) => {
             const subscriptionMessage = {
                 type: "subscribe",
                 channel: "v3_orderbook",
-                id: `subscription-${index}`, // Unique and simple identifier
                 market: market,
             };
             ws.send(JSON.stringify(subscriptionMessage));
-            logger.info(`Subscribed to market: ${market} with id: ${subscriptionMessage.id}`);
+            logger.info(`Subscribed to market: ${market}`);
         });
     });
 
