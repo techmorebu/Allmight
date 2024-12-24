@@ -1,11 +1,10 @@
-echbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-dydx-websocket.js
-[2024-12-24T05:08:28.177Z] INFO: Starting dYdX WebSocket fetcher test...
-[2024-12-24T05:08:28.182Z] ERROR: Error during test: connectToDYDX is not a function
-[2024-12-24T05:08:28.184Z] INFO: Test completed.
-[2024-12-24T05:08:28.795Z] INFO: Connected to dYdX WebSocket
-[2024-12-24T05:08:28.799Z] INFO: Subscribed to market: BTC-USD
-[2024-12-24T05:08:28.799Z] INFO: Subscribed to market: ETH-USD
-[2024-12-24T05:08:28.802Z] INFO: Unhandled message type: {"type":"connected","connection_id":"bc2e07f5-c8cf-4863-9da4-2d933e2633ef","message_id":0}
-[2024-12-24T05:08:29.097Z] INFO: Subscription confirmed for channel: v3_orderbook, market: BTC-USD
-[2024-12-24T05:08:29.100Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ETH-USD
-
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-dydx-websocket.js
+[2024-12-24T05:10:13.998Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-24T05:10:14.003Z] ERROR: Error during test: connectToDYDX is not a function
+[2024-12-24T05:10:14.005Z] INFO: Test completed.
+[2024-12-24T05:10:14.464Z] INFO: Connected to dYdX WebSocket
+[2024-12-24T05:10:14.470Z] INFO: Subscribed to market: BTC-USD
+[2024-12-24T05:10:14.472Z] INFO: Subscribed to market: ETH-USD
+[2024-12-24T05:10:14.476Z] INFO: Unhandled message type: {"type":"connected","connection_id":"4d3b4f53-e2ad-448f-a4a2-bfa664aa37d9","message_id":0}
+[2024-12-24T05:10:14.766Z] INFO: Subscription confirmed for channel: v3_orderbook, market: BTC-USD
+[2024-12-24T05:10:14.770Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ETH-USD
