@@ -1,6 +1,6 @@
 const WebSocket = require('ws');
 const Redis = require('ioredis');
-const { logger } = require('../utils/logger');
+const { logger } = require('../monitoring/logger');
 const axios = require('axios');
 require('dotenv').config();
 
