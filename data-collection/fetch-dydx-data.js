@@ -49,7 +49,7 @@ function connectToDYDXWebSocket() {
 }
 
 function subscribeToMarketOrderBooks(markets) {
-    markets.forEach((market, index) => {
+    markets.forEach((market) => {
         const subscriptionMessage = {
             type: 'subscribe',
             channel: 'v3_orderbook',
