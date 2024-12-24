@@ -31,15 +31,16 @@ function connectToDYDX() {
     });
 }
 
-/**
+**
  * Subscribe to market order books.
  */
 function subscribeToMarkets() {
-    markets.forEach((market) => {
+    markets.forEach((market, index) => {
         const subscriptionMessage = {
             type: 'subscribe',
             channel: 'v3_orderbook',
-            market: market, // Ensure market is correctly specified
+            id: `orderbook-${market}-${index}`, // Unique and descriptive subscription ID
+            market: market,
         };
 
         ws.send(JSON.stringify(subscriptionMessage));
