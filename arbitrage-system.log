@@ -2272,3 +2272,13 @@
 [2024-12-24T06:40:41.087Z] INFO: Unhandled message type: {"type":"connected","connection_id":"23be6b84-c282-46f8-917d-2ecdeb27b343","message_id":0}
 [2024-12-24T06:40:41.379Z] ERROR: Error from dYdX: Invalid id: undefined (Details: {"type":"error","message":"Invalid id: undefined","connection_id":"23be6b84-c282-46f8-917d-2ecdeb27b343","message_id":1})
 [2024-12-24T06:40:41.381Z] ERROR: Error from dYdX: Invalid id: undefined (Details: {"type":"error","message":"Invalid id: undefined","connection_id":"23be6b84-c282-46f8-917d-2ecdeb27b343","message_id":2})
+[2024-12-24T06:45:17.866Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-24T06:45:17.869Z] INFO: Testing enhanced orderbook parsing...
+[2024-12-24T06:45:17.870Z] INFO: Parsed Data: {"market":"BTC-USD","bestBid":{"price":"30000","size":"0.1"},"bestAsk":{"price":"30010","size":"0.1"}}
+[2024-12-24T06:45:17.931Z] INFO: Test completed.
+[2024-12-24T06:45:18.472Z] INFO: Connected to dYdX WebSocket
+[2024-12-24T06:45:18.476Z] INFO: Subscribed to market: BTC-USD with id: ticker-0
+[2024-12-24T06:45:18.477Z] INFO: Subscribed to market: ETH-USD with id: ticker-1
+[2024-12-24T06:45:18.482Z] INFO: Unhandled message type: {"type":"connected","connection_id":"ac46f00e-8523-4329-aa99-e5e15d365b86","message_id":0}
+[2024-12-24T06:45:18.774Z] INFO: Subscription confirmed for channel: v3_orderbook, market: undefined
+[2024-12-24T06:45:18.778Z] INFO: Subscription confirmed for channel: v3_orderbook, market: undefined

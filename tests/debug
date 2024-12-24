@@ -1,11 +1,11 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-dydx-websocket.js
-[2024-12-24T06:36:18.074Z] INFO: Starting dYdX WebSocket fetcher test...
-[2024-12-24T06:36:18.139Z] INFO: Test completed.
-[2024-12-24T06:36:18.644Z] INFO: Connected to dYdX WebSocket
-[2024-12-24T06:36:18.650Z] INFO: Subscribed to market: BTC-USD with id: subscription-0
-[2024-12-24T06:36:18.651Z] INFO: Subscribed to market: ETH-USD with id: subscription-1
-[2024-12-24T06:36:18.653Z] INFO: Unhandled message type: {"type":"connected","connection_id":"95089120-eadc-4219-b2f6-cd085d92fe57","message_id":0}
-[2024-12-24T06:36:18.838Z] ERROR: Error from dYdX: Invalid subscription id for channel: (v3_orderbook-subscription-0) (Details: {"type":"error","message":"Invalid subscription id for channel: (v3_orderbook-subscription-0)","connection_id":"95089120-eadc-4219-b2f6-cd085d92fe57","message_id":1})
-[2024-12-24T06:36:18.840Z] ERROR: Error from dYdX: Invalid subscription id for channel: (v3_orderbook-subscription-1) (Details: {"type":"error","message":"Invalid subscription id for channel: (v3_orderbook-subscription-1)","connection_id":"95089120-eadc-4219-b2f6-cd085d92fe57","message_id":2})
-
-
+echbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-dydx-websocket.js
+[2024-12-24T06:45:17.866Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-24T06:45:17.869Z] INFO: Testing enhanced orderbook parsing...
+[2024-12-24T06:45:17.870Z] INFO: Parsed Data: {"market":"BTC-USD","bestBid":{"price":"30000","size":"0.1"},"bestAsk":{"price":"30010","size":"0.1"}}
+[2024-12-24T06:45:17.931Z] INFO: Test completed.
+[2024-12-24T06:45:18.472Z] INFO: Connected to dYdX WebSocket
+[2024-12-24T06:45:18.476Z] INFO: Subscribed to market: BTC-USD with id: ticker-0
+[2024-12-24T06:45:18.477Z] INFO: Subscribed to market: ETH-USD with id: ticker-1
+[2024-12-24T06:45:18.482Z] INFO: Unhandled message type: {"type":"connected","connection_id":"ac46f00e-8523-4329-aa99-e5e15d365b86","message_id":0}
+[2024-12-24T06:45:18.774Z] INFO: Subscription confirmed for channel: v3_orderbook, market: undefined
+[2024-12-24T06:45:18.778Z] INFO: Subscription confirmed for channel: v3_orderbook, market: undefined
