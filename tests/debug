@@ -1,20 +1,6 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-dydx-websocket.js
-[2024-12-24T07:45:25.944Z] INFO: Starting dYdX WebSocket fetcher test...
-[2024-12-24T07:45:26.004Z] INFO: Test completed.
-[2024-12-24T07:45:27.217Z] INFO: Connected to dYdX WebSocket
-[2024-12-24T07:45:27.225Z] INFO: Subscribed to market: BTC-USD
-[2024-12-24T07:45:27.225Z] INFO: Subscribed to market: ETH-USD
-[2024-12-24T07:45:27.804Z] INFO: Subscription confirmed for channel: v3_orderbook, market: BTC-USD
-[2024-12-24T07:45:27.987Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ETH-USD
-/home/techbu/OFA_Project_Local/ofa-project/node_modules/ioredis/built/Redis.js:332
-            command.reject(new Error(utils_1.CONNECTION_CLOSED_ERROR_MSG));
-                           ^
-
-Error: Connection is closed.
-    at EventEmitter.sendCommand (/home/techbu/OFA_Project_Local/ofa-project/node_modules/ioredis/built/Redis.js:332:28)
-    at EventEmitter.get (/home/techbu/OFA_Project_Local/ofa-project/node_modules/ioredis/built/utils/Commander.js:90:25)
-    at Timeout._onTimeout (/home/techbu/OFA_Project_Local/ofa-project/tests/test-fetch-dydx-websocket.js:17:38)
-    at listOnTimeout (node:internal/timers:569:17)
-    at process.processTimers (node:internal/timers:512:7)
-
-Node.js v18.19.1
+[2024-12-24T07:54:14.444Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-24T07:54:14.449Z] INFO: Testing enhanced orderbook parsing...
+[2024-12-24T07:54:14.450Z] INFO: Parsed Data: {"market":"BTC-USD","bestBid":{"price":"30000","size":"0.1"},"bestAsk":{"price":"30010","size":"0.1"}}
+[2024-12-24T07:54:14.450Z] ERROR: Test Failed: connectToDYDXWebSocket is not a function
+[2024-12-24T07:54:14.479Z] INFO: Connected to Redis

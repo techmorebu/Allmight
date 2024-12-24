@@ -2347,3 +2347,8 @@
 [2024-12-24T07:49:54.547Z] INFO: Subscribed to market: ETH-USD
 [2024-12-24T07:49:55.177Z] INFO: Subscription confirmed for channel: v3_orderbook, market: BTC-USD
 [2024-12-24T07:49:55.214Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ETH-USD
+[2024-12-24T07:54:14.444Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-24T07:54:14.449Z] INFO: Testing enhanced orderbook parsing...
+[2024-12-24T07:54:14.450Z] INFO: Parsed Data: {"market":"BTC-USD","bestBid":{"price":"30000","size":"0.1"},"bestAsk":{"price":"30010","size":"0.1"}}
+[2024-12-24T07:54:14.450Z] ERROR: Test Failed: connectToDYDXWebSocket is not a function
+[2024-12-24T07:54:14.479Z] INFO: Connected to Redis
