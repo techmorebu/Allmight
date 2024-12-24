@@ -2,7 +2,6 @@ const WebSocket = require('ws');
 const Redis = require('ioredis');
 const { logger } = require('../monitoring/logger');
 
-// Initialize Redis client
 const redis = new Redis();
 
 redis.on('error', (err) => logger.error(`Redis error: ${err.message}`));
@@ -40,15 +39,16 @@ function handleWebSocketMessages(socket) {
     socket.on('message', async (data) => {
         try {
             const message = JSON.parse(data);
-            if (message.type === 'orderbook_update') {
-                const market = message.market;
-                const orderbook = {
-                    bestBid: message.bestBid,
-                    bestAsk: message.bestAsk,
+
+            if (message.type === 'subscribed' && message.contents) {
+                const market = message.id;
+                const orderBook = {
+                    asks: message.contents.asks,
+                    bids: message.contents.bids,
                 };
 
-                // Store the orderbook in Redis
-                await redis.set(`${market}:orderbook`, JSON.stringify(orderbook));
+                // Store order book in Redis
+                await redis.set(`${market}:orderbook`, JSON.stringify(orderBook));
                 logger.info(`Stored order book for ${market}`);
             } else {
                 logger.info(`Unhandled message type: ${JSON.stringify(message)}`);
