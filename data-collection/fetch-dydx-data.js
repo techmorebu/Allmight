@@ -1,61 +1,71 @@
-const WebSocket = require("ws");
-const { logger } = require("../monitoring/logger");
+const WebSocket = require('ws');
+const { logger } = require('../monitoring/logger');
+
+// WebSocket URL for dYdX
+const DYDX_WS_URL = 'wss://api.dydx.exchange/v3/ws';
 
 /**
- * Parses incoming orderbook messages to extract relevant data.
- * @param {Object} message - The WebSocket message.
- * @returns {Object|null} - Parsed orderbook data or null if the message is not relevant.
+ * Parses an orderbook message to extract relevant data.
+ * @param {Object} message - Incoming WebSocket message.
+ * @returns {Object} Parsed data (best bid/ask).
  */
-function connectToDYDX(markets) {
-    const ws = new WebSocket("wss://api.dydx.exchange/v3/ws");
+function parseOrderbookMessage(message) {
+    if (message && message.type === 'channel_data' && message.contents) {
+        const bids = message.contents.bids;
+        const asks = message.contents.asks;
+        return {
+            market: message.contents.market,
+            bestBid: bids[0] ? { price: bids[0].price, size: bids[0].size } : null,
+            bestAsk: asks[0] ? { price: asks[0].price, size: asks[0].size } : null,
+        };
+    }
+    return null;
+}
 
-    ws.on("open", () => {
-        logger.info("Connected to dYdX WebSocket");
-        markets.forEach((market) => {
+/**
+ * Connects to the dYdX WebSocket and subscribes to orderbook channels.
+ */
+async function connectToDYDX() {
+    const ws = new WebSocket(DYDX_WS_URL);
+
+    ws.on('open', () => {
+        logger.info('Connected to dYdX WebSocket');
+
+        // Subscribe to BTC-USD and ETH-USD orderbooks
+        const markets = ['BTC-USD', 'ETH-USD'];
+        markets.forEach((market, index) => {
             const subscriptionMessage = {
-                type: "subscribe",
-                channel: "v3_orderbook",
+                type: 'subscribe',
+                channel: 'v3_orderbook',
+                id: `orderbook-${market}`, // Adjusted ID format
                 market: market,
             };
             ws.send(JSON.stringify(subscriptionMessage));
-            logger.info(`Subscribed to market: ${market}`);
+            logger.info(`Subscribed to market: ${market} with id: orderbook-${market}`);
         });
     });
 
-    ws.on("message", (data) => {
-        try {
-            const message = JSON.parse(data);
-            if (message.type === "subscribed") {
-                logger.info(
-                    `Subscription confirmed for channel: ${message.channel}, market: ${message.market}`
-                );
-            } else if (message.type === "v3_orderbook") {
-                const parsed = parseOrderbookMessage(message);
-                if (parsed) {
-                    logger.info(
-                        `Received orderbook data for market: ${parsed.market}`
-                    );
-                }
-            } else if (message.type === "error") {
-                logger.error(
-                    `Error from dYdX: ${message.message} (Details: ${JSON.stringify(message)})`
-                );
-            } else {
-                logger.info(`Unhandled message type: ${JSON.stringify(message)}`);
+    ws.on('message', (data) => {
+        const message = JSON.parse(data);
+        if (message.type === 'channel_data') {
+            const parsedData = parseOrderbookMessage(message);
+            if (parsedData) {
+                logger.info(`Parsed Orderbook Data: ${JSON.stringify(parsedData)}`);
             }
-        } catch (err) {
-            logger.error(`Error processing WebSocket message: ${err.message}`);
+        } else if (message.type === 'error') {
+            logger.error(`Error from dYdX: ${message.message} (Details: ${JSON.stringify(message)})`);
+        } else {
+            logger.info(`Unhandled message type: ${JSON.stringify(message)}`);
         }
     });
 
-    ws.on("error", (err) => {
-        logger.error(`WebSocket error: ${err.message}`);
+    ws.on('error', (error) => {
+        logger.error(`WebSocket error: ${error.message}`);
     });
 
-    ws.on("close", () => {
-        logger.info("dYdX WebSocket connection closed");
+    ws.on('close', () => {
+        logger.info('dYdX WebSocket connection closed');
     });
 }
-
 
 module.exports = { connectToDYDX, parseOrderbookMessage };
