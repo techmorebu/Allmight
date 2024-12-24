@@ -4,7 +4,6 @@ require('dotenv').config();
 
 const DYDX_WEBSOCKET_URL = process.env.DYDX_WEBSOCKET_URL;
 
-// Connect to dYdX WebSocket
 function connectToDYDX() {
     const ws = new WebSocket(DYDX_WEBSOCKET_URL);
 
@@ -27,15 +26,14 @@ function connectToDYDX() {
 }
 
 function subscribeToMarkets(ws, markets) {
-    markets.forEach((market, index) => {
+    markets.forEach((market) => {
         const subscriptionMessage = {
             type: 'subscribe',
             channel: 'v3_orderbook',
-            id: `subscription-${index}`,
             market,
         };
         ws.send(JSON.stringify(subscriptionMessage));
-        logger.info(`Subscribed to market: ${market} with id: subscription-${index}`);
+        logger.info(`Subscribed to market: ${market}`);
     });
 }
 
