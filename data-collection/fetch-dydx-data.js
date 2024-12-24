@@ -1,20 +1,46 @@
 const WebSocket = require('ws');
 const { logger } = require('../monitoring/logger');
+require('dotenv').config();
 
-const DYDX_WEBSOCKET_URL = 'wss://api.dydx.exchange/v3/ws';
-const markets = ['BTC-USD', 'ETH-USD']; // Markets to subscribe
+const DYDX_WEBSOCKET_URL = process.env.DYDX_WEBSOCKET_URL;
+const markets = ['BTC-USD', 'ETH-USD'];
 
 let ws;
 
 /**
- * Subscribe to market order books.
+ * Connect to the dYdX WebSocket
+ */
+function connectToDYDX() {
+    ws = new WebSocket(DYDX_WEBSOCKET_URL);
+
+    ws.on('open', () => {
+        logger.info('Connected to dYdX WebSocket');
+        subscribeToMarkets();
+    });
+
+    ws.on('message', (data) => {
+        handleWebSocketMessage(data);
+    });
+
+    ws.on('error', (error) => {
+        logger.error(`WebSocket error: ${error.message}`);
+    });
+
+    ws.on('close', () => {
+        logger.info('WebSocket connection closed. Reconnecting in 5 seconds...');
+        setTimeout(connectToDYDX, 5000);
+    });
+}
+
+/**
+ * Subscribe to market order books
  */
 function subscribeToMarkets() {
     markets.forEach((market) => {
         const subscriptionMessage = {
             type: 'subscribe',
             channel: 'v3_orderbook',
-            market: market, // Ensure market field matches dYdX API expectations
+            market: market,
         };
 
         ws.send(JSON.stringify(subscriptionMessage));
@@ -23,7 +49,7 @@ function subscribeToMarkets() {
 }
 
 /**
- * Handle incoming WebSocket messages.
+ * Handle incoming WebSocket messages
  * @param {string} data - Incoming message data
  */
 function handleWebSocketMessage(data) {
