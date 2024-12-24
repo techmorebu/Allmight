@@ -1,5 +1,5 @@
 const { connectToDYDXWebSocket } = require('../data-collection/fetch-dydx-data');
-const { logger } = require('../utils/logger');
+const { logger } = require('../monitoring/logger');
 const Redis = require('ioredis');
 
 (async () => {
