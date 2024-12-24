@@ -2316,3 +2316,10 @@
 [2024-12-24T07:21:31.959Z] INFO: Testing WebSocket connection...
 [2024-12-24T07:21:31.960Z] ERROR: Test Failed: startFetcher is not defined
 [2024-12-24T07:21:31.960Z] INFO: Integration Test Completed.
+[2024-12-24T07:31:16.160Z] INFO: Starting dYdX Integration Test...
+[2024-12-24T07:31:16.164Z] INFO: Testing WebSocket connection...
+[2024-12-24T07:31:16.165Z] ERROR: Test Failed: connectToDYDX is not a function
+[2024-12-24T07:31:16.165Z] INFO: Integration Test Completed.
+[2024-12-24T07:31:17.231Z] INFO: Connected to dYdX WebSocket
+[2024-12-24T07:31:17.272Z] INFO: Stored Raw Message: connected
+[2024-12-24T07:31:17.557Z] INFO: Stored Raw Message: error

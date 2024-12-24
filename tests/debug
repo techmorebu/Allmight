@@ -1,16 +1,8 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/start-dydx-integration.js
-/home/techbu/OFA_Project_Local/ofa-project/scripts/start-dydx-integration.js:7
-    logger.info('Starting dYdX Integration Test...');
-           ^
-
-TypeError: logger.info is not a function
-    at /home/techbu/OFA_Project_Local/ofa-project/scripts/start-dydx-integration.js:7:12
-    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/scripts/start-dydx-integration.js:36:3)
-    at Module._compile (node:internal/modules/cjs/loader:1356:14)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
-    at Module.load (node:internal/modules/cjs/loader:1197:32)
-    at Module._load (node:internal/modules/cjs/loader:1013:12)
-    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
-    at node:internal/main/run_main_module:28:49
-
-Node.js v18.19.1
+[2024-12-24T07:31:16.160Z] INFO: Starting dYdX Integration Test...
+[2024-12-24T07:31:16.164Z] INFO: Testing WebSocket connection...
+[2024-12-24T07:31:16.165Z] ERROR: Test Failed: connectToDYDX is not a function
+[2024-12-24T07:31:16.165Z] INFO: Integration Test Completed.
+[2024-12-24T07:31:17.231Z] INFO: Connected to dYdX WebSocket
+[2024-12-24T07:31:17.272Z] INFO: Stored Raw Message: connected
+[2024-12-24T07:31:17.557Z] INFO: Stored Raw Message: error
