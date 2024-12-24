@@ -1,6 +1,7 @@
 // Test for dYdX WebSocket data processing
 const { connectToDYDX } = require('../data-collection/fetch-dydx-data');
 const Redis = require('ioredis');
+const redis = new Redis();
 const { logger } = require('../monitoring/logger');
 
 const redis = new Redis();
