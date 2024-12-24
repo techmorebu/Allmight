@@ -25,11 +25,11 @@ async function fetchActiveMarkets() {
 function connectToDYDXWebSocket() {
     return new Promise((resolve, reject) => {
         logger.info('Connecting to dYdX WebSocket...');
-        ws = new WebSocket(DYDX_WS_URL);
+        const ws = new WebSocket(DYDX_WS_URL);
 
         ws.on('open', () => {
             logger.info('Connected to dYdX WebSocket');
-            resolve();
+            resolve(ws); // Resolve with the WebSocket instance
         });
 
         ws.on('error', (error) => {
@@ -87,4 +87,6 @@ async function startFetcher() {
     }
 }
 
-module.exports = { startFetcher, fetchActiveMarkets };
+module.exports = {startFetcher,
+    fetchActiveMarkets,
+    connectToDYDXWebSocket};
