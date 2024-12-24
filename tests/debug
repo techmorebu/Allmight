@@ -1,12 +1,20 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/start-dydx-integration.js
-[2024-12-24T07:36:45.679Z] INFO: Starting dYdX Integration Test...
-[2024-12-24T07:36:45.686Z] INFO: Testing WebSocket connection...
-[2024-12-24T07:36:46.289Z] INFO: Connected to dYdX WebSocket
-[2024-12-24T07:36:46.294Z] INFO: WebSocket connection successful. Proceeding with fetcher...
-[2024-12-24T07:36:46.301Z] INFO: Subscribed to market: BTC-USD
-[2024-12-24T07:36:46.302Z] INFO: Subscribed to market: ETH-USD
-[2024-12-24T07:36:46.303Z] INFO: Integration Test Completed.
-[2024-12-24T07:36:46.308Z] INFO: Stored Raw Message: connected
-[2024-12-24T07:36:46.584Z] INFO: Stored Raw Message: subscribed
-[2024-12-24T07:36:46.587Z] INFO: Stored Raw Message: subscribed
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-dydx-websocket.js
+[2024-12-24T07:45:25.944Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-24T07:45:26.004Z] INFO: Test completed.
+[2024-12-24T07:45:27.217Z] INFO: Connected to dYdX WebSocket
+[2024-12-24T07:45:27.225Z] INFO: Subscribed to market: BTC-USD
+[2024-12-24T07:45:27.225Z] INFO: Subscribed to market: ETH-USD
+[2024-12-24T07:45:27.804Z] INFO: Subscription confirmed for channel: v3_orderbook, market: BTC-USD
+[2024-12-24T07:45:27.987Z] INFO: Subscription confirmed for channel: v3_orderbook, market: ETH-USD
+/home/techbu/OFA_Project_Local/ofa-project/node_modules/ioredis/built/Redis.js:332
+            command.reject(new Error(utils_1.CONNECTION_CLOSED_ERROR_MSG));
+                           ^
 
+Error: Connection is closed.
+    at EventEmitter.sendCommand (/home/techbu/OFA_Project_Local/ofa-project/node_modules/ioredis/built/Redis.js:332:28)
+    at EventEmitter.get (/home/techbu/OFA_Project_Local/ofa-project/node_modules/ioredis/built/utils/Commander.js:90:25)
+    at Timeout._onTimeout (/home/techbu/OFA_Project_Local/ofa-project/tests/test-fetch-dydx-websocket.js:17:38)
+    at listOnTimeout (node:internal/timers:569:17)
+    at process.processTimers (node:internal/timers:512:7)
+
+Node.js v18.19.1
