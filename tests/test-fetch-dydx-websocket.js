@@ -1,18 +1,33 @@
-const { connectToDYDXWebSocket } = require('../data-collection/fetch-dydx-data');
-const logger = require('../monitoring/logger');
+// Test for dYdX WebSocket data processing
+const { connectToDYDX } = require('../data-collection/fetch-dydx-data');
+const Redis = require('ioredis');
+const { logger } = require('../monitoring/logger');
 
-(async () => {
+const redis = new Redis();
+
+async function testDYDXFetcher() {
     logger.info('Starting dYdX WebSocket fetcher test...');
-    try {
-        const markets = ['BTC-USD', 'ETH-USD'];
-        const onMessage = (message) => {
-            logger.info(`Received data: ${JSON.stringify(message)}`);
-        };
 
-        await connectToDYDXWebSocket(markets, onMessage);
+    try {
+        connectToDYDX();
+
+        // Wait for a few seconds to allow data to populate Redis
+        setTimeout(async () => {
+            const key = 'dydx:BTC-USD:orderbook';
+            const data = await redis.get(key);
+
+            if (data) {
+                logger.info(`Data fetched from Redis: ${data}`);
+            } else {
+                logger.error('No data found in Redis for BTC-USD');
+            }
+        }, 5000);
     } catch (error) {
-        logger.error(`Error during test: ${error.message}`);
+        logger.error(`Test failed: ${error.message}`);
     } finally {
         logger.info('Test completed.');
+        redis.quit();
     }
-})();
+}
+
+testDYDXFetcher();
