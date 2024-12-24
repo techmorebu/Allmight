@@ -35,15 +35,14 @@ function connectToDYDX(markets) {
 
     ws.on("open", () => {
         logger.info("Connected to dYdX WebSocket");
-        markets.forEach((market, index) => {
+        markets.forEach((market) => {
             const subscriptionMessage = {
                 type: "subscribe",
                 channel: "v3_orderbook",
                 market,
-                id: index + 1, // Adding unique id for each subscription
             };
             ws.send(JSON.stringify(subscriptionMessage));
-            logger.info(`Subscribed to market: ${market} with id: ${subscriptionMessage.id}`);
+            logger.info(`Subscribed to market: ${market}`);
         });
     });
 
@@ -81,5 +80,6 @@ function connectToDYDX(markets) {
         logger.info("dYdX WebSocket connection closed");
     });
 }
+
 
 module.exports = { connectToDYDX, parseOrderbookMessage };
