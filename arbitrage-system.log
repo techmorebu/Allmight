@@ -2323,3 +2323,13 @@
 [2024-12-24T07:31:17.231Z] INFO: Connected to dYdX WebSocket
 [2024-12-24T07:31:17.272Z] INFO: Stored Raw Message: connected
 [2024-12-24T07:31:17.557Z] INFO: Stored Raw Message: error
+[2024-12-24T07:36:45.679Z] INFO: Starting dYdX Integration Test...
+[2024-12-24T07:36:45.686Z] INFO: Testing WebSocket connection...
+[2024-12-24T07:36:46.289Z] INFO: Connected to dYdX WebSocket
+[2024-12-24T07:36:46.294Z] INFO: WebSocket connection successful. Proceeding with fetcher...
+[2024-12-24T07:36:46.301Z] INFO: Subscribed to market: BTC-USD
+[2024-12-24T07:36:46.302Z] INFO: Subscribed to market: ETH-USD
+[2024-12-24T07:36:46.303Z] INFO: Integration Test Completed.
+[2024-12-24T07:36:46.308Z] INFO: Stored Raw Message: connected
+[2024-12-24T07:36:46.584Z] INFO: Stored Raw Message: subscribed
+[2024-12-24T07:36:46.587Z] INFO: Stored Raw Message: subscribed
