@@ -57,7 +57,7 @@ function handleWebSocketMessage(data) {
         const message = JSON.parse(data);
 
         if (message.type === 'subscribed' && message.channel === 'v3_orderbook') {
-            logger.info(`Subscription confirmed for channel: ${message.channel}, market: ${message.market || 'unknown'}`);
+            logger.info(`Subscription confirmed for channel: ${message.channel}, market: ${message.market}`);
         } else if (message.type === 'v3_orderbook') {
             const { market, bids, asks } = message.contents;
             const bestBid = bids[0] || { price: 'N/A', size: 'N/A' };
