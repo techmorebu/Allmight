@@ -2733,3 +2733,4 @@
 [2024-12-25T02:08:56.024Z] INFO: Test: Updated and stored order book in Redis
 [2024-12-25T02:08:56.026Z] INFO: Test completed successfully.
 [2024-12-25T02:08:57.071Z] INFO: Connected to dYdX WebSocket
+[2024-12-25T08:43:22.207Z] WARN: WebSocket connection closed.
