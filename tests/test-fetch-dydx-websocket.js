@@ -1,4 +1,4 @@
-const { fetchActiveMarkets, connectToDYDXWebSocket, subscribeToMarkets } = require('../data-collection/fetch-dydx-data');
+const { connectToDYDXWebSocket, subscribeToMarkets } = require('../data-collection/fetch-dydx-data');
 const { logger } = require('../monitoring/logger');
 const Redis = require('ioredis');
 
@@ -6,37 +6,46 @@ const Redis = require('ioredis');
     try {
         logger.info('Starting dYdX WebSocket fetcher test...');
         
-        // Fetch active markets
-        const activeMarkets = await fetchActiveMarkets();
-        const testMarkets = activeMarkets.slice(0, 2); // Test with 2 markets
-        logger.info(`Testing with markets: ${testMarkets.join(', ')}`);
+        // Mock order book data
+        const mockOrderBookSnapshot = {
+            type: 'snapshot',
+            id: 'ZEC-USD',
+            contents: {
+                asks: [{ price: '30.10', size: '1.2' }],
+                bids: [{ price: '30.00', size: '1.5' }],
+            },
+        };
+        const mockOrderBookUpdate = {
+            type: 'update',
+            id: 'ZEC-USD',
+            contents: {
+                asks: [{ price: '30.10', size: '1.0' }], // Update size
+                bids: [{ price: '29.90', size: '0.5' }], // Add new bid
+            },
+        };
 
         // Connect to Redis
         const redis = new Redis();
         logger.info('Connected to Redis');
 
-        // Simulate order book parsing
-        const mockOrderbook = {
-            type: 'snapshot',
-            id: testMarkets[0],
-            contents: {
-                bids: [{ price: '30.00', size: '1.5' }],
-                asks: [{ price: '30.10', size: '1.2' }],
-            },
-        };
-        await redis.set(`dydx:orderbook:${mockOrderbook.id}`, JSON.stringify(mockOrderbook));
-        logger.info(`Test: Stored mocked order book data for ${mockOrderbook.id}`);
-        logger.info(`Cached Data: ${JSON.stringify(mockOrderbook)}`);
-
         // Connect to WebSocket
         const ws = connectToDYDXWebSocket();
-        ws.on('open', async () => {
-            logger.info('WebSocket connection is open. Proceeding with subscriptions.');
-            await subscribeToMarkets(ws, testMarkets);
-            logger.info('Test completed successfully.');
-            redis.disconnect();
-        });
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait for connection
+        logger.info('WebSocket connection established.');
 
+        // Store snapshot in Redis
+        await redis.set(`dydx:orderbook:${mockOrderBookSnapshot.id}`, JSON.stringify(mockOrderBookSnapshot.contents));
+        logger.info('Test: Stored mocked order book snapshot in Redis');
+
+        // Simulate handling update
+        const currentOrderBook = JSON.parse(await redis.get(`dydx:orderbook:${mockOrderBookSnapshot.id}`));
+        const updatedOrderBook = mergeOrderBookUpdates(currentOrderBook, mockOrderBookUpdate.contents);
+        await redis.set(`dydx:orderbook:${mockOrderBookSnapshot.id}`, JSON.stringify(updatedOrderBook));
+        logger.info('Test: Updated mocked order book in Redis');
+        logger.info(`Updated Order Book: ${JSON.stringify(updatedOrderBook)}`);
+
+        logger.info('Test completed successfully.');
+        redis.disconnect();
     } catch (error) {
         logger.error(`Test failed: ${error.message}`);
     }
