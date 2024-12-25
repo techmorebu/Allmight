@@ -1,9 +1,16 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-dydx-websocket.js
-[2024-12-25T01:11:12.837Z] INFO: Starting dYdX WebSocket fetcher test...
-[2024-12-25T01:11:13.559Z] INFO: Fetched 38 active markets.
-[2024-12-25T01:11:13.559Z] INFO: Fetched 38 active markets.
-[2024-12-25T01:11:13.560Z] INFO: Testing with markets: ZEC-USD, EOS-USD
-[2024-12-25T01:11:13.561Z] INFO: Connected to Redis
-[2024-12-25T01:11:14.157Z] INFO: Connected to dYdX WebSocket
-[2024-12-25T01:11:14.158Z] INFO: Test completed successfully.
-[2024-12-25T01:11:14.161Z] INFO: WebSocket connected with ID: 7f0632f9-adee-430e-8030-82a83d95d33c
+[2024-12-25T01:17:41.245Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-25T01:17:42.014Z] INFO: Fetched 38 active markets.
+[2024-12-25T01:17:42.015Z] INFO: Fetched 38 active markets.
+[2024-12-25T01:17:42.015Z] INFO: Testing with markets: ZEC-USD, EOS-USD
+[2024-12-25T01:17:42.017Z] INFO: Connected to Redis
+[2024-12-25T01:17:42.027Z] INFO: Test: Stored mocked order book data for ZEC-USD
+[2024-12-25T01:17:42.028Z] INFO: Cached Data: {"type":"snapshot","id":"ZEC-USD","contents":{"bids":[{"price":"30.00","size":"1.5"}],"asks":[{"price":"30.10","size":"1.2"}]}}
+[2024-12-25T01:17:42.029Z] INFO: Test completed successfully.
+[2024-12-25T01:17:42.610Z] INFO: Connected to dYdX WebSocket
+[2024-12-25T01:17:42.610Z] INFO: WebSocket connection is open. Proceeding with subscriptions.
+[2024-12-25T01:17:42.614Z] INFO: Subscribed to market: ZEC-USD
+[2024-12-25T01:17:42.615Z] INFO: Subscribed to market: EOS-USD
+[2024-12-25T01:17:42.619Z] INFO: WebSocket connected with ID: 135704f8-dafc-407e-aa1c-ea641d06e0f9
+[2024-12-25T01:17:42.913Z] INFO: Subscription confirmed for market: ZEC-USD
+[2024-12-25T01:17:42.916Z] INFO: Subscription confirmed for market: EOS-USD
