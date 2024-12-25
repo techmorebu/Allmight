@@ -28,67 +28,40 @@ function connectToDYDXWebSocket() {
     return ws;
 }
 
-async function processOrderBookMessage(message) {
-    try {
-        if (message.type === 'snapshot' || message.type === 'update') {
-            const normalizedOrderBook = {
-                market: message.id,
-                timestamp: Date.now(),
-                bestBid: message.contents.bids?.[0] || null,
-                bestAsk: message.contents.asks?.[0] || null,
-            };
-
-            // Cache normalized order book data
-            await redis.set(`dydx:orderbook:${normalizedOrderBook.market}`, JSON.stringify(normalizedOrderBook));
-            logger.info(`Stored order book for ${normalizedOrderBook.market}: ${JSON.stringify(normalizedOrderBook)}`);
-        } else {
-            logger.info(`Unhandled order book message type: ${message.type}`);
-        }
-    } catch (error) {
-        logger.error(`Failed to process order book message: ${error.message}`);
-    }
-}
-
-
-async function handleMessage(message, ws) {
-    switch (message.type) {
-        case 'connected':
-            logger.info(`WebSocket connected with ID: ${message.connection_id}`);
-            break;
-        case 'subscribed':
-            logger.info(`Subscription confirmed for market: ${message.id}`);
-            break;
-        case 'snapshot':
-            await redis.set(`dydx:orderbook:${message.id}`, JSON.stringify(message.contents));
-            logger.info(`Stored order book for ${message.id}`);
-            break;
-        default:
-            logger.debug(`Unhandled message type: ${JSON.stringify(message)}`);
-    }
-}
-
-
 async function subscribeToMarkets(ws, markets) {
-    ws.on('open', () => {
-        logger.info('WebSocket connection is open. Proceeding with subscriptions.');
-        markets.forEach((market) => {
-            const subscriptionMessage = {
-                type: 'subscribe',
-                channel: 'v3_orderbook',
-                id: market,
-            };
-            ws.send(JSON.stringify(subscriptionMessage));
-            logger.info(`Subscribed to market: ${market}`);
-        });
+    markets.forEach((market) => {
+        const subscriptionMessage = {
+            type: 'subscribe',
+            channel: 'v3_orderbook',
+            id: market,
+        };
+        ws.send(JSON.stringify(subscriptionMessage));
+        logger.info(`Subscribed to market: ${market}`);
     });
 
     ws.on('message', async (data) => {
         const message = JSON.parse(data);
-        await handleMessage(message, ws);
+        if (message.type === 'subscribed' && message.channel === 'v3_orderbook') {
+            logger.info(`Subscription confirmed for market: ${message.id}`);
+        } else if (message.type === 'snapshot' || message.type === 'update') {
+            const parsedOrderBook = {
+                market: message.id,
+                bids: message.contents.bids.map((bid) => ({
+                    price: parseFloat(bid.price),
+                    size: parseFloat(bid.size),
+                })),
+                asks: message.contents.asks.map((ask) => ({
+                    price: parseFloat(ask.price),
+                    size: parseFloat(ask.size),
+                })),
+                timestamp: new Date().toISOString(),
+            };
+            await redis.set(`dydx:orderbook:${message.id}`, JSON.stringify(parsedOrderBook));
+            logger.info(`Stored parsed order book for ${message.id}`);
+        } else {
+            logger.info(`Unhandled message type: ${JSON.stringify(message)}`);
+        }
     });
-
-    ws.on('error', (error) => logger.error(`WebSocket error: ${error.message}`));
 }
-
 
 module.exports = { fetchActiveMarkets, connectToDYDXWebSocket, subscribeToMarkets };
