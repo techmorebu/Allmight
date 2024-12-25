@@ -1,15 +1,7 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-dydx-websocket.js
-[2024-12-25T01:47:38.855Z] INFO: Starting dYdX WebSocket fetcher test...
-[2024-12-25T01:47:39.229Z] INFO: Fetched 38 active markets.
-[2024-12-25T01:47:39.229Z] INFO: Testing with markets: ZEC-USD, EOS-USD
-[2024-12-25T01:47:39.230Z] INFO: Connected to Redis
-[2024-12-25T01:47:39.238Z] INFO: Test: Stored mocked order book data for ZEC-USD
-[2024-12-25T01:47:39.239Z] INFO: Cached Data: {"type":"snapshot","id":"ZEC-USD","contents":{"bids":[{"price":"30.00","size":"1.5"}],"asks":[{"price":"30.10","size":"1.2"}]}}
-[2024-12-25T01:47:39.804Z] INFO: Connected to dYdX WebSocket
-[2024-12-25T01:47:39.804Z] INFO: WebSocket connection is open. Proceeding with subscriptions.
-[2024-12-25T01:47:39.807Z] INFO: Subscribed to market: ZEC-USD
-[2024-12-25T01:47:39.808Z] INFO: Subscribed to market: EOS-USD
-[2024-12-25T01:47:39.809Z] INFO: Test completed successfully.
-[2024-12-25T01:47:40.126Z] INFO: Subscription confirmed for market: ZEC-USD
-[2024-12-25T01:47:40.130Z] INFO: Subscription confirmed for market: EOS-USD
-
+[2024-12-25T01:53:53.739Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-25T01:53:53.744Z] INFO: Connected to Redis
+[2024-12-25T01:53:54.661Z] INFO: Connected to dYdX WebSocket
+[2024-12-25T01:53:54.806Z] INFO: WebSocket connection established.
+[2024-12-25T01:53:54.811Z] INFO: Test: Stored mocked order book snapshot in Redis
+[2024-12-25T01:53:54.816Z] ERROR: Test failed: mergeOrderBookUpdates is not defined
