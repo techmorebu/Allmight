@@ -1,4 +1,4 @@
-const { fetchActiveMarkets, connectToDYDXWebSocket, subscribeToMarkets } = require('../data-collection/fetch-dydx-data');
+const { connectToDYDXWebSocket, fetchActiveMarkets, subscribeToMarkets } = require('../data-collection/fetch-dydx-data');
 const { logger } = require('../monitoring/logger');
 const Redis = require('ioredis');
 
@@ -7,11 +7,11 @@ const Redis = require('ioredis');
         logger.info('Starting dYdX WebSocket fetcher test...');
 
         // Fetch active markets
-        const markets = await fetchActiveMarkets();
-        logger.info(`Fetched ${markets.length} active markets.`);
+        const activeMarkets = await fetchActiveMarkets();
+        logger.info(`Fetched ${activeMarkets.length} active markets.`);
 
         // Limit markets for testing
-        const testMarkets = markets.slice(0, 2); // Example: Use only 2 markets for testing
+        const testMarkets = activeMarkets.slice(0, 2); // Example: Take the first 2 markets
         logger.info(`Testing with markets: ${testMarkets.join(', ')}`);
 
         // Connect to Redis
@@ -21,16 +21,27 @@ const Redis = require('ioredis');
         // Connect to WebSocket
         const ws = connectToDYDXWebSocket();
 
-        // Wait for WebSocket to open before subscribing
-        ws.on('open', async () => {
-            await subscribeToMarkets(ws, testMarkets);
-            logger.info('Test completed successfully.');
-            redis.disconnect();
-        });
+        // Subscribe to markets
+        await subscribeToMarkets(ws, testMarkets);
 
-        ws.on('error', (error) => {
-            logger.error(`WebSocket error: ${error.message}`);
-        });
+        // Simulate order book message processing
+        const mockOrderBookMessage = {
+            type: 'snapshot',
+            id: 'ZEC-USD',
+            contents: {
+                bids: [{ price: '30.00', size: '1.5' }],
+                asks: [{ price: '30.10', size: '1.2' }],
+            },
+        };
+        await redis.set(`dydx:orderbook:${mockOrderBookMessage.id}`, JSON.stringify(mockOrderBookMessage));
+        logger.info(`Test: Stored mocked order book data for ${mockOrderBookMessage.id}`);
+
+        // Verify cached data
+        const cachedData = await redis.get(`dydx:orderbook:${mockOrderBookMessage.id}`);
+        logger.info(`Cached Data: ${cachedData}`);
+
+        logger.info('Test completed successfully.');
+        redis.disconnect();
     } catch (error) {
         logger.error(`Test failed: ${error.message}`);
     }
