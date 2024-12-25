@@ -1,7 +1,9 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-dydx-websocket.js
-[2024-12-25T01:53:53.739Z] INFO: Starting dYdX WebSocket fetcher test...
-[2024-12-25T01:53:53.744Z] INFO: Connected to Redis
-[2024-12-25T01:53:54.661Z] INFO: Connected to dYdX WebSocket
-[2024-12-25T01:53:54.806Z] INFO: WebSocket connection established.
-[2024-12-25T01:53:54.811Z] INFO: Test: Stored mocked order book snapshot in Redis
-[2024-12-25T01:53:54.816Z] ERROR: Test failed: mergeOrderBookUpdates is not defined
+[2024-12-25T01:58:14.234Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-25T01:58:14.238Z] INFO: Connected to Redis
+[2024-12-25T01:58:14.298Z] INFO: Connected to dYdX WebSocket
+[2024-12-25T01:58:14.326Z] INFO: Test: Stored mocked order book snapshot in Redis
+[2024-12-25T01:58:14.330Z] INFO: Test: Updated and stored order book in Redis
+[2024-12-25T01:58:14.332Z] INFO: Test completed successfully.
+[2024-12-25T01:58:14.784Z] INFO: Connected to dYdX WebSocket
+
