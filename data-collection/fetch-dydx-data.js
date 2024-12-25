@@ -6,6 +6,7 @@ const Redis = require('ioredis');
 const redis = new Redis();
 
 const DYDX_API_URL = 'https://api.dydx.exchange/v3/markets';
+const DYDX_WS_URL = 'wss://api.dydx.exchange/v3/ws';
 
 async function fetchActiveMarkets() {
     try {
@@ -20,18 +21,13 @@ async function fetchActiveMarkets() {
 }
 
 function connectToDYDXWebSocket() {
-    const ws = new WebSocket('wss://api.dydx.exchange/v3/ws');
-    return new Promise((resolve, reject) => {
-        ws.on('open', () => {
-            logger.info('Connected to dYdX WebSocket');
-            resolve(ws);
-        });
-        ws.on('error', (error) => {
-            logger.error(`WebSocket error: ${error.message}`);
-            reject(error);
-        });
-        ws.on('close', () => logger.warn('WebSocket connection closed.'));
-    });
+    const ws = new WebSocket(DYDX_WS_URL);
+
+    ws.on('open', () => logger.info('Connected to dYdX WebSocket'));
+    ws.on('error', (error) => logger.error(`WebSocket error: ${error.message}`));
+    ws.on('close', () => logger.warn('WebSocket connection closed.'));
+    
+    return ws;
 }
 
 async function subscribeToMarkets(ws, markets) {
@@ -47,31 +43,19 @@ async function subscribeToMarkets(ws, markets) {
 
     ws.on('message', async (data) => {
         const message = JSON.parse(data);
-
-        switch (message.type) {
-            case 'connected':
-                logger.info(`WebSocket connected with ID: ${message.connection_id}`);
-                break;
-            case 'subscribed':
-                if (message.channel === 'v3_orderbook') {
-                    logger.info(`Subscription confirmed for market: ${message.id}`);
-                }
-                break;
-            case 'snapshot':
+        if (message.type === 'subscribed' && message.channel === 'v3_orderbook') {
+            logger.info(`Subscription confirmed for market: ${message.id}`);
+        } else if (message.type === 'snapshot') {
+            try {
                 await redis.set(`dydx:orderbook:${message.id}`, JSON.stringify(message.contents));
                 logger.info(`Stored order book for ${message.id}`);
-                break;
-            case 'update':
-                await redis.set(`dydx:orderbook:${message.id}`, JSON.stringify(message.contents));
-                logger.info(`Updated order book for ${message.id}`);
-                break;
-            default:
-                // Log unhandled messages at a lower log level
-                logger.debug(`Unhandled message: ${JSON.stringify(message)}`);
-                break;
+            } catch (err) {
+                logger.error(`Failed to store order book for ${message.id}: ${err.message}`);
+            }
+        } else {
+            logger.debug(`Unhandled message: ${JSON.stringify(message)}`);
         }
     });
 }
-
 
 module.exports = { fetchActiveMarkets, connectToDYDXWebSocket, subscribeToMarkets };
