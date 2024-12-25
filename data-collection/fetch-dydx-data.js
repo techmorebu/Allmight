@@ -28,22 +28,27 @@ function connectToDYDXWebSocket() {
     return ws;
 }
 
-function parseOrderBook(rawOrderBook, market, maxLevels = 5) {
-    const parsed = {
-        market,
-        bids: rawOrderBook.bids.slice(0, maxLevels).map(level => ({
-            price: parseFloat(level.price),
-            size: parseFloat(level.size),
-        })),
-        asks: rawOrderBook.asks.slice(0, maxLevels).map(level => ({
-            price: parseFloat(level.price),
-            size: parseFloat(level.size),
-        })),
-        timestamp: Date.now(),
-    };
-    logger.info(`Parsed order book for ${market}: ${JSON.stringify(parsed)}`);
-    return parsed;
+async function processOrderBookMessage(message) {
+    try {
+        if (message.type === 'snapshot' || message.type === 'update') {
+            const normalizedOrderBook = {
+                market: message.id,
+                timestamp: Date.now(),
+                bestBid: message.contents.bids?.[0] || null,
+                bestAsk: message.contents.asks?.[0] || null,
+            };
+
+            // Cache normalized order book data
+            await redis.set(`dydx:orderbook:${normalizedOrderBook.market}`, JSON.stringify(normalizedOrderBook));
+            logger.info(`Stored order book for ${normalizedOrderBook.market}: ${JSON.stringify(normalizedOrderBook)}`);
+        } else {
+            logger.info(`Unhandled order book message type: ${message.type}`);
+        }
+    } catch (error) {
+        logger.error(`Failed to process order book message: ${error.message}`);
+    }
 }
+
 
 async function handleMessage(message, ws) {
     switch (message.type) {
