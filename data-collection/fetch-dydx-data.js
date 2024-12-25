@@ -46,14 +46,22 @@ function parseOrderBook(rawOrderBook, market, maxLevels = 5) {
 }
 
 async function handleMessage(message, ws) {
-    if (message.type === 'snapshot' || message.type === 'update') {
-        const parsedData = parseOrderBook(message.contents, message.id, 10);
-        await redis.set(`dydx:orderbook:${message.id}`, JSON.stringify(parsedData));
-        logger.info(`Stored optimized order book for ${message.id}`);
-    } else {
-        logger.info(`Unhandled message: ${JSON.stringify(message)}`);
+    switch (message.type) {
+        case 'connected':
+            logger.info(`WebSocket connected with ID: ${message.connection_id}`);
+            break;
+        case 'subscribed':
+            logger.info(`Subscription confirmed for market: ${message.id}`);
+            break;
+        case 'snapshot':
+            await redis.set(`dydx:orderbook:${message.id}`, JSON.stringify(message.contents));
+            logger.info(`Stored order book for ${message.id}`);
+            break;
+        default:
+            logger.debug(`Unhandled message type: ${JSON.stringify(message)}`);
     }
 }
+
 
 async function subscribeToMarkets(ws, markets) {
     ws.on('open', () => {
