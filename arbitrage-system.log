@@ -2634,3 +2634,10 @@
 [2024-12-24T09:27:48.943Z] INFO: Subscribed to market: AVAX-USD
 [2024-12-24T09:27:49.945Z] INFO: Waiting for data collection...
 [2024-12-24T09:27:54.949Z] INFO: Test completed successfully.
+[2024-12-25T00:42:08.520Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-25T00:42:09.091Z] INFO: Fetched 38 active markets.
+[2024-12-25T00:42:09.091Z] INFO: Fetched 38 active markets.
+[2024-12-25T00:42:09.091Z] INFO: Testing with markets: ZEC-USD, EOS-USD
+[2024-12-25T00:42:09.092Z] INFO: Connected to Redis
+[2024-12-25T00:42:09.101Z] ERROR: Test failed: WebSocket is not open: readyState 0 (CONNECTING)
+[2024-12-25T00:42:09.689Z] INFO: Connected to dYdX WebSocket
