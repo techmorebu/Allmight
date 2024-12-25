@@ -6,7 +6,6 @@ const Redis = require('ioredis');
 const redis = new Redis();
 
 const DYDX_API_URL = 'https://api.dydx.exchange/v3/markets';
-const DYDX_WS_URL = 'wss://api.dydx.exchange/v3/ws';
 
 async function fetchActiveMarkets() {
     try {
@@ -21,11 +20,18 @@ async function fetchActiveMarkets() {
 }
 
 function connectToDYDXWebSocket() {
-    const ws = new WebSocket(DYDX_WS_URL);
-    ws.on('open', () => logger.info('Connected to dYdX WebSocket'));
-    ws.on('error', (error) => logger.error(`WebSocket error: ${error.message}`));
-    ws.on('close', () => logger.warn('WebSocket connection closed.'));
-    return ws;
+    const ws = new WebSocket('wss://api.dydx.exchange/v3/ws');
+    return new Promise((resolve, reject) => {
+        ws.on('open', () => {
+            logger.info('Connected to dYdX WebSocket');
+            resolve(ws);
+        });
+        ws.on('error', (error) => {
+            logger.error(`WebSocket error: ${error.message}`);
+            reject(error);
+        });
+        ws.on('close', () => logger.warn('WebSocket connection closed.'));
+    });
 }
 
 async function subscribeToMarkets(ws, markets) {
@@ -43,23 +49,11 @@ async function subscribeToMarkets(ws, markets) {
         const message = JSON.parse(data);
         if (message.type === 'subscribed' && message.channel === 'v3_orderbook') {
             logger.info(`Subscription confirmed for market: ${message.id}`);
-        } else if (message.type === 'snapshot' || message.type === 'update') {
-            const parsedOrderBook = {
-                market: message.id,
-                bids: message.contents.bids.map((bid) => ({
-                    price: parseFloat(bid.price),
-                    size: parseFloat(bid.size),
-                })),
-                asks: message.contents.asks.map((ask) => ({
-                    price: parseFloat(ask.price),
-                    size: parseFloat(ask.size),
-                })),
-                timestamp: new Date().toISOString(),
-            };
-            await redis.set(`dydx:orderbook:${message.id}`, JSON.stringify(parsedOrderBook));
-            logger.info(`Stored parsed order book for ${message.id}`);
+        } else if (message.type === 'snapshot') {
+            await redis.set(`dydx:orderbook:${message.id}`, JSON.stringify(message.contents));
+            logger.info(`Stored order book for ${message.id}`);
         } else {
-            logger.info(`Unhandled message type: ${JSON.stringify(message)}`);
+            logger.info(`Unhandled message: ${JSON.stringify(message)}`);
         }
     });
 }
