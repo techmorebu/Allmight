@@ -138,4 +138,8 @@ function mergePriceLevels(existingLevels, newLevels) {
         .sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
 }
 
-module.exports = { fetchActiveMarkets, connectToDYDXWebSocket, subscribeToMarkets };
+module.exports = { 
+    fetchActiveMarkets, 
+    connectToDYDXWebSocket, 
+    subscribeToMarkets, 
+    mergeOrderBookUpdates};
