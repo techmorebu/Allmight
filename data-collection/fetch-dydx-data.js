@@ -47,15 +47,31 @@ async function subscribeToMarkets(ws, markets) {
 
     ws.on('message', async (data) => {
         const message = JSON.parse(data);
-        if (message.type === 'subscribed' && message.channel === 'v3_orderbook') {
-            logger.info(`Subscription confirmed for market: ${message.id}`);
-        } else if (message.type === 'snapshot') {
-            await redis.set(`dydx:orderbook:${message.id}`, JSON.stringify(message.contents));
-            logger.info(`Stored order book for ${message.id}`);
-        } else {
-            logger.info(`Unhandled message: ${JSON.stringify(message)}`);
+
+        switch (message.type) {
+            case 'connected':
+                logger.info(`WebSocket connected with ID: ${message.connection_id}`);
+                break;
+            case 'subscribed':
+                if (message.channel === 'v3_orderbook') {
+                    logger.info(`Subscription confirmed for market: ${message.id}`);
+                }
+                break;
+            case 'snapshot':
+                await redis.set(`dydx:orderbook:${message.id}`, JSON.stringify(message.contents));
+                logger.info(`Stored order book for ${message.id}`);
+                break;
+            case 'update':
+                await redis.set(`dydx:orderbook:${message.id}`, JSON.stringify(message.contents));
+                logger.info(`Updated order book for ${message.id}`);
+                break;
+            default:
+                // Log unhandled messages at a lower log level
+                logger.debug(`Unhandled message: ${JSON.stringify(message)}`);
+                break;
         }
     });
 }
+
 
 module.exports = { fetchActiveMarkets, connectToDYDXWebSocket, subscribeToMarkets };
