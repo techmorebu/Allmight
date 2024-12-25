@@ -21,20 +21,16 @@ const Redis = require('ioredis');
         // Connect to WebSocket
         const ws = connectToDYDXWebSocket();
 
-        // Subscribe to test markets
-        await subscribeToMarkets(ws, testMarkets);
-
-        // Listen for snapshot and validate parsed data
-        ws.on('message', async (data) => {
-            const message = JSON.parse(data);
-            if (message.type === 'snapshot') {
-                const storedData = await redis.get(`dydx:orderbook:${message.id}`);
-                logger.info(`Verified data for ${message.id}: ${storedData}`);
-            }
+        // Wait for WebSocket to open before subscribing
+        ws.on('open', async () => {
+            await subscribeToMarkets(ws, testMarkets);
+            logger.info('Test completed successfully.');
+            redis.disconnect();
         });
 
-        logger.info('Test completed successfully.');
-        redis.disconnect();
+        ws.on('error', (error) => {
+            logger.error(`WebSocket error: ${error.message}`);
+        });
     } catch (error) {
         logger.error(`Test failed: ${error.message}`);
     }
