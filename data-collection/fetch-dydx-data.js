@@ -56,20 +56,26 @@ async function handleMessage(message, ws) {
 }
 
 async function subscribeToMarkets(ws, markets) {
-    markets.forEach((market) => {
-        const subscriptionMessage = {
-            type: 'subscribe',
-            channel: 'v3_orderbook',
-            id: market,
-        };
-        ws.send(JSON.stringify(subscriptionMessage));
-        logger.info(`Subscribed to market: ${market}`);
+    ws.on('open', () => {
+        logger.info('WebSocket connection is open. Proceeding with subscriptions.');
+        markets.forEach((market) => {
+            const subscriptionMessage = {
+                type: 'subscribe',
+                channel: 'v3_orderbook',
+                id: market,
+            };
+            ws.send(JSON.stringify(subscriptionMessage));
+            logger.info(`Subscribed to market: ${market}`);
+        });
     });
 
     ws.on('message', async (data) => {
         const message = JSON.parse(data);
         await handleMessage(message, ws);
     });
+
+    ws.on('error', (error) => logger.error(`WebSocket error: ${error.message}`));
 }
+
 
 module.exports = { fetchActiveMarkets, connectToDYDXWebSocket, subscribeToMarkets };
