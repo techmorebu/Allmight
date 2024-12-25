@@ -2641,3 +2641,11 @@
 [2024-12-25T00:42:09.092Z] INFO: Connected to Redis
 [2024-12-25T00:42:09.101Z] ERROR: Test failed: WebSocket is not open: readyState 0 (CONNECTING)
 [2024-12-25T00:42:09.689Z] INFO: Connected to dYdX WebSocket
+[2024-12-25T00:46:16.075Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-25T00:46:16.750Z] INFO: Fetched 38 active markets.
+[2024-12-25T00:46:16.750Z] INFO: Fetched 38 active markets.
+[2024-12-25T00:46:16.750Z] INFO: Testing with markets: ZEC-USD, EOS-USD
+[2024-12-25T00:46:16.752Z] INFO: Connected to Redis
+[2024-12-25T00:46:17.332Z] INFO: Connected to dYdX WebSocket
+[2024-12-25T00:46:17.335Z] INFO: Test completed successfully.
+[2024-12-25T00:46:17.341Z] INFO: Unhandled message: {"type":"connected","connection_id":"3ec9feae-3cdc-4d82-80b4-000b209c3949","message_id":0}
