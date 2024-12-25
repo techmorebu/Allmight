@@ -2672,3 +2672,9 @@
 [2024-12-25T01:17:42.619Z] INFO: WebSocket connected with ID: 135704f8-dafc-407e-aa1c-ea641d06e0f9
 [2024-12-25T01:17:42.913Z] INFO: Subscription confirmed for market: ZEC-USD
 [2024-12-25T01:17:42.916Z] INFO: Subscription confirmed for market: EOS-USD
+[2024-12-25T01:27:22.994Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-25T01:27:23.422Z] INFO: Fetched 38 active markets.
+[2024-12-25T01:27:23.423Z] INFO: Testing with markets: ZEC-USD, EOS-USD
+[2024-12-25T01:27:23.423Z] INFO: Connected to Redis
+[2024-12-25T01:27:23.432Z] ERROR: Test failed: WebSocket is not open: readyState 0 (CONNECTING)
+[2024-12-25T01:27:24.023Z] INFO: Connected to dYdX WebSocket
