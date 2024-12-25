@@ -1,9 +1,9 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-dydx-websocket.js
-[2024-12-25T00:46:16.075Z] INFO: Starting dYdX WebSocket fetcher test...
-[2024-12-25T00:46:16.750Z] INFO: Fetched 38 active markets.
-[2024-12-25T00:46:16.750Z] INFO: Fetched 38 active markets.
-[2024-12-25T00:46:16.750Z] INFO: Testing with markets: ZEC-USD, EOS-USD
-[2024-12-25T00:46:16.752Z] INFO: Connected to Redis
-[2024-12-25T00:46:17.332Z] INFO: Connected to dYdX WebSocket
-[2024-12-25T00:46:17.335Z] INFO: Test completed successfully.
-[2024-12-25T00:46:17.341Z] INFO: Unhandled message: {"type":"connected","connection_id":"3ec9feae-3cdc-4d82-80b4-000b209c3949","message_id":0}
+[2024-12-25T01:11:12.837Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-25T01:11:13.559Z] INFO: Fetched 38 active markets.
+[2024-12-25T01:11:13.559Z] INFO: Fetched 38 active markets.
+[2024-12-25T01:11:13.560Z] INFO: Testing with markets: ZEC-USD, EOS-USD
+[2024-12-25T01:11:13.561Z] INFO: Connected to Redis
+[2024-12-25T01:11:14.157Z] INFO: Connected to dYdX WebSocket
+[2024-12-25T01:11:14.158Z] INFO: Test completed successfully.
+[2024-12-25T01:11:14.161Z] INFO: WebSocket connected with ID: 7f0632f9-adee-430e-8030-82a83d95d33c
