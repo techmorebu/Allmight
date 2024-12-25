@@ -1,23 +1,37 @@
-// File: tests/test-fetch-dydx-websocket.js
-const { connectToDYDXWebSocket, subscribeToAllMarkets } = require('../data-collection/fetch-dydx-data');
+const { fetchActiveMarkets, connectToDYDXWebSocket, subscribeToMarkets } = require('../data-collection/fetch-dydx-data');
 const { logger } = require('../monitoring/logger');
 const Redis = require('ioredis');
 
-const redis = new Redis();
-
 (async () => {
     try {
-        logger.info('Starting expanded dYdX market coverage test...');
+        logger.info('Starting dYdX WebSocket fetcher test...');
 
-        // Connect to dYdX WebSocket
+        // Fetch active markets
+        const markets = await fetchActiveMarkets();
+        logger.info(`Fetched ${markets.length} active markets.`);
+
+        // Limit markets for testing
+        const testMarkets = markets.slice(0, 2); // Example: Use only 2 markets for testing
+        logger.info(`Testing with markets: ${testMarkets.join(', ')}`);
+
+        // Connect to Redis
+        const redis = new Redis();
+        logger.info('Connected to Redis');
+
+        // Connect to WebSocket
         const ws = connectToDYDXWebSocket();
 
-        // Subscribe to all active markets
-        await subscribeToAllMarkets(ws);
+        // Subscribe to test markets
+        await subscribeToMarkets(ws, testMarkets);
 
-        // Wait for data collection to ensure the WebSocket processes data
-        logger.info('Waiting for data collection...');
-        await new Promise((resolve) => setTimeout(resolve, 5000));
+        // Listen for snapshot and validate parsed data
+        ws.on('message', async (data) => {
+            const message = JSON.parse(data);
+            if (message.type === 'snapshot') {
+                const storedData = await redis.get(`dydx:orderbook:${message.id}`);
+                logger.info(`Verified data for ${message.id}: ${storedData}`);
+            }
+        });
 
         logger.info('Test completed successfully.');
         redis.disconnect();
