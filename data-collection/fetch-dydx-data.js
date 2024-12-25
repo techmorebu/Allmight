@@ -1,3 +1,4 @@
+// File: data-collection/fetch-dydx-data.js
 const axios = require('axios');
 const WebSocket = require('ws');
 const { logger } = require('../monitoring/logger');
@@ -8,9 +9,6 @@ const redis = new Redis();
 const DYDX_API_URL = 'https://api.dydx.exchange/v3/markets';
 const DYDX_WS_URL = 'wss://api.dydx.exchange/v3/ws';
 
-/**
- * Fetch the active markets from dYdX REST API.
- */
 async function fetchActiveMarkets() {
     try {
         const response = await axios.get(DYDX_API_URL);
@@ -23,31 +21,43 @@ async function fetchActiveMarkets() {
     }
 }
 
-/**
- * Connect to the dYdX WebSocket server.
- */
 function connectToDYDXWebSocket() {
     const ws = new WebSocket(DYDX_WS_URL);
-
     ws.on('open', () => logger.info('Connected to dYdX WebSocket'));
-
-    ws.on('error', (error) => {
-        logger.error(`WebSocket error: ${error.message}`);
-        setTimeout(() => connectToDYDXWebSocket(), 5000); // Retry connection
-    });
-
-    ws.on('close', (code, reason) => {
-        logger.warn(`WebSocket closed: Code ${code}, Reason ${reason}`);
-        setTimeout(() => connectToDYDXWebSocket(), 5000); // Retry connection
-    });
-
+    ws.on('error', (error) => logger.error(`WebSocket error: ${error.message}`));
+    ws.on('close', () => logger.warn('WebSocket connection closed.'));
     return ws;
 }
 
-/**
- * Subscribe to order book channels for specified markets.
- */
+function mergeOrderBookUpdates(orderBook, update) {
+    const updatedOrderBook = { ...orderBook };
+    ['bids', 'asks'].forEach((side) => {
+        update[side].forEach((updateEntry) => {
+            const existingIndex = updatedOrderBook[side].findIndex(
+                (entry) => entry.price === updateEntry.price
+            );
+
+            if (existingIndex >= 0) {
+                if (updateEntry.size === '0') {
+                    updatedOrderBook[side].splice(existingIndex, 1);
+                } else {
+                    updatedOrderBook[side][existingIndex].size = updateEntry.size;
+                }
+            } else if (updateEntry.size !== '0') {
+                updatedOrderBook[side].push(updateEntry);
+            }
+        });
+
+        updatedOrderBook[side].sort((a, b) =>
+            side === 'bids' ? b.price - a.price : a.price - b.price
+        );
+    });
+
+    return updatedOrderBook;
+}
+
 async function subscribeToMarkets(ws, markets) {
+    const orderBooks = {};
     markets.forEach((market) => {
         const subscriptionMessage = {
             type: 'subscribe',
@@ -56,90 +66,33 @@ async function subscribeToMarkets(ws, markets) {
         };
         ws.send(JSON.stringify(subscriptionMessage));
         logger.info(`Subscribed to market: ${market}`);
+        orderBooks[market] = { bids: [], asks: [] }; // Initialize empty order book
     });
 
-    await handleWebSocketMessage(ws);
-}
-
-/**
- * Handle WebSocket messages and parse order book data.
- */
-async function handleWebSocketMessage(ws) {
     ws.on('message', async (data) => {
         const message = JSON.parse(data);
 
-        switch (message.type) {
-            case 'connected':
-                logger.info(`WebSocket connected with ID: ${message.connection_id}`);
-                break;
-
-            case 'subscribed':
-                logger.info(`Subscription confirmed for market: ${message.id}`);
-                break;
-
-            case 'snapshot':
-                await redis.set(`dydx:orderbook:${message.id}`, JSON.stringify(message.contents));
-                logger.info(`Stored initial snapshot for ${message.id}`);
-                break;
-
-            case 'update':
-                const currentOrderBook = await redis.get(`dydx:orderbook:${message.id}`);
-                if (currentOrderBook) {
-                    const updatedOrderBook = mergeOrderBookUpdates(JSON.parse(currentOrderBook), message.contents);
-                    await redis.set(`dydx:orderbook:${message.id}`, JSON.stringify(updatedOrderBook));
-                    logger.info(`Updated order book for ${message.id}`);
-                } else {
-                    logger.warn(`No snapshot found for ${message.id}. Storing update as snapshot.`);
-                    await redis.set(`dydx:orderbook:${message.id}`, JSON.stringify(message.contents));
-                }
-                break;
-
-            default:
-                logger.debug(`Unhandled message type: ${JSON.stringify(message)}`);
-        }
-    });
-}
-
-/**
- * Merge updates into the current order book.
- */
-function mergeOrderBookUpdates(currentOrderBook, updates) {
-    const updatedAsks = mergePriceLevels(currentOrderBook.asks, updates.asks);
-    const updatedBids = mergePriceLevels(currentOrderBook.bids, updates.bids);
-
-    return {
-        ...currentOrderBook,
-        asks: updatedAsks,
-        bids: updatedBids,
-    };
-}
-
-/**
- * Merge price levels for asks or bids.
- */
-function mergePriceLevels(existingLevels, newLevels) {
-    const levelMap = new Map();
-
-    // Add existing levels
-    existingLevels.forEach((level) => levelMap.set(level.price, level.size));
-
-    // Apply updates
-    newLevels.forEach((level) => {
-        if (level.size === '0') {
-            levelMap.delete(level.price); // Remove levels with size 0
+        if (message.type === 'snapshot') {
+            const market = message.id;
+            await redis.set(`dydx:orderbook:${market}`, JSON.stringify(message.contents));
+            orderBooks[market] = message.contents;
+            logger.info(`Stored order book snapshot for ${market}`);
+        } else if (message.type === 'update') {
+            const market = message.id;
+            const existingOrderBook = orderBooks[market];
+            const updatedOrderBook = mergeOrderBookUpdates(existingOrderBook, message.contents);
+            await redis.set(`dydx:orderbook:${market}`, JSON.stringify(updatedOrderBook));
+            orderBooks[market] = updatedOrderBook;
+            logger.info(`Updated and stored order book for ${market}`);
         } else {
-            levelMap.set(level.price, level.size); // Update or add new levels
+            logger.info(`Unhandled message: ${JSON.stringify(message)}`);
         }
     });
-
-    // Convert back to array and sort
-    return Array.from(levelMap.entries())
-        .map(([price, size]) => ({ price, size }))
-        .sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
 }
 
-module.exports = { 
-    fetchActiveMarkets, 
-    connectToDYDXWebSocket, 
-    subscribeToMarkets, 
-    mergeOrderBookUpdates};
+module.exports = {
+    fetchActiveMarkets,
+    connectToDYDXWebSocket,
+    subscribeToMarkets,
+    mergeOrderBookUpdates,
+};
