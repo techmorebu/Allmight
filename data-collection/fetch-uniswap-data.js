@@ -1,34 +1,15 @@
-require('dotenv').config();
 const axios = require('axios');
 const { logger } = require('../monitoring/logger');
 const Redis = require('ioredis');
 
-const UNISWAP_GRAPHQL_URL = process.env.UNISWAP_GRAPHQL_URL;
-
 const redis = new Redis();
-
-async function fetchGraphQLData(query, variables = {}) {
-    try {
-        const response = await axios.post(UNISWAP_GRAPHQL_URL, { query, variables });
-        if (response.data.errors) {
-            logger.error(`GraphQL Errors: ${JSON.stringify(response.data.errors)}`);
-            throw new Error('GraphQL query failed');
-        }
-        return response.data.data;
-    } catch (error) {
-        logger.error(`Error fetching data from Uniswap: ${error.message}`);
-        throw error;
-    }
-}
+const UNISWAP_SUBGRAPH_URL = process.env.UNISWAP_SUBGRAPH_URL;
 
 async function fetchTopPools() {
-    const query = `
+    try {
+        const query = `
         {
-            pools(
-                first: 10,
-                orderBy: totalValueLockedUSD,
-                orderDirection: desc
-            ) {
+            pools(first: 10, orderBy: totalValueLockedUSD, orderDirection: desc) {
                 id
                 token0 {
                     symbol
@@ -37,31 +18,48 @@ async function fetchTopPools() {
                     symbol
                 }
                 totalValueLockedUSD
-                volumeUSD
             }
+        }`;
+
+        const response = await axios.post(UNISWAP_SUBGRAPH_URL, { query });
+        const pools = response.data.data.pools;
+
+        if (pools) {
+            logger.info(`Fetched ${pools.length} pools successfully.`);
+            return pools;
+        } else {
+            throw new Error('No pools found.');
         }
-    `;
-    const data = await fetchGraphQLData(query);
-    return data.pools;
+    } catch (error) {
+        logger.error(`Error fetching data from Uniswap: ${error.message}`);
+        throw error;
+    }
 }
 
-async function fetchTokenDayData(tokenId) {
-    const query = `
+async function fetchHistoricalDataForToken(tokenId) {
+    try {
+        const query = `
         {
-            tokenDayDatas(
-                first: 7,
-                orderBy: date,
-                orderDirection: desc,
-                where: { token: "${tokenId}" }
-            ) {
+            tokenDayDatas(where: { token: "${tokenId}" }, first: 7, orderBy: date, orderDirection: desc) {
                 date
-                dailyVolumeUSD
                 priceUSD
+                totalLiquidityUSD
             }
+        }`;
+
+        const response = await axios.post(UNISWAP_SUBGRAPH_URL, { query });
+        const historicalData = response.data.data.tokenDayDatas;
+
+        if (historicalData) {
+            logger.info(`Fetched historical data for token: ${tokenId}`);
+            return historicalData;
+        } else {
+            throw new Error(`No historical data found for token: ${tokenId}`);
         }
-    `;
-    const data = await fetchGraphQLData(query);
-    return data.tokenDayDatas;
+    } catch (error) {
+        logger.error(`Error fetching historical data for token: ${error.message}`);
+        throw error;
+    }
 }
 
-module.exports = { fetchTopPools, fetchTokenDayData };
+module.exports = { fetchTopPools, fetchHistoricalDataForToken };
