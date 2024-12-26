@@ -2774,3 +2774,8 @@
 [2024-12-26T08:08:35.315Z] INFO: Connected to Redis
 [2024-12-26T08:08:36.060Z] ERROR: Error fetching pools: No pools data found in response.
 [2024-12-26T08:08:36.061Z] ERROR: Test failed: No pools data found in response.
+[2024-12-26T08:21:00.635Z] INFO: Starting Uniswap fetcher test...
+[2024-12-26T08:21:00.638Z] INFO: Connected to Redis
+[2024-12-26T08:21:00.639Z] INFO: Fetching top pools...
+[2024-12-26T08:21:00.660Z] ERROR: Error fetching data from Uniswap: Invalid URL
+[2024-12-26T08:21:00.661Z] ERROR: Test failed: Invalid URL
