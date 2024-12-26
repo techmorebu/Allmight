@@ -1,15 +1,16 @@
 require('dotenv').config();
 const axios = require('axios');
-const { logger } = require('../monitoring/logger');
 const Redis = require('ioredis');
+const { logger } = require('../monitoring/logger');
 
 const UNISWAP_GRAPHQL_URL = process.env.UNISWAP_GRAPHQL_URL;
+const redis = new Redis();
 
 async function fetchTopPools() {
-    try {
-        const query = `
-        {
-            pools(first: 10, orderBy: totalValueLockedUSD, orderDirection: desc) {
+    logger.info('Fetching top pools...');
+    const query = `
+        query {
+            pools(orderBy: totalValueLockedUSD, orderDirection: desc, first: 10) {
                 id
                 token0 {
                     id
@@ -22,20 +23,23 @@ async function fetchTopPools() {
                 totalValueLockedUSD
                 volumeUSD
             }
-        }`;
+        }
+    `;
 
+    try {
         const response = await axios.post(UNISWAP_GRAPHQL_URL, { query });
+        const pools = response.data.data.pools;
 
-        if (response.data.errors) {
-            logger.error(`GraphQL Errors: ${JSON.stringify(response.data.errors)}`);
-            throw new Error('GraphQL query failed');
+        for (const pool of pools) {
+            const redisKey = `uniswap:pool:${pool.id}`;
+            await redis.set(redisKey, JSON.stringify(pool));
+            logger.info(`Stored pool data in Redis: ${redisKey}`);
         }
 
-        logger.info(`Fetched top pools: ${JSON.stringify(response.data.data.pools)}`);
-        return response.data.data.pools;
+        return pools;
     } catch (error) {
         logger.error(`Error fetching data from Uniswap: ${error.message}`);
-        throw error;
+        return null;
     }
 }
 
@@ -64,16 +68,9 @@ async function fetchHistoricalTokenData(tokenId) {
 
         const token = response.data.data.token;
         if (!token || !token.tokenDayData) {
-            logger.error(
-                `No historical data returned for token: ${tokenId}. Ensure GraphQL query structure matches Uniswap schema.`
-            );
+            logger.error(`No historical data returned for token: ${tokenId}`);
             return null;
         }
-
-        // Log raw fetched data
-        logger.debug(
-            `Raw historical data for token ${tokenId}: ${JSON.stringify(token.tokenDayData)}`
-        );
 
         const historicalData = token.tokenDayData.map((data) => ({
             date: data.date,
@@ -82,20 +79,17 @@ async function fetchHistoricalTokenData(tokenId) {
             liquidityUSD: data.totalLiquidityUSD || 'N/A',
         }));
 
-        // Store in Redis
         const redisKey = `uniswap:token:${tokenId}`;
         await redis.set(redisKey, JSON.stringify(historicalData));
         logger.info(`Historical data for token ${tokenId} stored in Redis under key: ${redisKey}`);
 
         return historicalData;
     } catch (error) {
-        logger.error(
-            `Error fetching historical data for token ${tokenId}: ${error.message}`
-        );
+        logger.error(`Error fetching historical data for token ${tokenId}: ${error.message}`);
         return null;
     }
 }
 
+module.exports = { fetchTopPools, fetchHistoricalTokenData };
 
-module.exports = { fetchTopPools, fetchHistoricalDataForToken };
 
