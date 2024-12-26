@@ -2805,3 +2805,7 @@
 [2024-12-26T08:36:33.200Z] INFO: Connected to Redis
 [2024-12-26T08:36:33.221Z] ERROR: Error fetching data from Uniswap: Invalid URL
 [2024-12-26T08:36:33.221Z] ERROR: Test failed: Invalid URL
+[2024-12-26T08:36:55.105Z] INFO: Starting Uniswap fetcher test...
+[2024-12-26T08:36:55.109Z] INFO: Connected to Redis
+[2024-12-26T08:36:55.130Z] ERROR: Error fetching data from Uniswap: Invalid URL
+[2024-12-26T08:36:55.130Z] ERROR: Test failed: Invalid URL
