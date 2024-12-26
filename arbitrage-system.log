@@ -2809,3 +2809,9 @@
 [2024-12-26T08:36:55.109Z] INFO: Connected to Redis
 [2024-12-26T08:36:55.130Z] ERROR: Error fetching data from Uniswap: Invalid URL
 [2024-12-26T08:36:55.130Z] ERROR: Test failed: Invalid URL
+[2024-12-26T08:39:46.876Z] INFO: Starting Uniswap fetcher test...
+[2024-12-26T08:39:46.880Z] INFO: Connected to Redis
+[2024-12-26T08:39:47.998Z] INFO: Fetched 10 pools successfully.
+[2024-12-26T08:39:48.000Z] INFO: Top pools stored successfully in Redis.
+[2024-12-26T08:39:48.194Z] ERROR: Error fetching historical data for token: Cannot read properties of null (reading 'tokenDayDatas')
+[2024-12-26T08:39:48.196Z] ERROR: Test failed: Cannot read properties of null (reading 'tokenDayDatas')
