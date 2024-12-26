@@ -1,48 +1,65 @@
 const axios = require('axios');
+const Redis = require('ioredis');
 const { logger } = require('../monitoring/logger');
-require('dotenv').config();
 
-const UNISWAP_SUBGRAPH_URL = process.env.UNISWAP_SUBGRAPH_URL;
+const redis = new Redis();
 
-async function fetchUniswapPairData() {
+// The Graph endpoint for Uniswap
+const GRAPH_API_URL = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3';
+
+async function fetchPools() {
     try {
         const query = `
         {
-            pools(first: 10, orderBy: volumeUSD, orderDirection: desc) {
+            pools(first: 10, orderBy: totalValueLockedUSD, orderDirection: desc) {
                 id
-                token0 { symbol decimals }
-                token1 { symbol decimals }
-                token0Price
-                token1Price
-                volumeUSD
+                token0 {
+                    id
+                    symbol
+                }
+                token1 {
+                    id
+                    symbol
+                }
+                feeTier
                 liquidity
+                volumeUSD
+                totalValueLockedUSD
             }
-        }`;
-
-        const response = await axios.post(UNISWAP_SUBGRAPH_URL, { query });
-        if (response.data && response.data.data && response.data.data.pools) {
-            return response.data.data.pools.map(pool => ({
-                pair: `${pool.token0.symbol}/${pool.token1.symbol}`,
-                token0: {
-                    symbol: pool.token0.symbol,
-                    price: parseFloat(pool.token0Price),
-                    decimals: parseInt(pool.token0.decimals),
-                },
-                token1: {
-                    symbol: pool.token1.symbol,
-                    price: parseFloat(pool.token1Price),
-                    decimals: parseInt(pool.token1.decimals),
-                },
-                volumeUSD: parseFloat(pool.volumeUSD),
-                liquidity: parseFloat(pool.liquidity),
-            }));
-        } else {
-            throw new Error('Invalid response structure');
         }
+        `;
+        const response = await axios.post(GRAPH_API_URL, { query });
+        const pools = response.data.data.pools;
+
+        logger.info(`Fetched ${pools.length} pools.`);
+        return pools;
     } catch (error) {
-        logger.error(`Error fetching Uniswap pair data: ${error.message}`);
-        throw error; // Ensure the error is re-thrown for testing.
+        logger.error(`Error fetching pools: ${error.message}`);
+        throw error;
     }
 }
 
-module.exports = { fetchUniswapPairData };
+async function storePoolsInRedis(pools) {
+    try {
+        for (const pool of pools) {
+            const redisKey = `uniswap:pool:${pool.id}`;
+            await redis.set(redisKey, JSON.stringify(pool));
+            logger.info(`Stored pool data for ${pool.token0.symbol}/${pool.token1.symbol} in Redis.`);
+        }
+    } catch (error) {
+        logger.error(`Error storing pools in Redis: ${error.message}`);
+    }
+}
+
+async function fetchAndStorePools() {
+    try {
+        const pools = await fetchPools();
+        await storePoolsInRedis(pools);
+    } catch (error) {
+        logger.error(`Workflow error: ${error.message}`);
+    } finally {
+        redis.disconnect();
+    }
+}
+
+module.exports = { fetchPools, storePoolsInRedis, fetchAndStorePools };
