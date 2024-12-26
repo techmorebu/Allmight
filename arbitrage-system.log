@@ -2766,3 +2766,7 @@
 [2024-12-26T06:21:20.278Z] INFO: Simulating alert conditions...
 [2024-12-26T06:21:20.278Z] WARN: Alert: High volume change detected for ZEC-USD.
 [2024-12-26T06:21:20.279Z] INFO: Final validation completed successfully.
+[2024-12-26T06:43:06.868Z] INFO: Starting Uniswap fetcher test...
+[2024-12-26T06:43:06.872Z] INFO: Connected to Redis
+[2024-12-26T06:43:07.238Z] ERROR: Error fetching pools: Cannot read properties of undefined (reading 'pools')
+[2024-12-26T06:43:07.239Z] ERROR: Test failed: Cannot read properties of undefined (reading 'pools')
