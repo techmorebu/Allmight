@@ -1,3 +1,4 @@
+require('dotenv').config();
 const axios = require('axios');
 const { logger } = require('../monitoring/logger');
 const Redis = require('ioredis');
