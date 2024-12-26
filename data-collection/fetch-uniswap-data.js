@@ -1,117 +1,57 @@
+// File: data-collection/fetch-uniswap-data.js
+require('dotenv').config(); // Load environment variables
 const axios = require('axios');
-const Redis = require('ioredis');
-const { logger } = require('../monitoring/logger');
-
-const redis = new Redis();
-
-// The Graph endpoint for Uniswap
-const GRAPH_API_URL = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3';
-
-async function fetchPools() {const axios = require('axios');
 const { logger } = require('../monitoring/logger');
 const Redis = require('ioredis');
 
-const UNISWAP_GRAPHQL_URL = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3';
+const redis = new Redis(process.env.REDIS_URL || undefined);
 
-async function fetchPools() {
-  try {
-    const query = `
-      {
-        pools(first: 10) {
-          id
-          token0 {
+// Use the Uniswap GraphQL endpoint from .env
+const UNISWAP_GRAPHQL_URL = process.env.UNISWAP_GRAPHQL_URL || 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3';
+
+// GraphQL query to fetch pools
+const POOLS_QUERY = `
+{
+    pools(first: 10, orderBy: totalValueLockedUSD, orderDirection: desc) {
+        id
+        token0 {
             symbol
-          }
-          token1 {
-            symbol
-          }
-          feeTier
-          liquidity
         }
-      }
-    `;
-
-    const response = await axios.post(UNISWAP_GRAPHQL_URL, { query });
-    logger.info('Raw API Response:', response.data);
-
-    if (response.data && response.data.data && response.data.data.pools) {
-      return response.data.data.pools;
-    } else {
-      throw new Error('Invalid API response structure.');
+        token1 {
+            symbol
+        }
+        totalValueLockedUSD
     }
-  } catch (error) {
-    logger.error(`Error fetching pools: ${error.message}`);
-    throw error;
-  }
 }
+`;
 
-(async () => {
-  const redis = new Redis();
-  logger.info('Connected to Redis');
-  
-  try {
-    const pools = await fetchPools();
-    await redis.set('uniswap:pools', JSON.stringify(pools));
-    logger.info('Pools fetched and stored successfully.');
-  } catch (error) {
-    logger.error(`Test failed: ${error.message}`);
-  } finally {
-    redis.disconnect();
-  }
-})();
-
+// Fetch data from Uniswap GraphQL
+async function fetchPoolsData() {
     try {
-        const query = `
-        {
-            pools(first: 10, orderBy: totalValueLockedUSD, orderDirection: desc) {
-                id
-                token0 {
-                    id
-                    symbol
-                }
-                token1 {
-                    id
-                    symbol
-                }
-                feeTier
-                liquidity
-                volumeUSD
-                totalValueLockedUSD
-            }
+        const response = await axios.post(UNISWAP_GRAPHQL_URL, { query: POOLS_QUERY });
+        if (response.data && response.data.data && response.data.data.pools) {
+            const pools = response.data.data.pools;
+            logger.info(`Fetched ${pools.length} pools from Uniswap.`);
+            return pools;
+        } else {
+            throw new Error('No pools data found in response.');
         }
-        `;
-        const response = await axios.post(GRAPH_API_URL, { query });
-        const pools = response.data.data.pools;
-
-        logger.info(`Fetched ${pools.length} pools.`);
-        return pools;
     } catch (error) {
         logger.error(`Error fetching pools: ${error.message}`);
         throw error;
     }
 }
 
-async function storePoolsInRedis(pools) {
+// Cache data in Redis
+async function cachePoolsData(pools) {
     try {
-        for (const pool of pools) {
-            const redisKey = `uniswap:pool:${pool.id}`;
-            await redis.set(redisKey, JSON.stringify(pool));
-            logger.info(`Stored pool data for ${pool.token0.symbol}/${pool.token1.symbol} in Redis.`);
-        }
+        const key = 'uniswap:pools';
+        await redis.set(key, JSON.stringify(pools));
+        logger.info(`Cached ${pools.length} pools data in Redis.`);
     } catch (error) {
-        logger.error(`Error storing pools in Redis: ${error.message}`);
+        logger.error(`Error caching pools data: ${error.message}`);
+        throw error;
     }
 }
 
-async function fetchAndStorePools() {
-    try {
-        const pools = await fetchPools();
-        await storePoolsInRedis(pools);
-    } catch (error) {
-        logger.error(`Workflow error: ${error.message}`);
-    } finally {
-        redis.disconnect();
-    }
-}
-
-module.exports = { fetchPools, storePoolsInRedis, fetchAndStorePools };
+module.exports = { fetchPoolsData, cachePoolsData };
