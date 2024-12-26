@@ -1,7 +1,19 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-uniswap.js
-[2024-12-26T08:39:46.876Z] INFO: Starting Uniswap fetcher test...
-[2024-12-26T08:39:46.880Z] INFO: Connected to Redis
-[2024-12-26T08:39:47.998Z] INFO: Fetched 10 pools successfully.
-[2024-12-26T08:39:48.000Z] INFO: Top pools stored successfully in Redis.
-[2024-12-26T08:39:48.194Z] ERROR: Error fetching historical data for token: Cannot read properties of null (reading 'tokenDayDatas')
-[2024-12-26T08:39:48.196Z] ERROR: Test failed: Cannot read properties of null (reading 'tokenDayDatas')
+[2024-12-26T08:43:05.395Z] INFO: Starting Uniswap fetcher test...
+[2024-12-26T08:43:05.399Z] INFO: Connected to Redis
+[2024-12-26T08:43:05.399Z] INFO: Fetching top pools...
+[2024-12-26T08:43:06.164Z] INFO: Fetched top pools: [{"id":"0x277667eb3e34f134adf870be9550e9f323d0dc24","token0":{"symbol":"ease.org"},"token1":{"symbol":"ez-cvxsteCRV"},"totalValueLockedUSD":"1110167010695.785900004139211677005","volumeUSD":"0"},{"id":"0x8c0411f2ad5470a66cb2e9c64536cfb8dcd54d51","token0":{"symbol":"ease.org"},"token1":{"symbol":"ez-yvCurve-IronBank"},"totalValueLockedUSD":"1432077483.208630196467118329099649","volumeUSD":"0"},{"id":"0x055284a4ca6532ecc219ac06b577d540c686669d","token0":{"symbol":"ease.org"},"token1":{"symbol":"ez-SLP-WBTC-WETH"},"totalValueLockedUSD":"1322031013.848042060988788389158996","volumeUSD":"0"},{"id":"0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640","token0":{"symbol":"USDC"},"token1":{"symbol":"WETH"},"totalValueLockedUSD":"455834880.1317725495453250221636727","volumeUSD":"516184454804.7530359426831209064394"},{"id":"0xcbcdf9626bc03e24f779434178a73a0b4bad62ed","token0":{"symbol":"WBTC"},"token1":{"symbol":"WETH"},"totalValueLockedUSD":"341371427.1611581383756918797899166","volumeUSD":"30996092627.84497595555590728312091"},{"id":"0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8","token0":{"symbol":"USDC"},"token1":{"symbol":"WETH"},"totalValueLockedUSD":"329445328.314633837445876395048774","volumeUSD":"81348206323.84251620958068877900899"},{"id":"0x4e68ccd3e89f51c3074ca5072bbac773960dfa36","token0":{"symbol":"WETH"},"token1":{"symbol":"USDT"},"totalValueLockedUSD":"218864217.6476730165463741428259768","volumeUSD":"42653882982.98011399219781302159746"},{"id":"0x99ac8ca7087fa4a2a1fb6357269965a2014abc35","token0":{"symbol":"WBTC"},"token1":{"symbol":"USDC"},"totalValueLockedUSD":"192911647.4385801594168942075636393","volumeUSD":"17016941740.06087718943475861510073"},{"id":"0x4585fe77225b41b697c938b018e2ac67ac5a20c0","token0":{"symbol":"WBTC"},"token1":{"symbol":"WETH"},"totalValueLockedUSD":"149627185.4014897507292591641724879","volumeUSD":"79420554746.21668169176390618166176"},{"id":"0x9db9e0e53058c89e5b94e29621a205198648425b","token0":{"symbol":"WBTC"},"token1":{"symbol":"USDT"},"totalValueLockedUSD":"112331623.7101730683735627886766527","volumeUSD":"5688275563.125037227706869920017721"}]
+[2024-12-26T08:43:06.166Z] INFO: Stored pool data in Redis: uniswap:pool:0x277667eb3e34f134adf870be9550e9f323d0dc24
+[2024-12-26T08:43:06.167Z] INFO: Stored pool data in Redis: uniswap:pool:0x8c0411f2ad5470a66cb2e9c64536cfb8dcd54d51
+[2024-12-26T08:43:06.169Z] INFO: Stored pool data in Redis: uniswap:pool:0x055284a4ca6532ecc219ac06b577d540c686669d
+[2024-12-26T08:43:06.172Z] INFO: Stored pool data in Redis: uniswap:pool:0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640
+[2024-12-26T08:43:06.174Z] INFO: Stored pool data in Redis: uniswap:pool:0xcbcdf9626bc03e24f779434178a73a0b4bad62ed
+[2024-12-26T08:43:06.175Z] INFO: Stored pool data in Redis: uniswap:pool:0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8
+[2024-12-26T08:43:06.178Z] INFO: Stored pool data in Redis: uniswap:pool:0x4e68ccd3e89f51c3074ca5072bbac773960dfa36
+[2024-12-26T08:43:06.180Z] INFO: Stored pool data in Redis: uniswap:pool:0x99ac8ca7087fa4a2a1fb6357269965a2014abc35
+[2024-12-26T08:43:06.181Z] INFO: Stored pool data in Redis: uniswap:pool:0x4585fe77225b41b697c938b018e2ac67ac5a20c0
+[2024-12-26T08:43:06.182Z] INFO: Stored pool data in Redis: uniswap:pool:0x9db9e0e53058c89e5b94e29621a205198648425b
+[2024-12-26T08:43:06.183Z] INFO: Fetching historical data for token: ease.org
+[2024-12-26T08:43:06.389Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `dailyVolumeUSD`","locations":[{"line":4,"column":3}]}]
+[2024-12-26T08:43:06.389Z] ERROR: Error fetching data from Uniswap: GraphQL query failed
+[2024-12-26T08:43:06.391Z] ERROR: Test failed: GraphQL query failed
