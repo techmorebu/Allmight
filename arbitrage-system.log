@@ -2770,3 +2770,7 @@
 [2024-12-26T06:43:06.872Z] INFO: Connected to Redis
 [2024-12-26T06:43:07.238Z] ERROR: Error fetching pools: Cannot read properties of undefined (reading 'pools')
 [2024-12-26T06:43:07.239Z] ERROR: Test failed: Cannot read properties of undefined (reading 'pools')
+[2024-12-26T08:08:35.309Z] INFO: Starting Uniswap fetcher test...
+[2024-12-26T08:08:35.315Z] INFO: Connected to Redis
+[2024-12-26T08:08:36.060Z] ERROR: Error fetching pools: No pools data found in response.
+[2024-12-26T08:08:36.061Z] ERROR: Test failed: No pools data found in response.
