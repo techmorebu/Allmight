@@ -1,3 +1,6 @@
+const Redis = require('ioredis');
+const { logger } = require('../monitoring/logger');
+
 (async () => {
     const redis = new Redis();
     try {
