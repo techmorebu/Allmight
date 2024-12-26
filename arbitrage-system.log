@@ -2797,3 +2797,7 @@
 [2024-12-26T08:26:18.372Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `dailyVolumeUSD`","locations":[{"line":4,"column":3}]}]
 [2024-12-26T08:26:18.373Z] ERROR: Error fetching data from Uniswap: GraphQL query failed
 [2024-12-26T08:26:18.376Z] ERROR: Test failed: GraphQL query failed
+[2024-12-26T08:32:20.227Z] INFO: Starting Uniswap fetcher test...
+[2024-12-26T08:32:20.230Z] INFO: Connected to Redis
+[2024-12-26T08:32:20.250Z] ERROR: Error fetching data from Uniswap: Invalid URL
+[2024-12-26T08:32:20.251Z] ERROR: Test failed: Invalid URL
