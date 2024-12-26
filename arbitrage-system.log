@@ -2755,3 +2755,14 @@
 [2024-12-26T06:14:32.716Z] INFO: Mock snapshot stored successfully.
 [2024-12-26T06:14:32.718Z] INFO: Updated snapshot stored successfully.
 [2024-12-26T06:14:32.720Z] INFO: Test completed successfully.
+[2024-12-26T06:21:20.240Z] INFO: Starting final dYdX integration validation...
+[2024-12-26T06:21:20.245Z] INFO: Connected to Redis
+[2024-12-26T06:21:20.275Z] INFO: Validation: Snapshot data is correctly stored.
+[2024-12-26T06:21:20.275Z] INFO: Testing edge cases...
+[2024-12-26T06:21:20.276Z] INFO: Validation: Empty update handled correctly.
+[2024-12-26T06:21:20.276Z] INFO: Validation: Large volume update handled correctly.
+[2024-12-26T06:21:20.277Z] INFO: Validation: Duplicate update handled correctly.
+[2024-12-26T06:21:20.278Z] INFO: Performance: Redis storage took 0 ms.
+[2024-12-26T06:21:20.278Z] INFO: Simulating alert conditions...
+[2024-12-26T06:21:20.278Z] WARN: Alert: High volume change detected for ZEC-USD.
+[2024-12-26T06:21:20.279Z] INFO: Final validation completed successfully.
