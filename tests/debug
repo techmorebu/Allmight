@@ -1,18 +1,13 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-uniswap.js
-[2024-12-26T08:57:13.890Z] INFO: Starting Uniswap fetcher test...
-[2024-12-26T08:57:13.898Z] INFO: Connected to Redis
-[2024-12-26T08:57:14.728Z] INFO: Fetched top pools: [{"id":"0x277667eb3e34f134adf870be9550e9f323d0dc24","token0":{"id":"0x160de4468586b6b2f8a92feb0c260fc6cfc743b1","symbol":"ease.org"},"token1":{"id":"0xea5edef1c6ed1be1bcba4617a1c5a994e9018a43","symbol":"ez-cvxsteCRV"},"totalValueLockedUSD":"1110167010695.785900004139211677005","volumeUSD":"0"},{"id":"0x8c0411f2ad5470a66cb2e9c64536cfb8dcd54d51","token0":{"id":"0x160de4468586b6b2f8a92feb0c260fc6cfc743b1","symbol":"ease.org"},"token1":{"id":"0xea5edef1fcf717327440646e7302ca058dde844f","symbol":"ez-yvCurve-IronBank"},"totalValueLockedUSD":"1432077483.208630196467118329099649","volumeUSD":"0"},{"id":"0x055284a4ca6532ecc219ac06b577d540c686669d","token0":{"id":"0x160de4468586b6b2f8a92feb0c260fc6cfc743b1","symbol":"ease.org"},"token1":{"id":"0xea5edef10f8255cd03541e8ff163a2836e0d7bd3","symbol":"ez-SLP-WBTC-WETH"},"totalValueLockedUSD":"1322031013.848042060988788389158996","volumeUSD":"0"},{"id":"0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640","token0":{"id":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48","symbol":"USDC"},"token1":{"id":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","symbol":"WETH"},"totalValueLockedUSD":"485553905.1360486418662653740612348","volumeUSD":"516187468950.0302138519329627055386"},{"id":"0xcbcdf9626bc03e24f779434178a73a0b4bad62ed","token0":{"id":"0x2260fac5e5542a773aa44fbcfedf7c193bc2c599","symbol":"WBTC"},"token1":{"id":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","symbol":"WETH"},"totalValueLockedUSD":"337556457.5498601748548086857061765","volumeUSD":"30996108487.47020486591914453785889"},{"id":"0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8","token0":{"id":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48","symbol":"USDC"},"token1":{"id":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","symbol":"WETH"},"totalValueLockedUSD":"329879828.5140425838508345005398393","volumeUSD":"81348299278.01940000597651825531463"},{"id":"0x4e68ccd3e89f51c3074ca5072bbac773960dfa36","token0":{"id":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","symbol":"WETH"},"token1":{"id":"0xdac17f958d2ee523a2206206994597c13d831ec7","symbol":"USDT"},"totalValueLockedUSD":"219158451.1879959952526372923497478","volumeUSD":"42654238788.26388918886705770080305"},{"id":"0x99ac8ca7087fa4a2a1fb6357269965a2014abc35","token0":{"id":"0x2260fac5e5542a773aa44fbcfedf7c193bc2c599","symbol":"WBTC"},"token1":{"id":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48","symbol":"USDC"},"totalValueLockedUSD":"193157698.5493475352395978081640457","volumeUSD":"17017110039.27385510583312454704833"},{"id":"0x4585fe77225b41b697c938b018e2ac67ac5a20c0","token0":{"id":"0x2260fac5e5542a773aa44fbcfedf7c193bc2c599","symbol":"WBTC"},"token1":{"id":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","symbol":"WETH"},"totalValueLockedUSD":"149958248.2996018457767565140184411","volumeUSD":"79421566283.00835959405878796083977"},{"id":"0x9db9e0e53058c89e5b94e29621a205198648425b","token0":{"id":"0x2260fac5e5542a773aa44fbcfedf7c193bc2c599","symbol":"WBTC"},"token1":{"id":"0xdac17f958d2ee523a2206206994597c13d831ec7","symbol":"USDT"},"totalValueLockedUSD":"112464955.9427365227044838181867293","volumeUSD":"5688443942.774077807954043450203858"}]
-[2024-12-26T08:57:14.739Z] INFO: Stored pool data in Redis: uniswap:pool:0x277667eb3e34f134adf870be9550e9f323d0dc24
-[2024-12-26T08:57:14.740Z] INFO: Stored pool data in Redis: uniswap:pool:0x8c0411f2ad5470a66cb2e9c64536cfb8dcd54d51
-[2024-12-26T08:57:14.740Z] INFO: Stored pool data in Redis: uniswap:pool:0x055284a4ca6532ecc219ac06b577d540c686669d
-[2024-12-26T08:57:14.758Z] INFO: Stored pool data in Redis: uniswap:pool:0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640
-[2024-12-26T08:57:14.759Z] INFO: Stored pool data in Redis: uniswap:pool:0xcbcdf9626bc03e24f779434178a73a0b4bad62ed
-[2024-12-26T08:57:14.759Z] INFO: Stored pool data in Redis: uniswap:pool:0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8
-[2024-12-26T08:57:14.759Z] INFO: Stored pool data in Redis: uniswap:pool:0x4e68ccd3e89f51c3074ca5072bbac773960dfa36
-[2024-12-26T08:57:14.760Z] INFO: Stored pool data in Redis: uniswap:pool:0x99ac8ca7087fa4a2a1fb6357269965a2014abc35
-[2024-12-26T08:57:14.761Z] INFO: Stored pool data in Redis: uniswap:pool:0x4585fe77225b41b697c938b018e2ac67ac5a20c0
-[2024-12-26T08:57:14.761Z] INFO: Stored pool data in Redis: uniswap:pool:0x9db9e0e53058c89e5b94e29621a205198648425b
-[2024-12-26T08:57:14.875Z] INFO: Fetched historical data for token: 0x160de4468586b6b2f8a92feb0c260fc6cfc743b1
-[2024-12-26T08:57:14.877Z] INFO: Stored historical data for token: 0x160de4468586b6b2f8a92feb0c260fc6cfc743b1
-[2024-12-26T08:57:14.880Z] INFO: Test completed successfully.
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-uniswap-valid.js
+[2024-12-26T09:05:25.777Z] INFO: Starting Redis validation for Uniswap data...
+[2024-12-26T09:05:25.835Z] INFO: Validated pool: 0x4e68ccd3e89f51c3074ca5072bbac773960dfa36
+[2024-12-26T09:05:25.836Z] INFO: Validated pool: 0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8
+[2024-12-26T09:05:25.838Z] INFO: Validated pool: 0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640
+[2024-12-26T09:05:25.838Z] INFO: Validated pool: 0x8c0411f2ad5470a66cb2e9c64536cfb8dcd54d51
+[2024-12-26T09:05:25.840Z] INFO: Validated pool: 0x055284a4ca6532ecc219ac06b577d540c686669d
+[2024-12-26T09:05:25.842Z] INFO: Validated pool: 0xcbcdf9626bc03e24f779434178a73a0b4bad62ed
+[2024-12-26T09:05:25.844Z] INFO: Validated pool: 0x4585fe77225b41b697c938b018e2ac67ac5a20c0
+[2024-12-26T09:05:25.845Z] INFO: Validated pool: 0x99ac8ca7087fa4a2a1fb6357269965a2014abc35
+[2024-12-26T09:05:25.846Z] INFO: Validated pool: 0x277667eb3e34f134adf870be9550e9f323d0dc24
+[2024-12-26T09:05:25.848Z] INFO: Validated pool: 0x9db9e0e53058c89e5b94e29621a205198648425b
+[2024-12-26T09:05:25.850Z] ERROR: No token historical data found in Redis.
