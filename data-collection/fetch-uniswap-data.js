@@ -46,7 +46,6 @@ async function fetchHistoricalDataForToken(tokenId) {
             tokenDayDatas(where: { token: "${tokenId}" }, first: 7, orderBy: date, orderDirection: desc) {
                 date
                 priceUSD
-                totalLiquidityUSD
                 volumeUSD
             }
         }`;
@@ -71,6 +70,7 @@ async function fetchHistoricalDataForToken(tokenId) {
         throw error;
     }
 }
+
 
 module.exports = { fetchTopPools, fetchHistoricalDataForToken };
 
