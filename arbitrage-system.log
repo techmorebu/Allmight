@@ -2750,3 +2750,8 @@
 [2024-12-26T06:04:00.081Z] INFO: Validation: Updated snapshot stored correctly.
 [2024-12-26T06:04:00.082Z] INFO: Test completed successfully.
 [2024-12-26T06:04:01.067Z] INFO: Connected to dYdX WebSocket
+[2024-12-26T06:14:32.680Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-26T06:14:32.685Z] INFO: Connected to Redis
+[2024-12-26T06:14:32.716Z] INFO: Mock snapshot stored successfully.
+[2024-12-26T06:14:32.718Z] INFO: Updated snapshot stored successfully.
+[2024-12-26T06:14:32.720Z] INFO: Test completed successfully.
