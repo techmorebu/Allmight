@@ -7,7 +7,59 @@ const redis = new Redis();
 // The Graph endpoint for Uniswap
 const GRAPH_API_URL = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3';
 
+async function fetchPools() {const axios = require('axios');
+const { logger } = require('../monitoring/logger');
+const Redis = require('ioredis');
+
+const UNISWAP_GRAPHQL_URL = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3';
+
 async function fetchPools() {
+  try {
+    const query = `
+      {
+        pools(first: 10) {
+          id
+          token0 {
+            symbol
+          }
+          token1 {
+            symbol
+          }
+          feeTier
+          liquidity
+        }
+      }
+    `;
+
+    const response = await axios.post(UNISWAP_GRAPHQL_URL, { query });
+    logger.info('Raw API Response:', response.data);
+
+    if (response.data && response.data.data && response.data.data.pools) {
+      return response.data.data.pools;
+    } else {
+      throw new Error('Invalid API response structure.');
+    }
+  } catch (error) {
+    logger.error(`Error fetching pools: ${error.message}`);
+    throw error;
+  }
+}
+
+(async () => {
+  const redis = new Redis();
+  logger.info('Connected to Redis');
+  
+  try {
+    const pools = await fetchPools();
+    await redis.set('uniswap:pools', JSON.stringify(pools));
+    logger.info('Pools fetched and stored successfully.');
+  } catch (error) {
+    logger.error(`Test failed: ${error.message}`);
+  } finally {
+    redis.disconnect();
+  }
+})();
+
     try {
         const query = `
         {
