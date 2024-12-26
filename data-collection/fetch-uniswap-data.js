@@ -4,64 +4,41 @@ const { logger } = require('../monitoring/logger');
 const Redis = require('ioredis');
 
 const UNISWAP_GRAPHQL_URL = process.env.UNISWAP_GRAPHQL_URL;
+const { fetchTopPools, fetchHistoricalDataForToken } = require('../data-collection/fetch-uniswap-data');
+const { logger } = require('../monitoring/logger');
+const Redis = require('ioredis');
 
-const redis = new Redis();
-
-async function fetchGraphQLData(query, variables = {}) {
+(async () => {
     try {
-        const response = await axios.post(UNISWAP_GRAPHQL_URL, { query, variables });
-        if (response.data.errors) {
-            logger.error(`GraphQL Errors: ${JSON.stringify(response.data.errors)}`);
-            throw new Error('GraphQL query failed');
+        logger.info('Starting Uniswap fetcher test...');
+        
+        const redis = new Redis();
+        logger.info('Connected to Redis');
+        
+        const pools = await fetchTopPools();
+        pools.forEach(async (pool) => {
+            await redis.set(`uniswap:pool:${pool.id}`, JSON.stringify(pool));
+            logger.info(`Stored pool data in Redis: uniswap:pool:${pool.id}`);
+        });
+
+        if (pools.length > 0) {
+            const tokenId = pools[0].token0.id;
+            try {
+                const historicalData = await fetchHistoricalDataForToken(tokenId);
+                if (historicalData.length > 0) {
+                    await redis.set(`uniswap:historicalData:${tokenId}`, JSON.stringify(historicalData));
+                    logger.info(`Stored historical data for token: ${tokenId}`);
+                } else {
+                    logger.warn('Historical data is empty, nothing to store.');
+                }
+            } catch (error) {
+                logger.error(`Failed to fetch historical data for token: ${tokenId}. ${error.message}`);
+            }
         }
-        return response.data.data;
+
+        redis.disconnect();
+        logger.info('Test completed successfully.');
     } catch (error) {
-        logger.error(`Error fetching data from Uniswap: ${error.message}`);
-        throw error;
+        logger.error(`Test failed: ${error.message}`);
     }
-}
-
-async function fetchTopPools() {
-    const query = `
-        {
-            pools(
-                first: 10,
-                orderBy: totalValueLockedUSD,
-                orderDirection: desc
-            ) {
-                id
-                token0 {
-                    symbol
-                }
-                token1 {
-                    symbol
-                }
-                totalValueLockedUSD
-                volumeUSD
-            }
-        }
-    `;
-    const data = await fetchGraphQLData(query);
-    return data.pools;
-}
-
-async function fetchTokenDayData(tokenId) {
-    const query = `
-        {
-            tokenDayDatas(
-                first: 7,
-                orderBy: date,
-                orderDirection: desc,
-                where: { token: "${tokenId}" }
-            ) {
-                date
-                dailyVolumeUSD
-                priceUSD
-            }
-        }
-    `;
-    const data = await fetchGraphQLData(query);
-    return data.tokenDayDatas;
-}
-
-module.exports = { fetchTopPools, fetchTokenDayData };
+})();
