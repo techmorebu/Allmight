@@ -3,7 +3,7 @@ const { logger } = require('../monitoring/logger');
 const Redis = require('ioredis');
 
 const redis = new Redis();
-const UNISWAP_SUBGRAPH_URL = process.env.UNISWAP_SUBGRAPH_URL;
+const UNISWAP_GRAPHQL_URL = process.env.UNISWAP_GRAPHQL_URL;
 
 async function fetchTopPools() {
     try {
@@ -12,16 +12,18 @@ async function fetchTopPools() {
             pools(first: 10, orderBy: totalValueLockedUSD, orderDirection: desc) {
                 id
                 token0 {
+                    id
                     symbol
                 }
                 token1 {
+                    id
                     symbol
                 }
                 totalValueLockedUSD
             }
         }`;
 
-        const response = await axios.post(UNISWAP_SUBGRAPH_URL, { query });
+        const response = await axios.post(UNISWAP_GRAPHQL_URL, { query });
         const pools = response.data.data.pools;
 
         if (pools) {
@@ -47,7 +49,7 @@ async function fetchHistoricalDataForToken(tokenId) {
             }
         }`;
 
-        const response = await axios.post(UNISWAP_SUBGRAPH_URL, { query });
+        const response = await axios.post(UNISWAP_GRAPHQL_URL, { query });
         const historicalData = response.data.data.tokenDayDatas;
 
         if (historicalData) {
