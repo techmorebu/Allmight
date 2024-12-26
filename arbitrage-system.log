@@ -2734,3 +2734,10 @@
 [2024-12-25T02:08:56.026Z] INFO: Test completed successfully.
 [2024-12-25T02:08:57.071Z] INFO: Connected to dYdX WebSocket
 [2024-12-25T08:43:22.207Z] WARN: WebSocket connection closed.
+[2024-12-25T19:32:38.323Z] INFO: Starting dYdX WebSocket fetcher test...
+[2024-12-25T19:32:38.327Z] INFO: Connected to Redis
+[2024-12-25T19:32:38.391Z] INFO: Connected to dYdX WebSocket
+[2024-12-25T19:32:38.421Z] INFO: Test: Stored mocked order book snapshot in Redis
+[2024-12-25T19:32:38.424Z] INFO: Test: Updated and stored order book in Redis
+[2024-12-25T19:32:38.427Z] INFO: Test completed successfully.
+[2024-12-25T19:32:39.388Z] INFO: Connected to dYdX WebSocket
