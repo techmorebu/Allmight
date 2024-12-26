@@ -76,19 +76,53 @@ const fetchHistoricalData = async (tokenId) => {
 };
 
 // Fetch historical data for tokens
-const fetchTokenHistoricalData = async (tokens) => {
-    for (const token of tokens) {
-        logger.info(`Fetching historical data for token: ${token.id}`);
-        const historicalData = await fetchHistoricalData(token.id);
-
-        if (historicalData.length > 0) {
-            await redis.set(`uniswap:token:${token.id}:historical`, JSON.stringify(historicalData));
-            logger.info(`Stored historical data for token: ${token.id}`);
-        } else {
-            logger.warn(`No historical data found for token: ${token.id}`);
+async function fetchTokenHistoricalData(tokenId, redis) {
+    const query = `
+        query ($id: String!) {
+            token(id: $id) {
+                id
+                symbol
+                tokenDayData(first: 7, orderBy: date, orderDirection: desc) {
+                    date
+                    priceUSD
+                    dailyVolumeUSD
+                    totalLiquidityUSD
+                }
+            }
         }
+    `;
+
+    const variables = { id: tokenId };
+
+    try {
+        const response = await axios.post(UNISWAP_GRAPHQL_URL, {
+            query,
+            variables,
+        });
+
+        const tokenData = response.data.data?.token;
+
+        if (!tokenData || !tokenData.tokenDayData) {
+            logger.warn(`No historical data found for token: ${tokenId}`);
+            return;
+        }
+
+        const historicalData = tokenData.tokenDayData.map((day) => ({
+            date: day.date,
+            priceUSD: day.priceUSD,
+            dailyVolumeUSD: day.dailyVolumeUSD,
+            totalLiquidityUSD: day.totalLiquidityUSD,
+        }));
+
+        // Store data in Redis
+        const redisKey = `uniswap:token:${tokenId}:historical`;
+        await redis.set(redisKey, JSON.stringify(historicalData));
+        logger.info(`Stored historical data for token: ${tokenId}`);
+    } catch (error) {
+        logger.error(`Error fetching historical data for token: ${tokenId}. ${error.message}`);
     }
-};
+}
+
 
 // Main workflow
 const fetchUniswapData = async () => {
