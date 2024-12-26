@@ -1,13 +1,54 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-uniswap-valid.js
-[2024-12-26T09:05:25.777Z] INFO: Starting Redis validation for Uniswap data...
-[2024-12-26T09:05:25.835Z] INFO: Validated pool: 0x4e68ccd3e89f51c3074ca5072bbac773960dfa36
-[2024-12-26T09:05:25.836Z] INFO: Validated pool: 0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8
-[2024-12-26T09:05:25.838Z] INFO: Validated pool: 0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640
-[2024-12-26T09:05:25.838Z] INFO: Validated pool: 0x8c0411f2ad5470a66cb2e9c64536cfb8dcd54d51
-[2024-12-26T09:05:25.840Z] INFO: Validated pool: 0x055284a4ca6532ecc219ac06b577d540c686669d
-[2024-12-26T09:05:25.842Z] INFO: Validated pool: 0xcbcdf9626bc03e24f779434178a73a0b4bad62ed
-[2024-12-26T09:05:25.844Z] INFO: Validated pool: 0x4585fe77225b41b697c938b018e2ac67ac5a20c0
-[2024-12-26T09:05:25.845Z] INFO: Validated pool: 0x99ac8ca7087fa4a2a1fb6357269965a2014abc35
-[2024-12-26T09:05:25.846Z] INFO: Validated pool: 0x277667eb3e34f134adf870be9550e9f323d0dc24
-[2024-12-26T09:05:25.848Z] INFO: Validated pool: 0x9db9e0e53058c89e5b94e29621a205198648425b
-[2024-12-26T09:05:25.850Z] ERROR: No token historical data found in Redis.
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-uniswap.js
+[2024-12-26T09:17:04.457Z] INFO: Starting Uniswap fetcher test...
+[2024-12-26T09:17:04.461Z] INFO: Fetching top pools...
+[2024-12-26T09:17:05.182Z] INFO: Stored pool data in Redis: uniswap:pool:0x277667eb3e34f134adf870be9550e9f323d0dc24
+[2024-12-26T09:17:05.184Z] INFO: Stored pool data in Redis: uniswap:pool:0x8c0411f2ad5470a66cb2e9c64536cfb8dcd54d51
+[2024-12-26T09:17:05.185Z] INFO: Stored pool data in Redis: uniswap:pool:0x055284a4ca6532ecc219ac06b577d540c686669d
+[2024-12-26T09:17:05.186Z] INFO: Stored pool data in Redis: uniswap:pool:0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640
+[2024-12-26T09:17:05.187Z] INFO: Stored pool data in Redis: uniswap:pool:0xcbcdf9626bc03e24f779434178a73a0b4bad62ed
+[2024-12-26T09:17:05.190Z] INFO: Stored pool data in Redis: uniswap:pool:0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8
+[2024-12-26T09:17:05.192Z] INFO: Stored pool data in Redis: uniswap:pool:0x4e68ccd3e89f51c3074ca5072bbac773960dfa36
+[2024-12-26T09:17:05.193Z] INFO: Stored pool data in Redis: uniswap:pool:0x99ac8ca7087fa4a2a1fb6357269965a2014abc35
+[2024-12-26T09:17:05.194Z] INFO: Stored pool data in Redis: uniswap:pool:0x4585fe77225b41b697c938b018e2ac67ac5a20c0
+[2024-12-26T09:17:05.195Z] INFO: Stored pool data in Redis: uniswap:pool:0x9db9e0e53058c89e5b94e29621a205198648425b
+[2024-12-26T09:17:05.195Z] INFO: Fetching historical data for token: 0x160de4468586b6b2f8a92feb0c260fc6cfc743b1
+[2024-12-26T09:17:05.387Z] ERROR: Error fetching historical data for token 0x160de4468586b6b2f8a92feb0c260fc6cfc743b1: Cannot read properties of null (reading 'token')
+[2024-12-26T09:17:05.387Z] INFO: Fetching historical data for token: 0xea5edef1c6ed1be1bcba4617a1c5a994e9018a43
+[2024-12-26T09:17:05.541Z] ERROR: Error fetching historical data for token 0xea5edef1c6ed1be1bcba4617a1c5a994e9018a43: Cannot read properties of null (reading 'token')
+[2024-12-26T09:17:05.542Z] INFO: Fetching historical data for token: 0x160de4468586b6b2f8a92feb0c260fc6cfc743b1
+[2024-12-26T09:17:05.689Z] ERROR: Error fetching historical data for token 0x160de4468586b6b2f8a92feb0c260fc6cfc743b1: Cannot read properties of null (reading 'token')
+[2024-12-26T09:17:05.690Z] INFO: Fetching historical data for token: 0xea5edef1fcf717327440646e7302ca058dde844f
+[2024-12-26T09:17:05.856Z] ERROR: Error fetching historical data for token 0xea5edef1fcf717327440646e7302ca058dde844f: Cannot read properties of null (reading 'token')
+[2024-12-26T09:17:05.856Z] INFO: Fetching historical data for token: 0x160de4468586b6b2f8a92feb0c260fc6cfc743b1
+[2024-12-26T09:17:06.054Z] ERROR: Error fetching historical data for token 0x160de4468586b6b2f8a92feb0c260fc6cfc743b1: Cannot read properties of null (reading 'token')
+[2024-12-26T09:17:06.055Z] INFO: Fetching historical data for token: 0xea5edef10f8255cd03541e8ff163a2836e0d7bd3
+[2024-12-26T09:17:06.253Z] ERROR: Error fetching historical data for token 0xea5edef10f8255cd03541e8ff163a2836e0d7bd3: Cannot read properties of null (reading 'token')
+[2024-12-26T09:17:06.254Z] INFO: Fetching historical data for token: 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+[2024-12-26T09:17:06.445Z] ERROR: Error fetching historical data for token 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48: Cannot read properties of null (reading 'token')
+[2024-12-26T09:17:06.446Z] INFO: Fetching historical data for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+[2024-12-26T09:17:06.634Z] ERROR: Error fetching historical data for token 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2: Cannot read properties of null (reading 'token')
+[2024-12-26T09:17:06.635Z] INFO: Fetching historical data for token: 0x2260fac5e5542a773aa44fbcfedf7c193bc2c599
+[2024-12-26T09:17:06.789Z] ERROR: Error fetching historical data for token 0x2260fac5e5542a773aa44fbcfedf7c193bc2c599: Cannot read properties of null (reading 'token')
+[2024-12-26T09:17:06.791Z] INFO: Fetching historical data for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+[2024-12-26T09:17:07.318Z] ERROR: Error fetching historical data for token 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2: Cannot read properties of null (reading 'token')
+[2024-12-26T09:17:07.318Z] INFO: Fetching historical data for token: 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+[2024-12-26T09:17:07.627Z] ERROR: Error fetching historical data for token 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48: Cannot read properties of null (reading 'token')
+[2024-12-26T09:17:07.628Z] INFO: Fetching historical data for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+[2024-12-26T09:17:07.806Z] ERROR: Error fetching historical data for token 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2: Cannot read properties of null (reading 'token')
+[2024-12-26T09:17:07.806Z] INFO: Fetching historical data for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+[2024-12-26T09:17:08.245Z] ERROR: Error fetching historical data for token 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2: Cannot read properties of null (reading 'token')
+[2024-12-26T09:17:08.246Z] INFO: Fetching historical data for token: 0xdac17f958d2ee523a2206206994597c13d831ec7
+[2024-12-26T09:17:08.497Z] ERROR: Error fetching historical data for token 0xdac17f958d2ee523a2206206994597c13d831ec7: Cannot read properties of null (reading 'token')
+[2024-12-26T09:17:08.498Z] INFO: Fetching historical data for token: 0x2260fac5e5542a773aa44fbcfedf7c193bc2c599
+[2024-12-26T09:17:08.717Z] ERROR: Error fetching historical data for token 0x2260fac5e5542a773aa44fbcfedf7c193bc2c599: Cannot read properties of null (reading 'token')
+[2024-12-26T09:17:08.718Z] INFO: Fetching historical data for token: 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+[2024-12-26T09:17:08.921Z] ERROR: Error fetching historical data for token 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48: Cannot read properties of null (reading 'token')
+[2024-12-26T09:17:08.922Z] INFO: Fetching historical data for token: 0x2260fac5e5542a773aa44fbcfedf7c193bc2c599
+[2024-12-26T09:17:09.106Z] ERROR: Error fetching historical data for token 0x2260fac5e5542a773aa44fbcfedf7c193bc2c599: Cannot read properties of null (reading 'token')
+[2024-12-26T09:17:09.107Z] INFO: Fetching historical data for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+[2024-12-26T09:17:09.315Z] ERROR: Error fetching historical data for token 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2: Cannot read properties of null (reading 'token')
+[2024-12-26T09:17:09.315Z] INFO: Fetching historical data for token: 0x2260fac5e5542a773aa44fbcfedf7c193bc2c599
+[2024-12-26T09:17:09.483Z] ERROR: Error fetching historical data for token 0x2260fac5e5542a773aa44fbcfedf7c193bc2c599: Cannot read properties of null (reading 'token')
+[2024-12-26T09:17:09.483Z] INFO: Fetching historical data for token: 0xdac17f958d2ee523a2206206994597c13d831ec7
+[2024-12-26T09:17:09.689Z] ERROR: Error fetching historical data for token 0xdac17f958d2ee523a2206206994597c13d831ec7: Cannot read properties of null (reading 'token')
+[2024-12-26T09:17:09.690Z] INFO: Test completed successfully.
