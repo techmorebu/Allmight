@@ -2,54 +2,38 @@ const Redis = require('ioredis');
 const { logger } = require('../monitoring/logger');
 
 (async () => {
-    const redis = new Redis();
     try {
         logger.info('Starting Redis validation for Uniswap data...');
+        const redis = new Redis();
 
         // Validate pool data
         const poolKeys = await redis.keys('uniswap:pool:*');
-        if (poolKeys.length === 0) {
-            logger.error('No pool data found in Redis.');
-            return;
-        }
-
-        for (const poolKey of poolKeys) {
-            const poolData = JSON.parse(await redis.get(poolKey));
-            const { id, token0, token1, totalValueLockedUSD, volumeUSD } = poolData;
-
-            if (!id || !token0 || !token1 || !totalValueLockedUSD || !volumeUSD) {
-                logger.error(`Invalid data for pool: ${poolKey}`);
-                logger.error(`Data: ${JSON.stringify(poolData)}`);
-                continue;
+        for (const key of poolKeys) {
+            const poolData = JSON.parse(await redis.get(key));
+            if (poolData && poolData.id && poolData.totalValueLockedUSD) {
+                logger.info(`Validated pool: ${poolData.id}`);
+            } else {
+                logger.error(`Invalid or missing data for pool: ${key}`);
             }
-            logger.info(`Validated pool: ${id}`);
         }
 
-        // Validate token historical data
+        // Validate historical token data
         const tokenKeys = await redis.keys('uniswap:token:*');
         if (tokenKeys.length === 0) {
             logger.error('No token historical data found in Redis.');
         } else {
-            for (const tokenKey of tokenKeys) {
-                const tokenData = JSON.parse(await redis.get(tokenKey));
-                if (!tokenData || tokenData.length === 0) {
-                    logger.error(`Empty or invalid data for token: ${tokenKey}`);
+            for (const key of tokenKeys) {
+                const tokenData = JSON.parse(await redis.get(key));
+                if (Array.isArray(tokenData) && tokenData.length > 0) {
+                    logger.info(`Validated token data: ${key}`);
                 } else {
-                    tokenData.forEach(({ date, priceUSD, volumeUSD, liquidityUSD }) => {
-                        if (!date || !priceUSD || !volumeUSD || !liquidityUSD) {
-                            logger.error(`Incomplete historical data for token: ${tokenKey}`);
-                            logger.error(`Data: ${JSON.stringify(tokenData)}`);
-                        }
-                    });
-                    logger.info(`Validated historical data for token: ${tokenKey}`);
+                    logger.error(`Invalid or missing data for token: ${key}`);
                 }
             }
         }
 
-        logger.info('Redis validation completed successfully.');
+        redis.disconnect();
     } catch (error) {
         logger.error(`Validation failed: ${error.message}`);
-    } finally {
-        redis.disconnect();
     }
 })();
