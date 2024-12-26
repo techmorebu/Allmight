@@ -1,57 +1,67 @@
-// File: data-collection/fetch-uniswap-data.js
-require('dotenv').config(); // Load environment variables
+require('dotenv').config();
 const axios = require('axios');
 const { logger } = require('../monitoring/logger');
 const Redis = require('ioredis');
 
-const redis = new Redis(process.env.REDIS_URL || undefined);
+const UNISWAP_GRAPHQL_URL = process.env.UNISWAP_GRAPHQL_URL;
 
-// Use the Uniswap GraphQL endpoint from .env
-const UNISWAP_GRAPHQL_URL = process.env.UNISWAP_GRAPHQL_URL || 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3';
+const redis = new Redis();
 
-// GraphQL query to fetch pools
-const POOLS_QUERY = `
-{
-    pools(first: 10, orderBy: totalValueLockedUSD, orderDirection: desc) {
-        id
-        token0 {
-            symbol
-        }
-        token1 {
-            symbol
-        }
-        totalValueLockedUSD
-    }
-}
-`;
-
-// Fetch data from Uniswap GraphQL
-async function fetchPoolsData() {
+async function fetchGraphQLData(query, variables = {}) {
     try {
-        const response = await axios.post(UNISWAP_GRAPHQL_URL, { query: POOLS_QUERY });
-        if (response.data && response.data.data && response.data.data.pools) {
-            const pools = response.data.data.pools;
-            logger.info(`Fetched ${pools.length} pools from Uniswap.`);
-            return pools;
-        } else {
-            throw new Error('No pools data found in response.');
+        const response = await axios.post(UNISWAP_GRAPHQL_URL, { query, variables });
+        if (response.data.errors) {
+            logger.error(`GraphQL Errors: ${JSON.stringify(response.data.errors)}`);
+            throw new Error('GraphQL query failed');
         }
+        return response.data.data;
     } catch (error) {
-        logger.error(`Error fetching pools: ${error.message}`);
+        logger.error(`Error fetching data from Uniswap: ${error.message}`);
         throw error;
     }
 }
 
-// Cache data in Redis
-async function cachePoolsData(pools) {
-    try {
-        const key = 'uniswap:pools';
-        await redis.set(key, JSON.stringify(pools));
-        logger.info(`Cached ${pools.length} pools data in Redis.`);
-    } catch (error) {
-        logger.error(`Error caching pools data: ${error.message}`);
-        throw error;
-    }
+async function fetchTopPools() {
+    const query = `
+        {
+            pools(
+                first: 10,
+                orderBy: totalValueLockedUSD,
+                orderDirection: desc
+            ) {
+                id
+                token0 {
+                    symbol
+                }
+                token1 {
+                    symbol
+                }
+                totalValueLockedUSD
+                volumeUSD
+            }
+        }
+    `;
+    const data = await fetchGraphQLData(query);
+    return data.pools;
 }
 
-module.exports = { fetchPoolsData, cachePoolsData };
+async function fetchTokenDayData(tokenId) {
+    const query = `
+        {
+            tokenDayDatas(
+                first: 7,
+                orderBy: date,
+                orderDirection: desc,
+                where: { token: "${tokenId}" }
+            ) {
+                date
+                dailyVolumeUSD
+                priceUSD
+            }
+        }
+    `;
+    const data = await fetchGraphQLData(query);
+    return data.tokenDayDatas;
+}
+
+module.exports = { fetchTopPools, fetchTokenDayData };
