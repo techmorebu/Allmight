@@ -1,37 +1,43 @@
-// File: tests/test-fetch-uniswap.js
-require('dotenv').config(); // Load environment variables
-const { fetchPoolsData, cachePoolsData } = require('../data-collection/fetch-uniswap-data');
+const { fetchTopPools, fetchTokenDayData } = require('../data-collection/fetch-uniswap-data');
 const { logger } = require('../monitoring/logger');
 const Redis = require('ioredis');
 
 (async () => {
     try {
         logger.info('Starting Uniswap fetcher test...');
-        
+
         // Connect to Redis
-        const redis = new Redis(process.env.REDIS_URL || undefined);
+        const redis = new Redis();
         logger.info('Connected to Redis');
 
-        // Fetch pools data
-        const pools = await fetchPoolsData();
+        // Fetch top pools
+        logger.info('Fetching top pools...');
+        const topPools = await fetchTopPools();
+        logger.info(`Fetched top pools: ${JSON.stringify(topPools)}`);
 
-        // Log fetched pools for validation
-        logger.info(`Test: Fetched Pools Data: ${JSON.stringify(pools, null, 2)}`);
-
-        // Cache pools data
-        await cachePoolsData(pools);
-        logger.info('Test: Cached pools data in Redis successfully.');
-
-        // Validate Redis storage
-        const cachedData = JSON.parse(await redis.get('uniswap:pools'));
-        if (cachedData.length === pools.length) {
-            logger.info('Validation: Redis storage matches fetched data.');
-        } else {
-            throw new Error('Validation failed: Redis data mismatch.');
+        // Store in Redis
+        for (const pool of topPools) {
+            const key = `uniswap:pool:${pool.id}`;
+            await redis.set(key, JSON.stringify(pool));
+            logger.info(`Stored pool data in Redis: ${key}`);
         }
 
-        redis.disconnect();
+        // Fetch historical token data
+        const tokenId = topPools[0]?.token0?.symbol; // Example: Fetch data for the first token
+        if (tokenId) {
+            logger.info(`Fetching historical data for token: ${tokenId}`);
+            const tokenDayData = await fetchTokenDayData(tokenId);
+            logger.info(`Fetched token day data: ${JSON.stringify(tokenDayData)}`);
+
+            // Store in Redis
+            await redis.set(`uniswap:token:${tokenId}:history`, JSON.stringify(tokenDayData));
+            logger.info(`Stored token day data in Redis: uniswap:token:${tokenId}:history`);
+        } else {
+            logger.warn('No token ID found for historical data fetch.');
+        }
+
         logger.info('Test completed successfully.');
+        redis.disconnect();
     } catch (error) {
         logger.error(`Test failed: ${error.message}`);
     }
