@@ -1,3 +1,4 @@
+const { fetchTopPools, fetchTokenHistoricalData } = require('../data-collection/fetch-uniswap-data');
 const Redis = require('ioredis');
 const { logger } = require('../monitoring/logger');
 
@@ -5,50 +6,25 @@ const { logger } = require('../monitoring/logger');
     const redis = new Redis();
 
     try {
-        logger.info('Starting Redis validation for Uniswap data...');
+        logger.info('Starting Uniswap fetcher test...');
 
-        // Validate Pool Data
-        const poolKeys = await redis.keys('uniswap:pool:*');
-        if (poolKeys.length === 0) {
-            logger.error('No pool data found in Redis.');
-        } else {
-            logger.info(`Found ${poolKeys.length} pools in Redis.`);
-            for (const poolKey of poolKeys) {
-                const poolData = await redis.get(poolKey);
-                const parsedPool = JSON.parse(poolData);
-                if (parsedPool.id && parsedPool.totalValueLockedUSD) {
-                    logger.info(`Validated pool: ${parsedPool.id}`);
-                } else {
-                    logger.warn(`Invalid data for pool: ${poolKey}`);
-                }
-            }
+        // Fetch top pools and store in Redis
+        const topPools = await fetchTopPools(redis);
+        if (!topPools) {
+            logger.warn('No top pools fetched, exiting test.');
+            return;
         }
 
-        // Validate Token Historical Data
-        const tokenKeys = await redis.keys('uniswap:token:*:historical');
-        if (tokenKeys.length === 0) {
-            logger.error('No historical token data found in Redis.');
-        } else {
-            logger.info(`Found historical data for ${tokenKeys.length} tokens in Redis.`);
-            for (const tokenKey of tokenKeys) {
-                const tokenData = await redis.get(tokenKey);
-                const parsedTokenData = JSON.parse(tokenData);
-
-                if (Array.isArray(parsedTokenData) && parsedTokenData.length > 0) {
-                    logger.info(
-                        `Validated historical data for token: ${tokenKey.split(':')[2]}`
-                    );
-                } else {
-                    logger.warn(
-                        `Invalid or empty historical data for token: ${tokenKey.split(':')[2]}`
-                    );
-                }
-            }
+        // Fetch historical data for tokens in the top pools
+        for (const pool of topPools) {
+            await fetchTokenHistoricalData(pool.token0.id, redis);
+            await fetchTokenHistoricalData(pool.token1.id, redis);
         }
+
+        logger.info('Test completed successfully.');
     } catch (error) {
-        logger.error(`Error during validation: ${error.message}`);
+        logger.error(`Test failed: ${error.message}`);
     } finally {
         redis.disconnect();
-        logger.info('Redis validation test completed.');
     }
 })();
