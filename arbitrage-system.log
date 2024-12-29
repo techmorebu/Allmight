@@ -3013,3 +3013,35 @@
 [2024-12-29T23:48:55.637Z] INFO: Validated pool: 0x4e68ccd3e89f51c3074ca5072bbac773960dfa36
 [2024-12-29T23:48:55.638Z] ERROR: No historical token data found in Redis.
 [2024-12-29T23:48:55.640Z] INFO: Redis validation test completed.
+[2024-12-29T23:49:26.375Z] INFO: Starting Uniswap fetcher test...
+[2024-12-29T23:49:27.124Z] INFO: Stored pool data in Redis: uniswap:pool:0x277667eb3e34f134adf870be9550e9f323d0dc24
+[2024-12-29T23:49:27.126Z] INFO: Stored pool data in Redis: uniswap:pool:0x8c0411f2ad5470a66cb2e9c64536cfb8dcd54d51
+[2024-12-29T23:49:27.127Z] INFO: Stored pool data in Redis: uniswap:pool:0x055284a4ca6532ecc219ac06b577d540c686669d
+[2024-12-29T23:49:27.129Z] INFO: Stored pool data in Redis: uniswap:pool:0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640
+[2024-12-29T23:49:27.130Z] INFO: Stored pool data in Redis: uniswap:pool:0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8
+[2024-12-29T23:49:27.131Z] INFO: Stored pool data in Redis: uniswap:pool:0xcbcdf9626bc03e24f779434178a73a0b4bad62ed
+[2024-12-29T23:49:27.134Z] INFO: Stored pool data in Redis: uniswap:pool:0x4e68ccd3e89f51c3074ca5072bbac773960dfa36
+[2024-12-29T23:49:27.135Z] INFO: Stored pool data in Redis: uniswap:pool:0x99ac8ca7087fa4a2a1fb6357269965a2014abc35
+[2024-12-29T23:49:27.137Z] INFO: Stored pool data in Redis: uniswap:pool:0x6dcba3657ee750a51a13a235b4ed081317da3066
+[2024-12-29T23:49:27.138Z] INFO: Stored pool data in Redis: uniswap:pool:0x4585fe77225b41b697c938b018e2ac67ac5a20c0
+[2024-12-29T23:49:27.309Z] WARN: No historical data found for token: 0x160de4468586b6b2f8a92feb0c260fc6cfc743b1
+[2024-12-29T23:49:27.499Z] WARN: No historical data found for token: 0xea5edef1c6ed1be1bcba4617a1c5a994e9018a43
+[2024-12-29T23:49:27.662Z] WARN: No historical data found for token: 0x160de4468586b6b2f8a92feb0c260fc6cfc743b1
+[2024-12-29T23:49:27.843Z] WARN: No historical data found for token: 0xea5edef1fcf717327440646e7302ca058dde844f
+[2024-12-29T23:49:28.209Z] WARN: No historical data found for token: 0x160de4468586b6b2f8a92feb0c260fc6cfc743b1
+[2024-12-29T23:49:28.364Z] WARN: No historical data found for token: 0xea5edef10f8255cd03541e8ff163a2836e0d7bd3
+[2024-12-29T23:49:28.529Z] WARN: No historical data found for token: 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+[2024-12-29T23:49:28.826Z] WARN: No historical data found for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+[2024-12-29T23:49:29.010Z] WARN: No historical data found for token: 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+[2024-12-29T23:49:29.193Z] WARN: No historical data found for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+[2024-12-29T23:49:29.364Z] WARN: No historical data found for token: 0x2260fac5e5542a773aa44fbcfedf7c193bc2c599
+[2024-12-29T23:49:29.555Z] WARN: No historical data found for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+[2024-12-29T23:49:29.728Z] WARN: No historical data found for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+[2024-12-29T23:49:29.891Z] WARN: No historical data found for token: 0xdac17f958d2ee523a2206206994597c13d831ec7
+[2024-12-29T23:49:30.077Z] WARN: No historical data found for token: 0x2260fac5e5542a773aa44fbcfedf7c193bc2c599
+[2024-12-29T23:49:30.268Z] WARN: No historical data found for token: 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+[2024-12-29T23:49:30.437Z] WARN: No historical data found for token: 0x97ad75064b20fb2b2447fed4fa953bf7f007a706
+[2024-12-29T23:49:30.606Z] WARN: No historical data found for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+[2024-12-29T23:49:30.779Z] WARN: No historical data found for token: 0x2260fac5e5542a773aa44fbcfedf7c193bc2c599
+[2024-12-29T23:49:30.945Z] WARN: No historical data found for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+[2024-12-29T23:49:30.945Z] INFO: Test completed successfully.
