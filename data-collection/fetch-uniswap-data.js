@@ -1,14 +1,16 @@
 require('dotenv').config();
-const axios = require('axios');
 const Redis = require('ioredis');
+const redis = new Redis();
+const axios = require('axios');
 const { logger } = require('../monitoring/logger');
 
-const redis = new Redis();
+// Load environment variables
+const UNISWAP_GRAPHQL_URL = process.env.UNISWAP_GRAPHQL_URL;
 
 // Fetch top pools from Uniswap
-const fetchTopPools = async () => {
+async function fetchTopPools(redis) {
     const query = `
-        query TopPools {
+        query {
             pools(first: 10, orderBy: totalValueLockedUSD, orderDirection: desc) {
                 id
                 token0 {
@@ -26,56 +28,28 @@ const fetchTopPools = async () => {
     `;
 
     try {
-        const response = await axios.post(process.env.UNISWAP_GRAPHQL_URL, { query });
+        const response = await axios.post(UNISWAP_GRAPHQL_URL, { query });
+        const pools = response.data.data.pools;
 
-        if (response.data.errors) {
-            logger.error(`GraphQL Errors: ${JSON.stringify(response.data.errors)}`);
-            throw new Error('GraphQL query failed');
+        if (!pools || pools.length === 0) {
+            logger.warn('No pools fetched from Uniswap.');
+            return;
         }
 
-        return response.data.data.pools || [];
+        for (const pool of pools) {
+            const redisKey = `uniswap:pool:${pool.id}`;
+            await redis.set(redisKey, JSON.stringify(pool));
+            logger.info(`Stored pool data in Redis: ${redisKey}`);
+        }
+
+        return pools;
     } catch (error) {
-        logger.error(`Error fetching data from Uniswap: ${error.message}`);
-        return [];
+        logger.error(`Error fetching pools: ${error.message}`);
+        throw error;
     }
-};
+}
 
-// Fetch historical token data
-const fetchHistoricalData = async (tokenId) => {
-    const query = `
-        query TokenDayData($tokenId: String!) {
-            tokenDayDatas(where: { token: $tokenId }, first: 10, orderBy: date, orderDirection: desc) {
-                date
-                priceUSD
-                totalLiquidityToken
-                totalLiquidityUSD
-                dailyVolumeToken
-                dailyVolumeUSD
-            }
-        }
-    `;
-
-    const variables = { tokenId };
-
-    try {
-        const response = await axios.post(process.env.UNISWAP_GRAPHQL_URL, {
-            query,
-            variables,
-        });
-
-        if (response.data.errors) {
-            logger.error(`GraphQL Errors: ${JSON.stringify(response.data.errors)}`);
-            throw new Error('GraphQL query failed');
-        }
-
-        return response.data.data.tokenDayDatas || [];
-    } catch (error) {
-        logger.error(`Error fetching historical data for token ${tokenId}: ${error.message}`);
-        return [];
-    }
-};
-
-// Fetch historical data for tokens
+// Fetch historical data for a specific token
 async function fetchTokenHistoricalData(tokenId, redis) {
     const query = `
         query ($id: String!) {
@@ -123,43 +97,7 @@ async function fetchTokenHistoricalData(tokenId, redis) {
     }
 }
 
-
-// Main workflow
-const fetchUniswapData = async () => {
-    try {
-        logger.info('Fetching top pools from Uniswap...');
-        const topPools = await fetchTopPools();
-
-        if (topPools.length === 0) {
-            logger.warn('No pools fetched. Exiting...');
-            return;
-        }
-
-        // Store pool data in Redis
-        for (const pool of topPools) {
-            await redis.set(`uniswap:pool:${pool.id}`, JSON.stringify(pool));
-            logger.info(`Stored pool data in Redis: uniswap:pool:${pool.id}`);
-        }
-
-        // Collect unique tokens from pools
-        const tokens = new Set();
-        for (const pool of topPools) {
-            tokens.add(pool.token0);
-            tokens.add(pool.token1);
-        }
-
-        logger.info('Fetching historical data for tokens...');
-        await fetchTokenHistoricalData([...tokens]);
-    } catch (error) {
-        logger.error(`Error in Uniswap fetcher: ${error.message}`);
-    } finally {
-        redis.disconnect();
-        logger.info('Redis connection closed.');
-    }
+module.exports = {
+    fetchTopPools,
+    fetchTokenHistoricalData,
 };
-
-// Execute fetcher
-fetchUniswapData();
-
-
-
