@@ -3045,3 +3045,11 @@
 [2024-12-29T23:49:30.779Z] WARN: No historical data found for token: 0x2260fac5e5542a773aa44fbcfedf7c193bc2c599
 [2024-12-29T23:49:30.945Z] WARN: No historical data found for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
 [2024-12-29T23:49:30.945Z] INFO: Test completed successfully.
+[2024-12-29T23:54:02.631Z] INFO: Starting Uniswap fetcher test...
+[2024-12-29T23:54:06.127Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `dailyVolumeUSD`","locations":[{"line":6,"column":5}]}]
+[2024-12-29T23:54:06.128Z] ERROR: Error fetching historical data for token: 0x160de4468586b6b2f8a92feb0c260fc6cfc743b1. GraphQL query failed
+[2024-12-29T23:54:06.428Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `dailyVolumeUSD`","locations":[{"line":6,"column":5}]}]
+[2024-12-29T23:54:06.431Z] ERROR: Error fetching historical data for token: 0xea5edef1c6ed1be1bcba4617a1c5a994e9018a43. GraphQL query failed
+[2024-12-29T23:54:06.834Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `dailyVolumeUSD`","locations":[{"line":6,"column":5}]}]
+[2024-12-29T23:54:06.835Z] ERROR: Error fetching historical data for token: 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48. GraphQL query failed
+[2024-12-29T23:54:06.835Z] INFO: Test completed successfully.
