@@ -5,7 +5,37 @@ const { logger } = require('../monitoring/logger');
 
 const UNISWAP_GRAPHQL_URL = process.env.UNISWAP_GRAPHQL_URL;
 
-// Fetch historical data for a token
+async function fetchTopPools() {
+    try {
+        const query = `
+            query {
+                pools(first: 10, orderBy: totalValueLockedUSD, orderDirection: desc) {
+                    id
+                    token0 {
+                        id
+                        symbol
+                    }
+                    token1 {
+                        id
+                        symbol
+                    }
+                    totalValueLockedUSD
+                    volumeUSD
+                }
+            }
+        `;
+        const response = await axios.post(UNISWAP_GRAPHQL_URL, { query });
+        if (response.data.errors) {
+            logger.error(`GraphQL Errors: ${JSON.stringify(response.data.errors)}`);
+            throw new Error('GraphQL query failed');
+        }
+        return response.data.data.pools;
+    } catch (error) {
+        logger.error(`Error fetching top pools: ${error.message}`);
+        throw error;
+    }
+}
+
 async function fetchTokenHistoricalData(tokenId) {
     try {
         const query = `
@@ -14,14 +44,14 @@ async function fetchTokenHistoricalData(tokenId) {
                     tokenDayData(first: 7, orderBy: date, orderDirection: desc) {
                         date
                         priceUSD
-                        dailyVolumeUSD
+                        volumeUSD
+                        totalLiquidityUSD
                     }
                 }
             }
         `;
 
         const variables = { id: tokenId };
-
         const response = await axios.post(UNISWAP_GRAPHQL_URL, { query, variables });
 
         if (response.data.errors) {
@@ -30,7 +60,6 @@ async function fetchTokenHistoricalData(tokenId) {
         }
 
         const tokenData = response.data.data.token;
-
         if (!tokenData || !tokenData.tokenDayData || tokenData.tokenDayData.length === 0) {
             logger.warn(`No historical data found for token: ${tokenId}`);
             return null;
@@ -45,5 +74,6 @@ async function fetchTokenHistoricalData(tokenId) {
 }
 
 module.exports = {
+    fetchTopPools,
     fetchTokenHistoricalData,
 };
