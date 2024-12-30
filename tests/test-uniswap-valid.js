@@ -1,16 +1,15 @@
-// File: tests/test-uniswap-validation.js
-
 const Redis = require('ioredis');
 const { logger } = require('../monitoring/logger');
 
-// Helper function to check Redis key and log missing keys
-const checkRedisKey = async (redis, key) => {
+// Helper function to check Redis key and fetch data
+const fetchRedisKey = async (redis, key) => {
     const exists = await redis.exists(key);
     if (!exists) {
         logger.warn(`Key not found in Redis: ${key}`);
         return null;
     }
-    return JSON.parse(await redis.get(key));
+    const data = await redis.get(key);
+    return JSON.parse(data);
 };
 
 // Helper function to validate pool data
@@ -50,7 +49,7 @@ const validateUniswapData = async () => {
 
         for (const poolKey of poolKeys) {
             logger.info(`Validating data for pool key: ${poolKey}`);
-            const poolData = await checkRedisKey(redis, poolKey);
+            const poolData = await fetchRedisKey(redis, poolKey);
 
             if (!poolData || !validatePoolData(poolData)) {
                 logger.error(`Invalid pool data for key: ${poolKey}`);
@@ -61,12 +60,19 @@ const validateUniswapData = async () => {
 
             // Validate historical data for tokens in the pool
             for (const token of [poolData.token0, poolData.token1]) {
-                const historicalKey = `uniswap:token:historical:${token.id}`;
-                const historicalData = await checkRedisKey(redis, historicalKey);
+                const historicalKey = `uniswap:token:${token.id}:historical`;
+                const historicalData = await fetchRedisKey(redis, historicalKey);
 
-                if (!historicalData || !validateHistoricalData(historicalData)) {
+                if (!historicalData) {
                     logger.error(
-                        `Invalid or missing historical data for token: ${token.id}`
+                        `Missing historical data for token: ${token.id}`
+                    );
+                    continue;
+                }
+
+                if (!validateHistoricalData(historicalData)) {
+                    logger.error(
+                        `Invalid historical data for token: ${token.id}`
                     );
                     continue;
                 }
