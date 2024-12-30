@@ -3157,3 +3157,71 @@
 [2024-12-30T00:21:00.922Z] INFO: Fetched historical data for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
 [2024-12-30T00:21:00.925Z] INFO: Stored historical data for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
 [2024-12-30T00:21:00.926Z] INFO: Test completed successfully.
+[2024-12-30T00:30:24.237Z] INFO: Starting Uniswap data validation...
+[2024-12-30T00:30:24.274Z] INFO: Validating data for pool key: uniswap:pool:0x6dcba3657ee750a51a13a235b4ed081317da3066
+[2024-12-30T00:30:24.276Z] INFO: Validated pool data for key: uniswap:pool:0x6dcba3657ee750a51a13a235b4ed081317da3066
+[2024-12-30T00:30:24.278Z] WARN: Key not found in Redis: uniswap:token:historical:0x97ad75064b20fb2b2447fed4fa953bf7f007a706
+[2024-12-30T00:30:24.279Z] ERROR: Invalid or missing historical data for token: 0x97ad75064b20fb2b2447fed4fa953bf7f007a706
+[2024-12-30T00:30:24.281Z] WARN: Key not found in Redis: uniswap:token:historical:0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+[2024-12-30T00:30:24.282Z] ERROR: Invalid or missing historical data for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+[2024-12-30T00:30:24.282Z] INFO: Validating data for pool key: uniswap:pool:0x99ac8ca7087fa4a2a1fb6357269965a2014abc35
+[2024-12-30T00:30:24.284Z] INFO: Validated pool data for key: uniswap:pool:0x99ac8ca7087fa4a2a1fb6357269965a2014abc35
+[2024-12-30T00:30:24.285Z] WARN: Key not found in Redis: uniswap:token:historical:0x2260fac5e5542a773aa44fbcfedf7c193bc2c599
+[2024-12-30T00:30:24.285Z] ERROR: Invalid or missing historical data for token: 0x2260fac5e5542a773aa44fbcfedf7c193bc2c599
+[2024-12-30T00:30:24.287Z] WARN: Key not found in Redis: uniswap:token:historical:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+[2024-12-30T00:30:24.287Z] ERROR: Invalid or missing historical data for token: 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+[2024-12-30T00:30:24.287Z] INFO: Validating data for pool key: uniswap:pool:0x055284a4ca6532ecc219ac06b577d540c686669d
+[2024-12-30T00:30:24.289Z] INFO: Validated pool data for key: uniswap:pool:0x055284a4ca6532ecc219ac06b577d540c686669d
+[2024-12-30T00:30:24.291Z] WARN: Key not found in Redis: uniswap:token:historical:0x160de4468586b6b2f8a92feb0c260fc6cfc743b1
+[2024-12-30T00:30:24.291Z] ERROR: Invalid or missing historical data for token: 0x160de4468586b6b2f8a92feb0c260fc6cfc743b1
+[2024-12-30T00:30:24.292Z] WARN: Key not found in Redis: uniswap:token:historical:0xea5edef10f8255cd03541e8ff163a2836e0d7bd3
+[2024-12-30T00:30:24.292Z] ERROR: Invalid or missing historical data for token: 0xea5edef10f8255cd03541e8ff163a2836e0d7bd3
+[2024-12-30T00:30:24.292Z] INFO: Validating data for pool key: uniswap:pool:0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640
+[2024-12-30T00:30:24.293Z] INFO: Validated pool data for key: uniswap:pool:0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640
+[2024-12-30T00:30:24.295Z] WARN: Key not found in Redis: uniswap:token:historical:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+[2024-12-30T00:30:24.295Z] ERROR: Invalid or missing historical data for token: 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+[2024-12-30T00:30:24.295Z] WARN: Key not found in Redis: uniswap:token:historical:0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+[2024-12-30T00:30:24.296Z] ERROR: Invalid or missing historical data for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+[2024-12-30T00:30:24.296Z] INFO: Validating data for pool key: uniswap:pool:0x277667eb3e34f134adf870be9550e9f323d0dc24
+[2024-12-30T00:30:24.296Z] INFO: Validated pool data for key: uniswap:pool:0x277667eb3e34f134adf870be9550e9f323d0dc24
+[2024-12-30T00:30:24.297Z] WARN: Key not found in Redis: uniswap:token:historical:0x160de4468586b6b2f8a92feb0c260fc6cfc743b1
+[2024-12-30T00:30:24.297Z] ERROR: Invalid or missing historical data for token: 0x160de4468586b6b2f8a92feb0c260fc6cfc743b1
+[2024-12-30T00:30:24.298Z] WARN: Key not found in Redis: uniswap:token:historical:0xea5edef1c6ed1be1bcba4617a1c5a994e9018a43
+[2024-12-30T00:30:24.298Z] ERROR: Invalid or missing historical data for token: 0xea5edef1c6ed1be1bcba4617a1c5a994e9018a43
+[2024-12-30T00:30:24.298Z] INFO: Validating data for pool key: uniswap:pool:0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8
+[2024-12-30T00:30:24.298Z] INFO: Validated pool data for key: uniswap:pool:0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8
+[2024-12-30T00:30:24.299Z] WARN: Key not found in Redis: uniswap:token:historical:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+[2024-12-30T00:30:24.299Z] ERROR: Invalid or missing historical data for token: 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+[2024-12-30T00:30:24.300Z] WARN: Key not found in Redis: uniswap:token:historical:0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+[2024-12-30T00:30:24.300Z] ERROR: Invalid or missing historical data for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+[2024-12-30T00:30:24.300Z] INFO: Validating data for pool key: uniswap:pool:0x9db9e0e53058c89e5b94e29621a205198648425b
+[2024-12-30T00:30:24.301Z] INFO: Validated pool data for key: uniswap:pool:0x9db9e0e53058c89e5b94e29621a205198648425b
+[2024-12-30T00:30:24.302Z] WARN: Key not found in Redis: uniswap:token:historical:0x2260fac5e5542a773aa44fbcfedf7c193bc2c599
+[2024-12-30T00:30:24.302Z] ERROR: Invalid or missing historical data for token: 0x2260fac5e5542a773aa44fbcfedf7c193bc2c599
+[2024-12-30T00:30:24.302Z] WARN: Key not found in Redis: uniswap:token:historical:0xdac17f958d2ee523a2206206994597c13d831ec7
+[2024-12-30T00:30:24.302Z] ERROR: Invalid or missing historical data for token: 0xdac17f958d2ee523a2206206994597c13d831ec7
+[2024-12-30T00:30:24.302Z] INFO: Validating data for pool key: uniswap:pool:0x8c0411f2ad5470a66cb2e9c64536cfb8dcd54d51
+[2024-12-30T00:30:24.303Z] INFO: Validated pool data for key: uniswap:pool:0x8c0411f2ad5470a66cb2e9c64536cfb8dcd54d51
+[2024-12-30T00:30:24.304Z] WARN: Key not found in Redis: uniswap:token:historical:0x160de4468586b6b2f8a92feb0c260fc6cfc743b1
+[2024-12-30T00:30:24.304Z] ERROR: Invalid or missing historical data for token: 0x160de4468586b6b2f8a92feb0c260fc6cfc743b1
+[2024-12-30T00:30:24.304Z] WARN: Key not found in Redis: uniswap:token:historical:0xea5edef1fcf717327440646e7302ca058dde844f
+[2024-12-30T00:30:24.304Z] ERROR: Invalid or missing historical data for token: 0xea5edef1fcf717327440646e7302ca058dde844f
+[2024-12-30T00:30:24.304Z] INFO: Validating data for pool key: uniswap:pool:0x4585fe77225b41b697c938b018e2ac67ac5a20c0
+[2024-12-30T00:30:24.305Z] INFO: Validated pool data for key: uniswap:pool:0x4585fe77225b41b697c938b018e2ac67ac5a20c0
+[2024-12-30T00:30:24.305Z] WARN: Key not found in Redis: uniswap:token:historical:0x2260fac5e5542a773aa44fbcfedf7c193bc2c599
+[2024-12-30T00:30:24.305Z] ERROR: Invalid or missing historical data for token: 0x2260fac5e5542a773aa44fbcfedf7c193bc2c599
+[2024-12-30T00:30:24.306Z] WARN: Key not found in Redis: uniswap:token:historical:0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+[2024-12-30T00:30:24.306Z] ERROR: Invalid or missing historical data for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+[2024-12-30T00:30:24.306Z] INFO: Validating data for pool key: uniswap:pool:0xcbcdf9626bc03e24f779434178a73a0b4bad62ed
+[2024-12-30T00:30:24.306Z] INFO: Validated pool data for key: uniswap:pool:0xcbcdf9626bc03e24f779434178a73a0b4bad62ed
+[2024-12-30T00:30:24.307Z] WARN: Key not found in Redis: uniswap:token:historical:0x2260fac5e5542a773aa44fbcfedf7c193bc2c599
+[2024-12-30T00:30:24.307Z] ERROR: Invalid or missing historical data for token: 0x2260fac5e5542a773aa44fbcfedf7c193bc2c599
+[2024-12-30T00:30:24.307Z] WARN: Key not found in Redis: uniswap:token:historical:0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+[2024-12-30T00:30:24.308Z] ERROR: Invalid or missing historical data for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+[2024-12-30T00:30:24.308Z] INFO: Validating data for pool key: uniswap:pool:0x4e68ccd3e89f51c3074ca5072bbac773960dfa36
+[2024-12-30T00:30:24.308Z] INFO: Validated pool data for key: uniswap:pool:0x4e68ccd3e89f51c3074ca5072bbac773960dfa36
+[2024-12-30T00:30:24.309Z] WARN: Key not found in Redis: uniswap:token:historical:0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+[2024-12-30T00:30:24.309Z] ERROR: Invalid or missing historical data for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
+[2024-12-30T00:30:24.309Z] WARN: Key not found in Redis: uniswap:token:historical:0xdac17f958d2ee523a2206206994597c13d831ec7
+[2024-12-30T00:30:24.310Z] ERROR: Invalid or missing historical data for token: 0xdac17f958d2ee523a2206206994597c13d831ec7
+[2024-12-30T00:30:24.311Z] INFO: Uniswap data validation completed successfully.
