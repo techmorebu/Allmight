@@ -1,5 +1,5 @@
 const Redis = require("ioredis");
-const logger = require("../monitoring/logger"); // Ensure logger setup matches your project
+const logger = require("../monitoring/logger"); // Corrected path to logger
 
 const redis = new Redis(); // Connect to Redis instance
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms)); // Helper function for delays
@@ -8,7 +8,7 @@ async function validateUniswapData() {
     logger.info("Starting Uniswap data validation...");
 
     // Introduce delay to ensure Redis is updated (optional)
-    await delay(1000); 
+    await delay(1000);
 
     try {
         const keys = await redis.keys("uniswap:pool:*");
