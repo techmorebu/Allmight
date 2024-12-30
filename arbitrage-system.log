@@ -3467,3 +3467,16 @@
 [2024-12-30T00:38:10.237Z] ERROR: Invalid historical data for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
 [2024-12-30T00:38:10.237Z] ERROR: Invalid historical data for token: 0xdac17f958d2ee523a2206206994597c13d831ec7
 [2024-12-30T00:38:10.238Z] INFO: Uniswap data validation completed successfully.
+[2024-12-30T00:54:13.521Z] INFO: Starting Uniswap data validation...
+[2024-12-30T00:54:13.563Z] INFO: Validated pool data for key: uniswap:pool:0x6dcba3657ee750a51a13a235b4ed081317da3066
+[2024-12-30T00:54:13.564Z] INFO: Validated pool data for key: uniswap:pool:0x99ac8ca7087fa4a2a1fb6357269965a2014abc35
+[2024-12-30T00:54:13.567Z] INFO: Validated pool data for key: uniswap:pool:0x055284a4ca6532ecc219ac06b577d540c686669d
+[2024-12-30T00:54:13.570Z] INFO: Validated pool data for key: uniswap:pool:0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640
+[2024-12-30T00:54:13.571Z] INFO: Validated pool data for key: uniswap:pool:0x277667eb3e34f134adf870be9550e9f323d0dc24
+[2024-12-30T00:54:13.574Z] INFO: Validated pool data for key: uniswap:pool:0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8
+[2024-12-30T00:54:13.576Z] INFO: Validated pool data for key: uniswap:pool:0x9db9e0e53058c89e5b94e29621a205198648425b
+[2024-12-30T00:54:13.577Z] INFO: Validated pool data for key: uniswap:pool:0x8c0411f2ad5470a66cb2e9c64536cfb8dcd54d51
+[2024-12-30T00:54:13.578Z] INFO: Validated pool data for key: uniswap:pool:0x4585fe77225b41b697c938b018e2ac67ac5a20c0
+[2024-12-30T00:54:13.580Z] INFO: Validated pool data for key: uniswap:pool:0xcbcdf9626bc03e24f779434178a73a0b4bad62ed
+[2024-12-30T00:54:13.581Z] INFO: Validated pool data for key: uniswap:pool:0x4e68ccd3e89f51c3074ca5072bbac773960dfa36
+[2024-12-30T00:54:13.585Z] INFO: Uniswap data validation completed.
