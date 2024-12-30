@@ -1,92 +1,59 @@
-const Redis = require('ioredis');
-const { logger } = require('../monitoring/logger');
+const Redis = require("ioredis");
+const logger = require("../monitoring/logger.js"); // Ensure logger setup matches your project
 
-// Helper function to check Redis key and fetch data
-const fetchRedisKey = async (redis, key) => {
-    const exists = await redis.exists(key);
-    if (!exists) {
-        logger.warn(`Key not found in Redis: ${key}`);
-        return null;
-    }
-    const data = await redis.get(key);
-    return JSON.parse(data);
-};
+const redis = new Redis(); // Connect to Redis instance
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms)); // Helper function for delays
 
-// Helper function to validate pool data
-const validatePoolData = (pool) => {
-    const isValid =
-        pool.id &&
-        pool.token0 &&
-        pool.token1 &&
-        pool.token0.id &&
-        pool.token1.id &&
-        pool.totalValueLockedUSD &&
-        pool.volumeUSD;
-    return isValid;
-};
+async function validateUniswapData() {
+    logger.info("Starting Uniswap data validation...");
 
-// Helper function to validate token historical data
-const validateHistoricalData = (data) => {
-    if (!Array.isArray(data) || data.length === 0) return false;
-    return data.every(
-        (day) => day.date && day.priceUSD && day.volumeUSD && day.liquidityUSD
-    );
-};
+    // Introduce delay to ensure Redis is updated (optional)
+    await delay(1000); 
 
-// Main validation function
-const validateUniswapData = async () => {
     try {
-        logger.info('Starting Uniswap data validation...');
+        const keys = await redis.keys("uniswap:pool:*");
+        logger.info(`Found ${keys.length} pool keys in Redis`);
 
-        const redis = new Redis();
-
-        // Fetch all pool keys from Redis
-        const poolKeys = await redis.keys('uniswap:pool:*');
-        if (poolKeys.length === 0) {
-            logger.warn('No pools found in Redis for Uniswap.');
-            return;
-        }
-
-        for (const poolKey of poolKeys) {
+        for (const poolKey of keys) {
             logger.info(`Validating data for pool key: ${poolKey}`);
-            const poolData = await fetchRedisKey(redis, poolKey);
 
-            if (!poolData || !validatePoolData(poolData)) {
-                logger.error(`Invalid pool data for key: ${poolKey}`);
+            // Validate pool data
+            const poolData = await redis.get(poolKey);
+            if (poolData) {
+                logger.info(`Validated pool data for key: ${poolKey}`);
+            } else {
+                logger.error(`Pool data missing for key: ${poolKey}`);
                 continue;
             }
 
-            logger.info(`Validated pool data for key: ${poolKey}`);
+            // Extract token IDs from the pool data
+            const { token0, token1 } = JSON.parse(poolData);
+            if (!token0 || !token1) {
+                logger.error(`Invalid pool data structure for key: ${poolKey}`);
+                continue;
+            }
 
-            // Validate historical data for tokens in the pool
-            for (const token of [poolData.token0, poolData.token1]) {
-                const historicalKey = `uniswap:token:${token.id}:historical`;
-                const historicalData = await fetchRedisKey(redis, historicalKey);
+            // Validate historical data for tokens
+            for (const token of [token0.id, token1.id]) {
+                const tokenKey = `uniswap:token:historical:${token}`;
+                const historicalData = await redis.get(tokenKey);
 
-                if (!historicalData) {
-                    logger.error(
-                        `Missing historical data for token: ${token.id}`
-                    );
-                    continue;
+                if (historicalData) {
+                    logger.info(`Validated historical data for token: ${token}`);
+                } else {
+                    logger.warn(`Key not found in Redis: ${tokenKey}`);
+                    logger.error(`Invalid or missing historical data for token: ${token}`);
                 }
-
-                if (!validateHistoricalData(historicalData)) {
-                    logger.error(
-                        `Invalid historical data for token: ${token.id}`
-                    );
-                    continue;
-                }
-
-                logger.info(`Validated historical data for token: ${token.id}`);
             }
         }
 
-        redis.disconnect();
-        logger.info('Uniswap data validation completed successfully.');
+        logger.info("Uniswap data validation completed successfully.");
     } catch (error) {
-        logger.error(`Validation failed: ${error.message}`);
+        logger.error(`Error during Uniswap data validation: ${error.message}`);
+    } finally {
+        redis.quit();
     }
-};
+}
 
-// Run validation
+// Execute the validation
 validateUniswapData();
