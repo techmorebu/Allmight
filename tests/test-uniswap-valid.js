@@ -1,59 +1,38 @@
-const Redis = require("ioredis");
-const logger = require("../monitoring/logger"); // Corrected path to logger
-
-const redis = new Redis(); // Connect to Redis instance
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms)); // Helper function for delays
+const { logger } = require('../monitoring/logger');
+const redis = require('ioredis');
+const client = new redis();
 
 async function validateUniswapData() {
     logger.info("Starting Uniswap data validation...");
 
-    // Introduce delay to ensure Redis is updated (optional)
-    await delay(1000);
-
     try {
-        const keys = await redis.keys("uniswap:pool:*");
-        logger.info(`Found ${keys.length} pool keys in Redis`);
-
-        for (const poolKey of keys) {
-            logger.info(`Validating data for pool key: ${poolKey}`);
-
-            // Validate pool data
-            const poolData = await redis.get(poolKey);
-            if (poolData) {
-                logger.info(`Validated pool data for key: ${poolKey}`);
-            } else {
-                logger.error(`Pool data missing for key: ${poolKey}`);
+        const keys = await client.keys('uniswap:pool:*');
+        for (const key of keys) {
+            const poolData = await client.get(key);
+            if (!poolData) {
+                logger.warn(`No data found for pool key: ${key}`);
                 continue;
             }
 
-            // Extract token IDs from the pool data
-            const { token0, token1 } = JSON.parse(poolData);
-            if (!token0 || !token1) {
-                logger.error(`Invalid pool data structure for key: ${poolKey}`);
-                continue;
-            }
-
-            // Validate historical data for tokens
-            for (const token of [token0.id, token1.id]) {
-                const tokenKey = `uniswap:token:historical:${token}`;
-                const historicalData = await redis.get(tokenKey);
-
-                if (historicalData) {
-                    logger.info(`Validated historical data for token: ${token}`);
-                } else {
-                    logger.warn(`Key not found in Redis: ${tokenKey}`);
-                    logger.error(`Invalid or missing historical data for token: ${token}`);
-                }
-            }
+            logger.info(`Validated pool data for key: ${key}`);
         }
 
-        logger.info("Uniswap data validation completed successfully.");
+        const historicalKeys = await client.keys('uniswap:token:historical:*');
+        for (const histKey of historicalKeys) {
+            const histData = await client.get(histKey);
+            if (!histData) {
+                logger.error(`Invalid or missing historical data for token: ${histKey}`);
+            } else {
+                logger.info(`Validated historical data for token: ${histKey}`);
+            }
+        }
     } catch (error) {
-        logger.error(`Error during Uniswap data validation: ${error.message}`);
+        logger.error(`Validation failed: ${error.message}`);
     } finally {
-        redis.quit();
+        client.disconnect();
     }
+
+    logger.info("Uniswap data validation completed.");
 }
 
-// Execute the validation
 validateUniswapData();
