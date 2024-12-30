@@ -1,35 +1,40 @@
-// Import dependencies
-const xrpl = require("xrpl");
-const logger = require("../monitoring/logger");
+const xrpl = require('xrpl');
+const logger = require('../monitoring/logger.js');
 
-// Fetch XRPL data
-const fetchXRPLData = async () => {
+async function fetchXRPLData() {
   try {
-    logger.info("Starting XRPL data fetch...");
-
-    // Create a client and connect to XRPL mainnet
-    const client = new xrpl.Client("wss://s1.ripple.com");
+    logger.info('Starting XRPL data fetch...');
+    const client = new xrpl.Client('wss://s1.ripple.com');
     await client.connect();
 
-    logger.info("Connected to XRPL mainnet.");
-
-    // Example: Fetch account info (replace with your desired functionality)
-    const account = "rXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"; // Replace with a real XRPL address
+    // Fetch account information
+    const account = 'rXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
     const accountInfo = await client.request({
-      command: "account_info",
-      account,
-      ledger_index: "validated",
+      command: 'account_info',
+      account: account,
     });
 
     logger.info(`Fetched account info: ${JSON.stringify(accountInfo.result)}`);
 
-    // Disconnect the client
+    // Fetch order book data (example)
+    const orderBookData = await client.request({
+      command: 'book_offers',
+      taker: 'rXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+      taker_gets: {
+        currency: 'XRP',
+      },
+      taker_pays: {
+        currency: 'USD',
+        issuer: 'rXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+      },
+    });
+
+    logger.info(`Fetched order book data: ${JSON.stringify(orderBookData.result)}`);
     await client.disconnect();
-    logger.info("Disconnected from XRPL mainnet.");
+    logger.info('XRPL data fetch completed successfully.');
   } catch (error) {
     logger.error(`Error in XRPL fetcher script: ${error.message}`);
   }
-};
+}
 
-// Run the fetcher
 fetchXRPLData();
