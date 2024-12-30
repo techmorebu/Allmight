@@ -1,9 +1,53 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-uniswap.js
-[2024-12-29T23:54:02.631Z] INFO: Starting Uniswap fetcher test...
-[2024-12-29T23:54:06.127Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `dailyVolumeUSD`","locations":[{"line":6,"column":5}]}]
-[2024-12-29T23:54:06.128Z] ERROR: Error fetching historical data for token: 0x160de4468586b6b2f8a92feb0c260fc6cfc743b1. GraphQL query failed
-[2024-12-29T23:54:06.428Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `dailyVolumeUSD`","locations":[{"line":6,"column":5}]}]
-[2024-12-29T23:54:06.431Z] ERROR: Error fetching historical data for token: 0xea5edef1c6ed1be1bcba4617a1c5a994e9018a43. GraphQL query failed
-[2024-12-29T23:54:06.834Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `dailyVolumeUSD`","locations":[{"line":6,"column":5}]}]
-[2024-12-29T23:54:06.835Z] ERROR: Error fetching historical data for token: 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48. GraphQL query failed
-[2024-12-29T23:54:06.835Z] INFO: Test completed successfully.
+[2024-12-30T00:16:53.746Z] INFO: Starting Uniswap fetcher test...
+[2024-12-30T00:16:54.588Z] INFO: Stored pool data in Redis: uniswap:pool:0x277667eb3e34f134adf870be9550e9f323d0dc24
+[2024-12-30T00:16:54.884Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `totalLiquidityUSD`","locations":[{"line":7,"column":5}]}]
+[2024-12-30T00:16:54.887Z] ERROR: Error fetching historical data for token: 0x160de4468586b6b2f8a92feb0c260fc6cfc743b1. GraphQL query failed
+[2024-12-30T00:16:55.069Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `totalLiquidityUSD`","locations":[{"line":7,"column":5}]}]
+[2024-12-30T00:16:55.070Z] ERROR: Error fetching historical data for token: 0xea5edef1c6ed1be1bcba4617a1c5a994e9018a43. GraphQL query failed
+[2024-12-30T00:16:55.075Z] INFO: Stored pool data in Redis: uniswap:pool:0x8c0411f2ad5470a66cb2e9c64536cfb8dcd54d51
+[2024-12-30T00:16:55.397Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `totalLiquidityUSD`","locations":[{"line":7,"column":5}]}]
+[2024-12-30T00:16:55.398Z] ERROR: Error fetching historical data for token: 0x160de4468586b6b2f8a92feb0c260fc6cfc743b1. GraphQL query failed
+[2024-12-30T00:16:55.578Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `totalLiquidityUSD`","locations":[{"line":7,"column":5}]}]
+[2024-12-30T00:16:55.580Z] ERROR: Error fetching historical data for token: 0xea5edef1fcf717327440646e7302ca058dde844f. GraphQL query failed
+[2024-12-30T00:16:55.584Z] INFO: Stored pool data in Redis: uniswap:pool:0x055284a4ca6532ecc219ac06b577d540c686669d
+[2024-12-30T00:16:55.747Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `totalLiquidityUSD`","locations":[{"line":7,"column":5}]}]
+[2024-12-30T00:16:55.749Z] ERROR: Error fetching historical data for token: 0x160de4468586b6b2f8a92feb0c260fc6cfc743b1. GraphQL query failed
+[2024-12-30T00:16:55.926Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `totalLiquidityUSD`","locations":[{"line":7,"column":5}]}]
+[2024-12-30T00:16:55.927Z] ERROR: Error fetching historical data for token: 0xea5edef10f8255cd03541e8ff163a2836e0d7bd3. GraphQL query failed
+[2024-12-30T00:16:55.931Z] INFO: Stored pool data in Redis: uniswap:pool:0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640
+[2024-12-30T00:16:56.094Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `totalLiquidityUSD`","locations":[{"line":7,"column":5}]}]
+[2024-12-30T00:16:56.096Z] ERROR: Error fetching historical data for token: 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48. GraphQL query failed
+[2024-12-30T00:16:56.261Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `totalLiquidityUSD`","locations":[{"line":7,"column":5}]}]
+[2024-12-30T00:16:56.262Z] ERROR: Error fetching historical data for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2. GraphQL query failed
+[2024-12-30T00:16:56.264Z] INFO: Stored pool data in Redis: uniswap:pool:0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8
+[2024-12-30T00:16:56.626Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `totalLiquidityUSD`","locations":[{"line":7,"column":5}]}]
+[2024-12-30T00:16:56.627Z] ERROR: Error fetching historical data for token: 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48. GraphQL query failed
+[2024-12-30T00:16:56.809Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `totalLiquidityUSD`","locations":[{"line":7,"column":5}]}]
+[2024-12-30T00:16:56.810Z] ERROR: Error fetching historical data for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2. GraphQL query failed
+[2024-12-30T00:16:56.813Z] INFO: Stored pool data in Redis: uniswap:pool:0xcbcdf9626bc03e24f779434178a73a0b4bad62ed
+[2024-12-30T00:16:57.138Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `totalLiquidityUSD`","locations":[{"line":7,"column":5}]}]
+[2024-12-30T00:16:57.139Z] ERROR: Error fetching historical data for token: 0x2260fac5e5542a773aa44fbcfedf7c193bc2c599. GraphQL query failed
+[2024-12-30T00:16:57.313Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `totalLiquidityUSD`","locations":[{"line":7,"column":5}]}]
+[2024-12-30T00:16:57.314Z] ERROR: Error fetching historical data for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2. GraphQL query failed
+[2024-12-30T00:16:57.318Z] INFO: Stored pool data in Redis: uniswap:pool:0x4e68ccd3e89f51c3074ca5072bbac773960dfa36
+[2024-12-30T00:16:57.648Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `totalLiquidityUSD`","locations":[{"line":7,"column":5}]}]
+[2024-12-30T00:16:57.649Z] ERROR: Error fetching historical data for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2. GraphQL query failed
+[2024-12-30T00:16:57.815Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `totalLiquidityUSD`","locations":[{"line":7,"column":5}]}]
+[2024-12-30T00:16:57.816Z] ERROR: Error fetching historical data for token: 0xdac17f958d2ee523a2206206994597c13d831ec7. GraphQL query failed
+[2024-12-30T00:16:57.818Z] INFO: Stored pool data in Redis: uniswap:pool:0x99ac8ca7087fa4a2a1fb6357269965a2014abc35
+[2024-12-30T00:16:57.994Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `totalLiquidityUSD`","locations":[{"line":7,"column":5}]}]
+[2024-12-30T00:16:57.995Z] ERROR: Error fetching historical data for token: 0x2260fac5e5542a773aa44fbcfedf7c193bc2c599. GraphQL query failed
+[2024-12-30T00:16:58.165Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `totalLiquidityUSD`","locations":[{"line":7,"column":5}]}]
+[2024-12-30T00:16:58.167Z] ERROR: Error fetching historical data for token: 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48. GraphQL query failed
+[2024-12-30T00:16:58.169Z] INFO: Stored pool data in Redis: uniswap:pool:0x6dcba3657ee750a51a13a235b4ed081317da3066
+[2024-12-30T00:16:58.336Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `totalLiquidityUSD`","locations":[{"line":7,"column":5}]}]
+[2024-12-30T00:16:58.337Z] ERROR: Error fetching historical data for token: 0x97ad75064b20fb2b2447fed4fa953bf7f007a706. GraphQL query failed
+[2024-12-30T00:16:58.497Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `totalLiquidityUSD`","locations":[{"line":7,"column":5}]}]
+[2024-12-30T00:16:58.498Z] ERROR: Error fetching historical data for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2. GraphQL query failed
+[2024-12-30T00:16:58.500Z] INFO: Stored pool data in Redis: uniswap:pool:0x4585fe77225b41b697c938b018e2ac67ac5a20c0
+[2024-12-30T00:16:58.674Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `totalLiquidityUSD`","locations":[{"line":7,"column":5}]}]
+[2024-12-30T00:16:58.674Z] ERROR: Error fetching historical data for token: 0x2260fac5e5542a773aa44fbcfedf7c193bc2c599. GraphQL query failed
+[2024-12-30T00:16:58.848Z] ERROR: GraphQL Errors: [{"message":"Type `TokenDayData` has no field `totalLiquidityUSD`","locations":[{"line":7,"column":5}]}]
+[2024-12-30T00:16:58.849Z] ERROR: Error fetching historical data for token: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2. GraphQL query failed
+[2024-12-30T00:16:58.850Z] INFO: Test completed successfully.
