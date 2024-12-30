@@ -1,7 +1,7 @@
 // Import required modules
 const xrpl = require('xrpl');
 const dotenv = require('dotenv');
-const logger = require('../monitoring/logger');
+const { logger } = require('../monitoring/logger');;
 
 // Load environment variables
 dotenv.config();
@@ -12,7 +12,7 @@ const XRPL_ACCOUNT = process.env.XRPL_ACCOUNT;
 const XRPL_ISSUER = process.env.XRPL_ISSUER;
 
 if (!XRPL_MAINNET_URL || !XRPL_TESTNET_URL || !XRPL_ACCOUNT || !XRPL_ISSUER) {
-    logger.error('Missing required environment variables for XRPL configuration.');
+    logger.error ('Missing required environment variables for XRPL configuration.');
     process.exit(1);
 }
 
