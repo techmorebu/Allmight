@@ -1,24 +1,24 @@
 const Redis = require('ioredis');
-const logger = require('../monitoring/logger'); // Ensure logger is imported consistently
+const logger = require('../monitoring/logger'); // Ensure logger is imported correctly
 
 async function validateUniswapData() {
     try {
-        logger.info('Starting Uniswap data validation...');
+        logger.log('info', 'Starting Uniswap data validation...');
         const redis = new Redis();
 
         const keys = await redis.keys('uniswap:pool:*');
         if (keys.length === 0) {
-            logger.warn('No pool data found in Redis.');
+            logger.log('warn', 'No pool data found in Redis.');
             return;
         }
 
         for (const key of keys) {
             const poolData = await redis.get(key);
             if (!poolData) {
-                logger.warn(`Missing data for pool key: ${key}`);
+                logger.log('warn', `Missing data for pool key: ${key}`);
                 continue;
             }
-            logger.info(`Validated pool data for key: ${key}`);
+            logger.log('info', `Validated pool data for key: ${key}`);
 
             const pool = JSON.parse(poolData);
             const tokens = [pool.token0, pool.token1];
@@ -27,17 +27,17 @@ async function validateUniswapData() {
                 const historicalKey = `uniswap:token:historical:${token}`;
                 const historicalData = await redis.get(historicalKey);
                 if (!historicalData) {
-                    logger.warn(`Missing historical data for token: ${token}`);
+                    logger.log('warn', `Missing historical data for token: ${token}`);
                     continue;
                 }
-                logger.info(`Validated historical data for token: ${token}`);
+                logger.log('info', `Validated historical data for token: ${token}`);
             }
         }
 
-        logger.info('Uniswap data validation completed.');
+        logger.log('info', 'Uniswap data validation completed.');
         redis.quit();
     } catch (error) {
-        logger.error(`Error during validation: ${error.message}`);
+        logger.log('error', `Error during validation: ${error.message}`);
     }
 }
 
