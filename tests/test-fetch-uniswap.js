@@ -1,33 +1,32 @@
-const { fetchTokenHistoricalData } = require('../data-collection/fetch-uniswap-data');
-const { logger } = require('../monitoring/logger');
 const Redis = require('ioredis');
+const { fetchTopPools, fetchTokenHistoricalData } = require('../data-collection/fetch-uniswap-data');
+const { logger } = require('../monitoring/logger');
 
 (async () => {
-    const redis = new Redis();
-
     try {
         logger.info('Starting Uniswap fetcher test...');
-        
-        const tokens = [
-            '0x160de4468586b6b2f8a92feb0c260fc6cfc743b1',
-            '0xea5edef1c6ed1be1bcba4617a1c5a994e9018a43',
-            '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-        ]; // Replace with tokens from your pool data
+        const redis = new Redis();
+        const pools = await fetchTopPools();
 
-        for (const tokenId of tokens) {
-            const historicalData = await fetchTokenHistoricalData(tokenId);
+        for (const pool of pools) {
+            const poolKey = `uniswap:pool:${pool.id}`;
+            await redis.set(poolKey, JSON.stringify(pool));
+            logger.info(`Stored pool data in Redis: ${poolKey}`);
 
-            if (historicalData) {
-                const redisKey = `uniswap:token:${tokenId}:history`;
-                await redis.set(redisKey, JSON.stringify(historicalData));
-                logger.info(`Stored historical data for token: ${tokenId}`);
+            const tokenIds = [pool.token0.id, pool.token1.id];
+            for (const tokenId of tokenIds) {
+                const historicalData = await fetchTokenHistoricalData(tokenId);
+                if (historicalData) {
+                    const tokenKey = `uniswap:token:${tokenId}:historical`;
+                    await redis.set(tokenKey, JSON.stringify(historicalData));
+                    logger.info(`Stored historical data for token: ${tokenId}`);
+                }
             }
         }
 
         logger.info('Test completed successfully.');
+        redis.disconnect();
     } catch (error) {
         logger.error(`Test failed: ${error.message}`);
-    } finally {
-        redis.disconnect();
     }
 })();
