@@ -1,3 +1,18 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-uniswap-valid.js
-Error during validation: logger.info is not a function
+echbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-uniswap-valid.js
+/home/techbu/OFA_Project_Local/ofa-project/tests/test-uniswap-valid.js:40
+        logger.error(`Error during validation: ${error.message}`);
+               ^
+
+TypeError: logger.error is not a function
+    at validateUniswapData (/home/techbu/OFA_Project_Local/ofa-project/tests/test-uniswap-valid.js:40:16)
+    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/tests/test-uniswap-valid.js:44:1)
+    at Module._compile (node:internal/modules/cjs/loader:1356:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
+    at Module.load (node:internal/modules/cjs/loader:1197:32)
+    at Module._load (node:internal/modules/cjs/loader:1013:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
+    at node:internal/main/run_main_module:28:49
+
+Node.js v18.19.1
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
+
