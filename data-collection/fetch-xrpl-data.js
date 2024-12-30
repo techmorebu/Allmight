@@ -71,7 +71,7 @@ async function main() {
 
     await client.disconnect();
     redis.quit();
-    logger.info('XRPL fetcher completed successfully.');
+    logger.info('XRPL data fetch completed successfully.');
 }
 
 main().catch((error) => {
