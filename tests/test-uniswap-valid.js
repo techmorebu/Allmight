@@ -1,5 +1,5 @@
 const Redis = require("ioredis");
-const logger = require("../monitoring/logger.js"); // Ensure logger setup matches your project
+const logger = require("../monitoring/logger"); // Ensure logger setup matches your project
 
 const redis = new Redis(); // Connect to Redis instance
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms)); // Helper function for delays
