@@ -1,5 +1,5 @@
 const Redis = require('ioredis');
-const logger = require('../monitoring/logger');
+const logger = require('../monitoring/logger'); // Ensure correct logger path
 
 async function validateUniswapData() {
     try {
@@ -7,10 +7,14 @@ async function validateUniswapData() {
         const redis = new Redis();
 
         const keys = await redis.keys('uniswap:pool:*');
+        if (keys.length === 0) {
+            logger.warn('No pool data found in Redis.');
+        }
+
         for (const key of keys) {
             const poolData = await redis.get(key);
             if (!poolData) {
-                logger.error(`Missing data for pool key: ${key}`);
+                logger.warn(`Missing data for pool key: ${key}`);
                 continue;
             }
             logger.info(`Validated pool data for key: ${key}`);
@@ -32,7 +36,11 @@ async function validateUniswapData() {
         logger.info('Uniswap data validation completed.');
         redis.quit();
     } catch (error) {
-        logger.error(`Error during validation: ${error.message}`);
+        if (typeof logger.error === 'function') {
+            logger.error(`Error during validation: ${error.message}`);
+        } else {
+            console.log(`Error during validation: ${error.message}`);
+        }
     }
 }
 
