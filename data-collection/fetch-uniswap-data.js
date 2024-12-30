@@ -45,7 +45,6 @@ async function fetchTokenHistoricalData(tokenId) {
                         date
                         priceUSD
                         volumeUSD
-                        totalLiquidityUSD
                     }
                 }
             }
