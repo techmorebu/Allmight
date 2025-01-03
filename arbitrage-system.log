@@ -3534,3 +3534,6 @@
   "rippled_version": "2.3.0",
   "network_id": 0
 }
+[2025-01-03T03:46:26.733Z] INFO: Starting XRPL fetcher test...
+[2025-01-03T03:46:26.737Z] INFO: Connecting to XRPL mainnet...
+[2025-01-03T03:46:26.739Z] ERROR: Error in XRPL fetcher test script: server URI must start with `wss://`, `ws://`, `wss+unix://`, or `ws+unix://`.
