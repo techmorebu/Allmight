@@ -1,39 +1,33 @@
-require('dotenv').config();
-const Redis = require('ioredis');
-const { logger } = require('../monitoring/logger');
-
-const redis = new Redis();
-
-async function validateData(key) {
+async function validateKey(key) {
     try {
-        logger.info(`Validating data for key: ${key}`);
-        const data = await redis.get(key);
+        const data = await redisClient.get(key);
         if (!data) {
             logger.error(`No data found for key: ${key}`);
-            return false;
+        } else {
+            logger.info(`Validated data for key: ${key}`);
+            logger.debug(`Data: ${data}`);
         }
-        logger.info(`Data for key ${key} is valid.`);
-        return true;
     } catch (error) {
-        logger.error(`Error during validation for key ${key}: ${error.message}`);
-        return false;
+        logger.error(`Error retrieving key ${key}: ${error.message}`);
     }
 }
 
-async function runValidation() {
-    logger.info('Starting XRPL data validation...');
+async function validateXRPLData() {
+    logger.info("Starting XRPL data validation...");
     const keys = [
         'xrpl:server_info',
-        `xrpl:account:${process.env.XRPL_PUBLIC_KEY}`,
-        `xrpl:tx:${process.env.XRPL_PUBLIC_KEY}`
+        `xrpl:account:${XRPL_PUBLIC_KEY}`,
+        `xrpl:tx:${XRPL_PUBLIC_KEY}`,
     ];
 
     for (const key of keys) {
-        await validateData(key);
+        await validateKey(key);
     }
 
-    logger.info('XRPL data validation completed.');
-    redis.disconnect();
+    logger.info("XRPL data validation completed.");
+    redisClient.quit();
 }
 
-runValidation();
+validateXRPLData().catch((error) => {
+    logger.error(`Validation script error: ${error.message}`);
+});
