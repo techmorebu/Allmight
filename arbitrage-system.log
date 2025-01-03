@@ -3920,3 +3920,9 @@
 [2025-01-03T23:46:27.762Z] INFO: Full API response:
 [2025-01-03T23:46:27.763Z] ERROR: Error fetching QuickSwap data: Invalid or null response from QuickSwap API.
 [2025-01-03T23:46:27.765Z] ERROR: Detailed error: Invalid or null response from QuickSwap API.
+[2025-01-03T23:49:26.559Z] INFO: Starting QuickSwap data fetcher...
+[2025-01-03T23:49:26.563Z] INFO: Fetching data from QuickSwap API at: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g
+[2025-01-03T23:49:26.863Z] INFO: HTTP Status Code: 200
+[2025-01-03T23:49:26.865Z] INFO: Full API Response:
+[2025-01-03T23:49:26.866Z] ERROR: Error fetching QuickSwap data: Invalid or null response from QuickSwap API.
+[2025-01-03T23:49:26.867Z] ERROR: Detailed Error: Invalid or null response from QuickSwap API.
