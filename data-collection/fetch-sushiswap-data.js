@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { logger } = require('../monitoring/logger');
+const Redis = require('ioredis');
 require('dotenv').config();
 
 const SUSHISWAP_API_URL = process.env.SUSHISWAP_API_URL;
@@ -8,6 +9,8 @@ if (!SUSHISWAP_API_URL) {
     logger.error('SUSHISWAP_API_URL is not defined in the environment variables');
     process.exit(1); // Exit if the URL is missing
 }
+
+const redis = new Redis();
 
 logger.info(`Using SushiSwap API URL: ${SUSHISWAP_API_URL}`);
 
@@ -43,6 +46,14 @@ async function fetchSushiSwapPairData() {
             }));
 
             logger.info('Fetched SushiSwap pair data successfully.');
+
+            // Save to Redis
+            for (const pool of liquidityPools) {
+                const redisKey = `sushiswap:pool:${pool.id}`;
+                await redis.set(redisKey, JSON.stringify(pool));
+                logger.info(`Stored pool data in Redis: ${redisKey}`);
+            }
+
             return liquidityPools;
         } else {
             throw new Error('Invalid response structure or missing liquidityPools data');
@@ -56,9 +67,11 @@ async function fetchSushiSwapPairData() {
 (async () => {
     try {
         const data = await fetchSushiSwapPairData();
-        logger.info(`Fetched ${data.length} SushiSwap liquidity pools.`);
+        logger.info(`Fetched and stored ${data.length} SushiSwap liquidity pools.`);
     } catch (error) {
         logger.error(`Fetcher script failed: ${error.message}`);
+    } finally {
+        redis.disconnect(); // Close Redis connection
     }
 })();
 
