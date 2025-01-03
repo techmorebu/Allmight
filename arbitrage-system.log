@@ -3811,3 +3811,28 @@
 [2025-01-03T08:57:48.341Z] INFO: Validated data for key: sushiswap:pool:0x8d11274ddeb8b141a24ca8a36c63699214e0d221
 [2025-01-03T08:57:48.342Z] INFO: SushiSwap data validation complete.
 [2025-01-03T08:57:48.344Z] INFO: Redis connection closed.
+[2025-01-03T09:30:56.023Z] INFO: Fetching Balancer data for chain: ETHEREUM using URL: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/C4ayEZP2yTXRAB8vSaTrgN4m9anTe9Mdm2ViyiAuV9TV...
+[2025-01-03T09:30:56.677Z] INFO: Fetched 10 Balancer pools. Storing in Redis...
+[2025-01-03T09:30:56.679Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x0017c363b29d8f86d82e9681552685f68f34b7e4000200000000000000000209
+[2025-01-03T09:30:56.681Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x0022b6e4ff3ddbf0c36c7c6c7c7f3062f36be5f8000200000000000000000330
+[2025-01-03T09:30:56.683Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x00612eb4f312eb6ace7acc8781196601078ae3390002000000000000000005a2
+[2025-01-03T09:30:56.685Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x006962f9de1aa0639f893aff1f08eddf40a67ad500020000000000000000020c
+[2025-01-03T09:30:56.688Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x006d7e2166472f62f0e9e5c95e3a313e01caea74000200000000000000000690
+[2025-01-03T09:30:56.691Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x00c2a4be503869fa751c2dbcb7156cc970b5a8da000000000000000000000477
+[2025-01-03T09:30:56.693Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x0129dff11b02c4d542aa0bdc7e99f65183212c320002000000000000000005e5
+[2025-01-03T09:30:56.695Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x01536b22ea06e4a315e3daaf05a12683ed4dc14c0000000000000000000005fc
+[2025-01-03T09:30:56.696Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x0195538979e579d49999f780c04fc4bf68778b6f0000000000000000000006d9
+[2025-01-03T09:30:56.697Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x01abc00e86c7e258823b9a055fd62ca6cf61a16300010000000000000000003b
+[2025-01-03T09:30:56.697Z] INFO: Balancer fetcher script completed successfully.
+[2025-01-03T09:31:25.268Z] INFO: Starting Balancer data validation...
+[2025-01-03T09:31:25.304Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x0129dff11b02c4d542aa0bdc7e99f65183212c320002000000000000000005e5
+[2025-01-03T09:31:25.305Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x00c2a4be503869fa751c2dbcb7156cc970b5a8da000000000000000000000477
+[2025-01-03T09:31:25.308Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x01536b22ea06e4a315e3daaf05a12683ed4dc14c0000000000000000000005fc
+[2025-01-03T09:31:25.310Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x0195538979e579d49999f780c04fc4bf68778b6f0000000000000000000006d9
+[2025-01-03T09:31:25.311Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x0017c363b29d8f86d82e9681552685f68f34b7e4000200000000000000000209
+[2025-01-03T09:31:25.313Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x006962f9de1aa0639f893aff1f08eddf40a67ad500020000000000000000020c
+[2025-01-03T09:31:25.314Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x0022b6e4ff3ddbf0c36c7c6c7c7f3062f36be5f8000200000000000000000330
+[2025-01-03T09:31:25.315Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x006d7e2166472f62f0e9e5c95e3a313e01caea74000200000000000000000690
+[2025-01-03T09:31:25.316Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x00612eb4f312eb6ace7acc8781196601078ae3390002000000000000000005a2
+[2025-01-03T09:31:25.318Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x01abc00e86c7e258823b9a055fd62ca6cf61a16300010000000000000000003b
+[2025-01-03T09:31:25.319Z] INFO: Balancer data validation completed successfully.

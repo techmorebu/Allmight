@@ -1,41 +1,28 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node data-collection/fetch-sushiswap-data.js
-[2025-01-03T08:57:27.253Z] INFO: Using SushiSwap API URL: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/3oHCddbQGTi42kPZBwyGzD2JzZR33zK2MwXtxAerNJy2
-[2025-01-03T08:57:28.015Z] INFO: Fetched SushiSwap pair data successfully.
-[2025-01-03T08:57:28.016Z] INFO: Stored pool data in Redis: sushiswap:pool:0x87a55586a089cb4eefd41f091731a5f229ae8936
-[2025-01-03T08:57:28.018Z] INFO: Stored pool data in Redis: sushiswap:pool:0xe68baa6891971e5c118ac64d86a1f5a79ce06757
-[2025-01-03T08:57:28.020Z] INFO: Stored pool data in Redis: sushiswap:pool:0x8d11274ddeb8b141a24ca8a36c63699214e0d221
-[2025-01-03T08:57:28.021Z] INFO: Stored pool data in Redis: sushiswap:pool:0xb3942c9ffa04efbc1fa746e146be7565c76e3dc1
-[2025-01-03T08:57:28.022Z] INFO: Stored pool data in Redis: sushiswap:pool:0x1797538dd80c041cc2f0c5901d5700868186a9a8
-[2025-01-03T08:57:28.023Z] INFO: Stored pool data in Redis: sushiswap:pool:0x753d81a2d6c61dd7c3510729c9df310659f9003b
-[2025-01-03T08:57:28.024Z] INFO: Stored pool data in Redis: sushiswap:pool:0x8bd39fa8608fd949c253987767540c26a0d974cf
-[2025-01-03T08:57:28.025Z] INFO: Stored pool data in Redis: sushiswap:pool:0x15e444da5b343c5a0931f5d3e85d158d1efc3d40
-[2025-01-03T08:57:28.026Z] INFO: Stored pool data in Redis: sushiswap:pool:0x99543bf98ca1830aa20d3eb12c1b9962f8eadc11
-[2025-01-03T08:57:28.026Z] INFO: Stored pool data in Redis: sushiswap:pool:0xd9e96f78b3c68ba79fd4dfad4ddf4f27bd1e2ecf
-[2025-01-03T08:57:28.026Z] INFO: Fetched and stored 10 SushiSwap liquidity pools.
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ redis-cli keys "*sushiswap*"
- 1) "sushiswap:pool:0xd9e96f78b3c68ba79fd4dfad4ddf4f27bd1e2ecf"
- 2) "sushiswap:pool:0x87a55586a089cb4eefd41f091731a5f229ae8936"
- 3) "sushiswap:pool:0x753d81a2d6c61dd7c3510729c9df310659f9003b"
- 4) "sushiswap:pool:0x99543bf98ca1830aa20d3eb12c1b9962f8eadc11"
- 5) "sushiswap:pool:0x1797538dd80c041cc2f0c5901d5700868186a9a8"
- 6) "sushiswap:pool:0x8bd39fa8608fd949c253987767540c26a0d974cf"
- 7) "sushiswap:pool:0xb3942c9ffa04efbc1fa746e146be7565c76e3dc1"
- 8) "sushiswap:pool:0xe68baa6891971e5c118ac64d86a1f5a79ce06757"
- 9) "sushiswap:pool:0x15e444da5b343c5a0931f5d3e85d158d1efc3d40"
-10) "sushiswap:pool:0x8d11274ddeb8b141a24ca8a36c63699214e0d221"
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-validate-sushiswap-data.js
-[2025-01-03T08:57:48.289Z] INFO: Starting SushiSwap data validation...
-[2025-01-03T08:57:48.328Z] INFO: Found 10 SushiSwap pool keys in Redis.
-[2025-01-03T08:57:48.329Z] INFO: Validated data for key: sushiswap:pool:0xd9e96f78b3c68ba79fd4dfad4ddf4f27bd1e2ecf
-[2025-01-03T08:57:48.331Z] INFO: Validated data for key: sushiswap:pool:0x87a55586a089cb4eefd41f091731a5f229ae8936
-[2025-01-03T08:57:48.332Z] INFO: Validated data for key: sushiswap:pool:0x753d81a2d6c61dd7c3510729c9df310659f9003b
-[2025-01-03T08:57:48.335Z] INFO: Validated data for key: sushiswap:pool:0x99543bf98ca1830aa20d3eb12c1b9962f8eadc11
-[2025-01-03T08:57:48.337Z] INFO: Validated data for key: sushiswap:pool:0x1797538dd80c041cc2f0c5901d5700868186a9a8
-[2025-01-03T08:57:48.337Z] INFO: Validated data for key: sushiswap:pool:0x8bd39fa8608fd949c253987767540c26a0d974cf
-[2025-01-03T08:57:48.338Z] INFO: Validated data for key: sushiswap:pool:0xb3942c9ffa04efbc1fa746e146be7565c76e3dc1
-[2025-01-03T08:57:48.339Z] INFO: Validated data for key: sushiswap:pool:0xe68baa6891971e5c118ac64d86a1f5a79ce06757
-[2025-01-03T08:57:48.340Z] INFO: Validated data for key: sushiswap:pool:0x15e444da5b343c5a0931f5d3e85d158d1efc3d40
-[2025-01-03T08:57:48.341Z] INFO: Validated data for key: sushiswap:pool:0x8d11274ddeb8b141a24ca8a36c63699214e0d221
-[2025-01-03T08:57:48.342Z] INFO: SushiSwap data validation complete.
-[2025-01-03T08:57:48.344Z] INFO: Redis connection closed.
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node data-collection/fetch-balancer-data.js
+[2025-01-03T09:30:56.023Z] INFO: Fetching Balancer data for chain: ETHEREUM using URL: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/C4ayEZP2yTXRAB8vSaTrgN4m9anTe9Mdm2ViyiAuV9TV...
+[2025-01-03T09:30:56.677Z] INFO: Fetched 10 Balancer pools. Storing in Redis...
+[2025-01-03T09:30:56.679Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x0017c363b29d8f86d82e9681552685f68f34b7e4000200000000000000000209
+[2025-01-03T09:30:56.681Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x0022b6e4ff3ddbf0c36c7c6c7c7f3062f36be5f8000200000000000000000330
+[2025-01-03T09:30:56.683Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x00612eb4f312eb6ace7acc8781196601078ae3390002000000000000000005a2
+[2025-01-03T09:30:56.685Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x006962f9de1aa0639f893aff1f08eddf40a67ad500020000000000000000020c
+[2025-01-03T09:30:56.688Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x006d7e2166472f62f0e9e5c95e3a313e01caea74000200000000000000000690
+[2025-01-03T09:30:56.691Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x00c2a4be503869fa751c2dbcb7156cc970b5a8da000000000000000000000477
+[2025-01-03T09:30:56.693Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x0129dff11b02c4d542aa0bdc7e99f65183212c320002000000000000000005e5
+[2025-01-03T09:30:56.695Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x01536b22ea06e4a315e3daaf05a12683ed4dc14c0000000000000000000005fc
+[2025-01-03T09:30:56.696Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x0195538979e579d49999f780c04fc4bf68778b6f0000000000000000000006d9
+[2025-01-03T09:30:56.697Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x01abc00e86c7e258823b9a055fd62ca6cf61a16300010000000000000000003b
+[2025-01-03T09:30:56.697Z] INFO: Balancer fetcher script completed successfully.
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-validate-balancer-data.js
+[2025-01-03T09:31:25.268Z] INFO: Starting Balancer data validation...
+[2025-01-03T09:31:25.304Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x0129dff11b02c4d542aa0bdc7e99f65183212c320002000000000000000005e5
+[2025-01-03T09:31:25.305Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x00c2a4be503869fa751c2dbcb7156cc970b5a8da000000000000000000000477
+[2025-01-03T09:31:25.308Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x01536b22ea06e4a315e3daaf05a12683ed4dc14c0000000000000000000005fc
+[2025-01-03T09:31:25.310Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x0195538979e579d49999f780c04fc4bf68778b6f0000000000000000000006d9
+[2025-01-03T09:31:25.311Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x0017c363b29d8f86d82e9681552685f68f34b7e4000200000000000000000209
+[2025-01-03T09:31:25.313Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x006962f9de1aa0639f893aff1f08eddf40a67ad500020000000000000000020c
+[2025-01-03T09:31:25.314Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x0022b6e4ff3ddbf0c36c7c6c7c7f3062f36be5f8000200000000000000000330
+[2025-01-03T09:31:25.315Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x006d7e2166472f62f0e9e5c95e3a313e01caea74000200000000000000000690
+[2025-01-03T09:31:25.316Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x00612eb4f312eb6ace7acc8781196601078ae3390002000000000000000005a2
+[2025-01-03T09:31:25.318Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x01abc00e86c7e258823b9a055fd62ca6cf61a16300010000000000000000003b
+[2025-01-03T09:31:25.319Z] INFO: Balancer data validation completed successfully.
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
