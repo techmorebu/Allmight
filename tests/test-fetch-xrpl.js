@@ -1,3 +1,7 @@
+require('dotenv').config();
+const Redis = require('ioredis');
+const { logger } = require('../monitoring/logger');
+
 async function validateKey(key) {
     try {
         const data = await redisClient.get(key);
