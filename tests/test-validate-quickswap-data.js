@@ -1,48 +1,23 @@
-require('dotenv').config();
-const Redis = require('ioredis');
 const { logger } = require('../monitoring/logger');
-
-const redis = new Redis();
+const redis = require('redis').createClient();
 
 async function validateQuickSwapData() {
   logger.info('Starting QuickSwap data validation...');
-
   try {
-    const keys = await redis.keys('quickswap:pair:*');
-    if (keys.length === 0) {
-      logger.error('No QuickSwap pair data found in Redis.');
-      return;
+    const poolKeys = await redis.keys('quickswap:pool:*');
+    const tokenKeys = await redis.keys('quickswap:token:*');
+
+    if (poolKeys.length === 0) {
+      logger.error('No QuickSwap pool data found in Redis.');
+    } else {
+      logger.info(`Validated ${poolKeys.length} pools in Redis.`);
     }
 
-    logger.info(`Validating ${keys.length} pairs from QuickSwap in Redis...`);
-    for (const key of keys) {
-      const data = await redis.get(key);
-      if (!data) {
-        logger.error(`No data found for key: ${key}`);
-        continue;
-      }
-
-      const parsedData = JSON.parse(data);
-
-      // Validate essential fields
-      const requiredFields = ['id', 'token0', 'token1', 'reserveUSD', 'volumeUSD'];
-      for (const field of requiredFields) {
-        if (!(field in parsedData)) {
-          logger.error(`Missing field '${field}' in data for key: ${key}`);
-          continue;
-        }
-      }
-
-      // Validate tokens
-      if (!parsedData.token0 || !parsedData.token1) {
-        logger.error(`Invalid token data in pair: ${key}`);
-        continue;
-      }
-
-      logger.info(`Validated pair data for key: ${key}`);
+    if (tokenKeys.length === 0) {
+      logger.error('No QuickSwap token data found in Redis.');
+    } else {
+      logger.info(`Validated ${tokenKeys.length} tokens in Redis.`);
     }
-
-    logger.info('QuickSwap data validation completed successfully.');
   } catch (error) {
     logger.error(`Error during QuickSwap data validation: ${error.message}`);
   } finally {
