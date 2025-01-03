@@ -1,6 +1,41 @@
-echbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node data-collection/fetch-sushiswap-data.js
-[2025-01-03T08:52:44.754Z] INFO: Using SushiSwap API URL: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/3oHCddbQGTi42kPZBwyGzD2JzZR33zK2MwXtxAerNJy2
-[2025-01-03T08:53:05.299Z] INFO: Fetched SushiSwap pair data successfully.
-[2025-01-03T08:53:05.300Z] INFO: Fetched 10 SushiSwap liquidity pools.
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node data-collection/fetch-sushiswap-data.js
+[2025-01-03T08:57:27.253Z] INFO: Using SushiSwap API URL: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/3oHCddbQGTi42kPZBwyGzD2JzZR33zK2MwXtxAerNJy2
+[2025-01-03T08:57:28.015Z] INFO: Fetched SushiSwap pair data successfully.
+[2025-01-03T08:57:28.016Z] INFO: Stored pool data in Redis: sushiswap:pool:0x87a55586a089cb4eefd41f091731a5f229ae8936
+[2025-01-03T08:57:28.018Z] INFO: Stored pool data in Redis: sushiswap:pool:0xe68baa6891971e5c118ac64d86a1f5a79ce06757
+[2025-01-03T08:57:28.020Z] INFO: Stored pool data in Redis: sushiswap:pool:0x8d11274ddeb8b141a24ca8a36c63699214e0d221
+[2025-01-03T08:57:28.021Z] INFO: Stored pool data in Redis: sushiswap:pool:0xb3942c9ffa04efbc1fa746e146be7565c76e3dc1
+[2025-01-03T08:57:28.022Z] INFO: Stored pool data in Redis: sushiswap:pool:0x1797538dd80c041cc2f0c5901d5700868186a9a8
+[2025-01-03T08:57:28.023Z] INFO: Stored pool data in Redis: sushiswap:pool:0x753d81a2d6c61dd7c3510729c9df310659f9003b
+[2025-01-03T08:57:28.024Z] INFO: Stored pool data in Redis: sushiswap:pool:0x8bd39fa8608fd949c253987767540c26a0d974cf
+[2025-01-03T08:57:28.025Z] INFO: Stored pool data in Redis: sushiswap:pool:0x15e444da5b343c5a0931f5d3e85d158d1efc3d40
+[2025-01-03T08:57:28.026Z] INFO: Stored pool data in Redis: sushiswap:pool:0x99543bf98ca1830aa20d3eb12c1b9962f8eadc11
+[2025-01-03T08:57:28.026Z] INFO: Stored pool data in Redis: sushiswap:pool:0xd9e96f78b3c68ba79fd4dfad4ddf4f27bd1e2ecf
+[2025-01-03T08:57:28.026Z] INFO: Fetched and stored 10 SushiSwap liquidity pools.
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ redis-cli keys "*sushiswap*"
-(empty array)
+ 1) "sushiswap:pool:0xd9e96f78b3c68ba79fd4dfad4ddf4f27bd1e2ecf"
+ 2) "sushiswap:pool:0x87a55586a089cb4eefd41f091731a5f229ae8936"
+ 3) "sushiswap:pool:0x753d81a2d6c61dd7c3510729c9df310659f9003b"
+ 4) "sushiswap:pool:0x99543bf98ca1830aa20d3eb12c1b9962f8eadc11"
+ 5) "sushiswap:pool:0x1797538dd80c041cc2f0c5901d5700868186a9a8"
+ 6) "sushiswap:pool:0x8bd39fa8608fd949c253987767540c26a0d974cf"
+ 7) "sushiswap:pool:0xb3942c9ffa04efbc1fa746e146be7565c76e3dc1"
+ 8) "sushiswap:pool:0xe68baa6891971e5c118ac64d86a1f5a79ce06757"
+ 9) "sushiswap:pool:0x15e444da5b343c5a0931f5d3e85d158d1efc3d40"
+10) "sushiswap:pool:0x8d11274ddeb8b141a24ca8a36c63699214e0d221"
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-validate-sushiswap-data.js
+[2025-01-03T08:57:48.289Z] INFO: Starting SushiSwap data validation...
+[2025-01-03T08:57:48.328Z] INFO: Found 10 SushiSwap pool keys in Redis.
+[2025-01-03T08:57:48.329Z] INFO: Validated data for key: sushiswap:pool:0xd9e96f78b3c68ba79fd4dfad4ddf4f27bd1e2ecf
+[2025-01-03T08:57:48.331Z] INFO: Validated data for key: sushiswap:pool:0x87a55586a089cb4eefd41f091731a5f229ae8936
+[2025-01-03T08:57:48.332Z] INFO: Validated data for key: sushiswap:pool:0x753d81a2d6c61dd7c3510729c9df310659f9003b
+[2025-01-03T08:57:48.335Z] INFO: Validated data for key: sushiswap:pool:0x99543bf98ca1830aa20d3eb12c1b9962f8eadc11
+[2025-01-03T08:57:48.337Z] INFO: Validated data for key: sushiswap:pool:0x1797538dd80c041cc2f0c5901d5700868186a9a8
+[2025-01-03T08:57:48.337Z] INFO: Validated data for key: sushiswap:pool:0x8bd39fa8608fd949c253987767540c26a0d974cf
+[2025-01-03T08:57:48.338Z] INFO: Validated data for key: sushiswap:pool:0xb3942c9ffa04efbc1fa746e146be7565c76e3dc1
+[2025-01-03T08:57:48.339Z] INFO: Validated data for key: sushiswap:pool:0xe68baa6891971e5c118ac64d86a1f5a79ce06757
+[2025-01-03T08:57:48.340Z] INFO: Validated data for key: sushiswap:pool:0x15e444da5b343c5a0931f5d3e85d158d1efc3d40
+[2025-01-03T08:57:48.341Z] INFO: Validated data for key: sushiswap:pool:0x8d11274ddeb8b141a24ca8a36c63699214e0d221
+[2025-01-03T08:57:48.342Z] INFO: SushiSwap data validation complete.
+[2025-01-03T08:57:48.344Z] INFO: Redis connection closed.
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
