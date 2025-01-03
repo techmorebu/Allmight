@@ -1,31 +1,9 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node data-collection/fetch-xrpl-data.js
-[2025-01-03T03:07:25.970Z] INFO: Starting XRPL fetcher script using JSON-RPC...
-[2025-01-03T03:07:25.974Z] INFO: Sending server_info request to XRPL at https://s1.ripple.com:51234...
-[2025-01-03T03:07:26.658Z] INFO: Received response from XRPL:
-[2025-01-03T03:07:26.661Z] INFO: Server Info: {
-  "complete_ledgers": "32570-93200240",
-  "load_factor": 1,
-  "time": "2025-Jan-03 03:07:26.386887 UTC",
-  "uptime": 67206,
-  "clio_version": "2.3.0",
-  "libxrpl_version": "2.3.0",
-  "validated_ledger": {
-    "age": 5,
-    "hash": "9B442F573D55ABECF5E1D40B1981D7A2E5D37020BE3044BF4066547DC5E41399",
-    "seq": 93200240,
-    "base_fee_xrp": 0.00001,
-    "reserve_base_xrp": 1,
-    "reserve_inc_xrp": 0.2
-  },
-  "cache": {
-    "size": 15522366,
-    "is_enabled": true,
-    "is_full": true,
-    "latest_ledger_seq": 93200240,
-    "object_hit_rate": 0.7758073806762695,
-    "successor_hit_rate": 0.9981392621994019
-  },
-  "validation_quorum": 28,
-  "rippled_version": "2.3.0",
-  "network_id": 0
-}
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-xrpl.js
+[2025-01-03T03:48:13.165Z] INFO: Starting XRPL data validation...
+[2025-01-03T03:48:13.170Z] INFO: Validating data for key: xrpl:server_info
+[2025-01-03T03:48:13.210Z] ERROR: No data found for key: xrpl:server_info
+[2025-01-03T03:48:13.211Z] INFO: Validating data for key: xrpl:account:rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx
+[2025-01-03T03:48:13.212Z] ERROR: No data found for key: xrpl:account:rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx
+[2025-01-03T03:48:13.213Z] INFO: Validating data for key: xrpl:tx:rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx
+[2025-01-03T03:48:13.215Z] ERROR: No data found for key: xrpl:tx:rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx
+[2025-01-03T03:48:13.215Z] INFO: XRPL data validation completed.

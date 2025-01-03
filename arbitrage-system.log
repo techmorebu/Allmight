@@ -3537,3 +3537,11 @@
 [2025-01-03T03:46:26.733Z] INFO: Starting XRPL fetcher test...
 [2025-01-03T03:46:26.737Z] INFO: Connecting to XRPL mainnet...
 [2025-01-03T03:46:26.739Z] ERROR: Error in XRPL fetcher test script: server URI must start with `wss://`, `ws://`, `wss+unix://`, or `ws+unix://`.
+[2025-01-03T03:48:13.165Z] INFO: Starting XRPL data validation...
+[2025-01-03T03:48:13.170Z] INFO: Validating data for key: xrpl:server_info
+[2025-01-03T03:48:13.210Z] ERROR: No data found for key: xrpl:server_info
+[2025-01-03T03:48:13.211Z] INFO: Validating data for key: xrpl:account:rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx
+[2025-01-03T03:48:13.212Z] ERROR: No data found for key: xrpl:account:rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx
+[2025-01-03T03:48:13.213Z] INFO: Validating data for key: xrpl:tx:rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx
+[2025-01-03T03:48:13.215Z] ERROR: No data found for key: xrpl:tx:rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx
+[2025-01-03T03:48:13.215Z] INFO: XRPL data validation completed.
