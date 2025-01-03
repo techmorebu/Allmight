@@ -1,21 +1,6 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node data-collection/fetch-xrpl-data.js
-[2025-01-03T07:33:45.460Z] INFO: Fetching server info from XRPL...
-[2025-01-03T07:33:46.243Z] INFO: Server info fetched successfully.
-[2025-01-03T07:33:46.249Z] INFO: Stored server info in Redis.
-[2025-01-03T07:33:46.250Z] INFO: Fetching account info for: rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx...
-[2025-01-03T07:33:46.592Z] INFO: Account info fetched successfully.
-[2025-01-03T07:33:46.597Z] INFO: Stored account info in Redis.
-[2025-01-03T07:33:46.599Z] INFO: Fetching transactions for: rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx...
-[2025-01-03T07:33:46.950Z] INFO: Transactions fetched successfully.
-[2025-01-03T07:33:46.958Z] INFO: Stored transactions in Redis.
-[2025-01-03T07:33:46.961Z] INFO: XRPL fetcher script completed successfully.
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ redis-cli keys "*xrpl*"
-1) "xrpl:server_info"
-2) "xrpl:account:rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx"
-3) "xrpl:tx:rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx"
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-xrpl.js
-[2025-01-03T07:34:32.206Z] INFO: Starting XRPL data validation...
-[2025-01-03T07:34:32.235Z] INFO: Validated data for key: xrpl:server_info
-[2025-01-03T07:34:32.237Z] INFO: Validated data for key: xrpl:account:rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx
-[2025-01-03T07:34:32.239Z] INFO: Validated data for key: xrpl:tx:rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx
-[2025-01-03T07:34:32.240Z] INFO: XRPL data validation complete
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-thorchain.js
+Testing Thorchain data fetching...
+Redis connected.
+❌ Error fetching Thorchain pool data: getaddrinfo ENOTFOUND midgard.thorchain.info
+❌ Error fetching Thorchain swap data: getaddrinfo ENOTFOUND midgard.thorchain.info
+❌ Error fetching Thorchain fee data: getaddrinfo ENOTFOUND midgard.thorchain.info
