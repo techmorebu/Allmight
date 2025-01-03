@@ -1,10 +1,6 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-validate-sushiswap-data.js
-[2025-01-03T08:34:25.790Z] INFO: Starting SushiSwap data validation...
-[2025-01-03T08:34:25.835Z] ERROR: No SushiSwap pool data found in Redis.
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ redis-cli keys"*sushiswap*"
-(error) ERR unknown command 'keys*sushiswap*', with args beginning with: 
+echbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node data-collection/fetch-sushiswap-data.js
+[2025-01-03T08:52:44.754Z] INFO: Using SushiSwap API URL: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/3oHCddbQGTi42kPZBwyGzD2JzZR33zK2MwXtxAerNJy2
+[2025-01-03T08:53:05.299Z] INFO: Fetched SushiSwap pair data successfully.
+[2025-01-03T08:53:05.300Z] INFO: Fetched 10 SushiSwap liquidity pools.
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ redis-cli keys "*sushiswap*"
 (empty array)
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node data-collection/fetch-sushiswap-data.js
-[2025-01-03T08:38:15.242Z] INFO: Using SushiSwap API URL: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/3oHCddbQGTi42kPZBwyGzD2JzZR33zK2MwXtxAerNJy2
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 

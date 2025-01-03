@@ -3781,3 +3781,6 @@
 [2025-01-03T08:43:32.402Z] INFO: Using SushiSwap API URL: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/3oHCddbQGTi42kPZBwyGzD2JzZR33zK2MwXtxAerNJy2
 [2025-01-03T08:43:33.023Z] ERROR: No pool data found in the response.
 [2025-01-03T08:43:33.025Z] INFO: Redis connection closed.
+[2025-01-03T08:52:44.754Z] INFO: Using SushiSwap API URL: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/3oHCddbQGTi42kPZBwyGzD2JzZR33zK2MwXtxAerNJy2
+[2025-01-03T08:53:05.299Z] INFO: Fetched SushiSwap pair data successfully.
+[2025-01-03T08:53:05.300Z] INFO: Fetched 10 SushiSwap liquidity pools.
