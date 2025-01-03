@@ -1,67 +1,52 @@
-require('dotenv').config();
 const axios = require('axios');
-const Redis = require('ioredis');
+const { createClient } = require('redis');
 const { logger } = require('../monitoring/logger');
+require('dotenv').config();
 
-const redis = new Redis();
-
-const chainUrls = {
-  ETHEREUM: process.env.BALANCER_ETHEREUM,
-  POLYGON: process.env.BALANCER_POLYGON,
-  OPTIMISM: process.env.BALANCER_OPTIMISM,
-  ARBITRUM: process.env.BALANCER_ARBITRUM,
-  AVALANCHE: process.env.BALANCER_AVALANCHE,
+const networks = {
+  ethereum: process.env.BALANCER_ETHEREUM,
+  polygon: process.env.BALANCER_POLYGON,
+  optimism: process.env.BALANCER_OPTIMISIM,
+  arbitrum: process.env.BALANCER_ARBITRUM,
+  avalanche: process.env.BALANCER_AVALANCHE,
 };
 
-const fetchBalancerData = async () => {
+async function fetchBalancerData(network, url) {
   try {
-    const chain = process.env.BALANCER_DEFAULT_CHAIN || 'ETHEREUM';
-    const url = chainUrls[chain];
-
-    if (!url) {
-      throw new Error(`No API URL found for chain: ${chain}`);
-    }
-
-    logger.info(`Fetching Balancer data for chain: ${chain} using URL: ${url}...`);
-
-    const query = `
-      {
-        pools(first: 10) {
-          id
-          address
-          tokens {
-            symbol
-            address
-            balance
+    logger.info(`Fetching Balancer data for ${network}...`);
+    const response = await axios.post(url, {
+      query: `
+        {
+          pools(first: 10, orderBy: totalLiquidity, orderDirection: desc) {
+            id
+            tokens {
+              symbol
+              balance
+            }
+            totalLiquidity
+            swapFee
           }
-          swapFee
-          totalLiquidity
         }
-      }
-    `;
-
-    const response = await axios.post(url, { query });
-
-    if (response.status !== 200 || !response.data.data) {
-      throw new Error(`Failed to fetch data from Balancer. Response status: ${response.status}`);
-    }
-
+      `,
+    });
     const pools = response.data.data.pools;
+    logger.info(`Fetched ${pools.length} pools for ${network}.`);
 
-    logger.info(`Fetched ${pools.length} Balancer pools. Storing in Redis...`);
-
-    for (const pool of pools) {
-      const key = `balancer:pool:${chain.toLowerCase()}:${pool.id}`;
-      await redis.set(key, JSON.stringify(pool));
-      logger.info(`Stored pool data in Redis with key: ${key}`);
-    }
-
-    logger.info(`Balancer fetcher script completed successfully.`);
+    const redis = createClient();
+    await redis.connect();
+    await redis.set(`balancer:pools:${network}`, JSON.stringify(pools));
+    logger.info(`Stored ${network} pools in Redis.`);
+    await redis.quit();
   } catch (error) {
-    logger.error(`Error in Balancer fetcher: ${error.message}`);
-  } finally {
-    redis.disconnect();
+    logger.error(`Error fetching data for ${network}: ${error.message}`);
   }
-};
+}
 
-fetchBalancerData();
+async function fetchAllNetworks() {
+  await Promise.all(
+    Object.entries(networks).map(([network, url]) => fetchBalancerData(network, url))
+  );
+  logger.info('Balancer data fetching completed for all networks.');
+}
+
+fetchAllNetworks();
