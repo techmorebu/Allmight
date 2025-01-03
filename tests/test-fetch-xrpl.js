@@ -2,6 +2,14 @@ require('dotenv').config();
 const Redis = require('ioredis');
 const { logger } = require('../monitoring/logger');
 
+const redisClient = new Redis();
+
+const XRPL_PUBLIC_KEY = process.env.XRPL_PUBLIC_KEY;
+
+if (!XRPL_PUBLIC_KEY) {
+    throw new Error('XRPL_PUBLIC_KEY is not defined in the .env file');
+}
+
 async function validateKey(key) {
     try {
         const data = await redisClient.get(key);
@@ -17,7 +25,7 @@ async function validateKey(key) {
 }
 
 async function validateXRPLData() {
-    logger.info("Starting XRPL data validation...");
+    logger.info('Starting XRPL data validation...');
     const keys = [
         'xrpl:server_info',
         `xrpl:account:${XRPL_PUBLIC_KEY}`,
@@ -28,7 +36,7 @@ async function validateXRPLData() {
         await validateKey(key);
     }
 
-    logger.info("XRPL data validation completed.");
+    logger.info('XRPL data validation completed.');
     redisClient.quit();
 }
 
