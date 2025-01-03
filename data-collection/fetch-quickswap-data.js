@@ -3,7 +3,8 @@ const axios = require('axios');
 const Redis = require('ioredis');
 const { logger } = require('../monitoring/logger');
 
-const QUICKSWAP_API = 'https://api.thegraph.com/subgraphs/name/sameepsi/quickswap';
+// QuickSwap API from .env
+const QUICKSWAP_API = process.env.QUICKSWAP_API || 'https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g';
 const redis = new Redis();
 
 async function fetchQuickSwapData() {
@@ -31,7 +32,9 @@ async function fetchQuickSwapData() {
       }
     `;
 
+    logger.info(`Fetching data from QuickSwap API at: ${QUICKSWAP_API}`);
     const response = await axios.post(QUICKSWAP_API, { query });
+
     const pairs = response.data.data.pairs;
 
     if (!pairs || pairs.length === 0) {
