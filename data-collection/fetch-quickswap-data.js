@@ -1,6 +1,6 @@
-const { logger } = require('../monitoring/logger'); // Correct logger import
 const axios = require('axios');
 const Redis = require('ioredis');
+const { logger } = require('../monitoring/logger');
 require('dotenv').config();
 
 // Environment Variables
@@ -32,7 +32,8 @@ async function fetchQuickSwapData() {
         });
 
         // Log raw API response for debugging
-        logger.info("Full API response:", JSON.stringify(response.data, null, 2));
+        logger.info(`HTTP Status Code: ${response.status}`);
+        logger.info("Full API Response:", JSON.stringify(response.data, null, 2));
 
         // Validate API response
         if (!response.data || !response.data.data) {
@@ -51,7 +52,12 @@ async function fetchQuickSwapData() {
         logger.info("Stored pairs data in Redis.");
     } catch (error) {
         logger.error(`Error fetching QuickSwap data: ${error.message}`);
-        logger.error("Detailed error:", error);
+        if (error.response) {
+            logger.error(`Response Status: ${error.response.status}`);
+            logger.error(`Response Data: ${JSON.stringify(error.response.data, null, 2)}`);
+        } else {
+            logger.error("Detailed Error:", error);
+        }
     } finally {
         redis.disconnect();
     }
