@@ -3569,3 +3569,7 @@
 [2025-01-03T04:26:23.266Z] INFO: Validating data for key: xrpl:tx:rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx
 [2025-01-03T04:26:23.270Z] ERROR: No data found for key: xrpl:tx:rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx
 [2025-01-03T04:26:23.271Z] INFO: XRPL data validation completed.
+[2025-01-03T04:30:28.634Z] INFO: Starting XRPL data validation...
+[2025-01-03T04:30:28.640Z] ERROR: Validation script error: XRPL_PUBLIC_KEY is not defined
+[2025-01-03T04:30:36.629Z] INFO: Starting XRPL data validation...
+[2025-01-03T04:30:36.635Z] ERROR: Validation script error: XRPL_PUBLIC_KEY is not defined
