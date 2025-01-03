@@ -1,4 +1,15 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-xrpl.js
-[2025-01-03T02:02:45.240Z] INFO: Starting XRPL fetcher test...
-[2025-01-03T02:02:45.247Z] INFO: Connecting to XRPL mainnet...
-[2025-01-03T02:02:50.265Z] ERROR: Error in XRPL fetcher test script: Error: connect() timed out after 5000 ms. If your internet connection is working, the rippled server may be blocked or inaccessible. You can also try setting the 'connectionTimeout' option in the Client constructor.
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ sudo apt upgrade
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+Calculating upgrade... Done
+Get more security updates through Ubuntu Pro with 'esm-apps' enabled:
+  libcjson1 libpostproc57 libavcodec60 libavutil58 libswscale7 libswresample4
+  libavformat60 libavfilter9
+Learn more about Ubuntu Pro at https://ubuntu.com/pro
+The following upgrades have been deferred due to phasing:
+  python3-distupgrade ubuntu-release-upgrader-core
+  ubuntu-release-upgrader-gtk
+0 upgraded, 0 newly installed, 0 to remove and 3 not upgraded.
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ curl -I wss://xrplcluster.com
+curl: (1) Protocol "wss" not supported or disabled in libcurl
