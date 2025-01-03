@@ -1,63 +1,61 @@
 const axios = require('axios');
-const { logger } = require('../monitoring/logger'); // Adjust path as needed
+const Redis = require('ioredis');
+const logger = require('../monitoring/logger');
 require('dotenv').config();
 
-const QUICKSWAP_API = process.env.QUICKSWAP_API;
+// Environment Variables
+const QUICKSWAP_API_URL = process.env.QUICKSWAP_API;
+const redis = new Redis();
 
+// Function to fetch QuickSwap data
 async function fetchQuickSwapData() {
-  logger.info('Fetching QuickSwap data...');
-  try {
-    const response = await axios.post(QUICKSWAP_API, {
-      query: `
-        {
-          pools(first: 10, orderBy: liquidity, orderDirection: desc) {
-            id
-            token0 {
-              id
-              symbol
-              decimals
-            }
-            token1 {
-              id
-              symbol
-              decimals
-            }
-            liquidity
-            volumeUSD
-            feesUSD
-          }
-          tokens(first: 10, orderBy: volumeUSD, orderDirection: desc) {
-            id
-            symbol
-            name
-            volumeUSD
-            derivedETH
-          }
+    logger.info("Starting QuickSwap data fetcher...");
+
+    try {
+        logger.info(`Fetching data from QuickSwap API at: ${QUICKSWAP_API_URL}`);
+
+        const response = await axios.post(QUICKSWAP_API_URL, {
+            query: `
+                {
+                    pairs(first: 10) {
+                        id
+                        token0 {
+                            symbol
+                        }
+                        token1 {
+                            symbol
+                        }
+                        reserveUSD
+                    }
+                }
+            `,
+        });
+
+        // Log raw API response for debugging
+        logger.info("Full API response:", JSON.stringify(response.data, null, 2));
+
+        // Validate API response
+        if (!response.data || !response.data.data) {
+            throw new Error("Invalid or null response from QuickSwap API.");
         }
-      `,
-    });
 
-    const { pools, tokens } = response.data.data;
+        const pairs = response.data.data.pairs || [];
+        if (pairs.length === 0) {
+            throw new Error("No pairs data found in QuickSwap API response.");
+        }
 
-    if (!pools || !tokens) {
-      throw new Error('No data returned from QuickSwap API');
+        logger.info(`Fetched ${pairs.length} QuickSwap pairs successfully.`);
+
+        // Store data in Redis
+        await redis.set("quickswap:pairs", JSON.stringify(pairs));
+        logger.info("Stored pairs data in Redis.");
+    } catch (error) {
+        logger.error(`Error fetching QuickSwap data: ${error.message}`);
+        logger.error("Detailed error:", error);
+    } finally {
+        redis.disconnect();
     }
-
-    logger.info(`Fetched ${pools.length} pools and ${tokens.length} tokens.`);
-    
-    // Save data to Redis or process further
-    // Example:
-    for (const pool of pools) {
-      logger.info(`Pool ID: ${pool.id} | Liquidity: ${pool.liquidity}`);
-    }
-    for (const token of tokens) {
-      logger.info(`Token: ${token.symbol} | Volume USD: ${token.volumeUSD}`);
-    }
-
-    logger.info('QuickSwap data fetching completed successfully.');
-  } catch (error) {
-    logger.error(`Error fetching QuickSwap data: ${error.message}`);
-  }
 }
 
+// Execute the function
 fetchQuickSwapData();
