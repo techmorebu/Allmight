@@ -17,11 +17,14 @@ async function fetchThorchainData() {
         await redis.set('thorchain:pools', JSON.stringify(poolData.data));
         logger.info('Stored Thorchain pool data in Redis.');
 
-        logger.info('Fetching Thorchain swap data...');
-        const swapData = await axios.get(`${MIDGARD_API_URL}/stats/swap`);
+       logger.info('Fetching Thorchain swap data...');
+        const swapData = await axios.get(`${MIDGARD_API_URL}/actions`, {
+        params: { type: 'swap', limit: 10 } // Adjust parameters as needed.
+        });
         logger.info('Fetched Thorchain swap data successfully.');
         await redis.set('thorchain:swaps', JSON.stringify(swapData.data));
         logger.info('Stored Thorchain swap data in Redis.');
+
 
         logger.info('Fetching Thorchain fee data...');
         const feeData = await axios.get(`${MIDGARD_API_URL}/network`);
