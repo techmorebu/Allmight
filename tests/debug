@@ -1,28 +1,52 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node data-collection/fetch-balancer-data.js
-[2025-01-03T09:30:56.023Z] INFO: Fetching Balancer data for chain: ETHEREUM using URL: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/C4ayEZP2yTXRAB8vSaTrgN4m9anTe9Mdm2ViyiAuV9TV...
-[2025-01-03T09:30:56.677Z] INFO: Fetched 10 Balancer pools. Storing in Redis...
-[2025-01-03T09:30:56.679Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x0017c363b29d8f86d82e9681552685f68f34b7e4000200000000000000000209
-[2025-01-03T09:30:56.681Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x0022b6e4ff3ddbf0c36c7c6c7c7f3062f36be5f8000200000000000000000330
-[2025-01-03T09:30:56.683Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x00612eb4f312eb6ace7acc8781196601078ae3390002000000000000000005a2
-[2025-01-03T09:30:56.685Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x006962f9de1aa0639f893aff1f08eddf40a67ad500020000000000000000020c
-[2025-01-03T09:30:56.688Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x006d7e2166472f62f0e9e5c95e3a313e01caea74000200000000000000000690
-[2025-01-03T09:30:56.691Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x00c2a4be503869fa751c2dbcb7156cc970b5a8da000000000000000000000477
-[2025-01-03T09:30:56.693Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x0129dff11b02c4d542aa0bdc7e99f65183212c320002000000000000000005e5
-[2025-01-03T09:30:56.695Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x01536b22ea06e4a315e3daaf05a12683ed4dc14c0000000000000000000005fc
-[2025-01-03T09:30:56.696Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x0195538979e579d49999f780c04fc4bf68778b6f0000000000000000000006d9
-[2025-01-03T09:30:56.697Z] INFO: Stored pool data in Redis with key: balancer:pool:ethereum:0x01abc00e86c7e258823b9a055fd62ca6cf61a16300010000000000000000003b
-[2025-01-03T09:30:56.697Z] INFO: Balancer fetcher script completed successfully.
+[2025-01-03T09:39:43.240Z] INFO: Fetching Balancer data for ethereum...
+[2025-01-03T09:39:43.315Z] INFO: Fetching Balancer data for polygon...
+[2025-01-03T09:39:43.320Z] INFO: Fetching Balancer data for optimism...
+[2025-01-03T09:39:43.324Z] INFO: Fetching Balancer data for arbitrum...
+[2025-01-03T09:39:43.328Z] INFO: Fetching Balancer data for avalanche...
+[2025-01-03T09:39:43.876Z] INFO: Fetched 10 pools for ethereum.
+[2025-01-03T09:39:43.891Z] INFO: Fetched 10 pools for avalanche.
+[2025-01-03T09:39:43.894Z] INFO: Fetched 10 pools for polygon.
+[2025-01-03T09:39:43.909Z] INFO: Stored ethereum pools in Redis.
+[2025-01-03T09:39:43.911Z] INFO: Stored avalanche pools in Redis.
+[2025-01-03T09:39:43.912Z] INFO: Stored polygon pools in Redis.
+[2025-01-03T09:39:44.760Z] INFO: Fetched 10 pools for optimism.
+[2025-01-03T09:39:44.771Z] INFO: Stored optimism pools in Redis.
+[2025-01-03T09:39:45.752Z] INFO: Fetched 10 pools for arbitrum.
+[2025-01-03T09:39:45.756Z] INFO: Stored arbitrum pools in Redis.
+[2025-01-03T09:39:45.756Z] INFO: Balancer data fetching completed for all networks.
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-validate-balancer-data.js
-[2025-01-03T09:31:25.268Z] INFO: Starting Balancer data validation...
-[2025-01-03T09:31:25.304Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x0129dff11b02c4d542aa0bdc7e99f65183212c320002000000000000000005e5
-[2025-01-03T09:31:25.305Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x00c2a4be503869fa751c2dbcb7156cc970b5a8da000000000000000000000477
-[2025-01-03T09:31:25.308Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x01536b22ea06e4a315e3daaf05a12683ed4dc14c0000000000000000000005fc
-[2025-01-03T09:31:25.310Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x0195538979e579d49999f780c04fc4bf68778b6f0000000000000000000006d9
-[2025-01-03T09:31:25.311Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x0017c363b29d8f86d82e9681552685f68f34b7e4000200000000000000000209
-[2025-01-03T09:31:25.313Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x006962f9de1aa0639f893aff1f08eddf40a67ad500020000000000000000020c
-[2025-01-03T09:31:25.314Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x0022b6e4ff3ddbf0c36c7c6c7c7f3062f36be5f8000200000000000000000330
-[2025-01-03T09:31:25.315Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x006d7e2166472f62f0e9e5c95e3a313e01caea74000200000000000000000690
-[2025-01-03T09:31:25.316Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x00612eb4f312eb6ace7acc8781196601078ae3390002000000000000000005a2
-[2025-01-03T09:31:25.318Z] INFO: Validated pool data for key: balancer:pool:ethereum:0x01abc00e86c7e258823b9a055fd62ca6cf61a16300010000000000000000003b
-[2025-01-03T09:31:25.319Z] INFO: Balancer data validation completed successfully.
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
+[2025-01-03T09:39:52.398Z] INFO: Validating Balancer data for ethereum...
+[2025-01-03T09:39:52.403Z] INFO: Validating Balancer data for polygon...
+[2025-01-03T09:39:52.404Z] INFO: Validating Balancer data for optimism...
+[2025-01-03T09:39:52.405Z] INFO: Validating Balancer data for arbitrum...
+[2025-01-03T09:39:52.407Z] INFO: Validating Balancer data for avalanche...
+[2025-01-03T09:39:52.418Z] INFO: Validated pool 0x3de27efa2f1aa663ae5d458857e731c129069f29000200000000000000000588 for ethereum.
+[2025-01-03T09:39:52.419Z] INFO: Validated pool 0xdacf5fa19b1f720111609043ac67a9818262850c000000000000000000000635 for ethereum.
+[2025-01-03T09:39:52.419Z] INFO: Validated pool 0x5c6ee304399dbdb9c8ef030ab642b10820db8f56000200000000000000000014 for ethereum.
+[2025-01-03T09:39:52.419Z] INFO: Validated pool 0x1e19cf2d73a72ef1332c882f20534b6519be0276000200000000000000000112 for ethereum.
+[2025-01-03T09:39:52.420Z] INFO: Validated pool 0x93d199263632a4ef4bb438f1feb99e57b4b5f0bd0000000000000000000005c2 for ethereum.
+[2025-01-03T09:39:52.420Z] INFO: Validated pool 0x88794c65550deb6b4087b7552ecf295113794410000000000000000000000648 for ethereum.
+[2025-01-03T09:39:52.420Z] INFO: Validated pool 0x2191df821c198600499aa1f0031b1a7514d7a7d9000200000000000000000639 for ethereum.
+[2025-01-03T09:39:52.420Z] INFO: Validated pool 0x596192bb6e41802428ac943d2f1476c1af25cc0e000000000000000000000659 for ethereum.
+[2025-01-03T09:39:52.421Z] INFO: Validated pool 0x8353157092ed8be69a9df8f95af097bbf33cb2af0000000000000000000005d9 for ethereum.
+[2025-01-03T09:39:52.421Z] INFO: Validated pool 0xf4c0dd9b82da36c07605df83c8a416f11724d88b000200000000000000000026 for ethereum.
+[2025-01-03T09:39:52.423Z] INFO: Validated pool 0xcd78a20c597e367a4e478a2411ceb790604d7c8f000000000000000000000c22 for polygon.
+[2025-01-03T09:39:52.423Z] INFO: Validated pool 0xae8f935830f6b418804836eacb0243447b6d977c000200000000000000000ad1 for polygon.
+[2025-01-03T09:39:52.424Z] INFO: Validated pool 0xe1e09ce7aac2740846d9b6d9d56f588c65314ecb000200000000000000000dbe for polygon.
+[2025-01-03T09:39:52.424Z] INFO: Validated pool 0x3bd8a254163f8328efcc4f8c36da566753462433000200000000000000000dc1 for polygon.
+[2025-01-03T09:39:52.424Z] INFO: Validated pool 0x03cd191f589d12b0582a99808cf19851e468e6b500010000000000000000000a for polygon.
+[2025-01-03T09:39:52.424Z] INFO: Validated pool 0xca6efa5704f1ae445e0ee24d9c3ddde34c5be1c2000200000000000000000dbd for polygon.
+[2025-01-03T09:39:52.424Z] INFO: Validated pool 0xa0ef0f4f24662050b7e504d1015a8cd7d2a8a51f000200000000000000000dbc for polygon.
+[2025-01-03T09:39:52.424Z] INFO: Validated pool 0x62309056c759c36879cde93693e7903bf415e4bc000200000000000000000d5f for polygon.
+[2025-01-03T09:39:52.425Z] INFO: Validated pool 0x19127998126b6c7d32d596ee15d32719b1789c8e000200000000000000000dbf for polygon.
+[2025-01-03T09:39:52.425Z] INFO: Validated pool 0x0297e37f1873d2dab4487aa67cd56b58e2f27875000100000000000000000002 for polygon.
+[2025-01-03T09:39:52.425Z] INFO: Validated pool 0xcd7b2232b7435595bbc7fd7962f1f352fc2cc61a0000000000000000000000f0 for optimism.
+[2025-01-03T09:39:52.425Z] INFO: Validated pool 0x4fd63966879300cafafbb35d157dc5229278ed2300020000000000000000002b for optimism.
+[2025-01-03T09:39:52.425Z] INFO: Validated pool 0x5f8893506ddc4c271837187d14a9c87964a074dc000000000000000000000106 for optimism.
+[2025-01-03T09:39:52.426Z] INFO: Validated pool 0x7ca75bdea9dede97f8b13c6641b768650cb837820002000000000000000000d5 for optimism.
+[2025-01-03T09:39:52.426Z] INFO: Validated pool 0xcb7d357c84b101e3d559ff4845cef63d7d0753ef000000000000000000000150 for optimism.
+[2025-01-03T09:39:52.426Z] INFO: Validated pool 0xcb89e89d798a4563d1599ea5508282e13b225b520000000000000000000000e4 for optimism.
+[2025-01-03T09:39:52.426Z] INFO: Validated pool 0x7fe29a818438ed2759e30f65c2302295711d66fc0000000000000000000000e5 for optimism.
+[2025-01-03T09:39:52.426Z] INFO: Validated pool 0x0244b0025264dc5f5c113d472d579c9c994a59ce0002000000000000000000c9 for optimism.
+[2025-01-03T09:39:52.426Z] INFO: Validated pool 0x73a7fe27fe9545d53924e529acf11f
