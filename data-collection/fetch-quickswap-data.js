@@ -1,6 +1,6 @@
+const { logger } = require('../monitoring/logger'); // Correct logger import
 const axios = require('axios');
 const Redis = require('ioredis');
-const logger = require('../monitoring/logger');
 require('dotenv').config();
 
 // Environment Variables
