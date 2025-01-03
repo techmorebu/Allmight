@@ -1,6 +1,8 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tests/test-fetch-thorchain.js
-Testing Thorchain data fetching...
-Redis connected.
-❌ Error fetching Thorchain pool data: getaddrinfo ENOTFOUND midgard.thorchain.info
-❌ Error fetching Thorchain swap data: getaddrinfo ENOTFOUND midgard.thorchain.info
-❌ Error fetching Thorchain fee data: getaddrinfo ENOTFOUND midgard.thorchain.info
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node data-collection/fetch-thorchain-data.js
+[2025-01-03T08:04:07.867Z] INFO: Fetching Thorchain pool data...
+[2025-01-03T08:04:08.081Z] INFO: Fetched Thorchain pool data successfully.
+[2025-01-03T08:04:08.085Z] INFO: Stored Thorchain pool data in Redis.
+[2025-01-03T08:04:08.085Z] INFO: Fetching Thorchain swap data...
+[2025-01-03T08:04:08.221Z] ERROR: Error in Thorchain fetcher: Request failed with status code 404
+[2025-01-03T08:04:08.223Z] ERROR: Response status: 404
+[2025-01-03T08:04:08.224Z] ERROR: Response data: "404 page not found\n"

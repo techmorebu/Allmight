@@ -3598,3 +3598,10 @@
 [2025-01-03T07:34:32.237Z] INFO: Validated data for key: xrpl:account:rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx
 [2025-01-03T07:34:32.239Z] INFO: Validated data for key: xrpl:tx:rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx
 [2025-01-03T07:34:32.240Z] INFO: XRPL data validation completed.
+[2025-01-03T08:04:07.867Z] INFO: Fetching Thorchain pool data...
+[2025-01-03T08:04:08.081Z] INFO: Fetched Thorchain pool data successfully.
+[2025-01-03T08:04:08.085Z] INFO: Stored Thorchain pool data in Redis.
+[2025-01-03T08:04:08.085Z] INFO: Fetching Thorchain swap data...
+[2025-01-03T08:04:08.221Z] ERROR: Error in Thorchain fetcher: Request failed with status code 404
+[2025-01-03T08:04:08.223Z] ERROR: Response status: 404
+[2025-01-03T08:04:08.224Z] ERROR: Response data: "404 page not found\n"
