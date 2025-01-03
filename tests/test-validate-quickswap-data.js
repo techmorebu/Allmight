@@ -14,7 +14,7 @@ async function validateQuickSwapData() {
       return;
     }
 
-    logger.info(`Found ${keys.length} QuickSwap pairs in Redis.`);
+    logger.info(`Validating ${keys.length} pairs from QuickSwap in Redis...`);
     for (const key of keys) {
       const data = await redis.get(key);
       if (!data) {
@@ -39,7 +39,7 @@ async function validateQuickSwapData() {
         continue;
       }
 
-      logger.info(`Validated data for key: ${key}`);
+      logger.info(`Validated pair data for key: ${key}`);
     }
 
     logger.info('QuickSwap data validation completed successfully.');
