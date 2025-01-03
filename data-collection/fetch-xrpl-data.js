@@ -1,51 +1,45 @@
-require('dotenv').config();
-const xrpl = require('xrpl');
+// fetch-xrpl-data.js
+const WebSocket = require('ws');
 const { logger } = require('../monitoring/logger');
+require('dotenv').config();
 
-// Fetch environment variables
-const XRPL_PUBLIC_KEY = process.env.XRPL_PUBLIC_KEY;
-const XRPL_PRIVATE_KEY = process.env.XRPL_PRIVATE_KEY;
 const XRPL_MAINNET_URL = process.env.XRPL_MAINNET_URL;
 
-if (!XRPL_PUBLIC_KEY || !XRPL_PRIVATE_KEY || !XRPL_MAINNET_URL) {
-    logger.error('Missing required environment variables. Please check your .env file.');
+if (!XRPL_MAINNET_URL) {
+    logger.error("Missing XRPL_MAINNET_URL in .env file. Please provide a valid WebSocket URL.");
     process.exit(1);
 }
 
-async function fetchXrplData() {
+(async () => {
+    logger.info("Starting XRPL fetcher script...");
+
     try {
-        logger.info('Starting XRPL fetcher...');
-        
-        // Connect to XRPL
-        const client = new xrpl.Client(XRPL_MAINNET_URL);
-        await client.connect();
-        logger.info('Connected to XRPL mainnet.');
+        logger.info(`Connecting to XRPL mainnet at ${XRPL_MAINNET_URL}...`);
+        const ws = new WebSocket(XRPL_MAINNET_URL);
 
-        // Fetch account information
-        const accountInfo = await client.request({
-            command: 'account_info',
-            account: XRPL_PUBLIC_KEY,
-            ledger_index: 'validated',
+        ws.on('open', () => {
+            logger.info("Successfully connected to XRPL mainnet.");
+            // Send a test command to fetch server information
+            const serverInfoCommand = JSON.stringify({ id: 1, command: 'server_info' });
+            ws.send(serverInfoCommand);
+            logger.info("Sent server_info command to XRPL.");
         });
-        logger.info(`Fetched account info: ${JSON.stringify(accountInfo.result)}`);
 
-        // Fetch account transactions
-        const accountTransactions = await client.request({
-            command: 'account_tx',
-            account: XRPL_PUBLIC_KEY,
-            ledger_index_min: -1,
-            ledger_index_max: -1,
-            limit: 10,
+        ws.on('message', (data) => {
+            const message = JSON.parse(data);
+            logger.info("Received message from XRPL:");
+            logger.debug(JSON.stringify(message, null, 2));
         });
-        logger.info(`Fetched account transactions: ${JSON.stringify(accountTransactions.result)}`);
 
-        // Disconnect client
-        await client.disconnect();
-        logger.info('Disconnected from XRPL mainnet.');
+        ws.on('close', () => {
+            logger.warn("WebSocket connection to XRPL closed.");
+        });
+
+        ws.on('error', (error) => {
+            logger.error(`WebSocket error: ${error.message}`);
+        });
 
     } catch (error) {
         logger.error(`Error in XRPL fetcher script: ${error.message}`);
     }
-}
-
-fetchXrplData();
+})();
