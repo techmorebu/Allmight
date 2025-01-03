@@ -3553,3 +3553,19 @@
 [2025-01-03T04:09:34.466Z] INFO: Validating data for key: xrpl:tx:rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx
 [2025-01-03T04:09:34.470Z] ERROR: No data found for key: xrpl:tx:rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx
 [2025-01-03T04:09:34.471Z] INFO: XRPL data validation completed.
+[2025-01-03T04:25:38.844Z] INFO: Starting XRPL data validation...
+[2025-01-03T04:25:38.849Z] INFO: Validating data for key: xrpl:server_info
+[2025-01-03T04:25:38.881Z] ERROR: No data found for key: xrpl:server_info
+[2025-01-03T04:25:38.882Z] INFO: Validating data for key: xrpl:account:rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx
+[2025-01-03T04:25:38.883Z] ERROR: No data found for key: xrpl:account:rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx
+[2025-01-03T04:25:38.884Z] INFO: Validating data for key: xrpl:tx:rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx
+[2025-01-03T04:25:38.885Z] ERROR: No data found for key: xrpl:tx:rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx
+[2025-01-03T04:25:38.886Z] INFO: XRPL data validation completed.
+[2025-01-03T04:26:23.215Z] INFO: Starting XRPL data validation...
+[2025-01-03T04:26:23.219Z] INFO: Validating data for key: xrpl:server_info
+[2025-01-03T04:26:23.264Z] ERROR: No data found for key: xrpl:server_info
+[2025-01-03T04:26:23.264Z] INFO: Validating data for key: xrpl:account:rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx
+[2025-01-03T04:26:23.266Z] ERROR: No data found for key: xrpl:account:rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx
+[2025-01-03T04:26:23.266Z] INFO: Validating data for key: xrpl:tx:rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx
+[2025-01-03T04:26:23.270Z] ERROR: No data found for key: xrpl:tx:rN2LNcagm4UL8KJWp5EneuxxL26pfWo9bx
+[2025-01-03T04:26:23.271Z] INFO: XRPL data validation completed.
