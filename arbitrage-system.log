@@ -3908,3 +3908,6 @@
 [2025-01-03T09:39:52.429Z] INFO: Validated pool 0x28f3a9e42667519c83cb090b5c4f6bd34e9f5569000200000000000000000031 for avalanche.
 [2025-01-03T09:39:52.429Z] INFO: Validated pool 0x856561c3b21efca7e483b1ad197e4ab5fb56ccdb000100000000000000000048 for avalanche.
 [2025-01-03T09:39:52.435Z] INFO: Balancer data validation completed for all networks.
+[2025-01-03T09:59:09.989Z] INFO: Starting QuickSwap data fetcher...
+[2025-01-03T09:59:09.994Z] INFO: Fetching data from QuickSwap API at: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g
+[2025-01-03T09:59:10.272Z] ERROR: Error fetching QuickSwap data: Cannot read properties of null (reading 'pairs')
