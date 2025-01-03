@@ -1,45 +1,36 @@
-// fetch-xrpl-data.js
-const WebSocket = require('ws');
+const axios = require('axios');
 const { logger } = require('../monitoring/logger');
 require('dotenv').config();
 
-const XRPL_MAINNET_URL = process.env.XRPL_MAINNET_URL;
-
-if (!XRPL_MAINNET_URL) {
-    logger.error("Missing XRPL_MAINNET_URL in .env file. Please provide a valid WebSocket URL.");
-    process.exit(1);
-}
+const XRPL_HTTP_URL = "https://s1.ripple.com:51234"; // JSON-RPC URL
 
 (async () => {
-    logger.info("Starting XRPL fetcher script...");
+    logger.info("Starting XRPL fetcher script using JSON-RPC...");
+
+    if (!XRPL_HTTP_URL) {
+        logger.error("Missing XRPL_HTTP_URL. Please provide a valid JSON-RPC endpoint.");
+        process.exit(1);
+    }
 
     try {
-        logger.info(`Connecting to XRPL mainnet at ${XRPL_MAINNET_URL}...`);
-        const ws = new WebSocket(XRPL_MAINNET_URL);
+        logger.info(`Sending server_info request to XRPL at ${XRPL_HTTP_URL}...`);
 
-        ws.on('open', () => {
-            logger.info("Successfully connected to XRPL mainnet.");
-            // Send a test command to fetch server information
-            const serverInfoCommand = JSON.stringify({ id: 1, command: 'server_info' });
-            ws.send(serverInfoCommand);
-            logger.info("Sent server_info command to XRPL.");
+        const response = await axios.post(XRPL_HTTP_URL, {
+            method: "server_info",
+            params: [{}],
         });
 
-        ws.on('message', (data) => {
-            const message = JSON.parse(data);
-            logger.info("Received message from XRPL:");
-            logger.debug(JSON.stringify(message, null, 2));
-        });
+        logger.info("Received response from XRPL:");
+        logger.debug(JSON.stringify(response.data, null, 2));
 
-        ws.on('close', () => {
-            logger.warn("WebSocket connection to XRPL closed.");
-        });
-
-        ws.on('error', (error) => {
-            logger.error(`WebSocket error: ${error.message}`);
-        });
-
+        // Example: Extracting specific information from the response
+        const serverInfo = response.data.result.info;
+        logger.info(`Server Info: ${JSON.stringify(serverInfo, null, 2)}`);
     } catch (error) {
-        logger.error(`Error in XRPL fetcher script: ${error.message}`);
+        if (error.response) {
+            logger.error(`Error response from XRPL: ${JSON.stringify(error.response.data, null, 2)}`);
+        } else {
+            logger.error(`Error in XRPL fetcher script: ${error.message}`);
+        }
     }
 })();
