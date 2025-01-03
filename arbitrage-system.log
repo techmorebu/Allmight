@@ -3605,3 +3605,12 @@
 [2025-01-03T08:04:08.221Z] ERROR: Error in Thorchain fetcher: Request failed with status code 404
 [2025-01-03T08:04:08.223Z] ERROR: Response status: 404
 [2025-01-03T08:04:08.224Z] ERROR: Response data: "404 page not found\n"
+[2025-01-03T08:09:22.486Z] INFO: Fetching Thorchain pool data...
+[2025-01-03T08:09:22.748Z] INFO: Fetched Thorchain pool data successfully.
+[2025-01-03T08:09:22.750Z] INFO: Stored Thorchain pool data in Redis.
+[2025-01-03T08:09:22.751Z] INFO: Fetching Thorchain swap data...
+[2025-01-03T08:09:30.227Z] INFO: Fetched Thorchain swap data successfully.
+[2025-01-03T08:09:30.230Z] INFO: Stored Thorchain swap data in Redis.
+[2025-01-03T08:09:30.230Z] INFO: Fetching Thorchain fee data...
+[2025-01-03T08:09:30.727Z] INFO: Fetched Thorchain fee data successfully.
+[2025-01-03T08:09:30.729Z] INFO: Stored Thorchain fee data in Redis.
