@@ -1,10 +1,8 @@
-require('dotenv').config();
 const axios = require('axios');
-const Redis = require('ioredis');
-const { logger } = require('../monitoring/logger');
+const { logger } = require('../monitoring/logger'); // Adjust path as needed
+require('dotenv').config();
 
 const QUICKSWAP_API = process.env.QUICKSWAP_API;
-const redis = new Redis();
 
 async function fetchQuickSwapData() {
   logger.info('Fetching QuickSwap data...');
@@ -12,42 +10,53 @@ async function fetchQuickSwapData() {
     const response = await axios.post(QUICKSWAP_API, {
       query: `
         {
-          pairs(first: 10) {
+          pools(first: 10, orderBy: liquidity, orderDirection: desc) {
             id
             token0 {
               id
               symbol
+              decimals
             }
             token1 {
               id
               symbol
+              decimals
             }
-            reserveUSD
+            liquidity
             volumeUSD
+            feesUSD
+          }
+          tokens(first: 10, orderBy: volumeUSD, orderDirection: desc) {
+            id
+            symbol
+            name
+            volumeUSD
+            derivedETH
           }
         }
       `,
     });
 
-    const pairs = response.data.data.pairs;
+    const { pools, tokens } = response.data.data;
 
-    if (!pairs || pairs.length === 0) {
-      logger.warn('No pairs fetched from QuickSwap API.');
-      return;
+    if (!pools || !tokens) {
+      throw new Error('No data returned from QuickSwap API');
     }
 
-    logger.info(`Fetched ${pairs.length} pairs from QuickSwap.`);
-    for (const pair of pairs) {
-      const redisKey = `quickswap:pair:${pair.id}`;
-      await redis.set(redisKey, JSON.stringify(pair));
-      logger.info(`Stored pair data in Redis: ${redisKey}`);
+    logger.info(`Fetched ${pools.length} pools and ${tokens.length} tokens.`);
+    
+    // Save data to Redis or process further
+    // Example:
+    for (const pool of pools) {
+      logger.info(`Pool ID: ${pool.id} | Liquidity: ${pool.liquidity}`);
+    }
+    for (const token of tokens) {
+      logger.info(`Token: ${token.symbol} | Volume USD: ${token.volumeUSD}`);
     }
 
     logger.info('QuickSwap data fetching completed successfully.');
   } catch (error) {
     logger.error(`Error fetching QuickSwap data: ${error.message}`);
-  } finally {
-    redis.quit();
   }
 }
 
