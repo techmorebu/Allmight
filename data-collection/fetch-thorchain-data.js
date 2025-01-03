@@ -1,59 +1,42 @@
 const axios = require('axios');
-const redisClient = require('../utils/redis-client');
+const Redis = require('ioredis');
+const { logger } = require('../monitoring/logger');
+
+// Load environment variables
 require('dotenv').config();
 
-const MIDGARD_API_URL = process.env.THORCHAIN_MIDGARD_API || 'https://midgard.thorchain.info/v2';
+const MIDGARD_API_URL = process.env.MIDGARD_API_URL || 'https://midgard.ninerealms.com/v2';
 
-/**
- * Fetch Thorchain liquidity pool data
- */
-async function fetchThorchainPools() {
+const redis = new Redis();
+
+async function fetchThorchainData() {
     try {
-        const response = await axios.get(`${MIDGARD_API_URL}/pools`);
-        const pools = response.data;
+        logger.info('Fetching Thorchain pool data...');
+        const poolData = await axios.get(`${MIDGARD_API_URL}/pools`);
+        logger.info('Fetched Thorchain pool data successfully.');
+        await redis.set('thorchain:pools', JSON.stringify(poolData.data));
+        logger.info('Stored Thorchain pool data in Redis.');
 
-        // Cache pool data in Redis
-        await redisClient.set('Thorchain:Pools', JSON.stringify(pools), 'EX', 60);
-        console.log('✅ Thorchain pool data cached successfully.');
+        logger.info('Fetching Thorchain swap data...');
+        const swapData = await axios.get(`${MIDGARD_API_URL}/stats/swap`);
+        logger.info('Fetched Thorchain swap data successfully.');
+        await redis.set('thorchain:swaps', JSON.stringify(swapData.data));
+        logger.info('Stored Thorchain swap data in Redis.');
+
+        logger.info('Fetching Thorchain fee data...');
+        const feeData = await axios.get(`${MIDGARD_API_URL}/network`);
+        logger.info('Fetched Thorchain fee data successfully.');
+        await redis.set('thorchain:fees', JSON.stringify(feeData.data));
+        logger.info('Stored Thorchain fee data in Redis.');
     } catch (error) {
-        console.error('❌ Error fetching Thorchain pool data:', error.message);
+        logger.error(`Error in Thorchain fetcher: ${error.message}`);
+        if (error.response) {
+            logger.error(`Response status: ${error.response.status}`);
+            logger.error(`Response data: ${JSON.stringify(error.response.data)}`);
+        }
+    } finally {
+        redis.disconnect();
     }
 }
 
-/**
- * Fetch Thorchain swap transactions
- */
-async function fetchThorchainSwaps() {
-    try {
-        const response = await axios.get(`${MIDGARD_API_URL}/swaps`);
-        const swaps = response.data;
-
-        // Cache swap data in Redis
-        await redisClient.set('Thorchain:Swaps', JSON.stringify(swaps), 'EX', 60);
-        console.log('✅ Thorchain swap data cached successfully.');
-    } catch (error) {
-        console.error('❌ Error fetching Thorchain swap data:', error.message);
-    }
-}
-
-/**
- * Fetch Thorchain network fees
- */
-async function fetchThorchainFees() {
-    try {
-        const response = await axios.get(`${MIDGARD_API_URL}/network`);
-        const fees = response.data;
-
-        // Cache network fees in Redis
-        await redisClient.set('Thorchain:Fees', JSON.stringify(fees), 'EX', 60);
-        console.log('✅ Thorchain network fee data cached successfully.');
-    } catch (error) {
-        console.error('❌ Error fetching Thorchain fee data:', error.message);
-    }
-}
-
-module.exports = {
-    fetchThorchainPools,
-    fetchThorchainSwaps,
-    fetchThorchainFees,
-};
+fetchThorchainData();
