@@ -3,53 +3,47 @@ const axios = require('axios');
 const Redis = require('ioredis');
 const { logger } = require('../monitoring/logger');
 
-// QuickSwap API from .env
-const QUICKSWAP_API = process.env.QUICKSWAP_API || 'https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g';
+const QUICKSWAP_API = process.env.QUICKSWAP_API;
 const redis = new Redis();
 
 async function fetchQuickSwapData() {
-  logger.info('Starting QuickSwap data fetcher...');
-
+  logger.info('Fetching QuickSwap data...');
   try {
-    // GraphQL query for pairs
-    const query = `
-      {
-        pairs(first: 10, orderBy: reserveUSD, orderDirection: desc) {
-          id
-          token0 {
+    const response = await axios.post(QUICKSWAP_API, {
+      query: `
+        {
+          pairs(first: 10) {
             id
-            symbol
-            name
+            token0 {
+              id
+              symbol
+            }
+            token1 {
+              id
+              symbol
+            }
+            reserveUSD
+            volumeUSD
           }
-          token1 {
-            id
-            symbol
-            name
-          }
-          reserveUSD
-          volumeUSD
         }
-      }
-    `;
-
-    logger.info(`Fetching data from QuickSwap API at: ${QUICKSWAP_API}`);
-    const response = await axios.post(QUICKSWAP_API, { query });
+      `,
+    });
 
     const pairs = response.data.data.pairs;
 
     if (!pairs || pairs.length === 0) {
-      logger.warn('No data received from QuickSwap API.');
+      logger.warn('No pairs fetched from QuickSwap API.');
       return;
     }
 
-    // Store pairs in Redis
+    logger.info(`Fetched ${pairs.length} pairs from QuickSwap.`);
     for (const pair of pairs) {
-      const key = `quickswap:pair:${pair.id}`;
-      await redis.set(key, JSON.stringify(pair));
-      logger.info(`Stored data for pair: ${pair.id}`);
+      const redisKey = `quickswap:pair:${pair.id}`;
+      await redis.set(redisKey, JSON.stringify(pair));
+      logger.info(`Stored pair data in Redis: ${redisKey}`);
     }
 
-    logger.info('QuickSwap data fetcher completed successfully.');
+    logger.info('QuickSwap data fetching completed successfully.');
   } catch (error) {
     logger.error(`Error fetching QuickSwap data: ${error.message}`);
   } finally {
