@@ -1,38 +1,38 @@
-require('dotenv').config();
-const Redis = require('ioredis');
+const { createClient } = require('redis');
 const { logger } = require('../monitoring/logger');
+require('dotenv').config();
 
-const redis = new Redis();
-
-const validateBalancerData = async () => {
+async function validateBalancerData(network) {
   try {
-    logger.info(`Starting Balancer data validation...`);
+    const redis = createClient();
+    await redis.connect();
 
-    const keys = await redis.keys('balancer:pool:*');
-    if (keys.length === 0) {
-      throw new Error(`No Balancer pool data found in Redis.`);
+    logger.info(`Validating Balancer data for ${network}...`);
+    const data = await redis.get(`balancer:pools:${network}`);
+    if (!data) {
+      logger.error(`No data found for ${network} in Redis.`);
+      return;
     }
 
-    for (const key of keys) {
-      const poolData = await redis.get(key);
-      if (!poolData) {
-        throw new Error(`No data found for key: ${key}`);
+    const pools = JSON.parse(data);
+    pools.forEach((pool) => {
+      if (!pool.id || !pool.totalLiquidity || !pool.swapFee) {
+        logger.warn(`Invalid pool data: ${JSON.stringify(pool)}`);
+      } else {
+        logger.info(`Validated pool ${pool.id} for ${network}.`);
       }
+    });
 
-      const pool = JSON.parse(poolData);
-      if (!pool.id || !pool.tokens || !pool.totalLiquidity) {
-        throw new Error(`Invalid data structure for key: ${key}`);
-      }
-
-      logger.info(`Validated pool data for key: ${key}`);
-    }
-
-    logger.info(`Balancer data validation completed successfully.`);
+    await redis.quit();
   } catch (error) {
-    logger.error(`Error during Balancer data validation: ${error.message}`);
-  } finally {
-    redis.disconnect();
+    logger.error(`Error validating data for ${network}: ${error.message}`);
   }
-};
+}
 
-validateBalancerData();
+async function validateAllNetworks() {
+  const networks = ['ethereum', 'polygon', 'optimism', 'arbitrum', 'avalanche'];
+  await Promise.all(networks.map(validateBalancerData));
+  logger.info('Balancer data validation completed for all networks.');
+}
+
+validateAllNetworks();
