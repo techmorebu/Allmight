@@ -3772,3 +3772,6 @@
     "totalValueLockedUSD": 54693.857391
   }
 ]
+[2025-01-03T08:34:25.790Z] INFO: Starting SushiSwap data validation...
+[2025-01-03T08:34:25.835Z] ERROR: No SushiSwap pool data found in Redis.
+[2025-01-03T08:38:15.242Z] INFO: Using SushiSwap API URL: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/3oHCddbQGTi42kPZBwyGzD2JzZR33zK2MwXtxAerNJy2
