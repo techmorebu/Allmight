@@ -1,8 +1,32 @@
+echbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node data-collection/fetch-quickswap-data.js
+[2025-01-04T00:12:14.252Z] INFO: Starting QuickSwap data fetcher...
+[2025-01-04T00:12:14.256Z] INFO: Fetching data from QuickSwap API at: undefined
+[2025-01-04T00:12:14.271Z] ERROR: Error fetching QuickSwap data:
+/home/techbu/OFA_Project_Local/ofa-project/node_modules/@redis/client/dist/lib/client/socket.js:70
+            throw new errors_1.ClientClosedError();
+                  ^
+
+ClientClosedError: The client is closed
+    at RedisSocket.quit (/home/techbu/OFA_Project_Local/ofa-project/node_modules/@redis/client/dist/lib/client/socket.js:70:19)
+    at Commander.QUIT (/home/techbu/OFA_Project_Local/ofa-project/node_modules/@redis/client/dist/lib/client/index.js:260:71)
+    at fetchQuickSwapData (/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-quickswap-data.js:54:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+Node.js v18.19.1
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node data-collection/fetch-quickswap-data.js
-[2025-01-03T23:49:26.559Z] INFO: Starting QuickSwap data fetcher...
-[2025-01-03T23:49:26.563Z] INFO: Fetching data from QuickSwap API at: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g
-[2025-01-03T23:49:26.863Z] INFO: HTTP Status Code: 200
-[2025-01-03T23:49:26.865Z] INFO: Full API Response:
-[2025-01-03T23:49:26.866Z] ERROR: Error fetching QuickSwap data: Invalid or null response from QuickSwap API.
-[2025-01-03T23:49:26.867Z] ERROR: Detailed Error: Invalid or null response from QuickSwap API.
+[2025-01-04T00:12:22.350Z] INFO: Starting QuickSwap data fetcher...
+[2025-01-04T00:12:22.353Z] INFO: Fetching data from QuickSwap API at: undefined
+[2025-01-04T00:12:22.368Z] ERROR: Error fetching QuickSwap data:
+/home/techbu/OFA_Project_Local/ofa-project/node_modules/@redis/client/dist/lib/client/socket.js:70
+            throw new errors_1.ClientClosedError();
+                  ^
+
+ClientClosedError: The client is closed
+    at RedisSocket.quit (/home/techbu/OFA_Project_Local/ofa-project/node_modules/@redis/client/dist/lib/client/socket.js:70:19)
+    at Commander.QUIT (/home/techbu/OFA_Project_Local/ofa-project/node_modules/@redis/client/dist/lib/client/index.js:260:71)
+    at fetchQuickSwapData (/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-quickswap-data.js:54:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+Node.js v18.19.1
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
+
