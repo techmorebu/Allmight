@@ -4000,3 +4000,6 @@
 [2025-01-04T00:58:50.147Z] INFO: Fetching data from QuickSwap API at: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g
 [2025-01-04T00:58:50.520Z] ERROR: Invalid or null response from QuickSwap API.
 [2025-01-04T00:58:50.522Z] ERROR: Detailed error:
+[2025-01-04T01:01:28.457Z] INFO: Starting QuickSwap data fetcher...
+[2025-01-04T01:01:28.461Z] INFO: Fetching data from QuickSwap API at: undefined
+[2025-01-04T01:01:28.483Z] ERROR: Error fetching QuickSwap data:
