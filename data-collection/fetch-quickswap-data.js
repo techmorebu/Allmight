@@ -1,71 +1,67 @@
 const axios = require('axios');
-const { createClient } = require('redis');
+const redis = require('redis');
+const { promisify } = require('util');
 const { logger } = require('../monitoring/logger');
-require('dotenv').config();
 
-const QUICKSWAP_API = process.env.QUICKSWAP_API;
-const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
+// Set up Redis client
+const redisClient = redis.createClient();
+const setAsync = promisify(redisClient.set).bind(redisClient);
 
-const redisClient = createClient({ url: REDIS_URL });
+const QUICKSWAP_API_URL = process.env.QUICKSWAP_API || 'https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g';
 
-(async () => {
-  try {
-    logger.info('Connecting to Redis...');
-    await redisClient.connect();
-    logger.info('Connected to Redis.');
+async function fetchQuickSwapData() {
+    try {
+        logger.info('Starting QuickSwap data fetcher...');
+        logger.info(`Fetching data from QuickSwap API at: ${QUICKSWAP_API_URL}`);
 
-    logger.info('Starting QuickSwap data fetcher...');
-    if (!QUICKSWAP_API) {
-      throw new Error('QUICKSWAP_API is not defined in the .env file');
-    }
+        const response = await axios.post(QUICKSWAP_API_URL, {
+            query: `
+                {
+                    pairs(first: 100) {
+                        id
+                        token0 {
+                            id
+                            symbol
+                        }
+                        token1 {
+                            id
+                            symbol
+                        }
+                        reserveUSD
+                        volumeUSD
+                    }
+                }
+            `,
+        });
 
-    logger.info(`Fetching data from QuickSwap API at: ${QUICKSWAP_API}`);
-    const query = `
-      {
-        pools(first: 10, orderBy: volumeUSD, orderDirection: desc) {
-          id
-          token0 {
-            id
-            symbol
-            name
-          }
-          token1 {
-            id
-            symbol
-            name
-          }
-          volumeUSD
-          totalValueLockedUSD
+        logger.info('Full API response:', response.data);
+
+        if (!response.data || !response.data.data || !response.data.data.pairs) {
+            throw new Error('Invalid or null response from QuickSwap API.');
         }
-      }
-    `;
 
-    const response = await axios.post(
-      QUICKSWAP_API,
-      { query },
-      { headers: { 'Content-Type': 'application/json' } }
-    );
+        const pairs = response.data.data.pairs;
 
-    logger.info('Full API response:', JSON.stringify(response.data, null, 2));
+        if (pairs.length === 0) {
+            logger.warn('No pairs data found from QuickSwap API.');
+            return;
+        }
 
-    const pools = response.data?.data?.pools;
-    if (!pools || pools.length === 0) {
-      throw new Error('Invalid or null response from QuickSwap API.');
+        logger.info(`Fetched ${pairs.length} pairs from QuickSwap API.`);
+
+        for (const pair of pairs) {
+            const key = `quickswap:pair:${pair.id}`;
+            await setAsync(key, JSON.stringify(pair));
+            logger.info(`Stored pair data in Redis with key: ${key}`);
+        }
+
+        logger.info('QuickSwap data fetcher completed successfully.');
+    } catch (error) {
+        logger.error('Error fetching QuickSwap data:', error.message);
+        logger.error('Detailed error:', error);
+    } finally {
+        redisClient.quit();
     }
+}
 
-    logger.info(`Fetched ${pools.length} pools from QuickSwap.`);
-
-    for (const pool of pools) {
-      const redisKey = `quickswap:pool:${pool.id}`;
-      await redisClient.set(redisKey, JSON.stringify(pool));
-      logger.info(`Stored pool ${pool.id} in Redis.`);
-    }
-
-    logger.info('QuickSwap data fetching completed successfully.');
-  } catch (error) {
-    logger.error('Error fetching QuickSwap data:', error.message);
-  } finally {
-    await redisClient.disconnect();
-    logger.info('Disconnected from Redis.');
-  }
-})();
+fetchQuickSwapData();
