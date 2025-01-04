@@ -1,6 +1,8 @@
-const { createClient } = require('redis');
 const axios = require('axios');
+const { createClient } = require('redis');
 const { logger } = require('../monitoring/logger');
+require('dotenv').config();
+
 
 // QuickSwap API URL from .env
 const QUICKSWAP_API = process.env.QUICKSWAP_API;
