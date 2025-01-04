@@ -3985,3 +3985,6 @@
 [2025-01-04T00:38:48.730Z] ERROR: Error fetching QuickSwap data:
 [2025-01-04T00:38:48.731Z] ERROR: Detailed error: Invalid or null response from QuickSwap API.
 [2025-01-04T00:38:49.033Z] INFO: Redis client closed.
+[2025-01-04T00:46:19.970Z] INFO: Starting QuickSwap data fetcher...
+[2025-01-04T00:46:19.973Z] INFO: Fetching data from QuickSwap API at: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g
+[2025-01-04T00:46:20.369Z] ERROR: Error fetching QuickSwap data: Invalid or null response from QuickSwap API.
