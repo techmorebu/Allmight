@@ -1,17 +1,312 @@
-[2025-01-04T00:36:08.095Z] INFO: Fetching data from QuickSwap API at: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/CCFSaj7uS128wazXMdxdnbGA3YQnND9yBdHjPtvH7Bc7
-[2025-01-04T00:36:08.500Z] INFO: Full API response:
-[2025-01-04T00:36:08.501Z] ERROR: Error fetching QuickSwap data:
-[2025-01-04T00:36:08.502Z] ERROR: Detailed error: Invalid or null response from QuickSwap API.
-/home/techbu/OFA_Project_Local/ofa-project/node_modules/@redis/client/dist/lib/client/socket.js:70
-            throw new errors_1.ClientClosedError();
-                  ^
+Fields
+factory(
+id: ID!
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): Factory
+factories(
+skip: Int = 0
+first: Int = 100
+orderBy: Factory_orderBy
+orderDirection: OrderDirection
+where: Factory_filter
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): [Factory!]!
+bundle(
+id: ID!
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): Bundle
+bundles(
+skip: Int = 0
+first: Int = 100
+orderBy: Bundle_orderBy
+orderDirection: OrderDirection
+where: Bundle_filter
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): [Bundle!]!
+token(
+id: ID!
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): Token
+tokens(
+skip: Int = 0
+first: Int = 100
+orderBy: Token_orderBy
+orderDirection: OrderDirection
+where: Token_filter
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): [Token!]!
+pool(
+id: ID!
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): Pool
+pools(
+skip: Int = 0
+first: Int = 100
+orderBy: Pool_orderBy
+orderDirection: OrderDirection
+where: Pool_filter
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): [Pool!]!
+tick(
+id: ID!
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): Tick
+ticks(
+skip: Int = 0
+first: Int = 100
+orderBy: Tick_orderBy
+orderDirection: OrderDirection
+where: Tick_filter
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): [Tick!]!
+position(
+id: ID!
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): Position
+positions(
+skip: Int = 0
+first: Int = 100
+orderBy: Position_orderBy
+orderDirection: OrderDirection
+where: Position_filter
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): [Position!]!
+positionSnapshot(
+id: ID!
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): PositionSnapshot
+positionSnapshots(
+skip: Int = 0
+first: Int = 100
+orderBy: PositionSnapshot_orderBy
+orderDirection: OrderDirection
+where: PositionSnapshot_filter
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): [PositionSnapshot!]!
+transaction(
+id: ID!
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): Transaction
+transactions(
+skip: Int = 0
+first: Int = 100
+orderBy: Transaction_orderBy
+orderDirection: OrderDirection
+where: Transaction_filter
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): [Transaction!]!
+mint(
+id: ID!
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): Mint
+mints(
+skip: Int = 0
+first: Int = 100
+orderBy: Mint_orderBy
+orderDirection: OrderDirection
+where: Mint_filter
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): [Mint!]!
+burn(
+id: ID!
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): Burn
+burns(
+skip: Int = 0
+first: Int = 100
+orderBy: Burn_orderBy
+orderDirection: OrderDirection
+where: Burn_filter
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): [Burn!]!
+swap(
+id: ID!
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): Swap
+swaps(
+skip: Int = 0
+first: Int = 100
+orderBy: Swap_orderBy
+orderDirection: OrderDirection
+where: Swap_filter
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): [Swap!]!
+collect(
+id: ID!
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): Collect
+collects(
+skip: Int = 0
+first: Int = 100
+orderBy: Collect_orderBy
+orderDirection: OrderDirection
+where: Collect_filter
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): [Collect!]!
+flash(
+id: ID!
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): Flash
+flashes(
+skip: Int = 0
+first: Int = 100
+orderBy: Flash_orderBy
+orderDirection: OrderDirection
+where: Flash_filter
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): [Flash!]!
+algebraDayData(
+id: ID!
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): AlgebraDayData
+algebraDayDatas(
+skip: Int = 0
+first: Int = 100
+orderBy: AlgebraDayData_orderBy
+orderDirection: OrderDirection
+where: AlgebraDayData_filter
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): [AlgebraDayData!]!
+poolDayData(
+id: ID!
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): PoolDayData
+poolDayDatas(
+skip: Int = 0
+first: Int = 100
+orderBy: PoolDayData_orderBy
+orderDirection: OrderDirection
+where: PoolDayData_filter
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): [PoolDayData!]!
+poolFeeData(
+id: ID!
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): PoolFeeData
+poolFeeDatas(
+skip: Int = 0
+first: Int = 100
+orderBy: PoolFeeData_orderBy
+orderDirection: OrderDirection
+where: PoolFeeData_filter
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): [PoolFeeData!]!
+poolHourData(
+id: ID!
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): PoolHourData
+poolHourDatas(
+skip: Int = 0
+first: Int = 100
+orderBy: PoolHourData_orderBy
+orderDirection: OrderDirection
+where: PoolHourData_filter
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): [PoolHourData!]!
+tickHourData(
+id: ID!
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): TickHourData
+tickHourDatas(
+skip: Int = 0
+first: Int = 100
+orderBy: TickHourData_orderBy
+orderDirection: OrderDirection
+where: TickHourData_filter
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): [TickHourData!]!
+tickDayData(
+id: ID!
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): TickDayData
+tickDayDatas(
+skip: Int = 0
+first: Int = 100
+orderBy: TickDayData_orderBy
+orderDirection: OrderDirection
+where: TickDayData_filter
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): [TickDayData!]!
+tokenDayData(
+id: ID!
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): TokenDayData
+tokenDayDatas(
+skip: Int = 0
+first: Int = 100
+orderBy: TokenDayData_orderBy
+orderDirection: OrderDirection
+where: TokenDayData_filter
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): [TokenDayData!]!
+tokenHourData(
+id: ID!
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): TokenHourData
+tokenHourDatas(
+skip: Int = 0
+first: Int = 100
+orderBy: TokenHourData_orderBy
+orderDirection: OrderDirection
+where: TokenHourData_filter
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): [TokenHourData!]!
+feeHourData(
+id: ID!
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): FeeHourData
+feeHourDatas(
+skip: Int = 0
+first: Int = 100
+orderBy: FeeHourData_orderBy
+orderDirection: OrderDirection
+where: FeeHourData_filter
+block: Block_height
+subgraphError: _SubgraphErrorPolicy_! = deny
+): [FeeHourData!]!
+_meta(block: Block_height): _Meta_
 
-ClientClosedError: The client is closed
-    at RedisSocket.quit (/home/techbu/OFA_Project_Local/ofa-project/node_modules/@redis/client/dist/lib/client/socket.js:70:19)
-    at Commander.QUIT (/home/techbu/OFA_Project_Local/ofa-project/node_modules/@redis/client/dist/lib/client/index.js:260:71)
-    at fetchQuickSwapData (/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-quickswap-data.js:50:12)
-    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
-
-Node.js v18.19.1
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
-
+Access to subgraph metadata
