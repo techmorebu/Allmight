@@ -1,34 +1,38 @@
-const redis = require('redis').createClient();
+const Redis = require('ioredis');
 const { logger } = require('../monitoring/logger');
 
-redis.on('connect', () => {
-  logger.info('Redis client connected for QuickSwap validation.');
-});
+// Create a Redis client instance
+const redis = new Redis();
 
-redis.on('error', (err) => {
-  logger.error(`Redis client error: ${err}`);
-});
-
-redis.keys('quickswap:pool:*', (err, keys) => {
-  if (err) {
-    logger.error(`Error fetching keys: ${err}`);
-  } else if (keys.length === 0) {
-    logger.error('No QuickSwap pool data found in Redis.');
-  } else {
-    logger.info(`Found ${keys.length} QuickSwap pools.`);
-    keys.forEach((key) => {
-      redis.get(key, (err, data) => {
-        if (err) {
-          logger.error(`Error fetching data for key ${key}: ${err}`);
-        } else {
-          logger.info(`Validated data for key: ${key}`);
+async function validateQuickSwapData() {
+    try {
+        logger.info('Starting QuickSwap data validation...');
+        
+        // Fetch all keys for QuickSwap pools from Redis
+        const keys = await redis.keys('quickswap:pool:*');
+        if (keys.length === 0) {
+            logger.error('No QuickSwap pool data found in Redis.');
+            return;
         }
-      });
-    });
-  }
-  redis.quit();
-});
 
-redis.on('end', () => {
-  logger.info('Redis client disconnected after QuickSwap validation.');
-});
+        // Validate each pool data
+        for (const key of keys) {
+            const poolData = await redis.get(key);
+            if (!poolData) {
+                logger.error(`No data found for key: ${key}`);
+            } else {
+                logger.info(`Validated pool data for key: ${key}`);
+            }
+        }
+
+        logger.info('QuickSwap data validation completed successfully.');
+    } catch (error) {
+        logger.error(`Error during QuickSwap data validation: ${error.message}`);
+    } finally {
+        // Ensure Redis connection is closed
+        redis.quit();
+    }
+}
+
+// Run the validation function
+validateQuickSwapData();
