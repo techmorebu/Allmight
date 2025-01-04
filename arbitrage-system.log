@@ -4160,3 +4160,15 @@
 [2025-01-04T01:36:45.779Z] INFO: Stored pool 0xa6aedf7c4ed6e821e67a6bfd56fd1702ad9a9719 in Redis.
 [2025-01-04T01:36:45.780Z] INFO: QuickSwap data fetching completed successfully.
 [2025-01-04T01:36:45.782Z] INFO: Disconnected from Redis.
+[2025-01-04T01:38:54.932Z] INFO: Starting QuickSwap data validation...
+[2025-01-04T01:38:54.973Z] INFO: Validated pool data for key: quickswap:pool:0xae81fac689a1b4b1e06e7ef4a2ab4cd8ac0a087d
+[2025-01-04T01:38:54.974Z] INFO: Validated pool data for key: quickswap:pool:0xa6aedf7c4ed6e821e67a6bfd56fd1702ad9a9719
+[2025-01-04T01:38:54.977Z] INFO: Validated pool data for key: quickswap:pool:0x9ceff2f5138fc59eb925d270b8a7a9c02a1810f2
+[2025-01-04T01:38:54.979Z] INFO: Validated pool data for key: quickswap:pool:0x55caabb0d2b704fd0ef8192a7e35d8837e678207
+[2025-01-04T01:38:54.981Z] INFO: Validated pool data for key: quickswap:pool:0x7b925e617aefd7fb3a93abe3a701135d7a1ba710
+[2025-01-04T01:38:54.982Z] INFO: Validated pool data for key: quickswap:pool:0x479e1b71a702a595e19b6d5932cd5c863ab57ee0
+[2025-01-04T01:38:54.983Z] INFO: Validated pool data for key: quickswap:pool:0xeecb5db986c20a8c88d8332e7e252a9671565751
+[2025-01-04T01:38:54.984Z] INFO: Validated pool data for key: quickswap:pool:0xa5cd8351cbf30b531c7b11b0d9d3ff38ea2e280f
+[2025-01-04T01:38:54.985Z] INFO: Validated pool data for key: quickswap:pool:0xac4494e30a85369e332bdb5230d6d694d4259dbc
+[2025-01-04T01:38:54.986Z] INFO: Validated pool data for key: quickswap:pool:0x5b41eedcfc8e0ae47493d4945aa1ae4fe05430ff
+[2025-01-04T01:38:54.986Z] INFO: QuickSwap data validation completed successfully.
