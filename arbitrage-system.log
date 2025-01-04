@@ -4012,3 +4012,6 @@
 [2025-01-04T01:06:48.790Z] INFO: Starting QuickSwap data fetcher...
 [2025-01-04T01:06:48.793Z] INFO: Fetching data from QuickSwap API at: undefined
 [2025-01-04T01:06:48.815Z] ERROR: Error fetching QuickSwap data:
+[2025-01-04T01:13:00.044Z] INFO: Starting QuickSwap data fetcher...
+[2025-01-04T01:13:00.047Z] INFO: Fetching data from QuickSwap API at: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g
+[2025-01-04T01:13:00.835Z] INFO: Fetched 10 pools from QuickSwap API.
