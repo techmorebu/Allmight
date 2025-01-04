@@ -1,64 +1,66 @@
 const axios = require('axios');
 const { logger } = require('../monitoring/logger');
-const redis = require('../db/redis');
+const redis = require('redis');
+const client = redis.createClient();
 
-const QUICKSWAP_API = process.env.QUICKSWAP_API || 'https://gateway.thegraph.com/api/.../subgraphs/id/...';
+client.on('error', (err) => logger.error('Redis Client Error', err));
 
-async function fetchQuickSwapData() {
+(async () => {
+  try {
     logger.info('Starting QuickSwap data fetcher...');
 
-    try {
-        logger.info(`Fetching data from QuickSwap API at: ${QUICKSWAP_API}`);
+    // Define QuickSwap API URL
+    const QUICKSWAP_API = process.env.QUICKSWAP_API || 'https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g';
 
-        // Define the GraphQL query
-        const query = `
-        {
-            pools(first: 100, orderBy: totalValueLockedUSD, orderDirection: desc) {
-                id
-                token0 {
-                    id
-                    symbol
-                    name
-                }
-                token1 {
-                    id
-                    symbol
-                    name
-                }
-                reserveUSD
-                volumeUSD
-            }
+    logger.info(`Fetching data from QuickSwap API at: ${QUICKSWAP_API}`);
+
+    const query = `
+      {
+        pools(first: 10, orderBy: totalLiquidity, orderDirection: desc) {
+          id
+          token0 {
+            id
+            symbol
+            name
+          }
+          token1 {
+            id
+            symbol
+            name
+          }
+          reserveUSD
+          volumeUSD
+          txCount
         }
-        `;
+      }
+    `;
 
-        // Fetch data from the API
-        const response = await axios.post(QUICKSWAP_API, { query });
+    // Fetch data from QuickSwap
+    const response = await axios.post(QUICKSWAP_API, { query });
 
-        if (!response.data || !response.data.data || !response.data.data.pools) {
-            logger.error('Invalid or null response from QuickSwap API.');
-            throw new Error('Invalid or null response from QuickSwap API.');
-        }
-
-        const pools = response.data.data.pools;
-        logger.info(`Fetched ${pools.length} pools from QuickSwap.`);
-
-        // Store data in Redis
-        const redisKey = 'quickswap:pools';
-        await redis.set(redisKey, JSON.stringify(pools));
-        logger.info(`Stored ${pools.length} pools in Redis under key: ${redisKey}`);
-
-        return pools;
-    } catch (error) {
-        logger.error(`Error fetching QuickSwap data: ${error.message}`);
-        throw error;
+    if (!response.data || !response.data.data || !response.data.data.pools) {
+      throw new Error('Invalid or null response from QuickSwap API.');
     }
-}
 
-// Run the fetcher if executed directly
-if (require.main === module) {
-    fetchQuickSwapData()
-        .then(() => logger.info('QuickSwap data fetcher completed successfully.'))
-        .catch(err => logger.error(`QuickSwap data fetcher encountered an error: ${err.message}`));
-}
+    const pools = response.data.data.pools;
 
-module.exports = { fetchQuickSwapData };
+    logger.info(`Fetched ${pools.length} pools from QuickSwap.`);
+
+    // Store in Redis
+    for (const pool of pools) {
+      const key = `quickswap:pool:${pool.id}`;
+      await client.set(key, JSON.stringify(pool));
+      logger.info(`Stored pool data in Redis: ${key}`);
+    }
+
+    logger.info('QuickSwap data fetcher completed successfully.');
+  } catch (error) {
+    logger.error(`Error fetching QuickSwap data: ${error.message}`);
+    if (error.response) {
+      logger.error(`Response status: ${error.response.status}`);
+      logger.error(`Response data: ${JSON.stringify(error.response.data)}`);
+    }
+  } finally {
+    client.quit();
+  }
+})();
