@@ -1,67 +1,66 @@
 const axios = require('axios');
-const redis = require('redis');
-const { promisify } = require('util');
 const { logger } = require('../monitoring/logger');
+require('dotenv').config();
 
-// Set up Redis client
-const redisClient = redis.createClient();
-const setAsync = promisify(redisClient.set).bind(redisClient);
+const QUICKSWAP_API = process.env.QUICKSWAP_API || 'https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g';
+const MAX_RETRIES = 3;
 
-const QUICKSWAP_API_URL = process.env.QUICKSWAP_API || 'https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g';
+const query = `
+  query {
+    pools(first: 10, orderBy: liquidity, orderDirection: desc) {
+      id
+      token0 {
+        symbol
+        name
+      }
+      token1 {
+        symbol
+        name
+      }
+      totalLiquidity
+      volumeUSD
+    }
+  }
+`;
 
 async function fetchQuickSwapData() {
+  logger.info('Starting QuickSwap data fetcher...');
+  logger.info(`Fetching data from QuickSwap API at: ${QUICKSWAP_API}`);
+
+  let retries = 0;
+  let response = null;
+
+  while (retries < MAX_RETRIES) {
     try {
-        logger.info('Starting QuickSwap data fetcher...');
-        logger.info(`Fetching data from QuickSwap API at: ${QUICKSWAP_API_URL}`);
+      response = await axios.post(QUICKSWAP_API, { query });
 
-        const response = await axios.post(QUICKSWAP_API_URL, {
-            query: `
-                {
-                    pairs(first: 100) {
-                        id
-                        token0 {
-                            id
-                            symbol
-                        }
-                        token1 {
-                            id
-                            symbol
-                        }
-                        reserveUSD
-                        volumeUSD
-                    }
-                }
-            `,
-        });
+      if (!response.data || !response.data.data || !response.data.data.pools) {
+        throw new Error('Invalid or null response from QuickSwap API.');
+      }
 
-        logger.info('Full API response:', response.data);
+      logger.info('QuickSwap data fetched successfully.');
+      logger.debug('Full API response:', JSON.stringify(response.data, null, 2));
 
-        if (!response.data || !response.data.data || !response.data.data.pairs) {
-            throw new Error('Invalid or null response from QuickSwap API.');
-        }
+      // Process and store data in Redis (replace with your storage logic)
+      const pools = response.data.data.pools;
+      pools.forEach((pool) => {
+        logger.info(`Pool ID: ${pool.id}, Liquidity: ${pool.totalLiquidity}, Volume: ${pool.volumeUSD}`);
+        // Store to Redis or process further
+      });
 
-        const pairs = response.data.data.pairs;
-
-        if (pairs.length === 0) {
-            logger.warn('No pairs data found from QuickSwap API.');
-            return;
-        }
-
-        logger.info(`Fetched ${pairs.length} pairs from QuickSwap API.`);
-
-        for (const pair of pairs) {
-            const key = `quickswap:pair:${pair.id}`;
-            await setAsync(key, JSON.stringify(pair));
-            logger.info(`Stored pair data in Redis with key: ${key}`);
-        }
-
-        logger.info('QuickSwap data fetcher completed successfully.');
+      return; // Exit function on success
     } catch (error) {
-        logger.error('Error fetching QuickSwap data:', error.message);
-        logger.error('Detailed error:', error);
-    } finally {
-        redisClient.quit();
+      retries += 1;
+      logger.error(`Attempt ${retries}: ${error.message}`);
+
+      if (retries >= MAX_RETRIES) {
+        logger.error('Max retries reached. Exiting fetch process.');
+        return;
+      }
+
+      logger.info('Retrying fetch...');
     }
+  }
 }
 
-fetchQuickSwapData();
+fetchQuickSwapData().catch((err) => logger.error(`Unhandled error: ${err.message}`));
