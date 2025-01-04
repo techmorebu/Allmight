@@ -3972,3 +3972,9 @@
 [2025-01-04T00:32:28.453Z] INFO: Fetching data from QuickSwap API at: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/CCFSaj7uS128wazXMdxdnbGA3YQnND9yBdHjPtvH7Bc7
 [2025-01-04T00:32:28.741Z] ERROR: Invalid or null response from QuickSwap API.
 [2025-01-04T00:32:28.743Z] ERROR: Detailed error:
+[2025-01-04T00:34:09.306Z] INFO: Starting QuickSwap data fetcher...
+[2025-01-04T00:34:09.310Z] INFO: Fetching data from QuickSwap API at: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/CCFSaj7uS128wazXMdxdnbGA3YQnND9yBdHjPtvH7Bc7
+[2025-01-04T00:34:09.605Z] ERROR: Error fetching QuickSwap data:
+[2025-01-04T00:34:13.473Z] INFO: Starting QuickSwap data fetcher...
+[2025-01-04T00:34:13.477Z] INFO: Fetching data from QuickSwap API at: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/CCFSaj7uS128wazXMdxdnbGA3YQnND9yBdHjPtvH7Bc7
+[2025-01-04T00:34:13.852Z] ERROR: Error fetching QuickSwap data:
