@@ -1,71 +1,71 @@
-const axios = require('axios');
-const { createClient } = require('redis');
-const { logger } = require('../monitoring/logger');
 require('dotenv').config();
+const axios = require('axios');
+const Redis = require('ioredis');
+const { logger } = require('../monitoring/logger');
 
 const QUICKSWAP_API = process.env.QUICKSWAP_API;
-const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
+const redis = new Redis();
 
-const redisClient = createClient({ url: REDIS_URL });
+async function fetchQuickSwapData() {
+    try {
+        logger.info('Starting QuickSwap data fetcher...');
 
-(async () => {
-  try {
-    logger.info('Connecting to Redis...');
-    await redisClient.connect();
-    logger.info('Connected to Redis.');
-
-    logger.info('Starting QuickSwap data fetcher...');
-    if (!QUICKSWAP_API) {
-      throw new Error('QUICKSWAP_API is not defined in the .env file');
-    }
-
-    logger.info(`Fetching data from QuickSwap API at: ${QUICKSWAP_API}`);
-    const query = `
-      {
-        pools(first: 10, orderBy: volumeUSD, orderDirection: desc) {
-          id
-          token0 {
-            id
-            symbol
-            name
-          }
-          token1 {
-            id
-            symbol
-            name
-          }
-          volumeUSD
-          totalValueLockedUSD
+        // Validate API URL
+        if (!QUICKSWAP_API) {
+            logger.error('QuickSwap API URL is missing from .env file.');
+            throw new Error('QuickSwap API URL is required.');
         }
-      }
-    `;
 
-    const response = await axios.post(
-      QUICKSWAP_API,
-      { query },
-      { headers: { 'Content-Type': 'application/json' } }
-    );
+        logger.info(`Fetching data from QuickSwap API at: ${QUICKSWAP_API}`);
+        const response = await axios.post(QUICKSWAP_API, {
+            query: `
+                {
+                    pools(first: 10, orderBy: totalLiquidity, orderDirection: desc) {
+                        id
+                        token0 {
+                            id
+                            symbol
+                        }
+                        token1 {
+                            id
+                            symbol
+                        }
+                        volumeUSD
+                        totalLiquidity
+                        swaps(first: 5, orderBy: timestamp, orderDirection: desc) {
+                            id
+                            amountUSD
+                            timestamp
+                        }
+                    }
+                }
+            `
+        });
 
-    logger.info('Full API response:', JSON.stringify(response.data, null, 2));
+        // Check for null or invalid responses
+        if (!response || !response.data || !response.data.data || !response.data.data.pools) {
+            logger.error('Invalid or null response from QuickSwap API.');
+            throw new Error('Invalid or null response from QuickSwap API.');
+        }
 
-    const pools = response.data?.data?.pools;
-    if (!pools || pools.length === 0) {
-      throw new Error('Invalid or null response from QuickSwap API.');
+        const pools = response.data.data.pools;
+        logger.info(`Fetched ${pools.length} pools from QuickSwap.`);
+
+        // Store pool data in Redis
+        for (const pool of pools) {
+            const key = `quickswap:pool:${pool.id}`;
+            await redis.set(key, JSON.stringify(pool));
+            logger.info(`Stored pool data in Redis with key: ${key}`);
+        }
+
+        logger.info('QuickSwap data fetcher completed successfully.');
+    } catch (error) {
+        logger.error(`Error fetching QuickSwap data: ${error.message}`);
+        logger.error(`Detailed error: ${error.stack}`);
+    } finally {
+        redis.disconnect();
     }
+}
 
-    logger.info(`Fetched ${pools.length} pools from QuickSwap.`);
-
-    for (const pool of pools) {
-      const redisKey = `quickswap:pool:${pool.id}`;
-      await redisClient.set(redisKey, JSON.stringify(pool));
-      logger.info(`Stored pool ${pool.id} in Redis.`);
-    }
-
-    logger.info('QuickSwap data fetching completed successfully.');
-  } catch (error) {
-    logger.error('Error fetching QuickSwap data:', error.message);
-  } finally {
-    await redisClient.disconnect();
-    logger.info('Disconnected from Redis.');
-  }
-})();
+// Run the fetcher
+fetchQuickSwapData();
