@@ -4006,3 +4006,9 @@
 [2025-01-04T01:02:13.456Z] INFO: Starting QuickSwap data fetcher...
 [2025-01-04T01:02:13.460Z] INFO: Fetching data from QuickSwap API at: undefined
 [2025-01-04T01:02:13.483Z] ERROR: Error fetching QuickSwap data:
+[2025-01-04T01:06:45.119Z] INFO: Starting QuickSwap data fetcher...
+[2025-01-04T01:06:45.123Z] INFO: Fetching data from QuickSwap API at: undefined
+[2025-01-04T01:06:45.144Z] ERROR: Error fetching QuickSwap data:
+[2025-01-04T01:06:48.790Z] INFO: Starting QuickSwap data fetcher...
+[2025-01-04T01:06:48.793Z] INFO: Fetching data from QuickSwap API at: undefined
+[2025-01-04T01:06:48.815Z] ERROR: Error fetching QuickSwap data:
