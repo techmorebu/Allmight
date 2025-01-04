@@ -4178,3 +4178,6 @@
 [2025-01-04T01:44:29.265Z] INFO: Starting QuickSwap data fetcher...
 [2025-01-04T01:44:29.268Z] INFO: Fetching data from QuickSwap API at: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g
 [2025-01-04T01:44:29.604Z] INFO: Full API response:
+[2025-01-04T01:47:10.813Z] INFO: Starting QuickSwap data validation...
+[2025-01-04T01:47:10.824Z] ERROR: No QuickSwap pairs data found in Redis.
+[2025-01-04T01:47:10.824Z] INFO: QuickSwap data validation complete.
