@@ -1,15 +1,5 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node data-collection/fetch-quickswap-data.js
-[2025-01-04T00:46:19.970Z] INFO: Starting QuickSwap data fetcher...
-[2025-01-04T00:46:19.973Z] INFO: Fetching data from QuickSwap API at: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g
-[2025-01-04T00:46:20.369Z] ERROR: Error fetching QuickSwap data: Invalid or null response from QuickSwap API.
-/home/techbu/OFA_Project_Local/ofa-project/node_modules/@redis/client/dist/lib/client/socket.js:70
-            throw new errors_1.ClientClosedError();
-                  ^
-
-ClientClosedError: The client is closed
-    at RedisSocket.quit (/home/techbu/OFA_Project_Local/ofa-project/node_modules/@redis/client/dist/lib/client/socket.js:70:19)
-    at Commander.QUIT (/home/techbu/OFA_Project_Local/ofa-project/node_modules/@redis/client/dist/lib/client/index.js:260:71)
-    at /home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-quickswap-data.js:64:12
-    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
-
-Node.js v18.19.1
+[2025-01-04T00:48:28.479Z] INFO: Starting QuickSwap data fetcher...
+[2025-01-04T00:48:28.484Z] INFO: Fetching data from QuickSwap API at: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/CCFSaj7uS128wazXMdxdnbGA3YQnND9yBdHjPtvH7Bc7
+[2025-01-04T00:48:28.813Z] ERROR: Error fetching QuickSwap data: Invalid or null response from QuickSwap API.
+[2025-01-04T00:48:28.815Z] INFO: QuickSwap data fetcher completed.
