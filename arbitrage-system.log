@@ -4027,3 +4027,11 @@
 [2025-01-04T01:15:18.917Z] INFO: Fetching data from QuickSwap API at: undefined
 [2025-01-04T01:15:18.931Z] ERROR: Error fetching QuickSwap data: Invalid URL
 [2025-01-04T01:15:18.945Z] INFO: Redis client closed successfully.
+[2025-01-04T01:17:47.595Z] INFO: Starting QuickSwap data fetcher...
+[2025-01-04T01:17:47.636Z] INFO: Fetching data from QuickSwap API at: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g
+[2025-01-04T01:17:47.956Z] ERROR: No pools data found in the API response.
+[2025-01-04T01:17:47.960Z] INFO: Redis client closed successfully.
+[2025-01-04T01:17:50.745Z] INFO: Starting QuickSwap data fetcher...
+[2025-01-04T01:17:50.779Z] INFO: Fetching data from QuickSwap API at: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g
+[2025-01-04T01:17:51.078Z] ERROR: No pools data found in the API response.
+[2025-01-04T01:17:51.082Z] INFO: Redis client closed successfully.
