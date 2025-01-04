@@ -4211,3 +4211,10 @@
 [2025-01-04T01:51:29.626Z] INFO: Starting QuickSwap data validation...
 [2025-01-04T01:51:29.638Z] ERROR: No QuickSwap pairs data found in Redis.
 [2025-01-04T01:51:29.638Z] INFO: QuickSwap data validation complete.
+[2025-01-04T01:56:04.432Z] INFO: Starting QuickSwap data fetcher...
+[2025-01-04T01:56:04.437Z] INFO: Fetching data from QuickSwap API at: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g
+[2025-01-04T01:56:04.762Z] ERROR: Invalid or null response from QuickSwap API.
+[2025-01-04T01:56:04.763Z] ERROR: Error fetching QuickSwap data: Invalid or null response from QuickSwap API.
+[2025-01-04T01:56:04.765Z] ERROR: Detailed error: Error: Invalid or null response from QuickSwap API.
+    at fetchQuickSwapData (/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-quickswap-data.js:48:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
