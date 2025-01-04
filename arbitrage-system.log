@@ -4172,3 +4172,6 @@
 [2025-01-04T01:38:54.985Z] INFO: Validated pool data for key: quickswap:pool:0xac4494e30a85369e332bdb5230d6d694d4259dbc
 [2025-01-04T01:38:54.986Z] INFO: Validated pool data for key: quickswap:pool:0x5b41eedcfc8e0ae47493d4945aa1ae4fe05430ff
 [2025-01-04T01:38:54.986Z] INFO: QuickSwap data validation completed successfully.
+[2025-01-04T01:40:41.715Z] INFO: Starting QuickSwap data validation...
+[2025-01-04T01:40:41.722Z] ERROR: No QuickSwap pairs data found in Redis.
+[2025-01-04T01:40:41.723Z] INFO: QuickSwap data validation complete.
