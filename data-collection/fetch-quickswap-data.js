@@ -1,54 +1,60 @@
-const axios = require('axios');
 const { logger } = require('../monitoring/logger');
-const redis = require('redis');
+const axios = require('axios');
+const Redis = require('ioredis');
 require('dotenv').config();
 
-const client = redis.createClient();
-
-const QUICKSWAP_API = process.env.QUICKSWAP_API;
+const QUICKSWAP_API_URL = process.env.QUICKSWAP_API;
+const redis = new Redis();
 
 async function fetchQuickSwapData() {
-  logger.info('Starting QuickSwap data fetcher...');
+    try {
+        logger.info(`Fetching data from QuickSwap API at: ${QUICKSWAP_API_URL}`);
 
-  try {
-    logger.info(`Fetching data from QuickSwap API at: ${QUICKSWAP_API}`);
-    const response = await axios.post(QUICKSWAP_API, {
-      query: `
-        query {
-          pairs(first: 10) {
-            id
-            token0 { id symbol }
-            token1 { id symbol }
-            reserveUSD
-          }
+        const response = await axios.post(QUICKSWAP_API_URL, {
+            query: `
+                {
+                    pairs(first: 10) {
+                        id
+                        token0 {
+                            symbol
+                        }
+                        token1 {
+                            symbol
+                        }
+                        reserveUSD
+                        volumeUSD
+                    }
+                }
+            `
+        });
+
+        if (!response.data || !response.data.data || !response.data.data.pairs) {
+            throw new Error('Invalid or null response from QuickSwap API.');
         }
-      `,
-    });
 
-    // Log the full API response for debugging
-    logger.info('Full API response:', JSON.stringify(response.data, null, 2));
+        const pairs = response.data.data.pairs;
+        logger.info(`Fetched ${pairs.length} pairs from QuickSwap API.`);
 
-    if (!response.data || !response.data.data || !response.data.data.pairs) {
-      throw new Error('Invalid or null response from QuickSwap API.');
+        // Store pairs in Redis
+        for (const pair of pairs) {
+            const redisKey = `quickswap:pair:${pair.id}`;
+            await redis.set(redisKey, JSON.stringify(pair));
+            logger.info(`Stored pair ${pair.id} in Redis.`);
+        }
+
+        logger.info('QuickSwap data fetching completed successfully.');
+    } catch (error) {
+        logger.error('Error fetching QuickSwap data:', error.message);
+        logger.error('Detailed error:', error);
+    } finally {
+        if (!redis.status || redis.status === 'end') {
+            logger.warn('Redis client is already closed.');
+        } else {
+            await redis.quit();
+            logger.info('Redis client closed.');
+        }
     }
-
-    const pairs = response.data.data.pairs;
-    logger.info(`Fetched ${pairs.length} pairs from QuickSwap.`);
-
-    // Store pairs in Redis
-    for (const pair of pairs) {
-      const key = `quickswap:pair:${pair.id}`;
-      await client.set(key, JSON.stringify(pair));
-      logger.info(`Stored pair ${pair.id} in Redis.`);
-    }
-
-    logger.info('QuickSwap data fetching completed successfully.');
-  } catch (error) {
-    logger.error('Error fetching QuickSwap data:', error.message);
-    logger.error('Detailed error:', error);
-  } finally {
-    client.quit();
-  }
 }
 
+// Run the fetcher
 fetchQuickSwapData();
