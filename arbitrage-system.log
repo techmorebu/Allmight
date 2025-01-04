@@ -3968,3 +3968,7 @@
 [2025-01-04T00:30:10.624Z] INFO: Fetching data from QuickSwap API at: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/CCFSaj7uS128wazXMdxdnbGA3YQnND9yBdHjPtvH7Bc7
 [2025-01-04T00:30:11.157Z] ERROR: Invalid or null response from QuickSwap API.
 [2025-01-04T00:30:11.157Z] ERROR: Detailed error: {"data":null,"errors":[{"message":"Type `Pool` has no field `reserve0`","locations":[{"line":12,"column":3}]},{"message":"Type `Pool` has no field `reserve1`","locations":[{"line":13,"column":3}]},{"message":"Type `Pool` has no field `totalSupply`","locations":[{"line":14,"column":3}]}]}
+[2025-01-04T00:32:28.450Z] INFO: Starting QuickSwap data fetcher...
+[2025-01-04T00:32:28.453Z] INFO: Fetching data from QuickSwap API at: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/CCFSaj7uS128wazXMdxdnbGA3YQnND9yBdHjPtvH7Bc7
+[2025-01-04T00:32:28.741Z] ERROR: Invalid or null response from QuickSwap API.
+[2025-01-04T00:32:28.743Z] ERROR: Detailed error:
