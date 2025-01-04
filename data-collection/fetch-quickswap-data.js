@@ -1,66 +1,71 @@
-const axios = require('axios');
-const { logger } = require('../monitoring/logger');
 require('dotenv').config();
+const axios = require('axios');
+const Redis = require('ioredis');
+const { logger } = require('../monitoring/logger');
 
-const QUICKSWAP_API = process.env.QUICKSWAP_API || 'https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g';
-const MAX_RETRIES = 3;
-
-const query = `
-  query {
-    pools(first: 10, orderBy: liquidity, orderDirection: desc) {
-      id
-      token0 {
-        symbol
-        name
-      }
-      token1 {
-        symbol
-        name
-      }
-      totalLiquidity
-      volumeUSD
-    }
-  }
-`;
+const QUICKSWAP_API = process.env.QUICKSWAP_API;
+const redis = new Redis();
 
 async function fetchQuickSwapData() {
-  logger.info('Starting QuickSwap data fetcher...');
-  logger.info(`Fetching data from QuickSwap API at: ${QUICKSWAP_API}`);
-
-  let retries = 0;
-  let response = null;
-
-  while (retries < MAX_RETRIES) {
     try {
-      response = await axios.post(QUICKSWAP_API, { query });
+        logger.info('Starting QuickSwap data fetcher...');
 
-      if (!response.data || !response.data.data || !response.data.data.pools) {
-        throw new Error('Invalid or null response from QuickSwap API.');
-      }
+        // Validate API URL
+        if (!QUICKSWAP_API) {
+            logger.error('QuickSwap API URL is missing from .env file.');
+            throw new Error('QuickSwap API URL is required.');
+        }
 
-      logger.info('QuickSwap data fetched successfully.');
-      logger.debug('Full API response:', JSON.stringify(response.data, null, 2));
+        logger.info(`Fetching data from QuickSwap API at: ${QUICKSWAP_API}`);
+        const response = await axios.post(QUICKSWAP_API, {
+            query: `
+                {
+                    pools(first: 10, orderBy: totalLiquidity, orderDirection: desc) {
+                        id
+                        token0 {
+                            id
+                            symbol
+                        }
+                        token1 {
+                            id
+                            symbol
+                        }
+                        volumeUSD
+                        totalLiquidity
+                        swaps(first: 5, orderBy: timestamp, orderDirection: desc) {
+                            id
+                            amountUSD
+                            timestamp
+                        }
+                    }
+                }
+            `
+        });
 
-      // Process and store data in Redis (replace with your storage logic)
-      const pools = response.data.data.pools;
-      pools.forEach((pool) => {
-        logger.info(`Pool ID: ${pool.id}, Liquidity: ${pool.totalLiquidity}, Volume: ${pool.volumeUSD}`);
-        // Store to Redis or process further
-      });
+        // Check for null or invalid responses
+        if (!response || !response.data || !response.data.data || !response.data.data.pools) {
+            logger.error('Invalid or null response from QuickSwap API.');
+            throw new Error('Invalid or null response from QuickSwap API.');
+        }
 
-      return; // Exit function on success
+        const pools = response.data.data.pools;
+        logger.info(`Fetched ${pools.length} pools from QuickSwap.`);
+
+        // Store pool data in Redis
+        for (const pool of pools) {
+            const key = `quickswap:pool:${pool.id}`;
+            await redis.set(key, JSON.stringify(pool));
+            logger.info(`Stored pool data in Redis with key: ${key}`);
+        }
+
+        logger.info('QuickSwap data fetcher completed successfully.');
     } catch (error) {
-      retries += 1;
-      logger.error(`Attempt ${retries}: ${error.message}`);
-
-      if (retries >= MAX_RETRIES) {
-        logger.error('Max retries reached. Exiting fetch process.');
-        return;
-      }
-
-      logger.info('Retrying fetch...');
+        logger.error(`Error fetching QuickSwap data: ${error.message}`);
+        logger.error(`Detailed error: ${error.stack}`);
+    } finally {
+        redis.disconnect();
     }
-  }
 }
 
-fetchQuickSwapData().catch((err) => logger.error(`Unhandled error: ${err.message}`));
+// Run the fetcher
+fetchQuickSwapData();
