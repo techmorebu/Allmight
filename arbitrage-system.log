@@ -4035,3 +4035,21 @@
 [2025-01-04T01:17:50.779Z] INFO: Fetching data from QuickSwap API at: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g
 [2025-01-04T01:17:51.078Z] ERROR: No pools data found in the API response.
 [2025-01-04T01:17:51.082Z] INFO: Redis client closed successfully.
+[2025-01-04T01:22:27.548Z] INFO: Connecting to Redis...
+[2025-01-04T01:22:27.583Z] INFO: Connected to Redis.
+[2025-01-04T01:22:27.584Z] INFO: Starting QuickSwap data fetcher...
+[2025-01-04T01:22:27.584Z] INFO: Fetching data from QuickSwap API at: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g
+[2025-01-04T01:22:28.182Z] INFO: Full API response:
+[2025-01-04T01:22:28.183Z] INFO: Fetched 10 pools from QuickSwap.
+[2025-01-04T01:22:28.382Z] INFO: Stored pool 0x55caabb0d2b704fd0ef8192a7e35d8837e678207 in Redis.
+[2025-01-04T01:22:28.389Z] INFO: Stored pool 0xae81fac689a1b4b1e06e7ef4a2ab4cd8ac0a087d in Redis.
+[2025-01-04T01:22:28.394Z] INFO: Stored pool 0x7b925e617aefd7fb3a93abe3a701135d7a1ba710 in Redis.
+[2025-01-04T01:22:28.402Z] INFO: Stored pool 0x479e1b71a702a595e19b6d5932cd5c863ab57ee0 in Redis.
+[2025-01-04T01:22:28.407Z] INFO: Stored pool 0xac4494e30a85369e332bdb5230d6d694d4259dbc in Redis.
+[2025-01-04T01:22:28.413Z] INFO: Stored pool 0x5b41eedcfc8e0ae47493d4945aa1ae4fe05430ff in Redis.
+[2025-01-04T01:22:28.418Z] INFO: Stored pool 0xeecb5db986c20a8c88d8332e7e252a9671565751 in Redis.
+[2025-01-04T01:22:28.421Z] INFO: Stored pool 0x9ceff2f5138fc59eb925d270b8a7a9c02a1810f2 in Redis.
+[2025-01-04T01:22:28.423Z] INFO: Stored pool 0xa5cd8351cbf30b531c7b11b0d9d3ff38ea2e280f in Redis.
+[2025-01-04T01:22:28.424Z] INFO: Stored pool 0xa6aedf7c4ed6e821e67a6bfd56fd1702ad9a9719 in Redis.
+[2025-01-04T01:22:28.425Z] INFO: QuickSwap data fetching completed successfully.
+[2025-01-04T01:22:28.428Z] INFO: Disconnected from Redis.
