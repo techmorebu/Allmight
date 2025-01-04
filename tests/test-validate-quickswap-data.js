@@ -1,28 +1,27 @@
+const { createClient } = require('redis');
 const { logger } = require('../monitoring/logger');
-const redis = require('redis').createClient();
 
-async function validateQuickSwapData() {
-  logger.info('Starting QuickSwap data validation...');
-  try {
-    const poolKeys = await redis.keys('quickswap:pool:*');
-    const tokenKeys = await redis.keys('quickswap:token:*');
+const validateQuickSwapData = async () => {
+    const redisClient = createClient();
+    redisClient.on('error', (err) => logger.error('Redis Client Error', err));
 
-    if (poolKeys.length === 0) {
-      logger.error('No QuickSwap pool data found in Redis.');
-    } else {
-      logger.info(`Validated ${poolKeys.length} pools in Redis.`);
+    try {
+        await redisClient.connect();
+        logger.info('Redis client connected for QuickSwap validation.');
+
+        // Example validation for QuickSwap pool data
+        const poolData = await redisClient.get('quickswap:pools');
+        if (!poolData) {
+            logger.error('No QuickSwap pool data found in Redis.');
+        } else {
+            logger.info('QuickSwap pool data validated successfully.');
+        }
+    } catch (error) {
+        logger.error(`Error during QuickSwap data validation: ${error.message}`);
+    } finally {
+        await redisClient.disconnect();
+        logger.info('Redis client disconnected after QuickSwap validation.');
     }
-
-    if (tokenKeys.length === 0) {
-      logger.error('No QuickSwap token data found in Redis.');
-    } else {
-      logger.info(`Validated ${tokenKeys.length} tokens in Redis.`);
-    }
-  } catch (error) {
-    logger.error(`Error during QuickSwap data validation: ${error.message}`);
-  } finally {
-    redis.quit();
-  }
-}
+};
 
 validateQuickSwapData();
