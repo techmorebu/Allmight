@@ -1,5 +1,1 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node data-collection/fetch-quickswap-data.js
-[2025-01-04T00:58:50.143Z] INFO: Starting QuickSwap data fetcher...
-[2025-01-04T00:58:50.147Z] INFO: Fetching data from QuickSwap API at: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g
-[2025-01-04T00:58:50.520Z] ERROR: Invalid or null response from QuickSwap API.
-[2025-01-04T00:58:50.522Z] ERROR: Detailed error:
+curl -X POST -H "Content-Type: application/json" --data '{ "query": "{ __schema { queryType { name } mutationType { name } subscriptionType { name } types { name kind fields { name type { name kind ofType { name kind } } } } directives { name } } }" }' https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g
