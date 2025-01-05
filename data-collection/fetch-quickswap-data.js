@@ -2,70 +2,64 @@ require('dotenv').config();
 const axios = require('axios');
 const Redis = require('ioredis');
 const { logger } = require('../monitoring/logger');
+const { fetchApiData } = require("../utils/api-fetcher");
+const { validateApiData } = require("../validators/validate-api-data");
 
-const QUICKSWAP_API = process.env.QUICKSWAP_API;
-const redis = new Redis();
+const uniswapQuery = `
+{
+  pools(first: 10) {
+    id
+    token0 { symbol address decimals }
+    token1 { symbol address decimals }
+    volumeUSD
+    totalLiquidity
+    txCount
+    swapFee
+  }
+}`;
 
-async function fetchQuickSwapData() {
-    try {
-        logger.info('Starting QuickSwap data fetcher...');
+async function fetchUniswapData() {
+  try {
+    const rawData = await fetchApiData("uniswap", uniswapQuery);
 
-        // Validate API URL
-        if (!QUICKSWAP_API) {
-            logger.error('QuickSwap API URL is missing from .env file.');
-            throw new Error('QuickSwap API URL is required.');
-        }
+    const pools = rawData.data.pools.map(pool => ({
+      pair: `${pool.token0.symbol}-${pool.token1.symbol}`,
+      price: parseFloat(pool.totalLiquidity) / parseFloat(pool.volumeUSD),
+      volumeUSD: parseFloat(pool.volumeUSD),
+      liquidityUSD: parseFloat(pool.totalLiquidity),
+      lastUpdated: new Date().toISOString(),
+      token0: {
+        symbol: pool.token0.symbol,
+        address: pool.token0.address,
+        decimals: pool.token0.decimals,
+      },
+      token1: {
+        symbol: pool.token1.symbol,
+        address: pool.token1.address,
+        decimals: pool.token1.decimals,
+      },
+      txCount: parseInt(pool.txCount),
+      swapFee: parseFloat(pool.swapFee),
+      platform: "Uniswap",
+      chainId: 1,
+    }));
 
-        logger.info(`Fetching data from QuickSwap API at: ${QUICKSWAP_API}`);
-        const response = await axios.post(QUICKSWAP_API, {
-            query: `
-                {
-                    pools(first: 10, orderBy: totalLiquidity, orderDirection: desc) {
-                        id
-                        token0 {
-                            id
-                            symbol
-                        }
-                        token1 {
-                            id
-                            symbol
-                        }
-                        volumeUSD
-                        totalLiquidity
-                        swaps(first: 5, orderBy: timestamp, orderDirection: desc) {
-                            id
-                            amountUSD
-                            timestamp
-                        }
-                    }
-                }
-            `
-        });
+    for (const pool of pools) {
+      const validation = validateApiData(pool);
+      if (!validation.valid) {
+        console.error("Validation failed for pool:", pool, validation.errors);
+        continue;
+      }
 
-        // Check for null or invalid responses
-        if (!response || !response.data || !response.data.data || !response.data.data.pools) {
-            logger.error('Invalid or null response from QuickSwap API.');
-            throw new Error('Invalid or null response from QuickSwap API.');
-        }
-
-        const pools = response.data.data.pools;
-        logger.info(`Fetched ${pools.length} pools from QuickSwap.`);
-
-        // Store pool data in Redis
-        for (const pool of pools) {
-            const key = `quickswap:pool:${pool.id}`;
-            await redis.set(key, JSON.stringify(pool));
-            logger.info(`Stored pool data in Redis with key: ${key}`);
-        }
-
-        logger.info('QuickSwap data fetcher completed successfully.');
-    } catch (error) {
-        logger.error(`Error fetching QuickSwap data: ${error.message}`);
-        logger.error(`Detailed error: ${error.stack}`);
-    } finally {
-        redis.disconnect();
+      const cacheKey = `Uniswap:Pool:${pool.pair}`;
+      await redis.set(cacheKey, JSON.stringify(pool), "EX", 3600); // Cache for 1 hour
+      console.log(`Validated and cached: ${cacheKey}`);
     }
+
+    console.log("✅ Uniswap data fetch complete");
+  } catch (error) {
+    console.error("❌ Error fetching Uniswap data:", error.message);
+  }
 }
 
-// Run the fetcher
-fetchQuickSwapData();
+module.exports = fetchUniswapData;
