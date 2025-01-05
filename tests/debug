@@ -1,12 +1,13 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tools/analyze-and-generate.js
-🚀 Fetching raw data...
-✅ Raw data saved to /home/techbu/OFA_Project_Local/ofa-project/logs/raw-data.json
-🔍 Analyzing raw data...
-✅ Field analysis saved to /home/techbu/OFA_Project_Local/ofa-project/logs/field-analysis.json
-🛠 Generating schema...
-✅ Schema saved to /home/techbu/OFA_Project_Local/ofa-project/logs/generated-schema.json
-📜 Creating fetcher...
-✅ Fetcher template saved to /home/techbu/OFA_Project_Local/ofa-project/logs/generated-fetcher.js
-🎉 All tasks completed successfully!
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node logs/generated-fetcher.js
+/home/techbu/OFA_Project_Local/ofa-project/logs/generated-fetcher.js:2
+const fetch = require("node-fetch");
+              ^
+
+Error [ERR_REQUIRE_ESM]: require() of ES Module /home/techbu/OFA_Project_Local/ofa-project/node_modules/node-fetch/src/index.js from /home/techbu/OFA_Project_Local/ofa-project/logs/generated-fetcher.js not supported.
+Instead change the require of index.js in /home/techbu/OFA_Project_Local/ofa-project/logs/generated-fetcher.js to a dynamic import() which is available in all CommonJS modules.
+    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/logs/generated-fetcher.js:2:15) {
+  code: 'ERR_REQUIRE_ESM'
+}
+
+Node.js v18.19.1
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 

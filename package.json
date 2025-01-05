@@ -30,6 +30,7 @@
     "graphql-request": "^7.1.2",
     "ioredis": "^5.4.2",
     "node-cache": "^5.1.2",
+    "node-fetch": "^3.3.2",
     "npm-force-resolutions": "^0.0.10",
     "redis": "^4.7.0",
     "winston": "^3.17.0",
