@@ -1,22 +1,34 @@
 require("dotenv").config();
 const fetch = require("node-fetch");
+const fs = require("fs");
+const path = require("path");
 
 async function fetchData() {
   try {
     console.log("Fetching data from:", process.env.NEW_DEX_API_URL);
 
-    const query = process.env.NEW_DEX_QUERY; // Fetch the query from .env
-    if (!query) {
-      console.error("Error: No GraphQL query provided in NEW_DEX_QUERY.");
+    // Load the schema dynamically
+    const schemaPath = path.resolve(__dirname, "../logs/generated-schema.json");
+    if (!fs.existsSync(schemaPath)) {
+      console.error("Error: Schema file not found at", schemaPath);
       return;
     }
+
+    const schema = JSON.parse(fs.readFileSync(schemaPath, "utf-8"));
+    console.log("Loaded Schema:", schema);
+
+    // Construct the query dynamically based on the schema
+    const queryFields = schema.fields.join(" ");
+    const query = {
+      query: `{ pools(first: 10) { ${queryFields} } }`
+    };
 
     const response = await fetch(process.env.NEW_DEX_API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ query })
+      body: JSON.stringify(query)
     });
 
     if (!response.ok) {
@@ -27,7 +39,7 @@ async function fetchData() {
     const data = await response.json();
     console.log("Raw Data Fetched:", JSON.stringify(data, null, 2));
 
-    const validatedData = data.data.pools.filter(item => validate(item));
+    const validatedData = data.data.pools.filter(item => validate(item, schema.fields));
     console.log("Validated Data:", JSON.stringify(validatedData, null, 2));
 
     return validatedData;
@@ -36,8 +48,7 @@ async function fetchData() {
   }
 }
 
-function validate(item) {
-  const requiredFields = ["id", "volumeUSD", "liquidityUSD"];
+function validate(item, requiredFields) {
   for (const field of requiredFields) {
     if (!item[field]) {
       console.warn(`Skipping item due to missing field: ${field}`);
