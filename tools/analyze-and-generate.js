@@ -1,112 +1,95 @@
-require("dotenv").config();
-const fetch = require("node-fetch");
-const fs = require("fs");
-const path = require("path");
+import fs from "fs";
+import fetch from "node-fetch";
+import path from "path";
+import { fileURLToPath } from "url";
 
-async function fetchSchema(apiUrl, typeName) {
-  console.log(`🚀 Fetching schema for type: ${typeName} from: ${apiUrl}`);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-  const introspectionQuery = {
-    query: `
-      {
-        __type(name: "${typeName}") {
-          fields {
-            name
-            type {
-              name
-              kind
-              ofType {
-                name
-                kind
-                ofType {
-                  name
-                  kind
-                }
-              }
-            }
-            description
-          }
-        }
-      }
-    `
-  };
+const LOGS_DIR = path.join(__dirname, "../logs");
+const RAW_DATA_FILE = path.join(LOGS_DIR, "raw-data.json");
+const SCHEMA_FILE = path.join(LOGS_DIR, "generated-schema.json");
+const FETCHER_FILE = path.join(LOGS_DIR, "generated-fetcher.js");
 
-  const response = await fetch(apiUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(introspectionQuery)
-  });
+// Validator functions
+function validate(item, schema) {
+  const { properties, required } = schema;
 
-  const data = await response.json();
-  if (data.errors) {
-    console.error("❌ Error fetching schema:", data.errors);
-    throw new Error("Schema fetching failed.");
+  const missingFields = required.filter(field => !item[field]);
+  if (missingFields.length > 0) {
+    console.error(`Validation failed for item: ${JSON.stringify(item, null, 2)}`);
+    console.error(`Missing fields: ${missingFields.join(", ")}`);
+    return false;
   }
 
-  const fields = data.data.__type.fields;
-  return fields.map(field => ({
-    name: field.name,
-    type: field.type,
-    description: field.description || "No description available"
-  }));
+  for (const [field, definition] of Object.entries(properties)) {
+    if (item[field] !== undefined && typeof item[field] !== definition.type) {
+      console.error(`Field type mismatch for '${field}': expected '${definition.type}', got '${typeof item[field]}'`);
+      return false;
+    }
+  }
+
+  return true;
 }
 
-function resolveType(type) {
-  if (!type) return "string"; // Default to string if type is missing
+function generateValidationReport(items, schema) {
+  let totalItems = items.length;
+  let validItems = 0;
+  let missingFieldStats = {};
 
-  if (type.name) return type.name; // Direct type name
-  if (type.ofType) return resolveType(type.ofType); // Recursively resolve nested types
-
-  return "string"; // Fallback
-}
-
-function generateSchema(fields) {
-  const schema = {
-    type: "object",
-    properties: {},
-    required: []
-  };
-
-  fields.forEach(field => {
-    const resolvedType = resolveType(field.type);
-
-    // Map GraphQL types to JSON Schema types
-    const jsonType = resolvedType === "Int" ? "integer" :
-                     resolvedType === "Float" ? "number" :
-                     resolvedType === "Boolean" ? "boolean" : "string";
-
-    schema.properties[field.name] = {
-      type: jsonType,
-      description: field.description || "No description available"
-    };
-
-    // Add to required fields
-    schema.required.push(field.name);
+  items.forEach(item => {
+    const missingFields = schema.required.filter(field => !item[field]);
+    if (missingFields.length === 0) {
+      validItems++;
+    } else {
+      missingFields.forEach(field => {
+        missingFieldStats[field] = (missingFieldStats[field] || 0) + 1;
+      });
+    }
   });
 
-  return schema;
+  console.log("Validation Report:");
+  console.log(`Total items: ${totalItems}`);
+  console.log(`Valid items: ${validItems} (${((validItems / totalItems) * 100).toFixed(2)}%)`);
+  console.log("Most commonly missing fields:");
+  console.table(
+    Object.entries(missingFieldStats)
+      .sort(([, countA], [, countB]) => countB - countA)
+      .map(([field, count]) => ({ Field: field, MissingCount: count, Percentage: ((count / totalItems) * 100).toFixed(2) }))
+  );
 }
 
+// Main function
 async function main() {
-  try {
-    const apiUrl = process.env.NEW_DEX_API_URL;
-    const typeName = process.env.NEW_DEX_TYPE || "Pool";
+  console.log(`🚀 Fetching schema for type: Pool from: ${process.env.NEW_DEX_API_URL}`);
 
-    // Fetch schema fields
-    const fields = await fetchSchema(apiUrl, typeName);
+  const schema = JSON.parse(fs.readFileSync(SCHEMA_FILE, "utf8"));
+  console.log("Loaded Schema:", JSON.stringify(schema, null, 2));
 
-    // Generate schema
-    const schema = generateSchema(fields);
+  console.log("Fetching raw data...");
+  const response = await fetch(process.env.NEW_DEX_API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query: buildGraphQLQuery(schema) })
+  });
 
-    // Save schema
-    const schemaPath = path.resolve(__dirname, "../logs/generated-schema.json");
-    fs.writeFileSync(schemaPath, JSON.stringify(schema, null, 2));
-    console.log(`✅ Schema saved to: ${schemaPath}`);
-  } catch (error) {
-    console.error("❌ Error:", error);
-  }
+  const rawData = await response.json();
+  console.log("Raw Data Fetched:", JSON.stringify(rawData, null, 2));
+
+  console.log("Validating data...");
+  const validatedData = rawData.data.pools.filter(item => validate(item, schema));
+
+  console.log("Validated Data:", JSON.stringify(validatedData, null, 2));
+
+  generateValidationReport(rawData.data.pools, schema);
 }
 
-main();
+// Helper function to build GraphQL query dynamically
+function buildGraphQLQuery(schema) {
+  const fields = Object.keys(schema.properties).join(" ");
+  return `{ pools { ${fields} } }`;
+}
+
+main().catch(error => {
+  console.error("❌ Error:", error.message);
+});
