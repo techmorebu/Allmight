@@ -46,74 +46,7 @@ function analyzeRawData(data) {
 }
 
 function generateSchema(fieldAnalysis) {
-  const schema = { type: "object", properties: {}, required: [] };
-
-  for (const field in fieldAnalysis) {
-    const fieldInfo = fieldAnalysis[field];
-    schema.properties[field] = { type: fieldInfo.type };
-
-    if (fieldInfo.type === "number") {
-      schema.properties[field].minimum = 0;
-    }
-
-    if (!field.includes(".")) {
-      schema.required.push(field);
-    }
-  }
-
-  fs.writeFileSync("generated-schema.json", JSON.stringify(schema, null, 2));
-  console.log("✅ Schema saved to generated-schema.json");
-}
-
-function generateFetcher(schemaPath, apiUrl) {
-  const schema = require(schemaPath);
-  const fetcherTemplate = `
-require("dotenv").config();
-const fetch = require("node-fetch");
-
-async function fetchData() {
-  const response = await fetch("${apiUrl}");
-  const data = await response.json();
-  
-  const validatedData = data.filter(item => validate(item));
-
-  // Validation logic here
-  
-  return validatedData;
-}
-
-function validate(item) {
-  // Example validation based on schema
-  const requiredFields = ${JSON.stringify(schema.required)};
-  for (const field of requiredFields) {
-    if (!item[field]) return false;
-  }
-  return true;
-}
-
-module.exports = fetchData;
-`;
-
-  fs.writeFileSync("generated-fetcher.js", fetcherTemplate);
-  console.log("✅ Fetcher template saved to generated-fetcher.js");
-}
-
-(async () => {
-  const apiUrl = process.env.NEW_DEX_API_URL;
-  const query = process.env.NEW_DEX_QUERY || null;
-
-  console.log("🚀 Fetching raw data...");
-  const rawData = await fetchRawData(apiUrl, query);
-
-  console.log("🔍 Analyzing raw data...");
-  analyzeRawData(rawData);
-
-  console.log("🛠 Generating schema...");
-  const fieldAnalysis = require("./field-analysis.json");
-  generateSchema(fieldAnalysis);
-
-  console.log("📜 Creating fetcher...");
-  generateFetcher("./generated-schema.json", apiUrl);
-
-  console.log("🎉 All tasks completed successfully!");
-})();
+  const schema = {
+    type: "object",
+    properties: {
+      price: { type: "number", description: "Curren
