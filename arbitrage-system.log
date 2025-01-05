@@ -4256,3 +4256,10 @@
 [2025-01-04T02:04:30.455Z] INFO: Retrying fetch...
 [2025-01-04T02:04:30.751Z] ERROR: Attempt 3: Invalid or null response from QuickSwap API.
 [2025-01-04T02:04:30.754Z] ERROR: Max retries reached. Exiting fetch process.
+[2025-01-04T02:07:42.203Z] INFO: Starting QuickSwap data fetcher...
+[2025-01-04T02:07:42.206Z] INFO: Fetching data from QuickSwap API at: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g
+[2025-01-04T02:07:42.580Z] ERROR: Invalid or null response from QuickSwap API.
+[2025-01-04T02:07:42.581Z] ERROR: Error fetching QuickSwap data: Invalid or null response from QuickSwap API.
+[2025-01-04T02:07:42.582Z] ERROR: Detailed error: Error: Invalid or null response from QuickSwap API.
+    at fetchQuickSwapData (/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-quickswap-data.js:48:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
