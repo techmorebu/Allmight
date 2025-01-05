@@ -3,143 +3,88 @@ const fetch = require("node-fetch");
 const fs = require("fs");
 const path = require("path");
 
-// Logs folder
-const LOGS_FOLDER = path.resolve(__dirname, "../logs");
+async function fetchSchema(apiUrl, typeName) {
+  console.log(`🚀 Fetching schema for type: ${typeName} from: ${apiUrl}`);
 
-// Ensure the logs folder exists
-if (!fs.existsSync(LOGS_FOLDER)) {
-  fs.mkdirSync(LOGS_FOLDER);
-}
-
-async function fetchRawData(apiUrl, query = null) {
-  const options = query
-    ? {
-        method: "POST",
-        body: JSON.stringify({ query }),
-        headers: { "Content-Type": "application/json" },
+  const introspectionQuery = {
+    query: `
+      {
+        __type(name: "${typeName}") {
+          fields {
+            name
+            type {
+              name
+              kind
+              ofType {
+                name
+                kind
+              }
+            }
+            description
+          }
+        }
       }
-    : { method: "GET" };
-
-  const response = await fetch(apiUrl, options);
-  const data = await response.json();
-
-  const rawDataPath = path.join(LOGS_FOLDER, "raw-data.json");
-  fs.writeFileSync(rawDataPath, JSON.stringify(data, null, 2));
-  console.log(`✅ Raw data saved to ${rawDataPath}`);
-  return data;
-}
-
-function analyzeRawData(data) {
-  const fieldAnalysis = {};
-
-  function analyzeObject(obj, parent = "") {
-    for (const key in obj) {
-      const fieldPath = parent ? `${parent}.${key}` : key;
-      const value = obj[key];
-
-      if (!fieldAnalysis[fieldPath]) {
-        fieldAnalysis[fieldPath] = { type: typeof value, examples: [] };
-      }
-
-      if (!fieldAnalysis[fieldPath].examples.includes(value)) {
-        fieldAnalysis[fieldPath].examples.push(value);
-      }
-
-      if (value && typeof value === "object" && !Array.isArray(value)) {
-        analyzeObject(value, fieldPath);
-      }
-    }
-  }
-
-  analyzeObject(data);
-
-  const fieldAnalysisPath = path.join(LOGS_FOLDER, "field-analysis.json");
-  fs.writeFileSync(fieldAnalysisPath, JSON.stringify(fieldAnalysis, null, 2));
-  console.log(`✅ Field analysis saved to ${fieldAnalysisPath}`);
-}
-
-function generateSchema(fieldAnalysis) {
-  const schema = {
-    type: "object",
-    properties: {
-      price: { type: "number", description: "Current price of the asset" },
-      volumeUSD: { type: "number", description: "Total trading volume in USD" },
-      txCount: { type: "integer", description: "Number of transactions" },
-      liquidityUSD: { type: "number", description: "Total liquidity in USD" },
-      swapFee: { type: "number", description: "Trading fee percentage" },
-      priceImpact: { type: "number", description: "Impact on price for large trades" },
-      metadata: {
-        type: "object",
-        description: "Additional fields for future use",
-        additionalProperties: true,
-      },
-    },
-    required: ["price", "volumeUSD", "liquidityUSD"],
+    `
   };
 
-  const schemaPath = path.join(LOGS_FOLDER, "generated-schema.json");
-  fs.writeFileSync(schemaPath, JSON.stringify(schema, null, 2));
-  console.log(`✅ Schema saved to ${schemaPath}`);
+  const response = await fetch(apiUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(introspectionQuery)
+  });
+
+  const data = await response.json();
+  if (data.errors) {
+    console.error("❌ Error fetching schema:", data.errors);
+    throw new Error("Schema fetching failed.");
+  }
+
+  const fields = data.data.__type.fields;
+  return fields.map(field => ({
+    name: field.name,
+    type: field.type.name || field.type.ofType?.name,
+    description: field.description || "No description available"
+  }));
 }
 
-function generateFetcher(schemaPath, apiUrl) {
-  const schema = require(schemaPath);
-  const fetcherTemplate = `
-require("dotenv").config();
-const fetch = require("node-fetch");
+function generateSchema(fields) {
+  const schema = {
+    type: "object",
+    properties: {},
+    required: []
+  };
 
-async function fetchData() {
+  fields.forEach(field => {
+    schema.properties[field.name] = {
+      type: field.type === "Int" ? "integer" : field.type.toLowerCase(),
+      description: field.description
+    };
+    schema.required.push(field.name);
+  });
+
+  return schema;
+}
+
+async function main() {
   try {
-    console.log("Fetching data from:", process.env.NEW_DEX_API_URL);
-    const response = await fetch(process.env.NEW_DEX_API_URL);
-    const data = await response.json();
-    console.log("Raw Data:", JSON.stringify(data, null, 2));
+    const apiUrl = process.env.NEW_DEX_API_URL;
+    const typeName = process.env.NEW_DEX_TYPE || "Pool";
 
-    const validatedData = data.filter(item => validate(item));
-    console.log("Validated Data:", JSON.stringify(validatedData, null, 2));
+    // Fetch schema fields
+    const fields = await fetchSchema(apiUrl, typeName);
 
-    return validatedData;
+    // Generate schema
+    const schema = generateSchema(fields);
+
+    // Save schema
+    const schemaPath = path.resolve(__dirname, "../logs/generated-schema.json");
+    fs.writeFileSync(schemaPath, JSON.stringify(schema, null, 2));
+    console.log(`✅ Schema saved to: ${schemaPath}`);
   } catch (error) {
-    console.error("Error in fetchData:", error);
+    console.error("❌ Error:", error);
   }
 }
 
-function validate(item) {
-  const requiredFields = ["price", "volumeUSD", "liquidityUSD"];
-  for (const field of requiredFields) {
-    if (!item[field]) {
-      console.error("Missing field: " + field);
-      return false;
-    }
-  }
-  return true;
-}
-
-module.exports = fetchData;
-
-`;
-
-  const fetcherPath = path.join(LOGS_FOLDER, "generated-fetcher.js");
-  fs.writeFileSync(fetcherPath, fetcherTemplate.trim());
-  console.log(`✅ Fetcher template saved to ${fetcherPath}`);
-}
-
-(async () => {
-  const apiUrl = process.env.NEW_DEX_API_URL;
-  const query = process.env.NEW_DEX_QUERY || null;
-
-  console.log("🚀 Fetching raw data...");
-  const rawData = await fetchRawData(apiUrl, query);
-
-  console.log("🔍 Analyzing raw data...");
-  analyzeRawData(rawData);
-
-  console.log("🛠 Generating schema...");
-  const fieldAnalysis = require(path.join(LOGS_FOLDER, "field-analysis.json"));
-  generateSchema(fieldAnalysis);
-
-  console.log("📜 Creating fetcher...");
-  generateFetcher(path.join(LOGS_FOLDER, "generated-schema.json"), apiUrl);
-
-  console.log("🎉 All tasks completed successfully!");
-})();
+main();
