@@ -1,39 +1,212 @@
 {
   "type": "object",
   "properties": {
-    "price": {
-      "type": "number",
-      "description": "Current price of the asset"
+    "id": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "createdAtTimestamp": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "createdAtBlockNumber": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "token0": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "token1": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "fee": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "communityFee0": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "communityFee1": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "liquidity": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "sqrtPrice": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "feeGrowthGlobal0X128": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "feeGrowthGlobal1X128": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "token0Price": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "token1Price": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "tick": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "observationIndex": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "volumeToken0": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "volumeToken1": {
+      "type": "string",
+      "description": "No description available"
     },
     "volumeUSD": {
-      "type": "number",
-      "description": "Total trading volume in USD"
+      "type": "string",
+      "description": "No description available"
+    },
+    "untrackedVolumeUSD": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "feesUSD": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "untrackedFeesUSD": {
+      "type": "string",
+      "description": "No description available"
     },
     "txCount": {
-      "type": "integer",
-      "description": "Number of transactions"
+      "type": "string",
+      "description": "No description available"
     },
-    "liquidityUSD": {
-      "type": "number",
-      "description": "Total liquidity in USD"
+    "collectedFeesToken0": {
+      "type": "string",
+      "description": "No description available"
     },
-    "swapFee": {
-      "type": "number",
-      "description": "Trading fee percentage"
+    "collectedFeesToken1": {
+      "type": "string",
+      "description": "No description available"
     },
-    "priceImpact": {
-      "type": "number",
-      "description": "Impact on price for large trades"
+    "collectedFeesUSD": {
+      "type": "string",
+      "description": "No description available"
     },
-    "metadata": {
-      "type": "object",
-      "description": "Additional fields for future use",
-      "additionalProperties": true
+    "totalValueLockedToken0": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "totalValueLockedToken1": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "feesToken0": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "feesToken1": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "totalValueLockedMatic": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "totalValueLockedUSD": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "totalValueLockedUSDUntracked": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "liquidityProviderCount": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "poolHourData": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "poolDayData": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "mints": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "burns": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "swaps": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "collects": {
+      "type": "string",
+      "description": "No description available"
+    },
+    "ticks": {
+      "type": "string",
+      "description": "No description available"
     }
   },
   "required": [
-    "price",
+    "id",
+    "createdAtTimestamp",
+    "createdAtBlockNumber",
+    "token0",
+    "token1",
+    "fee",
+    "communityFee0",
+    "communityFee1",
+    "liquidity",
+    "sqrtPrice",
+    "feeGrowthGlobal0X128",
+    "feeGrowthGlobal1X128",
+    "token0Price",
+    "token1Price",
+    "tick",
+    "observationIndex",
+    "volumeToken0",
+    "volumeToken1",
     "volumeUSD",
-    "liquidityUSD"
+    "untrackedVolumeUSD",
+    "feesUSD",
+    "untrackedFeesUSD",
+    "txCount",
+    "collectedFeesToken0",
+    "collectedFeesToken1",
+    "collectedFeesUSD",
+    "totalValueLockedToken0",
+    "totalValueLockedToken1",
+    "feesToken0",
+    "feesToken1",
+    "totalValueLockedMatic",
+    "totalValueLockedUSD",
+    "totalValueLockedUSDUntracked",
+    "liquidityProviderCount",
+    "poolHourData",
+    "poolDayData",
+    "mints",
+    "burns",
+    "swaps",
+    "collects",
+    "ticks"
   ]
 }

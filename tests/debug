@@ -1,8 +1,45 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tools/analyze-and-generate.js
 🚀 Fetching schema for type: Pool from: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g
-❌ Error: TypeError: Cannot read properties of null (reading 'name')
-    at /home/techbu/OFA_Project_Local/ofa-project/tools/analyze-and-generate.js:61:32
-    at Array.forEach (<anonymous>)
-    at generateSchema (/home/techbu/OFA_Project_Local/ofa-project/tools/analyze-and-generate.js:59:10)
-    at main (/home/techbu/OFA_Project_Local/ofa-project/tools/analyze-and-generate.js:92:20)
-    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Warning: Could not resolve type for field 'id'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'createdAtTimestamp'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'createdAtBlockNumber'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'token0'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'token1'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'fee'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'communityFee0'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'communityFee1'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'liquidity'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'sqrtPrice'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'feeGrowthGlobal0X128'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'feeGrowthGlobal1X128'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'token0Price'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'token1Price'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'tick'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'observationIndex'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'volumeToken0'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'volumeToken1'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'volumeUSD'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'untrackedVolumeUSD'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'feesUSD'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'untrackedFeesUSD'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'txCount'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'collectedFeesToken0'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'collectedFeesToken1'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'collectedFeesUSD'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'totalValueLockedToken0'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'totalValueLockedToken1'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'feesToken0'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'feesToken1'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'totalValueLockedMatic'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'totalValueLockedUSD'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'totalValueLockedUSDUntracked'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'liquidityProviderCount'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'poolHourData'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'poolDayData'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'mints'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'burns'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'swaps'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'collects'. Defaulting to 'string'.
+Warning: Could not resolve type for field 'ticks'. Defaulting to 'string'.
+✅ Schema saved to: /home/techbu/OFA_Project_Local/ofa-project/logs/generated-schema.json
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
