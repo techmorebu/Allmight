@@ -18,6 +18,10 @@ async function fetchSchema(apiUrl, typeName) {
               ofType {
                 name
                 kind
+                ofType {
+                  name
+                  kind
+                }
               }
             }
             description
@@ -44,7 +48,7 @@ async function fetchSchema(apiUrl, typeName) {
   const fields = data.data.__type.fields;
   return fields.map(field => ({
     name: field.name,
-    type: field.type.name || field.type.ofType?.name,
+    type: field.type,
     description: field.description || "No description available"
   }));
 }
