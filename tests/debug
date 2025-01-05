@@ -1,27 +1,12 @@
-Node.js v18.19.1
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tools/analyze-and-generate.js
 🚀 Fetching raw data...
-✅ Raw data saved to raw-data.json
+✅ Raw data saved to /home/techbu/OFA_Project_Local/ofa-project/logs/raw-data.json
 🔍 Analyzing raw data...
-✅ Field analysis saved to field-analysis.json
+✅ Field analysis saved to /home/techbu/OFA_Project_Local/ofa-project/logs/field-analysis.json
 🛠 Generating schema...
-node:internal/modules/cjs/loader:1134
-  const err = new Error(message);
-              ^
-
-Error: Cannot find module './field-analysis.json'
-Require stack:
-- /home/techbu/OFA_Project_Local/ofa-project/tools/analyze-and-generate.js
-    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
-    at Module._load (node:internal/modules/cjs/loader:975:27)
-    at Module.require (node:internal/modules/cjs/loader:1225:19)
-    at require (node:internal/modules/helpers:177:18)
-    at /home/techbu/OFA_Project_Local/ofa-project/tools/analyze-and-generate.js:123:25
-    at process.processTicksAndRejections (node:internal/process/task_queues:95:5) {
-  code: 'MODULE_NOT_FOUND',
-  requireStack: [
-    '/home/techbu/OFA_Project_Local/ofa-project/tools/analyze-and-generate.js'
-  ]
-}
-
-Node.js v18.19.1
+✅ Schema saved to /home/techbu/OFA_Project_Local/ofa-project/logs/generated-schema.json
+📜 Creating fetcher...
+✅ Fetcher template saved to /home/techbu/OFA_Project_Local/ofa-project/logs/generated-fetcher.js
+🎉 All tasks completed successfully!
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node logs/generated-fetcher.js
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
