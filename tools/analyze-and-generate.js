@@ -53,6 +53,15 @@ async function fetchSchema(apiUrl, typeName) {
   }));
 }
 
+function resolveType(type) {
+  if (!type) return "string"; // Default to string if type is missing
+
+  if (type.name) return type.name; // Direct type name
+  if (type.ofType) return resolveType(type.ofType); // Recursively resolve nested types
+
+  return "string"; // Fallback
+}
+
 function generateSchema(fields) {
   const schema = {
     type: "object",
@@ -61,26 +70,12 @@ function generateSchema(fields) {
   };
 
   fields.forEach(field => {
-    // Safely resolve the field type
-    let fieldType = null;
-    if (field.type) {
-      if (field.type.name) {
-        fieldType = field.type.name;
-      } else if (field.type.ofType && field.type.ofType.name) {
-        fieldType = field.type.ofType.name;
-      }
-    }
-
-    // Default to "string" if type cannot be resolved
-    if (!fieldType) {
-      console.warn(`Warning: Could not resolve type for field '${field.name}'. Defaulting to 'string'.`);
-      fieldType = "string";
-    }
+    const resolvedType = resolveType(field.type);
 
     // Map GraphQL types to JSON Schema types
-    const jsonType = fieldType === "Int" ? "integer" :
-                     fieldType === "Float" ? "number" :
-                     fieldType === "Boolean" ? "boolean" : "string";
+    const jsonType = resolvedType === "Int" ? "integer" :
+                     resolvedType === "Float" ? "number" :
+                     resolvedType === "Boolean" ? "boolean" : "string";
 
     schema.properties[field.name] = {
       type: jsonType,
