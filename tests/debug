@@ -17,14 +17,59 @@ Loaded Schema: {
   },
   required: [ 'price', 'volumeUSD', 'liquidityUSD' ]
 }
-Error in fetchData: TypeError: Cannot read properties of undefined (reading 'join')
-    at fetchData (/home/techbu/OFA_Project_Local/ofa-project/logs/generated-fetcher.js:21:39)
-    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/logs/generated-fetcher.js:61:1)
-    at Module._compile (node:internal/modules/cjs/loader:1356:14)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
-    at Module.load (node:internal/modules/cjs/loader:1197:32)
-    at Module._load (node:internal/modules/cjs/loader:1013:12)
-    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
-    at node:internal/main/run_main_module:28:49
+Query Fields: price volumeUSD txCount liquidityUSD swapFee priceImpact metadata
+Raw Data Fetched: {
+  "data": null,
+  "errors": [
+    {
+      "message": "Type `Pool` has no field `price`",
+      "locations": [
+        {
+          "line": 3,
+          "column": 3
+        }
+      ]
+    },
+    {
+      "message": "Type `Pool` has no field `liquidityUSD`",
+      "locations": [
+        {
+          "line": 6,
+          "column": 3
+        }
+      ]
+    },
+    {
+      "message": "Type `Pool` has no field `swapFee`",
+      "locations": [
+        {
+          "line": 7,
+          "column": 3
+        }
+      ]
+    },
+    {
+      "message": "Type `Pool` has no field `priceImpact`",
+      "locations": [
+        {
+          "line": 8,
+          "column": 3
+        }
+      ]
+    },
+    {
+      "message": "Type `Pool` has no field `metadata`",
+      "locations": [
+        {
+          "line": 9,
+          "column": 3
+        }
+      ]
+    }
+  ]
+}
+Error in fetchData: TypeError: Cannot read properties of null (reading 'pools')
+    at fetchData (/home/techbu/OFA_Project_Local/ofa-project/logs/generated-fetcher.js:44:37)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
 
