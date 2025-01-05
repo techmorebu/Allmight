@@ -17,8 +17,10 @@ async function fetchData() {
     const schema = JSON.parse(fs.readFileSync(schemaPath, "utf-8"));
     console.log("Loaded Schema:", schema);
 
-    // Construct the query dynamically based on the schema
-    const queryFields = schema.fields.join(" ");
+    // Extract fields from schema.properties
+    const queryFields = Object.keys(schema.properties).join(" ");
+    console.log("Query Fields:", queryFields);
+
     const query = {
       query: `{ pools(first: 10) { ${queryFields} } }`
     };
@@ -39,7 +41,9 @@ async function fetchData() {
     const data = await response.json();
     console.log("Raw Data Fetched:", JSON.stringify(data, null, 2));
 
-    const validatedData = data.data.pools.filter(item => validate(item, schema.fields));
+    const validatedData = data.data.pools.filter(item =>
+      validate(item, Object.keys(schema.properties))
+    );
     console.log("Validated Data:", JSON.stringify(validatedData, null, 2));
 
     return validatedData;
