@@ -1,0 +1,12 @@
+{
+  "errors": {
+    "type": "object",
+    "examples": [
+      [
+        {
+          "message": "bad query: Failed to parse query"
+        }
+      ]
+    ]
+  }
+}
