@@ -1,0 +1,39 @@
+{
+  "type": "object",
+  "properties": {
+    "price": {
+      "type": "number",
+      "description": "Current price of the asset"
+    },
+    "volumeUSD": {
+      "type": "number",
+      "description": "Total trading volume in USD"
+    },
+    "txCount": {
+      "type": "integer",
+      "description": "Number of transactions"
+    },
+    "liquidityUSD": {
+      "type": "number",
+      "description": "Total liquidity in USD"
+    },
+    "swapFee": {
+      "type": "number",
+      "description": "Trading fee percentage"
+    },
+    "priceImpact": {
+      "type": "number",
+      "description": "Impact on price for large trades"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional fields for future use",
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "price",
+    "volumeUSD",
+    "liquidityUSD"
+  ]
+}
