@@ -52,14 +52,15 @@ async function fetchData() {
   }
 }
 
-function validate(item, requiredFields) {
-  for (const field of requiredFields) {
-    if (!item[field]) {
-      console.warn(`Skipping item due to missing field: ${field}`);
-      return false;
+function validate(item) {
+    const requiredFields = ["token0", "token1", "liquidity"];
+    for (const field of requiredFields) {
+        if (!item[field]) {
+            console.error(`Field ${field} missing in item:`, JSON.stringify(item, null, 2));
+            return false;
+        }
     }
-  }
-  return true;
+    return true;
 }
 
 fetchData();
