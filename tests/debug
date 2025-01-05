@@ -1,12 +1,13 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tools/analyze-and-generate.js
-🚀 Fetching raw data...
-✅ Raw data saved to /home/techbu/OFA_Project_Local/ofa-project/logs/raw-data.json
-🔍 Analyzing raw data...
-✅ Field analysis saved to /home/techbu/OFA_Project_Local/ofa-project/logs/field-analysis.json
-🛠 Generating schema...
-✅ Schema saved to /home/techbu/OFA_Project_Local/ofa-project/logs/generated-schema.json
-📜 Creating fetcher...
-✅ Fetcher template saved to /home/techbu/OFA_Project_Local/ofa-project/logs/generated-fetcher.js
-🎉 All tasks completed successfully!
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node logs/generated-fetcher.js
+Fetching data from: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g
+Raw Data Fetched: {
+  "errors": [
+    {
+      "message": "bad query: Failed to parse query"
+    }
+  ]
+}
+Error in fetchData: TypeError: Cannot read properties of undefined (reading 'pools')
+    at fetchData (/home/techbu/OFA_Project_Local/ofa-project/logs/generated-fetcher.js:30:37)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
