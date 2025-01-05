@@ -108,7 +108,7 @@ function validate(item) {
   const requiredFields = ["price", "volumeUSD", "liquidityUSD"];
   for (const field of requiredFields) {
     if (!item[field]) {
-      console.error(`Missing field: ${field}`);
+      console.error("Missing field: " + field);
       return false;
     }
   }
