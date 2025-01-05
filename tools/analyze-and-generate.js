@@ -1,6 +1,15 @@
 require("dotenv").config();
 const fetch = require("node-fetch");
 const fs = require("fs");
+const path = require("path");
+
+// Logs folder
+const LOGS_FOLDER = path.resolve(__dirname, "../logs");
+
+// Ensure the logs folder exists
+if (!fs.existsSync(LOGS_FOLDER)) {
+  fs.mkdirSync(LOGS_FOLDER);
+}
 
 async function fetchRawData(apiUrl, query = null) {
   const options = query
@@ -13,8 +22,10 @@ async function fetchRawData(apiUrl, query = null) {
 
   const response = await fetch(apiUrl, options);
   const data = await response.json();
-  fs.writeFileSync("raw-data.json", JSON.stringify(data, null, 2));
-  console.log("✅ Raw data saved to raw-data.json");
+
+  const rawDataPath = path.join(LOGS_FOLDER, "raw-data.json");
+  fs.writeFileSync(rawDataPath, JSON.stringify(data, null, 2));
+  console.log(`✅ Raw data saved to ${rawDataPath}`);
   return data;
 }
 
@@ -41,8 +52,10 @@ function analyzeRawData(data) {
   }
 
   analyzeObject(data);
-  fs.writeFileSync("field-analysis.json", JSON.stringify(fieldAnalysis, null, 2));
-  console.log("✅ Field analysis saved to field-analysis.json");
+
+  const fieldAnalysisPath = path.join(LOGS_FOLDER, "field-analysis.json");
+  fs.writeFileSync(fieldAnalysisPath, JSON.stringify(fieldAnalysis, null, 2));
+  console.log(`✅ Field analysis saved to ${fieldAnalysisPath}`);
 }
 
 function generateSchema(fieldAnalysis) {
@@ -64,17 +77,9 @@ function generateSchema(fieldAnalysis) {
     required: ["price", "volumeUSD", "liquidityUSD"],
   };
 
-  for (const field in fieldAnalysis) {
-    if (!schema.properties[field]) {
-      schema.properties.metadata.properties[field] = {
-        type: fieldAnalysis[field].type,
-        description: `Dynamic field: ${field}`,
-      };
-    }
-  }
-
-  fs.writeFileSync("generated-schema.json", JSON.stringify(schema, null, 2));
-  console.log("✅ Schema saved to generated-schema.json");
+  const schemaPath = path.join(LOGS_FOLDER, "generated-schema.json");
+  fs.writeFileSync(schemaPath, JSON.stringify(schema, null, 2));
+  console.log(`✅ Schema saved to ${schemaPath}`);
 }
 
 function generateFetcher(schemaPath, apiUrl) {
@@ -105,8 +110,9 @@ function validate(item) {
 module.exports = fetchData;
 `;
 
-  fs.writeFileSync("generated-fetcher.js", fetcherTemplate);
-  console.log("✅ Fetcher template saved to generated-fetcher.js");
+  const fetcherPath = path.join(LOGS_FOLDER, "generated-fetcher.js");
+  fs.writeFileSync(fetcherPath, fetcherTemplate);
+  console.log(`✅ Fetcher template saved to ${fetcherPath}`);
 }
 
 (async () => {
@@ -120,11 +126,11 @@ module.exports = fetchData;
   analyzeRawData(rawData);
 
   console.log("🛠 Generating schema...");
-  const fieldAnalysis = require("./field-analysis.json");
+  const fieldAnalysis = require(path.join(LOGS_FOLDER, "field-analysis.json"));
   generateSchema(fieldAnalysis);
 
   console.log("📜 Creating fetcher...");
-  generateFetcher("./generated-schema.json", apiUrl);
+  generateFetcher(path.join(LOGS_FOLDER, "generated-schema.json"), apiUrl);
 
   console.log("🎉 All tasks completed successfully!");
 })();
