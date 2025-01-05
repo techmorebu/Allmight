@@ -1,9 +1,25 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node data-collection/fetch-quickswap-data.js
-[2025-01-04T01:56:04.432Z] INFO: Starting QuickSwap data fetcher...
-[2025-01-04T01:56:04.437Z] INFO: Fetching data from QuickSwap API at: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g
-[2025-01-04T01:56:04.762Z] ERROR: Invalid or null response from QuickSwap API.
-[2025-01-04T01:56:04.763Z] ERROR: Error fetching QuickSwap data: Invalid or null response from QuickSwap API.
-[2025-01-04T01:56:04.765Z] ERROR: Detailed error: Error: Invalid or null response from QuickSwap API.
-    at fetchQuickSwapData (/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-quickswap-data.js:48:19)
-    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
+node:internal/modules/cjs/loader:1137
+  throw err;
+  ^
+
+Error: Cannot find module '../utils/api-fetcher'
+Require stack:
+- /home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-quickswap-data.js
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
+    at Module._load (node:internal/modules/cjs/loader:975:27)
+    at Module.require (node:internal/modules/cjs/loader:1225:19)
+    at require (node:internal/modules/helpers:177:18)
+    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-quickswap-data.js:5:26)
+    at Module._compile (node:internal/modules/cjs/loader:1356:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
+    at Module.load (node:internal/modules/cjs/loader:1197:32)
+    at Module._load (node:internal/modules/cjs/loader:1013:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-quickswap-data.js'
+  ]
+}
+
+Node.js v18.19.1
