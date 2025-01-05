@@ -2,7 +2,7 @@ require('dotenv').config(); // Load environment variables
 const axios = require('axios'); // For making API requests
 const Redis = require('ioredis'); // For Redis caching
 const { logger } = require('../monitoring/logger'); // For logging
-const { fetchApiData } = require("../utils/api-fetcher"); // Generic API fetcher
+const { fetchApiData } = require("../data-collection/api-fetcher"); // Generic API fetcher
 const { validateApiData } = require("../validators/validate-api-data"); // Schema validation
 
 // Define GraphQL query or API structure for QuickSwap (example to replace below)
