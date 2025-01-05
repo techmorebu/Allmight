@@ -1,27 +1,23 @@
 const Ajv = require("ajv");
 const addFormats = require("ajv-formats");
-const dexDataSchema = require("../schemas/dexDataSchema");
+const schema = require("../schemas/dexDataSchema.json");
 
-const ajv = new Ajv();
-addFormats(ajv); // Add support for date-time format
+const ajv = new Ajv({ allErrors: true, useDefaults: true });
+addFormats(ajv);
+
+const validate = ajv.compile(schema);
 
 /**
- * Validate DEX data against the expanded schema
- * @param {Object} data - The data to validate
- * @returns {Object} Validation result
+ * Validates data against the DEX schema.
+ * @param {Object} data - The data to validate.
+ * @returns {Object} - Validation result with validity and errors.
  */
-function validateDexData(data) {
-  const validate = ajv.compile(dexDataSchema);
-  const isValid = validate(data);
-
-  if (!isValid) {
-    return {
-      valid: false,
-      errors: validate.errors,
-    };
+function validateApiData(data) {
+  const valid = validate(data);
+  if (!valid) {
+    return { valid: false, errors: validate.errors };
   }
-
   return { valid: true };
 }
 
-module.exports = { validateDexData };
+module.exports = { validateApiData };
