@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "The OFA project is an AI-driven arbitrage and accumulation bot for cross-chain DeFi trading. It optimizes MATIC accumulation and profit generation, dynamically toggling between arbitrage and pair trading strategies.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
