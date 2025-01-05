@@ -1,75 +1,8 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node logs/generated-fetcher.js
-Fetching data from: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g
-Loaded Schema: {
-  type: 'object',
-  properties: {
-    price: { type: 'number', description: 'Current price of the asset' },
-    volumeUSD: { type: 'number', description: 'Total trading volume in USD' },
-    txCount: { type: 'integer', description: 'Number of transactions' },
-    liquidityUSD: { type: 'number', description: 'Total liquidity in USD' },
-    swapFee: { type: 'number', description: 'Trading fee percentage' },
-    priceImpact: { type: 'number', description: 'Impact on price for large trades' },
-    metadata: {
-      type: 'object',
-      description: 'Additional fields for future use',
-      additionalProperties: true
-    }
-  },
-  required: [ 'price', 'volumeUSD', 'liquidityUSD' ]
-}
-Query Fields: price volumeUSD txCount liquidityUSD swapFee priceImpact metadata
-Raw Data Fetched: {
-  "data": null,
-  "errors": [
-    {
-      "message": "Type `Pool` has no field `price`",
-      "locations": [
-        {
-          "line": 3,
-          "column": 3
-        }
-      ]
-    },
-    {
-      "message": "Type `Pool` has no field `liquidityUSD`",
-      "locations": [
-        {
-          "line": 6,
-          "column": 3
-        }
-      ]
-    },
-    {
-      "message": "Type `Pool` has no field `swapFee`",
-      "locations": [
-        {
-          "line": 7,
-          "column": 3
-        }
-      ]
-    },
-    {
-      "message": "Type `Pool` has no field `priceImpact`",
-      "locations": [
-        {
-          "line": 8,
-          "column": 3
-        }
-      ]
-    },
-    {
-      "message": "Type `Pool` has no field `metadata`",
-      "locations": [
-        {
-          "line": 9,
-          "column": 3
-        }
-      ]
-    }
-  ]
-}
-Error in fetchData: TypeError: Cannot read properties of null (reading 'pools')
-    at fetchData (/home/techbu/OFA_Project_Local/ofa-project/logs/generated-fetcher.js:44:37)
-    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
-
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tools/analyze-and-generate.js
+🚀 Fetching schema for type: Pool from: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g
+❌ Error: TypeError: Cannot read properties of null (reading 'toLowerCase')
+    at /home/techbu/OFA_Project_Local/ofa-project/tools/analyze-and-generate.js:61:59
+    at Array.forEach (<anonymous>)
+    at generateSchema (/home/techbu/OFA_Project_Local/ofa-project/tools/analyze-and-generate.js:59:10)
+    at main (/home/techbu/OFA_Project_Local/ofa-project/tools/analyze-and-generate.js:79:20)
+    at process.processTicksAndRejections (no
