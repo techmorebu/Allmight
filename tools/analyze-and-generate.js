@@ -57,10 +57,20 @@ function generateSchema(fields) {
   };
 
   fields.forEach(field => {
-    // Resolve the type name
-    let fieldType = field.type.name || (field.type.ofType && field.type.ofType.name);
+    // Safely resolve the field type
+    let fieldType = null;
+    if (field.type) {
+      if (field.type.name) {
+        fieldType = field.type.name;
+      } else if (field.type.ofType && field.type.ofType.name) {
+        fieldType = field.type.ofType.name;
+      }
+    }
+
+    // Default to "string" if type cannot be resolved
     if (!fieldType) {
-      fieldType = "string"; // Default to string if type is not resolved
+      console.warn(`Warning: Could not resolve type for field '${field.name}'. Defaulting to 'string'.`);
+      fieldType = "string";
     }
 
     // Map GraphQL types to JSON Schema types
