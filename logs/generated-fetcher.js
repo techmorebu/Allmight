@@ -1,15 +1,13 @@
-
 require("dotenv").config();
 const fetch = require("node-fetch");
 
 async function fetchData() {
-  const response = await fetch("https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g");
+  const response = await fetch(process.env.NEW_DEX_API_URL);
   const data = await response.json();
-  
-  const validatedData = data.filter(item => validate(item));
 
-  // Validation logic here
-  
+  const validatedData = data.filter(item => validate(item));
+  console.log("Validated Data:", JSON.stringify(validatedData, null, 2));
+
   return validatedData;
 }
 
