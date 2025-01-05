@@ -1,66 +1,85 @@
 require("dotenv").config();
 const fetch = require("node-fetch");
-const fs = require("fs");
-const path = require("path");
+
+const schema = {
+  type: "object",
+  properties: {
+    id: { type: "string", description: "Unique identifier of the pool." },
+    txCount: { type: "integer", description: "Total number of transactions in the pool." },
+    volumeUSD: { type: "number", description: "Total trading volume in USD for the pool." },
+    liquidity: { type: "number", description: "Current liquidity available in the pool." },
+    token0: { type: "string", description: "Address of the first token in the pool." },
+    token1: { type: "string", description: "Address of the second token in the pool." },
+    token0Price: { type: "number", description: "Price of token0 in terms of token1." },
+    token1Price: { type: "number", description: "Price of token1 in terms of token0." },
+    feesUSD: { type: "number", description: "Total fees collected in USD." },
+    createdAtTimestamp: {
+      type: "string",
+      format: "date-time",
+      description: "Timestamp when the pool was created."
+    },
+    updatedAtTimestamp: {
+      type: "string",
+      format: "date-time",
+      description: "Timestamp when the pool was last updated."
+    }
+  },
+  required: ["id", "txCount", "volumeUSD", "liquidity", "token0", "token1"]
+};
 
 async function fetchData() {
+  const apiUrl = process.env.QUICKSWAP_API_URL;
+
   try {
-    console.log("Fetching data from:", process.env.NEW_DEX_API_URL);
-
-    // Load the schema dynamically
-    const schemaPath = path.resolve(__dirname, "../logs/generated-schema.json");
-    if (!fs.existsSync(schemaPath)) {
-      console.error("Error: Schema file not found at", schemaPath);
-      return;
-    }
-
-    const schema = JSON.parse(fs.readFileSync(schemaPath, "utf-8"));
-    console.log("Loaded Schema:", schema);
-
-    // Extract fields from schema.properties
-    const queryFields = Object.keys(schema.properties).join(" ");
-    console.log("Query Fields:", queryFields);
-
-    const query = {
-      query: `{ pools(first: 10) { ${queryFields} } }`
-    };
-
-    const response = await fetch(process.env.NEW_DEX_API_URL, {
+    console.log(`Fetching data from: ${apiUrl}`);
+    const response = await fetch(apiUrl, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(query)
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        query: `
+          {
+            pools {
+              id
+              txCount
+              volumeUSD
+              liquidity
+              token0
+              token1
+              token0Price
+              token1Price
+              feesUSD
+              createdAtTimestamp
+              updatedAtTimestamp
+            }
+          }
+        `
+      })
     });
 
-    if (!response.ok) {
-      console.error("Failed to fetch data:", response.statusText);
+    const data = await response.json();
+    if (data.errors) {
+      console.error("Errors in response:", data.errors);
       return;
     }
 
-    const data = await response.json();
-    console.log("Raw Data Fetched:", JSON.stringify(data, null, 2));
+    const pools = data.data.pools;
+    const validatedPools = pools.filter(validateData);
 
-    const validatedData = data.data.pools.filter(item =>
-      validate(item, Object.keys(schema.properties))
-    );
-    console.log("Validated Data:", JSON.stringify(validatedData, null, 2));
-
-    return validatedData;
+    console.log("Validated Data:", JSON.stringify(validatedPools, null, 2));
+    return validatedPools;
   } catch (error) {
-    console.error("Error in fetchData:", error);
+    console.error("Error fetching data:", error);
   }
 }
 
-function validate(item) {
-    const requiredFields = ["token0", "token1", "liquidity"];
-    for (const field of requiredFields) {
-        if (!item[field]) {
-            console.error(`Field ${field} missing in item:`, JSON.stringify(item, null, 2));
-            return false;
-        }
-    }
-    return true;
+function validateData(pool) {
+  const missingFields = schema.required.filter((field) => !(field in pool));
+  if (missingFields.length > 0) {
+    console.warn(`Pool ${pool.id} missing fields: ${missingFields.join(", ")}`);
+    return false;
+  }
+
+  return true;
 }
 
-fetchData();
+module.exports = fetchData;
