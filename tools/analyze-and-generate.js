@@ -57,10 +57,23 @@ function generateSchema(fields) {
   };
 
   fields.forEach(field => {
+    // Resolve the type name
+    let fieldType = field.type.name || (field.type.ofType && field.type.ofType.name);
+    if (!fieldType) {
+      fieldType = "string"; // Default to string if type is not resolved
+    }
+
+    // Map GraphQL types to JSON Schema types
+    const jsonType = fieldType === "Int" ? "integer" :
+                     fieldType === "Float" ? "number" :
+                     fieldType === "Boolean" ? "boolean" : "string";
+
     schema.properties[field.name] = {
-      type: field.type === "Int" ? "integer" : field.type.toLowerCase(),
-      description: field.description
+      type: jsonType,
+      description: field.description || "No description available"
     };
+
+    // Add to required fields
     schema.required.push(field.name);
   });
 
