@@ -3,82 +3,41 @@
             pools {
     id
     id
-    token0
-    token1
-    id
-    id
-    txCount
-    id
-    id
-    token0
-    token1
-    id
-    token0
-    token1
-    liquidity
-    sqrtPrice
-    token0Price
-    token1Price
-    tick
-    volumeUSD
-    feesUSD
-    txCount
     id
     liquidity
-    sqrtPrice
-    token0Price
-    token1Price
-    tick
-    volumeUSD
-    feesUSD
-    txCount
     id
-    liquidity
-    sqrtPrice
-    token0Price
-    token1Price
-    tick
-    volumeUSD
-    feesUSD
-    txCount
     id
-    token0
-    token1
+    id
+    tick
+    id
+    tick
+    id
+    id
+    tick
+    id
     liquidity
     id
     liquidity
-    tick
-    tick
-    id
-    token0
-    token1
-    tick
-    id
-    volumeUSD
-    feesUSD
     id
     tick
-    volumeUSD
-    feesUSD
     id
     tick
-    volumeUSD
-    feesUSD
     id
-    volumeUSD
-    feesUSD
-    txCount
-    id
-    volumeUSD
-    feesUSD
-    id
-    volumeUSD
-    feesUSD
+    tick
     id
     id
-    volumeUSD
-    feesUSD
-    txCount
+    tick
+    id
+    tick
+    id
+    id
+    id
+    id
+    liquidity
+    id
+    id
+    id
+    id
             }
         }
     

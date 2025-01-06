@@ -1,175 +1,59 @@
 [
   {
     "name": "id",
-    "type": "ID"
+    "type": "Bytes"
   },
   {
     "name": "id",
-    "type": "ID"
-  },
-  {
-    "name": "token0",
-    "type": "Token"
-  },
-  {
-    "name": "token1",
-    "type": "Token"
+    "type": "Bytes"
   },
   {
     "name": "id",
-    "type": "ID"
-  },
-  {
-    "name": "id",
-    "type": "ID"
-  },
-  {
-    "name": "txCount",
-    "type": "BigInt"
-  },
-  {
-    "name": "id",
-    "type": "ID"
-  },
-  {
-    "name": "id",
-    "type": "ID"
-  },
-  {
-    "name": "token0",
-    "type": "Token"
-  },
-  {
-    "name": "token1",
-    "type": "Token"
-  },
-  {
-    "name": "id",
-    "type": "ID"
-  },
-  {
-    "name": "token0",
-    "type": "Token"
-  },
-  {
-    "name": "token1",
-    "type": "Token"
+    "type": "Bytes"
   },
   {
     "name": "liquidity",
     "type": "BigInt"
   },
   {
-    "name": "sqrtPrice",
-    "type": "BigInt"
+    "name": "id",
+    "type": "Bytes"
   },
   {
-    "name": "token0Price",
-    "type": "BigDecimal"
+    "name": "id",
+    "type": "Bytes"
   },
   {
-    "name": "token1Price",
-    "type": "BigDecimal"
+    "name": "id",
+    "type": "Bytes"
   },
   {
     "name": "tick",
     "type": "BigInt"
   },
   {
-    "name": "volumeUSD",
-    "type": "BigDecimal"
-  },
-  {
-    "name": "feesUSD",
-    "type": "BigDecimal"
-  },
-  {
-    "name": "txCount",
-    "type": "BigInt"
-  },
-  {
     "name": "id",
-    "type": "ID"
-  },
-  {
-    "name": "liquidity",
-    "type": "BigInt"
-  },
-  {
-    "name": "sqrtPrice",
-    "type": "BigInt"
-  },
-  {
-    "name": "token0Price",
-    "type": "BigDecimal"
-  },
-  {
-    "name": "token1Price",
-    "type": "BigDecimal"
+    "type": "Bytes"
   },
   {
     "name": "tick",
     "type": "BigInt"
   },
   {
-    "name": "volumeUSD",
-    "type": "BigDecimal"
-  },
-  {
-    "name": "feesUSD",
-    "type": "BigDecimal"
-  },
-  {
-    "name": "txCount",
-    "type": "BigInt"
+    "name": "id",
+    "type": "Bytes"
   },
   {
     "name": "id",
-    "type": "ID"
-  },
-  {
-    "name": "liquidity",
-    "type": "BigInt"
-  },
-  {
-    "name": "sqrtPrice",
-    "type": "BigInt"
-  },
-  {
-    "name": "token0Price",
-    "type": "BigDecimal"
-  },
-  {
-    "name": "token1Price",
-    "type": "BigDecimal"
+    "type": "Bytes"
   },
   {
     "name": "tick",
     "type": "BigInt"
   },
   {
-    "name": "volumeUSD",
-    "type": "BigDecimal"
-  },
-  {
-    "name": "feesUSD",
-    "type": "BigDecimal"
-  },
-  {
-    "name": "txCount",
-    "type": "BigInt"
-  },
-  {
     "name": "id",
-    "type": "ID"
-  },
-  {
-    "name": "token0",
-    "type": "Token"
-  },
-  {
-    "name": "token1",
-    "type": "Token"
+    "type": "Bytes"
   },
   {
     "name": "liquidity",
@@ -177,15 +61,15 @@
   },
   {
     "name": "id",
-    "type": "ID"
+    "type": "Bytes"
   },
   {
     "name": "liquidity",
     "type": "BigInt"
   },
   {
-    "name": "tick",
-    "type": "Tick"
+    "name": "id",
+    "type": "Bytes"
   },
   {
     "name": "tick",
@@ -193,122 +77,74 @@
   },
   {
     "name": "id",
-    "type": "ID"
-  },
-  {
-    "name": "token0",
-    "type": "Token"
-  },
-  {
-    "name": "token1",
-    "type": "Token"
-  },
-  {
-    "name": "tick",
-    "type": "BigInt"
-  },
-  {
-    "name": "id",
-    "type": "ID"
-  },
-  {
-    "name": "volumeUSD",
-    "type": "BigDecimal"
-  },
-  {
-    "name": "feesUSD",
-    "type": "BigDecimal"
-  },
-  {
-    "name": "id",
-    "type": "ID"
+    "type": "Bytes"
   },
   {
     "name": "tick",
     "type": "Tick"
   },
   {
-    "name": "volumeUSD",
-    "type": "BigDecimal"
+    "name": "id",
+    "type": "Bytes"
   },
   {
-    "name": "feesUSD",
-    "type": "BigDecimal"
+    "name": "tick",
+    "type": "BigInt"
   },
   {
     "name": "id",
-    "type": "ID"
+    "type": "Bytes"
+  },
+  {
+    "name": "id",
+    "type": "Bytes"
   },
   {
     "name": "tick",
     "type": "Tick"
   },
   {
-    "name": "volumeUSD",
-    "type": "BigDecimal"
+    "name": "id",
+    "type": "Bytes"
   },
   {
-    "name": "feesUSD",
-    "type": "BigDecimal"
+    "name": "tick",
+    "type": "Tick"
   },
   {
     "name": "id",
-    "type": "ID"
+    "type": "Bytes"
   },
   {
-    "name": "volumeUSD",
-    "type": "BigDecimal"
+    "name": "id",
+    "type": "Bytes"
   },
   {
-    "name": "feesUSD",
-    "type": "BigDecimal"
+    "name": "id",
+    "type": "Bytes"
   },
   {
-    "name": "txCount",
+    "name": "id",
+    "type": "Bytes"
+  },
+  {
+    "name": "liquidity",
     "type": "BigInt"
   },
   {
     "name": "id",
-    "type": "ID"
+    "type": "Bytes"
   },
   {
-    "name": "volumeUSD",
-    "type": "BigDecimal"
+    "name": "id",
+    "type": "Bytes"
   },
   {
-    "name": "feesUSD",
-    "type": "BigDecimal"
+    "name": "id",
+    "type": "Bytes"
   },
   {
     "name": "id",
     "type": "ID"
-  },
-  {
-    "name": "volumeUSD",
-    "type": "BigDecimal"
-  },
-  {
-    "name": "feesUSD",
-    "type": "BigDecimal"
-  },
-  {
-    "name": "id",
-    "type": "ID"
-  },
-  {
-    "name": "id",
-    "type": "ID"
-  },
-  {
-    "name": "volumeUSD",
-    "type": "BigDecimal"
-  },
-  {
-    "name": "feesUSD",
-    "type": "BigDecimal"
-  },
-  {
-    "name": "txCount",
-    "type": "BigInt"
   }
 ]
