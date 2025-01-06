@@ -25,6 +25,7 @@ async function fetchData() {
                         pools {
                             id
                             txCount
+                            volumeUSD
                             token0 {
                                 id
                                 symbol
@@ -35,7 +36,6 @@ async function fetchData() {
                                 symbol
                                 name
                             }
-                            volumeUSD
                             liquidity
                         }
                     }
@@ -73,13 +73,14 @@ function filterPools(pools) {
             const token0Symbol = token0.symbol || "UNKNOWN";
             const token1Symbol = token1.symbol || "UNKNOWN";
 
-            // Check if the pool contains stablecoins or has a high txCount
             const hasStablecoin =
                 ["DAI", "USDC", "USDT"].includes(token0Symbol) ||
                 ["DAI", "USDC", "USDT"].includes(token1Symbol);
-            const hasHighTxCount = pool.txCount && parseInt(pool.txCount, 10) > 400;
+            const txCount = pool.txCount ? parseInt(pool.txCount, 10) : 0;
+            const volumeUSD = pool.volumeUSD ? parseFloat(pool.volumeUSD) : 0;
 
-            return hasStablecoin || hasHighTxCount;
+            // Filter logic: Stablecoin pairs AND txCount > 400 OR volumeUSD > 20000
+            return (hasStablecoin && txCount > 400) || volumeUSD > 20000;
         });
 
         console.log(`✅ ${filteredPools.length} pools matched the filter criteria.`);
