@@ -1,7 +1,6 @@
 require("dotenv").config();
 const fetch = require("node-fetch");
 
-// Adding global error handling
 process.on("uncaughtException", (err) => {
   console.error("❌ Uncaught Exception:", err);
 });
@@ -59,20 +58,11 @@ async function fetchData() {
               id
               symbol
               name
-              derivedETH
               volumeUSD
-              totalLiquidity
               tokenDayData(first: 3) {
                 date
                 priceUSD
                 volumeUSD
-                totalLiquidity
-              }
-              tokenHourData(first: 3) {
-                hourStartUnix
-                priceUSD
-                volumeUSD
-                totalLiquidity
               }
             }
             swaps(first: 10, orderBy: timestamp, orderDirection: desc) {
@@ -96,7 +86,6 @@ async function fetchData() {
               id
               blockNumber
               timestamp
-              gasUsed
               gasPrice
             }
           }
@@ -125,7 +114,6 @@ async function fetchData() {
   }
 }
 
-// Run the script
 (async () => {
   try {
     await fetchData();
