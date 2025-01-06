@@ -1,157 +1,121 @@
 require("dotenv").config();
-const fetch = require("node-fetch");
 const fs = require("fs");
+const fetch = require("node-fetch");
+const readline = require("readline");
 
-const API_URL = process.env.NEW_DEX_API_URL;
-const DEFAULT_QUERY = `
-{
-  __schema {
-    types {
-      name
-      fields {
-        name
-        type {
-          name
-          kind
-          ofType {
-            name
-            kind
-          }
-        }
-      }
-    }
-  }
-}
-`;
+// Utility to ask user for input
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
 
-async function fetchRawData() {
+const askQuestion = (query) =>
+  new Promise((resolve) => rl.question(query, resolve));
+
+async function analyzeAndGenerate() {
   try {
-    console.log(`🚀 Fetching raw data from: ${API_URL}`);
-    const response = await fetch(API_URL, {
+    console.log("🚀 Starting schema analyzer and fetcher generator...");
+
+    const apiUrl = process.env.API_URL || (await askQuestion("Enter API URL: "));
+    if (!apiUrl) throw new Error("❌ API URL is required!");
+
+    console.log(`📡 Fetching schema from: ${apiUrl}`);
+    const response = await fetch(apiUrl, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query: DEFAULT_QUERY }),
-    });
-    const rawData = await response.json();
-
-    const rawFilePath = "./logs/raw-data.json";
-    fs.writeFileSync(rawFilePath, JSON.stringify(rawData, null, 2));
-    console.log(`✅ Raw data saved to: ${rawFilePath}`);
-    return rawData;
-  } catch (error) {
-    console.error("❌ Error fetching raw data:", error);
-    return null;
-  }
-}
-
-function analyzeSchema(rawData) {
-  try {
-    console.log("🔍 Analyzing raw schema...");
-    const types = rawData?.data?.__schema?.types || [];
-    const analyzedFields = {};
-
-    types.forEach((type) => {
-      if (type.fields) {
-        analyzedFields[type.name] = type.fields.map((field) => ({
-          name: field.name,
-          type: field.type.name || field.type.ofType?.name,
-          kind: field.type.kind || field.type.ofType?.kind,
-        }));
-      }
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query: `
+          {
+            __schema {
+              queryType {
+                name
+              }
+              mutationType {
+                name
+              }
+              subscriptionType {
+                name
+              }
+              types {
+                name
+                fields {
+                  name
+                }
+              }
+            }
+          }
+        `,
+      }),
     });
 
-    const analysisFilePath = "./logs/field-analysis.json";
-    fs.writeFileSync(analysisFilePath, JSON.stringify(analyzedFields, null, 2));
-    console.log(`✅ Field analysis saved to: ${analysisFilePath}`);
-    return analyzedFields;
-  } catch (error) {
-    console.error("❌ Error analyzing schema:", error);
-    return null;
-  }
-}
+    if (!response.ok) throw new Error(`❌ Failed to fetch schema: ${response.statusText}`);
+    const data = await response.json();
+    const types = data.data.__schema.types;
 
-function generateSchema(selectedFields) {
-  console.log("🛠 Generating schema...");
-  const schema = {
-    type: "object",
-    properties: {},
-    required: [],
-  };
+    console.log("✅ Schema fetched successfully!");
 
-  selectedFields.forEach((field) => {
-    schema.properties[field.name] = {
-      type: field.type.toLowerCase(),
-      description: `Field of type ${field.type}`,
-    };
-    schema.required.push(field.name);
-  });
+    // Filter and save schema to file
+    const filteredTypes = types.map((type) => ({
+      name: type.name,
+      fields: type.fields ? type.fields.map((field) => field.name) : [],
+    }));
+    fs.writeFileSync("./logs/schema-analysis.json", JSON.stringify(filteredTypes, null, 2));
+    console.log("✅ Schema saved to: ./logs/schema-analysis.json");
 
-  const schemaFilePath = "./logs/generated-schema.json";
-  fs.writeFileSync(schemaFilePath, JSON.stringify(schema, null, 2));
-  console.log(`✅ Schema saved to: ${schemaFilePath}`);
-  return schema;
-}
+    // Interactive field selection
+    console.log("🔍 Available fields:");
+    console.table(filteredTypes);
 
-function generateFetcherTemplate(schema) {
-  console.log("📜 Creating fetcher...");
-  const template = `
+    const selectedFields = (await askQuestion(
+      "Enter fields to include (comma-separated): "
+    ))
+      .split(",")
+      .map((field) => field.trim());
+
+    console.log("✅ Selected fields:", selectedFields);
+
+    // Generate fetcher script
+    const fetcherTemplate = `
 require("dotenv").config();
 const fetch = require("node-fetch");
 
-async function fetchData() {
-  const response = await fetch(process.env.NEW_DEX_API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      query: \`
-      {
-        pools {
-          ${schema.required.join("\n")}
-        }
-      }
-      \`,
-    }),
-  });
+(async () => {
+  try {
+    const response = await fetch(process.env.API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        query: \`
+          {
+            pools {
+              ${selectedFields.join("\n              ")}
+            }
+          }
+        \`,
+      }),
+    });
 
-  const data = await response.json();
-  const validatedData = data.data.pools.filter((item) => validate(item));
-  console.log("Validated Data:", JSON.stringify(validatedData, null, 2));
-  return validatedData;
-}
+    if (!response.ok) throw new Error(\`❌ Fetch failed: \${response.statusText}\`);
 
-function validate(item) {
-  const requiredFields = ${JSON.stringify(schema.required)};
-  for (const field of requiredFields) {
-    if (!item[field]) return false;
+    const data = await response.json();
+    console.log("✅ Fetched Data:", JSON.stringify(data, null, 2));
+  } catch (error) {
+    console.error("❌ Error:", error);
   }
-  return true;
+})();
+    `;
+
+    fs.writeFileSync("./data-collection/generated-fetcher.js", fetcherTemplate);
+    console.log("✅ Fetcher generated: ./data-collection/generated-fetcher.js");
+
+    rl.close();
+  } catch (error) {
+    console.error("❌ Error in analyzeAndGenerate:", error);
+    rl.close();
+  }
 }
 
-module.exports = fetchData;
-`;
-
-  const fetcherFilePath = "./logs/generated-fetcher.js";
-  fs.writeFileSync(fetcherFilePath, template);
-  console.log(`✅ Fetcher template saved to: ${fetcherFilePath}`);
-}
-
-async function main() {
-  const rawData = await fetchRawData();
-  if (!rawData) return;
-
-  const analyzedFields = analyzeSchema(rawData);
-  if (!analyzedFields) return;
-
-  console.log("⚙️ Fields detected. Select fields to include:");
-  console.table(analyzedFields);
-
-  // Replace this array with dynamically selected fields as needed
-  const selectedFields = Object.values(analyzedFields)[0]; // Default to the first detected type for demo
-
-  const schema = generateSchema(selectedFields);
-  generateFetcherTemplate(schema);
-
-  console.log("🎉 All tasks completed successfully!");
-}
-
-main();
+// Run the script
+analyzeAndGenerate();
