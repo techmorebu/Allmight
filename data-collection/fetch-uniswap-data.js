@@ -72,8 +72,7 @@ async function fetchuniswapData() {
 function filterPools(pools) {
   console.log("🔍 Filtering pools for arbitrage-ready data...");
   return pools.filter((pool) => {
-    // Ensure critical fields exist and meet basic thresholds
-    const requiredFields = ["id", "token0", "token1", "volumeUSD", "liquidity"];
+    const requiredFields = ["id", "token0", "token1", "volumeUSD", "txCount", "liquidity"];
     for (const field of requiredFields) {
       if (!pool[field]) {
         console.warn(`⚠️ Pool missing field: ${field}`);
@@ -81,10 +80,14 @@ function filterPools(pools) {
       }
     }
 
-    // Custom filtering logic
-    const minVolumeUSD = 1000; // Example threshold for minimum volume
-    const minLiquidity = 5000; // Example threshold for minimum liquidity
-    return parseFloat(pool.volumeUSD) > minVolumeUSD && parseFloat(pool.liquidity) > minLiquidity;
+    const stablecoinSymbols = ["DAI", "USDC", "USDT"];
+    const isStablecoinPair =
+      stablecoinSymbols.includes(pool.token0.symbol) || stablecoinSymbols.includes(pool.token1.symbol);
+
+    const hasHighVolumeOrTxCount =
+      parseFloat(pool.volumeUSD) > 20000 || parseInt(pool.txCount, 10) > 400;
+
+    return isStablecoinPair && hasHighVolumeOrTxCount;
   });
 }
 
