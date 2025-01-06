@@ -1,39 +1,47 @@
 {
   "type": "object",
   "properties": {
-    "price": {
-      "type": "number",
-      "description": "Current price of the asset"
+    "id": {
+      "type": "id",
+      "description": "Field of type ID"
+    },
+    "date": {
+      "type": "int",
+      "description": "Field of type Int"
+    },
+    "volumeMatic": {
+      "type": "bigdecimal",
+      "description": "Field of type BigDecimal"
     },
     "volumeUSD": {
-      "type": "number",
-      "description": "Total trading volume in USD"
+      "type": "bigdecimal",
+      "description": "Field of type BigDecimal"
+    },
+    "volumeUSDUntracked": {
+      "type": "bigdecimal",
+      "description": "Field of type BigDecimal"
+    },
+    "feesUSD": {
+      "type": "bigdecimal",
+      "description": "Field of type BigDecimal"
     },
     "txCount": {
-      "type": "integer",
-      "description": "Number of transactions"
+      "type": "bigint",
+      "description": "Field of type BigInt"
     },
-    "liquidityUSD": {
-      "type": "number",
-      "description": "Total liquidity in USD"
-    },
-    "swapFee": {
-      "type": "number",
-      "description": "Trading fee percentage"
-    },
-    "priceImpact": {
-      "type": "number",
-      "description": "Impact on price for large trades"
-    },
-    "metadata": {
-      "type": "object",
-      "description": "Additional fields for future use",
-      "additionalProperties": true
+    "tvlUSD": {
+      "type": "bigdecimal",
+      "description": "Field of type BigDecimal"
     }
   },
   "required": [
-    "price",
+    "id",
+    "date",
+    "volumeMatic",
     "volumeUSD",
-    "liquidityUSD"
+    "volumeUSDUntracked",
+    "feesUSD",
+    "txCount",
+    "tvlUSD"
   ]
 }
