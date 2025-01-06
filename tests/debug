@@ -1,83 +1,2697 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node logs/generated-fetcher.js
-📡 Fetching data from: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g
-✅ Fetched Data: {
-  "data": {
-    "pools": [
+🚀 Starting enhanced fetcher...
+🚀 Fetching pools data (skip: 0, first: 10)...
+🚀 Fetching pools data (skip: 10, first: 10)...
+🚀 Fetching pools data (skip: 20, first: 10)...
+🚀 Fetching pools data (skip: 30, first: 10)...
+🚀 Fetching pools data (skip: 40, first: 10)...
+❌ Errors in API response: [
+  {
+    "message": "bad indexers: {0x0fd8fd1dc8162148cb9413062fe6c6b144335dbf: BadResponse(400), 0x1b7e0068ca1d7929c8c56408d766e1510e54d98d: Timeout, 0x4e5c87772c29381bcabc58c3f182b6633b5a274a: Timeout, 0x7bb834017672b1135466661d8dd69c5dd0b3bf51: Timeout, 0xbdfb5ee5a2abf4fc7bb1bd1221067aef7f9de491: Timeout, 0xedca8740873152ff30a2696add66d1ab41882beb: Timeout, 0xf92f430dd8567b0d466358c79594ab58d919a6d4: BadResponse(expected value at line 1 column 1), 0xfeff9093f6b32d0e5cddba743b06a1fedb87c004: Unavailable(too far behind)}"
+  }
+]
+🔍 Filtering pools...
+✅ Valid Pool: 0x55caabb0d2b704fd0ef8192a7e35d8837e678207 (Liquidity: 194325564957798145, VolumeUSD: 5793100623.821347902489720201062695)
+✅ Valid Pool: 0xae81fac689a1b4b1e06e7ef4a2ab4cd8ac0a087d (Liquidity: 8293176281066681244, VolumeUSD: 4210298900.264781364028517543239533)
+✅ Valid Pool: 0x7b925e617aefd7fb3a93abe3a701135d7a1ba710 (Liquidity: 73082404749003, VolumeUSD: 3835152048.904008150810865081850612)
+✅ Valid Pool: 0x479e1b71a702a595e19b6d5932cd5c863ab57ee0 (Liquidity: 215588595146542507906202, VolumeUSD: 3634068477.817461811457663810613666)
+✅ Valid Pool: 0xac4494e30a85369e332bdb5230d6d694d4259dbc (Liquidity: 9818777417550095, VolumeUSD: 2418871848.117147151649573809806649)
+✅ Valid Pool: 0xeecb5db986c20a8c88d8332e7e252a9671565751 (Liquidity: 30359655925433, VolumeUSD: 1503247509.7692952606459)
+✅ Valid Pool: 0x5b41eedcfc8e0ae47493d4945aa1ae4fe05430ff (Liquidity: 3506838646715136236, VolumeUSD: 1502856544.502702197858253538467042)
+✅ Valid Pool: 0x9ceff2f5138fc59eb925d270b8a7a9c02a1810f2 (Liquidity: 53378135065488795, VolumeUSD: 1246205476.946518491313310840426156)
+✅ Valid Pool: 0xa5cd8351cbf30b531c7b11b0d9d3ff38ea2e280f (Liquidity: 53487716665, VolumeUSD: 1007900260.777298915367696136623581)
+✅ Valid Pool: 0xa6aedf7c4ed6e821e67a6bfd56fd1702ad9a9719 (Liquidity: 156339473051789804, VolumeUSD: 750116808.4951977718898784123335327)
+✅ Valid Pool: 0x0e3eb2c75bd7dd0e12249d96b1321d9570764d77 (Liquidity: 89952897020455, VolumeUSD: 700410986.2942723732201720402391496)
+✅ Valid Pool: 0xe7e0eb9f6bcccfe847fdf62a3628319a092f11a2 (Liquidity: 78728193313453477399, VolumeUSD: 615554770.7459303730204742584302022)
+✅ Valid Pool: 0x6669b4706cc152f359e947bca68e263a87c52634 (Liquidity: 4949634078501492303, VolumeUSD: 351292082.6505387333322004904322286)
+✅ Valid Pool: 0xab52931301078e2405c3a3ebb86e11ad0dfd2cfd (Liquidity: 39961248897696115034616, VolumeUSD: 323271087.8818665974676514280420479)
+✅ Valid Pool: 0xbc8f3da0bd42e1f2509cd8671ce7c7e5f7fd39c8 (Liquidity: 81892773316998190375, VolumeUSD: 208573739.0061535062444416601055356)
+✅ Valid Pool: 0x1f97c0260c6a18b26a9c2681f0faa93ac2182dbc (Liquidity: 5745708674847070023, VolumeUSD: 202646042.1236044073713050238498931)
+✅ Valid Pool: 0x9f1a8caf3c8e94e43aa64922d67dff4dc3e88a42 (Liquidity: 104663746968806054318753532, VolumeUSD: 165327954.6363218346975873154602938)
+✅ Valid Pool: 0xeffa9e5e63ba18160ee26bda56b42f3368719615 (Liquidity: 17844332989631999418, VolumeUSD: 161875450.8627371568902986966097754)
+✅ Valid Pool: 0xe3703608393727c6b3761471d13e064c77c8d836 (Liquidity: 1268627422426626328, VolumeUSD: 157907082.8557477203386)
+✅ Valid Pool: 0xd85a25332b57cc447a791100e7317e534d553761 (Liquidity: 337032310252565721149564, VolumeUSD: 129407030.0623832063628409538575549)
+✅ Valid Pool: 0xde2d1fd2e8238aba80a5b80c7262e4833d92f624 (Liquidity: 251413704893224903684329, VolumeUSD: 127044047.065632644008916494812199)
+✅ Valid Pool: 0x6b7a1606558f586ffa1fad23a1ab84ccb9155b00 (Liquidity: 1100888895253, VolumeUSD: 88332957.23537014589)
+✅ Valid Pool: 0x05bfe97bf794a4db69d3059091f064ea0a5e538e (Liquidity: 41866451263794502179751764, VolumeUSD: 87892109.31247577212373705963217537)
+✅ Valid Pool: 0x384d2094d0df788192043a1cbd200308dd60b068 (Liquidity: 349676680166498806270752, VolumeUSD: 80837673.86888557645106319273276811)
+✅ Valid Pool: 0x00a6177c6455a29b8daa7144b2befc9f2147bb7e (Liquidity: 1602468077885843899734652, VolumeUSD: 75666004.98830276257857800747732459)
+✅ Valid Pool: 0x5bf44bb003efe05f711a14a189c0902d6626e919 (Liquidity: 619271953028030772580, VolumeUSD: 67424160.30665580697503618679591923)
+✅ Valid Pool: 0x44720a6f572649526ac9073cae9200755cc78e0a (Liquidity: 715558763199472579415, VolumeUSD: 67301428.01921925466076339152862062)
+✅ Valid Pool: 0x5b1fd9fa139353c5d9eaf459e4bd2f7a6b4812bb (Liquidity: 167154563256986598, VolumeUSD: 66033035.36629221394428190530075488)
+✅ Valid Pool: 0x64c01d2b748e5deba661ce58393e6ee0e151a1ee (Liquidity: 1110796371667787528699944, VolumeUSD: 65734464.90136104376836868052068796)
+✅ Valid Pool: 0x94d47616f45f98e1ac688326ffdab7bf3a6be440 (Liquidity: 111487309498812767, VolumeUSD: 61035205.24210924364)
+✅ Valid Pool: 0x022df0b3341b3a0157eea97dd024a93f7496d631 (Liquidity: 2016292908116034465, VolumeUSD: 57034367.0735650363277)
+✅ Valid Pool: 0x7212d38aa05d4d76c9af19721fda00c21b7f8b28 (Liquidity: 1251415112105214814397, VolumeUSD: 47922206.47215794344055902637389275)
+✅ Valid Pool: 0xdb975b96828352880409e86d5ae93c23c924f812 (Liquidity: 41460228461, VolumeUSD: 42962174.06275850640002674217666098)
+✅ Valid Pool: 0x4b6998b0cc8825898708564040cbd302257b531b (Liquidity: 159493332088880887922, VolumeUSD: 42583134.14368090307230514839619032)
+✅ Valid Pool: 0xbf3036c5c55bdb36ae505f96f4c40c92e782e9f6 (Liquidity: 1115762245715208310, VolumeUSD: 38780590.0781832033365)
+✅ Valid Pool: 0xa56796f13566c515471a2fbbab731f88ce5de428 (Liquidity: 1636916517939662549353, VolumeUSD: 36592782.23014603875197707485042413)
+✅ Valid Pool: 0x0bef3882798219eeaf40a8b63563a3d3ab6092ab (Liquidity: 4064366109000238421161926, VolumeUSD: 32899105.4119850441266421355518033)
+✅ Valid Pool: 0x76d9553f9910c5cf1f5dbbb210dc95bc5a63ee68 (Liquidity: 12432083264, VolumeUSD: 30004653.0644248651695041740753586)
+✅ Valid Pool: 0x370404a2a57edfbeaf16dc8ef8e2d1b0a2a9da15 (Liquidity: 2781952562601367020258, VolumeUSD: 27191585.82335443790268307139960092)
+✅ Valid Pool: 0x8cc24a7dfe0c946cd10c25cfee5769ae617ec459 (Liquidity: 1237599352134308164, VolumeUSD: 26872824.73480885738763352540119032)
+✅ Final Validated Pools: [
+  {
+    "id": "0x55caabb0d2b704fd0ef8192a7e35d8837e678207",
+    "liquidity": "194325564957798145",
+    "poolDayData": [
       {
-        "id": "0x000a7d8e4619aa9ee59eb80fa5bc5d5905afb403",
-        "liquidity": "0",
-        "token0": {
-          "id": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
-          "name": "USD Coin (PoS)",
-          "symbol": "USDC"
-        },
-        "token1": {
-          "id": "0xbb6e6cbe9b392ac1275f3764cfda687a7d0a2cf6",
-          "name": "Dummy VIS",
-          "symbol": "DVIS"
-        },
-        "volumeUSD": "286.793155"
+        "date": 1663113600,
+        "volumeUSD": "230.2777005"
       },
       {
-        "id": "0x001ca4c9b09c890cf5facc6b79a8a0ae65ed2489",
-        "liquidity": "0",
-        "token0": {
-          "id": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
-          "name": "Wrapped Polygon Ecosystem Token",
-          "symbol": "WPOL"
-        },
-        "token1": {
-          "id": "0x8b2d0d46a907aa5653f05d708c8c69f46cf88676",
-          "name": "Sonicomic",
-          "symbol": "SNCM"
-        },
+        "date": 1663200000,
+        "volumeUSD": "838.193172"
+      },
+      {
+        "date": 1663286400,
+        "volumeUSD": "0.06869699999999999999999999999999995"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1663120800,
         "volumeUSD": "0"
       },
       {
-        "id": "0x001d653809c56cc8cbb13daa261228bbb2bb3ead",
-        "liquidity": "0",
-        "token0": {
-          "id": "0x72d31b6dd46daae07391036097a2cb4648991ecd",
-          "name": "STAR-Power/StarSeeds Protocol",
-          "symbol": "SP"
-        },
-        "token1": {
-          "id": "0x7bf44c2be2b9bab23cea3e071a14d93df9cdefaf",
-          "name": "USD Yield Index by StarSeeds Protocol",
-          "symbol": "USD-S"
-        },
+        "periodStartUnix": 1663178400,
+        "volumeUSD": "80.068385"
+      },
+      {
+        "periodStartUnix": 1663182000,
+        "volumeUSD": "150.2093155"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "1504.280678413349690929127672879498",
+        "timestamp": "1736147034"
+      },
+      {
+        "amountUSD": "729.128456473163774172086546539646",
+        "timestamp": "1736147034"
+      },
+      {
+        "amountUSD": "272.5888954419136446782602176988181",
+        "timestamp": "1736147008"
+      },
+      {
+        "amountUSD": "1110.404553889589454312216578853285",
+        "timestamp": "1736146992"
+      },
+      {
+        "amountUSD": "12.87743874649174459159945106434955",
+        "timestamp": "1736146740"
+      }
+    ],
+    "token0": {
+      "id": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+      "name": "USD Coin (PoS)",
+      "symbol": "USDC"
+    },
+    "token1": {
+      "id": "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+      "name": "Wrapped Ether",
+      "symbol": "WETH"
+    },
+    "totalValueLockedUSD": "877426.5873612767348465846966853422",
+    "volumeUSD": "5793100623.821347902489720201062695"
+  },
+  {
+    "id": "0xae81fac689a1b4b1e06e7ef4a2ab4cd8ac0a087d",
+    "liquidity": "8293176281066681244",
+    "poolDayData": [
+      {
+        "date": 1662249600,
         "volumeUSD": "0"
       },
       {
-        "id": "0x0057ba214d879738d317aedb3826cafdcc78328f",
-        "liquidity": "0",
-        "token0": {
-          "id": "0x00658b2c97c550767fe894d8cb21008d2ca4740f",
-          "name": "ToTheMoon",
-          "symbol": "2MOON"
-        },
-        "token1": {
-          "id": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
-          "name": "Wrapped Polygon Ecosystem Token",
-          "symbol": "WPOL"
-        },
-        "volumeUSD": "37.28712049557024072268812874341868"
+        "date": 1662336000,
+        "volumeUSD": "0"
       },
       {
-        "id": "0x00602d036403258c2765cb95f750db96cd9ddda4",
-        "liquidity": "0",
-        "token0": {
-          "id": "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
-          "name": "USD Coin",
-          "symbol": "USDC"
-        },
-        "token1": {
-          "id": "0x731c79f054df3a567584ee21a95399d343103143",
-          "name": "Corgi Studio",
-          "symbol": "CRS"
-        },
+        "date": 1662422400,
+        "volumeUSD": "0.8659986074765169291512336114995558"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1662307200,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1662310800,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1662318000,
         "volumeUSD": "0"
       }
-    ]
+    ],
+    "swaps": [
+      {
+        "amountUSD": "10.15201812515603289118098469770236",
+        "timestamp": "1736147026"
+      },
+      {
+        "amountUSD": "287.3561109610363124725742290441855",
+        "timestamp": "1736147016"
+      },
+      {
+        "amountUSD": "128.8490374237533438397746707713661",
+        "timestamp": "1736147008"
+      },
+      {
+        "amountUSD": "273.3173885494964237829054919688702",
+        "timestamp": "1736147008"
+      },
+      {
+        "amountUSD": "40.95427496203218476994956996430586",
+        "timestamp": "1736147008"
+      }
+    ],
+    "token0": {
+      "id": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+      "name": "Wrapped Matic",
+      "symbol": "WMATIC"
+    },
+    "token1": {
+      "id": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+      "name": "USD Coin (PoS)",
+      "symbol": "USDC"
+    },
+    "totalValueLockedUSD": "549181.2853785814120559341967930744",
+    "volumeUSD": "4210298900.264781364028517543239533"
+  },
+  {
+    "id": "0x7b925e617aefd7fb3a93abe3a701135d7a1ba710",
+    "liquidity": "73082404749003",
+    "poolDayData": [
+      {
+        "date": 1663027200,
+        "volumeUSD": "0.4667297221191971583084892002199261"
+      },
+      {
+        "date": 1663459200,
+        "volumeUSD": "20.73864939435652711343511711623605"
+      },
+      {
+        "date": 1663545600,
+        "volumeUSD": "5815.421643133623192837386268407099"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1663030800,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1663066800,
+        "volumeUSD": "0.4667297221191971583084892002199261"
+      },
+      {
+        "periodStartUnix": 1663495200,
+        "volumeUSD": "9.50955325723901572874266032269756"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "867.005646928683",
+        "timestamp": "1736147008"
+      },
+      {
+        "amountUSD": "5530.6508816692925",
+        "timestamp": "1736147000"
+      },
+      {
+        "amountUSD": "1556.129485933268076036733741914675",
+        "timestamp": "1736146996"
+      },
+      {
+        "amountUSD": "3352.291975975037999999999999999999",
+        "timestamp": "1736146992"
+      },
+      {
+        "amountUSD": "2.342879328322",
+        "timestamp": "1736146992"
+      }
+    ],
+    "token0": {
+      "id": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+      "name": "USD Coin (PoS)",
+      "symbol": "USDC"
+    },
+    "token1": {
+      "id": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+      "name": "(PoS) Tether USD",
+      "symbol": "USDT"
+    },
+    "totalValueLockedUSD": "706493.7665737587933999999999999997",
+    "volumeUSD": "3835152048.904008150810865081850612"
+  },
+  {
+    "id": "0x479e1b71a702a595e19b6d5932cd5c863ab57ee0",
+    "liquidity": "215588595146542507906202",
+    "poolDayData": [
+      {
+        "date": 1662940800,
+        "volumeUSD": "0"
+      },
+      {
+        "date": 1663027200,
+        "volumeUSD": "0"
+      },
+      {
+        "date": 1663113600,
+        "volumeUSD": "0"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1663020000,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1663027200,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1663030800,
+        "volumeUSD": "0"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "941.931653278176941898736845947735",
+        "timestamp": "1736147012"
+      },
+      {
+        "amountUSD": "213.3627320130929636587958083671527",
+        "timestamp": "1736147004"
+      },
+      {
+        "amountUSD": "361.3034619467244507204886646913956",
+        "timestamp": "1736147004"
+      },
+      {
+        "amountUSD": "779.6938171219918962580827165265165",
+        "timestamp": "1736147000"
+      },
+      {
+        "amountUSD": "384.3683780077085693386246336104067",
+        "timestamp": "1736147000"
+      }
+    ],
+    "token0": {
+      "id": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+      "name": "Wrapped Matic",
+      "symbol": "WMATIC"
+    },
+    "token1": {
+      "id": "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+      "name": "Wrapped Ether",
+      "symbol": "WETH"
+    },
+    "totalValueLockedUSD": "1274409.931783563965604383371847124",
+    "volumeUSD": "3634068477.817461811457663810613666"
+  },
+  {
+    "id": "0xac4494e30a85369e332bdb5230d6d694d4259dbc",
+    "liquidity": "9818777417550095",
+    "poolDayData": [
+      {
+        "date": 1663545600,
+        "volumeUSD": "11.12018583559176295316311170327531"
+      },
+      {
+        "date": 1663632000,
+        "volumeUSD": "718.393259946967154508244070858269"
+      },
+      {
+        "date": 1663718400,
+        "volumeUSD": "1.717995261334561827578205428635464"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1663606800,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1663610400,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1663614000,
+        "volumeUSD": "3.599571198472222983236701906621016"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "920.4215817603952976328563765986295",
+        "timestamp": "1736147034"
+      },
+      {
+        "amountUSD": "181.0917181094527494149613404356427",
+        "timestamp": "1736147024"
+      },
+      {
+        "amountUSD": "3310.744593130957363651971344137528",
+        "timestamp": "1736146992"
+      },
+      {
+        "amountUSD": "920.709288313598705712274928926369",
+        "timestamp": "1736146716"
+      },
+      {
+        "amountUSD": "181.1476363045531502635841967667173",
+        "timestamp": "1736146354"
+      }
+    ],
+    "token0": {
+      "id": "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6",
+      "name": "(PoS) Wrapped BTC",
+      "symbol": "WBTC"
+    },
+    "token1": {
+      "id": "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+      "name": "Wrapped Ether",
+      "symbol": "WETH"
+    },
+    "totalValueLockedUSD": "1828743.374143834713058451297806394",
+    "volumeUSD": "2418871848.117147151649573809806649"
+  },
+  {
+    "id": "0xeecb5db986c20a8c88d8332e7e252a9671565751",
+    "liquidity": "30359655925433",
+    "poolDayData": [
+      {
+        "date": 1697932800,
+        "volumeUSD": "7787.655635"
+      },
+      {
+        "date": 1698019200,
+        "volumeUSD": "56579.258775"
+      },
+      {
+        "date": 1698105600,
+        "volumeUSD": "82290.605141"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1698001200,
+        "volumeUSD": "250.558753"
+      },
+      {
+        "periodStartUnix": 1698004800,
+        "volumeUSD": "3241.309505"
+      },
+      {
+        "periodStartUnix": 1698008400,
+        "volumeUSD": "3304.001992"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "98.2486571751333",
+        "timestamp": "1736147012"
+      },
+      {
+        "amountUSD": "866.8184123181501",
+        "timestamp": "1736147008"
+      },
+      {
+        "amountUSD": "1555.485742",
+        "timestamp": "1736146996"
+      },
+      {
+        "amountUSD": "725.4667264533201",
+        "timestamp": "1736146996"
+      },
+      {
+        "amountUSD": "1116.911136",
+        "timestamp": "1736146992"
+      }
+    ],
+    "token0": {
+      "id": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+      "name": "USD Coin (PoS)",
+      "symbol": "USDC"
+    },
+    "token1": {
+      "id": "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+      "name": "USD Coin",
+      "symbol": "USDC"
+    },
+    "totalValueLockedUSD": "182099.751898570224977476262053678",
+    "volumeUSD": "1503247509.7692952606459"
+  },
+  {
+    "id": "0x5b41eedcfc8e0ae47493d4945aa1ae4fe05430ff",
+    "liquidity": "3506838646715136236",
+    "poolDayData": [
+      {
+        "date": 1663718400,
+        "volumeUSD": "8.006367339678779342218696462019237"
+      },
+      {
+        "date": 1663804800,
+        "volumeUSD": "2.866724543628271023283044929327431"
+      },
+      {
+        "date": 1663891200,
+        "volumeUSD": "3.369589160473953297567477794149291"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1663729200,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1663732800,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1663740000,
+        "volumeUSD": "1.052226197962008824283072162561644"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "365.220560066000451162821809909272",
+        "timestamp": "1736146954"
+      },
+      {
+        "amountUSD": "241.9785422299402615828116825764646",
+        "timestamp": "1736146948"
+      },
+      {
+        "amountUSD": "365.0998813720029548594309988454464",
+        "timestamp": "1736146948"
+      },
+      {
+        "amountUSD": "206.3850942632280324660979208504298",
+        "timestamp": "1736146940"
+      },
+      {
+        "amountUSD": "364.9164735731808279243438553912697",
+        "timestamp": "1736146920"
+      }
+    ],
+    "token0": {
+      "id": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+      "name": "Wrapped Matic",
+      "symbol": "WMATIC"
+    },
+    "token1": {
+      "id": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+      "name": "(PoS) Tether USD",
+      "symbol": "USDT"
+    },
+    "totalValueLockedUSD": "408317.2256749477832715385925682629",
+    "volumeUSD": "1502856544.502702197858253538467042"
+  },
+  {
+    "id": "0x9ceff2f5138fc59eb925d270b8a7a9c02a1810f2",
+    "liquidity": "53378135065488795",
+    "poolDayData": [
+      {
+        "date": 1663113600,
+        "volumeUSD": "0"
+      },
+      {
+        "date": 1663200000,
+        "volumeUSD": "0.2464332891794804123122491328977506"
+      },
+      {
+        "date": 1665100800,
+        "volumeUSD": "680.0949788480722835603960461209807"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1663164000,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1663257600,
+        "volumeUSD": "0.2464332891794804123122491328977506"
+      },
+      {
+        "periodStartUnix": 1663275600,
+        "volumeUSD": "0"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "1.77260722840716639821785306845164",
+        "timestamp": "1736146992"
+      },
+      {
+        "amountUSD": "22.56617209585076431388822670547183",
+        "timestamp": "1736146984"
+      },
+      {
+        "amountUSD": "7.777624722375994432527224458422095",
+        "timestamp": "1736146832"
+      },
+      {
+        "amountUSD": "443.9444263084104322139041124647649",
+        "timestamp": "1736146716"
+      },
+      {
+        "amountUSD": "141.4044397568533014066662729259406",
+        "timestamp": "1736146708"
+      }
+    ],
+    "token0": {
+      "id": "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+      "name": "Wrapped Ether",
+      "symbol": "WETH"
+    },
+    "token1": {
+      "id": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+      "name": "(PoS) Tether USD",
+      "symbol": "USDT"
+    },
+    "totalValueLockedUSD": "250629.0149688426985105020266771969",
+    "volumeUSD": "1246205476.946518491313310840426156"
+  },
+  {
+    "id": "0xa5cd8351cbf30b531c7b11b0d9d3ff38ea2e280f",
+    "liquidity": "53487716665",
+    "poolDayData": [
+      {
+        "date": 1663372800,
+        "volumeUSD": "0"
+      },
+      {
+        "date": 1663545600,
+        "volumeUSD": "1.899015"
+      },
+      {
+        "date": 1663632000,
+        "volumeUSD": "0.4956335"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1663419600,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1663552800,
+        "volumeUSD": "1.339035"
+      },
+      {
+        "periodStartUnix": 1663596000,
+        "volumeUSD": "0.55998"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "387.9605962118407130039704289431783",
+        "timestamp": "1736146996"
+      },
+      {
+        "amountUSD": "47.36520992235546583670719949386597",
+        "timestamp": "1736146726"
+      },
+      {
+        "amountUSD": "197.7696521348877905625847875915654",
+        "timestamp": "1736146716"
+      },
+      {
+        "amountUSD": "186.6067463179607998448736979586806",
+        "timestamp": "1736146336"
+      },
+      {
+        "amountUSD": "56.75807210072199066174943796078025",
+        "timestamp": "1736146296"
+      }
+    ],
+    "token0": {
+      "id": "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6",
+      "name": "(PoS) Wrapped BTC",
+      "symbol": "WBTC"
+    },
+    "token1": {
+      "id": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+      "name": "USD Coin (PoS)",
+      "symbol": "USDC"
+    },
+    "totalValueLockedUSD": "139175.0015796641687446212407630067",
+    "volumeUSD": "1007900260.777298915367696136623581"
+  },
+  {
+    "id": "0xa6aedf7c4ed6e821e67a6bfd56fd1702ad9a9719",
+    "liquidity": "156339473051789804",
+    "poolDayData": [
+      {
+        "date": 1697241600,
+        "volumeUSD": "0"
+      },
+      {
+        "date": 1697328000,
+        "volumeUSD": "1.845295073356343807013846496178759"
+      },
+      {
+        "date": 1697414400,
+        "volumeUSD": "9838.014353419527544953917740670015"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1697317200,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1697335200,
+        "volumeUSD": "0.000051861172931747076045403084179699"
+      },
+      {
+        "periodStartUnix": 1697342400,
+        "volumeUSD": "0.00005175821248814754202136650752740095"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "1000.425763790719630471683609103554",
+        "timestamp": "1736147034"
+      },
+      {
+        "amountUSD": "4.226957341810972120591507584847096",
+        "timestamp": "1736147030"
+      },
+      {
+        "amountUSD": "2.864490099766467615791616055478158",
+        "timestamp": "1736147030"
+      },
+      {
+        "amountUSD": "7.455682012743936902976997290188215",
+        "timestamp": "1736147028"
+      },
+      {
+        "amountUSD": "47.14263858597188377102398795611094",
+        "timestamp": "1736147008"
+      }
+    ],
+    "token0": {
+      "id": "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+      "name": "USD Coin",
+      "symbol": "USDC"
+    },
+    "token1": {
+      "id": "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+      "name": "Wrapped Ether",
+      "symbol": "WETH"
+    },
+    "totalValueLockedUSD": "409018.4750748123525992394336984554",
+    "volumeUSD": "750116808.4951977718898784123335327"
+  },
+  {
+    "id": "0x0e3eb2c75bd7dd0e12249d96b1321d9570764d77",
+    "liquidity": "89952897020455",
+    "poolDayData": [
+      {
+        "date": 1697846400,
+        "volumeUSD": "6937.348567164669523761509798914237"
+      },
+      {
+        "date": 1697932800,
+        "volumeUSD": "24841.70691059203102720786631738601"
+      },
+      {
+        "date": 1698019200,
+        "volumeUSD": "53782.25739097235911790482046284524"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1697886000,
+        "volumeUSD": "1038.729257922033666388279614255371"
+      },
+      {
+        "periodStartUnix": 1697889600,
+        "volumeUSD": "1349.508384131183365230787013007708"
+      },
+      {
+        "periodStartUnix": 1697893200,
+        "volumeUSD": "18.649288"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "1519.911915",
+        "timestamp": "1736147050"
+      },
+      {
+        "amountUSD": "619.582545416835",
+        "timestamp": "1736147040"
+      },
+      {
+        "amountUSD": "213.102239",
+        "timestamp": "1736147038"
+      },
+      {
+        "amountUSD": "32.059997",
+        "timestamp": "1736147038"
+      },
+      {
+        "amountUSD": "0.049009",
+        "timestamp": "1736147034"
+      }
+    ],
+    "token0": {
+      "id": "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+      "name": "USD Coin",
+      "symbol": "USDC"
+    },
+    "token1": {
+      "id": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+      "name": "(PoS) Tether USD",
+      "symbol": "USDT"
+    },
+    "totalValueLockedUSD": "572979.5100597336458170488147619368",
+    "volumeUSD": "700410986.2942723732201720402391496"
+  },
+  {
+    "id": "0xe7e0eb9f6bcccfe847fdf62a3628319a092f11a2",
+    "liquidity": "78728193313453477399",
+    "poolDayData": [
+      {
+        "date": 1662940800,
+        "volumeUSD": "0.1500308863728027189999999999999999"
+      },
+      {
+        "date": 1663027200,
+        "volumeUSD": "4.712794949215245220077499954766238"
+      },
+      {
+        "date": 1663113600,
+        "volumeUSD": "51.52562476677737193780726667910305"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1663012800,
+        "volumeUSD": "0.1500308863728027189999999999999999"
+      },
+      {
+        "periodStartUnix": 1663077600,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1663081200,
+        "volumeUSD": "3.846282676034813393917104043572212"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "725.390308277544261063304121",
+        "timestamp": "1736146996"
+      },
+      {
+        "amountUSD": "752.7942466746819426575283845",
+        "timestamp": "1736146934"
+      },
+      {
+        "amountUSD": "2434.131852474615443238612966513725",
+        "timestamp": "1736146934"
+      },
+      {
+        "amountUSD": "690.7122237682526150697923715",
+        "timestamp": "1736146810"
+      },
+      {
+        "amountUSD": "685.421770045102336904939084728914",
+        "timestamp": "1736146522"
+      }
+    ],
+    "token0": {
+      "id": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+      "name": "USD Coin (PoS)",
+      "symbol": "USDC"
+    },
+    "token1": {
+      "id": "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+      "name": "(PoS) Dai Stablecoin",
+      "symbol": "DAI"
+    },
+    "totalValueLockedUSD": "252989.210597162486059843568436",
+    "volumeUSD": "615554770.7459303730204742584302022"
+  },
+  {
+    "id": "0x6669b4706cc152f359e947bca68e263a87c52634",
+    "liquidity": "4949634078501492303",
+    "poolDayData": [
+      {
+        "date": 1697068800,
+        "volumeUSD": "3.037825795346711551821422081128351"
+      },
+      {
+        "date": 1697155200,
+        "volumeUSD": "3.049653749649615147356609270180266"
+      },
+      {
+        "date": 1697241600,
+        "volumeUSD": "0.01866589281301577881127474680437652"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1697108400,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1697122800,
+        "volumeUSD": "0.0001562823461958051815475108798054711"
+      },
+      {
+        "periodStartUnix": 1697137200,
+        "volumeUSD": "0.00009879781429029039798605035222646525"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "633.589164508919104764248668774703",
+        "timestamp": "1736147036"
+      },
+      {
+        "amountUSD": "1292.15943561261951763526970003292",
+        "timestamp": "1736147000"
+      },
+      {
+        "amountUSD": "361.1334021218902859258875226825459",
+        "timestamp": "1736146992"
+      },
+      {
+        "amountUSD": "1116.055396477443948212214081652613",
+        "timestamp": "1736146992"
+      },
+      {
+        "amountUSD": "323.6755445351429664110574393225771",
+        "timestamp": "1736146948"
+      }
+    ],
+    "token0": {
+      "id": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+      "name": "Wrapped Matic",
+      "symbol": "WMATIC"
+    },
+    "token1": {
+      "id": "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+      "name": "USD Coin",
+      "symbol": "USDC"
+    },
+    "totalValueLockedUSD": "296597.8344081444914240147259633095",
+    "volumeUSD": "351292082.6505387333322004904322286"
+  },
+  {
+    "id": "0xab52931301078e2405c3a3ebb86e11ad0dfd2cfd",
+    "liquidity": "39961248897696115034616",
+    "poolDayData": [
+      {
+        "date": 1670198400,
+        "volumeUSD": "145.3390517033934915828408356638095"
+      },
+      {
+        "date": 1670284800,
+        "volumeUSD": "215.4127134911937122974211160595466"
+      },
+      {
+        "date": 1670371200,
+        "volumeUSD": "66.32659304864367506009293331249429"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1670205600,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1670220000,
+        "volumeUSD": "6.91266640914973282137930719284031"
+      },
+      {
+        "periodStartUnix": 1670223600,
+        "volumeUSD": "17.96576863441472789452152071855133"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "3819.38852078908916394190452238643",
+        "timestamp": "1736146336"
+      },
+      {
+        "amountUSD": "1691.271334930926788888010742271999",
+        "timestamp": "1736146316"
+      },
+      {
+        "amountUSD": "0.08275051841758885058376060155540535",
+        "timestamp": "1736144646"
+      },
+      {
+        "amountUSD": "4892.360511502459601444039636916372",
+        "timestamp": "1736144012"
+      },
+      {
+        "amountUSD": "1770.285241547903082905924997897824",
+        "timestamp": "1736144008"
+      }
+    ],
+    "token0": {
+      "id": "0x53e0bca35ec356bd5dddfebbd1fc0fd03fabad39",
+      "name": "ChainLink Token",
+      "symbol": "LINK"
+    },
+    "token1": {
+      "id": "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+      "name": "Wrapped Ether",
+      "symbol": "WETH"
+    },
+    "totalValueLockedUSD": "339106.0181197281033144675930484437",
+    "volumeUSD": "323271087.8818665974676514280420479"
+  },
+  {
+    "id": "0xbc8f3da0bd42e1f2509cd8671ce7c7e5f7fd39c8",
+    "liquidity": "81892773316998190375",
+    "poolDayData": [
+      {
+        "date": 1697500800,
+        "volumeUSD": "1.546008741879974418"
+      },
+      {
+        "date": 1697587200,
+        "volumeUSD": "630.1770132506112522047697144716206"
+      },
+      {
+        "date": 1697673600,
+        "volumeUSD": "463.2418484740214490510468368187647"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1697547600,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1697569200,
+        "volumeUSD": "1.546008741879974418"
+      },
+      {
+        "periodStartUnix": 1697594400,
+        "volumeUSD": "0"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "44.45678961783061146198175256133382",
+        "timestamp": "1736147040"
+      },
+      {
+        "amountUSD": "542.436130239674168105116197960665",
+        "timestamp": "1736147028"
+      },
+      {
+        "amountUSD": "725.8553103378650980330212585688395",
+        "timestamp": "1736146996"
+      },
+      {
+        "amountUSD": "619.176330891699070428",
+        "timestamp": "1736146944"
+      },
+      {
+        "amountUSD": "477.5502558760560480421576242738382",
+        "timestamp": "1736146942"
+      }
+    ],
+    "token0": {
+      "id": "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+      "name": "USD Coin",
+      "symbol": "USDC"
+    },
+    "token1": {
+      "id": "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+      "name": "(PoS) Dai Stablecoin",
+      "symbol": "DAI"
+    },
+    "totalValueLockedUSD": "246299.755418700317909585334024155",
+    "volumeUSD": "208573739.0061535062444416601055356"
+  },
+  {
+    "id": "0x1f97c0260c6a18b26a9c2681f0faa93ac2182dbc",
+    "liquidity": "5745708674847070023",
+    "poolDayData": [
+      {
+        "date": 1667433600,
+        "volumeUSD": "58696.14203458797964183412144087302"
+      },
+      {
+        "date": 1667520000,
+        "volumeUSD": "216684.169949192035028447053761335"
+      },
+      {
+        "date": 1667606400,
+        "volumeUSD": "56928.59498742909383346955777618631"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1667487600,
+        "volumeUSD": "3249.996165926454585724008889489911"
+      },
+      {
+        "periodStartUnix": 1667491200,
+        "volumeUSD": "8384.213251745685101595786645027657"
+      },
+      {
+        "periodStartUnix": 1667494800,
+        "volumeUSD": "4417.195358270796773047677744133014"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "1.73312539978017906368734925619337",
+        "timestamp": "1736130960"
+      },
+      {
+        "amountUSD": "1.142018098897066227480451124178202",
+        "timestamp": "1736062022"
+      },
+      {
+        "amountUSD": "1.690608876132453542813692784496503",
+        "timestamp": "1736025770"
+      },
+      {
+        "amountUSD": "0.2502485802677272551328342606489619",
+        "timestamp": "1735995935"
+      },
+      {
+        "amountUSD": "1.736546031648028575251536210172973",
+        "timestamp": "1735993729"
+      }
+    ],
+    "token0": {
+      "id": "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+      "name": "Wrapped Ether",
+      "symbol": "WETH"
+    },
+    "token1": {
+      "id": "0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b",
+      "name": "BOB",
+      "symbol": "BOB"
+    },
+    "totalValueLockedUSD": "354.0463665903021132845601237366123",
+    "volumeUSD": "202646042.1236044073713050238498931"
+  },
+  {
+    "id": "0x9f1a8caf3c8e94e43aa64922d67dff4dc3e88a42",
+    "liquidity": "104663746968806054318753532",
+    "poolDayData": [
+      {
+        "date": 1662854400,
+        "volumeUSD": "0.006744502056531406479887267802822582"
+      },
+      {
+        "date": 1662940800,
+        "volumeUSD": "0.01550928253542133183325320852507161"
+      },
+      {
+        "date": 1663027200,
+        "volumeUSD": "0.0051209227465306745046724047809758"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1662908400,
+        "volumeUSD": "0.006744502056531406479887267802822582"
+      },
+      {
+        "periodStartUnix": 1662912000,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1663005600,
+        "volumeUSD": "0.01550928253542133183325320852507161"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "4355.430196376466217937659338219772",
+        "timestamp": "1736145376"
+      },
+      {
+        "amountUSD": "379.9784912643332007430035509647994",
+        "timestamp": "1736145344"
+      },
+      {
+        "amountUSD": "524.0437386443179413749286559470455",
+        "timestamp": "1736145190"
+      },
+      {
+        "amountUSD": "668.9047908880780084013052119962965",
+        "timestamp": "1736145154"
+      },
+      {
+        "amountUSD": "554.5489946761617158792516290775665",
+        "timestamp": "1736145116"
+      }
+    ],
+    "token0": {
+      "id": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+      "name": "Wrapped Matic",
+      "symbol": "WMATIC"
+    },
+    "token1": {
+      "id": "0xb5c064f955d8e7f38fe0460c556a72987494ee17",
+      "name": "QuickSwap",
+      "symbol": "QUICK"
+    },
+    "totalValueLockedUSD": "426933.3444588342514906986062014645",
+    "volumeUSD": "165327954.6363218346975873154602938"
+  },
+  {
+    "id": "0xeffa9e5e63ba18160ee26bda56b42f3368719615",
+    "liquidity": "17844332989631999418",
+    "poolDayData": [
+      {
+        "date": 1665964800,
+        "volumeUSD": "0"
+      },
+      {
+        "date": 1666051200,
+        "volumeUSD": "90.29386687215989064732667565773335"
+      },
+      {
+        "date": 1666137600,
+        "volumeUSD": "17.57140839872062790410947212720477"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1666029600,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1666101600,
+        "volumeUSD": "48.74216125355423663582667565773335"
+      },
+      {
+        "periodStartUnix": 1666105200,
+        "volumeUSD": "41.5517056186056540115"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "542.4705721184392933559279265",
+        "timestamp": "1736147028"
+      },
+      {
+        "amountUSD": "752.9198554630019716155",
+        "timestamp": "1736146934"
+      },
+      {
+        "amountUSD": "9.139549756133978660999999999999995",
+        "timestamp": "1736146370"
+      },
+      {
+        "amountUSD": "11.489614651678458691646255",
+        "timestamp": "1736146054"
+      },
+      {
+        "amountUSD": "126.492259566234791377768702458469",
+        "timestamp": "1736145802"
+      }
+    ],
+    "token0": {
+      "id": "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+      "name": "(PoS) Dai Stablecoin",
+      "symbol": "DAI"
+    },
+    "token1": {
+      "id": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+      "name": "(PoS) Tether USD",
+      "symbol": "USDT"
+    },
+    "totalValueLockedUSD": "84285.74017663482082000528789189999",
+    "volumeUSD": "161875450.8627371568902986966097754"
+  },
+  {
+    "id": "0xe3703608393727c6b3761471d13e064c77c8d836",
+    "liquidity": "1268627422426626328",
+    "poolDayData": [
+      {
+        "date": 1669075200,
+        "volumeUSD": "0"
+      },
+      {
+        "date": 1669161600,
+        "volumeUSD": "4.151253"
+      },
+      {
+        "date": 1669248000,
+        "volumeUSD": "0.156248"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1669107600,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1669208400,
+        "volumeUSD": "4.151253"
+      },
+      {
+        "periodStartUnix": 1669316400,
+        "volumeUSD": "0.156248"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "32.383757959491",
+        "timestamp": "1736147008"
+      },
+      {
+        "amountUSD": "439.2394983949535",
+        "timestamp": "1736145986"
+      },
+      {
+        "amountUSD": "437.236287",
+        "timestamp": "1736144020"
+      },
+      {
+        "amountUSD": "437.523462",
+        "timestamp": "1736144014"
+      },
+      {
+        "amountUSD": "118.036952",
+        "timestamp": "1736144014"
+      }
+    ],
+    "token0": {
+      "id": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+      "name": "USD Coin (PoS)",
+      "symbol": "USDC"
+    },
+    "token1": {
+      "id": "0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7",
+      "name": "Aavegotchi GHST Token (PoS)",
+      "symbol": "GHST"
+    },
+    "totalValueLockedUSD": "2770369.489615604359901958202804562",
+    "volumeUSD": "157907082.8557477203386"
+  },
+  {
+    "id": "0xd85a25332b57cc447a791100e7317e534d553761",
+    "liquidity": "337032310252565721149564",
+    "poolDayData": [
+      {
+        "date": 1666396800,
+        "volumeUSD": "0"
+      },
+      {
+        "date": 1666569600,
+        "volumeUSD": "0.8891512385675321607993516110215975"
+      },
+      {
+        "date": 1666656000,
+        "volumeUSD": "65.60759557833728621854019647609443"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1666479600,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1666645200,
+        "volumeUSD": "0.8891512385675321607993516110215975"
+      },
+      {
+        "periodStartUnix": 1666710000,
+        "volumeUSD": "21.98148537099186719218558015656624"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "98.67186377005196146984430546635115",
+        "timestamp": "1736146996"
+      },
+      {
+        "amountUSD": "0.5966803441496163449967780711329605",
+        "timestamp": "1736146526"
+      },
+      {
+        "amountUSD": "91.8348043192875331357905303263939",
+        "timestamp": "1736146522"
+      },
+      {
+        "amountUSD": "32.00450446528214805644393103061094",
+        "timestamp": "1736146500"
+      },
+      {
+        "amountUSD": "53.3617233397936611024075213846662",
+        "timestamp": "1736146164"
+      }
+    ],
+    "token0": {
+      "id": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+      "name": "Wrapped Matic",
+      "symbol": "WMATIC"
+    },
+    "token1": {
+      "id": "0xbbba073c31bf03b8acf7c28ef0738decf3695683",
+      "name": "SAND",
+      "symbol": "SAND"
+    },
+    "totalValueLockedUSD": "166485.1074918794361272073195701756",
+    "volumeUSD": "129407030.0623832063628409538575549"
+  },
+  {
+    "id": "0xde2d1fd2e8238aba80a5b80c7262e4833d92f624",
+    "liquidity": "251413704893224903684329",
+    "poolDayData": [
+      {
+        "date": 1663027200,
+        "volumeUSD": "0"
+      },
+      {
+        "date": 1663545600,
+        "volumeUSD": "344.9392142582341366080202516621279"
+      },
+      {
+        "date": 1663632000,
+        "volumeUSD": "104.0329783796077839981272117642931"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1663056000,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1663077600,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1663606800,
+        "volumeUSD": "0"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "175.3114903855010196383846576712612",
+        "timestamp": "1736147046"
+      },
+      {
+        "amountUSD": "483.7160610185929584412697611955323",
+        "timestamp": "1736147042"
+      },
+      {
+        "amountUSD": "368.0220401981065866654708625755454",
+        "timestamp": "1736147024"
+      },
+      {
+        "amountUSD": "113.0600177998818313976319872935093",
+        "timestamp": "1736146938"
+      },
+      {
+        "amountUSD": "12.80008741660253652821117007114004",
+        "timestamp": "1736146740"
+      }
+    ],
+    "token0": {
+      "id": "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+      "name": "Wrapped Ether",
+      "symbol": "WETH"
+    },
+    "token1": {
+      "id": "0xb5c064f955d8e7f38fe0460c556a72987494ee17",
+      "name": "QuickSwap",
+      "symbol": "QUICK"
+    },
+    "totalValueLockedUSD": "244405.8911676292199204102829508302",
+    "volumeUSD": "127044047.065632644008916494812199"
+  },
+  {
+    "id": "0x6b7a1606558f586ffa1fad23a1ab84ccb9155b00",
+    "liquidity": "1100888895253",
+    "poolDayData": [
+      {
+        "date": 1668988800,
+        "volumeUSD": "0"
+      },
+      {
+        "date": 1669075200,
+        "volumeUSD": "10297.591752"
+      },
+      {
+        "date": 1669161600,
+        "volumeUSD": "144498.948915"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1669064400,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1669068000,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1669082400,
+        "volumeUSD": "49.915827"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "9.99494404956",
+        "timestamp": "1736146612"
+      },
+      {
+        "amountUSD": "2.08865011329",
+        "timestamp": "1736145922"
+      },
+      {
+        "amountUSD": "21.79760002182",
+        "timestamp": "1736145322"
+      },
+      {
+        "amountUSD": "0.08157318426",
+        "timestamp": "1736143748"
+      },
+      {
+        "amountUSD": "0.1044389556",
+        "timestamp": "1736143374"
+      }
+    ],
+    "token0": {
+      "id": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+      "name": "USD Coin (PoS)",
+      "symbol": "USDC"
+    },
+    "token1": {
+      "id": "0x750e4c4984a9e0f12978ea6742bc1c5d248f40ed",
+      "name": "Axelar Wrapped USDC",
+      "symbol": "axlUSDC"
+    },
+    "totalValueLockedUSD": "18227.63607155756613690391850659712",
+    "volumeUSD": "88332957.23537014589"
+  },
+  {
+    "id": "0x05bfe97bf794a4db69d3059091f064ea0a5e538e",
+    "liquidity": "41866451263794502179751764",
+    "poolDayData": [
+      {
+        "date": 1663372800,
+        "volumeUSD": "0"
+      },
+      {
+        "date": 1663804800,
+        "volumeUSD": "0"
+      },
+      {
+        "date": 1665100800,
+        "volumeUSD": "57177.63926618803232408288471359307"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1663419600,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1663884000,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1665158400,
+        "volumeUSD": "0"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "14.2231638986804583309665030125825",
+        "timestamp": "1736140894"
+      },
+      {
+        "amountUSD": "37.42617949877202332449993377581379",
+        "timestamp": "1736131590"
+      },
+      {
+        "amountUSD": "5.25826438525220866120411874044886",
+        "timestamp": "1736130970"
+      },
+      {
+        "amountUSD": "6.5363216120262965325491453659031",
+        "timestamp": "1736130906"
+      },
+      {
+        "amountUSD": "6.95935689015366386774591979981972",
+        "timestamp": "1736129312"
+      }
+    ],
+    "token0": {
+      "id": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+      "name": "Wrapped Matic",
+      "symbol": "WMATIC"
+    },
+    "token1": {
+      "id": "0xfa68fb4628dff1028cfec22b4162fccd0d45efb6",
+      "name": "Liquid Staking Matic (PoS)",
+      "symbol": "MaticX"
+    },
+    "totalValueLockedUSD": "251993.4373707565882383935539230524",
+    "volumeUSD": "87892109.31247577212373705963217537"
+  },
+  {
+    "id": "0x384d2094d0df788192043a1cbd200308dd60b068",
+    "liquidity": "349676680166498806270752",
+    "poolDayData": [
+      {
+        "date": 1666828800,
+        "volumeUSD": "152.8327913556052428938472502920458"
+      },
+      {
+        "date": 1667001600,
+        "volumeUSD": "1400.961990328609284965563799495004"
+      },
+      {
+        "date": 1667088000,
+        "volumeUSD": "2460.071917870345728416935829956558"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1666886400,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1666890000,
+        "volumeUSD": "8.52191895838453941878069239544381"
+      },
+      {
+        "periodStartUnix": 1666900800,
+        "volumeUSD": "40.45859779434096713279421601417419"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "152.2126442589461620618818347514562",
+        "timestamp": "1736147024"
+      },
+      {
+        "amountUSD": "136.3535319340295682773271579114256",
+        "timestamp": "1736146940"
+      },
+      {
+        "amountUSD": "6.31022634320872795747313931467178",
+        "timestamp": "1736146880"
+      },
+      {
+        "amountUSD": "101.0427710107259694441251179489492",
+        "timestamp": "1736146878"
+      },
+      {
+        "amountUSD": "5.075761309538359097976004919738875",
+        "timestamp": "1736146806"
+      }
+    ],
+    "token0": {
+      "id": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+      "name": "Wrapped Matic",
+      "symbol": "WMATIC"
+    },
+    "token1": {
+      "id": "0xe5417af564e4bfda1c483642db72007871397896",
+      "name": "Gains Network",
+      "symbol": "GNS"
+    },
+    "totalValueLockedUSD": "61758.28978220047787367069034496699",
+    "volumeUSD": "80837673.86888557645106319273276811"
+  },
+  {
+    "id": "0x00a6177c6455a29b8daa7144b2befc9f2147bb7e",
+    "liquidity": "1602468077885843899734652",
+    "poolDayData": [
+      {
+        "date": 1675123200,
+        "volumeUSD": "0"
+      },
+      {
+        "date": 1675296000,
+        "volumeUSD": "0"
+      },
+      {
+        "date": 1675382400,
+        "volumeUSD": "0.0000000000001139030564383112941016786083248004"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1675195200,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1675317600,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1675382400,
+        "volumeUSD": "0"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "117.2575805668879681109463597130835",
+        "timestamp": "1736147042"
+      },
+      {
+        "amountUSD": "20.64142621349309104717327184648146",
+        "timestamp": "1736147008"
+      },
+      {
+        "amountUSD": "42.21312934357194090296061826634313",
+        "timestamp": "1736147004"
+      },
+      {
+        "amountUSD": "682.530782583002891525616044128359",
+        "timestamp": "1736146968"
+      },
+      {
+        "amountUSD": "113.9117369416155923808446849838421",
+        "timestamp": "1736146960"
+      }
+    ],
+    "token0": {
+      "id": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+      "name": "Wrapped Matic",
+      "symbol": "WMATIC"
+    },
+    "token1": {
+      "id": "0x172370d5cd63279efa6d502dab29171933a610af",
+      "name": "CRV (PoS)",
+      "symbol": "CRV"
+    },
+    "totalValueLockedUSD": "132286.7041339544557840455744275416",
+    "volumeUSD": "75666004.98830276257857800747732459"
+  },
+  {
+    "id": "0x5bf44bb003efe05f711a14a189c0902d6626e919",
+    "liquidity": "619271953028030772580",
+    "poolDayData": [
+      {
+        "date": 1665100800,
+        "volumeUSD": "2046.603876424363904961320246617151"
+      },
+      {
+        "date": 1665187200,
+        "volumeUSD": "21075.76096747560295600603095602549"
+      },
+      {
+        "date": 1665273600,
+        "volumeUSD": "26400.53664526020606228073527366576"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1665158400,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1665176400,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1665180000,
+        "volumeUSD": "1631.110933358460305079053202578397"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "12.29275392902751806729965489912059",
+        "timestamp": "1736146370"
+      },
+      {
+        "amountUSD": "17.52192703729101327834987673954427",
+        "timestamp": "1736146108"
+      },
+      {
+        "amountUSD": "11.42115542399486672843958208886576",
+        "timestamp": "1736146054"
+      },
+      {
+        "amountUSD": "23.58960130471782913815035269076032",
+        "timestamp": "1736145640"
+      },
+      {
+        "amountUSD": "21.37970574491232063050116272469339",
+        "timestamp": "1736145630"
+      }
+    ],
+    "token0": {
+      "id": "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+      "name": "Wrapped Ether",
+      "symbol": "WETH"
+    },
+    "token1": {
+      "id": "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+      "name": "(PoS) Dai Stablecoin",
+      "symbol": "DAI"
+    },
+    "totalValueLockedUSD": "4552.9647701325296403111573967454",
+    "volumeUSD": "67424160.30665580697503618679591923"
+  },
+  {
+    "id": "0x44720a6f572649526ac9073cae9200755cc78e0a",
+    "liquidity": "715558763199472579415",
+    "poolDayData": [
+      {
+        "date": 1676505600,
+        "volumeUSD": "0"
+      },
+      {
+        "date": 1677024000,
+        "volumeUSD": "162.1588528621917189258413406493946"
+      },
+      {
+        "date": 1677801600,
+        "volumeUSD": "1.221125766255897962898201216856734"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1676584800,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1677052800,
+        "volumeUSD": "162.1588528621917189258413406493946"
+      },
+      {
+        "periodStartUnix": 1677823200,
+        "volumeUSD": "1.221125766255897962898201216856734"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "236.9848328980301965080432302981917",
+        "timestamp": "1736146736"
+      },
+      {
+        "amountUSD": "298.5445269401342565226040289533306",
+        "timestamp": "1736146724"
+      },
+      {
+        "amountUSD": "59.3853230327680750217536360772068",
+        "timestamp": "1736146140"
+      },
+      {
+        "amountUSD": "316.5609532176575330736631037868059",
+        "timestamp": "1736146080"
+      },
+      {
+        "amountUSD": "39.49807707280907054380726900702058",
+        "timestamp": "1736144268"
+      }
+    ],
+    "token0": {
+      "id": "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+      "name": "Wrapped Ether",
+      "symbol": "WETH"
+    },
+    "token1": {
+      "id": "0xd6df932a45c0f255f85145f286ea0b292b21c90b",
+      "name": "Aave (PoS)",
+      "symbol": "AAVE"
+    },
+    "totalValueLockedUSD": "150515.477083251333083692516626381",
+    "volumeUSD": "67301428.01921925466076339152862062"
+  },
+  {
+    "id": "0x5b1fd9fa139353c5d9eaf459e4bd2f7a6b4812bb",
+    "liquidity": "167154563256986598",
+    "poolDayData": [
+      {
+        "date": 1665100800,
+        "volumeUSD": "5670.952567318757994964433358298098"
+      },
+      {
+        "date": 1665187200,
+        "volumeUSD": "71930.09614057987129754424758053913"
+      },
+      {
+        "date": 1665273600,
+        "volumeUSD": "18462.79783143965374504240150315502"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1665158400,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1665172800,
+        "volumeUSD": "674.1307309715155082247572781731563"
+      },
+      {
+        "periodStartUnix": 1665176400,
+        "volumeUSD": "1241.682242347242486739676080124942"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "2.157717",
+        "timestamp": "1736144210"
+      },
+      {
+        "amountUSD": "16.49943",
+        "timestamp": "1736142938"
+      },
+      {
+        "amountUSD": "7.408048",
+        "timestamp": "1736138062"
+      },
+      {
+        "amountUSD": "14.85630643545",
+        "timestamp": "1736136892"
+      },
+      {
+        "amountUSD": "11.760047",
+        "timestamp": "1736136316"
+      }
+    ],
+    "token0": {
+      "id": "0xa3fa99a148fa48d14ed51d610c367c61876997f1",
+      "name": "miMATIC",
+      "symbol": "miMATIC"
+    },
+    "token1": {
+      "id": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+      "name": "(PoS) Tether USD",
+      "symbol": "USDT"
+    },
+    "totalValueLockedUSD": "2307.969794811927763241388954677395",
+    "volumeUSD": "66033035.36629221394428190530075488"
+  },
+  {
+    "id": "0x64c01d2b748e5deba661ce58393e6ee0e151a1ee",
+    "liquidity": "1110796371667787528699944",
+    "poolDayData": [
+      {
+        "date": 1665100800,
+        "volumeUSD": "26794.42798883979665987799134239543"
+      },
+      {
+        "date": 1665187200,
+        "volumeUSD": "45752.99349231269637478972963170838"
+      },
+      {
+        "date": 1665273600,
+        "volumeUSD": "85513.30922098254168602452777258978"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1665158400,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1665169200,
+        "volumeUSD": "59.6718812854205615654929553874396"
+      },
+      {
+        "periodStartUnix": 1665172800,
+        "volumeUSD": "372.7961425223191118265133594439445"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "7.599220664479156398209546940466085",
+        "timestamp": "1736140894"
+      },
+      {
+        "amountUSD": "165.88455321226298517767984227384",
+        "timestamp": "1736131586"
+      },
+      {
+        "amountUSD": "147.9734948473997185202924552409727",
+        "timestamp": "1736131582"
+      },
+      {
+        "amountUSD": "10.05894326060284138266238584328464",
+        "timestamp": "1736127880"
+      },
+      {
+        "amountUSD": "132.3464531823702131785104555219814",
+        "timestamp": "1736127658"
+      }
+    ],
+    "token0": {
+      "id": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+      "name": "Wrapped Matic",
+      "symbol": "WMATIC"
+    },
+    "token1": {
+      "id": "0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4",
+      "name": "Staked MATIC (PoS)",
+      "symbol": "stMATIC"
+    },
+    "totalValueLockedUSD": "82092.55746636519499770475187367804",
+    "volumeUSD": "65734464.90136104376836868052068796"
+  },
+  {
+    "id": "0x94d47616f45f98e1ac688326ffdab7bf3a6be440",
+    "liquidity": "111487309498812767",
+    "poolDayData": [
+      {
+        "date": 1664928000,
+        "volumeUSD": "57.45343099999999999999999999999998"
+      },
+      {
+        "date": 1665014400,
+        "volumeUSD": "2.092446"
+      },
+      {
+        "date": 1665100800,
+        "volumeUSD": "0"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1664946000,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1664949600,
+        "volumeUSD": "57.37118499999999999999999999999998"
+      },
+      {
+        "periodStartUnix": 1664974800,
+        "volumeUSD": "0.082246"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "16.780481",
+        "timestamp": "1736147036"
+      },
+      {
+        "amountUSD": "10.52781272082",
+        "timestamp": "1736128432"
+      },
+      {
+        "amountUSD": "23.847691",
+        "timestamp": "1736124712"
+      },
+      {
+        "amountUSD": "0.34881551181",
+        "timestamp": "1736092239"
+      },
+      {
+        "amountUSD": "1.99998",
+        "timestamp": "1736089759"
+      }
+    ],
+    "token0": {
+      "id": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+      "name": "USD Coin (PoS)",
+      "symbol": "USDC"
+    },
+    "token1": {
+      "id": "0xa3fa99a148fa48d14ed51d610c367c61876997f1",
+      "name": "miMATIC",
+      "symbol": "miMATIC"
+    },
+    "totalValueLockedUSD": "2308.2881006651346676539843494739",
+    "volumeUSD": "61035205.24210924364"
+  },
+  {
+    "id": "0x022df0b3341b3a0157eea97dd024a93f7496d631",
+    "liquidity": "2016292908116034465",
+    "poolDayData": [
+      {
+        "date": 1662508800,
+        "volumeUSD": "0"
+      },
+      {
+        "date": 1662595200,
+        "volumeUSD": "0.000071"
+      },
+      {
+        "date": 1662854400,
+        "volumeUSD": "0.01449"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1662577200,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1662645600,
+        "volumeUSD": "0.000071"
+      },
+      {
+        "periodStartUnix": 1662908400,
+        "volumeUSD": "0.01449"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "36.864503",
+        "timestamp": "1736146722"
+      },
+      {
+        "amountUSD": "49.211014",
+        "timestamp": "1736144192"
+      },
+      {
+        "amountUSD": "83.412287",
+        "timestamp": "1736144020"
+      },
+      {
+        "amountUSD": "159.773135578753",
+        "timestamp": "1736141794"
+      },
+      {
+        "amountUSD": "74.46345842685",
+        "timestamp": "1736141660"
+      }
+    ],
+    "token0": {
+      "id": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+      "name": "USD Coin (PoS)",
+      "symbol": "USDC"
+    },
+    "token1": {
+      "id": "0xb5c064f955d8e7f38fe0460c556a72987494ee17",
+      "name": "QuickSwap",
+      "symbol": "QUICK"
+    },
+    "totalValueLockedUSD": "154512.0382684033047412821821725539",
+    "volumeUSD": "57034367.0735650363277"
+  },
+  {
+    "id": "0x7212d38aa05d4d76c9af19721fda00c21b7f8b28",
+    "liquidity": "1251415112105214814397",
+    "poolDayData": [
+      {
+        "date": 1665100800,
+        "volumeUSD": "2589.583898673828292408460001113738"
+      },
+      {
+        "date": 1665187200,
+        "volumeUSD": "18431.77738664204661033796044976995"
+      },
+      {
+        "date": 1665273600,
+        "volumeUSD": "55103.76380862900393477831648400993"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1665158400,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1665169200,
+        "volumeUSD": "1.070330377967190338237645325955773"
+      },
+      {
+        "periodStartUnix": 1665172800,
+        "volumeUSD": "1773.880410586925067382918350092059"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "3.487125574366072835062355745985856",
+        "timestamp": "1736138392"
+      },
+      {
+        "amountUSD": "4.179274355782323833039212411993236",
+        "timestamp": "1736138388"
+      },
+      {
+        "amountUSD": "4.527449078730219469790637243603026",
+        "timestamp": "1736138322"
+      },
+      {
+        "amountUSD": "6.249178788096464926084740672901835",
+        "timestamp": "1736138318"
+      },
+      {
+        "amountUSD": "2.729016181790504277674477280065568",
+        "timestamp": "1736130932"
+      }
+    ],
+    "token0": {
+      "id": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+      "name": "Wrapped Matic",
+      "symbol": "WMATIC"
+    },
+    "token1": {
+      "id": "0xa3fa99a148fa48d14ed51d610c367c61876997f1",
+      "name": "miMATIC",
+      "symbol": "miMATIC"
+    },
+    "totalValueLockedUSD": "2798.247263021095397967423629078387",
+    "volumeUSD": "47922206.47215794344055902637389275"
+  },
+  {
+    "id": "0xdb975b96828352880409e86d5ae93c23c924f812",
+    "liquidity": "41460228461",
+    "poolDayData": [
+      {
+        "date": 1697587200,
+        "volumeUSD": "0"
+      },
+      {
+        "date": 1697673600,
+        "volumeUSD": "3.94916973464194147732014448990377"
+      },
+      {
+        "date": 1697760000,
+        "volumeUSD": "0.806175933303925170906723544246507"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1697670000,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1697688000,
+        "volumeUSD": "0.1999522456855698446002846246056263"
+      },
+      {
+        "periodStartUnix": 1697734800,
+        "volumeUSD": "1.399128110707112226134020734417949"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "352.7100837409539543120695290218954",
+        "timestamp": "1736147040"
+      },
+      {
+        "amountUSD": "196.4922844083404026075854930904752",
+        "timestamp": "1736146716"
+      },
+      {
+        "amountUSD": "12.26835568372765015222684139241165",
+        "timestamp": "1736146496"
+      },
+      {
+        "amountUSD": "61.8465675136311390721436121428446",
+        "timestamp": "1736146336"
+      },
+      {
+        "amountUSD": "79.07528553454514471147433621367685",
+        "timestamp": "1736146312"
+      }
+    ],
+    "token0": {
+      "id": "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6",
+      "name": "(PoS) Wrapped BTC",
+      "symbol": "WBTC"
+    },
+    "token1": {
+      "id": "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+      "name": "USD Coin",
+      "symbol": "USDC"
+    },
+    "totalValueLockedUSD": "135165.9012524500332556980398372805",
+    "volumeUSD": "42962174.06275850640002674217666098"
+  },
+  {
+    "id": "0x4b6998b0cc8825898708564040cbd302257b531b",
+    "liquidity": "159493332088880887922",
+    "poolDayData": [
+      {
+        "date": 1666828800,
+        "volumeUSD": "11736.91548815367930991184653084416"
+      },
+      {
+        "date": 1666915200,
+        "volumeUSD": "27049.03130146944110368194387876462"
+      },
+      {
+        "date": 1667001600,
+        "volumeUSD": "26595.71160204226991841171189218983"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1666857600,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1666861200,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1666864800,
+        "volumeUSD": "2024.278581284503298218632609491922"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "0.968559791855652111830540080148286",
+        "timestamp": "1736131878"
+      },
+      {
+        "amountUSD": "1.375732247273045667917343782615647",
+        "timestamp": "1736131826"
+      },
+      {
+        "amountUSD": "0.993321253498193668194929590901273",
+        "timestamp": "1736128470"
+      },
+      {
+        "amountUSD": "0.872134159811236161854545548484809",
+        "timestamp": "1736126526"
+      },
+      {
+        "amountUSD": "1.028008197401755888367343539975873",
+        "timestamp": "1736092151"
+      }
+    ],
+    "token0": {
+      "id": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+      "name": "Wrapped Matic",
+      "symbol": "WMATIC"
+    },
+    "token1": {
+      "id": "0xb0b195aefa3650a6908f15cdac7d92f8a5791b0b",
+      "name": "BOB",
+      "symbol": "BOB"
+    },
+    "totalValueLockedUSD": "121.7618918406202973572659753188781",
+    "volumeUSD": "42583134.14368090307230514839619032"
+  },
+  {
+    "id": "0xbf3036c5c55bdb36ae505f96f4c40c92e782e9f6",
+    "liquidity": "1115762245715208310",
+    "poolDayData": [
+      {
+        "date": 1664323200,
+        "volumeUSD": "0"
+      },
+      {
+        "date": 1664409600,
+        "volumeUSD": "0"
+      },
+      {
+        "date": 1674518400,
+        "volumeUSD": "1.012128"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1664406000,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1664409600,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1664442000,
+        "volumeUSD": "0"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "119.47773",
+        "timestamp": "1736146732"
+      },
+      {
+        "amountUSD": "256.957726",
+        "timestamp": "1736146728"
+      },
+      {
+        "amountUSD": "29.111808",
+        "timestamp": "1736146728"
+      },
+      {
+        "amountUSD": "119.53501",
+        "timestamp": "1736146728"
+      },
+      {
+        "amountUSD": "120.32282221966",
+        "timestamp": "1736145750"
+      }
+    ],
+    "token0": {
+      "id": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+      "name": "USD Coin (PoS)",
+      "symbol": "USDC"
+    },
+    "token1": {
+      "id": "0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f",
+      "name": "VOXEL Token",
+      "symbol": "VOXEL"
+    },
+    "totalValueLockedUSD": "764714.8677231891437092700556709642",
+    "volumeUSD": "38780590.0781832033365"
+  },
+  {
+    "id": "0xa56796f13566c515471a2fbbab731f88ce5de428",
+    "liquidity": "1636916517939662549353",
+    "poolDayData": [
+      {
+        "date": 1664064000,
+        "volumeUSD": "1.840685884856320393582710868917727"
+      },
+      {
+        "date": 1664150400,
+        "volumeUSD": "2.140885610569460179123019450101256"
+      },
+      {
+        "date": 1664236800,
+        "volumeUSD": "4.032399420035934674491846785276424"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1664082000,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1664121600,
+        "volumeUSD": "1.840685884856320393582710868917727"
+      },
+      {
+        "periodStartUnix": 1664175600,
+        "volumeUSD": "2.140885610569460179123019450101256"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "5.1965842022590775044350619634423",
+        "timestamp": "1736146534"
+      },
+      {
+        "amountUSD": "3.171615370371859187348240399999999",
+        "timestamp": "1736131108"
+      },
+      {
+        "amountUSD": "5.913889891767714679770834",
+        "timestamp": "1736129290"
+      },
+      {
+        "amountUSD": "5.3734884603327380889923028",
+        "timestamp": "1736128520"
+      },
+      {
+        "amountUSD": "3.984796621039325936152774058294303",
+        "timestamp": "1736126300"
+      }
+    ],
+    "token0": {
+      "id": "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+      "name": "(PoS) Dai Stablecoin",
+      "symbol": "DAI"
+    },
+    "token1": {
+      "id": "0xe5417af564e4bfda1c483642db72007871397896",
+      "name": "Gains Network",
+      "symbol": "GNS"
+    },
+    "totalValueLockedUSD": "5876.756136384165962863356136375003",
+    "volumeUSD": "36592782.23014603875197707485042413"
+  },
+  {
+    "id": "0x0bef3882798219eeaf40a8b63563a3d3ab6092ab",
+    "liquidity": "4064366109000238421161926",
+    "poolDayData": [
+      {
+        "date": 1665100800,
+        "volumeUSD": "1302.532629924500656658223446634578"
+      },
+      {
+        "date": 1665187200,
+        "volumeUSD": "35599.8881524160283893857485477503"
+      },
+      {
+        "date": 1665273600,
+        "volumeUSD": "8370.031213609642078801837943128172"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1665158400,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1665172800,
+        "volumeUSD": "191.6092348296384871289557727553871"
+      },
+      {
+        "periodStartUnix": 1665176400,
+        "volumeUSD": "418.8868284659332612659420492412825"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "32.02982051204069247473037",
+        "timestamp": "1736139514"
+      },
+      {
+        "amountUSD": "32.79639925531970018073899999999999",
+        "timestamp": "1736134978"
+      },
+      {
+        "amountUSD": "5.70023981480133360888696",
+        "timestamp": "1736129146"
+      },
+      {
+        "amountUSD": "31.27330667514348957197052",
+        "timestamp": "1736129020"
+      },
+      {
+        "amountUSD": "44.07173309691267701836473",
+        "timestamp": "1736128538"
+      }
+    ],
+    "token0": {
+      "id": "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+      "name": "(PoS) Dai Stablecoin",
+      "symbol": "DAI"
+    },
+    "token1": {
+      "id": "0xa3fa99a148fa48d14ed51d610c367c61876997f1",
+      "name": "miMATIC",
+      "symbol": "miMATIC"
+    },
+    "totalValueLockedUSD": "73226.25391249012169230398097614199",
+    "volumeUSD": "32899105.4119850441266421355518033"
+  },
+  {
+    "id": "0x76d9553f9910c5cf1f5dbbb210dc95bc5a63ee68",
+    "liquidity": "12432083264",
+    "poolDayData": [
+      {
+        "date": 1674000000,
+        "volumeUSD": "1.890085059719670286192959971738605"
+      },
+      {
+        "date": 1674172800,
+        "volumeUSD": "7.407343220915148989470820806332222"
+      },
+      {
+        "date": 1674432000,
+        "volumeUSD": "4.788727472431365572579519946254095"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1674003600,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1674072000,
+        "volumeUSD": "1.890085059719670286192959971738605"
+      },
+      {
+        "periodStartUnix": 1674234000,
+        "volumeUSD": "2.048967837558137422477329140398904"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "132.1670546843362626829312549251045",
+        "timestamp": "1736147026"
+      },
+      {
+        "amountUSD": "50.2566419001110068309495468820543",
+        "timestamp": "1736146766"
+      },
+      {
+        "amountUSD": "55.45582380093897654480629510557685",
+        "timestamp": "1736146736"
+      },
+      {
+        "amountUSD": "14.01141820281892783004012291471105",
+        "timestamp": "1736146684"
+      },
+      {
+        "amountUSD": "56.547297979213129726242279513682",
+        "timestamp": "1736146148"
+      }
+    ],
+    "token0": {
+      "id": "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6",
+      "name": "(PoS) Wrapped BTC",
+      "symbol": "WBTC"
+    },
+    "token1": {
+      "id": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+      "name": "(PoS) Tether USD",
+      "symbol": "USDT"
+    },
+    "totalValueLockedUSD": "27865.04511807023096082285227995087",
+    "volumeUSD": "30004653.0644248651695041740753586"
+  },
+  {
+    "id": "0x370404a2a57edfbeaf16dc8ef8e2d1b0a2a9da15",
+    "liquidity": "2781952562601367020258",
+    "poolDayData": [
+      {
+        "date": 1678320000,
+        "volumeUSD": "0"
+      },
+      {
+        "date": 1678406400,
+        "volumeUSD": "0"
+      },
+      {
+        "date": 1678492800,
+        "volumeUSD": "0.542599732542531434420209929960107"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1678384800,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1678395600,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1678464000,
+        "volumeUSD": "0"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "10.38929621857792301337986474646124",
+        "timestamp": "1736146988"
+      },
+      {
+        "amountUSD": "27.15013002233560845647239733236003",
+        "timestamp": "1736146716"
+      },
+      {
+        "amountUSD": "56.24647569493712694987756286306605",
+        "timestamp": "1736146148"
+      },
+      {
+        "amountUSD": "12.84391446245196758519162716015465",
+        "timestamp": "1736145716"
+      },
+      {
+        "amountUSD": "50.2498768933336246409292649523317",
+        "timestamp": "1736145650"
+      }
+    ],
+    "token0": {
+      "id": "0x03b54a6e9a984069379fae1a4fc4dbae93b3bccd",
+      "name": "Wrapped liquid staked Ether 2.0 (PoS)",
+      "symbol": "wstETH"
+    },
+    "token1": {
+      "id": "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+      "name": "Wrapped Ether",
+      "symbol": "WETH"
+    },
+    "totalValueLockedUSD": "214179.0111606829441902852526505992",
+    "volumeUSD": "27191585.82335443790268307139960092"
+  },
+  {
+    "id": "0x8cc24a7dfe0c946cd10c25cfee5769ae617ec459",
+    "liquidity": "1237599352134308164",
+    "poolDayData": [
+      {
+        "date": 1727136000,
+        "volumeUSD": "71290.74300668988957035413691644618"
+      },
+      {
+        "date": 1727222400,
+        "volumeUSD": "30858.5146173373997556496792241929"
+      },
+      {
+        "date": 1727308800,
+        "volumeUSD": "70089.52240039270800112282431498118"
+      }
+    ],
+    "poolHourData": [
+      {
+        "periodStartUnix": 1727179200,
+        "volumeUSD": "0"
+      },
+      {
+        "periodStartUnix": 1727182800,
+        "volumeUSD": "41802.72066323740455097703415908338"
+      },
+      {
+        "periodStartUnix": 1727186400,
+        "volumeUSD": "15837.7712595392162934864702507858"
+      }
+    ],
+    "swaps": [
+      {
+        "amountUSD": "246.41674",
+        "timestamp": "1736147000"
+      },
+      {
+        "amountUSD": "273.1869265493284",
+        "timestamp": "1736146896"
+      },
+      {
+        "amountUSD": "499.9946",
+        "timestamp": "1736146780"
+      },
+      {
+        "amountUSD": "489.658526630798",
+        "timestamp": "1736146780"
+      },
+      {
+        "amountUSD": "500.418346",
+        "timestamp": "1736146780"
+      }
+    ],
+    "token0": {
+      "id": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+      "name": "(PoS) Tether USD",
+      "symbol": "USDT"
+    },
+    "token1": {
+      "id": "0xf2b028ed5977f136982fdfa429814cf19f09693f",
+      "name": "Unseen",
+      "symbol": "UNCN"
+    },
+    "totalValueLockedUSD": "1264301.222335685264714854600303682",
+    "volumeUSD": "26872824.73480885738763352540119032"
   }
-}
+]
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
+
