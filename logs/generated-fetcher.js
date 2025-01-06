@@ -50,7 +50,7 @@ const fetchPools = async (skip = 0, first = 10) => {
                 volumeUSD
               }
               poolHourData(first: 3) {
-                hour
+                periodStartUnix
                 volumeUSD
               }
             }
