@@ -1,53 +1,5 @@
 [
   {
-    "id": "0x000a7d8e4619aa9ee59eb80fa5bc5d5905afb403",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
-      "name": "USD Coin (PoS)",
-      "symbol": "USDC"
-    },
-    "token1": {
-      "id": "0xbb6e6cbe9b392ac1275f3764cfda687a7d0a2cf6",
-      "name": "Dummy VIS",
-      "symbol": "DVIS"
-    },
-    "txCount": "122",
-    "volumeUSD": "286.793155"
-  },
-  {
-    "id": "0x00602d036403258c2765cb95f750db96cd9ddda4",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
-      "name": "USD Coin",
-      "symbol": "USDC"
-    },
-    "token1": {
-      "id": "0x731c79f054df3a567584ee21a95399d343103143",
-      "name": "Corgi Studio",
-      "symbol": "CRS"
-    },
-    "txCount": "7",
-    "volumeUSD": "0"
-  },
-  {
-    "id": "0x0080c1cb52682de5a1f183923134f8ccd2632c90",
-    "liquidity": "4547114609005437053",
-    "token0": {
-      "id": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
-      "name": "Wrapped Matic",
-      "symbol": "WMATIC"
-    },
-    "token1": {
-      "id": "0x85955046df4668e1dd369d2de9f3aeb98dd2a369",
-      "name": "DefiPulse Index (PoS)",
-      "symbol": "DPI"
-    },
-    "txCount": "616",
-    "volumeUSD": "607.5438225957197376109672159763713"
-  },
-  {
     "id": "0x00841185ce96c3f0523063674975e846c99a33ce",
     "liquidity": "0",
     "token0": {
@@ -64,24 +16,8 @@
     "volumeUSD": "230736.6831209687465185667826061869"
   },
   {
-    "id": "0x0090f56042f338dc03621d8f1ed7d906bed0667b",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x53e0bca35ec356bd5dddfebbd1fc0fd03fabad39",
-      "name": "ChainLink Token",
-      "symbol": "LINK"
-    },
-    "token1": {
-      "id": "0xb5c064f955d8e7f38fe0460c556a72987494ee17",
-      "name": "QuickSwap",
-      "symbol": "QUICK"
-    },
-    "txCount": "431",
-    "volumeUSD": "0"
-  },
-  {
     "id": "0x00a6177c6455a29b8daa7144b2befc9f2147bb7e",
-    "liquidity": "1164876215349400976886857",
+    "liquidity": "1219920477268763341074056",
     "token0": {
       "id": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
       "name": "Wrapped Matic",
@@ -92,8 +28,8 @@
       "name": "CRV (PoS)",
       "symbol": "CRV"
     },
-    "txCount": "382712",
-    "volumeUSD": "75704323.03306577163081053128689294"
+    "txCount": "382724",
+    "volumeUSD": "75706091.24805951975522275673148385"
   },
   {
     "id": "0x00df93b1f3b1185c0048d50ab3281311b64836c2",
@@ -112,70 +48,6 @@
     "volumeUSD": "217729.1642660962038606412502104819"
   },
   {
-    "id": "0x00e1269f75c2345372593b9f7423228fb46b544c",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x60edc5ee90fea7deb8768085a140abc5dc905e99",
-      "name": "scooterfund",
-      "symbol": "$LUF"
-    },
-    "token1": {
-      "id": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
-      "name": "(PoS) Tether USD",
-      "symbol": "USDT"
-    },
-    "txCount": "14",
-    "volumeUSD": "11.07414287010818124730521321898151"
-  },
-  {
-    "id": "0x014433cff4829223a727a582ea056ce5852a81af",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x9d939e22d4a50025cddac3d26f9485e49f95d074",
-      "name": "Hellhound",
-      "symbol": "HLH"
-    },
-    "token1": {
-      "id": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
-      "name": "(PoS) Tether USD",
-      "symbol": "USDT"
-    },
-    "txCount": "3",
-    "volumeUSD": "0"
-  },
-  {
-    "id": "0x015b9aeabec0289aa01e8bf46a476cc099442f94",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
-      "name": "USD Coin (PoS)",
-      "symbol": "USDC"
-    },
-    "token1": {
-      "id": "0xe39b04e6760e22ea5899193bccccf3e258025bda",
-      "name": "BTC-S",
-      "symbol": "BTC-S"
-    },
-    "txCount": "4",
-    "volumeUSD": "11.310339"
-  },
-  {
-    "id": "0x01b6b7c78f1186e734c3eaf4bcfd31f207f46db5",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x9aa68ba3746d05009135d5f33d3ced069dca719b",
-      "name": "Seven Chain",
-      "symbol": "SVC"
-    },
-    "token1": {
-      "id": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
-      "name": "(PoS) Tether USD",
-      "symbol": "USDT"
-    },
-    "txCount": "5",
-    "volumeUSD": "2.062745761184212388034825130212647"
-  },
-  {
     "id": "0x01e0d3b51b8a005951d8ff6b0ad147a7faead9d5",
     "liquidity": "759268017838655",
     "token0": {
@@ -192,22 +64,6 @@
     "volumeUSD": "0"
   },
   {
-    "id": "0x02165fb12e16b6673f8cf941ee36a2996c53fac2",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
-      "name": "USD Coin (PoS)",
-      "symbol": "USDC"
-    },
-    "token1": {
-      "id": "0x3553f861dec0257bada9f8ed268bf0d74e45e89c",
-      "name": "USDT",
-      "symbol": "USDT"
-    },
-    "txCount": "17",
-    "volumeUSD": "124.012962"
-  },
-  {
     "id": "0x022df0b3341b3a0157eea97dd024a93f7496d631",
     "liquidity": "2425183090502685500",
     "token0": {
@@ -222,22 +78,6 @@
     },
     "txCount": "276822",
     "volumeUSD": "57036284.9915690363277"
-  },
-  {
-    "id": "0x0238344d13ff4e01ea1e36e4bdfa891a960bce33",
-    "liquidity": "83179951908790525677",
-    "token0": {
-      "id": "0xce5f928be5e42f7f83e7c92a9dde70430a119c44",
-      "name": "SFC",
-      "symbol": "SFC"
-    },
-    "token1": {
-      "id": "0xdfe21992da3c135f009f273a281bfe4ee84d9872",
-      "name": "XXOO",
-      "symbol": "XXOO"
-    },
-    "txCount": "2126",
-    "volumeUSD": "0"
   },
   {
     "id": "0x024bc4547af770edfcdfb4c2ddb52c9ae3dc3440",
@@ -272,118 +112,6 @@
     "volumeUSD": "17451.663554"
   },
   {
-    "id": "0x02af19640cc9f5fd1aeee84c7e9a738afe508363",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
-      "name": "USD Coin (PoS)",
-      "symbol": "USDC"
-    },
-    "token1": {
-      "id": "0xabdf49b642eb741269a4554f924fb7909b07e8b2",
-      "name": "HoneySwap Polygon",
-      "symbol": "HSP"
-    },
-    "txCount": "8",
-    "volumeUSD": "1.258996"
-  },
-  {
-    "id": "0x02ba675fec5a601d206e65a8d6f23b2fe694a61c",
-    "liquidity": "1060211348861122",
-    "token0": {
-      "id": "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
-      "name": "USD Coin",
-      "symbol": "USDC"
-    },
-    "token1": {
-      "id": "0xe9e6b372a8bb30cf95387e10f66b9ca193416e5b",
-      "name": "STARPRO",
-      "symbol": "SPRO"
-    },
-    "txCount": "57",
-    "volumeUSD": "0"
-  },
-  {
-    "id": "0x03289b90bd098d21a39211c15e92251d52e3614a",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x386bb7d41fdf5b5579a58262a0a9e8397d6b0572",
-      "name": "MaxBIT",
-      "symbol": "MBIT"
-    },
-    "token1": {
-      "id": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
-      "name": "(PoS) Tether USD",
-      "symbol": "USDT"
-    },
-    "txCount": "4",
-    "volumeUSD": "0"
-  },
-  {
-    "id": "0x033922fa6e64a51ea5b09a57dd337bc1e63f9629",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x4d232c4b8147179fb675272dc3d193ef5a66df88",
-      "name": "Orion Protocol",
-      "symbol": "ORN"
-    },
-    "token1": {
-      "id": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
-      "name": "(PoS) Tether USD",
-      "symbol": "USDT"
-    },
-    "txCount": "153",
-    "volumeUSD": "52.37181148580557438608664882666752"
-  },
-  {
-    "id": "0x03478bc1db3ae1f18e8a528b04d44ba0d36383a6",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4",
-      "name": "Staked MATIC (PoS)",
-      "symbol": "stMATIC"
-    },
-    "token1": {
-      "id": "0x53e0bca35ec356bd5dddfebbd1fc0fd03fabad39",
-      "name": "ChainLink Token",
-      "symbol": "LINK"
-    },
-    "txCount": "610",
-    "volumeUSD": "0"
-  },
-  {
-    "id": "0x035a3ac9ca05113ee96004bdd84d6da3217cf372",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x3405a1bd46b85c5c029483fbecf2f3e611026e45",
-      "name": "Bat True Dollar",
-      "symbol": "BTD"
-    },
-    "token1": {
-      "id": "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
-      "name": "(PoS) Dai Stablecoin",
-      "symbol": "DAI"
-    },
-    "txCount": "5",
-    "volumeUSD": "4.743005373224008254700073465386714"
-  },
-  {
-    "id": "0x0385ed5a1a53c391958100756124bb58b49ac73b",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x7abe9edf5c544a04da83e9110cf46dbc4759170c",
-      "name": "WPAY",
-      "symbol": "WPAY"
-    },
-    "token1": {
-      "id": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
-      "name": "(PoS) Tether USD",
-      "symbol": "USDT"
-    },
-    "txCount": "3",
-    "volumeUSD": "0"
-  },
-  {
     "id": "0x03b6353989a8a50dacaab4a69bac829f08c21013",
     "liquidity": "0",
     "token0": {
@@ -414,22 +142,6 @@
     },
     "txCount": "512",
     "volumeUSD": "668.680785773754581141533214486368"
-  },
-  {
-    "id": "0x03e56e6a75d893f52fa978b5422486eb3f3e4976",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x5e932823d2e72162b0285fa79059b65cee400411",
-      "name": "Billionaire Dog Club",
-      "symbol": "BDC"
-    },
-    "token1": {
-      "id": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
-      "name": "(PoS) Tether USD",
-      "symbol": "USDT"
-    },
-    "txCount": "6",
-    "volumeUSD": "8.389613"
   },
   {
     "id": "0x0410ffe134c121be176e03ff4474ee5fb9cc867d",
@@ -464,54 +176,6 @@
     "volumeUSD": "1323889.2815047845743"
   },
   {
-    "id": "0x041a1a7117fd6b116778af7bf8d826032f9653fc",
-    "liquidity": "2000097353541",
-    "token0": {
-      "id": "0x645b28102f69ce4a8ad0c5ac60469ea6bb748ddc",
-      "name": "AK Parti",
-      "symbol": "AKP"
-    },
-    "token1": {
-      "id": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
-      "name": "(PoS) Tether USD",
-      "symbol": "USDT"
-    },
-    "txCount": "7",
-    "volumeUSD": "1.907576778800995040668913753137117"
-  },
-  {
-    "id": "0x0426d44fde1c6aea7212b9d88a7a2c86816a876d",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x58f9365510c410a27ae785a49db5000a89cfd1bd",
-      "name": "UltimateDealOfficialStore",
-      "symbol": "UDS"
-    },
-    "token1": {
-      "id": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
-      "name": "(PoS) Tether USD",
-      "symbol": "USDT"
-    },
-    "txCount": "48",
-    "volumeUSD": "127.9580109606884133717819429270264"
-  },
-  {
-    "id": "0x0442ae62aa5ad7880423285ed51c5bf031de4c73",
-    "liquidity": "0",
-    "token0": {
-      "id": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
-      "name": "(PoS) Tether USD",
-      "symbol": "USDT"
-    },
-    "token1": {
-      "id": "0xc85b1809b475f5a0d863cb79172522a2c2115a56",
-      "name": "TheToken",
-      "symbol": "TTK"
-    },
-    "txCount": "9",
-    "volumeUSD": "6.00001"
-  },
-  {
     "id": "0x04520ba3144345eba167addfb2a8879467253076",
     "liquidity": "44112267422686660",
     "token0": {
@@ -528,67 +192,19 @@
     "volumeUSD": "3442946.686431926257177507931994661"
   },
   {
-    "id": "0x047b86c1755b838765218b42895b27183039d48f",
+    "id": "0x046c727b28e5ce96454044fefdde2651aad6c890",
     "liquidity": "0",
     "token0": {
-      "id": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
-      "name": "(PoS) Tether USD",
-      "symbol": "USDT"
-    },
-    "token1": {
-      "id": "0xf0a129913dc28c426bfd37776d0771e5d9444a5d",
-      "name": "EVM FIRESTAR",
-      "symbol": "EVM FR"
-    },
-    "txCount": "49",
-    "volumeUSD": "4.26794658697190220687291440017544"
-  },
-  {
-    "id": "0x047f5693d81d831ebce46b1180bdf8b9a9b5e3e9",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x198f1d316aad1c0bfd36a79bd1a8e9dba92daa18",
-      "name": "DECATS",
-      "symbol": "DECATS"
-    },
-    "token1": {
-      "id": "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
-      "name": "(PoS) Dai Stablecoin",
-      "symbol": "DAI"
-    },
-    "txCount": "38",
-    "volumeUSD": "1966.111337032641266649277126243619"
-  },
-  {
-    "id": "0x049e37180f6cc04ac8a3497d2fcff1bc9f762209",
-    "liquidity": "2562656822427728991982",
-    "token0": {
-      "id": "0x05fa81ae340098c8c7fcd310469195f9f8410858",
-      "name": "STEM",
-      "symbol": "STEM"
-    },
-    "token1": {
       "id": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
       "name": "Wrapped Matic",
       "symbol": "WMATIC"
     },
-    "txCount": "417",
-    "volumeUSD": "472.801579152738368413549743171436"
-  },
-  {
-    "id": "0x04a0ef2af0c56fa516c72264444c70dfd2fb11b0",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x52468c88e8b4f5bcca20a6a7813355637dc5e3ad",
-      "name": "Power Of Deep Ocean",
-      "symbol": "PODO"
-    },
     "token1": {
-      "id": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
-      "name": "(PoS) Tether USD",
-      "symbol": "USDT"
+      "id": "0xd33fd95fc17bc808b35e98458e078330f35dbfa3",
+      "name": "Midnight",
+      "symbol": "NIGHT"
     },
-    "txCount": "10",
-    "volumeUSD": "1.141495"
+    "txCount": "240",
+    "volumeUSD": "64147.74814956925916354404170750676"
   }
 ]
