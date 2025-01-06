@@ -51,10 +51,26 @@ rawPools.forEach((pool) => {
   }
 
   if (isValid) {
-    validPools.push(pool);
+    // Include token names and symbols in the filtered result
+    validPools.push({
+      id: pool.id,
+      volumeUSD: pool.volumeUSD,
+      liquidity: pool.liquidity,
+      feesUSD: pool.feesUSD,
+      token0: {
+        id: pool.token0.id,
+        name: pool.token0.name,
+        symbol: pool.token0.symbol,
+      },
+      token1: {
+        id: pool.token1.id,
+        name: pool.token1.name,
+        symbol: pool.token1.symbol,
+      },
+    });
   }
 });
 
-// Save the filtered pools
+// Save the filtered pools with token metadata
 fs.writeFileSync(filteredDataPath, JSON.stringify(validPools, null, 2));
 console.log(`✅ Valid pools saved to ${filteredDataPath}`);
