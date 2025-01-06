@@ -2,46 +2,25 @@
   "type": "object",
   "properties": {
     "id": {
-      "type": "id",
-      "description": "Field of type ID"
-    },
-    "date": {
-      "type": "int",
-      "description": "Field of type Int"
-    },
-    "volumeMatic": {
-      "type": "bigdecimal",
-      "description": "Field of type BigDecimal"
+      "type": "string",
+      "description": "Unique identifier for the pool"
     },
     "volumeUSD": {
-      "type": "bigdecimal",
-      "description": "Field of type BigDecimal"
-    },
-    "volumeUSDUntracked": {
-      "type": "bigdecimal",
-      "description": "Field of type BigDecimal"
-    },
-    "feesUSD": {
-      "type": "bigdecimal",
-      "description": "Field of type BigDecimal"
+      "type": "string",
+      "description": "Total trading volume in USD"
     },
     "txCount": {
-      "type": "bigint",
-      "description": "Field of type BigInt"
+      "type": "string",
+      "description": "Number of transactions in the pool"
     },
-    "tvlUSD": {
-      "type": "bigdecimal",
-      "description": "Field of type BigDecimal"
+    "sqrtPrice": {
+      "type": "string",
+      "description": "Advanced calculation field to determine pool pricing"
+    },
+    "tick": {
+      "type": "string",
+      "description": "Helps identify changes in pool state"
     }
   },
-  "required": [
-    "id",
-    "date",
-    "volumeMatic",
-    "volumeUSD",
-    "volumeUSDUntracked",
-    "feesUSD",
-    "txCount",
-    "tvlUSD"
-  ]
+  "required": ["id", "volumeUSD", "txCount", "sqrtPrice", "tick"]
 }
