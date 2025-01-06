@@ -1,0 +1,22 @@
+
+    query {
+      pools {
+        liquidity
+token0Price
+token1Price
+tick
+volumeToken0
+volumeToken1
+volumeUSD
+untrackedVolumeUSD
+feesUSD
+txCount
+      }
+      tokens {
+        volumeUSD
+untrackedVolumeUSD
+feesUSD
+txCount
+      }
+    }
+  

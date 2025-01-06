@@ -1,14 +1,8 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tools/analyze-and-generate.js
 🚀 Starting schema analysis...
 🚀 Fetching schema...
-❌ Error: TypeError: Only absolute URLs are supported
-    at getNodeRequestOptions (/home/techbu/OFA_Project_Local/ofa-project/node_modules/node-fetch/lib/index.js:1327:9)
-    at /home/techbu/OFA_Project_Local/ofa-project/node_modules/node-fetch/lib/index.js:1450:19
-    at new Promise (<anonymous>)
-    at fetch (/home/techbu/OFA_Project_Local/ofa-project/node_modules/node-fetch/lib/index.js:1447:9)
-    at fetchSchema (/home/techbu/OFA_Project_Local/ofa-project/tools/analyze-and-generate.js:57:26)
-    at /home/techbu/OFA_Project_Local/ofa-project/tools/analyze-and-generate.js:139:26
-    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/tools/analyze-and-generate.js:149:3)
-    at Module._compile (node:internal/modules/cjs/loader:1356:14)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
-    at Module.load (node:internal/modules/cjs/loader:1197:32)
+🔍 Analyzing fields...
+✅ Raw schema saved to logs/raw-schema.json
+✅ Field analysis saved to logs/field-analysis.json
+✅ Generated query saved to logs/generated-query.graphql
+🎉 Schema analysis completed successfully!
