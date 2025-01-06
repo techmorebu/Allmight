@@ -76,7 +76,7 @@ function filterPools(pools) {
             const hasStablecoin =
                 ["DAI", "USDC", "USDT"].includes(token0Symbol) ||
                 ["DAI", "USDC", "USDT"].includes(token1Symbol);
-            const txCount = pool.txCount ? parseInt(pool.txCount, 10) : 0;
+            const txCount = pool.txCount ? parseInt(pool.txCount, 400) : 0;
             const volumeUSD = pool.volumeUSD ? parseFloat(pool.volumeUSD) : 0;
 
             // Filter logic: Stablecoin pairs AND txCount > 400 OR volumeUSD > 20000
