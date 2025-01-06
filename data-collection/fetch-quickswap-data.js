@@ -65,4 +65,34 @@ async function fetchQuickswapData() {
 
     return filteredPools;
   } catch (error) {
-    console.error("❌
+    console.error("❌ Error in fetchQuickswapData:", error);
+  }
+}
+
+function filterPools(pools) {
+  console.log("🔍 Filtering pools for arbitrage-ready data...");
+  return pools.filter((pool) => {
+    // Ensure critical fields exist and meet basic thresholds
+    const requiredFields = ["id", "token0", "token1", "volumeUSD", "liquidity"];
+    for (const field of requiredFields) {
+      if (!pool[field]) {
+        console.warn(`⚠️ Pool missing field: ${field}`);
+        return false;
+      }
+    }
+
+    // Custom filtering logic
+    const minVolumeUSD = 1000; // Example threshold for minimum volume
+    const minLiquidity = 5000; // Example threshold for minimum liquidity
+    return parseFloat(pool.volumeUSD) > minVolumeUSD && parseFloat(pool.liquidity) > minLiquidity;
+  });
+}
+
+// Immediately invoke the function to fetch data
+(async () => {
+  try {
+    await fetchQuickswapData();
+  } catch (error) {
+    console.error("❌ Uncaught error in script:", error);
+  }
+})();
