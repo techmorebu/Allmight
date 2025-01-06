@@ -3,147 +3,128 @@ const fetch = require("node-fetch");
 const fs = require("fs");
 const path = require("path");
 
-// Priority fields for arbitrage and scalping
-const PRIORITY_FIELDS = [
-  "token0Price",
-  "token1Price",
-  "volumeUSD",
-  "volumeToken0",
-  "volumeToken1",
-  "liquidity",
-  "liquidityGross",
-  "liquidityNet",
-  "txCount",
-  "feesUSD",
-  "open",
-  "high",
-  "low",
-  "close",
-  "tick",
-  "price0",
-  "price1",
-  "tickLower",
-  "tickUpper",
-  "untrackedVolumeUSD",
-  "gasPrice",
-  "gasLimit",
-];
+// Fetch and analyze schema
+async function fetchSchema(apiUrl) {
+    try {
+        console.log("🚀 Fetching schema...");
+        const response = await fetch(apiUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                query: `
+                    {
+                        __schema {
+                            types {
+                                name
+                                fields {
+                                    name
+                                    type {
+                                        kind
+                                        name
+                                        ofType {
+                                            kind
+                                            name
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                `,
+            }),
+        });
 
-const API_URL = process.env.API_URL || "https://your-api-url/graphql";
-
-async function fetchSchema() {
-  console.log("🚀 Fetching schema...");
-  const introspectionQuery = `
-    {
-      __schema {
-        types {
-          name
-          fields {
-            name
-            type {
-              name
-              kind
-              ofType {
-                name
-                kind
-              }
-            }
-          }
+        if (!response.ok) {
+            throw new Error(`❌ Failed to fetch schema: ${response.statusText}`);
         }
-      }
+
+        const data = await response.json();
+        return data.data.__schema.types;
+    } catch (error) {
+        console.error("❌ Error fetching schema:", error);
+        throw error;
     }
-  `;
-
-  const response = await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query: introspectionQuery }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`❌ Failed to fetch schema: ${response.statusText}`);
-  }
-
-  const schemaData = await response.json();
-  if (schemaData.errors) {
-    console.error("❌ Errors in schema response:", schemaData.errors);
-    throw new Error("Schema fetch failed.");
-  }
-
-  return schemaData.data.__schema.types;
 }
 
-function analyzeFields(schema) {
-  console.log("🔍 Analyzing fields...");
-  const fieldMap = {};
+// Analyze fields and prioritize
+function analyzeFields(schemaTypes) {
+    console.log("🔍 Analyzing fields...");
+    const priorityFields = [
+        "id", "txCount", "volumeUSD", "liquidity", "token0", "token1",
+        "token0Price", "token1Price", "feesUSD", "tick", "sqrtPrice"
+    ];
 
-  schema.forEach((type) => {
-    if (type.fields) {
-      fieldMap[type.name] = type.fields.map((field) => field.name);
+    const fieldAnalysis = schemaTypes
+        .flatMap((type) => type.fields || [])
+        .filter((field) => priorityFields.includes(field.name))
+        .map((field) => ({
+            name: field.name,
+            type: field.type.kind === "NON_NULL" ? field.type.ofType.name : field.type.name,
+        }));
+
+    return fieldAnalysis;
+}
+
+// Generate GraphQL query
+function generateQuery(fields) {
+    console.log("🛠 Generating GraphQL query...");
+    const poolFields = fields.map((field) => `    ${field.name}`).join("\n");
+    return `
+        query {
+            pools {
+${poolFields}
+            }
+        }
+    `;
+}
+
+// Update fetcher script
+function updateFetcherScript(fetcherPath, generatedQuery) {
+    try {
+        console.log("🔄 Updating fetcher script...");
+
+        const fetcherContent = fs.readFileSync(fetcherPath, "utf-8");
+        const updatedContent = fetcherContent.replace(
+            /query\s+\{([\s\S]*?)\}/g,
+            generatedQuery.trim()
+        );
+
+        fs.writeFileSync(fetcherPath, updatedContent);
+        console.log(`✅ Fetcher script updated: ${fetcherPath}`);
+    } catch (error) {
+        console.error("❌ Error updating fetcher script:", error);
+        throw error;
     }
-  });
-
-  const relevantFields = {};
-  Object.entries(fieldMap).forEach(([typeName, fields]) => {
-    relevantFields[typeName] = fields.filter((field) =>
-      PRIORITY_FIELDS.includes(field)
-    );
-  });
-
-  return relevantFields;
 }
 
-function saveResults(schema, relevantFields) {
-  const logsDir = path.resolve(__dirname, "../logs");
-
-  if (!fs.existsSync(logsDir)) {
-    fs.mkdirSync(logsDir);
-  }
-
-  fs.writeFileSync(
-    path.join(logsDir, "raw-schema.json"),
-    JSON.stringify(schema, null, 2)
-  );
-  console.log("✅ Raw schema saved to logs/raw-schema.json");
-
-  fs.writeFileSync(
-    path.join(logsDir, "field-analysis.json"),
-    JSON.stringify(relevantFields, null, 2)
-  );
-  console.log("✅ Field analysis saved to logs/field-analysis.json");
-}
-
-function generateQuery(relevantFields) {
-  const poolsFields = relevantFields.Pool || [];
-  const tokensFields = relevantFields.Token || [];
-
-  const query = `
-    query {
-      pools {
-        ${poolsFields.join("\n")}
-      }
-      tokens {
-        ${tokensFields.join("\n")}
-      }
-    }
-  `;
-
-  const logsDir = path.resolve(__dirname, "../logs");
-  fs.writeFileSync(path.join(logsDir, "generated-query.graphql"), query);
-  console.log("✅ Generated query saved to logs/generated-query.graphql");
-}
-
+// Main execution
 (async () => {
-  try {
-    console.log("🚀 Starting schema analysis...");
-    const schema = await fetchSchema();
-    const relevantFields = analyzeFields(schema);
+    try {
+        const apiUrl = process.env.API_URL;
+        if (!apiUrl) {
+            throw new Error("❌ API_URL is not defined in the .env file");
+        }
 
-    saveResults(schema, relevantFields);
-    generateQuery(relevantFields);
+        const schemaTypes = await fetchSchema(apiUrl);
+        fs.writeFileSync("./logs/raw-schema.json", JSON.stringify(schemaTypes, null, 2));
+        console.log("✅ Raw schema saved to logs/raw-schema.json");
 
-    console.log("🎉 Schema analysis completed successfully!");
-  } catch (error) {
-    console.error("❌ Error:", error);
-  }
+        const fields = analyzeFields(schemaTypes);
+        fs.writeFileSync("./logs/field-analysis.json", JSON.stringify(fields, null, 2));
+        console.log("✅ Field analysis saved to logs/field-analysis.json");
+
+        const generatedQuery = generateQuery(fields);
+        fs.writeFileSync("./logs/generated-query.graphql", generatedQuery);
+        console.log("✅ Generated query saved to logs/generated-query.graphql");
+
+        // Path to your fetcher script
+        const fetcherPath = path.join(__dirname, "../data-collection/fetch-quickswap-data.js");
+        updateFetcherScript(fetcherPath, generatedQuery);
+
+        console.log("🎉 Schema analysis and fetcher update completed successfully!");
+    } catch (error) {
+        console.error("❌ Error in analyze-and-generate.js:", error);
+    }
 })();
