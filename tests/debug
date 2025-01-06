@@ -1,43 +1,101 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tools/analyze-and-generate.js
-🚀 Fetching raw data from: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g
-✅ Raw data saved to: ./logs/raw-data.json
-🔍 Analyzing raw schema...
-✅ Field analysis saved to: ./logs/field-analysis.json
-⚙️ Fields detected. Select fields to include:
-┌──────────────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┐
-│     (index)      │    0     │    1     │    2     │    3     │    4     │    5     │    6     │    7     │    8     │    9     │    10    │    11    │    12    │    13    │    14    │    15    │    16    │    17    │    18    │    19    │    20    │    21    │    22    │    23    │    24    │    25    │    26    │    27    │    28    │    29    │    30    │    31    │    32    │    33    │    34    │    35    │    36    │    37    │    38    │    39    │    40    │    41    │    42    │    43    │    44    │
-├──────────────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
-│  AlgebraDayData  │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │
-│      Bundle      │ [Object] │ [Object] │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │
-│       Burn       │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │
-│     Collect      │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │
-│     Factory      │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │
-│   FeeHourData    │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │
-│      Flash       │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │
-│       Mint       │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │
-│       Pool       │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │          │          │          │          │
-│   PoolDayData    │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │
-│   PoolFeeData    │ [Object] │ [Object] │ [Object] │ [Object] │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │
-│   PoolHourData   │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │
-│     Position     │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │
-│ PositionSnapshot │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │
-│      Query       │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │
-│   Subscription   │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │
-│       Swap       │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │
-│       Tick       │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │
-│   TickDayData    │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │
-│   TickHourData   │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │
-│      Token       │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │
-│   TokenDayData   │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │
-│  TokenHourData   │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │
-│   Transaction    │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │ [Object] │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │
-│     _Block_      │ [Object] │ [Object] │ [Object] │ [Object] │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │
-│      _Meta_      │ [Object] │ [Object] │ [Object] │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │          │
-└──────────────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┘
-🛠 Generating schema...
-✅ Schema saved to: ./logs/generated-schema.json
-📜 Creating fetcher...
-✅ Fetcher template saved to: ./logs/generated-fetcher.js
-🎉 All tasks completed successfully!
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
-
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node logs/generated-fetcher.js
+🚀 Starting comprehensive fetcher...
+📡 Fetching data from: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g
+✅ Raw Data Fetched: {
+  "data": null,
+  "errors": [
+    {
+      "message": "Type `Token` has no field `derivedETH`",
+      "locations": [
+        {
+          "line": 32,
+          "column": 3
+        }
+      ]
+    },
+    {
+      "message": "Type `Token` has no field `totalLiquidity`",
+      "locations": [
+        {
+          "line": 34,
+          "column": 3
+        }
+      ]
+    },
+    {
+      "message": "Type `TokenDayData` has no field `totalLiquidity`",
+      "locations": [
+        {
+          "line": 39,
+          "column": 5
+        }
+      ]
+    },
+    {
+      "message": "Type `Token` has no field `tokenHourData`",
+      "locations": [
+        {
+          "line": 41,
+          "column": 3
+        }
+      ]
+    },
+    {
+      "message": "Type `Transaction` has no field `gasUsed`",
+      "locations": [
+        {
+          "line": 69,
+          "column": 3
+        }
+      ]
+    }
+  ]
+}
+❌ Errors in API response: [
+  {
+    "message": "Type `Token` has no field `derivedETH`",
+    "locations": [
+      {
+        "line": 32,
+        "column": 3
+      }
+    ]
+  },
+  {
+    "message": "Type `Token` has no field `totalLiquidity`",
+    "locations": [
+      {
+        "line": 34,
+        "column": 3
+      }
+    ]
+  },
+  {
+    "message": "Type `TokenDayData` has no field `totalLiquidity`",
+    "locations": [
+      {
+        "line": 39,
+        "column": 5
+      }
+    ]
+  },
+  {
+    "message": "Type `Token` has no field `tokenHourData`",
+    "locations": [
+      {
+        "line": 41,
+        "column": 3
+      }
+    ]
+  },
+  {
+    "message": "Type `Transaction` has no field `gasUsed`",
+    "locations": [
+      {
+        "line": 69,
+        "column": 3
+      }
+    ]
+  }
+]
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-
