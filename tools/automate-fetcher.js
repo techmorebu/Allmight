@@ -1,81 +1,127 @@
 require("dotenv").config();
-const fs = require("fs");
 const fetch = require("node-fetch");
+const fs = require("fs");
 
-// Helper function for filtering pools
-const filterPools = (pools) => {
-  const stablecoins = ["DAI", "USDC", "USDT"];
-  const minTxCount = 400;
-  const validPools = [];
+async function fetchData() {
+    try {
+        console.log("🚀 Starting automate-fetcher workflow...");
 
-  pools.forEach((pool) => {
-    const txCount = parseInt(pool.txCount || "0", 10);
+        const apiUrl = process.env.QUICKSWAP_API;
 
-    // Check for stablecoin pairs
-    const token0Stable = stablecoins.includes(pool.token0.symbol);
-    const token1Stable = stablecoins.includes(pool.token1.symbol);
+        if (!apiUrl) {
+            throw new Error("❌ QUICKSWAP_API is not defined in the .env file");
+        }
 
-    // Determine validity based on conditions
-    if (token0Stable || token1Stable || txCount > minTxCount) {
-      validPools.push({
-        id: pool.id,
-        volumeUSD: pool.volumeUSD,
-        liquidity: pool.liquidity,
-        txCount: pool.txCount,
-        token0: {
-          id: pool.token0.id,
-          name: pool.token0.name,
-          symbol: pool.token0.symbol,
-        },
-        token1: {
-          id: pool.token1.id,
-          name: pool.token1.name,
-          symbol: pool.token1.symbol,
-        },
-      });
+        console.log(`📡 Fetching data from: ${apiUrl}`);
+
+        const response = await fetch(apiUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                query: `
+                    query {
+                        pools {
+                            id
+                            txCount
+                            token0 {
+                                id
+                                symbol
+                                name
+                            }
+                            token1 {
+                                id
+                                symbol
+                                name
+                            }
+                            volumeUSD
+                            liquidity
+                        }
+                    }
+                `,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`❌ Failed to fetch data: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        if (data.errors) {
+            console.error("❌ Errors in API response:", data.errors);
+            return [];
+        }
+
+        const pools = data.data.pools || [];
+        console.log("✅ Raw data fetched successfully.");
+        return pools;
+    } catch (error) {
+        console.error("❌ Error in fetchData:", error);
+        return [];
     }
-  });
+}
 
-  return validPools;
-};
+function filterPools(pools) {
+    try {
+        console.log("🔍 Filtering pools...");
+        const filteredPools = pools.filter(pool => {
+            const token0 = pool.token0 || {};
+            const token1 = pool.token1 || {};
 
-// Main fetcher function
-const fetchData = async () => {
-  try {
-    console.log("🚀 Starting automate-fetcher workflow...");
+            const token0Symbol = token0.symbol || "UNKNOWN";
+            const token1Symbol = token1.symbol || "UNKNOWN";
 
-    const apiUrl = process.env.QUICKSWAP_API;
-    if (!apiUrl) throw new Error("❌ API endpoint missing in .env file");
+            // Check if the pool contains stablecoins or has a high txCount
+            const hasStablecoin =
+                ["DAI", "USDC", "USDT"].includes(token0Symbol) ||
+                ["DAI", "USDC", "USDT"].includes(token1Symbol);
+            const hasHighTxCount = pool.txCount && parseInt(pool.txCount, 10) > 400;
 
-    console.log(`📡 Fetching data from: ${apiUrl}`);
+            return hasStablecoin || hasHighTxCount;
+        });
 
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        query: fs.readFileSync("./logs/generated-query.graphql", "utf-8"),
-      }),
-    });
+        console.log(`✅ ${filteredPools.length} pools matched the filter criteria.`);
+        return filteredPools;
+    } catch (error) {
+        console.error("❌ Error in filterPools:", error);
+        return [];
+    }
+}
 
-    if (!response.ok) throw new Error(`❌ Failed to fetch data: ${response.statusText}`);
+async function saveFilteredPools(filteredPools) {
+    try {
+        const outputPath = "./logs/final-pools.json";
+        fs.writeFileSync(outputPath, JSON.stringify(filteredPools, null, 2));
+        console.log(`✅ Filtered pools saved to ${outputPath}`);
+    } catch (error) {
+        console.error("❌ Error in saveFilteredPools:", error);
+    }
+}
 
-    const data = await response.json();
-    if (data.errors) throw new Error(`❌ API Errors: ${JSON.stringify(data.errors)}`);
+async function automateFetcher() {
+    try {
+        const pools = await fetchData();
 
-    console.log("✅ Raw data fetched successfully.");
+        if (pools.length === 0) {
+            console.log("⚠️ No pools found. Exiting workflow.");
+            return;
+        }
 
-    // Filter pools
-    const rawPools = data.data.pools || [];
-    const filteredPools = filterPools(rawPools);
+        const filteredPools = filterPools(pools);
 
-    // Save filtered pools to a file
-    fs.writeFileSync("./logs/final-pools.json", JSON.stringify(filteredPools, null, 2));
-    console.log("🎉 Filtered pools saved to logs/final-pools.json");
+        if (filteredPools.length === 0) {
+            console.log("⚠️ No pools matched the criteria. Exiting workflow.");
+            return;
+        }
 
-  } catch (error) {
-    console.error("❌ Error in automate-fetcher:", error);
-  }
-};
+        await saveFilteredPools(filteredPools);
 
-// Run the fetcher
-fetchData();
+        console.log("🎉 Workflow completed successfully!");
+    } catch (error) {
+        console.error("❌ Error in automateFetcher workflow:", error);
+    }
+}
+
+automateFetcher();
