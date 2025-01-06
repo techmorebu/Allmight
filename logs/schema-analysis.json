@@ -1,0 +1,791 @@
+[
+  {
+    "name": "Aggregation_interval",
+    "fields": []
+  },
+  {
+    "name": "AlgebraDayData",
+    "fields": [
+      "id",
+      "date",
+      "volumeMatic",
+      "volumeUSD",
+      "volumeUSDUntracked",
+      "feesUSD",
+      "txCount",
+      "tvlUSD"
+    ]
+  },
+  {
+    "name": "AlgebraDayData_filter",
+    "fields": []
+  },
+  {
+    "name": "AlgebraDayData_orderBy",
+    "fields": []
+  },
+  {
+    "name": "BigDecimal",
+    "fields": []
+  },
+  {
+    "name": "BigInt",
+    "fields": []
+  },
+  {
+    "name": "BlockChangedFilter",
+    "fields": []
+  },
+  {
+    "name": "Block_height",
+    "fields": []
+  },
+  {
+    "name": "Boolean",
+    "fields": []
+  },
+  {
+    "name": "Bundle",
+    "fields": [
+      "id",
+      "maticPriceUSD"
+    ]
+  },
+  {
+    "name": "Bundle_filter",
+    "fields": []
+  },
+  {
+    "name": "Bundle_orderBy",
+    "fields": []
+  },
+  {
+    "name": "Burn",
+    "fields": [
+      "id",
+      "transaction",
+      "pool",
+      "token0",
+      "token1",
+      "timestamp",
+      "owner",
+      "origin",
+      "amount",
+      "amount0",
+      "amount1",
+      "amountUSD",
+      "tickLower",
+      "tickUpper",
+      "logIndex"
+    ]
+  },
+  {
+    "name": "Burn_filter",
+    "fields": []
+  },
+  {
+    "name": "Burn_orderBy",
+    "fields": []
+  },
+  {
+    "name": "Bytes",
+    "fields": []
+  },
+  {
+    "name": "Collect",
+    "fields": [
+      "id",
+      "transaction",
+      "timestamp",
+      "pool",
+      "owner",
+      "amount0",
+      "amount1",
+      "amountUSD",
+      "tickLower",
+      "tickUpper",
+      "logIndex"
+    ]
+  },
+  {
+    "name": "Collect_filter",
+    "fields": []
+  },
+  {
+    "name": "Collect_orderBy",
+    "fields": []
+  },
+  {
+    "name": "Factory",
+    "fields": [
+      "id",
+      "poolCount",
+      "txCount",
+      "totalVolumeUSD",
+      "totalVolumeMatic",
+      "totalFeesUSD",
+      "totalFeesMatic",
+      "untrackedVolumeUSD",
+      "totalValueLockedUSD",
+      "totalValueLockedMatic",
+      "totalValueLockedUSDUntracked",
+      "totalValueLockedMaticUntracked",
+      "owner"
+    ]
+  },
+  {
+    "name": "Factory_filter",
+    "fields": []
+  },
+  {
+    "name": "Factory_orderBy",
+    "fields": []
+  },
+  {
+    "name": "FeeHourData",
+    "fields": [
+      "id",
+      "pool",
+      "fee",
+      "changesCount",
+      "timestamp",
+      "minFee",
+      "maxFee",
+      "startFee",
+      "endFee"
+    ]
+  },
+  {
+    "name": "FeeHourData_filter",
+    "fields": []
+  },
+  {
+    "name": "FeeHourData_orderBy",
+    "fields": []
+  },
+  {
+    "name": "Flash",
+    "fields": [
+      "id",
+      "transaction",
+      "timestamp",
+      "pool",
+      "sender",
+      "recipient",
+      "amount0",
+      "amount1",
+      "amountUSD",
+      "amount0Paid",
+      "amount1Paid",
+      "logIndex"
+    ]
+  },
+  {
+    "name": "Flash_filter",
+    "fields": []
+  },
+  {
+    "name": "Flash_orderBy",
+    "fields": []
+  },
+  {
+    "name": "Float",
+    "fields": []
+  },
+  {
+    "name": "ID",
+    "fields": []
+  },
+  {
+    "name": "Int",
+    "fields": []
+  },
+  {
+    "name": "Int8",
+    "fields": []
+  },
+  {
+    "name": "Mint",
+    "fields": [
+      "id",
+      "transaction",
+      "timestamp",
+      "pool",
+      "token0",
+      "token1",
+      "owner",
+      "sender",
+      "origin",
+      "amount",
+      "amount0",
+      "amount1",
+      "amountUSD",
+      "tickLower",
+      "tickUpper",
+      "logIndex"
+    ]
+  },
+  {
+    "name": "Mint_filter",
+    "fields": []
+  },
+  {
+    "name": "Mint_orderBy",
+    "fields": []
+  },
+  {
+    "name": "OrderDirection",
+    "fields": []
+  },
+  {
+    "name": "Pool",
+    "fields": [
+      "id",
+      "createdAtTimestamp",
+      "createdAtBlockNumber",
+      "token0",
+      "token1",
+      "fee",
+      "communityFee0",
+      "communityFee1",
+      "liquidity",
+      "sqrtPrice",
+      "feeGrowthGlobal0X128",
+      "feeGrowthGlobal1X128",
+      "token0Price",
+      "token1Price",
+      "tick",
+      "observationIndex",
+      "volumeToken0",
+      "volumeToken1",
+      "volumeUSD",
+      "untrackedVolumeUSD",
+      "feesUSD",
+      "untrackedFeesUSD",
+      "txCount",
+      "collectedFeesToken0",
+      "collectedFeesToken1",
+      "collectedFeesUSD",
+      "totalValueLockedToken0",
+      "totalValueLockedToken1",
+      "feesToken0",
+      "feesToken1",
+      "totalValueLockedMatic",
+      "totalValueLockedUSD",
+      "totalValueLockedUSDUntracked",
+      "liquidityProviderCount",
+      "poolHourData",
+      "poolDayData",
+      "mints",
+      "burns",
+      "swaps",
+      "collects",
+      "ticks"
+    ]
+  },
+  {
+    "name": "PoolDayData",
+    "fields": [
+      "id",
+      "date",
+      "pool",
+      "liquidity",
+      "sqrtPrice",
+      "untrackedVolumeUSD",
+      "token0Price",
+      "token1Price",
+      "tick",
+      "feeGrowthGlobal0X128",
+      "feeGrowthGlobal1X128",
+      "tvlUSD",
+      "feesToken0",
+      "feesToken1",
+      "volumeToken0",
+      "volumeToken1",
+      "volumeUSD",
+      "feesUSD",
+      "txCount",
+      "open",
+      "high",
+      "low",
+      "close"
+    ]
+  },
+  {
+    "name": "PoolDayData_filter",
+    "fields": []
+  },
+  {
+    "name": "PoolDayData_orderBy",
+    "fields": []
+  },
+  {
+    "name": "PoolFeeData",
+    "fields": [
+      "id",
+      "pool",
+      "timestamp",
+      "fee"
+    ]
+  },
+  {
+    "name": "PoolFeeData_filter",
+    "fields": []
+  },
+  {
+    "name": "PoolFeeData_orderBy",
+    "fields": []
+  },
+  {
+    "name": "PoolHourData",
+    "fields": [
+      "id",
+      "periodStartUnix",
+      "pool",
+      "liquidity",
+      "sqrtPrice",
+      "token0Price",
+      "token1Price",
+      "tick",
+      "feeGrowthGlobal0X128",
+      "feeGrowthGlobal1X128",
+      "tvlUSD",
+      "volumeToken0",
+      "volumeToken1",
+      "volumeUSD",
+      "feesUSD",
+      "untrackedVolumeUSD",
+      "txCount",
+      "open",
+      "high",
+      "low",
+      "close"
+    ]
+  },
+  {
+    "name": "PoolHourData_filter",
+    "fields": []
+  },
+  {
+    "name": "PoolHourData_orderBy",
+    "fields": []
+  },
+  {
+    "name": "Pool_filter",
+    "fields": []
+  },
+  {
+    "name": "Pool_orderBy",
+    "fields": []
+  },
+  {
+    "name": "Position",
+    "fields": [
+      "id",
+      "owner",
+      "pool",
+      "token0",
+      "token1",
+      "tickLower",
+      "tickUpper",
+      "liquidity",
+      "depositedToken0",
+      "depositedToken1",
+      "withdrawnToken0",
+      "withdrawnToken1",
+      "collectedToken0",
+      "collectedToken1",
+      "collectedFeesToken0",
+      "collectedFeesToken1",
+      "transaction",
+      "feeGrowthInside0LastX128",
+      "feeGrowthInside1LastX128",
+      "token0Tvl",
+      "token1Tvl"
+    ]
+  },
+  {
+    "name": "PositionSnapshot",
+    "fields": [
+      "id",
+      "owner",
+      "pool",
+      "position",
+      "blockNumber",
+      "timestamp",
+      "liquidity",
+      "depositedToken0",
+      "depositedToken1",
+      "withdrawnToken0",
+      "withdrawnToken1",
+      "collectedFeesToken0",
+      "collectedFeesToken1",
+      "transaction",
+      "feeGrowthInside0LastX128",
+      "feeGrowthInside1LastX128"
+    ]
+  },
+  {
+    "name": "PositionSnapshot_filter",
+    "fields": []
+  },
+  {
+    "name": "PositionSnapshot_orderBy",
+    "fields": []
+  },
+  {
+    "name": "Position_filter",
+    "fields": []
+  },
+  {
+    "name": "Position_orderBy",
+    "fields": []
+  },
+  {
+    "name": "Query",
+    "fields": [
+      "factory",
+      "factories",
+      "bundle",
+      "bundles",
+      "token",
+      "tokens",
+      "pool",
+      "pools",
+      "tick",
+      "ticks",
+      "position",
+      "positions",
+      "positionSnapshot",
+      "positionSnapshots",
+      "transaction",
+      "transactions",
+      "mint",
+      "mints",
+      "burn",
+      "burns",
+      "swap",
+      "swaps",
+      "collect",
+      "collects",
+      "flash",
+      "flashes",
+      "algebraDayData",
+      "algebraDayDatas",
+      "poolDayData",
+      "poolDayDatas",
+      "poolFeeData",
+      "poolFeeDatas",
+      "poolHourData",
+      "poolHourDatas",
+      "tickHourData",
+      "tickHourDatas",
+      "tickDayData",
+      "tickDayDatas",
+      "tokenDayData",
+      "tokenDayDatas",
+      "tokenHourData",
+      "tokenHourDatas",
+      "feeHourData",
+      "feeHourDatas",
+      "_meta"
+    ]
+  },
+  {
+    "name": "String",
+    "fields": []
+  },
+  {
+    "name": "Subscription",
+    "fields": [
+      "factory",
+      "factories",
+      "bundle",
+      "bundles",
+      "token",
+      "tokens",
+      "pool",
+      "pools",
+      "tick",
+      "ticks",
+      "position",
+      "positions",
+      "positionSnapshot",
+      "positionSnapshots",
+      "transaction",
+      "transactions",
+      "mint",
+      "mints",
+      "burn",
+      "burns",
+      "swap",
+      "swaps",
+      "collect",
+      "collects",
+      "flash",
+      "flashes",
+      "algebraDayData",
+      "algebraDayDatas",
+      "poolDayData",
+      "poolDayDatas",
+      "poolFeeData",
+      "poolFeeDatas",
+      "poolHourData",
+      "poolHourDatas",
+      "tickHourData",
+      "tickHourDatas",
+      "tickDayData",
+      "tickDayDatas",
+      "tokenDayData",
+      "tokenDayDatas",
+      "tokenHourData",
+      "tokenHourDatas",
+      "feeHourData",
+      "feeHourDatas",
+      "_meta"
+    ]
+  },
+  {
+    "name": "Swap",
+    "fields": [
+      "id",
+      "transaction",
+      "timestamp",
+      "pool",
+      "token0",
+      "token1",
+      "sender",
+      "recipient",
+      "liquidity",
+      "origin",
+      "amount0",
+      "amount1",
+      "amountUSD",
+      "price",
+      "tick",
+      "logIndex"
+    ]
+  },
+  {
+    "name": "Swap_filter",
+    "fields": []
+  },
+  {
+    "name": "Swap_orderBy",
+    "fields": []
+  },
+  {
+    "name": "Tick",
+    "fields": [
+      "id",
+      "poolAddress",
+      "tickIdx",
+      "pool",
+      "liquidityGross",
+      "liquidityNet",
+      "price0",
+      "price1",
+      "volumeToken0",
+      "volumeToken1",
+      "volumeUSD",
+      "untrackedVolumeUSD",
+      "feesUSD",
+      "collectedFeesToken0",
+      "collectedFeesToken1",
+      "collectedFeesUSD",
+      "createdAtTimestamp",
+      "createdAtBlockNumber",
+      "liquidityProviderCount",
+      "feeGrowthOutside0X128",
+      "feeGrowthOutside1X128"
+    ]
+  },
+  {
+    "name": "TickDayData",
+    "fields": [
+      "id",
+      "date",
+      "pool",
+      "tick",
+      "liquidityGross",
+      "liquidityNet",
+      "volumeToken0",
+      "volumeToken1",
+      "volumeUSD",
+      "feesUSD",
+      "feeGrowthOutside0X128",
+      "feeGrowthOutside1X128"
+    ]
+  },
+  {
+    "name": "TickDayData_filter",
+    "fields": []
+  },
+  {
+    "name": "TickDayData_orderBy",
+    "fields": []
+  },
+  {
+    "name": "TickHourData",
+    "fields": [
+      "id",
+      "periodStartUnix",
+      "pool",
+      "tick",
+      "liquidityGross",
+      "liquidityNet",
+      "volumeToken0",
+      "volumeToken1",
+      "volumeUSD",
+      "feesUSD"
+    ]
+  },
+  {
+    "name": "TickHourData_filter",
+    "fields": []
+  },
+  {
+    "name": "TickHourData_orderBy",
+    "fields": []
+  },
+  {
+    "name": "Tick_filter",
+    "fields": []
+  },
+  {
+    "name": "Tick_orderBy",
+    "fields": []
+  },
+  {
+    "name": "Timestamp",
+    "fields": []
+  },
+  {
+    "name": "Token",
+    "fields": [
+      "id",
+      "symbol",
+      "name",
+      "decimals",
+      "totalSupply",
+      "volume",
+      "volumeUSD",
+      "untrackedVolumeUSD",
+      "feesUSD",
+      "txCount",
+      "poolCount",
+      "totalValueLocked",
+      "totalValueLockedUSD",
+      "totalValueLockedUSDUntracked",
+      "derivedMatic",
+      "whitelistPools",
+      "tokenDayData"
+    ]
+  },
+  {
+    "name": "TokenDayData",
+    "fields": [
+      "id",
+      "date",
+      "token",
+      "volume",
+      "volumeUSD",
+      "untrackedVolumeUSD",
+      "totalValueLocked",
+      "totalValueLockedUSD",
+      "priceUSD",
+      "feesUSD",
+      "open",
+      "high",
+      "low",
+      "close"
+    ]
+  },
+  {
+    "name": "TokenDayData_filter",
+    "fields": []
+  },
+  {
+    "name": "TokenDayData_orderBy",
+    "fields": []
+  },
+  {
+    "name": "TokenHourData",
+    "fields": [
+      "id",
+      "periodStartUnix",
+      "token",
+      "volume",
+      "volumeUSD",
+      "untrackedVolumeUSD",
+      "totalValueLocked",
+      "totalValueLockedUSD",
+      "priceUSD",
+      "feesUSD",
+      "open",
+      "high",
+      "low",
+      "close"
+    ]
+  },
+  {
+    "name": "TokenHourData_filter",
+    "fields": []
+  },
+  {
+    "name": "TokenHourData_orderBy",
+    "fields": []
+  },
+  {
+    "name": "Token_filter",
+    "fields": []
+  },
+  {
+    "name": "Token_orderBy",
+    "fields": []
+  },
+  {
+    "name": "Transaction",
+    "fields": [
+      "id",
+      "blockNumber",
+      "timestamp",
+      "gasLimit",
+      "gasPrice",
+      "mints",
+      "burns",
+      "swaps",
+      "flashed",
+      "collects"
+    ]
+  },
+  {
+    "name": "Transaction_filter",
+    "fields": []
+  },
+  {
+    "name": "Transaction_orderBy",
+    "fields": []
+  },
+  {
+    "name": "_Block_",
+    "fields": [
+      "hash",
+      "number",
+      "timestamp",
+      "parentHash"
+    ]
+  },
+  {
+    "name": "_Meta_",
+    "fields": [
+      "block",
+      "deployment",
+      "hasIndexingErrors"
+    ]
+  },
+  {
+    "name": "_SubgraphErrorPolicy_",
+    "fields": []
+  }
+]
