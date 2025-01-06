@@ -2,13 +2,13 @@ require("dotenv").config();
 const { exec } = require("child_process");
 const fs = require("fs");
 
-// List of DEX APIs from .env
-const DEX_APIS = [
-    { name: "Quickswap", url: process.env.QUICKSWAP_API },
-    { name: "Uniswap", url: process.env.UNISWAP_API },
-    { name: "Sushiswap", url: process.env.SUSHISWAP_API },
-    // Add more DEXs as needed
-];
+// Extract all API URLs from .env dynamically
+const DEX_APIS = Object.entries(process.env)
+    .filter(([key]) => key.endsWith("_API"))
+    .map(([key, value]) => ({
+        name: key.replace("_API", ""), // Extract DEX name from the key
+        url: value,
+    }));
 
 async function runCommand(command) {
     return new Promise((resolve, reject) => {
@@ -26,7 +26,8 @@ async function runCommand(command) {
 async function processDEX(dex) {
     try {
         console.log(`🚀 Processing DEX: ${dex.name}...`);
-        // Update API_URL dynamically
+
+        // Update API_URL dynamically in .env
         const envPath = "./.env";
         const currentEnv = fs.readFileSync(envPath, "utf8");
         const updatedEnv = currentEnv.replace(/API_URL=.*/, `API_URL=${dex.url}`);
