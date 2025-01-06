@@ -1,21 +1,5 @@
 [
   {
-    "id": "0x000024feb293b6c6c3a80a95f1f830a8746400b9",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x6aa56e1d98b3805921c170eb4b3fe7d4fda6d89b",
-      "name": "MAGA",
-      "symbol": "TRUMP"
-    },
-    "token1": {
-      "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      "name": "Wrapped Ether",
-      "symbol": "WETH"
-    },
-    "txCount": "140",
-    "volumeUSD": "154179.6070438752993793129113309885"
-  },
-  {
     "id": "0x0004cd8474e882278e32e584699090be496f410e",
     "liquidity": "188566476438429518",
     "token0": {
@@ -48,22 +32,6 @@
     "volumeUSD": "66865314.03554697973971043393612015"
   },
   {
-    "id": "0x000c0d31f6b7cecde4645eef0c4ec6a492659d62",
-    "liquidity": "0",
-    "token0": {
-      "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      "name": "Wrapped Ether",
-      "symbol": "WETH"
-    },
-    "token1": {
-      "id": "0xc97d6c52f3add91fa1c5287a453d7444aecbca83",
-      "name": "DegenZoo",
-      "symbol": "DZOO"
-    },
-    "txCount": "2534",
-    "volumeUSD": "1578270.935608292892839129102762754"
-  },
-  {
     "id": "0x000ea4a83acefdd62b1b43e9ccc281f442651520",
     "liquidity": "148443933127936569",
     "token0": {
@@ -78,22 +46,6 @@
     },
     "txCount": "2562",
     "volumeUSD": "4828583.59128203551421812473997936"
-  },
-  {
-    "id": "0x001202b13fab0dcbdaa605a48a73df38cd70d14c",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x54be892fb7b890f5e3e39d1769bbe32f5225861f",
-      "name": "Odin",
-      "symbol": "Odin"
-    },
-    "token1": {
-      "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      "name": "Wrapped Ether",
-      "symbol": "WETH"
-    },
-    "txCount": "68",
-    "volumeUSD": "27348.16527335890669281561788990365"
   },
   {
     "id": "0x001d6b301b939dc0dd2b982378d30b049d1d7e91",
@@ -144,118 +96,6 @@
     "volumeUSD": "106940.5110185102987976355017843765"
   },
   {
-    "id": "0x0059b4c53c85bb8159014bfd20700c14b29c4483",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x8d717ab5eac1016b64c2a7fd04720fd2d27d1b86",
-      "name": "BitcoinVend",
-      "symbol": "BCVT"
-    },
-    "token1": {
-      "id": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-      "name": "Tether USD",
-      "symbol": "USDT"
-    },
-    "txCount": "221",
-    "volumeUSD": "422003.2929206367494891532886409989"
-  },
-  {
-    "id": "0x005d641f9f14b2222f7d84de20ccda0fbfe9f1c7",
-    "liquidity": "0",
-    "token0": {
-      "id": "0xb631202263bcfd8735ea6e69c7cf19312633560a",
-      "name": "gnihton ylbaborp",
-      "symbol": "gnihton"
-    },
-    "token1": {
-      "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      "name": "Wrapped Ether",
-      "symbol": "WETH"
-    },
-    "txCount": "29",
-    "volumeUSD": "56211.90792024441619672694939011193"
-  },
-  {
-    "id": "0x0068bb604413dfee5c453907bb150d0312a0f257",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x6a126b1a4d6a66370930eca642eff93d8e1be321",
-      "name": "思襄会币",
-      "symbol": "SXHC"
-    },
-    "token1": {
-      "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      "name": "Wrapped Ether",
-      "symbol": "WETH"
-    },
-    "txCount": "63",
-    "volumeUSD": "54197.45237083549904606267092155472"
-  },
-  {
-    "id": "0x006b974ca08532d95015cd3e17ac65fac1f570a1",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x0feff7bf57ee9a257f6647baefae76b7366981a1",
-      "name": "A Pepe Ethereum Dream",
-      "symbol": "APED"
-    },
-    "token1": {
-      "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      "name": "Wrapped Ether",
-      "symbol": "WETH"
-    },
-    "txCount": "25",
-    "volumeUSD": "110664.7004503554194977429789872776"
-  },
-  {
-    "id": "0x006cf8fe7f17c010bbf61456ababf14088186ec6",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x736ef045577a70f11be004c18b668bcef077bb98",
-      "name": "LaughingLama Token",
-      "symbol": "LLT"
-    },
-    "token1": {
-      "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      "name": "Wrapped Ether",
-      "symbol": "WETH"
-    },
-    "txCount": "179",
-    "volumeUSD": "78223.50094843740507177444320075736"
-  },
-  {
-    "id": "0x0073ce82d9a8ffa9b695cca63cd3993c3eaef4dc",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x5ec61c91c151e01b2150b8d7aee47bd67c5e326e",
-      "name": "peepeeyouasd",
-      "symbol": "PPUSD"
-    },
-    "token1": {
-      "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      "name": "Wrapped Ether",
-      "symbol": "WETH"
-    },
-    "txCount": "527",
-    "volumeUSD": "266206.7545551764606981109270108256"
-  },
-  {
-    "id": "0x00916eb312b2982eb86a7714be64546baebc1a5c",
-    "liquidity": "0",
-    "token0": {
-      "id": "0xb0ba1b6ebadeba1a63a94445f0dfb249082b5dc1",
-      "name": "Boba",
-      "symbol": "BOBA"
-    },
-    "token1": {
-      "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      "name": "Wrapped Ether",
-      "symbol": "WETH"
-    },
-    "txCount": "625",
-    "volumeUSD": "534035.6339923922930930143639974316"
-  },
-  {
     "id": "0x00a151b39b43f6a79366f9129222b9370e30a702",
     "liquidity": "8998077112326985950396256",
     "token0": {
@@ -270,86 +110,6 @@
     },
     "txCount": "114",
     "volumeUSD": "89403.76997450945814518076822669615"
-  },
-  {
-    "id": "0x00a9897a285247d285adbe77d5584612f04735be",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x44f9b7859291dd247a07e4088b04325b206f9f6b",
-      "name": "KNX",
-      "symbol": "KNX"
-    },
-    "token1": {
-      "id": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-      "name": "USD Coin",
-      "symbol": "USDC"
-    },
-    "txCount": "8",
-    "volumeUSD": "82408.669211"
-  },
-  {
-    "id": "0x00ae909d0405a4ae2b190af7c731711d0fc56bb7",
-    "liquidity": "0",
-    "token0": {
-      "id": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-      "name": "USD Coin",
-      "symbol": "USDC"
-    },
-    "token1": {
-      "id": "0xdb8a9e26bf319d1bbd04a8e13b02652c0b14b400",
-      "name": "wBOND",
-      "symbol": "wBOND"
-    },
-    "txCount": "70",
-    "volumeUSD": "367173.478132"
-  },
-  {
-    "id": "0x00b9ec4ed8b667647a6c193855c20751e5701892",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x18500bf205a788d88e9377e74817c4c5271416cf",
-      "name": "McBoy's Club",
-      "symbol": "MCBC"
-    },
-    "token1": {
-      "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      "name": "Wrapped Ether",
-      "symbol": "WETH"
-    },
-    "txCount": "417",
-    "volumeUSD": "43636.8408831101210847408048702399"
-  },
-  {
-    "id": "0x00bdbb8a65a0a1fc7a5488f47aadc611732705e8",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x569424c5ee13884a193773fdc5d1c5f79c443a51",
-      "name": "Pine Token",
-      "symbol": "PINE"
-    },
-    "token1": {
-      "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      "name": "Wrapped Ether",
-      "symbol": "WETH"
-    },
-    "txCount": "207",
-    "volumeUSD": "116864.408791046695220992058957238"
-  },
-  {
-    "id": "0x00bfcbf6716c0657c3a2fa51f20976678482ab2e",
-    "liquidity": "0",
-    "token0": {
-      "id": "0xa8a837e2bf0c37fef5c495951a0dfc33aaead57a",
-      "name": "Uniswap V2",
-      "symbol": "UNI-V2"
-    },
-    "token1": {
-      "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      "name": "Wrapped Ether",
-      "symbol": "WETH"
-    },
-    "txCount": "228",
-    "volumeUSD": "23777.05685636633800834902003226467"
   },
   {
     "id": "0x00c07a7e77c9ffa6e0e3c58790e0dcb81cef89e1",
@@ -380,56 +140,8 @@
       "name": "Wrapped Ether",
       "symbol": "WETH"
     },
-    "txCount": "7089",
-    "volumeUSD": "13446147.5600936610549871222437921"
-  },
-  {
-    "id": "0x00c6f73f423fe4e9d693d0b4cfddf92d406a83a4",
-    "liquidity": "0",
-    "token0": {
-      "id": "0x4bb79bb9e8fbb85c3153bd04a1a24c26021753c2",
-      "name": "Wagner",
-      "symbol": "WAGNER"
-    },
-    "token1": {
-      "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      "name": "Wrapped Ether",
-      "symbol": "WETH"
-    },
-    "txCount": "235",
-    "volumeUSD": "254502.1921124253740659738878554544"
-  },
-  {
-    "id": "0x00cb3f7871d4383d517214ded3e9f0e9a1978cb3",
-    "liquidity": "0",
-    "token0": {
-      "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      "name": "Wrapped Ether",
-      "symbol": "WETH"
-    },
-    "token1": {
-      "id": "0xf35a9b73b6f6cd81ffcfffc1b6d56e17c58a8b76",
-      "name": "GOD BLES AMERICA",
-      "symbol": "GBA"
-    },
-    "txCount": "295",
-    "volumeUSD": "72891.01545481637416488185380541664"
-  },
-  {
-    "id": "0x00ce80a0b06a4f6d47e11e5ae1e7186bf0866391",
-    "liquidity": "0",
-    "token0": {
-      "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      "name": "Wrapped Ether",
-      "symbol": "WETH"
-    },
-    "token1": {
-      "id": "0xfae103dc9cf190ed75350761e95403b7b8afa6c0",
-      "name": "rswETH",
-      "symbol": "rswETH"
-    },
-    "txCount": "176",
-    "volumeUSD": "279089.1864592395200303553347511472"
+    "txCount": "7090",
+    "volumeUSD": "13446561.18287028650692246092857717"
   },
   {
     "id": "0x00cef0386ed94d738c8f8a74e8bfd0376926d24c",
@@ -478,21 +190,5 @@
     },
     "txCount": "1327",
     "volumeUSD": "545769.929405"
-  },
-  {
-    "id": "0x00dce1deb188ee420ea8be0cf95888521fbc13a3",
-    "liquidity": "0",
-    "token0": {
-      "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      "name": "Wrapped Ether",
-      "symbol": "WETH"
-    },
-    "token1": {
-      "id": "0xed1167b6dc64e8a366db86f2e952a482d0981ebd",
-      "name": "Lybra",
-      "symbol": "LBR"
-    },
-    "txCount": "1491",
-    "volumeUSD": "1590527.019245016118150916733506055"
   }
 ]
