@@ -76,11 +76,12 @@ function filterPools(pools) {
             const hasStablecoin =
                 ["DAI", "USDC", "USDT"].includes(token0Symbol) ||
                 ["DAI", "USDC", "USDT"].includes(token1Symbol);
-            const txCount = pool.txCount ? parseInt(pool.txCount, 400) : 0;
+            const txCount = pool.txCount ? parseInt(pool.txCount, 10) : 0;
             const volumeUSD = pool.volumeUSD ? parseFloat(pool.volumeUSD) : 0;
+            const liquidity = pool.liquidity ? parseFloat(pool.liquidity) : 0;
 
-            // Filter logic: Stablecoin pairs AND txCount > 400 OR volumeUSD > 20000
-            return (hasStablecoin && txCount > 400) || volumeUSD > 20000;
+            // Updated filter logic: Liquidity > 100,000, and (Stablecoin pairs AND txCount > 400 OR volumeUSD > 20,000)
+            return liquidity > 100000 && ((hasStablecoin && txCount > 400) || volumeUSD > 20000);
         });
 
         console.log(`✅ ${filteredPools.length} pools matched the filter criteria.`);
