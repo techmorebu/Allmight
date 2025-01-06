@@ -1,96 +1,14 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tools/analyze-and-generate.js
-🚀 Starting schema analyzer and fetcher generator...
-📡 Fetching schema from: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g
-✅ Schema fetched successfully!
-✅ Schema saved to: ./logs/schema-analysis.json
-🔍 Available fields:
-┌─────────┬────────────────────────────┬───────────────────────────────────────────────────────────────────────────┐
-│ (index) │            name            │                                  fields                                   │
-├─────────┼────────────────────────────┼───────────────────────────────────────────────────────────────────────────┤
-│    0    │   'Aggregation_interval'   │                                    []                                     │
-│    1    │      'AlgebraDayData'      │             [ 'id', 'date', 'volumeMatic', ... 5 more items ]             │
-│    2    │  'AlgebraDayData_filter'   │                                    []                                     │
-│    3    │  'AlgebraDayData_orderBy'  │                                    []                                     │
-│    4    │        'BigDecimal'        │                                    []                                     │
-│    5    │          'BigInt'          │                                    []                                     │
-│    6    │    'BlockChangedFilter'    │                                    []                                     │
-│    7    │       'Block_height'       │                                    []                                     │
-│    8    │         'Boolean'          │                                    []                                     │
-│    9    │          'Bundle'          │                         [ 'id', 'maticPriceUSD' ]                         │
-│   10    │      'Bundle_filter'       │                                    []                                     │
-│   11    │      'Bundle_orderBy'      │                                    []                                     │
-│   12    │           'Burn'           │            [ 'id', 'transaction', 'pool', ... 12 more items ]             │
-│   13    │       'Burn_filter'        │                                    []                                     │
-│   14    │       'Burn_orderBy'       │                                    []                                     │
-│   15    │          'Bytes'           │                                    []                                     │
-│   16    │         'Collect'          │          [ 'id', 'transaction', 'timestamp', ... 8 more items ]           │
-│   17    │      'Collect_filter'      │                                    []                                     │
-│   18    │     'Collect_orderBy'      │                                    []                                     │
-│   19    │         'Factory'          │            [ 'id', 'poolCount', 'txCount', ... 10 more items ]            │
-│   20    │      'Factory_filter'      │                                    []                                     │
-│   21    │     'Factory_orderBy'      │                                    []                                     │
-│   22    │       'FeeHourData'        │                 [ 'id', 'pool', 'fee', ... 6 more items ]                 │
-│   23    │    'FeeHourData_filter'    │                                    []                                     │
-│   24    │   'FeeHourData_orderBy'    │                                    []                                     │
-│   25    │          'Flash'           │          [ 'id', 'transaction', 'timestamp', ... 9 more items ]           │
-│   26    │       'Flash_filter'       │                                    []                                     │
-│   27    │      'Flash_orderBy'       │                                    []                                     │
-│   28    │          'Float'           │                                    []                                     │
-│   29    │            'ID'            │                                    []                                     │
-│   30    │           'Int'            │                                    []                                     │
-│   31    │           'Int8'           │                                    []                                     │
-│   32    │           'Mint'           │          [ 'id', 'transaction', 'timestamp', ... 13 more items ]          │
-│   33    │       'Mint_filter'        │                                    []                                     │
-│   34    │       'Mint_orderBy'       │                                    []                                     │
-│   35    │      'OrderDirection'      │                                    []                                     │
-│   36    │           'Pool'           │ [ 'id', 'createdAtTimestamp', 'createdAtBlockNumber', ... 38 more items ] │
-│   37    │       'PoolDayData'        │                [ 'id', 'date', 'pool', ... 20 more items ]                │
-│   38    │    'PoolDayData_filter'    │                                    []                                     │
-│   39    │   'PoolDayData_orderBy'    │                                    []                                     │
-│   40    │       'PoolFeeData'        │              [ 'id', 'pool', 'timestamp', ... 1 more item ]               │
-│   41    │    'PoolFeeData_filter'    │                                    []                                     │
-│   42    │   'PoolFeeData_orderBy'    │                                    []                                     │
-│   43    │       'PoolHourData'       │          [ 'id', 'periodStartUnix', 'pool', ... 18 more items ]           │
-│   44    │   'PoolHourData_filter'    │                                    []                                     │
-│   45    │   'PoolHourData_orderBy'   │                                    []                                     │
-│   46    │       'Pool_filter'        │                                    []                                     │
-│   47    │       'Pool_orderBy'       │                                    []                                     │
-│   48    │         'Position'         │               [ 'id', 'owner', 'pool', ... 18 more items ]                │
-│   49    │     'PositionSnapshot'     │               [ 'id', 'owner', 'pool', ... 13 more items ]                │
-│   50    │ 'PositionSnapshot_filter'  │                                    []                                     │
-│   51    │ 'PositionSnapshot_orderBy' │                                    []                                     │
-│   52    │     'Position_filter'      │                                    []                                     │
-│   53    │     'Position_orderBy'     │                                    []                                     │
-│   54    │          'Query'           │          [ 'factory', 'factories', 'bundle', ... 42 more items ]          │
-│   55    │          'String'          │                                    []                                     │
-│   56    │       'Subscription'       │          [ 'factory', 'factories', 'bundle', ... 42 more items ]          │
-│   57    │           'Swap'           │          [ 'id', 'transaction', 'timestamp', ... 13 more items ]          │
-│   58    │       'Swap_filter'        │                                    []                                     │
-│   59    │       'Swap_orderBy'       │                                    []                                     │
-│   60    │           'Tick'           │           [ 'id', 'poolAddress', 'tickIdx', ... 18 more items ]           │
-│   61    │       'TickDayData'        │                [ 'id', 'date', 'pool', ... 9 more items ]                 │
-│   62    │    'TickDayData_filter'    │                                    []                                     │
-│   63    │   'TickDayData_orderBy'    │                                    []                                     │
-│   64    │       'TickHourData'       │           [ 'id', 'periodStartUnix', 'pool', ... 7 more items ]           │
-│   65    │   'TickHourData_filter'    │                                    []                                     │
-│   66    │   'TickHourData_orderBy'   │                                    []                                     │
-│   67    │       'Tick_filter'        │                                    []                                     │
-│   68    │       'Tick_orderBy'       │                                    []                                     │
-│   69    │        'Timestamp'         │                                    []                                     │
-│   70    │          'Token'           │               [ 'id', 'symbol', 'name', ... 14 more items ]               │
-│   71    │       'TokenDayData'       │               [ 'id', 'date', 'token', ... 11 more items ]                │
-│   72    │   'TokenDayData_filter'    │                                    []                                     │
-│   73    │   'TokenDayData_orderBy'   │                                    []                                     │
-│   74    │      'TokenHourData'       │          [ 'id', 'periodStartUnix', 'token', ... 11 more items ]          │
-│   75    │   'TokenHourData_filter'   │                                    []                                     │
-│   76    │  'TokenHourData_orderBy'   │                                    []                                     │
-│   77    │       'Token_filter'       │                                    []                                     │
-│   78    │      'Token_orderBy'       │                                    []                                     │
-│   79    │       'Transaction'        │          [ 'id', 'blockNumber', 'timestamp', ... 7 more items ]           │
-│   80    │    'Transaction_filter'    │                                    []                                     │
-│   81    │   'Transaction_orderBy'    │                                    []                                     │
-│   82    │         '_Block_'          │            [ 'hash', 'number', 'timestamp', ... 1 more item ]             │
-│   83    │          '_Meta_'          │              [ 'block', 'deployment', 'hasIndexingErrors' ]               │
-│   84    │  '_SubgraphErrorPolicy_'   │                                    []                                     │
-└─────────┴────────────────────────────┴───────────────────────────────────────────────────────────────────────────┘
-Enter fields to include (comma-separated): 
+🚀 Starting schema analysis...
+🚀 Fetching schema...
+❌ Error: TypeError: Only absolute URLs are supported
+    at getNodeRequestOptions (/home/techbu/OFA_Project_Local/ofa-project/node_modules/node-fetch/lib/index.js:1327:9)
+    at /home/techbu/OFA_Project_Local/ofa-project/node_modules/node-fetch/lib/index.js:1450:19
+    at new Promise (<anonymous>)
+    at fetch (/home/techbu/OFA_Project_Local/ofa-project/node_modules/node-fetch/lib/index.js:1447:9)
+    at fetchSchema (/home/techbu/OFA_Project_Local/ofa-project/tools/analyze-and-generate.js:57:26)
+    at /home/techbu/OFA_Project_Local/ofa-project/tools/analyze-and-generate.js:139:26
+    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/tools/analyze-and-generate.js:149:3)
+    at Module._compile (node:internal/modules/cjs/loader:1356:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
+    at Module.load (node:internal/modules/cjs/loader:1197:32)
