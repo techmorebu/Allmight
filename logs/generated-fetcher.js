@@ -12,7 +12,7 @@ process.on("unhandledRejection", (reason, promise) => {
 
 async function fetchData() {
   try {
-    console.log("🚀 Starting fetcher script...");
+    console.log("🚀 Starting comprehensive fetcher...");
     const apiUrl = process.env.API_URL;
 
     if (!apiUrl) {
@@ -29,20 +29,75 @@ async function fetchData() {
       body: JSON.stringify({
         query: `
           query {
-            pools {
+            pools(first: 10) {
               id
+              token0 {
+                id
+                symbol
+                name
+              }
+              token1 {
+                id
+                symbol
+                name
+              }
               volumeUSD
-              txCount
               liquidity
               feesUSD
-              token0Price
-              token1Price
-              totalValueLockedUSD
-              volumeToken0
-              volumeToken1
-              liquidityProviderCount
               sqrtPrice
               tick
+              totalValueLockedUSD
+              swaps(first: 5) {
+                id
+                timestamp
+                sender
+                recipient
+                amountUSD
+              }
+            }
+            tokens(first: 10) {
+              id
+              symbol
+              name
+              derivedETH
+              volumeUSD
+              totalLiquidity
+              tokenDayData(first: 3) {
+                date
+                priceUSD
+                volumeUSD
+                totalLiquidity
+              }
+              tokenHourData(first: 3) {
+                hourStartUnix
+                priceUSD
+                volumeUSD
+                totalLiquidity
+              }
+            }
+            swaps(first: 10, orderBy: timestamp, orderDirection: desc) {
+              id
+              timestamp
+              sender
+              recipient
+              amountUSD
+              token0 {
+                id
+                symbol
+                name
+              }
+              token1 {
+                id
+                symbol
+                name
+              }
+            }
+            transactions(first: 10, orderBy: timestamp, orderDirection: desc) {
+              id
+              blockNumber
+              timestamp
+              gasUsed
+              gasPrice
             }
           }
         `,
@@ -61,36 +116,16 @@ async function fetchData() {
       return;
     }
 
-    const pools = data.data.pools;
-    console.log("✅ Pools Data:", pools);
+    const results = data.data;
+    console.log("✅ Processed Data:", JSON.stringify(results, null, 2));
 
-    if (!pools || pools.length === 0) {
-      console.log("⚠️ No pools data found");
-      return;
-    }
-
-    const validatedPools = pools.filter((pool) => validatePool(pool));
-    console.log("✅ Validated Pools:", JSON.stringify(validatedPools, null, 2));
-
-    return validatedPools;
+    return results;
   } catch (error) {
     console.error("❌ Error in fetchData:", error);
   }
 }
 
-function validatePool(pool) {
-  console.log(`🔍 Validating pool: ${JSON.stringify(pool, null, 2)}`);
-  const requiredFields = ["id", "txCount", "volumeUSD", "sqrtPrice", "tick"];
-  for (const field of requiredFields) {
-    if (!pool[field]) {
-      console.warn(`⚠️ Missing field: ${field}`);
-      return false;
-    }
-  }
-  return true;
-}
-
-// Immediately invoking the fetchData function to run the script
+// Run the script
 (async () => {
   try {
     await fetchData();
