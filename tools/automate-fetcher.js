@@ -6,7 +6,7 @@ async function fetchData() {
     try {
         console.log("🚀 Starting automate-fetcher workflow...");
 
-        const apiUrl = process.env.QUICKSWAP_API;
+        const apiUrl = process.env.API_URL;
 
         if (!apiUrl) {
             throw new Error("❌ QUICKSWAP_API is not defined in the .env file");
