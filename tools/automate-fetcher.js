@@ -9,7 +9,7 @@ async function fetchData() {
         const apiUrl = process.env.API_URL;
 
         if (!apiUrl) {
-            throw new Error("❌ QUICKSWAP_API is not defined in the .env file");
+            throw new Error("❌ API_URL is not defined in the .env file");
         }
 
         console.log(`📡 Fetching data from: ${apiUrl}`);
