@@ -1,41 +1,54 @@
-
 require("dotenv").config();
 const fetch = require("node-fetch");
 
 async function fetchData() {
-  const response = await fetch(process.env.NEW_DEX_API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      query: `
+  const apiUrl = process.env.API_URL;
+
+  try {
+    console.log(`Fetching data from: ${apiUrl}`);
+    const query = `
       {
         pools {
           id
-date
-volumeMatic
-volumeUSD
-volumeUSDUntracked
-feesUSD
-txCount
-tvlUSD
+          volumeUSD
+          txCount
+          sqrtPrice
+          tick
         }
       }
-      `,
-    }),
-  });
+    `;
 
-  const data = await response.json();
-  const validatedData = data.data.pools.filter((item) => validate(item));
-  console.log("Validated Data:", JSON.stringify(validatedData, null, 2));
-  return validatedData;
-}
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query }),
+    });
 
-function validate(item) {
-  const requiredFields = ["id","date","volumeMatic","volumeUSD","volumeUSDUntracked","feesUSD","txCount","tvlUSD"];
-  for (const field of requiredFields) {
-    if (!item[field]) return false;
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const json = await response.json();
+
+    if (json.errors) {
+      console.error("GraphQL Errors:", JSON.stringify(json.errors, null, 2));
+      return [];
+    }
+
+    const data = json.data.pools.map((item) => ({
+      id: item.id,
+      volumeUSD: item.volumeUSD,
+      txCount: item.txCount,
+      sqrtPrice: item.sqrtPrice,
+      tick: item.tick,
+    }));
+
+    console.log("Validated Data:", JSON.stringify(data, null, 2));
+    return data;
+  } catch (error) {
+    console.error("Error in fetchData:", error);
+    return [];
   }
-  return true;
 }
 
 module.exports = fetchData;
