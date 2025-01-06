@@ -19,28 +19,28 @@ async function fetchData() {
       },
       body: JSON.stringify({
         query: `
-          # Paste the content from logs/generated-query.graphql here
-          {
-            pools {
-              id
-              token0 {
-                id
-                symbol
-                name
-              }
-              token1 {
-                id
-                symbol
-                name
-              }
-              volumeUSD
-              txCount
-              liquidity
-            }
-          }
-        `,
-      }),
-    });
+          
+    query {
+      pools {
+        liquidity
+token0Price
+token1Price
+tick
+volumeToken0
+volumeToken1
+volumeUSD
+untrackedVolumeUSD
+feesUSD
+txCount
+      }
+      tokens {
+        volumeUSD
+untrackedVolumeUSD
+feesUSD
+txCount
+      }
+    }
+  
 
     if (!response.ok) {
       throw new Error(`❌ Failed to fetch data: ${response.statusText}`);
