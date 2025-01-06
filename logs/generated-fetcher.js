@@ -31,18 +31,18 @@ async function fetchData() {
           query {
             pools {
               id
-                    volumeUSD
-                    txCount
-                    liquidity
-                    feesUSD
-                    token0Price
-                    token1Price
-                    totalValueLockedUSD
-                    volumeToken0
-                    volumeToken1
-                    liquidityProviderCount
-                    sqrtPrice
-                    tick
+              volumeUSD
+              txCount
+              liquidity
+              feesUSD
+              token0Price
+              token1Price
+              totalValueLockedUSD
+              volumeToken0
+              volumeToken1
+              liquidityProviderCount
+              sqrtPrice
+              tick
             }
           }
         `,
