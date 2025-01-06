@@ -1,101 +1,83 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node logs/generated-fetcher.js
-🚀 Starting comprehensive fetcher...
 📡 Fetching data from: https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g
-✅ Raw Data Fetched: {
-  "data": null,
-  "errors": [
-    {
-      "message": "Type `Token` has no field `derivedETH`",
-      "locations": [
-        {
-          "line": 32,
-          "column": 3
-        }
-      ]
-    },
-    {
-      "message": "Type `Token` has no field `totalLiquidity`",
-      "locations": [
-        {
-          "line": 34,
-          "column": 3
-        }
-      ]
-    },
-    {
-      "message": "Type `TokenDayData` has no field `totalLiquidity`",
-      "locations": [
-        {
-          "line": 39,
-          "column": 5
-        }
-      ]
-    },
-    {
-      "message": "Type `Token` has no field `tokenHourData`",
-      "locations": [
-        {
-          "line": 41,
-          "column": 3
-        }
-      ]
-    },
-    {
-      "message": "Type `Transaction` has no field `gasUsed`",
-      "locations": [
-        {
-          "line": 69,
-          "column": 3
-        }
-      ]
-    }
-  ]
-}
-❌ Errors in API response: [
-  {
-    "message": "Type `Token` has no field `derivedETH`",
-    "locations": [
+✅ Fetched Data: {
+  "data": {
+    "pools": [
       {
-        "line": 32,
-        "column": 3
-      }
-    ]
-  },
-  {
-    "message": "Type `Token` has no field `totalLiquidity`",
-    "locations": [
+        "id": "0x000a7d8e4619aa9ee59eb80fa5bc5d5905afb403",
+        "liquidity": "0",
+        "token0": {
+          "id": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+          "name": "USD Coin (PoS)",
+          "symbol": "USDC"
+        },
+        "token1": {
+          "id": "0xbb6e6cbe9b392ac1275f3764cfda687a7d0a2cf6",
+          "name": "Dummy VIS",
+          "symbol": "DVIS"
+        },
+        "volumeUSD": "286.793155"
+      },
       {
-        "line": 34,
-        "column": 3
-      }
-    ]
-  },
-  {
-    "message": "Type `TokenDayData` has no field `totalLiquidity`",
-    "locations": [
+        "id": "0x001ca4c9b09c890cf5facc6b79a8a0ae65ed2489",
+        "liquidity": "0",
+        "token0": {
+          "id": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+          "name": "Wrapped Polygon Ecosystem Token",
+          "symbol": "WPOL"
+        },
+        "token1": {
+          "id": "0x8b2d0d46a907aa5653f05d708c8c69f46cf88676",
+          "name": "Sonicomic",
+          "symbol": "SNCM"
+        },
+        "volumeUSD": "0"
+      },
       {
-        "line": 39,
-        "column": 5
-      }
-    ]
-  },
-  {
-    "message": "Type `Token` has no field `tokenHourData`",
-    "locations": [
+        "id": "0x001d653809c56cc8cbb13daa261228bbb2bb3ead",
+        "liquidity": "0",
+        "token0": {
+          "id": "0x72d31b6dd46daae07391036097a2cb4648991ecd",
+          "name": "STAR-Power/StarSeeds Protocol",
+          "symbol": "SP"
+        },
+        "token1": {
+          "id": "0x7bf44c2be2b9bab23cea3e071a14d93df9cdefaf",
+          "name": "USD Yield Index by StarSeeds Protocol",
+          "symbol": "USD-S"
+        },
+        "volumeUSD": "0"
+      },
       {
-        "line": 41,
-        "column": 3
-      }
-    ]
-  },
-  {
-    "message": "Type `Transaction` has no field `gasUsed`",
-    "locations": [
+        "id": "0x0057ba214d879738d317aedb3826cafdcc78328f",
+        "liquidity": "0",
+        "token0": {
+          "id": "0x00658b2c97c550767fe894d8cb21008d2ca4740f",
+          "name": "ToTheMoon",
+          "symbol": "2MOON"
+        },
+        "token1": {
+          "id": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+          "name": "Wrapped Polygon Ecosystem Token",
+          "symbol": "WPOL"
+        },
+        "volumeUSD": "37.28712049557024072268812874341868"
+      },
       {
-        "line": 69,
-        "column": 3
+        "id": "0x00602d036403258c2765cb95f750db96cd9ddda4",
+        "liquidity": "0",
+        "token0": {
+          "id": "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+          "name": "USD Coin",
+          "symbol": "USDC"
+        },
+        "token1": {
+          "id": "0x731c79f054df3a567584ee21a95399d343103143",
+          "name": "Corgi Studio",
+          "symbol": "CRS"
+        },
+        "volumeUSD": "0"
       }
     ]
   }
-]
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-
+}
