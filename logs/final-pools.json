@@ -1,193 +1,133 @@
 [
   {
+    "feesUSD": "2550.322301145",
     "id": "0x0004cd8474e882278e32e584699090be496f410e",
     "liquidity": "188566476438429518",
-    "token0": {
-      "id": "0x0ec78ed49c2d27b315d462d43b5bab94d2c79bf8",
-      "name": "ZERO",
-      "symbol": "ZERO"
-    },
-    "token1": {
-      "id": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-      "name": "USD Coin",
-      "symbol": "USDC"
-    },
+    "sqrtPrice": "10913463597193949857056",
+    "tick": "-315973",
+    "token0Price": "52.70283277767219076461830998676668",
+    "token1Price": "0.01897431214406476499542666358830627",
     "txCount": "1521",
     "volumeUSD": "850107.433715"
   },
   {
+    "feesUSD": "200595.9421066409392191313018083606",
     "id": "0x000ba527862e5b82cff0f7c66b646af023274aa1",
     "liquidity": "19926110609894096472135",
-    "token0": {
-      "id": "0x5afe3855358e112b5647b952709e6165e1c1eeee",
-      "name": "Safe Token",
-      "symbol": "SAFE"
-    },
-    "token1": {
-      "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      "name": "Wrapped Ether",
-      "symbol": "WETH"
-    },
+    "sqrtPrice": "1348352457935054467302450850",
+    "tick": "-81474",
+    "token0Price": "3452.648009426795167310573465299209",
+    "token1Price": "0.0002896327680289711612796063451692932",
     "txCount": "22033",
     "volumeUSD": "66865314.03554697973971043393612015"
   },
   {
+    "feesUSD": "14485.75077384610654265437421993816",
     "id": "0x000ea4a83acefdd62b1b43e9ccc281f442651520",
     "liquidity": "148443933127936569",
-    "token0": {
-      "id": "0x4fabb145d64652a948d72533023f6e7a623c7c53",
-      "name": "Binance USD",
-      "symbol": "BUSD"
-    },
-    "token1": {
-      "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      "name": "Wrapped Ether",
-      "symbol": "WETH"
-    },
+    "sqrtPrice": "1443251797509876472701169237",
+    "tick": "-80113",
+    "token0Price": "3013.526073131901193875154209991264",
+    "token1Price": "0.0003318371820027821207842810663772582",
     "txCount": "2562",
     "volumeUSD": "4828583.59128203551421812473997936"
   },
   {
+    "feesUSD": "116.4554527742814775912700078251748",
     "id": "0x001d6b301b939dc0dd2b982378d30b049d1d7e91",
     "liquidity": "1224738156519443122",
-    "token0": {
-      "id": "0x20cdf21d68c1c9cfbcaee29476e3fd111f2a7f6b",
-      "name": "The Coin",
-      "symbol": "COIN"
-    },
-    "token1": {
-      "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      "name": "Wrapped Ether",
-      "symbol": "WETH"
-    },
+    "sqrtPrice": "4319267848",
+    "tick": "-887160",
+    "token0Price": "336464225295863887061540173687352500000",
+    "token1Price": "0.000000000000000000000000000000000000002972084176618383790525093357651693",
     "txCount": "79",
     "volumeUSD": "38818.48425809382586375666927505829"
   },
   {
+    "feesUSD": "6085.154241048602605787077965107922",
     "id": "0x0025ade782cc2b2415d1e841a8d52ff5dce33dfe",
     "liquidity": "292918389273214376584",
-    "token0": {
-      "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      "name": "Wrapped Ether",
-      "symbol": "WETH"
-    },
-    "token1": {
-      "id": "0xea5b19c073f8074f9a8dcd693d01b6acb1c26ae4",
-      "name": "Simba Inu",
-      "symbol": "SIM"
-    },
+    "sqrtPrice": "791104195530027435866207858325333",
+    "tick": "184186",
+    "token0Price": "0.00000001002978889064874757301645039078766",
+    "token1Price": "99702995.83596897854835565395626819",
     "txCount": "1568",
     "volumeUSD": "2028384.747016200868595692655035967"
   },
   {
+    "feesUSD": "320.8215330555308963929065053531295",
     "id": "0x0026040bcab8c8e352e2ec3f66e4c4b8ca4658b2",
     "liquidity": "433815326510610256913",
-    "token0": {
-      "id": "0x2c0687215aca7f5e2792d956e170325e92a02aca",
-      "name": "Earth 2 Essence",
-      "symbol": "ESS"
-    },
-    "token1": {
-      "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      "name": "Wrapped Ether",
-      "symbol": "WETH"
-    },
+    "sqrtPrice": "407255662379357635437965606",
+    "tick": "-105419",
+    "token0Price": "37846.42872877926964157976462042543",
+    "token1Price": "0.00002642257231630359000517684698252857",
     "txCount": "481",
     "volumeUSD": "106940.5110185102987976355017843765"
   },
   {
+    "feesUSD": "894.0376997450945814518076822669615",
     "id": "0x00a151b39b43f6a79366f9129222b9370e30a702",
     "liquidity": "8998077112326985950396256",
-    "token0": {
-      "id": "0x036c3a8bc8327e56564104f658576c995118e9a3",
-      "name": "Burn.ly - Let it burn",
-      "symbol": "BURNLY"
-    },
-    "token1": {
-      "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      "name": "Wrapped Ether",
-      "symbol": "WETH"
-    },
+    "sqrtPrice": "23303285954661101614348",
+    "tick": "-300800",
+    "token0Price": "11559121763939.8299305883707908807",
+    "token1Price": "0.00000000000008651176278111619854128064551949413",
     "txCount": "114",
     "volumeUSD": "89403.76997450945814518076822669615"
   },
   {
+    "feesUSD": "8102.545064984485940771140345599785",
     "id": "0x00c07a7e77c9ffa6e0e3c58790e0dcb81cef89e1",
     "liquidity": "961503437059901987930",
-    "token0": {
-      "id": "0xa444ec96ee01bb219a44b285de47bf33c3447ad5",
-      "name": "LEOX",
-      "symbol": "LEOX"
-    },
-    "token1": {
-      "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      "name": "Wrapped Ether",
-      "symbol": "WETH"
-    },
+    "sqrtPrice": "804577059664958538029228752",
+    "tick": "-91800",
+    "token0Price": "9696.698139298527752600721487213549",
+    "token1Price": "0.0001031278880330641448005408019960306",
     "txCount": "2016",
     "volumeUSD": "810254.5064984485940771140345599785"
   },
   {
+    "feesUSD": "40339.68354861085952076738278573186",
     "id": "0x00c6a247a868dee7e84d16eba22d1ab903108a44",
     "liquidity": "14710442632042879628",
-    "token0": {
-      "id": "0x85f138bfee4ef8e540890cfb48f620571d67eda3",
-      "name": "Wrapped AVAX (Wormhole)",
-      "symbol": "WAVAX"
-    },
-    "token1": {
-      "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      "name": "Wrapped Ether",
-      "symbol": "WETH"
-    },
+    "sqrtPrice": "8669431424292671999570392083",
+    "tick": "-44253",
+    "token0Price": "83.51758661968484736191214599833799",
+    "token1Price": "0.0119735260616870239769573736578265",
     "txCount": "7090",
     "volumeUSD": "13446561.18287028650692246092857717"
   },
   {
+    "feesUSD": "267539.9470533653572960261193567911",
     "id": "0x00cef0386ed94d738c8f8a74e8bfd0376926d24c",
-    "liquidity": "3524547796572459",
-    "token0": {
-      "id": "0x4fabb145d64652a948d72533023f6e7a623c7c53",
-      "name": "Binance USD",
-      "symbol": "BUSD"
-    },
-    "token1": {
-      "id": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-      "name": "USD Coin",
-      "symbol": "USDC"
-    },
-    "txCount": "16688",
-    "volumeUSD": "535078989.9957617145920522387135823"
+    "liquidity": "1848016791642434426",
+    "sqrtPrice": "79238595674865661066632",
+    "tick": "-276322",
+    "token0Price": "0.9997366820131643782951222910563713",
+    "token1Price": "1.000263387341460132973570915952034",
+    "txCount": "16689",
+    "volumeUSD": "535079894.1067307145920522387135823"
   },
   {
+    "feesUSD": "3845.140667207170502693487690547109",
     "id": "0x00da578acb3381f48f187374cda78d6824676f27",
     "liquidity": "16315499759069",
-    "token0": {
-      "id": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
-      "name": "Wrapped BTC",
-      "symbol": "WBTC"
-    },
-    "token1": {
-      "id": "0xa469b7ee9ee773642b3e93e842e5d9b5baa10067",
-      "name": "USDz",
-      "symbol": "USDz"
-    },
+    "sqrtPrice": "2456413428080671731702866912780345928",
+    "tick": "345009",
+    "token0Price": "0.00001040294355034780307273917604135123",
+    "token1Price": "96126.63907674158815915323536932427",
     "txCount": "2771",
     "volumeUSD": "7690281.334414341005386975381094202"
   },
   {
+    "feesUSD": "5457.69929405",
     "id": "0x00dc4f81f0b3fdcfbcc27655c8518a2275e93cf9",
     "liquidity": "1621301092217284",
-    "token0": {
-      "id": "0x0f7b3f5a8fed821c5eb60049538a548db2d479ce",
-      "name": "AirTor Protocol",
-      "symbol": "ATOR"
-    },
-    "token1": {
-      "id": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-      "name": "USD Coin",
-      "symbol": "USDC"
-    },
+    "sqrtPrice": "5793189401396919498766",
+    "tick": "-328640",
+    "token0Price": "187.0353568274244834127404498246564",
+    "token1Price": "0.005346582683415784688062885493491942",
     "txCount": "1327",
     "volumeUSD": "545769.929405"
   }
