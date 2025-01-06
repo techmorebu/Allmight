@@ -1,9 +1,4 @@
 {
-  "AlgebraDayData": [
-    "volumeUSD",
-    "feesUSD",
-    "txCount"
-  ],
   "Bundle": [],
   "Burn": [
     "tickLower",
@@ -17,7 +12,6 @@
     "txCount",
     "untrackedVolumeUSD"
   ],
-  "FeeHourData": [],
   "Flash": [],
   "Mint": [
     "tickLower",
@@ -37,7 +31,6 @@
   ],
   "PoolDayData": [
     "liquidity",
-    "untrackedVolumeUSD",
     "token0Price",
     "token1Price",
     "tick",
@@ -51,7 +44,6 @@
     "low",
     "close"
   ],
-  "PoolFeeData": [],
   "PoolHourData": [
     "liquidity",
     "token0Price",
@@ -61,7 +53,6 @@
     "volumeToken1",
     "volumeUSD",
     "feesUSD",
-    "untrackedVolumeUSD",
     "txCount",
     "open",
     "high",
@@ -83,7 +74,6 @@
     "tick"
   ],
   "Swap": [
-    "liquidity",
     "tick"
   ],
   "Tick": [
@@ -140,8 +130,12 @@
     "close"
   ],
   "Transaction": [
-    "gasLimit",
     "gasPrice"
+  ],
+  "UniswapDayData": [
+    "volumeUSD",
+    "feesUSD",
+    "txCount"
   ],
   "_Block_": [],
   "_Meta_": []

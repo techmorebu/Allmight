@@ -4,107 +4,6 @@
     "name": "Aggregation_interval"
   },
   {
-    "fields": [
-      {
-        "name": "id",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "ID"
-          }
-        }
-      },
-      {
-        "name": "date",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "Int"
-          }
-        }
-      },
-      {
-        "name": "volumeMatic",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigDecimal"
-          }
-        }
-      },
-      {
-        "name": "volumeUSD",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigDecimal"
-          }
-        }
-      },
-      {
-        "name": "volumeUSDUntracked",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigDecimal"
-          }
-        }
-      },
-      {
-        "name": "feesUSD",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigDecimal"
-          }
-        }
-      },
-      {
-        "name": "txCount",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigInt"
-          }
-        }
-      },
-      {
-        "name": "tvlUSD",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigDecimal"
-          }
-        }
-      }
-    ],
-    "name": "AlgebraDayData"
-  },
-  {
-    "fields": null,
-    "name": "AlgebraDayData_filter"
-  },
-  {
-    "fields": null,
-    "name": "AlgebraDayData_orderBy"
-  },
-  {
     "fields": null,
     "name": "BigDecimal"
   },
@@ -138,7 +37,7 @@
         }
       },
       {
-        "name": "maticPriceUSD",
+        "name": "ethPriceUSD",
         "type": {
           "kind": "NON_NULL",
           "name": null,
@@ -504,7 +403,7 @@
         }
       },
       {
-        "name": "totalVolumeMatic",
+        "name": "totalVolumeETH",
         "type": {
           "kind": "NON_NULL",
           "name": null,
@@ -526,7 +425,7 @@
         }
       },
       {
-        "name": "totalFeesMatic",
+        "name": "totalFeesETH",
         "type": {
           "kind": "NON_NULL",
           "name": null,
@@ -559,7 +458,7 @@
         }
       },
       {
-        "name": "totalValueLockedMatic",
+        "name": "totalValueLockedETH",
         "type": {
           "kind": "NON_NULL",
           "name": null,
@@ -581,7 +480,7 @@
         }
       },
       {
-        "name": "totalValueLockedMaticUntracked",
+        "name": "totalValueLockedETHUntracked",
         "type": {
           "kind": "NON_NULL",
           "name": null,
@@ -612,118 +511,6 @@
   {
     "fields": null,
     "name": "Factory_orderBy"
-  },
-  {
-    "fields": [
-      {
-        "name": "id",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "ID"
-          }
-        }
-      },
-      {
-        "name": "pool",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "String"
-          }
-        }
-      },
-      {
-        "name": "fee",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigInt"
-          }
-        }
-      },
-      {
-        "name": "changesCount",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigInt"
-          }
-        }
-      },
-      {
-        "name": "timestamp",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigInt"
-          }
-        }
-      },
-      {
-        "name": "minFee",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigInt"
-          }
-        }
-      },
-      {
-        "name": "maxFee",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigInt"
-          }
-        }
-      },
-      {
-        "name": "startFee",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigInt"
-          }
-        }
-      },
-      {
-        "name": "endFee",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigInt"
-          }
-        }
-      }
-    ],
-    "name": "FeeHourData"
-  },
-  {
-    "fields": null,
-    "name": "FeeHourData_filter"
-  },
-  {
-    "fields": null,
-    "name": "FeeHourData_orderBy"
   },
   {
     "fields": [
@@ -1125,29 +912,7 @@
         }
       },
       {
-        "name": "fee",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigInt"
-          }
-        }
-      },
-      {
-        "name": "communityFee0",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigInt"
-          }
-        }
-      },
-      {
-        "name": "communityFee1",
+        "name": "feeTier",
         "type": {
           "kind": "NON_NULL",
           "name": null,
@@ -1226,12 +991,9 @@
       {
         "name": "tick",
         "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigInt"
-          }
+          "kind": "SCALAR",
+          "name": "BigInt",
+          "ofType": null
         }
       },
       {
@@ -1291,17 +1053,6 @@
       },
       {
         "name": "feesUSD",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigDecimal"
-          }
-        }
-      },
-      {
-        "name": "untrackedFeesUSD",
         "type": {
           "kind": "NON_NULL",
           "name": null,
@@ -1378,29 +1129,7 @@
         }
       },
       {
-        "name": "feesToken0",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigDecimal"
-          }
-        }
-      },
-      {
-        "name": "feesToken1",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigDecimal"
-          }
-        }
-      },
-      {
-        "name": "totalValueLockedMatic",
+        "name": "totalValueLockedETH",
         "type": {
           "kind": "NON_NULL",
           "name": null,
@@ -1581,17 +1310,6 @@
         }
       },
       {
-        "name": "untrackedVolumeUSD",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigDecimal"
-          }
-        }
-      },
-      {
         "name": "token0Price",
         "type": {
           "kind": "NON_NULL",
@@ -1645,28 +1363,6 @@
       },
       {
         "name": "tvlUSD",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigDecimal"
-          }
-        }
-      },
-      {
-        "name": "feesToken0",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigDecimal"
-          }
-        }
-      },
-      {
-        "name": "feesToken1",
         "type": {
           "kind": "NON_NULL",
           "name": null,
@@ -1785,60 +1481,6 @@
   {
     "fields": null,
     "name": "PoolDayData_orderBy"
-  },
-  {
-    "fields": [
-      {
-        "name": "id",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "ID"
-          }
-        }
-      },
-      {
-        "name": "pool",
-        "type": {
-          "kind": "SCALAR",
-          "name": "String",
-          "ofType": null
-        }
-      },
-      {
-        "name": "timestamp",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigInt"
-          }
-        }
-      },
-      {
-        "name": "fee",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigInt"
-          }
-        }
-      }
-    ],
-    "name": "PoolFeeData"
-  },
-  {
-    "fields": null,
-    "name": "PoolFeeData_filter"
-  },
-  {
-    "fields": null,
-    "name": "PoolFeeData_orderBy"
   },
   {
     "fields": [
@@ -1995,17 +1637,6 @@
       },
       {
         "name": "feesUSD",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigDecimal"
-          }
-        }
-      },
-      {
-        "name": "untrackedVolumeUSD",
         "type": {
           "kind": "NON_NULL",
           "name": null,
@@ -2224,28 +1855,6 @@
         }
       },
       {
-        "name": "collectedToken0",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigDecimal"
-          }
-        }
-      },
-      {
-        "name": "collectedToken1",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigDecimal"
-          }
-        }
-      },
-      {
         "name": "collectedFeesToken0",
         "type": {
           "kind": "NON_NULL",
@@ -2298,22 +1907,6 @@
             "kind": "SCALAR",
             "name": "BigInt"
           }
-        }
-      },
-      {
-        "name": "token0Tvl",
-        "type": {
-          "kind": "SCALAR",
-          "name": "BigDecimal",
-          "ofType": null
-        }
-      },
-      {
-        "name": "token1Tvl",
-        "type": {
-          "kind": "SCALAR",
-          "name": "BigDecimal",
-          "ofType": null
         }
       }
     ],
@@ -2766,15 +2359,15 @@
         }
       },
       {
-        "name": "algebraDayData",
+        "name": "uniswapDayData",
         "type": {
           "kind": "OBJECT",
-          "name": "AlgebraDayData",
+          "name": "UniswapDayData",
           "ofType": null
         }
       },
       {
-        "name": "algebraDayDatas",
+        "name": "uniswapDayDatas",
         "type": {
           "kind": "NON_NULL",
           "name": null,
@@ -2794,25 +2387,6 @@
       },
       {
         "name": "poolDayDatas",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "LIST",
-            "name": null
-          }
-        }
-      },
-      {
-        "name": "poolFeeData",
-        "type": {
-          "kind": "OBJECT",
-          "name": "PoolFeeData",
-          "ofType": null
-        }
-      },
-      {
-        "name": "poolFeeDatas",
         "type": {
           "kind": "NON_NULL",
           "name": null,
@@ -2908,25 +2482,6 @@
       },
       {
         "name": "tokenHourDatas",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "LIST",
-            "name": null
-          }
-        }
-      },
-      {
-        "name": "feeHourData",
-        "type": {
-          "kind": "OBJECT",
-          "name": "FeeHourData",
-          "ofType": null
-        }
-      },
-      {
-        "name": "feeHourDatas",
         "type": {
           "kind": "NON_NULL",
           "name": null,
@@ -3201,15 +2756,15 @@
         }
       },
       {
-        "name": "algebraDayData",
+        "name": "uniswapDayData",
         "type": {
           "kind": "OBJECT",
-          "name": "AlgebraDayData",
+          "name": "UniswapDayData",
           "ofType": null
         }
       },
       {
-        "name": "algebraDayDatas",
+        "name": "uniswapDayDatas",
         "type": {
           "kind": "NON_NULL",
           "name": null,
@@ -3229,25 +2784,6 @@
       },
       {
         "name": "poolDayDatas",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "LIST",
-            "name": null
-          }
-        }
-      },
-      {
-        "name": "poolFeeData",
-        "type": {
-          "kind": "OBJECT",
-          "name": "PoolFeeData",
-          "ofType": null
-        }
-      },
-      {
-        "name": "poolFeeDatas",
         "type": {
           "kind": "NON_NULL",
           "name": null,
@@ -3343,25 +2879,6 @@
       },
       {
         "name": "tokenHourDatas",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "LIST",
-            "name": null
-          }
-        }
-      },
-      {
-        "name": "feeHourData",
-        "type": {
-          "kind": "OBJECT",
-          "name": "FeeHourData",
-          "ofType": null
-        }
-      },
-      {
-        "name": "feeHourDatas",
         "type": {
           "kind": "NON_NULL",
           "name": null,
@@ -3473,17 +2990,6 @@
         }
       },
       {
-        "name": "liquidity",
-        "type": {
-          "kind": "NON_NULL",
-          "name": null,
-          "ofType": {
-            "kind": "SCALAR",
-            "name": "BigInt"
-          }
-        }
-      },
-      {
         "name": "origin",
         "type": {
           "kind": "NON_NULL",
@@ -3528,7 +3034,7 @@
         }
       },
       {
-        "name": "price",
+        "name": "sqrtPriceX96",
         "type": {
           "kind": "NON_NULL",
           "name": null,
@@ -4238,7 +3744,7 @@
         }
       },
       {
-        "name": "derivedMatic",
+        "name": "derivedETH",
         "type": {
           "kind": "NON_NULL",
           "name": null,
@@ -4651,7 +4157,7 @@
         }
       },
       {
-        "name": "gasLimit",
+        "name": "gasUsed",
         "type": {
           "kind": "NON_NULL",
           "name": null,
@@ -4737,6 +4243,107 @@
   {
     "fields": null,
     "name": "Transaction_orderBy"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "date",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Int"
+          }
+        }
+      },
+      {
+        "name": "volumeETH",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "volumeUSD",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "volumeUSDUntracked",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "feesUSD",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "txCount",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigInt"
+          }
+        }
+      },
+      {
+        "name": "tvlUSD",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      }
+    ],
+    "name": "UniswapDayData"
+  },
+  {
+    "fields": null,
+    "name": "UniswapDayData_filter"
+  },
+  {
+    "fields": null,
+    "name": "UniswapDayData_orderBy"
   },
   {
     "fields": [
