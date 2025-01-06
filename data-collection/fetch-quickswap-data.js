@@ -1,36 +1,41 @@
 require("dotenv").config();
 const fetch = require("node-fetch");
-const fs = require("fs");
 
-async function fetchQuickswapData() {
+async function fetchData() {
   try {
-    console.log("🚀 Fetching data from Quickswap...");
-    const apiUrl = process.env.QUICKSWAP_API_URL;
+    console.log("🚀 Starting fetcher script...");
+    const apiUrl = process.env.QUICKSWAP_API; // Ensure this is set in your .env file
 
     if (!apiUrl) {
-      throw new Error("❌ QUICKSWAP_API_URL is not defined in the .env file");
+      throw new Error("❌ QUICKSWAP_API is not defined in the .env file");
     }
+
+    console.log(`📡 Fetching data from: ${apiUrl}`);
 
     const response = await fetch(apiUrl, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         query: `
-          query {
+          # Paste the content from logs/generated-query.graphql here
+          {
             pools {
               id
-              volumeUSD
-              liquidity
               token0 {
                 id
-                name
                 symbol
+                name
               }
               token1 {
                 id
-                name
                 symbol
+                name
               }
+              volumeUSD
+              txCount
+              liquidity
             }
           }
         `,
@@ -42,40 +47,22 @@ async function fetchQuickswapData() {
     }
 
     const data = await response.json();
+    console.log("✅ Fetched Data:", JSON.stringify(data, null, 2));
+
     if (data.errors) {
       console.error("❌ Errors in API response:", JSON.stringify(data.errors, null, 2));
       return;
     }
 
-    const pools = data.data.pools;
-    console.log("✅ Raw Data Fetched:", JSON.stringify(pools, null, 2));
+    const pools = data.data.pools || [];
+    console.log("✅ Pools Data:", pools);
 
-    // Validate and filter pools
-    const validatedPools = pools.filter((pool) => validatePool(pool));
-    console.log("✅ Validated Pools:", validatedPools);
-
-    // Save to file
-    fs.writeFileSync("./logs/validated-quickswap-data.json", JSON.stringify(validatedPools, null, 2));
-    console.log("✅ Data saved to logs/validated-quickswap-data.json");
-
-    return validatedPools;
+    return pools;
   } catch (error) {
-    console.error("❌ Error fetching Quickswap data:", error);
+    console.error("❌ Error in fetchData:", error);
   }
 }
 
-function validatePool(pool) {
-  const requiredFields = ["id", "volumeUSD", "liquidity", "token0", "token1"];
-  for (const field of requiredFields) {
-    if (!pool[field]) {
-      console.warn(`⚠️ Missing field: ${field} in pool ${pool.id}`);
-      return false;
-    }
-  }
-  return true;
-}
-
-// Execute the fetcher
 (async () => {
-  await fetchQuickswapData();
+  await fetchData();
 })();
