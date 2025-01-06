@@ -1,4 +1,4 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tools/analyze-and-generate.js
+echbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tools/analyze-and-generate.js
 🚀 Starting schema analysis...
 🚀 Fetching schema...
 🔍 Analyzing fields...
@@ -6,3 +6,58 @@ techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tools/analyze-and-ge
 ✅ Field analysis saved to logs/field-analysis.json
 ✅ Generated query saved to logs/generated-query.graphql
 🎉 Schema analysis completed successfully!
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tools/automate-fetcher.js
+🚀 Starting automated workflow for Quickswap...
+📊 Running schema analysis...
+✅ Script /home/techbu/OFA_Project_Local/ofa-project/tools/analyze-and-generate.js completed successfully.
+🚀 Starting schema analysis...
+🚀 Fetching schema...
+🔍 Analyzing fields...
+✅ Raw schema saved to logs/raw-schema.json
+✅ Field analysis saved to logs/field-analysis.json
+✅ Generated query saved to logs/generated-query.graphql
+🎉 Schema analysis completed successfully!
+
+📡 Running data fetcher...
+❌ Error running script /home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-quickswap-data.js: /home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-quickswap-data.js:68
+    console.error("❌
+                  ^^
+
+SyntaxError: Invalid or unexpected token
+    at internalCompileFunction (node:internal/vm:73:18)
+    at wrapSafe (node:internal/modules/cjs/loader:1274:20)
+    at Module._compile (node:internal/modules/cjs/loader:1320:27)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
+    at Module.load (node:internal/modules/cjs/loader:1197:32)
+    at Module._load (node:internal/modules/cjs/loader:1013:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
+    at node:internal/main/run_main_module:28:49
+
+Node.js v18.19.1
+
+❌ Error in automateFetcher workflow: Error: Command failed: node /home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-quickswap-data.js
+/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-quickswap-data.js:68
+    console.error("❌
+                  ^^
+
+SyntaxError: Invalid or unexpected token
+    at internalCompileFunction (node:internal/vm:73:18)
+    at wrapSafe (node:internal/modules/cjs/loader:1274:20)
+    at Module._compile (node:internal/modules/cjs/loader:1320:27)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
+    at Module.load (node:internal/modules/cjs/loader:1197:32)
+    at Module._load (node:internal/modules/cjs/loader:1013:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
+    at node:internal/main/run_main_module:28:49
+
+Node.js v18.19.1
+
+    at ChildProcess.exithandler (node:child_process:422:12)
+    at ChildProcess.emit (node:events:517:28)
+    at maybeClose (node:internal/child_process:1098:16)
+    at ChildProcess._handle.onexit (node:internal/child_process:303:5) {
+  code: 1,
+  killed: false,
+  signal: null,
+  cmd: 'node /home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-quickswap-data.js'
+}
