@@ -1,101 +1,31 @@
+
 require("dotenv").config();
 const fetch = require("node-fetch");
-const fs = require("fs");
-const path = require("path");
 
-// Global error handling
-process.on("uncaughtException", (err) => {
-  console.error("❌ Uncaught Exception:", err);
-});
+(async function fetchData() {
+    try {
+        console.log("🚀 Fetching data for Uniswap...");
+        const response = await fetch("https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                query: `
+                    query {
+                        pools { id volumeUSD txCount liquidity token0 { symbol } token1 { symbol } }
+                    }
+                `,
+            }),
+        });
 
-process.on("unhandledRejection", (reason, promise) => {
-  console.error("❌ Unhandled Rejection:", reason);
-});
-
-const API_URL = process.env.UNISWAP_API;
-if (!API_URL) {
-  console.error("❌ UNISWAP_API is not defined in the .env file");
-  process.exit(1);
-}
-
-// Generated query file from schema analysis
-const queryFilePath = path.resolve(__dirname, "../logs/generated-query.graphql");
-if (!fs.existsSync(queryFilePath)) {
-  console.error("❌ No generated query file found. Run the schema analysis first.");
-  process.exit(1);
-}
-
-// Load the query
-const query = fs.readFileSync(queryFilePath, "utf8");
-
-async function fetchuniswapData() {
-  try {
-    console.log("🚀 Starting uniswap data fetch...");
-    console.log(`📡 Fetching data from: ${API_URL}`);
-
-    const response = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ query }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`❌ Failed to fetch data: ${response.statusText}`);
+        const data = await response.json();
+        if (data.errors) {
+            console.error("❌ Errors in API response:", data.errors);
+        } else {
+            console.log("✅ Data fetched successfully:", data.data);
+        }
+    } catch (error) {
+        console.error("❌ Error fetching data for Uniswap:", error);
     }
-
-    const data = await response.json();
-    if (data.errors) {
-      console.error("❌ Errors in API response:", JSON.stringify(data.errors, null, 2));
-      return;
-    }
-
-    const pools = data.data?.pools || [];
-    console.log("✅ Raw Pools Data Fetched:", JSON.stringify(pools, null, 2));
-
-    // Filter pools for arbitrage opportunities
-    const filteredPools = filterPools(pools);
-    console.log("✅ Filtered Pools:", JSON.stringify(filteredPools, null, 2));
-
-    // Save filtered pools to file
-    const outputPath = path.resolve(__dirname, "../logs/arbitrage-ready-pools.json");
-    fs.writeFileSync(outputPath, JSON.stringify(filteredPools, null, 2));
-    console.log(`✅ Filtered pools saved to: ${outputPath}`);
-
-    return filteredPools;
-  } catch (error) {
-    console.error("❌ Error in fetchuniswapData:", error);
-  }
-}
-
-function filterPools(pools) {
-  console.log("🔍 Filtering pools for arbitrage-ready data...");
-  return pools.filter((pool) => {
-    const requiredFields = ["id", "token0", "token1", "volumeUSD", "txCount", "liquidity"];
-    for (const field of requiredFields) {
-      if (!pool[field]) {
-        console.warn(`⚠️ Pool missing field: ${field}`);
-        return false;
-      }
-    }
-
-    const stablecoinSymbols = ["DAI", "USDC", "USDT"];
-    const isStablecoinPair =
-      stablecoinSymbols.includes(pool.token0.symbol) || stablecoinSymbols.includes(pool.token1.symbol);
-
-    const hasHighVolumeOrTxCount =
-      parseFloat(pool.volumeUSD) > 20000 || parseInt(pool.txCount, 10) > 400;
-
-    return isStablecoinPair && hasHighVolumeOrTxCount;
-  });
-}
-
-// Immediately invoke the function to fetch data
-(async () => {
-  try {
-    await fetchuniswapData();
-  } catch (error) {
-    console.error("❌ Uncaught error in script:", error);
-  }
 })();

@@ -4,8 +4,8 @@ const fetch = require("node-fetch");
 
 (async function fetchData() {
     try {
-        console.log("🚀 Fetching data for Quickswap...");
-        const response = await fetch("https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g", {
+        console.log("🚀 Fetching data for Balancer_Optimism...");
+        const response = await fetch("https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FsmdxmvBJLGjUQPxKMRtcWKzuCNpomKuMTbSbtRtggZ7", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -26,6 +26,6 @@ const fetch = require("node-fetch");
             console.log("✅ Data fetched successfully:", data.data);
         }
     } catch (error) {
-        console.error("❌ Error fetching data for Quickswap:", error);
+        console.error("❌ Error fetching data for Balancer_Optimism:", error);
     }
 })();
