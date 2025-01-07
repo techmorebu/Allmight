@@ -3,64 +3,64 @@ const { exec } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
-// Default DEXs and their APIs
+// List of DEX APIs from .env
 const DEX_APIS = [
-    { name: "Quickswap", api: "https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g" },
-    { name: "Uniswap", api: "https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV" },
-    { name: "Sushiswap", api: "https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/3oHCddbQGTi42kPZBwyGzD2JzZR33zK2MwXtxAerNJy2" },
-    { name: "Balancer_Polygon", api: "https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/H9oPAbXnobBRq1cB3HDmbZ1E8MWQyJYQjT1QDJMrdbNp" },
-    { name: "Balancer_Optimism", api: "https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FsmdxmvBJLGjUQPxKMRtcWKzuCNpomKuMTbSbtRtggZ7" },
-    { name: "Balancer_Arbitrum", api: "https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/98cQDy6tufTJtshDCuhh9z2kWXsQWBHVh2bqnLHsGAeS" },
+    { name: "Quickswap", url: process.env.QUICKSWAP_API },
+    { name: "Uniswap", url: process.env.UNISWAP_API },
+    { name: "Sushiswap", url: process.env.SUSHISWAP_API },
+    { name: "Balancer_Polygon", url: process.env.BALANCER_POLYGON_API },
+    { name: "Balancer_Optimism", url: process.env.BALANCER_OPTIMISIM_API },
+    { name: "Balancer_Arbitrum", url: process.env.BALANCER_ARBITRUM_API },
+    { name: "Balancer_Avalanche", url: process.env.BALANCER_AVALANCHE_API },
+    { name: "Balancer_Ethereum", url: process.env.BALANCER_ETHEREUM_API }
 ];
 
-// Function to dynamically update the `.env` file
-function updateEnv(dexName, apiUrl) {
-    const envPath = path.resolve(__dirname, "../.env");
-    let envContent = fs.existsSync(envPath) ? fs.readFileSync(envPath, "utf-8") : "";
-
-    // Check if the DEX is already in `.env`
-    const dexKey = dexName.toUpperCase().replace(/-/g, "_") + "_API";
-    if (!envContent.includes(dexKey)) {
-        // Append the DEX API to `.env`
-        envContent += `\n${dexKey}=${apiUrl}`;
-        fs.writeFileSync(envPath, envContent, "utf-8");
-        console.log(`✅ Added ${dexName} API to .env`);
-    } else {
-        console.log(`⚠️ ${dexName} API already exists in .env`);
-    }
+// Ensure the logs directory exists
+const logsDir = path.join(__dirname, "../logs");
+if (!fs.existsSync(logsDir)) {
+    fs.mkdirSync(logsDir);
 }
 
-// Function to run a shell command and wait for its completion
-async function runCommand(command) {
+async function runCommand(command, logFileName) {
     return new Promise((resolve, reject) => {
-        exec(command, (error, stdout, stderr) => {
+        const logPath = path.join(logsDir, logFileName);
+
+        const process = exec(command, (error, stdout, stderr) => {
             if (error) {
                 console.error(`❌ Error: ${stderr}`);
+                fs.appendFileSync(logPath, `❌ Error: ${stderr}\n`);
                 return reject(error);
             }
             console.log(stdout);
+            fs.appendFileSync(logPath, stdout);
             resolve(stdout);
         });
     });
 }
 
-// Function to process each DEX
 async function processDEX(dex) {
     try {
         console.log(`🚀 Processing DEX: ${dex.name}...`);
+        const logFileName = `${dex.name.toLowerCase()}-log.txt`;
 
-        // Update `.env` with the DEX API if not present
-        updateEnv(dex.name, dex.api);
+        // Update API_URL dynamically
+        const envPath = path.join(__dirname, "../.env");
+        const currentEnv = fs.readFileSync(envPath, "utf8");
+        const updatedEnv = currentEnv.replace(/API_URL=.*/, `API_URL=${dex.url}`);
+        fs.writeFileSync(envPath, updatedEnv);
 
-        // Update API_URL dynamically in the environment
-        process.env.API_URL = dex.api;
-        process.env.DEX = dex.name;
+        // Check if API URL exists
+        if (!dex.url) {
+            console.warn(`⚠️ Skipping ${dex.name}: API URL not defined.`);
+            fs.appendFileSync(path.join(logsDir, logFileName), `⚠️ Skipping ${dex.name}: API URL not defined.\n`);
+            return;
+        }
 
         console.log("📊 Running schema analysis...");
-        await runCommand("node tools/analyze-and-generate.js");
+        await runCommand("node tools/analyze-and-generate.js", logFileName);
 
         console.log("📡 Fetching and filtering data...");
-        await runCommand("node tools/automate-fetcher.js");
+        await runCommand("node tools/automate-fetcher.js", logFileName);
 
         console.log(`✅ ${dex.name} processing completed successfully!`);
     } catch (error) {
@@ -68,7 +68,6 @@ async function processDEX(dex) {
     }
 }
 
-// Master workflow to process all DEXs
 async function masterAutomation() {
     for (const dex of DEX_APIS) {
         await processDEX(dex);
