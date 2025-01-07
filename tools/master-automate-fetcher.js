@@ -17,16 +17,19 @@ const DEX_APIS = [
     { name: "Curve_Ethereum", url: process.env.CURVE_ETHEREUM_API },
 ];
 
-async function runCommand(command) {
+async function runCommand(command, logFilePath) {
     return new Promise((resolve, reject) => {
-        exec(command, (error, stdout, stderr) => {
+        const process = exec(command, (error, stdout, stderr) => {
             if (error) {
-                console.error(`❌ Error: ${stderr}`);
+                fs.appendFileSync(logFilePath, `❌ Error: ${stderr}\n`);
                 return reject(error);
             }
-            console.log(stdout);
+            fs.appendFileSync(logFilePath, stdout);
             resolve(stdout);
         });
+
+        process.stdout.on("data", (data) => fs.appendFileSync(logFilePath, data));
+        process.stderr.on("data", (data) => fs.appendFileSync(logFilePath, data));
     });
 }
 
@@ -50,12 +53,16 @@ async function processDEX(dex) {
         console.log(`    API_URL=${dex.url}`);
         console.log(`    DEX_NAME=${dex.name}`);
 
+        const logFilePath = path.join("logs/dex-logs", `${dex.name}-log.txt`);
+        if (!fs.existsSync("logs/dex-logs")) {
+            fs.mkdirSync("logs/dex-logs", { recursive: true });
+        }
+
         console.log(`📊 Running schema analysis for ${dex.name}...`);
-        await runCommand("node tools/analyze-and-generate.js");
+        await runCommand("node tools/analyze-and-generate.js", logFilePath);
 
         console.log(`📡 Fetching and filtering data for ${dex.name}...`);
-        const logFile = path.join("logs/dex-logs", `${dex.name}-log.txt`);
-        await runCommand(`node data-collection/fetch-template.js > ${logFile}`);
+        await runCommand("node data-collection/fetch-template.js", logFilePath);
 
         console.log(`✅ ${dex.name} processing completed successfully!`);
     } catch (error) {
@@ -64,15 +71,9 @@ async function processDEX(dex) {
 }
 
 async function masterAutomation() {
-    if (!fs.existsSync("logs/dex-logs")) {
-        fs.mkdirSync("logs/dex-logs", { recursive: true });
-        console.log("✅ Created logs directory.");
-    }
-
     for (const dex of DEX_APIS) {
         await processDEX(dex);
     }
-
     console.log("🎉 All DEXs processed successfully!");
 }
 
