@@ -1,7 +1,6 @@
 require("dotenv").config();
 const fs = require("fs");
 const { exec } = require("child_process");
-const path = require("path");
 
 const DEX_APIS = [
     { name: "Quickswap", url: process.env.QUICKSWAP_API },
@@ -20,10 +19,9 @@ async function runCommand(command) {
     return new Promise((resolve, reject) => {
         exec(command, (error, stdout, stderr) => {
             if (error) {
-                console.error(`❌ Error: ${stderr}`);
+                console.error(`❌ Command Error: ${stderr}`);
                 return reject(error);
             }
-            console.log(stdout);
             resolve(stdout);
         });
     });
@@ -31,18 +29,27 @@ async function runCommand(command) {
 
 async function processDEX(dex) {
     try {
-        console.log(`🚀 Processing DEX: ${dex.name}...`);
+        if (!dex.url) {
+            console.warn(`⚠️ Skipping ${dex.name}: API URL not defined.`);
+            return;
+        }
 
-        // Update .env with current DEX API details
+        console.log(`🚀 Processing DEX: ${dex.name}`);
         const envPath = "./.env";
-        const currentEnv = fs.readFileSync(envPath, "utf8");
+        const currentEnv = fs.readFileSync(envPath, "utf-8");
         const updatedEnv = currentEnv
             .replace(/API_URL=.*/, `API_URL=${dex.url}`)
             .replace(/DEX_NAME=.*/, `DEX_NAME=${dex.name}`);
         fs.writeFileSync(envPath, updatedEnv);
+        console.log(`✅ Updated .env for ${dex.name}:\n    API_URL=${dex.url}\n    DEX_NAME=${dex.name}`);
 
-        console.log(`📡 Fetching raw data for ${dex.name}...`);
-        await runCommand("node data-collection/fetch-template.js");
+        console.log(`📊 Running schema analysis for ${dex.name}...`);
+        const analyzeOutput = await runCommand("node tools/analyze-and-generate.js");
+        console.log(analyzeOutput);
+
+        console.log(`📡 Fetching and filtering data for ${dex.name}...`);
+        const fetchOutput = await runCommand("node data-collection/fetch-template.js");
+        console.log(fetchOutput);
 
         console.log(`✅ ${dex.name} processing completed successfully!`);
     } catch (error) {
@@ -52,10 +59,6 @@ async function processDEX(dex) {
 
 async function masterAutomation() {
     for (const dex of DEX_APIS) {
-        if (!dex.url) {
-            console.warn(`⚠️ Skipping ${dex.name}: API URL not defined.`);
-            continue;
-        }
         await processDEX(dex);
     }
     console.log("🎉 All DEXs processed successfully!");
