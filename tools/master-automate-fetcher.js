@@ -17,11 +17,6 @@ const DEX_APIS = [
     { name: "Curve_Ethereum", url: process.env.CURVE_ETHEREUM_API },
 ];
 
-const logsDir = path.join(__dirname, "../logs/dex-logs");
-if (!fs.existsSync(logsDir)) {
-    fs.mkdirSync(logsDir, { recursive: true });
-}
-
 async function runCommand(command) {
     return new Promise((resolve, reject) => {
         exec(command, (error, stdout, stderr) => {
