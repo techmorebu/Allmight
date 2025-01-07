@@ -17,28 +17,15 @@ const DEX_APIS = [
     { name: "Curve_Ethereum", url: process.env.CURVE_ETHEREUM_API },
 ];
 
-// Ensure the logs directory exists
-const logsDir = path.join(__dirname, "logs", "dex-logs");
-if (!fs.existsSync(logsDir)) {
-    fs.mkdirSync(logsDir, { recursive: true });
-    console.log("✅ Created logs/dex-logs directory.");
-}
-
-async function runCommand(command, dexName) {
+async function runCommand(command) {
     return new Promise((resolve, reject) => {
-        const logFile = path.join(logsDir, `${dexName}-log.txt`);
-        const logStream = fs.createWriteStream(logFile, { flags: "a" });
-        const process = exec(command);
-
-        process.stdout.on("data", (data) => logStream.write(data));
-        process.stderr.on("data", (data) => logStream.write(data));
-
-        process.on("close", (code) => {
-            logStream.end();
-            if (code !== 0) {
-                return reject(new Error(`Command failed with code ${code}`));
+        exec(command, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`❌ Error: ${stderr}`);
+                return reject(error);
             }
-            resolve();
+            console.log(stdout);
+            resolve(stdout);
         });
     });
 }
@@ -46,7 +33,12 @@ async function runCommand(command, dexName) {
 async function processDEX(dex) {
     try {
         console.log(`🚀 Processing DEX: ${dex.name}...`);
-        
+
+        if (!dex.url) {
+            console.warn(`⚠️ Skipping ${dex.name}: API URL not defined.`);
+            return;
+        }
+
         const envPath = "./.env";
         const currentEnv = fs.readFileSync(envPath, "utf8");
         const updatedEnv = currentEnv
@@ -55,10 +47,11 @@ async function processDEX(dex) {
         fs.writeFileSync(envPath, updatedEnv);
 
         console.log(`📊 Running schema analysis for ${dex.name}...`);
-        await runCommand("node tools/analyze-and-generate.js", dex.name);
+        await runCommand("node tools/analyze-and-generate.js");
 
         console.log(`📡 Fetching and filtering data for ${dex.name}...`);
-        await runCommand("node data-collection/fetch-template.js", dex.name);
+        const logFile = path.join("logs/dex-logs", `${dex.name}-log.txt`);
+        await runCommand(`node data-collection/fetch-template.js > ${logFile}`);
 
         console.log(`✅ ${dex.name} processing completed successfully!`);
     } catch (error) {
@@ -67,13 +60,15 @@ async function processDEX(dex) {
 }
 
 async function masterAutomation() {
+    if (!fs.existsSync("logs/dex-logs")) {
+        fs.mkdirSync("logs/dex-logs", { recursive: true });
+        console.log("✅ Created logs directory.");
+    }
+
     for (const dex of DEX_APIS) {
-        if (!dex.url) {
-            console.warn(`⚠️ Skipping ${dex.name}: API URL not defined.`);
-            continue;
-        }
         await processDEX(dex);
     }
+
     console.log("🎉 All DEXs processed successfully!");
 }
 
