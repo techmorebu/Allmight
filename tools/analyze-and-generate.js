@@ -3,6 +3,18 @@ const fetch = require("node-fetch");
 const fs = require("fs");
 const path = require("path");
 
+const API_URL = process.env.API_URL;
+const DEX_NAME = process.env.DEX_NAME || "unknown-dex";
+
+if (!API_URL) {
+    console.error(`❌ API_URL is not defined for ${DEX_NAME}`);
+    process.exit(1);
+}
+
+console.log(`🚀 Starting schema analysis for ${DEX_NAME}...`);
+console.log(`📡 Using API URL: ${API_URL}`);
+
+
 async function fetchSchema() {
     const apiUrl = process.env.API_URL;
     console.log(`🚀 Fetching schema from: ${apiUrl}`);
