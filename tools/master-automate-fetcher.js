@@ -1,6 +1,7 @@
 require("dotenv").config();
 const { exec } = require("child_process");
 const fs = require("fs");
+const path = require("path");
 
 // List of DEX APIs from .env
 const DEX_APIS = [
@@ -28,7 +29,7 @@ async function runCommand(command) {
     });
 }
 
-async function processDEX(dex) {
+async function processDEX(dex, consolidatedData) {
     try {
         console.log(`🚀 Processing DEX: ${dex.name}...`);
         
@@ -44,6 +45,18 @@ async function processDEX(dex) {
         console.log("📡 Fetching and filtering data...");
         await runCommand("node tools/automate-fetcher.js");
 
+        // Step 2: Append filtered data to consolidatedData
+        const finalPoolsPath = path.resolve("./logs/final-pools.json");
+        if (fs.existsSync(finalPoolsPath)) {
+            const dexData = JSON.parse(fs.readFileSync(finalPoolsPath, "utf8"));
+            dexData.forEach(pool => {
+                pool.dex = dex.name; // Label pools with their source DEX
+            });
+            consolidatedData.push(...dexData);
+        } else {
+            console.warn(`⚠️ No data found for ${dex.name}. Skipping.`);
+        }
+
         console.log(`✅ ${dex.name} processing completed successfully!`);
     } catch (error) {
         console.error(`❌ Error processing ${dex.name}:`, error);
@@ -51,13 +64,20 @@ async function processDEX(dex) {
 }
 
 async function masterAutomation() {
+    const consolidatedData = [];
+
     for (const dex of DEX_APIS) {
         if (!dex.url) {
             console.warn(`⚠️ Skipping ${dex.name}: API URL not defined.`);
             continue;
         }
-        await processDEX(dex);
+        await processDEX(dex, consolidatedData);
     }
+
+    // Save consolidated data to a single file
+    const consolidatedPath = "./logs/consolidated-pools.json";
+    fs.writeFileSync(consolidatedPath, JSON.stringify(consolidatedData, null, 2));
+    console.log(`🎉 Consolidated data saved to ${consolidatedPath}`);
     console.log("🎉 All DEXs processed successfully!");
 }
 
