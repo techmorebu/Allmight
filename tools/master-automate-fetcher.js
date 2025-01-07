@@ -13,6 +13,8 @@ const DEX_APIS = [
     { name: "Balancer-Arbitrum", url: process.env.BALANCER_ARBITRUM_API },
     { name: "Balancer-Avalanche", url: process.env.BALANCER_AVALANCHE_API },
     { name: "Balancer-Ethereum", url: process.env.BALANCER_ETHEREUM_API },
+    { name: "Curve-Ethereum", url: process.env.CURVE_FINANCE_ETHEREUM_API },
+    { name: "Curve-Avalanche", url: process.env.CURVE_FINANCE_AVALANCHE_API },
     // Add more DEXs or networks as needed
 ];
 
