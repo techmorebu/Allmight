@@ -46,9 +46,9 @@ async function main() {
         return;
     }
 
-    const logFilePath = path.join("logs/dex-logs", `${DEX_NAME}-raw.json`);
-    fs.writeFileSync(logFilePath, JSON.stringify(pools, null, 2));
-    console.log(`✅ Raw data saved for ${DEX_NAME}: ${logFilePath}`);
+    const rawLogFile = path.join("logs/dex-logs", `${DEX_NAME}-raw.json`);
+    fs.writeFileSync(rawLogFile, JSON.stringify(pools, null, 2));
+    console.log(`✅ Raw data saved for ${DEX_NAME}: ${rawLogFile}`);
 }
 
 main();
