@@ -1,0 +1,15 @@
+🚀 Fetching schema for unknown-dex...
+🚀 Fetching schema from: 
+🔍 Analyzing schema fields...
+🛠 Generating query...
+🎉 Analyze-and-generate process for unknown-dex completed.
+❌ Error in fetcher workflow: Error: ❌ API_URL is not defined in the .env file
+    at fetchData (/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-template.js:10:15)
+    at /home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-template.js:57:29
+    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/data-collection/fetch-template.js:68:3)
+    at Module._compile (node:internal/modules/cjs/loader:1356:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
+    at Module.load (node:internal/modules/cjs/loader:1197:32)
+    at Module._load (node:internal/modules/cjs/loader:1013:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
+    at node:internal/main/run_main_module:28:49
