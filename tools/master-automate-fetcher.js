@@ -36,12 +36,20 @@ async function processDEX(dex) {
 
         console.log(`🚀 Processing DEX: ${dex.name}`);
         const envPath = "./.env";
+
+        // Update .env file with API_URL and DEX_NAME
         const currentEnv = fs.readFileSync(envPath, "utf-8");
         const updatedEnv = currentEnv
             .replace(/API_URL=.*/, `API_URL=${dex.url}`)
             .replace(/DEX_NAME=.*/, `DEX_NAME=${dex.name}`);
         fs.writeFileSync(envPath, updatedEnv);
         console.log(`✅ Updated .env for ${dex.name}:\n    API_URL=${dex.url}\n    DEX_NAME=${dex.name}`);
+
+        // Validate .env file
+        const envContent = fs.readFileSync(envPath, "utf-8");
+        if (!envContent.includes(`API_URL=${dex.url}`) || !envContent.includes(`DEX_NAME=${dex.name}`)) {
+            throw new Error(`Failed to write correct API_URL or DEX_NAME for ${dex.name}`);
+        }
 
         console.log(`📊 Running schema analysis for ${dex.name}...`);
         const analyzeOutput = await runCommand("node tools/analyze-and-generate.js");
