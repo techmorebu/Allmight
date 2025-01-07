@@ -17,28 +17,28 @@ const DEX_APIS = [
     { name: "Curve_Ethereum", url: process.env.CURVE_ETHEREUM_API },
 ];
 
-async function runCommand(command, logFilePath) {
+const logsDir = path.join(__dirname, "../logs/dex-logs");
+if (!fs.existsSync(logsDir)) {
+    fs.mkdirSync(logsDir, { recursive: true });
+}
+
+async function runCommand(command) {
     return new Promise((resolve, reject) => {
-        const process = exec(command, (error, stdout, stderr) => {
+        exec(command, (error, stdout, stderr) => {
             if (error) {
-                fs.appendFileSync(logFilePath, `❌ Error: ${stderr}\n`);
+                console.error(`❌ Error: ${stderr}`);
                 return reject(error);
             }
-            fs.appendFileSync(logFilePath, stdout);
+            console.log(stdout);
             resolve(stdout);
         });
-
-        process.stdout.on("data", (data) => fs.appendFileSync(logFilePath, data));
-        process.stderr.on("data", (data) => fs.appendFileSync(logFilePath, data));
     });
 }
 
 async function processDEX(dex) {
-    const logFilePath = path.join(__dirname, `../logs/dex-logs/${dex.name.toLowerCase()}-log.txt`);
     try {
         console.log(`🚀 Processing DEX: ${dex.name}...`);
-        
-        // Update .env dynamically
+
         const envPath = "./.env";
         const currentEnv = fs.readFileSync(envPath, "utf8");
         const updatedEnv = currentEnv
@@ -46,31 +46,19 @@ async function processDEX(dex) {
             .replace(/DEX_NAME=.*/, `DEX_NAME=${dex.name}`);
         fs.writeFileSync(envPath, updatedEnv);
 
-        console.log(`✅ Updated .env for ${dex.name}:
-    API_URL=${dex.url}
-    DEX_NAME=${dex.name}`);
-
-        // Run schema analysis
         console.log(`📊 Running schema analysis for ${dex.name}...`);
-        await runCommand("node tools/analyze-and-generate.js", logFilePath);
+        await runCommand("node tools/analyze-and-generate.js");
 
-        // Run fetcher
         console.log(`📡 Fetching and filtering data for ${dex.name}...`);
-        const fetcherCommand = `node data-collection/fetch-template.js`;
-        await runCommand(fetcherCommand, logFilePath);
+        await runCommand("node data-collection/fetch-template.js");
 
         console.log(`✅ ${dex.name} processing completed successfully!`);
     } catch (error) {
-        fs.appendFileSync(logFilePath, `❌ Error processing ${dex.name}: ${error.message}\n`);
         console.error(`❌ Error processing ${dex.name}:`, error);
     }
 }
 
 async function masterAutomation() {
-    console.log("✅ Ensuring logs directory exists...");
-    const logDir = path.join(__dirname, "../logs/dex-logs");
-    if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
-
     for (const dex of DEX_APIS) {
         if (!dex.url) {
             console.warn(`⚠️ Skipping ${dex.name}: API URL not defined.`);
