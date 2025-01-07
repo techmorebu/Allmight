@@ -1,8 +1,39 @@
 const fetch = require("node-fetch");
 const fs = require("fs");
+require("dotenv").config(); // Load .env variables
+
+// Function to handle pagination for REST APIs
+async function fetchAllPages(endpoint, headers, handle, pageParam = "page", startPage = 1) {
+  let currentPage = startPage;
+  let allData = [];
+
+  while (true) {
+    const url = `${endpoint}?${pageParam}=${currentPage}`;
+    console.log(`🔍 Fetching page ${currentPage} for ${handle}: ${url}`);
+    try {
+      const response = await fetch(url, {
+        headers: { "Content-Type": "application/json", ...headers },
+      });
+      const data = await response.json();
+
+      if (!data || Object.keys(data).length === 0) {
+        console.log(`✅ Completed pagination for ${handle}.`);
+        break;
+      }
+
+      allData.push(data);
+      currentPage++;
+    } catch (error) {
+      console.error(`❌ Error fetching page ${currentPage} for ${handle}:`, error);
+      break;
+    }
+  }
+
+  return allData;
+}
 
 // Function to fetch and introspect GraphQL schema
-async function fetchGraphQLSchema(endpoint, headers = {}) {
+async function fetchGraphQLSchema(endpoint, handle, headers = {}) {
   const introspectionQuery = `
   {
     __schema {
@@ -36,8 +67,7 @@ async function fetchGraphQLSchema(endpoint, headers = {}) {
     const rawSchema = await response.json();
 
     if (rawSchema.errors) {
-      console.error("❌ GraphQL Schema Fetch Error:", rawSchema.errors);
-      return;
+      throw new Error(`GraphQL Schema Fetch Error: ${JSON.stringify(rawSchema.errors)}`);
     }
 
     const schema = rawSchema.data.__schema.types;
@@ -52,25 +82,23 @@ async function fetchGraphQLSchema(endpoint, headers = {}) {
       return `Type: ${type.name} (${type.kind})\n${fields}`;
     }).join("\n\n");
 
-    console.log(chart);
+    console.log(`✅ GraphQL schema retrieved for ${handle}`);
 
     // Save to file
-    fs.writeFileSync("graphql-fields.txt", chart);
-    console.log("✅ GraphQL schema saved to graphql-fields.txt");
+    fs.writeFileSync(`${handle}_graphql-fields.txt`, chart);
+    console.log(`✅ GraphQL schema saved to ${handle}_graphql-fields.txt`);
   } catch (error) {
-    console.error("❌ Error fetching GraphQL schema:", error);
+    console.error(`❌ Error fetching GraphQL schema for ${handle}:`, error);
+    throw error;
   }
 }
 
 // Function to fetch and map REST API fields
-async function fetchRESTData(endpoint, method = "GET", headers = {}, body = null) {
+async function fetchRESTData(endpoint, handle, headers = {}) {
   try {
-    const response = await fetch(endpoint, {
-      method,
-      headers: { "Content-Type": "application/json", ...headers },
-      body: body ? JSON.stringify(body) : null,
-    });
-    const data = await response.json();
+    // Handle pagination
+    const allData = await fetchAllPages(endpoint, headers, handle);
+    const combinedData = Object.assign({}, ...allData);
 
     const mapFields = (obj, prefix = "") =>
       Object.keys(obj).reduce((res, key) => {
@@ -84,32 +112,54 @@ async function fetchRESTData(endpoint, method = "GET", headers = {}, body = null
         return res;
       }, []);
 
-    const fields = mapFields(data);
+    const fields = mapFields(combinedData);
     const chart = fields.map(field => `  - ${field}`).join("\n");
 
-    console.log(chart);
+    console.log(`✅ REST API fields retrieved for ${handle}`);
 
     // Save to file
-    fs.writeFileSync("rest-fields.txt", chart);
-    console.log("✅ REST API fields saved to rest-fields.txt");
+    fs.writeFileSync(`${handle}_rest-fields.txt`, chart);
+    console.log(`✅ REST API fields saved to ${handle}_rest-fields.txt`);
   } catch (error) {
-    console.error("❌ Error fetching REST API data:", error);
+    console.error(`❌ Error fetching REST API data for ${handle}:`, error);
+    throw error;
   }
 }
 
 // Universal query function
-async function queryAPI(endpoint, type, options = {}) {
-  const { method = "GET", headers = {}, body = null } = options;
+async function queryAPIFromEnv(outputDir = "./") {
+  const envVars = Object.entries(process.env);
+  const dexApis = envVars.filter(([key, value]) => key.endsWith("_DEX_API"));
 
-  if (type === "graphql") {
-    await fetchGraphQLSchema(endpoint, headers);
-  } else if (type === "rest") {
-    await fetchRESTData(endpoint, method, headers, body);
-  } else {
-    console.error("❌ Unknown API type. Please specify 'graphql' or 'rest'.");
+  if (dexApis.length === 0) {
+    console.error("❌ No DEX APIs found in .env file.");
+    return;
   }
+
+  let report = "API Query Report:\n\n";
+
+  for (const [key, endpoint] of dexApis) {
+    const handle = key.replace("_DEX_API", "").toLowerCase(); // Generate handle name
+    console.log(`🔍 Querying API for ${handle} (${endpoint})...`);
+
+    try {
+      if (endpoint.includes("graphql") || endpoint.includes("thegraph")) {
+        await fetchGraphQLSchema(endpoint, handle);
+      } else {
+        await fetchRESTData(endpoint, handle);
+      }
+
+      report += `✅ Success: ${handle} (${endpoint})\n`;
+    } catch (error) {
+      report += `❌ Failed: ${handle} (${endpoint}) - ${error.message}\n`;
+    }
+  }
+
+  // Save report
+  const reportPath = `${outputDir}report.txt`;
+  fs.writeFileSync(reportPath, report);
+  console.log(`✅ Report saved to ${reportPath}`);
 }
 
-// Usage example
-// queryAPI("https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3", "graphql");
-// queryAPI("https://api.curve.fi/api/getPools/ethereum", "rest");
+// Execute the query
+queryAPIFromEnv("./outputs/");
