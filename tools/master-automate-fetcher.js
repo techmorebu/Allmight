@@ -18,10 +18,10 @@ const DEX_APIS = [
 ];
 
 // Ensure the logs directory exists
-const logsDir = path.join(__dirname, "logs");
+const logsDir = path.join(__dirname, "logs", "dex-logs");
 if (!fs.existsSync(logsDir)) {
     fs.mkdirSync(logsDir, { recursive: true });
-    console.log("✅ Created logs directory.");
+    console.log("✅ Created logs/dex-logs directory.");
 }
 
 async function runCommand(command, dexName) {
