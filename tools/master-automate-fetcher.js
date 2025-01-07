@@ -17,14 +17,28 @@ const DEX_APIS = [
     { name: "Curve_Ethereum", url: process.env.CURVE_ETHEREUM_API },
 ];
 
-async function runCommand(command) {
+// Ensure the logs directory exists
+const logsDir = path.join(__dirname, "logs");
+if (!fs.existsSync(logsDir)) {
+    fs.mkdirSync(logsDir, { recursive: true });
+    console.log("✅ Created logs directory.");
+}
+
+async function runCommand(command, dexName) {
     return new Promise((resolve, reject) => {
-        exec(command, (error, stdout, stderr) => {
-            if (error) {
-                console.error(`❌ Error: ${stderr}`);
-                return reject(error);
+        const logFile = path.join(logsDir, `${dexName}-log.txt`);
+        const logStream = fs.createWriteStream(logFile, { flags: "a" });
+        const process = exec(command);
+
+        process.stdout.on("data", (data) => logStream.write(data));
+        process.stderr.on("data", (data) => logStream.write(data));
+
+        process.on("close", (code) => {
+            logStream.end();
+            if (code !== 0) {
+                return reject(new Error(`Command failed with code ${code}`));
             }
-            resolve(stdout);
+            resolve();
         });
     });
 }
@@ -32,7 +46,6 @@ async function runCommand(command) {
 async function processDEX(dex) {
     try {
         console.log(`🚀 Processing DEX: ${dex.name}...`);
-        console.log(`🔧 Using API URL: ${dex.url}`);
         
         const envPath = "./.env";
         const currentEnv = fs.readFileSync(envPath, "utf8");
@@ -41,23 +54,11 @@ async function processDEX(dex) {
             .replace(/DEX_NAME=.*/, `DEX_NAME=${dex.name}`);
         fs.writeFileSync(envPath, updatedEnv);
 
-        console.log(fs.readFileSync(envPath, "utf8")); // Debugging the .env content
-
         console.log(`📊 Running schema analysis for ${dex.name}...`);
-        const logPathAnalyze = path.join(__dirname, `logs/${dex.name}-analyze-log.txt`);
-        await runCommand(`node tools/analyze-and-generate.js > ${logPathAnalyze} 2>&1`);
-        console.log(`📄 Analyze logs written to: ${logPathAnalyze}`);
+        await runCommand("node tools/analyze-and-generate.js", dex.name);
 
         console.log(`📡 Fetching and filtering data for ${dex.name}...`);
-        const fetcherScript = `data-collection/fetch-${dex.name.toLowerCase()}-data.js`;
-        const logPathFetch = path.join(__dirname, `logs/${dex.name}-fetch-log.txt`);
-        if (fs.existsSync(fetcherScript)) {
-            await runCommand(`node ${fetcherScript} > ${logPathFetch} 2>&1`);
-        } else {
-            console.warn(`⚠️ Fetcher script for ${dex.name} not found. Using fetch-template.js.`);
-            await runCommand(`node data-collection/fetch-template.js > ${logPathFetch} 2>&1`);
-        }
-        console.log(`📄 Fetch logs written to: ${logPathFetch}`);
+        await runCommand("node data-collection/fetch-template.js", dex.name);
 
         console.log(`✅ ${dex.name} processing completed successfully!`);
     } catch (error) {
