@@ -2,19 +2,19 @@ require("dotenv").config();
 const fetch = require("node-fetch");
 const fs = require("fs");
 
-async function fetchBalancerData() {
+const balancerApis = [
+    { name: "Polygon", url: process.env.BALANCER_POLYGON_API },
+    { name: "Optimism", url: process.env.BALANCER_OPTIMISIM_API },
+    { name: "Arbitrum", url: process.env.BALANCER_ARBITRUM_API },
+    { name: "Avalanche", url: process.env.BALANCER_AVALANCHE_API },
+    { name: "Ethereum", url: process.env.BALANCER_ETHEREUM_API },
+];
+
+async function fetchBalancerData(api) {
     try {
-        console.log("🚀 Starting Balancer fetcher...");
+        console.log(`🚀 Fetching data from Balancer (${api.name})...`);
 
-        const apiUrl = process.env.API_URL;
-
-        if (!apiUrl) {
-            throw new Error("❌ API_URL is not defined in the .env file");
-        }
-
-        console.log(`📡 Fetching data from: ${apiUrl}`);
-
-        const response = await fetch(apiUrl, {
+        const response = await fetch(api.url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -50,15 +50,15 @@ async function fetchBalancerData() {
         const data = await response.json();
 
         if (data.errors) {
-            console.error("❌ Errors in API response:", data.errors);
+            console.error(`❌ Errors in API response (${api.name}):`, data.errors);
             return [];
         }
 
         const pools = data.data.pools || [];
-        console.log("✅ Raw data fetched successfully.");
+        console.log(`✅ Fetched ${pools.length} pools from Balancer (${api.name}).`);
         return pools;
     } catch (error) {
-        console.error("❌ Error in fetchBalancerData:", error);
+        console.error(`❌ Error fetching data from Balancer (${api.name}):`, error);
         return [];
     }
 }
@@ -94,38 +94,45 @@ function filterBalancerPools(pools) {
     }
 }
 
-async function saveBalancerPools(filteredPools) {
+async function saveConsolidatedData(data) {
     try {
-        const outputPath = "./logs/final-balancer-pools.json";
-        fs.writeFileSync(outputPath, JSON.stringify(filteredPools, null, 2));
-        console.log(`✅ Filtered Balancer pools saved to ${outputPath}`);
+        const outputPath = "./logs/consolidated-balancer-pools.json";
+        fs.writeFileSync(outputPath, JSON.stringify(data, null, 2));
+        console.log(`✅ Consolidated data saved to ${outputPath}`);
     } catch (error) {
-        console.error("❌ Error in saveBalancerPools:", error);
+        console.error("❌ Error saving consolidated data:", error);
     }
 }
 
 async function automateBalancerFetcher() {
-    try {
-        const pools = await fetchBalancerData();
+    const consolidatedData = {};
+
+    for (const api of balancerApis) {
+        if (!api.url) {
+            console.warn(`⚠️ API URL for ${api.name} is missing. Skipping...`);
+            continue;
+        }
+
+        const pools = await fetchBalancerData(api);
 
         if (pools.length === 0) {
-            console.log("⚠️ No pools found. Exiting workflow.");
-            return;
+            console.log(`⚠️ No pools found for ${api.name}. Skipping...`);
+            continue;
         }
 
         const filteredPools = filterBalancerPools(pools);
 
         if (filteredPools.length === 0) {
-            console.log("⚠️ No pools matched the criteria. Exiting workflow.");
-            return;
+            console.log(`⚠️ No pools matched the criteria for ${api.name}. Skipping...`);
+            continue;
         }
 
-        await saveBalancerPools(filteredPools);
-
-        console.log("🎉 Balancer workflow completed successfully!");
-    } catch (error) {
-        console.error("❌ Error in automateBalancerFetcher:", error);
+        // Add filtered pools to consolidated data
+        consolidatedData[api.name] = filteredPools;
     }
+
+    await saveConsolidatedData(consolidatedData);
+    console.log("🎉 Balancer workflow completed for all networks!");
 }
 
 automateBalancerFetcher();
