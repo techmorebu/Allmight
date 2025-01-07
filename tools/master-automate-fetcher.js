@@ -34,12 +34,15 @@ async function runCommand(command) {
 async function processDEX(dex) {
     try {
         console.log(`🚀 Processing DEX: ${dex.name}...`);
+        console.log(`📡 Using API URL: ${dex.url}`);
 
-        // Ensure correct API URL replacement
+        // Debugging URL assignment
         if (!dex.url) {
-            throw new Error(`API URL for ${dex.name} is not defined.`);
+        console.error(`❌ API URL missing for DEX: ${dex.name}`);
+        return;
         }
-
+        
+        // Update .env dynamically with the correct API URL
         const envPath = "./.env";
         const currentEnv = fs.readFileSync(envPath, "utf8");
         const updatedEnv = currentEnv.replace(/API_URL=.*/, `API_URL=${dex.url}`);
