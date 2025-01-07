@@ -1,9 +1,8 @@
 require("dotenv").config();
 const fetch = require("node-fetch");
 const fs = require("fs");
-const path = require("path");
 
-async function fetchPools() {
+async function fetchData() {
     try {
         console.log("🚀 Starting automate-fetcher workflow...");
 
@@ -15,14 +14,33 @@ async function fetchPools() {
 
         console.log(`📡 Fetching data from: ${apiUrl}`);
 
-        const query = fs.readFileSync(path.join(__dirname, "../logs/generated-query.graphql"), "utf-8");
-
         const response = await fetch(apiUrl, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ query }),
+            body: JSON.stringify({
+                query: `
+                    query {
+                        pools {
+                            id
+                            txCount
+                            volumeUSD
+                            token0 {
+                                id
+                                symbol
+                                name
+                            }
+                            token1 {
+                                id
+                                symbol
+                                name
+                            }
+                            liquidity
+                        }
+                    }
+                `,
+            }),
         });
 
         if (!response.ok) {
@@ -40,7 +58,7 @@ async function fetchPools() {
         console.log("✅ Raw data fetched successfully.");
         return pools;
     } catch (error) {
-        console.error("❌ Error in fetchPools:", error);
+        console.error("❌ Error in fetchData:", error);
         return [];
     }
 }
@@ -62,11 +80,8 @@ function filterPools(pools) {
             const volumeUSD = pool.volumeUSD ? parseFloat(pool.volumeUSD) : 0;
             const liquidity = pool.liquidity ? parseFloat(pool.liquidity) : 0;
 
-            // Filter logic: Stablecoin pairs AND txCount > 400 OR volumeUSD > 20000, liquidity > 100000
-            return (
-                ((hasStablecoin && txCount > 400) || volumeUSD > 20000) &&
-                liquidity > 100000
-            );
+            // Updated filter logic: Liquidity > 100,000, and (Stablecoin pairs AND txCount > 400 OR volumeUSD > 20,000)
+            return liquidity > 100000 && ((hasStablecoin && txCount > 400) || volumeUSD > 20000);
         });
 
         console.log(`✅ ${filteredPools.length} pools matched the filter criteria.`);
@@ -89,14 +104,7 @@ async function saveFilteredPools(filteredPools) {
 
 async function automateFetcher() {
     try {
-        console.log("📊 Running schema analysis...");
-        const analyzeScript = path.join(__dirname, "analyze-and-generate.js");
-
-        const analyzeResult = require("child_process").execSync(`node ${analyzeScript}`).toString();
-        console.log(analyzeResult);
-
-        console.log("📡 Running data fetcher...");
-        const pools = await fetchPools();
+        const pools = await fetchData();
 
         if (pools.length === 0) {
             console.log("⚠️ No pools found. Exiting workflow.");
@@ -114,7 +122,7 @@ async function automateFetcher() {
 
         console.log("🎉 Workflow completed successfully!");
     } catch (error) {
-        console.error("❌ Error in automate-fetcher workflow:", error);
+        console.error("❌ Error in automateFetcher workflow:", error);
     }
 }
 
