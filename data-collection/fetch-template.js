@@ -1,54 +1,33 @@
 require("dotenv").config();
-const fetch = require("node-fetch");
 const fs = require("fs");
 const path = require("path");
+const axios = require("axios");
 
 const API_URL = process.env.API_URL;
-const DEX_NAME = process.env.DEX_NAME || "unknown-dex";
+const DEX_NAME = process.env.DEX_NAME;
+const LOG_DIR = path.join(__dirname, "../logs/dex-logs");
 
-if (!API_URL) {
-    console.error(`❌ API_URL is not defined for ${DEX_NAME}`);
-    process.exit(1);
+// Ensure logs directory exists
+if (!fs.existsSync(LOG_DIR)) {
+    fs.mkdirSync(LOG_DIR, { recursive: true });
 }
-
-console.log(`🚀 Fetching data for ${DEX_NAME} using API: ${API_URL}`);
 
 async function fetchData() {
     try {
-        const response = await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query: `{ pools { id txCount volumeUSD } }` }),
+        console.log(`🚀 Fetching data from ${DEX_NAME}...`);
+        const response = await axios.post(API_URL, {
+            query: "{ pools { id, liquidity, volumeUSD, token0 { symbol }, token1 { symbol } } }"
         });
 
-        if (!response.ok) {
-            throw new Error(`❌ API response error: ${response.statusText}`);
-        }
+        const rawData = response.data;
+        const logFile = path.join(LOG_DIR, `${DEX_NAME}-raw.json`);
 
-        const data = await response.json();
-        if (data.errors) {
-            console.error(`❌ API Errors:`, data.errors);
-            return [];
-        }
-
-        return data.data.pools || [];
+        // Save raw data
+        fs.writeFileSync(logFile, JSON.stringify(rawData, null, 2));
+        console.log(`✅ Raw data saved to ${logFile}`);
     } catch (error) {
-        console.error(`❌ Error fetching data for ${DEX_NAME}:`, error);
-        return [];
+        console.error(`❌ Error fetching data for ${DEX_NAME}:`, error.message);
     }
 }
 
-async function main() {
-    const pools = await fetchData();
-
-    if (pools.length === 0) {
-        console.warn(`⚠️ No data fetched for ${DEX_NAME}.`);
-        return;
-    }
-
-    const rawLogFile = path.join("logs/dex-logs", `${DEX_NAME}-raw.json`);
-    fs.writeFileSync(rawLogFile, JSON.stringify(pools, null, 2));
-    console.log(`✅ Raw data saved for ${DEX_NAME}: ${rawLogFile}`);
-}
-
-main();
+fetchData();
