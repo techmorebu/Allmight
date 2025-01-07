@@ -1,0 +1,1106 @@
+{
+  "data": {
+    "pools": [
+      {
+        "id": "0x000024feb293b6c6c3a80a95f1f830a8746400b9",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "TRUMP"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "154179.6070438752993793129113309885"
+      },
+      {
+        "id": "0x0000d36ab86d213c14d93cd5ae78615a20596505",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "RALPH"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "3215.847063376039061797618238526234"
+      },
+      {
+        "id": "0x0001fcbba8eb491c3ccfeddc5a5caba1a98c4c28",
+        "liquidity": "303015134493562686441",
+        "token0": {
+          "symbol": "BCZ"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "0.1849193372604300017804758202164034"
+      },
+      {
+        "id": "0x0002e63328169d7feea121f1e32e4f620abf0352",
+        "liquidity": "15770036641733558",
+        "token0": {
+          "symbol": "wNXM"
+        },
+        "token1": {
+          "symbol": "ICHI"
+        },
+        "volumeUSD": "0"
+      },
+      {
+        "id": "0x0003c9d75e102b8a9fe77280ca410e9135beb150",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "TRANCHE-bWBTC-A"
+        },
+        "token1": {
+          "symbol": "USDT"
+        },
+        "volumeUSD": "2.66107"
+      },
+      {
+        "id": "0x0004cd8474e882278e32e584699090be496f410e",
+        "liquidity": "188566476438429518",
+        "token0": {
+          "symbol": "ZERO"
+        },
+        "token1": {
+          "symbol": "USDC"
+        },
+        "volumeUSD": "850282.373145"
+      },
+      {
+        "id": "0x0005079292756443f2e711570f8ab4e1951d4f97",
+        "liquidity": "17025917918309",
+        "token0": {
+          "symbol": "EDG"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "243.6778155790351951611664668478445"
+      },
+      {
+        "id": "0x0005647722f0f8233d64063dcae20ebdb99fdc02",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "ELONvZUCK"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "381.097792589199480520817183009315"
+      },
+      {
+        "id": "0x000ba527862e5b82cff0f7c66b646af023274aa1",
+        "liquidity": "23229531794343807709643",
+        "token0": {
+          "symbol": "SAFE"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "67039837.52022337472185923510264126"
+      },
+      {
+        "id": "0x000c0d31f6b7cecde4645eef0c4ec6a492659d62",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "WETH"
+        },
+        "token1": {
+          "symbol": "DZOO"
+        },
+        "volumeUSD": "1578270.935608292892839129102762754"
+      },
+      {
+        "id": "0x000e0bbcfdba9490ee20b0a7900a4dff46317998",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "FORTH"
+        },
+        "token1": {
+          "symbol": "WAMPL"
+        },
+        "volumeUSD": "0"
+      },
+      {
+        "id": "0x000ea4a83acefdd62b1b43e9ccc281f442651520",
+        "liquidity": "5560291431217545389",
+        "token0": {
+          "symbol": "BUSD"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "4828585.683422081526728328125805841"
+      },
+      {
+        "id": "0x000f0c0b0b791e855dcc5ad6501c7529dea882e0",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "WETH"
+        },
+        "token1": {
+          "symbol": "DOGGE"
+        },
+        "volumeUSD": "0"
+      },
+      {
+        "id": "0x000fedac8a4c7f2c291c5bca0fd244e17e27c763",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "WETH"
+        },
+        "token1": {
+          "symbol": "DEGEN"
+        },
+        "volumeUSD": "10.35757137260855163942300747622732"
+      },
+      {
+        "id": "0x001202b13fab0dcbdaa605a48a73df38cd70d14c",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "Odin"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "27348.16527335890669281561788990365"
+      },
+      {
+        "id": "0x0012c1c4da19861a5f299b9dcc1dcb5cfa4770aa",
+        "liquidity": "102630312763787238",
+        "token0": {
+          "symbol": "CO2B"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "603.1050214912399663827920762730146"
+      },
+      {
+        "id": "0x001d6b301b939dc0dd2b982378d30b049d1d7e91",
+        "liquidity": "1224738156519443122",
+        "token0": {
+          "symbol": "COIN"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "38818.48425809382586375666927505829"
+      },
+      {
+        "id": "0x00254e7612301f5f952e262dac3d8ca5f422b3bf",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "FANTA"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "360.475658164371099086600501751426"
+      },
+      {
+        "id": "0x0025ade782cc2b2415d1e841a8d52ff5dce33dfe",
+        "liquidity": "292918389273214376584",
+        "token0": {
+          "symbol": "WETH"
+        },
+        "token1": {
+          "symbol": "SIM"
+        },
+        "volumeUSD": "2028384.747016200868595692655035967"
+      },
+      {
+        "id": "0x0026040bcab8c8e352e2ec3f66e4c4b8ca4658b2",
+        "liquidity": "433815326510610256913",
+        "token0": {
+          "symbol": "ESS"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "106940.5110185102987976355017843765"
+      },
+      {
+        "id": "0x00299231273752123aed17229810c0e9a7681ce6",
+        "liquidity": "7035733899560990",
+        "token0": {
+          "symbol": "$BURNA"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "43.10716597061975134893471746031689"
+      },
+      {
+        "id": "0x002c0b78c8057636918b963cd26c07b7f2892bd8",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "WETH"
+        },
+        "token1": {
+          "symbol": "CP"
+        },
+        "volumeUSD": "449.6232866667318800279087899561653"
+      },
+      {
+        "id": "0x00323a300261042dd5d697e3f92a06279cc7d15b",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "LTY"
+        },
+        "token1": {
+          "symbol": "DOGY"
+        },
+        "volumeUSD": "0"
+      },
+      {
+        "id": "0x0033ca9e1093852aa4c1e98692ff6ba7eb913514",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "DOGE"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "1315.125891438267678401719887937783"
+      },
+      {
+        "id": "0x0033e006041435952ee4a1fc37feadc19a562cff",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "USDC"
+        },
+        "token1": {
+          "symbol": "tBONE"
+        },
+        "volumeUSD": "0"
+      },
+      {
+        "id": "0x0037337bfea0ca0bd1ef594dc73d36c1818aeab0",
+        "liquidity": "6324242599444",
+        "token0": {
+          "symbol": "WETH"
+        },
+        "token1": {
+          "symbol": "AoS"
+        },
+        "volumeUSD": "0"
+      },
+      {
+        "id": "0x0038955d12bf880849c7a984e9bdf3ff02035d8b",
+        "liquidity": "208214116667372005",
+        "token0": {
+          "symbol": "WEED"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "16438.11907649282323844436516903386"
+      },
+      {
+        "id": "0x003f74396718dae1700dad33e05cdfdfe8d46af1",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "oAkita"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "0"
+      },
+      {
+        "id": "0x0041426a64a85ef884387dc3a69f9df1fbb7f9d1",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "WIVA"
+        },
+        "token1": {
+          "symbol": "USDC"
+        },
+        "volumeUSD": "349.949999"
+      },
+      {
+        "id": "0x0046f6bf89e812f053941731af74decdfc93093f",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "ZRC"
+        },
+        "token1": {
+          "symbol": "USDT"
+        },
+        "volumeUSD": "0"
+      },
+      {
+        "id": "0x005489c69e5800d38bf8d7d616f4cb676185dfd6",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "palmer"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "3194.706608885842058720014198763952"
+      },
+      {
+        "id": "0x005843e075e77ba46a26d24914db10a4d9ca0122",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "WETH"
+        },
+        "token1": {
+          "symbol": "FREEBRIT"
+        },
+        "volumeUSD": "50.38236592968574898322020214887573"
+      },
+      {
+        "id": "0x0059b4c53c85bb8159014bfd20700c14b29c4483",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "BCVT"
+        },
+        "token1": {
+          "symbol": "USDT"
+        },
+        "volumeUSD": "422003.2929206367494891532886409989"
+      },
+      {
+        "id": "0x005b584315d7c47bb5fca504ac0d8df56aea40f9",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "USDT"
+        },
+        "token1": {
+          "symbol": "STC"
+        },
+        "volumeUSD": "0.1333806122410035941835000124955043"
+      },
+      {
+        "id": "0x005cd18887579ed785fb3e5e2c9356c31b78f89e",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "wMEMO"
+        },
+        "token1": {
+          "symbol": "MIM"
+        },
+        "volumeUSD": "0"
+      },
+      {
+        "id": "0x005d641f9f14b2222f7d84de20ccda0fbfe9f1c7",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "gnihton"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "56211.90792024441619672694939011193"
+      },
+      {
+        "id": "0x005e3dc62b7a269bef2a7d06e06cc0c991375c6f",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "MODE"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "5187.737877956972571153910386245936"
+      },
+      {
+        "id": "0x00631e7e8be695f1d52536bafe937e5a7709c469",
+        "liquidity": "10009013323591326699997",
+        "token0": {
+          "symbol": "ねいろ"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "1116.825038907035105940577305468311"
+      },
+      {
+        "id": "0x0068bb604413dfee5c453907bb150d0312a0f257",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "SXHC"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "54197.45237083549904606267092155472"
+      },
+      {
+        "id": "0x006909ef5027363d7fbbd8e81186d23aa7db9f39",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "LOODZ"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "18.7308158112487918665376129466203"
+      },
+      {
+        "id": "0x006a004447380d08f8a0662c545e425004cf8d0b",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "WETH"
+        },
+        "token1": {
+          "symbol": "DFB"
+        },
+        "volumeUSD": "4168.99091523951204554307437115529"
+      },
+      {
+        "id": "0x006ac24a1f49e472673c82327bdf177a5c11491b",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "WETH"
+        },
+        "token1": {
+          "symbol": "FUDX"
+        },
+        "volumeUSD": "23.44517388687004155152597216622357"
+      },
+      {
+        "id": "0x006b974ca08532d95015cd3e17ac65fac1f570a1",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "APED"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "110664.7004503554194977429789872776"
+      },
+      {
+        "id": "0x006bf6c02578ad587eb5e1fbdfbd57a58edd3e3e",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "JOW"
+        },
+        "token1": {
+          "symbol": "POL"
+        },
+        "volumeUSD": "0"
+      },
+      {
+        "id": "0x006cf8fe7f17c010bbf61456ababf14088186ec6",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "LLT"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "78223.50094843740507177444320075736"
+      },
+      {
+        "id": "0x006f6b5033dba7c532aba820a9412b889650a1fa",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "$W"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "6149.787235585378382684666058749837"
+      },
+      {
+        "id": "0x0072adf9e6c1840804e56be890d78788600834b6",
+        "liquidity": "42647917869911255144",
+        "token0": {
+          "symbol": "CGD"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "414.8546903562226701542909331222093"
+      },
+      {
+        "id": "0x0073ce82d9a8ffa9b695cca63cd3993c3eaef4dc",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "PPUSD"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "266206.7545551764606981109270108256"
+      },
+      {
+        "id": "0x00776e638fcb9c03c45054a4b397af0f0a6a00c2",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "PLD"
+        },
+        "token1": {
+          "symbol": "USDC"
+        },
+        "volumeUSD": "0"
+      },
+      {
+        "id": "0x007a3f1527991382a238bcd352bffbf51c8161cf",
+        "liquidity": "912735398453049046109935",
+        "token0": {
+          "symbol": "BB"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "17070.43088072561480277090174719984"
+      },
+      {
+        "id": "0x008368f0a747a36e07dcd5ea4e11f9f44aa0410c",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "MMX"
+        },
+        "token1": {
+          "symbol": "USDC"
+        },
+        "volumeUSD": "0"
+      },
+      {
+        "id": "0x008432bdcc8b9569450f0134a8174c71ddc2b047",
+        "liquidity": "23124354317497",
+        "token0": {
+          "symbol": "LIAN"
+        },
+        "token1": {
+          "symbol": "USDT"
+        },
+        "volumeUSD": "7"
+      },
+      {
+        "id": "0x008620aa1ef483c71b6047dc31d592fabd54bfcb",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "WETH"
+        },
+        "token1": {
+          "symbol": "dogewifhat"
+        },
+        "volumeUSD": "5802.304084137186309798979957567827"
+      },
+      {
+        "id": "0x00916eb312b2982eb86a7714be64546baebc1a5c",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "BOBA"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "534035.6339923922930930143639974316"
+      },
+      {
+        "id": "0x00953df8289165834539f5fdbc2bf40fa1538840",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "WETH"
+        },
+        "token1": {
+          "symbol": "MON"
+        },
+        "volumeUSD": "703.3359918083510755338132335066662"
+      },
+      {
+        "id": "0x0097093ca2709413528229d01a48de16a765558b",
+        "liquidity": "3162433331493778556",
+        "token0": {
+          "symbol": "PEACE"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "0.002649530837225482953721936480386537"
+      },
+      {
+        "id": "0x009b5d59ff6d7b5140b76fd0d25396f8014d5bd0",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "DAI"
+        },
+        "token1": {
+          "symbol": "VSDC"
+        },
+        "volumeUSD": "678.6669934666755891226251583167509"
+      },
+      {
+        "id": "0x00a151b39b43f6a79366f9129222b9370e30a702",
+        "liquidity": "8998077112326985950396256",
+        "token0": {
+          "symbol": "BURNLY"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "89403.76997450945814518076822669615"
+      },
+      {
+        "id": "0x00a7af7f910f98d7e03ce41d7a73c759d51dc36e",
+        "liquidity": "2723249136020312494353112",
+        "token0": {
+          "symbol": "n"
+        },
+        "token1": {
+          "symbol": "GROKS"
+        },
+        "volumeUSD": "0"
+      },
+      {
+        "id": "0x00a9205611cc32ec9c0d16fc58f31b9355ec7ade",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "EGG"
+        },
+        "token1": {
+          "symbol": "USDT"
+        },
+        "volumeUSD": "16582.12618691793596980780593598731"
+      },
+      {
+        "id": "0x00a96cd5489824a9aeecba7ddb4dd0e7168b0117",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "CATGPT"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "1036.764337753685342807823602932148"
+      },
+      {
+        "id": "0x00a9897a285247d285adbe77d5584612f04735be",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "KNX"
+        },
+        "token1": {
+          "symbol": "USDC"
+        },
+        "volumeUSD": "82408.669211"
+      },
+      {
+        "id": "0x00ae909d0405a4ae2b190af7c731711d0fc56bb7",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "USDC"
+        },
+        "token1": {
+          "symbol": "wBOND"
+        },
+        "volumeUSD": "367173.478132"
+      },
+      {
+        "id": "0x00b531695a43b0f68d69ba52a52bc5578374ebd7",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "BOOTY"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "18.600863241043311486650397875848"
+      },
+      {
+        "id": "0x00b6cfd82bc81857e90db08ced5d8c711eb509ca",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "HAHA"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "2569.002675416090085791184413972243"
+      },
+      {
+        "id": "0x00b9ec4ed8b667647a6c193855c20751e5701892",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "MCBC"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "43636.8408831101210847408048702399"
+      },
+      {
+        "id": "0x00ba0712030df939db04192a6515b3fa910f1e72",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "TBL"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "5065.312308574750719174244749476376"
+      },
+      {
+        "id": "0x00ba1202ebec134b7916dec310457781589bba57",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "DRAKEGAY"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "0"
+      },
+      {
+        "id": "0x00bdbb8a65a0a1fc7a5488f47aadc611732705e8",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "PINE"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "116864.408791046695220992058957238"
+      },
+      {
+        "id": "0x00bfa50b186bccd38413d93aba6f3a0a5822d5cf",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "OMIKAMI"
+        },
+        "token1": {
+          "symbol": "USDC"
+        },
+        "volumeUSD": "97.843781"
+      },
+      {
+        "id": "0x00bfcbf6716c0657c3a2fa51f20976678482ab2e",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "UNI-V2"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "23777.05685636633800834902003226467"
+      },
+      {
+        "id": "0x00c07a7e77c9ffa6e0e3c58790e0dcb81cef89e1",
+        "liquidity": "961503437059901987930",
+        "token0": {
+          "symbol": "LEOX"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "810254.5064984485940771140345599785"
+      },
+      {
+        "id": "0x00c23703d02565ec5536f58f8b586ec052195d08",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "RAI"
+        },
+        "token1": {
+          "symbol": "NCR"
+        },
+        "volumeUSD": "0"
+      },
+      {
+        "id": "0x00c5d11465f0518bf3fa2b2a0c030a7661e0a5f3",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "HRS"
+        },
+        "token1": {
+          "symbol": "USDT"
+        },
+        "volumeUSD": "19.999999"
+      },
+      {
+        "id": "0x00c6a247a868dee7e84d16eba22d1ab903108a44",
+        "liquidity": "14710442632042879628",
+        "token0": {
+          "symbol": "WAVAX"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "13446773.96432469897744229218644483"
+      },
+      {
+        "id": "0x00c6f73f423fe4e9d693d0b4cfddf92d406a83a4",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "WAGNER"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "254502.1921124253740659738878554544"
+      },
+      {
+        "id": "0x00cb3f7871d4383d517214ded3e9f0e9a1978cb3",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "WETH"
+        },
+        "token1": {
+          "symbol": "GBA"
+        },
+        "volumeUSD": "72891.01545481637416488185380541664"
+      },
+      {
+        "id": "0x00cc0523b7a2b97f1d52bea1b7a0c50027e0a706",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "USD0++"
+        },
+        "token1": {
+          "symbol": "USDT"
+        },
+        "volumeUSD": "10303.65635855039205981259839754188"
+      },
+      {
+        "id": "0x00cc4f4fdce4207b37ea129251d1afb2cd45efcd",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "<animateMotion dur=\"2s\" repeatCount=\"indefinite\" path=\"m33.980756,21.474954c20.166597,-50.254797 99.179986,0 0,64.61331c-99.179986,-64.61331 -20.166597,-114.868107 0,-64.61331z\"/>"
+        },
+        "token1": {
+          "symbol": "&#x5C;(❤️.❤️)"
+        },
+        "volumeUSD": "0"
+      },
+      {
+        "id": "0x00ce80a0b06a4f6d47e11e5ae1e7186bf0866391",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "WETH"
+        },
+        "token1": {
+          "symbol": "rswETH"
+        },
+        "volumeUSD": "279089.1864592395200303553347511472"
+      },
+      {
+        "id": "0x00cef0386ed94d738c8f8a74e8bfd0376926d24c",
+        "liquidity": "1848016791642434426",
+        "token0": {
+          "symbol": "BUSD"
+        },
+        "token1": {
+          "symbol": "USDC"
+        },
+        "volumeUSD": "535080693.4243827145920522387135823"
+      },
+      {
+        "id": "0x00d2881608d3e960d389c3421b4bfcf683a1798d",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "PSLC"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "9585.520075441129034161290620751704"
+      },
+      {
+        "id": "0x00d336082e3f555dcfd3ef17bb2fafb5708a61e9",
+        "liquidity": "18876687833743199",
+        "token0": {
+          "symbol": "NUMM"
+        },
+        "token1": {
+          "symbol": "USDC"
+        },
+        "volumeUSD": "488.974867"
+      },
+      {
+        "id": "0x00d5ad12f4f0c9af3d35c055b16a33b649639b75",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "NO"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "0"
+      },
+      {
+        "id": "0x00da578acb3381f48f187374cda78d6824676f27",
+        "liquidity": "16315499759069",
+        "token0": {
+          "symbol": "WBTC"
+        },
+        "token1": {
+          "symbol": "USDz"
+        },
+        "volumeUSD": "7690402.801564569564885824445850327"
+      },
+      {
+        "id": "0x00db8a652ec925dbfe08b537759cf98770251183",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "Cĕrēs"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "2237.653554742832296989158330076265"
+      },
+      {
+        "id": "0x00dbd02706a86e391ea30d53aa88f7df53a06b85",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "BNT"
+        },
+        "token1": {
+          "symbol": "vBNT"
+        },
+        "volumeUSD": "0"
+      },
+      {
+        "id": "0x00dc4f81f0b3fdcfbcc27655c8518a2275e93cf9",
+        "liquidity": "1621301092217284",
+        "token0": {
+          "symbol": "ATOR"
+        },
+        "token1": {
+          "symbol": "USDC"
+        },
+        "volumeUSD": "545769.929405"
+      },
+      {
+        "id": "0x00dce1deb188ee420ea8be0cf95888521fbc13a3",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "WETH"
+        },
+        "token1": {
+          "symbol": "LBR"
+        },
+        "volumeUSD": "1590527.019245016118150916733506055"
+      },
+      {
+        "id": "0x00dd1e0ad901e8135cd5c6df4f4ccf081c7d3fc7",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "GOON"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "14385.74454483323794865232453860325"
+      },
+      {
+        "id": "0x00e0e850070c1131e0004330b0a16172f78ffec9",
+        "liquidity": "334373111809320",
+        "token0": {
+          "symbol": "PCS"
+        },
+        "token1": {
+          "symbol": "USDT"
+        },
+        "volumeUSD": "38.76713"
+      },
+      {
+        "id": "0x00e145fc1111a085616eb1cb414226e192537148",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "BULL"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "104.5758790727075968329054142181763"
+      },
+      {
+        "id": "0x00e3620b44e0c9b7624f7982de866175cb01d5db",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "FJARED"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "13967.04925783736715802491275210936"
+      },
+      {
+        "id": "0x00e5066de0a0265815699a1c8b448398af33cbe9",
+        "liquidity": "1990097592677246961391316",
+        "token0": {
+          "symbol": "CHAD"
+        },
+        "token1": {
+          "symbol": "CHAD"
+        },
+        "volumeUSD": "0"
+      },
+      {
+        "id": "0x00e60e96f423be482a56d22d460c6c1da8c65650",
+        "liquidity": "3864420131107513",
+        "token0": {
+          "symbol": "SAB121"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "5970.700237621170432496651364925207"
+      },
+      {
+        "id": "0x00e7e38fe607d1340b34cf820ced39f514cf4a89",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "HMEME"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "147.8115086994851424833008651651926"
+      },
+      {
+        "id": "0x00e888e4cea8b2942bfe8f6f3e6880526d29bab5",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "CARN"
+        },
+        "token1": {
+          "symbol": "ACR"
+        },
+        "volumeUSD": "0"
+      },
+      {
+        "id": "0x00e8d9811c8fee0d8dedbe4891fafda493d6ac66",
+        "liquidity": "19465941250534123030",
+        "token0": {
+          "symbol": "GRAI"
+        },
+        "token1": {
+          "symbol": "swETH"
+        },
+        "volumeUSD": "0"
+      },
+      {
+        "id": "0x00eac8324053b72a43fbf65aeee36a9eb16258ac",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "WETH"
+        },
+        "token1": {
+          "symbol": "RESQ"
+        },
+        "volumeUSD": "0"
+      },
+      {
+        "id": "0x00eb5948931a72135f688fbf93b62903f735443b",
+        "liquidity": "0",
+        "token0": {
+          "symbol": "KCI"
+        },
+        "token1": {
+          "symbol": "WETH"
+        },
+        "volumeUSD": "12773.2221160141484563541937849145"
+      }
+    ]
+  }
+}

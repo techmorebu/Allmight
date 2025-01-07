@@ -1,0 +1,17 @@
+{
+  "data": null,
+  "errors": [
+    {
+      "message": "Type `Pool` has no field `liquidity`"
+    },
+    {
+      "message": "Type `Pool` has no field `volumeUSD`"
+    },
+    {
+      "message": "Type `Pool` has no field `token0`"
+    },
+    {
+      "message": "Type `Pool` has no field `token1`"
+    }
+  ]
+}
