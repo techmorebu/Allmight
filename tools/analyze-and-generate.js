@@ -1,56 +1,129 @@
-// Update fetcher script dynamically based on DEX
-function updateFetcherScript(dexName, generatedQuery) {
+require("dotenv").config();
+const fetch = require("node-fetch");
+const fs = require("fs");
+const path = require("path");
+
+async function fetchSchema(apiUrl) {
     try {
-        console.log("🔄 Updating fetcher script...");
-        
-        const fetcherPath = path.join(__dirname, `../data-collection/fetch-${dexName}-data.js`);
-        
-        if (!fs.existsSync(fetcherPath)) {
-            throw new Error(`❌ Fetcher script not found: ${fetcherPath}`);
+        console.log("🚀 Fetching schema...");
+        const response = await fetch(apiUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                query: `
+                {
+                    __schema {
+                        queryType {
+                            fields {
+                                name
+                                type {
+                                    name
+                                    kind
+                                    ofType {
+                                        name
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                `,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch schema: ${response.statusText}`);
         }
 
-        const fetcherContent = fs.readFileSync(fetcherPath, "utf-8");
-        const updatedContent = fetcherContent.replace(
-            /query\s+\{([\s\S]*?)\}/g,
-            generatedQuery.trim()
-        );
-
-        fs.writeFileSync(fetcherPath, updatedContent);
-        console.log(`✅ Fetcher script updated: ${fetcherPath}`);
+        const data = await response.json();
+        console.log("✅ Schema fetched successfully.");
+        return data.data.__schema.queryType.fields;
     } catch (error) {
-        console.error("❌ Error updating fetcher script:", error);
-        throw error;
+        console.error("❌ Error fetching schema:", error);
+        return [];
     }
 }
 
-// Main execution with dynamic DEX handling
-(async () => {
+function analyzeSchema(fields) {
+    console.log("🔍 Analyzing schema...");
+    const importantFields = fields.filter((field) =>
+        ["pools", "liquidity", "volumeUSD", "txCount"].includes(field.name)
+    );
+    console.log(`✅ Found ${importantFields.length} relevant fields.`);
+    return importantFields;
+}
+
+function generateFetcherTemplate(dexName, apiUrl, fields) {
+    const outputPath = path.resolve(
+        __dirname,
+        `../data-collection/fetch-${dexName.toLowerCase()}-data.js`
+    );
+
+    const fetcherTemplate = `
+require("dotenv").config();
+const fetch = require("node-fetch");
+
+(async function fetchData() {
     try {
-        const apiUrl = process.env.API_URL;
-        const dexName = process.env.DEX_NAME || "unknown-dex";
+        console.log("🚀 Fetching data for ${dexName}...");
+        const response = await fetch("${apiUrl}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                query: \`
+                    query {
+                        ${fields
+                            .map(
+                                (field) =>
+                                    `${field.name} { id volumeUSD txCount liquidity token0 { symbol } token1 { symbol } }`
+                            )
+                            .join("\n")}
+                    }
+                \`,
+            }),
+        });
 
-        if (!apiUrl) {
-            throw new Error("❌ API_URL is not defined in the .env file");
+        const data = await response.json();
+        if (data.errors) {
+            console.error("❌ Errors in API response:", data.errors);
+        } else {
+            console.log("✅ Data fetched successfully:", data.data);
         }
-
-        console.log(`🚀 Processing DEX: ${dexName}`);
-
-        const schemaTypes = await fetchSchema(apiUrl);
-        fs.writeFileSync(`./logs/raw-schema-${dexName}.json`, JSON.stringify(schemaTypes, null, 2));
-        console.log(`✅ Raw schema saved to logs/raw-schema-${dexName}.json`);
-
-        const fields = analyzeFields(schemaTypes);
-        fs.writeFileSync(`./logs/field-analysis-${dexName}.json`, JSON.stringify(fields, null, 2));
-        console.log(`✅ Field analysis saved to logs/field-analysis-${dexName}.json`);
-
-        const generatedQuery = generateQuery(fields);
-        fs.writeFileSync(`./logs/generated-query-${dexName}.graphql`, generatedQuery);
-        console.log(`✅ Generated query saved to logs/generated-query-${dexName}.graphql`);
-
-        updateFetcherScript(dexName, generatedQuery);
-
-        console.log("🎉 Schema analysis and fetcher update completed successfully!");
     } catch (error) {
-        console.error("❌ Error in analyze-and-generate.js:", error);
+        console.error("❌ Error fetching data for ${dexName}:", error);
+    }
+})();
+`;
+
+    fs.writeFileSync(outputPath, fetcherTemplate);
+    console.log(`✅ Fetcher template for ${dexName} saved to: ${outputPath}`);
+}
+
+(async function main() {
+    const apiUrl = process.env.API_URL;
+
+    if (!apiUrl) {
+        console.error("❌ Error: API_URL not defined in .env");
+        return;
+    }
+
+    const dexName = process.env.DEX || "unknown-dex";
+    console.log(`🔄 Processing DEX: ${dexName}`);
+
+    const fields = await fetchSchema(apiUrl);
+
+    if (fields.length === 0) {
+        console.error("⚠️ No schema fields found. Exiting.");
+        return;
+    }
+
+    const relevantFields = analyzeSchema(fields);
+
+    if (relevantFields.length > 0) {
+        generateFetcherTemplate(dexName, apiUrl, relevantFields);
     }
 })();
