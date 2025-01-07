@@ -1,0 +1,10 @@
+
+        query {
+            pools {
+                id
+price0
+price1
+liquidityNet
+            }
+        }
+    
