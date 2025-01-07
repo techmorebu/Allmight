@@ -36,12 +36,8 @@ async function runCommand(command, logFilePath) {
 async function processDEX(dex) {
     try {
         console.log(`🚀 Processing DEX: ${dex.name}...`);
-
-        if (!dex.url) {
-            console.warn(`⚠️ Skipping ${dex.name}: API URL not defined.`);
-            return;
-        }
-
+        
+        // Update .env dynamically
         const envPath = "./.env";
         const currentEnv = fs.readFileSync(envPath, "utf8");
         const updatedEnv = currentEnv
@@ -49,26 +45,25 @@ async function processDEX(dex) {
             .replace(/DEX_NAME=.*/, `DEX_NAME=${dex.name}`);
         fs.writeFileSync(envPath, updatedEnv);
 
-        console.log(`✅ Updated .env for ${dex.name}:`);
-        console.log(`    API_URL=${dex.url}`);
-        console.log(`    DEX_NAME=${dex.name}`);
+        console.log(`✅ Updated .env for ${dex.name}:
+    API_URL=${dex.url}
+    DEX_NAME=${dex.name}`);
 
-        const logFilePath = path.join("logs/dex-logs", `${dex.name}-log.txt`);
-        if (!fs.existsSync("logs/dex-logs")) {
-            fs.mkdirSync("logs/dex-logs", { recursive: true });
-        }
-
+        // Run schema analysis
         console.log(`📊 Running schema analysis for ${dex.name}...`);
-        await runCommand("node tools/analyze-and-generate.js", logFilePath);
+        await runCommand("node tools/analyze-and-generate.js");
 
+        // Run fetcher
         console.log(`📡 Fetching and filtering data for ${dex.name}...`);
-        await runCommand("node data-collection/fetch-template.js", logFilePath);
+        const fetcherCommand = `node data-collection/fetch-template.js > logs/dex-logs/${dex.name.toLowerCase()}-log.txt`;
+        await runCommand(fetcherCommand);
 
         console.log(`✅ ${dex.name} processing completed successfully!`);
     } catch (error) {
         console.error(`❌ Error processing ${dex.name}:`, error);
     }
 }
+
 
 async function masterAutomation() {
     for (const dex of DEX_APIS) {
