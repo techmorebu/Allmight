@@ -46,6 +46,10 @@ async function processDEX(dex) {
             .replace(/DEX_NAME=.*/, `DEX_NAME=${dex.name}`);
         fs.writeFileSync(envPath, updatedEnv);
 
+        console.log(`✅ Updated .env for ${dex.name}:`);
+        console.log(`    API_URL=${dex.url}`);
+        console.log(`    DEX_NAME=${dex.name}`);
+
         console.log(`📊 Running schema analysis for ${dex.name}...`);
         await runCommand("node tools/analyze-and-generate.js");
 
