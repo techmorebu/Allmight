@@ -31,33 +31,27 @@ async function runCommand(command) {
     });
 }
 
-async function processDEX(dex, consolidatedData) {
+async function processDEX(dex) {
     try {
         console.log(`🚀 Processing DEX: ${dex.name}...`);
-        
-        // Step 1: Dynamically set the API URL in the .env file
+
+        // Ensure correct API URL replacement
+        if (!dex.url) {
+            throw new Error(`API URL for ${dex.name} is not defined.`);
+        }
+
         const envPath = "./.env";
         const currentEnv = fs.readFileSync(envPath, "utf8");
         const updatedEnv = currentEnv.replace(/API_URL=.*/, `API_URL=${dex.url}`);
         fs.writeFileSync(envPath, updatedEnv);
+
+        console.log(`📡 Using API URL: ${dex.url}`);
 
         console.log("📊 Running schema analysis...");
         await runCommand("node tools/analyze-and-generate.js");
 
         console.log("📡 Fetching and filtering data...");
         await runCommand("node tools/automate-fetcher.js");
-
-        // Step 2: Append filtered data to consolidatedData
-        const finalPoolsPath = path.resolve("./logs/final-pools.json");
-        if (fs.existsSync(finalPoolsPath)) {
-            const dexData = JSON.parse(fs.readFileSync(finalPoolsPath, "utf8"));
-            dexData.forEach(pool => {
-                pool.dex = dex.name; // Label pools with their source DEX
-            });
-            consolidatedData.push(...dexData);
-        } else {
-            console.warn(`⚠️ No data found for ${dex.name}. Skipping.`);
-        }
 
         console.log(`✅ ${dex.name} processing completed successfully!`);
     } catch (error) {
