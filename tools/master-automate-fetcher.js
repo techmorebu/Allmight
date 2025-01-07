@@ -1,9 +1,8 @@
 require("dotenv").config();
 const { exec } = require("child_process");
 const fs = require("fs");
-const path = require("path");
 
-// List of DEX APIs from .env
+// List of DEX APIs
 const DEX_APIS = [
     { name: "Quickswap", url: process.env.QUICKSWAP_API },
     { name: "Uniswap", url: process.env.UNISWAP_API },
@@ -17,9 +16,9 @@ const DEX_APIS = [
     { name: "Curve_Ethereum", url: process.env.CURVE_ETHEREUM_API },
 ];
 
-async function runCommand(command) {
+async function runCommand(command, env) {
     return new Promise((resolve, reject) => {
-        exec(command, (error, stdout, stderr) => {
+        exec(command, { env }, (error, stdout, stderr) => {
             if (error) {
                 console.error(`❌ Error: ${stderr}`);
                 return reject(error);
@@ -34,18 +33,17 @@ async function processDEX(dex) {
     try {
         console.log(`🚀 Processing DEX: ${dex.name}...`);
 
-        const envPath = "./.env";
-        const currentEnv = fs.readFileSync(envPath, "utf8");
-        const updatedEnv = currentEnv
-            .replace(/API_URL=.*/, `API_URL=${dex.url}`)
-            .replace(/DEX_NAME=.*/, `DEX_NAME=${dex.name}`);
-        fs.writeFileSync(envPath, updatedEnv);
+        const envVariables = {
+            ...process.env,
+            API_URL: dex.url,
+            DEX_NAME: dex.name,
+        };
 
         console.log(`📊 Running schema analysis for ${dex.name}...`);
-        await runCommand("node tools/analyze-and-generate.js");
+        await runCommand("node tools/analyze-and-generate.js", envVariables);
 
         console.log(`📡 Fetching and filtering data for ${dex.name}...`);
-        await runCommand("node data-collection/fetch-template.js");
+        await runCommand("node data-collection/fetch-template.js", envVariables);
 
         console.log(`✅ ${dex.name} processing completed successfully!`);
     } catch (error) {
