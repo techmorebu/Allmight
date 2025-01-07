@@ -8,13 +8,13 @@ const DEX_APIS = [
     { name: "Quickswap", url: process.env.QUICKSWAP_API },
     { name: "Uniswap", url: process.env.UNISWAP_API },
     { name: "Sushiswap", url: process.env.SUSHISWAP_API },
-    { name: "Balancer-Polygon", url: process.env.BALANCER_POLYGON_API },
-    { name: "Balancer-Optimism", url: process.env.BALANCER_OPTIMISM_API },
-    { name: "Balancer-Arbitrum", url: process.env.BALANCER_ARBITRUM_API },
-    { name: "Balancer-Avalanche", url: process.env.BALANCER_AVALANCHE_API },
-    { name: "Balancer-Ethereum", url: process.env.BALANCER_ETHEREUM_API },
-    { name: "Curve-Ethereum", url: process.env.CURVE_FINANCE_ETHEREUM_API },
-    { name: "Curve-Avalanche", url: process.env.CURVE_FINANCE_AVALANCHE_API },
+    { name: "Balancer_Polygon", url: process.env.BALANCER_POLYGON_API },
+    { name: "Balancer_Optimism", url: process.env.BALANCER_OPTIMISM_API },
+    { name: "Balancer_Arbitrum", url: process.env.BALANCER_ARBITRUM_API },
+    { name: "Balancer_Avalanche", url: process.env.BALANCER_AVALANCHE_API },
+    { name: "Balancer_Ethereum", url: process.env.BALANCER_ETHEREUM_API },
+    { name: "Curve_Ethereum", url: process.env.CURVE_FINANCE_ETHEREUM_API },
+    { name: "Curve_Avalanche", url: process.env.CURVE_FINANCE_AVALANCHE_API },
     // Add more DEXs or networks as needed
 ];
 
