@@ -7,6 +7,8 @@ const DEX_APIS = [
     { name: "Quickswap", url: process.env.QUICKSWAP_API },
     { name: "Uniswap", url: process.env.UNISWAP_API },
     { name: "Sushiswap", url: process.env.SUSHISWAP_API },
+    { name: "Balancer", url: process.env.BALANCER_API },
+
     // Add more DEXs as needed
 ];
 
