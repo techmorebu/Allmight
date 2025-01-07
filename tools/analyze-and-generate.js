@@ -1,44 +1,42 @@
 require("dotenv").config();
+const fetch = require("node-fetch");
 const fs = require("fs");
 const path = require("path");
 
-// Ensure required environment variables are present
-if (!process.env.API_URL || !process.env.DEX_NAME) {
-    console.error("❌ Error: Missing API_URL or DEX_NAME in .env file.");
-    process.exit(1);
+const LOGS_DIR = path.join(__dirname, "../logs");
+
+async function fetchSchemaAndData() {
+   const apiUrl = process.env.NEW_DEX_API_URL;
+   if (!apiUrl) {
+      throw new Error("API URL is not defined in the environment variables.");
+   }
+
+   console.log("Using API URL:", apiUrl);
+
+   const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: `{ pools { id volumeUSD txCount } }` }),
+   });
+
+   if (!response.ok) {
+      throw new Error(`Failed to fetch data: ${response.statusText}`);
+   }
+
+   const rawData = await response.json();
+   fs.writeFileSync(path.join(LOGS_DIR, "raw-data.json"), JSON.stringify(rawData, null, 2));
+   console.log("✅ Raw data saved to raw-data.json");
+
+   return rawData;
 }
 
-console.log(`🔍 Starting schema analysis for DEX: ${process.env.DEX_NAME}`);
-console.log(`📡 Using API URL: ${process.env.API_URL}`);
-
-// Mocked schema fetcher (replace with actual implementation)
-function fetchSchema(apiUrl) {
-    console.log(`🚀 Fetching schema from: ${apiUrl}`);
-    // Replace with actual schema fetching logic
-    return { mockField1: "String", mockField2: "Int" }; // Example
+async function main() {
+   try {
+      const rawData = await fetchSchemaAndData();
+      console.log("Raw Data Fetched:", JSON.stringify(rawData, null, 2));
+   } catch (error) {
+      console.error("❌ Error:", error.message);
+   }
 }
 
-// Mocked query generator
-function generateQuery(schema) {
-    console.log("🛠 Generating query template...");
-    return `
-query {
-    ${Object.keys(schema).map(field => `${field}`).join("\n    ")}
-}`;
-}
-
-// Main process
-(async () => {
-    const schema = fetchSchema(process.env.API_URL);
-    const schemaPath = path.join(__dirname, `../logs/schemas/${process.env.DEX_NAME}-schema.json`);
-    const queryTemplatePath = path.join(__dirname, `../logs/query_templates/${process.env.DEX_NAME}-query.graphql`);
-
-    // Save schema
-    fs.writeFileSync(schemaPath, JSON.stringify(schema, null, 2));
-    console.log(`✅ Schema saved to: ${schemaPath}`);
-
-    // Save query template
-    const queryTemplate = generateQuery(schema);
-    fs.writeFileSync(queryTemplatePath, queryTemplate);
-    console.log(`✅ Query template saved to: ${queryTemplatePath}`);
-})();
+main();
