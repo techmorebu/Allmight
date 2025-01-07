@@ -13,6 +13,8 @@ const DEX_APIS = [
     { name: "Balancer_Arbitrum", url: process.env.BALANCER_ARBITRUM_API },
     { name: "Balancer_Avalanche", url: process.env.BALANCER_AVALANCHE_API },
     { name: "Balancer_Ethereum", url: process.env.BALANCER_ETHEREUM_API },
+    { name: "Curve_Avalanche", url: process.env.CURVE_AVALANCHE_API },
+    { name: "Curve_Ethereum", url: process.env.CURVE_ETHEREUM_API },
 ];
 
 async function runCommand(command) {
@@ -22,7 +24,6 @@ async function runCommand(command) {
                 console.error(`❌ Error: ${stderr}`);
                 return reject(error);
             }
-            console.log(stdout);
             resolve(stdout);
         });
     });
@@ -31,6 +32,7 @@ async function runCommand(command) {
 async function processDEX(dex) {
     try {
         console.log(`🚀 Processing DEX: ${dex.name}...`);
+        console.log(`🔧 Using API URL: ${dex.url}`);
         
         const envPath = "./.env";
         const currentEnv = fs.readFileSync(envPath, "utf8");
@@ -39,11 +41,23 @@ async function processDEX(dex) {
             .replace(/DEX_NAME=.*/, `DEX_NAME=${dex.name}`);
         fs.writeFileSync(envPath, updatedEnv);
 
+        console.log(fs.readFileSync(envPath, "utf8")); // Debugging the .env content
+
         console.log(`📊 Running schema analysis for ${dex.name}...`);
-        await runCommand("node tools/analyze-and-generate.js");
+        const logPathAnalyze = path.join(__dirname, `logs/${dex.name}-analyze-log.txt`);
+        await runCommand(`node tools/analyze-and-generate.js > ${logPathAnalyze} 2>&1`);
+        console.log(`📄 Analyze logs written to: ${logPathAnalyze}`);
 
         console.log(`📡 Fetching and filtering data for ${dex.name}...`);
-        await runCommand("node data-collection/fetch-template.js");
+        const fetcherScript = `data-collection/fetch-${dex.name.toLowerCase()}-data.js`;
+        const logPathFetch = path.join(__dirname, `logs/${dex.name}-fetch-log.txt`);
+        if (fs.existsSync(fetcherScript)) {
+            await runCommand(`node ${fetcherScript} > ${logPathFetch} 2>&1`);
+        } else {
+            console.warn(`⚠️ Fetcher script for ${dex.name} not found. Using fetch-template.js.`);
+            await runCommand(`node data-collection/fetch-template.js > ${logPathFetch} 2>&1`);
+        }
+        console.log(`📄 Fetch logs written to: ${logPathFetch}`);
 
         console.log(`✅ ${dex.name} processing completed successfully!`);
     } catch (error) {
