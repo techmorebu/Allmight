@@ -1,165 +1,101 @@
 const fetch = require("node-fetch");
 const fs = require("fs");
-require("dotenv").config(); // Load .env variables
+const path = require("path");
+require("dotenv").config();
 
-// Function to handle pagination for REST APIs
-async function fetchAllPages(endpoint, headers, handle, pageParam = "page", startPage = 1) {
-  let currentPage = startPage;
-  let allData = [];
+const outputDir = path.join(__dirname, "../outputs");
 
-  while (true) {
-    const url = `${endpoint}?${pageParam}=${currentPage}`;
-    console.log(`🔍 Fetching page ${currentPage} for ${handle}: ${url}`);
-    try {
-      const response = await fetch(url, {
-        headers: { "Content-Type": "application/json", ...headers },
-      });
-      const data = await response.json();
-
-      if (!data || Object.keys(data).length === 0) {
-        console.log(`✅ Completed pagination for ${handle}.`);
-        break;
-      }
-
-      allData.push(data);
-      currentPage++;
-    } catch (error) {
-      console.error(`❌ Error fetching page ${currentPage} for ${handle}:`, error);
-      break;
-    }
-  }
-
-  return allData;
+// Ensure output directory exists
+if (!fs.existsSync(outputDir)) {
+  fs.mkdirSync(outputDir);
 }
 
-// Function to fetch and introspect GraphQL schema
-async function fetchGraphQLSchema(endpoint, handle, headers = {}) {
-  const introspectionQuery = `
-  {
-    __schema {
-      types {
-        name
-        kind
-        description
-        fields {
-          name
-          description
-          type {
-            name
-            kind
-            ofType {
+// Map your API endpoints from .env
+const apis = {
+  uniswap: process.env.UNISWAP_DEX_API,
+  curve: process.env.CURVE_DEX_API,
+  sushiswap: process.env.SUSHISWAP_DEX_API,
+  // Add more APIs as needed
+};
+
+// Helper function to fetch schema or data
+async function fetchApiSchema(apiName, apiUrl) {
+  try {
+    console.log(`Fetching schema for ${apiName}...`);
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        query: `{
+          __schema {
+            types {
               name
               kind
+              fields {
+                name
+                type {
+                  name
+                  kind
+                  ofType {
+                    name
+                    kind
+                  }
+                }
+              }
             }
           }
-        }
-      }
-    }
-  }`;
-
-  try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", ...headers },
-      body: JSON.stringify({ query: introspectionQuery }),
+        }`,
+      }),
     });
 
-    const rawSchema = await response.json();
-
-    if (rawSchema.errors) {
-      throw new Error(`GraphQL Schema Fetch Error: ${JSON.stringify(rawSchema.errors)}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch schema for ${apiName}: ${response.statusText}`);
     }
 
-    const schema = rawSchema.data.__schema.types;
+    const data = await response.json();
+    if (data.errors) {
+      throw new Error(`API Error: ${data.errors[0].message}`);
+    }
 
-    // Format schema into readable chart
-    const chart = schema.map(type => {
-      const fields = type.fields
-        ? type.fields
-            .map(field => `  - ${field.name} (${field.type.kind})${field.description ? `: ${field.description}` : ""}`)
-            .join("\n")
-        : "  - No fields";
-      return `Type: ${type.name} (${type.kind})\n${fields}`;
-    }).join("\n\n");
-
-    console.log(`✅ GraphQL schema retrieved for ${handle}`);
-
-    // Save to file
-    fs.writeFileSync(`${handle}_graphql-fields.txt`, chart);
-    console.log(`✅ GraphQL schema saved to ${handle}_graphql-fields.txt`);
+    return data.data.__schema.types;
   } catch (error) {
-    console.error(`❌ Error fetching GraphQL schema for ${handle}:`, error);
-    throw error;
+    console.error(`Error fetching schema for ${apiName}:`, error.message);
+    return null;
   }
 }
 
-// Function to fetch and map REST API fields
-async function fetchRESTData(endpoint, handle, headers = {}) {
-  try {
-    // Handle pagination
-    const allData = await fetchAllPages(endpoint, headers, handle);
-    const combinedData = Object.assign({}, ...allData);
-
-    const mapFields = (obj, prefix = "") =>
-      Object.keys(obj).reduce((res, key) => {
-        const fullKey = prefix ? `${prefix}.${key}` : key;
-        if (typeof obj[key] === "object" && obj[key] !== null) {
-          res.push(fullKey);
-          res.push(...mapFields(obj[key], fullKey));
-        } else {
-          res.push(fullKey);
-        }
-        return res;
-      }, []);
-
-    const fields = mapFields(combinedData);
-    const chart = fields.map(field => `  - ${field}`).join("\n");
-
-    console.log(`✅ REST API fields retrieved for ${handle}`);
-
-    // Save to file
-    fs.writeFileSync(`${handle}_rest-fields.txt`, chart);
-    console.log(`✅ REST API fields saved to ${handle}_rest-fields.txt`);
-  } catch (error) {
-    console.error(`❌ Error fetching REST API data for ${handle}:`, error);
-    throw error;
-  }
+// Function to process schema and extract fields
+function processSchema(types) {
+  const fields = [];
+  types.forEach((type) => {
+    if (type.fields) {
+      type.fields.forEach((field) => {
+        fields.push({
+          name: field.name,
+          type: field.type.name || field.type.ofType?.name || "Unknown",
+          kind: field.type.kind,
+        });
+      });
+    }
+  });
+  return fields;
 }
 
-// Universal query function
-async function queryAPIFromEnv(outputDir = "./") {
-  const envVars = Object.entries(process.env);
-  const dexApis = envVars.filter(([key, value]) => key.endsWith("_DEX_API"));
+// Main function to run the mapper
+async function runMapper() {
+  for (const [apiName, apiUrl] of Object.entries(apis)) {
+    const schema = await fetchApiSchema(apiName, apiUrl);
+    if (schema) {
+      const fields = processSchema(schema);
 
-  if (dexApis.length === 0) {
-    console.error("❌ No DEX APIs found in .env file.");
-    return;
-  }
-
-  let report = "API Query Report:\n\n";
-
-  for (const [key, endpoint] of dexApis) {
-    const handle = key.replace("_DEX_API", "").toLowerCase(); // Generate handle name
-    console.log(`🔍 Querying API for ${handle} (${endpoint})...`);
-
-    try {
-      if (endpoint.includes("graphql") || endpoint.includes("thegraph")) {
-        await fetchGraphQLSchema(endpoint, handle);
-      } else {
-        await fetchRESTData(endpoint, handle);
-      }
-
-      report += `✅ Success: ${handle} (${endpoint})\n`;
-    } catch (error) {
-      report += `❌ Failed: ${handle} (${endpoint}) - ${error.message}\n`;
+      // Save fields to JSON file
+      const outputFilePath = path.join(outputDir, `${apiName}-fields-${new Date().toISOString().split("T")[0]}.json`);
+      fs.writeFileSync(outputFilePath, JSON.stringify(fields, null, 2));
+      console.log(`Schema for ${apiName} saved to ${outputFilePath}`);
     }
   }
-
-  // Save report
-  const reportPath = `${outputDir}report.txt`;
-  fs.writeFileSync(reportPath, report);
-  console.log(`✅ Report saved to ${reportPath}`);
+  console.log("Field mapping completed for all APIs.");
 }
 
-// Execute the query
-queryAPIFromEnv("./outputs/");
+// Run the script
+runMapper();
