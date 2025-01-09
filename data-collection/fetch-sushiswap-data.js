@@ -1,78 +1,62 @@
-const axios = require('axios');
-const { logger } = require('../monitoring/logger');
-const Redis = require('ioredis');
-require('dotenv').config();
+const fetch = require("node-fetch");
+require("dotenv").config();
 
-const SUSHISWAP_API_URL = process.env.SUSHISWAP_API_URL;
+async function fetchSushiswapData() {
+  const query = `
+  {
+    pairs(first: 10) {
+      id
+      token0 {
+        symbol
+        derivedETH
+      }
+      token1 {
+        symbol
+        derivedETH
+      }
+      volumeUSD
+      reserveUSD
+      txCount
+    }
+  }`;
 
-if (!SUSHISWAP_API_URL) {
-    logger.error('SUSHISWAP_API_URL is not defined in the environment variables');
-    process.exit(1); // Exit if the URL is missing
+  try {
+    const response = await fetch(process.env.SUSHISWAP_DEX_API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query }),
+    });
+    const data = await response.json();
+
+    // Format and return the data
+    const pairData = data.data.pairs.map((pair) => ({
+      pairId: pair.id,
+      token0: {
+        symbol: pair.token0.symbol,
+        price: pair.token0.derivedETH,
+      },
+      token1: {
+        symbol: pair.token1.symbol,
+        price: pair.token1.derivedETH,
+      },
+      volumeUSD: pair.volumeUSD,
+      reserveUSD: pair.reserveUSD,
+      txCount: pair.txCount,
+    }));
+
+    console.log("Fetched Sushiswap Data:", pairData);
+    return pairData;
+  } catch (error) {
+    console.error("Error fetching Sushiswap data:", error.message);
+    return [];
+  }
 }
 
-const redis = new Redis();
+module.exports = fetchSushiswapData;
 
-logger.info(`Using SushiSwap API URL: ${SUSHISWAP_API_URL}`);
-
-/**
- * Fetch pair-level data from SushiSwap Subgraph
- */
-async function fetchSushiSwapPairData() {
-    try {
-        const query = `{
-            liquidityPools(first: 10, orderBy: totalValueLockedUSD, orderDirection: desc) {
-                id
-                name
-                inputTokens {
-                    symbol
-                    decimals
-                }
-                totalValueLockedUSD
-            }
-        }`;
-
-        const response = await axios.post(SUSHISWAP_API_URL, { query });
-
-        // Validate the response structure
-        if (response.data && response.data.data && response.data.data.liquidityPools) {
-            const liquidityPools = response.data.data.liquidityPools.map(pool => ({
-                id: pool.id,
-                name: pool.name,
-                tokens: pool.inputTokens.map(token => ({
-                    symbol: token.symbol,
-                    decimals: parseInt(token.decimals, 10),
-                })),
-                totalValueLockedUSD: parseFloat(pool.totalValueLockedUSD),
-            }));
-
-            logger.info('Fetched SushiSwap pair data successfully.');
-
-            // Save to Redis
-            for (const pool of liquidityPools) {
-                const redisKey = `sushiswap:pool:${pool.id}`;
-                await redis.set(redisKey, JSON.stringify(pool));
-                logger.info(`Stored pool data in Redis: ${redisKey}`);
-            }
-
-            return liquidityPools;
-        } else {
-            throw new Error('Invalid response structure or missing liquidityPools data');
-        }
-    } catch (error) {
-        logger.error(`Error fetching SushiSwap pair data: ${error.message}`);
-        throw error;
-    }
+// Example Usage
+if (require.main === module) {
+  fetchSushiswapData().then((data) =>
+    console.log("Fetched Sushiswap Pairs:", data)
+  );
 }
-
-(async () => {
-    try {
-        const data = await fetchSushiSwapPairData();
-        logger.info(`Fetched and stored ${data.length} SushiSwap liquidity pools.`);
-    } catch (error) {
-        logger.error(`Fetcher script failed: ${error.message}`);
-    } finally {
-        redis.disconnect(); // Close Redis connection
-    }
-})();
-
-module.exports = { fetchSushiSwapPairData };
