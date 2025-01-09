@@ -1,0 +1,2963 @@
+[
+  {
+    "name": "id",
+    "type": "ID",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "AlgebraDayData"
+  },
+  {
+    "name": "date",
+    "type": "Int",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "AlgebraDayData"
+  },
+  {
+    "name": "volumeMatic",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "AlgebraDayData"
+  },
+  {
+    "name": "volumeUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "AlgebraDayData"
+  },
+  {
+    "name": "volumeUSDUntracked",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "AlgebraDayData"
+  },
+  {
+    "name": "feesUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "AlgebraDayData"
+  },
+  {
+    "name": "txCount",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "AlgebraDayData"
+  },
+  {
+    "name": "tvlUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "AlgebraDayData"
+  },
+  {
+    "name": "id",
+    "type": "ID",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Bundle"
+  },
+  {
+    "name": "maticPriceUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Bundle"
+  },
+  {
+    "name": "id",
+    "type": "ID",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Burn"
+  },
+  {
+    "name": "transaction",
+    "type": "Transaction",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Burn"
+  },
+  {
+    "name": "pool",
+    "type": "Pool",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Burn"
+  },
+  {
+    "name": "token0",
+    "type": "Token",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Burn"
+  },
+  {
+    "name": "token1",
+    "type": "Token",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Burn"
+  },
+  {
+    "name": "timestamp",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Burn"
+  },
+  {
+    "name": "owner",
+    "type": "Bytes",
+    "kind": "SCALAR",
+    "api": "quickswap",
+    "parent": "Burn"
+  },
+  {
+    "name": "origin",
+    "type": "Bytes",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Burn"
+  },
+  {
+    "name": "amount",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Burn"
+  },
+  {
+    "name": "amount0",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Burn"
+  },
+  {
+    "name": "amount1",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Burn"
+  },
+  {
+    "name": "amountUSD",
+    "type": "BigDecimal",
+    "kind": "SCALAR",
+    "api": "quickswap",
+    "parent": "Burn"
+  },
+  {
+    "name": "tickLower",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Burn"
+  },
+  {
+    "name": "tickUpper",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Burn"
+  },
+  {
+    "name": "logIndex",
+    "type": "BigInt",
+    "kind": "SCALAR",
+    "api": "quickswap",
+    "parent": "Burn"
+  },
+  {
+    "name": "id",
+    "type": "ID",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Collect"
+  },
+  {
+    "name": "transaction",
+    "type": "Transaction",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Collect"
+  },
+  {
+    "name": "timestamp",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Collect"
+  },
+  {
+    "name": "pool",
+    "type": "Pool",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Collect"
+  },
+  {
+    "name": "owner",
+    "type": "Bytes",
+    "kind": "SCALAR",
+    "api": "quickswap",
+    "parent": "Collect"
+  },
+  {
+    "name": "amount0",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Collect"
+  },
+  {
+    "name": "amount1",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Collect"
+  },
+  {
+    "name": "amountUSD",
+    "type": "BigDecimal",
+    "kind": "SCALAR",
+    "api": "quickswap",
+    "parent": "Collect"
+  },
+  {
+    "name": "tickLower",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Collect"
+  },
+  {
+    "name": "tickUpper",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Collect"
+  },
+  {
+    "name": "logIndex",
+    "type": "BigInt",
+    "kind": "SCALAR",
+    "api": "quickswap",
+    "parent": "Collect"
+  },
+  {
+    "name": "id",
+    "type": "ID",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Factory"
+  },
+  {
+    "name": "poolCount",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Factory"
+  },
+  {
+    "name": "txCount",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Factory"
+  },
+  {
+    "name": "totalVolumeUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Factory"
+  },
+  {
+    "name": "totalVolumeMatic",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Factory"
+  },
+  {
+    "name": "totalFeesUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Factory"
+  },
+  {
+    "name": "totalFeesMatic",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Factory"
+  },
+  {
+    "name": "untrackedVolumeUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Factory"
+  },
+  {
+    "name": "totalValueLockedUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Factory"
+  },
+  {
+    "name": "totalValueLockedMatic",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Factory"
+  },
+  {
+    "name": "totalValueLockedUSDUntracked",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Factory"
+  },
+  {
+    "name": "totalValueLockedMaticUntracked",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Factory"
+  },
+  {
+    "name": "owner",
+    "type": "ID",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Factory"
+  },
+  {
+    "name": "id",
+    "type": "ID",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "FeeHourData"
+  },
+  {
+    "name": "pool",
+    "type": "String",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "FeeHourData"
+  },
+  {
+    "name": "fee",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "FeeHourData"
+  },
+  {
+    "name": "changesCount",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "FeeHourData"
+  },
+  {
+    "name": "timestamp",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "FeeHourData"
+  },
+  {
+    "name": "minFee",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "FeeHourData"
+  },
+  {
+    "name": "maxFee",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "FeeHourData"
+  },
+  {
+    "name": "startFee",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "FeeHourData"
+  },
+  {
+    "name": "endFee",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "FeeHourData"
+  },
+  {
+    "name": "id",
+    "type": "ID",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Flash"
+  },
+  {
+    "name": "transaction",
+    "type": "Transaction",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Flash"
+  },
+  {
+    "name": "timestamp",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Flash"
+  },
+  {
+    "name": "pool",
+    "type": "Pool",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Flash"
+  },
+  {
+    "name": "sender",
+    "type": "Bytes",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Flash"
+  },
+  {
+    "name": "recipient",
+    "type": "Bytes",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Flash"
+  },
+  {
+    "name": "amount0",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Flash"
+  },
+  {
+    "name": "amount1",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Flash"
+  },
+  {
+    "name": "amountUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Flash"
+  },
+  {
+    "name": "amount0Paid",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Flash"
+  },
+  {
+    "name": "amount1Paid",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Flash"
+  },
+  {
+    "name": "logIndex",
+    "type": "BigInt",
+    "kind": "SCALAR",
+    "api": "quickswap",
+    "parent": "Flash"
+  },
+  {
+    "name": "id",
+    "type": "ID",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Mint"
+  },
+  {
+    "name": "transaction",
+    "type": "Transaction",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Mint"
+  },
+  {
+    "name": "timestamp",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Mint"
+  },
+  {
+    "name": "pool",
+    "type": "Pool",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Mint"
+  },
+  {
+    "name": "token0",
+    "type": "Token",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Mint"
+  },
+  {
+    "name": "token1",
+    "type": "Token",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Mint"
+  },
+  {
+    "name": "owner",
+    "type": "Bytes",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Mint"
+  },
+  {
+    "name": "sender",
+    "type": "Bytes",
+    "kind": "SCALAR",
+    "api": "quickswap",
+    "parent": "Mint"
+  },
+  {
+    "name": "origin",
+    "type": "Bytes",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Mint"
+  },
+  {
+    "name": "amount",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Mint"
+  },
+  {
+    "name": "amount0",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Mint"
+  },
+  {
+    "name": "amount1",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Mint"
+  },
+  {
+    "name": "amountUSD",
+    "type": "BigDecimal",
+    "kind": "SCALAR",
+    "api": "quickswap",
+    "parent": "Mint"
+  },
+  {
+    "name": "tickLower",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Mint"
+  },
+  {
+    "name": "tickUpper",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Mint"
+  },
+  {
+    "name": "logIndex",
+    "type": "BigInt",
+    "kind": "SCALAR",
+    "api": "quickswap",
+    "parent": "Mint"
+  },
+  {
+    "name": "id",
+    "type": "ID",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "createdAtTimestamp",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "createdAtBlockNumber",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "token0",
+    "type": "Token",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "token1",
+    "type": "Token",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "fee",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "communityFee0",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "communityFee1",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "liquidity",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "sqrtPrice",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "feeGrowthGlobal0X128",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "feeGrowthGlobal1X128",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "token0Price",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "token1Price",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "tick",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "observationIndex",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "volumeToken0",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "volumeToken1",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "volumeUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "untrackedVolumeUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "feesUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "untrackedFeesUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "txCount",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "collectedFeesToken0",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "collectedFeesToken1",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "collectedFeesUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "totalValueLockedToken0",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "totalValueLockedToken1",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "feesToken0",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "feesToken1",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "totalValueLockedMatic",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "totalValueLockedUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "totalValueLockedUSDUntracked",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "liquidityProviderCount",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "poolHourData",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "poolDayData",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "mints",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "burns",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "swaps",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "collects",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "ticks",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Pool"
+  },
+  {
+    "name": "id",
+    "type": "ID",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolDayData"
+  },
+  {
+    "name": "date",
+    "type": "Int",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolDayData"
+  },
+  {
+    "name": "pool",
+    "type": "Pool",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolDayData"
+  },
+  {
+    "name": "liquidity",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolDayData"
+  },
+  {
+    "name": "sqrtPrice",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolDayData"
+  },
+  {
+    "name": "untrackedVolumeUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolDayData"
+  },
+  {
+    "name": "token0Price",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolDayData"
+  },
+  {
+    "name": "token1Price",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolDayData"
+  },
+  {
+    "name": "tick",
+    "type": "BigInt",
+    "kind": "SCALAR",
+    "api": "quickswap",
+    "parent": "PoolDayData"
+  },
+  {
+    "name": "feeGrowthGlobal0X128",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolDayData"
+  },
+  {
+    "name": "feeGrowthGlobal1X128",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolDayData"
+  },
+  {
+    "name": "tvlUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolDayData"
+  },
+  {
+    "name": "feesToken0",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolDayData"
+  },
+  {
+    "name": "feesToken1",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolDayData"
+  },
+  {
+    "name": "volumeToken0",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolDayData"
+  },
+  {
+    "name": "volumeToken1",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolDayData"
+  },
+  {
+    "name": "volumeUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolDayData"
+  },
+  {
+    "name": "feesUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolDayData"
+  },
+  {
+    "name": "txCount",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolDayData"
+  },
+  {
+    "name": "open",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolDayData"
+  },
+  {
+    "name": "high",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolDayData"
+  },
+  {
+    "name": "low",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolDayData"
+  },
+  {
+    "name": "close",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolDayData"
+  },
+  {
+    "name": "id",
+    "type": "ID",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolFeeData"
+  },
+  {
+    "name": "pool",
+    "type": "String",
+    "kind": "SCALAR",
+    "api": "quickswap",
+    "parent": "PoolFeeData"
+  },
+  {
+    "name": "timestamp",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolFeeData"
+  },
+  {
+    "name": "fee",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolFeeData"
+  },
+  {
+    "name": "id",
+    "type": "ID",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolHourData"
+  },
+  {
+    "name": "periodStartUnix",
+    "type": "Int",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolHourData"
+  },
+  {
+    "name": "pool",
+    "type": "Pool",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolHourData"
+  },
+  {
+    "name": "liquidity",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolHourData"
+  },
+  {
+    "name": "sqrtPrice",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolHourData"
+  },
+  {
+    "name": "token0Price",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolHourData"
+  },
+  {
+    "name": "token1Price",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolHourData"
+  },
+  {
+    "name": "tick",
+    "type": "BigInt",
+    "kind": "SCALAR",
+    "api": "quickswap",
+    "parent": "PoolHourData"
+  },
+  {
+    "name": "feeGrowthGlobal0X128",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolHourData"
+  },
+  {
+    "name": "feeGrowthGlobal1X128",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolHourData"
+  },
+  {
+    "name": "tvlUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolHourData"
+  },
+  {
+    "name": "volumeToken0",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolHourData"
+  },
+  {
+    "name": "volumeToken1",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolHourData"
+  },
+  {
+    "name": "volumeUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolHourData"
+  },
+  {
+    "name": "feesUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolHourData"
+  },
+  {
+    "name": "untrackedVolumeUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolHourData"
+  },
+  {
+    "name": "txCount",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolHourData"
+  },
+  {
+    "name": "open",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolHourData"
+  },
+  {
+    "name": "high",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolHourData"
+  },
+  {
+    "name": "low",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolHourData"
+  },
+  {
+    "name": "close",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PoolHourData"
+  },
+  {
+    "name": "id",
+    "type": "ID",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Position"
+  },
+  {
+    "name": "owner",
+    "type": "Bytes",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Position"
+  },
+  {
+    "name": "pool",
+    "type": "Pool",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Position"
+  },
+  {
+    "name": "token0",
+    "type": "Token",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Position"
+  },
+  {
+    "name": "token1",
+    "type": "Token",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Position"
+  },
+  {
+    "name": "tickLower",
+    "type": "Tick",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Position"
+  },
+  {
+    "name": "tickUpper",
+    "type": "Tick",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Position"
+  },
+  {
+    "name": "liquidity",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Position"
+  },
+  {
+    "name": "depositedToken0",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Position"
+  },
+  {
+    "name": "depositedToken1",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Position"
+  },
+  {
+    "name": "withdrawnToken0",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Position"
+  },
+  {
+    "name": "withdrawnToken1",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Position"
+  },
+  {
+    "name": "collectedToken0",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Position"
+  },
+  {
+    "name": "collectedToken1",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Position"
+  },
+  {
+    "name": "collectedFeesToken0",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Position"
+  },
+  {
+    "name": "collectedFeesToken1",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Position"
+  },
+  {
+    "name": "transaction",
+    "type": "Transaction",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Position"
+  },
+  {
+    "name": "feeGrowthInside0LastX128",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Position"
+  },
+  {
+    "name": "feeGrowthInside1LastX128",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Position"
+  },
+  {
+    "name": "token0Tvl",
+    "type": "BigDecimal",
+    "kind": "SCALAR",
+    "api": "quickswap",
+    "parent": "Position"
+  },
+  {
+    "name": "token1Tvl",
+    "type": "BigDecimal",
+    "kind": "SCALAR",
+    "api": "quickswap",
+    "parent": "Position"
+  },
+  {
+    "name": "id",
+    "type": "ID",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PositionSnapshot"
+  },
+  {
+    "name": "owner",
+    "type": "Bytes",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PositionSnapshot"
+  },
+  {
+    "name": "pool",
+    "type": "Pool",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PositionSnapshot"
+  },
+  {
+    "name": "position",
+    "type": "Position",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PositionSnapshot"
+  },
+  {
+    "name": "blockNumber",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PositionSnapshot"
+  },
+  {
+    "name": "timestamp",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PositionSnapshot"
+  },
+  {
+    "name": "liquidity",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PositionSnapshot"
+  },
+  {
+    "name": "depositedToken0",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PositionSnapshot"
+  },
+  {
+    "name": "depositedToken1",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PositionSnapshot"
+  },
+  {
+    "name": "withdrawnToken0",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PositionSnapshot"
+  },
+  {
+    "name": "withdrawnToken1",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PositionSnapshot"
+  },
+  {
+    "name": "collectedFeesToken0",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PositionSnapshot"
+  },
+  {
+    "name": "collectedFeesToken1",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PositionSnapshot"
+  },
+  {
+    "name": "transaction",
+    "type": "Transaction",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PositionSnapshot"
+  },
+  {
+    "name": "feeGrowthInside0LastX128",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PositionSnapshot"
+  },
+  {
+    "name": "feeGrowthInside1LastX128",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "PositionSnapshot"
+  },
+  {
+    "name": "factory",
+    "type": "Factory",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "factories",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "bundle",
+    "type": "Bundle",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "bundles",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "token",
+    "type": "Token",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "tokens",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "pool",
+    "type": "Pool",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "pools",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "tick",
+    "type": "Tick",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "ticks",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "position",
+    "type": "Position",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "positions",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "positionSnapshot",
+    "type": "PositionSnapshot",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "positionSnapshots",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "transaction",
+    "type": "Transaction",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "transactions",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "mint",
+    "type": "Mint",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "mints",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "burn",
+    "type": "Burn",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "burns",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "swap",
+    "type": "Swap",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "swaps",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "collect",
+    "type": "Collect",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "collects",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "flash",
+    "type": "Flash",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "flashes",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "algebraDayData",
+    "type": "AlgebraDayData",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "algebraDayDatas",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "poolDayData",
+    "type": "PoolDayData",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "poolDayDatas",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "poolFeeData",
+    "type": "PoolFeeData",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "poolFeeDatas",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "poolHourData",
+    "type": "PoolHourData",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "poolHourDatas",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "tickHourData",
+    "type": "TickHourData",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "tickHourDatas",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "tickDayData",
+    "type": "TickDayData",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "tickDayDatas",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "tokenDayData",
+    "type": "TokenDayData",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "tokenDayDatas",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "tokenHourData",
+    "type": "TokenHourData",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "tokenHourDatas",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "feeHourData",
+    "type": "FeeHourData",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "feeHourDatas",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "_meta",
+    "type": "_Meta_",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Query"
+  },
+  {
+    "name": "factory",
+    "type": "Factory",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "factories",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "bundle",
+    "type": "Bundle",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "bundles",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "token",
+    "type": "Token",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "tokens",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "pool",
+    "type": "Pool",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "pools",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "tick",
+    "type": "Tick",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "ticks",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "position",
+    "type": "Position",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "positions",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "positionSnapshot",
+    "type": "PositionSnapshot",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "positionSnapshots",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "transaction",
+    "type": "Transaction",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "transactions",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "mint",
+    "type": "Mint",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "mints",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "burn",
+    "type": "Burn",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "burns",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "swap",
+    "type": "Swap",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "swaps",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "collect",
+    "type": "Collect",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "collects",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "flash",
+    "type": "Flash",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "flashes",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "algebraDayData",
+    "type": "AlgebraDayData",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "algebraDayDatas",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "poolDayData",
+    "type": "PoolDayData",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "poolDayDatas",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "poolFeeData",
+    "type": "PoolFeeData",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "poolFeeDatas",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "poolHourData",
+    "type": "PoolHourData",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "poolHourDatas",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "tickHourData",
+    "type": "TickHourData",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "tickHourDatas",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "tickDayData",
+    "type": "TickDayData",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "tickDayDatas",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "tokenDayData",
+    "type": "TokenDayData",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "tokenDayDatas",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "tokenHourData",
+    "type": "TokenHourData",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "tokenHourDatas",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "feeHourData",
+    "type": "FeeHourData",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "feeHourDatas",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "_meta",
+    "type": "_Meta_",
+    "kind": "OBJECT",
+    "api": "quickswap",
+    "parent": "Subscription"
+  },
+  {
+    "name": "id",
+    "type": "ID",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Swap"
+  },
+  {
+    "name": "transaction",
+    "type": "Transaction",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Swap"
+  },
+  {
+    "name": "timestamp",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Swap"
+  },
+  {
+    "name": "pool",
+    "type": "Pool",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Swap"
+  },
+  {
+    "name": "token0",
+    "type": "Token",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Swap"
+  },
+  {
+    "name": "token1",
+    "type": "Token",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Swap"
+  },
+  {
+    "name": "sender",
+    "type": "Bytes",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Swap"
+  },
+  {
+    "name": "recipient",
+    "type": "Bytes",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Swap"
+  },
+  {
+    "name": "liquidity",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Swap"
+  },
+  {
+    "name": "origin",
+    "type": "Bytes",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Swap"
+  },
+  {
+    "name": "amount0",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Swap"
+  },
+  {
+    "name": "amount1",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Swap"
+  },
+  {
+    "name": "amountUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Swap"
+  },
+  {
+    "name": "price",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Swap"
+  },
+  {
+    "name": "tick",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Swap"
+  },
+  {
+    "name": "logIndex",
+    "type": "BigInt",
+    "kind": "SCALAR",
+    "api": "quickswap",
+    "parent": "Swap"
+  },
+  {
+    "name": "id",
+    "type": "ID",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Tick"
+  },
+  {
+    "name": "poolAddress",
+    "type": "String",
+    "kind": "SCALAR",
+    "api": "quickswap",
+    "parent": "Tick"
+  },
+  {
+    "name": "tickIdx",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Tick"
+  },
+  {
+    "name": "pool",
+    "type": "Pool",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Tick"
+  },
+  {
+    "name": "liquidityGross",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Tick"
+  },
+  {
+    "name": "liquidityNet",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Tick"
+  },
+  {
+    "name": "price0",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Tick"
+  },
+  {
+    "name": "price1",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Tick"
+  },
+  {
+    "name": "volumeToken0",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Tick"
+  },
+  {
+    "name": "volumeToken1",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Tick"
+  },
+  {
+    "name": "volumeUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Tick"
+  },
+  {
+    "name": "untrackedVolumeUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Tick"
+  },
+  {
+    "name": "feesUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Tick"
+  },
+  {
+    "name": "collectedFeesToken0",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Tick"
+  },
+  {
+    "name": "collectedFeesToken1",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Tick"
+  },
+  {
+    "name": "collectedFeesUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Tick"
+  },
+  {
+    "name": "createdAtTimestamp",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Tick"
+  },
+  {
+    "name": "createdAtBlockNumber",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Tick"
+  },
+  {
+    "name": "liquidityProviderCount",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Tick"
+  },
+  {
+    "name": "feeGrowthOutside0X128",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Tick"
+  },
+  {
+    "name": "feeGrowthOutside1X128",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Tick"
+  },
+  {
+    "name": "id",
+    "type": "ID",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TickDayData"
+  },
+  {
+    "name": "date",
+    "type": "Int",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TickDayData"
+  },
+  {
+    "name": "pool",
+    "type": "Pool",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TickDayData"
+  },
+  {
+    "name": "tick",
+    "type": "Tick",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TickDayData"
+  },
+  {
+    "name": "liquidityGross",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TickDayData"
+  },
+  {
+    "name": "liquidityNet",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TickDayData"
+  },
+  {
+    "name": "volumeToken0",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TickDayData"
+  },
+  {
+    "name": "volumeToken1",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TickDayData"
+  },
+  {
+    "name": "volumeUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TickDayData"
+  },
+  {
+    "name": "feesUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TickDayData"
+  },
+  {
+    "name": "feeGrowthOutside0X128",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TickDayData"
+  },
+  {
+    "name": "feeGrowthOutside1X128",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TickDayData"
+  },
+  {
+    "name": "id",
+    "type": "ID",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TickHourData"
+  },
+  {
+    "name": "periodStartUnix",
+    "type": "Int",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TickHourData"
+  },
+  {
+    "name": "pool",
+    "type": "Pool",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TickHourData"
+  },
+  {
+    "name": "tick",
+    "type": "Tick",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TickHourData"
+  },
+  {
+    "name": "liquidityGross",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TickHourData"
+  },
+  {
+    "name": "liquidityNet",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TickHourData"
+  },
+  {
+    "name": "volumeToken0",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TickHourData"
+  },
+  {
+    "name": "volumeToken1",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TickHourData"
+  },
+  {
+    "name": "volumeUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TickHourData"
+  },
+  {
+    "name": "feesUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TickHourData"
+  },
+  {
+    "name": "id",
+    "type": "ID",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Token"
+  },
+  {
+    "name": "symbol",
+    "type": "String",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Token"
+  },
+  {
+    "name": "name",
+    "type": "String",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Token"
+  },
+  {
+    "name": "decimals",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Token"
+  },
+  {
+    "name": "totalSupply",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Token"
+  },
+  {
+    "name": "volume",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Token"
+  },
+  {
+    "name": "volumeUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Token"
+  },
+  {
+    "name": "untrackedVolumeUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Token"
+  },
+  {
+    "name": "feesUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Token"
+  },
+  {
+    "name": "txCount",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Token"
+  },
+  {
+    "name": "poolCount",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Token"
+  },
+  {
+    "name": "totalValueLocked",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Token"
+  },
+  {
+    "name": "totalValueLockedUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Token"
+  },
+  {
+    "name": "totalValueLockedUSDUntracked",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Token"
+  },
+  {
+    "name": "derivedMatic",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Token"
+  },
+  {
+    "name": "whitelistPools",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Token"
+  },
+  {
+    "name": "tokenDayData",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Token"
+  },
+  {
+    "name": "id",
+    "type": "ID",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenDayData"
+  },
+  {
+    "name": "date",
+    "type": "Int",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenDayData"
+  },
+  {
+    "name": "token",
+    "type": "Token",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenDayData"
+  },
+  {
+    "name": "volume",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenDayData"
+  },
+  {
+    "name": "volumeUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenDayData"
+  },
+  {
+    "name": "untrackedVolumeUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenDayData"
+  },
+  {
+    "name": "totalValueLocked",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenDayData"
+  },
+  {
+    "name": "totalValueLockedUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenDayData"
+  },
+  {
+    "name": "priceUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenDayData"
+  },
+  {
+    "name": "feesUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenDayData"
+  },
+  {
+    "name": "open",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenDayData"
+  },
+  {
+    "name": "high",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenDayData"
+  },
+  {
+    "name": "low",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenDayData"
+  },
+  {
+    "name": "close",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenDayData"
+  },
+  {
+    "name": "id",
+    "type": "ID",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenHourData"
+  },
+  {
+    "name": "periodStartUnix",
+    "type": "Int",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenHourData"
+  },
+  {
+    "name": "token",
+    "type": "Token",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenHourData"
+  },
+  {
+    "name": "volume",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenHourData"
+  },
+  {
+    "name": "volumeUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenHourData"
+  },
+  {
+    "name": "untrackedVolumeUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenHourData"
+  },
+  {
+    "name": "totalValueLocked",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenHourData"
+  },
+  {
+    "name": "totalValueLockedUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenHourData"
+  },
+  {
+    "name": "priceUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenHourData"
+  },
+  {
+    "name": "feesUSD",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenHourData"
+  },
+  {
+    "name": "open",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenHourData"
+  },
+  {
+    "name": "high",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenHourData"
+  },
+  {
+    "name": "low",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenHourData"
+  },
+  {
+    "name": "close",
+    "type": "BigDecimal",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "TokenHourData"
+  },
+  {
+    "name": "id",
+    "type": "ID",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Transaction"
+  },
+  {
+    "name": "blockNumber",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Transaction"
+  },
+  {
+    "name": "timestamp",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Transaction"
+  },
+  {
+    "name": "gasLimit",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Transaction"
+  },
+  {
+    "name": "gasPrice",
+    "type": "BigInt",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Transaction"
+  },
+  {
+    "name": "mints",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Transaction"
+  },
+  {
+    "name": "burns",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Transaction"
+  },
+  {
+    "name": "swaps",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Transaction"
+  },
+  {
+    "name": "flashed",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Transaction"
+  },
+  {
+    "name": "collects",
+    "type": "Unknown",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "Transaction"
+  },
+  {
+    "name": "hash",
+    "type": "Bytes",
+    "kind": "SCALAR",
+    "api": "quickswap",
+    "parent": "_Block_"
+  },
+  {
+    "name": "number",
+    "type": "Int",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "_Block_"
+  },
+  {
+    "name": "timestamp",
+    "type": "Int",
+    "kind": "SCALAR",
+    "api": "quickswap",
+    "parent": "_Block_"
+  },
+  {
+    "name": "parentHash",
+    "type": "Bytes",
+    "kind": "SCALAR",
+    "api": "quickswap",
+    "parent": "_Block_"
+  },
+  {
+    "name": "block",
+    "type": "_Block_",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "_Meta_"
+  },
+  {
+    "name": "deployment",
+    "type": "String",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "_Meta_"
+  },
+  {
+    "name": "hasIndexingErrors",
+    "type": "Boolean",
+    "kind": "NON_NULL",
+    "api": "quickswap",
+    "parent": "_Meta_"
+  }
+]
