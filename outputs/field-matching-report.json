@@ -1,0 +1,131 @@
+{
+  "curveAvalanche-2025-01-09": {
+    "matchedFields": [
+      "totalValueLockedUSD"
+    ],
+    "missingFields": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "volumeToken0",
+      "volumeToken1",
+      "liquidity",
+      "feesUSD",
+      "txCount",
+      "tick",
+      "tickLower",
+      "tickUpper",
+      "open",
+      "high",
+      "low",
+      "close",
+      "tvlUSD",
+      "totalValueLockedMatic",
+      "volumeUSDUntracked",
+      "untrackedFeesUSD"
+    ]
+  },
+  "curveEthereum-2025-01-09": {
+    "matchedFields": [
+      "totalValueLockedUSD"
+    ],
+    "missingFields": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "volumeToken0",
+      "volumeToken1",
+      "liquidity",
+      "feesUSD",
+      "txCount",
+      "tick",
+      "tickLower",
+      "tickUpper",
+      "open",
+      "high",
+      "low",
+      "close",
+      "tvlUSD",
+      "totalValueLockedMatic",
+      "volumeUSDUntracked",
+      "untrackedFeesUSD"
+    ]
+  },
+  "quickswap-2025-01-09": {
+    "matchedFields": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "volumeToken0",
+      "volumeToken1",
+      "liquidity",
+      "feesUSD",
+      "txCount",
+      "tick",
+      "tickLower",
+      "tickUpper",
+      "open",
+      "high",
+      "low",
+      "close",
+      "tvlUSD",
+      "totalValueLockedUSD",
+      "totalValueLockedMatic",
+      "volumeUSDUntracked",
+      "untrackedFeesUSD"
+    ],
+    "missingFields": []
+  },
+  "sushiswap-2025-01-09": {
+    "matchedFields": [
+      "liquidity",
+      "tick",
+      "tickLower",
+      "tickUpper",
+      "totalValueLockedUSD"
+    ],
+    "missingFields": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "volumeToken0",
+      "volumeToken1",
+      "feesUSD",
+      "txCount",
+      "open",
+      "high",
+      "low",
+      "close",
+      "tvlUSD",
+      "totalValueLockedMatic",
+      "volumeUSDUntracked",
+      "untrackedFeesUSD"
+    ]
+  },
+  "uniswap-2025-01-09": {
+    "matchedFields": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "volumeToken0",
+      "volumeToken1",
+      "liquidity",
+      "feesUSD",
+      "txCount",
+      "tick",
+      "tickLower",
+      "tickUpper",
+      "open",
+      "high",
+      "low",
+      "close",
+      "tvlUSD",
+      "totalValueLockedUSD",
+      "volumeUSDUntracked"
+    ],
+    "missingFields": [
+      "totalValueLockedMatic",
+      "untrackedFeesUSD"
+    ]
+  }
+}
