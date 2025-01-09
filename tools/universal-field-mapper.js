@@ -21,10 +21,13 @@ const apis = {
 
 // Helper function to fetch schema or data
 async function fetchApiSchema(apiName, apiUrl) {
+  if (!apiUrl) {
+    console.error(`Error: API URL for ${apiName} is not defined.`);
+    return null;
+  }
+
   try {
     console.log(`Fetching schema for ${apiName}...`);
-
-    // Determine if it's a GraphQL API
     const isGraphQL = apiUrl.includes("thegraph");
     const options = isGraphQL
       ? {
