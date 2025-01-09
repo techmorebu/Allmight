@@ -17,6 +17,7 @@ const apis = {
   sushiswap: process.env.SUSHISWAP_DEX_API,
   curveEthereum: process.env.CURVE_ETHEREUM_DEX_API,
   curveAvalanche: process.env.CURVE_AVALANCHE_DEX_API,
+  quickswap: process.env.QUICKSWAP_DEX_API,
 };
 
 // Helper function to fetch schema or data
