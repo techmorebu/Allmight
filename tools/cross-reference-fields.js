@@ -1,52 +1,87 @@
 const fs = require("fs");
 const path = require("path");
 
-// Define required fields
-const requiredFields = [
-  "token0Price", "token1Price", "volumeUSD", "volumeToken0", "volumeToken1",
-  "liquidity", "liquidityGross", "liquidityNet", "txCount", "feesUSD",
-  "open", "high", "low", "close", "tick", "price0", "price1",
-  "tickLower", "tickUpper", "untrackedVolumeUSD", "gasPrice", "gasLimit"
-];
-
-// Function to cross-reference fields
-function crossReferenceFields(mappingDirectory) {
-  const files = fs.readdirSync(mappingDirectory);
-  const report = [];
+function loadFieldMappings(directory) {
+  const files = fs.readdirSync(directory).filter(file => file.endsWith(".json"));
+  const mappings = {};
 
   files.forEach(file => {
-    if (file.endsWith("_graphql-fields.txt") || file.endsWith("_rest-fields.txt")) {
-      const filePath = path.join(mappingDirectory, file);
-      const content = fs.readFileSync(filePath, "utf-8");
-
-      const matches = requiredFields.filter(field => content.includes(field));
-      const missing = requiredFields.filter(field => !content.includes(field));
-
-      report.push({
-        file,
-        matches,
-        missing,
-      });
-    }
+    const apiName = file.split("-fields")[0];
+    const filePath = path.join(directory, file);
+    const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+    mappings[apiName] = data.fields || [];
   });
+
+  return mappings;
+}
+
+function crossReferenceFields(mappings, requiredFields) {
+  const report = [];
+  const fieldCoverage = {};
+
+  requiredFields.forEach(field => {
+    fieldCoverage[field] = [];
+  });
+
+  for (const [apiName, fields] of Object.entries(mappings)) {
+    requiredFields.forEach(field => {
+      if (fields.includes(field)) {
+        fieldCoverage[field].push(apiName);
+      }
+    });
+  }
+
+  for (const field of requiredFields) {
+    const apis = fieldCoverage[field];
+    if (apis.length > 0) {
+      report.push(`Field: ${field}\n  Covered by: ${apis.join(", ")}`);
+    } else {
+      report.push(`Field: ${field}\n  Missing in all APIs`);
+    }
+  }
 
   return report;
 }
 
-// Generate a report
-function generateReport(mappingDirectory, outputFile) {
-  const results = crossReferenceFields(mappingDirectory);
-  let report = "Field Matching Report:\n\n";
-
-  results.forEach(({ file, matches, missing }) => {
-    report += `File: ${file}\n`;
-    report += `  Matching Fields: ${matches.length > 0 ? matches.join(", ") : "None"}\n`;
-    report += `  Missing Fields: ${missing.length > 0 ? missing.join(", ") : "None"}\n\n`;
-  });
-
-  fs.writeFileSync(outputFile, report);
-  console.log(`✅ Field matching report generated: ${outputFile}`);
+function saveReport(report, outputPath) {
+  const reportContent = report.join("\n\n");
+  // Overwrite file by using the 'w' flag
+  fs.writeFileSync(outputPath, reportContent, { encoding: "utf-8", flag: "w" });
+  console.log(`Field Matching Report saved to: ${outputPath}`);
 }
 
-// Run the cross-referencing process
-generateReport("./outputs", "./outputs/field-matching-report.txt");
+// Main Execution
+(() => {
+  const inputDirectory = "./outputs";
+  const outputReportPath = "./outputs/field-matching-report.txt";
+  const requiredFields = [
+    "token0Price",
+    "token1Price",
+    "volumeUSD",
+    "liquidity",
+    "feesUSD",
+    "txCount",
+    "cumulativeVolumeUSD",
+    "inputTokenBalances",
+    "totalValueLockedUSD",
+    "price0",
+    "price1",
+    "tickLower",
+    "tickUpper",
+  ];
+
+  try {
+    console.log("Loading field mappings...");
+    const mappings = loadFieldMappings(inputDirectory);
+
+    console.log("Cross-referencing fields...");
+    const report = crossReferenceFields(mappings, requiredFields);
+
+    console.log("Saving report...");
+    saveReport(report, outputReportPath);
+
+    console.log("Field matching completed successfully!");
+  } catch (error) {
+    console.error("Error during field matching:", error.message);
+  }
+})();
