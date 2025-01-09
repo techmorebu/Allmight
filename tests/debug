@@ -1,25 +1,9 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tools/universal-field-mapper.js
-node:internal/modules/cjs/loader:1137
-  throw err;
-  ^
+Fetching schema for uniswap...
+Error fetching schema for uniswap: Cannot read properties of undefined (reading 'includes')
+Fetching schema for curve...
+Error fetching schema for curve: Cannot read properties of undefined (reading 'includes')
+Fetching schema for sushiswap...
+Error fetching schema for sushiswap: Cannot read properties of undefined (reading 'includes')
+Field mapping completed for all APIs.
 
-Error: Cannot find module 'node-cron'
-Require stack:
-- /home/techbu/OFA_Project_Local/ofa-project/tools/universal-field-mapper.js
-    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
-    at Module._load (node:internal/modules/cjs/loader:975:27)
-    at Module.require (node:internal/modules/cjs/loader:1225:19)
-    at require (node:internal/modules/helpers:177:18)
-    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/tools/universal-field-mapper.js:4:14)
-    at Module._compile (node:internal/modules/cjs/loader:1356:14)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
-    at Module.load (node:internal/modules/cjs/loader:1197:32)
-    at Module._load (node:internal/modules/cjs/loader:1013:12)
-    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12) {
-  code: 'MODULE_NOT_FOUND',
-  requireStack: [
-    '/home/techbu/OFA_Project_Local/ofa-project/tools/universal-field-mapper.js'
-  ]
-}
-
-Node.js v18.19.1
