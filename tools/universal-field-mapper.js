@@ -18,6 +18,11 @@ const apis = {
   curveEthereum: process.env.CURVE_ETHEREUM_DEX_API,
   curveAvalanche: process.env.CURVE_AVALANCHE_DEX_API,
   quickswap: process.env.QUICKSWAP_DEX_API,
+  balancerPolygon: process.env.BALANCER_POLYGON_DEX_API
+  balancerOptimism: process.env. BALANCER_OPTIMISM_DEX_API
+  balancerArbitrum: process.env.BALANCER_ARBITRUM_DEX_API
+  balancerAvalanche: process.env.BALANCER_AVALANCHE_DEX_API
+  balancerEthereum: process.env.BALANCER_ETHEREUM_DEX_API
 };
 
 // Helper function to fetch schema or data
