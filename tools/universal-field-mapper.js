@@ -14,9 +14,9 @@ if (!fs.existsSync(outputDir)) {
 // Map your API endpoints from .env
 const apis = {
   uniswap: process.env.UNISWAP_DEX_API,
-  curve: process.env.CURVE_DEX_API,
   sushiswap: process.env.SUSHISWAP_DEX_API,
-  // Add more APIs here
+  curveEthereum: process.env.CURVE_ETHEREUM_DEX_API,
+  curveAvalanche: process.env.CURVE_AVALANCHE_DEX_API,
 };
 
 // Helper function to fetch schema or data
