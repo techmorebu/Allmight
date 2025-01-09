@@ -1,87 +1,84 @@
 const fs = require("fs");
 const path = require("path");
 
-function loadFieldMappings(directory) {
-  const files = fs.readdirSync(directory).filter(file => file.endsWith(".json"));
-  const mappings = {};
+// Required fields for the project
+const requiredFields = [
+  "token0Price",
+  "token1Price",
+  "volumeUSD",
+  "volumeToken0",
+  "volumeToken1",
+  "liquidity",
+  "feesUSD",
+  "txCount",
+  "tick",
+  "tickLower",
+  "tickUpper",
+  "open",
+  "high",
+  "low",
+  "close",
+  "tvlUSD",
+  "totalValueLockedUSD",
+  "totalValueLockedMatic",
+  "volumeUSDUntracked",
+  "untrackedFeesUSD",
+];
 
-  files.forEach(file => {
-    const apiName = file.split("-fields")[0];
-    const filePath = path.join(directory, file);
-    const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-    mappings[apiName] = data.fields || [];
-  });
+// Scan outputs directory for all field mapping files
+const outputsDir = path.join(__dirname, "../outputs");
+const fieldFiles = fs.readdirSync(outputsDir).filter((file) => file.endsWith(".json"));
 
-  return mappings;
-}
-
-function crossReferenceFields(mappings, requiredFields) {
-  const report = [];
-  const fieldCoverage = {};
-
-  requiredFields.forEach(field => {
-    fieldCoverage[field] = [];
-  });
-
-  for (const [apiName, fields] of Object.entries(mappings)) {
-    requiredFields.forEach(field => {
-      if (fields.includes(field)) {
-        fieldCoverage[field].push(apiName);
-      }
-    });
-  }
-
-  for (const field of requiredFields) {
-    const apis = fieldCoverage[field];
-    if (apis.length > 0) {
-      report.push(`Field: ${field}\n  Covered by: ${apis.join(", ")}`);
-    } else {
-      report.push(`Field: ${field}\n  Missing in all APIs`);
-    }
-  }
-
-  return report;
-}
-
-function saveReport(report, outputPath) {
-  const reportContent = report.join("\n\n");
-  // Overwrite file by using the 'w' flag
-  fs.writeFileSync(outputPath, reportContent, { encoding: "utf-8", flag: "w" });
-  console.log(`Field Matching Report saved to: ${outputPath}`);
-}
-
-// Main Execution
-(() => {
-  const inputDirectory = "./outputs";
-  const outputReportPath = "./outputs/field-matching-report.txt";
-  const requiredFields = [
-    "token0Price",
-    "token1Price",
-    "volumeUSD",
-    "liquidity",
-    "feesUSD",
-    "txCount",
-    "cumulativeVolumeUSD",
-    "inputTokenBalances",
-    "totalValueLockedUSD",
-    "price0",
-    "price1",
-    "tickLower",
-    "tickUpper",
-  ];
-
+// Helper function to load field mappings from JSON files
+function loadApiFields(filePath) {
   try {
-    console.log("Loading field mappings...");
-    const mappings = loadFieldMappings(inputDirectory);
-
-    console.log("Cross-referencing fields...");
-    const report = crossReferenceFields(mappings, requiredFields);
-
-    console.log("Saving report...");
-    saveReport(report, outputReportPath);
-
-    console.log("Field matching completed successfully!");
+    const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
+    return data.map((field) => field.name);
   } catch (error) {
-    console.error("Error during field matching:", error.message);
+    console.error(`Error loading file ${filePath}:`, error.message);
+    return [];
   }
-})();
+}
+
+// Match required fields against API fields
+function matchFields(apiFields, requiredFields) {
+  const matched = [];
+  const missing = [];
+
+  requiredFields.forEach((field) => {
+    if (apiFields.includes(field)) {
+      matched.push(field);
+    } else {
+      missing.push(field);
+    }
+  });
+
+  return { matched, missing };
+}
+
+// Generate the cross-reference report
+const crossReferenceReport = {};
+fieldFiles.forEach((file) => {
+  const apiName = path.basename(file, ".json").replace("-fields", "");
+  const apiFields = loadApiFields(path.join(outputsDir, file));
+  const matches = matchFields(apiFields, requiredFields);
+
+  crossReferenceReport[apiName] = {
+    matchedFields: matches.matched,
+    missingFields: matches.missing,
+  };
+});
+
+// Save the report
+const reportFilePath = path.join(outputsDir, "field-matching-report.json");
+fs.writeFileSync(reportFilePath, JSON.stringify(crossReferenceReport, null, 2));
+
+console.log("Field matching report saved:", reportFilePath);
+
+// Summary output
+console.log("\nSummary Report:");
+Object.entries(crossReferenceReport).forEach(([apiName, matches]) => {
+  console.log(`\nAPI: ${apiName}`);
+  console.log(`  Matched fields (${matches.matchedFields.length}):`, matches.matchedFields.join(", "));
+  console.log(`  Missing fields (${matches.missingFields.length}):`, matches.missingFields.join(", "));
+});
