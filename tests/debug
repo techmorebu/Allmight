@@ -1,9 +1,11 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tools/universal-field-mapper.js
 Fetching schema for uniswap...
-Error fetching schema for uniswap: Cannot read properties of undefined (reading 'includes')
-Fetching schema for curve...
-Error fetching schema for curve: Cannot read properties of undefined (reading 'includes')
+Output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/uniswap-fields-2025-01-09.json
+CSV Output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/uniswap-fields-2025-01-09.csv
+HTML Output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/uniswap-fields-2025-01-09.html
+Error: API URL for curve is not defined.
 Fetching schema for sushiswap...
-Error fetching schema for sushiswap: Cannot read properties of undefined (reading 'includes')
+Output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/sushiswap-fields-2025-01-09.json
+CSV Output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/sushiswap-fields-2025-01-09.csv
+HTML Output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/sushiswap-fields-2025-01-09.html
 Field mapping completed for all APIs.
-
