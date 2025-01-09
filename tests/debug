@@ -1,11 +1,4 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tools/universal-field-mapper.js
-Fetching schema for uniswap...
-Output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/uniswap-fields-2025-01-09.json
-CSV Output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/uniswap-fields-2025-01-09.csv
-HTML Output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/uniswap-fields-2025-01-09.html
-Error: API URL for curve is not defined.
-Fetching schema for sushiswap...
-Output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/sushiswap-fields-2025-01-09.json
-CSV Output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/sushiswap-fields-2025-01-09.csv
-HTML Output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/sushiswap-fields-2025-01-09.html
-Field mapping completed for all APIs.
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node data-collection/masterFetcher/fetch-curve-metaregistry.js
+Fetching Curve pools for token: 0x6B175474E89094C44Da98b954EedeAC495271d0F...
+Error fetching Curve Metaregistry data: Cannot read properties of undefined (reading 'JsonRpcProvider')
+Fetched Curve Metaregistry pools: []
