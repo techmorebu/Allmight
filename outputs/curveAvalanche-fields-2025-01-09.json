@@ -1,2270 +1,2276 @@
-[
-  {
-    "name": "id",
-    "type": "ID",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Account"
-  },
-  {
-    "name": "id",
-    "type": "ID",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "ActiveAccount"
-  },
-  {
-    "name": "id",
-    "type": "ID",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Deposit"
-  },
-  {
-    "name": "hash",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Deposit"
-  },
-  {
-    "name": "logIndex",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Deposit"
-  },
-  {
-    "name": "protocol",
-    "type": "DexAmmProtocol",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Deposit"
-  },
-  {
-    "name": "to",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Deposit"
-  },
-  {
-    "name": "from",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Deposit"
-  },
-  {
-    "name": "blockNumber",
-    "type": "BigInt",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Deposit"
-  },
-  {
-    "name": "timestamp",
-    "type": "BigInt",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Deposit"
-  },
-  {
-    "name": "inputTokens",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Deposit"
-  },
-  {
-    "name": "outputToken",
-    "type": "Token",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Deposit"
-  },
-  {
-    "name": "inputTokenAmounts",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Deposit"
-  },
-  {
-    "name": "outputTokenAmount",
-    "type": "BigInt",
-    "kind": "SCALAR",
-    "api": "curveAvalanche",
-    "parent": "Deposit"
-  },
-  {
-    "name": "amountUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Deposit"
-  },
-  {
-    "name": "pool",
-    "type": "LiquidityPool",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Deposit"
-  },
-  {
-    "name": "id",
-    "type": "ID",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "DexAmmProtocol"
-  },
-  {
-    "name": "name",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "DexAmmProtocol"
-  },
-  {
-    "name": "slug",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "DexAmmProtocol"
-  },
-  {
-    "name": "schemaVersion",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "DexAmmProtocol"
-  },
-  {
-    "name": "subgraphVersion",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "DexAmmProtocol"
-  },
-  {
-    "name": "methodologyVersion",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "DexAmmProtocol"
-  },
-  {
-    "name": "network",
-    "type": "Network",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "DexAmmProtocol"
-  },
-  {
-    "name": "type",
-    "type": "ProtocolType",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "DexAmmProtocol"
-  },
-  {
-    "name": "totalValueLockedUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "DexAmmProtocol"
-  },
-  {
-    "name": "protocolControlledValueUSD",
-    "type": "BigDecimal",
-    "kind": "SCALAR",
-    "api": "curveAvalanche",
-    "parent": "DexAmmProtocol"
-  },
-  {
-    "name": "cumulativeVolumeUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "DexAmmProtocol"
-  },
-  {
-    "name": "cumulativeSupplySideRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "DexAmmProtocol"
-  },
-  {
-    "name": "cumulativeProtocolSideRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "DexAmmProtocol"
-  },
-  {
-    "name": "cumulativeTotalRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "DexAmmProtocol"
-  },
-  {
-    "name": "cumulativeUniqueUsers",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "DexAmmProtocol"
-  },
-  {
-    "name": "totalPoolCount",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "DexAmmProtocol"
-  },
-  {
-    "name": "dailyUsageMetrics",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "DexAmmProtocol"
-  },
-  {
-    "name": "hourlyUsageMetrics",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "DexAmmProtocol"
-  },
-  {
-    "name": "financialMetrics",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "DexAmmProtocol"
-  },
-  {
-    "name": "pools",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "DexAmmProtocol"
-  },
-  {
-    "name": "_poolIds",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "DexAmmProtocol"
-  },
-  {
-    "name": "id",
-    "type": "ID",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Event"
-  },
-  {
-    "name": "hash",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Event"
-  },
-  {
-    "name": "logIndex",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Event"
-  },
-  {
-    "name": "protocol",
-    "type": "DexAmmProtocol",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Event"
-  },
-  {
-    "name": "to",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Event"
-  },
-  {
-    "name": "from",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Event"
-  },
-  {
-    "name": "blockNumber",
-    "type": "BigInt",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Event"
-  },
-  {
-    "name": "timestamp",
-    "type": "BigInt",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Event"
-  },
-  {
-    "name": "id",
-    "type": "ID",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "FinancialsDailySnapshot"
-  },
-  {
-    "name": "protocol",
-    "type": "DexAmmProtocol",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "FinancialsDailySnapshot"
-  },
-  {
-    "name": "totalValueLockedUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "FinancialsDailySnapshot"
-  },
-  {
-    "name": "protocolControlledValueUSD",
-    "type": "BigDecimal",
-    "kind": "SCALAR",
-    "api": "curveAvalanche",
-    "parent": "FinancialsDailySnapshot"
-  },
-  {
-    "name": "dailyVolumeUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "FinancialsDailySnapshot"
-  },
-  {
-    "name": "cumulativeVolumeUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "FinancialsDailySnapshot"
-  },
-  {
-    "name": "dailySupplySideRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "FinancialsDailySnapshot"
-  },
-  {
-    "name": "cumulativeSupplySideRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "FinancialsDailySnapshot"
-  },
-  {
-    "name": "dailyProtocolSideRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "FinancialsDailySnapshot"
-  },
-  {
-    "name": "cumulativeProtocolSideRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "FinancialsDailySnapshot"
-  },
-  {
-    "name": "dailyTotalRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "FinancialsDailySnapshot"
-  },
-  {
-    "name": "cumulativeTotalRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "FinancialsDailySnapshot"
-  },
-  {
-    "name": "blockNumber",
-    "type": "BigInt",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "FinancialsDailySnapshot"
-  },
-  {
-    "name": "timestamp",
-    "type": "BigInt",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "FinancialsDailySnapshot"
-  },
-  {
-    "name": "id",
-    "type": "ID",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "protocol",
-    "type": "DexAmmProtocol",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "name",
-    "type": "String",
-    "kind": "SCALAR",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "symbol",
-    "type": "String",
-    "kind": "SCALAR",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "inputTokens",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "_inputTokensOrdered",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "outputToken",
-    "type": "Token",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "rewardTokens",
-    "type": "Unknown",
-    "kind": "LIST",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "fees",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "isSingleSided",
-    "type": "Boolean",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "createdTimestamp",
-    "type": "BigInt",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "createdBlockNumber",
-    "type": "BigInt",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "totalValueLockedUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "_tvlUSDExcludingBasePoolLpTokens",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "cumulativeSupplySideRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "cumulativeProtocolSideRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "cumulativeTotalRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "cumulativeVolumeUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "inputTokenBalances",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "inputTokenWeights",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "outputTokenSupply",
-    "type": "BigInt",
-    "kind": "SCALAR",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "outputTokenPriceUSD",
-    "type": "BigDecimal",
-    "kind": "SCALAR",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "stakedOutputTokenAmount",
-    "type": "BigInt",
-    "kind": "SCALAR",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "rewardTokenEmissionsAmount",
-    "type": "Unknown",
-    "kind": "LIST",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "rewardTokenEmissionsUSD",
-    "type": "Unknown",
-    "kind": "LIST",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "dailySnapshots",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "hourlySnapshots",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "deposits",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "withdraws",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "swaps",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "_registryAddress",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "_gaugeAddress",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "_isMetapool",
-    "type": "Boolean",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPool"
-  },
-  {
-    "name": "id",
-    "type": "ID",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolDailySnapshot"
-  },
-  {
-    "name": "protocol",
-    "type": "DexAmmProtocol",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolDailySnapshot"
-  },
-  {
-    "name": "pool",
-    "type": "LiquidityPool",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolDailySnapshot"
-  },
-  {
-    "name": "blockNumber",
-    "type": "BigInt",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolDailySnapshot"
-  },
-  {
-    "name": "timestamp",
-    "type": "BigInt",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolDailySnapshot"
-  },
-  {
-    "name": "totalValueLockedUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolDailySnapshot"
-  },
-  {
-    "name": "cumulativeSupplySideRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolDailySnapshot"
-  },
-  {
-    "name": "dailySupplySideRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolDailySnapshot"
-  },
-  {
-    "name": "cumulativeProtocolSideRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolDailySnapshot"
-  },
-  {
-    "name": "dailyProtocolSideRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolDailySnapshot"
-  },
-  {
-    "name": "cumulativeTotalRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolDailySnapshot"
-  },
-  {
-    "name": "dailyTotalRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolDailySnapshot"
-  },
-  {
-    "name": "dailyVolumeUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolDailySnapshot"
-  },
-  {
-    "name": "dailyVolumeByTokenAmount",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolDailySnapshot"
-  },
-  {
-    "name": "dailyVolumeByTokenUSD",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolDailySnapshot"
-  },
-  {
-    "name": "cumulativeVolumeUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolDailySnapshot"
-  },
-  {
-    "name": "inputTokenBalances",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolDailySnapshot"
-  },
-  {
-    "name": "inputTokenWeights",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolDailySnapshot"
-  },
-  {
-    "name": "outputTokenSupply",
-    "type": "BigInt",
-    "kind": "SCALAR",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolDailySnapshot"
-  },
-  {
-    "name": "outputTokenPriceUSD",
-    "type": "BigDecimal",
-    "kind": "SCALAR",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolDailySnapshot"
-  },
-  {
-    "name": "stakedOutputTokenAmount",
-    "type": "BigInt",
-    "kind": "SCALAR",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolDailySnapshot"
-  },
-  {
-    "name": "rewardTokenEmissionsAmount",
-    "type": "Unknown",
-    "kind": "LIST",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolDailySnapshot"
-  },
-  {
-    "name": "rewardTokenEmissionsUSD",
-    "type": "Unknown",
-    "kind": "LIST",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolDailySnapshot"
-  },
-  {
-    "name": "id",
-    "type": "ID",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolFee"
-  },
-  {
-    "name": "feePercentage",
-    "type": "BigDecimal",
-    "kind": "SCALAR",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolFee"
-  },
-  {
-    "name": "feeType",
-    "type": "LiquidityPoolFeeType",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolFee"
-  },
-  {
-    "name": "id",
-    "type": "ID",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolHourlySnapshot"
-  },
-  {
-    "name": "protocol",
-    "type": "DexAmmProtocol",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolHourlySnapshot"
-  },
-  {
-    "name": "pool",
-    "type": "LiquidityPool",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolHourlySnapshot"
-  },
-  {
-    "name": "blockNumber",
-    "type": "BigInt",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolHourlySnapshot"
-  },
-  {
-    "name": "timestamp",
-    "type": "BigInt",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolHourlySnapshot"
-  },
-  {
-    "name": "totalValueLockedUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolHourlySnapshot"
-  },
-  {
-    "name": "cumulativeSupplySideRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolHourlySnapshot"
-  },
-  {
-    "name": "hourlySupplySideRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolHourlySnapshot"
-  },
-  {
-    "name": "cumulativeProtocolSideRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolHourlySnapshot"
-  },
-  {
-    "name": "hourlyProtocolSideRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolHourlySnapshot"
-  },
-  {
-    "name": "cumulativeTotalRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolHourlySnapshot"
-  },
-  {
-    "name": "hourlyTotalRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolHourlySnapshot"
-  },
-  {
-    "name": "hourlyVolumeUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolHourlySnapshot"
-  },
-  {
-    "name": "hourlyVolumeByTokenAmount",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolHourlySnapshot"
-  },
-  {
-    "name": "hourlyVolumeByTokenUSD",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolHourlySnapshot"
-  },
-  {
-    "name": "cumulativeVolumeUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolHourlySnapshot"
-  },
-  {
-    "name": "inputTokenBalances",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolHourlySnapshot"
-  },
-  {
-    "name": "inputTokenWeights",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolHourlySnapshot"
-  },
-  {
-    "name": "outputTokenSupply",
-    "type": "BigInt",
-    "kind": "SCALAR",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolHourlySnapshot"
-  },
-  {
-    "name": "outputTokenPriceUSD",
-    "type": "BigDecimal",
-    "kind": "SCALAR",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolHourlySnapshot"
-  },
-  {
-    "name": "stakedOutputTokenAmount",
-    "type": "BigInt",
-    "kind": "SCALAR",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolHourlySnapshot"
-  },
-  {
-    "name": "rewardTokenEmissionsAmount",
-    "type": "Unknown",
-    "kind": "LIST",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolHourlySnapshot"
-  },
-  {
-    "name": "rewardTokenEmissionsUSD",
-    "type": "Unknown",
-    "kind": "LIST",
-    "api": "curveAvalanche",
-    "parent": "LiquidityPoolHourlySnapshot"
-  },
-  {
-    "name": "id",
-    "type": "ID",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Protocol"
-  },
-  {
-    "name": "name",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Protocol"
-  },
-  {
-    "name": "slug",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Protocol"
-  },
-  {
-    "name": "schemaVersion",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Protocol"
-  },
-  {
-    "name": "subgraphVersion",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Protocol"
-  },
-  {
-    "name": "methodologyVersion",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Protocol"
-  },
-  {
-    "name": "network",
-    "type": "Network",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Protocol"
-  },
-  {
-    "name": "type",
-    "type": "ProtocolType",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Protocol"
-  },
-  {
-    "name": "totalValueLockedUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Protocol"
-  },
-  {
-    "name": "protocolControlledValueUSD",
-    "type": "BigDecimal",
-    "kind": "SCALAR",
-    "api": "curveAvalanche",
-    "parent": "Protocol"
-  },
-  {
-    "name": "cumulativeSupplySideRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Protocol"
-  },
-  {
-    "name": "cumulativeProtocolSideRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Protocol"
-  },
-  {
-    "name": "cumulativeTotalRevenueUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Protocol"
-  },
-  {
-    "name": "cumulativeUniqueUsers",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Protocol"
-  },
-  {
-    "name": "totalPoolCount",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Protocol"
-  },
-  {
-    "name": "dailyUsageMetrics",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Protocol"
-  },
-  {
-    "name": "hourlyUsageMetrics",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Protocol"
-  },
-  {
-    "name": "financialMetrics",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Protocol"
-  },
-  {
-    "name": "token",
-    "type": "Token",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "tokens",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "rewardToken",
-    "type": "RewardToken",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "rewardTokens",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "liquidityPoolFee",
-    "type": "LiquidityPoolFee",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "liquidityPoolFees",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "dexAmmProtocol",
-    "type": "DexAmmProtocol",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "dexAmmProtocols",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "usageMetricsDailySnapshot",
-    "type": "UsageMetricsDailySnapshot",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "usageMetricsDailySnapshots",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "usageMetricsHourlySnapshot",
-    "type": "UsageMetricsHourlySnapshot",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "usageMetricsHourlySnapshots",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "financialsDailySnapshot",
-    "type": "FinancialsDailySnapshot",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "financialsDailySnapshots",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "liquidityPool",
-    "type": "LiquidityPool",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "liquidityPools",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "liquidityPoolDailySnapshot",
-    "type": "LiquidityPoolDailySnapshot",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "liquidityPoolDailySnapshots",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "liquidityPoolHourlySnapshot",
-    "type": "LiquidityPoolHourlySnapshot",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "liquidityPoolHourlySnapshots",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "deposit",
-    "type": "Deposit",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "deposits",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "withdraw",
-    "type": "Withdraw",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "withdraws",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "swap",
-    "type": "Swap",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "swaps",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "account",
-    "type": "Account",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "accounts",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "activeAccount",
-    "type": "ActiveAccount",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "activeAccounts",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "liquidityGauge",
-    "type": "_LiquidityGauge",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "liquidityGauges",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "lpToken",
-    "type": "_LpToken",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "lpTokens",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "circularBuffer",
-    "type": "_CircularBuffer",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "circularBuffers",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "protocol",
-    "type": "Protocol",
-    "kind": "INTERFACE",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "protocols",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "event",
-    "type": "Event",
-    "kind": "INTERFACE",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "events",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "_meta",
-    "type": "_Meta_",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Query"
-  },
-  {
-    "name": "id",
-    "type": "ID",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "RewardToken"
-  },
-  {
-    "name": "token",
-    "type": "Token",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "RewardToken"
-  },
-  {
-    "name": "type",
-    "type": "RewardTokenType",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "RewardToken"
-  },
-  {
-    "name": "token",
-    "type": "Token",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "tokens",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "rewardToken",
-    "type": "RewardToken",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "rewardTokens",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "liquidityPoolFee",
-    "type": "LiquidityPoolFee",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "liquidityPoolFees",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "dexAmmProtocol",
-    "type": "DexAmmProtocol",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "dexAmmProtocols",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "usageMetricsDailySnapshot",
-    "type": "UsageMetricsDailySnapshot",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "usageMetricsDailySnapshots",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "usageMetricsHourlySnapshot",
-    "type": "UsageMetricsHourlySnapshot",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "usageMetricsHourlySnapshots",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "financialsDailySnapshot",
-    "type": "FinancialsDailySnapshot",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "financialsDailySnapshots",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "liquidityPool",
-    "type": "LiquidityPool",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "liquidityPools",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "liquidityPoolDailySnapshot",
-    "type": "LiquidityPoolDailySnapshot",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "liquidityPoolDailySnapshots",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "liquidityPoolHourlySnapshot",
-    "type": "LiquidityPoolHourlySnapshot",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "liquidityPoolHourlySnapshots",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "deposit",
-    "type": "Deposit",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "deposits",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "withdraw",
-    "type": "Withdraw",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "withdraws",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "swap",
-    "type": "Swap",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "swaps",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "account",
-    "type": "Account",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "accounts",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "activeAccount",
-    "type": "ActiveAccount",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "activeAccounts",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "liquidityGauge",
-    "type": "_LiquidityGauge",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "liquidityGauges",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "lpToken",
-    "type": "_LpToken",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "lpTokens",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "circularBuffer",
-    "type": "_CircularBuffer",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "circularBuffers",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "protocol",
-    "type": "Protocol",
-    "kind": "INTERFACE",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "protocols",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "event",
-    "type": "Event",
-    "kind": "INTERFACE",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "events",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "_meta",
-    "type": "_Meta_",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Subscription"
-  },
-  {
-    "name": "id",
-    "type": "ID",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Swap"
-  },
-  {
-    "name": "hash",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Swap"
-  },
-  {
-    "name": "logIndex",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Swap"
-  },
-  {
-    "name": "protocol",
-    "type": "DexAmmProtocol",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Swap"
-  },
-  {
-    "name": "to",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Swap"
-  },
-  {
-    "name": "from",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Swap"
-  },
-  {
-    "name": "blockNumber",
-    "type": "BigInt",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Swap"
-  },
-  {
-    "name": "timestamp",
-    "type": "BigInt",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Swap"
-  },
-  {
-    "name": "tokenIn",
-    "type": "Token",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Swap"
-  },
-  {
-    "name": "amountIn",
-    "type": "BigInt",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Swap"
-  },
-  {
-    "name": "amountInUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Swap"
-  },
-  {
-    "name": "tokenOut",
-    "type": "Token",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Swap"
-  },
-  {
-    "name": "amountOut",
-    "type": "BigInt",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Swap"
-  },
-  {
-    "name": "amountOutUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Swap"
-  },
-  {
-    "name": "pool",
-    "type": "LiquidityPool",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Swap"
-  },
-  {
-    "name": "id",
-    "type": "ID",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Token"
-  },
-  {
-    "name": "name",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Token"
-  },
-  {
-    "name": "symbol",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Token"
-  },
-  {
-    "name": "decimals",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Token"
-  },
-  {
-    "name": "isBasePoolLpToken",
-    "type": "Boolean",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Token"
-  },
-  {
-    "name": "lastPriceUSD",
-    "type": "BigDecimal",
-    "kind": "SCALAR",
-    "api": "curveAvalanche",
-    "parent": "Token"
-  },
-  {
-    "name": "lastPriceBlockNumber",
-    "type": "BigInt",
-    "kind": "SCALAR",
-    "api": "curveAvalanche",
-    "parent": "Token"
-  },
-  {
-    "name": "oracleType",
-    "type": "String",
-    "kind": "SCALAR",
-    "api": "curveAvalanche",
-    "parent": "Token"
-  },
-  {
-    "name": "_totalSupply",
-    "type": "BigInt",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Token"
-  },
-  {
-    "name": "_totalValueLockedUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Token"
-  },
-  {
-    "name": "_largePriceChangeBuffer",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Token"
-  },
-  {
-    "name": "_largeTVLImpactBuffer",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Token"
-  },
-  {
-    "name": "id",
-    "type": "ID",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "UsageMetricsDailySnapshot"
-  },
-  {
-    "name": "protocol",
-    "type": "DexAmmProtocol",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "UsageMetricsDailySnapshot"
-  },
-  {
-    "name": "dailyActiveUsers",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "UsageMetricsDailySnapshot"
-  },
-  {
-    "name": "cumulativeUniqueUsers",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "UsageMetricsDailySnapshot"
-  },
-  {
-    "name": "dailyTransactionCount",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "UsageMetricsDailySnapshot"
-  },
-  {
-    "name": "dailyDepositCount",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "UsageMetricsDailySnapshot"
-  },
-  {
-    "name": "dailyWithdrawCount",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "UsageMetricsDailySnapshot"
-  },
-  {
-    "name": "dailySwapCount",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "UsageMetricsDailySnapshot"
-  },
-  {
-    "name": "totalPoolCount",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "UsageMetricsDailySnapshot"
-  },
-  {
-    "name": "blockNumber",
-    "type": "BigInt",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "UsageMetricsDailySnapshot"
-  },
-  {
-    "name": "timestamp",
-    "type": "BigInt",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "UsageMetricsDailySnapshot"
-  },
-  {
-    "name": "id",
-    "type": "ID",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "UsageMetricsHourlySnapshot"
-  },
-  {
-    "name": "protocol",
-    "type": "DexAmmProtocol",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "UsageMetricsHourlySnapshot"
-  },
-  {
-    "name": "hourlyActiveUsers",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "UsageMetricsHourlySnapshot"
-  },
-  {
-    "name": "cumulativeUniqueUsers",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "UsageMetricsHourlySnapshot"
-  },
-  {
-    "name": "hourlyTransactionCount",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "UsageMetricsHourlySnapshot"
-  },
-  {
-    "name": "hourlyDepositCount",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "UsageMetricsHourlySnapshot"
-  },
-  {
-    "name": "hourlyWithdrawCount",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "UsageMetricsHourlySnapshot"
-  },
-  {
-    "name": "hourlySwapCount",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "UsageMetricsHourlySnapshot"
-  },
-  {
-    "name": "blockNumber",
-    "type": "BigInt",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "UsageMetricsHourlySnapshot"
-  },
-  {
-    "name": "timestamp",
-    "type": "BigInt",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "UsageMetricsHourlySnapshot"
-  },
-  {
-    "name": "id",
-    "type": "ID",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Withdraw"
-  },
-  {
-    "name": "hash",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Withdraw"
-  },
-  {
-    "name": "logIndex",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Withdraw"
-  },
-  {
-    "name": "protocol",
-    "type": "DexAmmProtocol",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Withdraw"
-  },
-  {
-    "name": "to",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Withdraw"
-  },
-  {
-    "name": "from",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Withdraw"
-  },
-  {
-    "name": "blockNumber",
-    "type": "BigInt",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Withdraw"
-  },
-  {
-    "name": "timestamp",
-    "type": "BigInt",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Withdraw"
-  },
-  {
-    "name": "inputTokens",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Withdraw"
-  },
-  {
-    "name": "outputToken",
-    "type": "Token",
-    "kind": "OBJECT",
-    "api": "curveAvalanche",
-    "parent": "Withdraw"
-  },
-  {
-    "name": "inputTokenAmounts",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Withdraw"
-  },
-  {
-    "name": "outputTokenAmount",
-    "type": "BigInt",
-    "kind": "SCALAR",
-    "api": "curveAvalanche",
-    "parent": "Withdraw"
-  },
-  {
-    "name": "amountUSD",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Withdraw"
-  },
-  {
-    "name": "pool",
-    "type": "LiquidityPool",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "Withdraw"
-  },
-  {
-    "name": "hash",
-    "type": "Bytes",
-    "kind": "SCALAR",
-    "api": "curveAvalanche",
-    "parent": "_Block_"
-  },
-  {
-    "name": "number",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "_Block_"
-  },
-  {
-    "name": "timestamp",
-    "type": "Int",
-    "kind": "SCALAR",
-    "api": "curveAvalanche",
-    "parent": "_Block_"
-  },
-  {
-    "name": "parentHash",
-    "type": "Bytes",
-    "kind": "SCALAR",
-    "api": "curveAvalanche",
-    "parent": "_Block_"
-  },
-  {
-    "name": "id",
-    "type": "ID",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "_CircularBuffer"
-  },
-  {
-    "name": "blocks",
-    "type": "Unknown",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "_CircularBuffer"
-  },
-  {
-    "name": "windowStartIndex",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "_CircularBuffer"
-  },
-  {
-    "name": "nextIndex",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "_CircularBuffer"
-  },
-  {
-    "name": "bufferSize",
-    "type": "Int",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "_CircularBuffer"
-  },
-  {
-    "name": "blocksPerDay",
-    "type": "BigDecimal",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "_CircularBuffer"
-  },
-  {
-    "name": "id",
-    "type": "ID",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "_LiquidityGauge"
-  },
-  {
-    "name": "poolAddress",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "_LiquidityGauge"
-  },
-  {
-    "name": "id",
-    "type": "ID",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "_LpToken"
-  },
-  {
-    "name": "poolAddress",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "_LpToken"
-  },
-  {
-    "name": "registryAddress",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "_LpToken"
-  },
-  {
-    "name": "block",
-    "type": "_Block_",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "_Meta_"
-  },
-  {
-    "name": "deployment",
-    "type": "String",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "_Meta_"
-  },
-  {
-    "name": "hasIndexingErrors",
-    "type": "Boolean",
-    "kind": "NON_NULL",
-    "api": "curveAvalanche",
-    "parent": "_Meta_"
-  }
-]
+{
+  "metadata": {
+    "timestamp": "2025-01-09T22:20:29.988Z",
+    "totalFields": 324
+  },
+  "fields": [
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Account"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "ActiveAccount"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Deposit"
+    },
+    {
+      "name": "hash",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Deposit"
+    },
+    {
+      "name": "logIndex",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Deposit"
+    },
+    {
+      "name": "protocol",
+      "type": "DexAmmProtocol",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Deposit"
+    },
+    {
+      "name": "to",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Deposit"
+    },
+    {
+      "name": "from",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Deposit"
+    },
+    {
+      "name": "blockNumber",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Deposit"
+    },
+    {
+      "name": "timestamp",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Deposit"
+    },
+    {
+      "name": "inputTokens",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Deposit"
+    },
+    {
+      "name": "outputToken",
+      "type": "Token",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Deposit"
+    },
+    {
+      "name": "inputTokenAmounts",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Deposit"
+    },
+    {
+      "name": "outputTokenAmount",
+      "type": "BigInt",
+      "kind": "SCALAR",
+      "api": "curveAvalanche",
+      "parent": "Deposit"
+    },
+    {
+      "name": "amountUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Deposit"
+    },
+    {
+      "name": "pool",
+      "type": "LiquidityPool",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Deposit"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "DexAmmProtocol"
+    },
+    {
+      "name": "name",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "DexAmmProtocol"
+    },
+    {
+      "name": "slug",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "DexAmmProtocol"
+    },
+    {
+      "name": "schemaVersion",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "DexAmmProtocol"
+    },
+    {
+      "name": "subgraphVersion",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "DexAmmProtocol"
+    },
+    {
+      "name": "methodologyVersion",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "DexAmmProtocol"
+    },
+    {
+      "name": "network",
+      "type": "Network",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "DexAmmProtocol"
+    },
+    {
+      "name": "type",
+      "type": "ProtocolType",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "DexAmmProtocol"
+    },
+    {
+      "name": "totalValueLockedUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "DexAmmProtocol"
+    },
+    {
+      "name": "protocolControlledValueUSD",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "curveAvalanche",
+      "parent": "DexAmmProtocol"
+    },
+    {
+      "name": "cumulativeVolumeUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "DexAmmProtocol"
+    },
+    {
+      "name": "cumulativeSupplySideRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "DexAmmProtocol"
+    },
+    {
+      "name": "cumulativeProtocolSideRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "DexAmmProtocol"
+    },
+    {
+      "name": "cumulativeTotalRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "DexAmmProtocol"
+    },
+    {
+      "name": "cumulativeUniqueUsers",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "DexAmmProtocol"
+    },
+    {
+      "name": "totalPoolCount",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "DexAmmProtocol"
+    },
+    {
+      "name": "dailyUsageMetrics",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "DexAmmProtocol"
+    },
+    {
+      "name": "hourlyUsageMetrics",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "DexAmmProtocol"
+    },
+    {
+      "name": "financialMetrics",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "DexAmmProtocol"
+    },
+    {
+      "name": "pools",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "DexAmmProtocol"
+    },
+    {
+      "name": "_poolIds",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "DexAmmProtocol"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Event"
+    },
+    {
+      "name": "hash",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Event"
+    },
+    {
+      "name": "logIndex",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Event"
+    },
+    {
+      "name": "protocol",
+      "type": "DexAmmProtocol",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Event"
+    },
+    {
+      "name": "to",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Event"
+    },
+    {
+      "name": "from",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Event"
+    },
+    {
+      "name": "blockNumber",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Event"
+    },
+    {
+      "name": "timestamp",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Event"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "FinancialsDailySnapshot"
+    },
+    {
+      "name": "protocol",
+      "type": "DexAmmProtocol",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "FinancialsDailySnapshot"
+    },
+    {
+      "name": "totalValueLockedUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "FinancialsDailySnapshot"
+    },
+    {
+      "name": "protocolControlledValueUSD",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "curveAvalanche",
+      "parent": "FinancialsDailySnapshot"
+    },
+    {
+      "name": "dailyVolumeUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "FinancialsDailySnapshot"
+    },
+    {
+      "name": "cumulativeVolumeUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "FinancialsDailySnapshot"
+    },
+    {
+      "name": "dailySupplySideRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "FinancialsDailySnapshot"
+    },
+    {
+      "name": "cumulativeSupplySideRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "FinancialsDailySnapshot"
+    },
+    {
+      "name": "dailyProtocolSideRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "FinancialsDailySnapshot"
+    },
+    {
+      "name": "cumulativeProtocolSideRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "FinancialsDailySnapshot"
+    },
+    {
+      "name": "dailyTotalRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "FinancialsDailySnapshot"
+    },
+    {
+      "name": "cumulativeTotalRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "FinancialsDailySnapshot"
+    },
+    {
+      "name": "blockNumber",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "FinancialsDailySnapshot"
+    },
+    {
+      "name": "timestamp",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "FinancialsDailySnapshot"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "protocol",
+      "type": "DexAmmProtocol",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "name",
+      "type": "String",
+      "kind": "SCALAR",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "symbol",
+      "type": "String",
+      "kind": "SCALAR",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "inputTokens",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "_inputTokensOrdered",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "outputToken",
+      "type": "Token",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "rewardTokens",
+      "type": "Unknown",
+      "kind": "LIST",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "fees",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "isSingleSided",
+      "type": "Boolean",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "createdTimestamp",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "createdBlockNumber",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "totalValueLockedUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "_tvlUSDExcludingBasePoolLpTokens",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "cumulativeSupplySideRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "cumulativeProtocolSideRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "cumulativeTotalRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "cumulativeVolumeUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "inputTokenBalances",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "inputTokenWeights",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "outputTokenSupply",
+      "type": "BigInt",
+      "kind": "SCALAR",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "outputTokenPriceUSD",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "stakedOutputTokenAmount",
+      "type": "BigInt",
+      "kind": "SCALAR",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "rewardTokenEmissionsAmount",
+      "type": "Unknown",
+      "kind": "LIST",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "rewardTokenEmissionsUSD",
+      "type": "Unknown",
+      "kind": "LIST",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "dailySnapshots",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "hourlySnapshots",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "deposits",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "withdraws",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "swaps",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "_registryAddress",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "_gaugeAddress",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "_isMetapool",
+      "type": "Boolean",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPool"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolDailySnapshot"
+    },
+    {
+      "name": "protocol",
+      "type": "DexAmmProtocol",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolDailySnapshot"
+    },
+    {
+      "name": "pool",
+      "type": "LiquidityPool",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolDailySnapshot"
+    },
+    {
+      "name": "blockNumber",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolDailySnapshot"
+    },
+    {
+      "name": "timestamp",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolDailySnapshot"
+    },
+    {
+      "name": "totalValueLockedUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolDailySnapshot"
+    },
+    {
+      "name": "cumulativeSupplySideRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolDailySnapshot"
+    },
+    {
+      "name": "dailySupplySideRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolDailySnapshot"
+    },
+    {
+      "name": "cumulativeProtocolSideRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolDailySnapshot"
+    },
+    {
+      "name": "dailyProtocolSideRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolDailySnapshot"
+    },
+    {
+      "name": "cumulativeTotalRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolDailySnapshot"
+    },
+    {
+      "name": "dailyTotalRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolDailySnapshot"
+    },
+    {
+      "name": "dailyVolumeUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolDailySnapshot"
+    },
+    {
+      "name": "dailyVolumeByTokenAmount",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolDailySnapshot"
+    },
+    {
+      "name": "dailyVolumeByTokenUSD",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolDailySnapshot"
+    },
+    {
+      "name": "cumulativeVolumeUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolDailySnapshot"
+    },
+    {
+      "name": "inputTokenBalances",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolDailySnapshot"
+    },
+    {
+      "name": "inputTokenWeights",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolDailySnapshot"
+    },
+    {
+      "name": "outputTokenSupply",
+      "type": "BigInt",
+      "kind": "SCALAR",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolDailySnapshot"
+    },
+    {
+      "name": "outputTokenPriceUSD",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolDailySnapshot"
+    },
+    {
+      "name": "stakedOutputTokenAmount",
+      "type": "BigInt",
+      "kind": "SCALAR",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolDailySnapshot"
+    },
+    {
+      "name": "rewardTokenEmissionsAmount",
+      "type": "Unknown",
+      "kind": "LIST",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolDailySnapshot"
+    },
+    {
+      "name": "rewardTokenEmissionsUSD",
+      "type": "Unknown",
+      "kind": "LIST",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolDailySnapshot"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolFee"
+    },
+    {
+      "name": "feePercentage",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolFee"
+    },
+    {
+      "name": "feeType",
+      "type": "LiquidityPoolFeeType",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolFee"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolHourlySnapshot"
+    },
+    {
+      "name": "protocol",
+      "type": "DexAmmProtocol",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolHourlySnapshot"
+    },
+    {
+      "name": "pool",
+      "type": "LiquidityPool",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolHourlySnapshot"
+    },
+    {
+      "name": "blockNumber",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolHourlySnapshot"
+    },
+    {
+      "name": "timestamp",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolHourlySnapshot"
+    },
+    {
+      "name": "totalValueLockedUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolHourlySnapshot"
+    },
+    {
+      "name": "cumulativeSupplySideRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolHourlySnapshot"
+    },
+    {
+      "name": "hourlySupplySideRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolHourlySnapshot"
+    },
+    {
+      "name": "cumulativeProtocolSideRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolHourlySnapshot"
+    },
+    {
+      "name": "hourlyProtocolSideRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolHourlySnapshot"
+    },
+    {
+      "name": "cumulativeTotalRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolHourlySnapshot"
+    },
+    {
+      "name": "hourlyTotalRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolHourlySnapshot"
+    },
+    {
+      "name": "hourlyVolumeUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolHourlySnapshot"
+    },
+    {
+      "name": "hourlyVolumeByTokenAmount",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolHourlySnapshot"
+    },
+    {
+      "name": "hourlyVolumeByTokenUSD",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolHourlySnapshot"
+    },
+    {
+      "name": "cumulativeVolumeUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolHourlySnapshot"
+    },
+    {
+      "name": "inputTokenBalances",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolHourlySnapshot"
+    },
+    {
+      "name": "inputTokenWeights",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolHourlySnapshot"
+    },
+    {
+      "name": "outputTokenSupply",
+      "type": "BigInt",
+      "kind": "SCALAR",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolHourlySnapshot"
+    },
+    {
+      "name": "outputTokenPriceUSD",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolHourlySnapshot"
+    },
+    {
+      "name": "stakedOutputTokenAmount",
+      "type": "BigInt",
+      "kind": "SCALAR",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolHourlySnapshot"
+    },
+    {
+      "name": "rewardTokenEmissionsAmount",
+      "type": "Unknown",
+      "kind": "LIST",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolHourlySnapshot"
+    },
+    {
+      "name": "rewardTokenEmissionsUSD",
+      "type": "Unknown",
+      "kind": "LIST",
+      "api": "curveAvalanche",
+      "parent": "LiquidityPoolHourlySnapshot"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Protocol"
+    },
+    {
+      "name": "name",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Protocol"
+    },
+    {
+      "name": "slug",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Protocol"
+    },
+    {
+      "name": "schemaVersion",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Protocol"
+    },
+    {
+      "name": "subgraphVersion",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Protocol"
+    },
+    {
+      "name": "methodologyVersion",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Protocol"
+    },
+    {
+      "name": "network",
+      "type": "Network",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Protocol"
+    },
+    {
+      "name": "type",
+      "type": "ProtocolType",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Protocol"
+    },
+    {
+      "name": "totalValueLockedUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Protocol"
+    },
+    {
+      "name": "protocolControlledValueUSD",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "curveAvalanche",
+      "parent": "Protocol"
+    },
+    {
+      "name": "cumulativeSupplySideRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Protocol"
+    },
+    {
+      "name": "cumulativeProtocolSideRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Protocol"
+    },
+    {
+      "name": "cumulativeTotalRevenueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Protocol"
+    },
+    {
+      "name": "cumulativeUniqueUsers",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Protocol"
+    },
+    {
+      "name": "totalPoolCount",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Protocol"
+    },
+    {
+      "name": "dailyUsageMetrics",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Protocol"
+    },
+    {
+      "name": "hourlyUsageMetrics",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Protocol"
+    },
+    {
+      "name": "financialMetrics",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Protocol"
+    },
+    {
+      "name": "token",
+      "type": "Token",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "tokens",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "rewardToken",
+      "type": "RewardToken",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "rewardTokens",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "liquidityPoolFee",
+      "type": "LiquidityPoolFee",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "liquidityPoolFees",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "dexAmmProtocol",
+      "type": "DexAmmProtocol",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "dexAmmProtocols",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "usageMetricsDailySnapshot",
+      "type": "UsageMetricsDailySnapshot",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "usageMetricsDailySnapshots",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "usageMetricsHourlySnapshot",
+      "type": "UsageMetricsHourlySnapshot",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "usageMetricsHourlySnapshots",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "financialsDailySnapshot",
+      "type": "FinancialsDailySnapshot",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "financialsDailySnapshots",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "liquidityPool",
+      "type": "LiquidityPool",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "liquidityPools",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "liquidityPoolDailySnapshot",
+      "type": "LiquidityPoolDailySnapshot",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "liquidityPoolDailySnapshots",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "liquidityPoolHourlySnapshot",
+      "type": "LiquidityPoolHourlySnapshot",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "liquidityPoolHourlySnapshots",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "deposit",
+      "type": "Deposit",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "deposits",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "withdraw",
+      "type": "Withdraw",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "withdraws",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "swap",
+      "type": "Swap",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "swaps",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "account",
+      "type": "Account",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "accounts",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "activeAccount",
+      "type": "ActiveAccount",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "activeAccounts",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "liquidityGauge",
+      "type": "_LiquidityGauge",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "liquidityGauges",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "lpToken",
+      "type": "_LpToken",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "lpTokens",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "circularBuffer",
+      "type": "_CircularBuffer",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "circularBuffers",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "protocol",
+      "type": "Protocol",
+      "kind": "INTERFACE",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "protocols",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "event",
+      "type": "Event",
+      "kind": "INTERFACE",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "events",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "_meta",
+      "type": "_Meta_",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Query"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "RewardToken"
+    },
+    {
+      "name": "token",
+      "type": "Token",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "RewardToken"
+    },
+    {
+      "name": "type",
+      "type": "RewardTokenType",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "RewardToken"
+    },
+    {
+      "name": "token",
+      "type": "Token",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "tokens",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "rewardToken",
+      "type": "RewardToken",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "rewardTokens",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "liquidityPoolFee",
+      "type": "LiquidityPoolFee",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "liquidityPoolFees",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "dexAmmProtocol",
+      "type": "DexAmmProtocol",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "dexAmmProtocols",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "usageMetricsDailySnapshot",
+      "type": "UsageMetricsDailySnapshot",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "usageMetricsDailySnapshots",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "usageMetricsHourlySnapshot",
+      "type": "UsageMetricsHourlySnapshot",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "usageMetricsHourlySnapshots",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "financialsDailySnapshot",
+      "type": "FinancialsDailySnapshot",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "financialsDailySnapshots",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "liquidityPool",
+      "type": "LiquidityPool",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "liquidityPools",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "liquidityPoolDailySnapshot",
+      "type": "LiquidityPoolDailySnapshot",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "liquidityPoolDailySnapshots",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "liquidityPoolHourlySnapshot",
+      "type": "LiquidityPoolHourlySnapshot",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "liquidityPoolHourlySnapshots",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "deposit",
+      "type": "Deposit",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "deposits",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "withdraw",
+      "type": "Withdraw",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "withdraws",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "swap",
+      "type": "Swap",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "swaps",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "account",
+      "type": "Account",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "accounts",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "activeAccount",
+      "type": "ActiveAccount",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "activeAccounts",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "liquidityGauge",
+      "type": "_LiquidityGauge",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "liquidityGauges",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "lpToken",
+      "type": "_LpToken",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "lpTokens",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "circularBuffer",
+      "type": "_CircularBuffer",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "circularBuffers",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "protocol",
+      "type": "Protocol",
+      "kind": "INTERFACE",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "protocols",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "event",
+      "type": "Event",
+      "kind": "INTERFACE",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "events",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "_meta",
+      "type": "_Meta_",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Subscription"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Swap"
+    },
+    {
+      "name": "hash",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Swap"
+    },
+    {
+      "name": "logIndex",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Swap"
+    },
+    {
+      "name": "protocol",
+      "type": "DexAmmProtocol",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Swap"
+    },
+    {
+      "name": "to",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Swap"
+    },
+    {
+      "name": "from",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Swap"
+    },
+    {
+      "name": "blockNumber",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Swap"
+    },
+    {
+      "name": "timestamp",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Swap"
+    },
+    {
+      "name": "tokenIn",
+      "type": "Token",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Swap"
+    },
+    {
+      "name": "amountIn",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Swap"
+    },
+    {
+      "name": "amountInUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Swap"
+    },
+    {
+      "name": "tokenOut",
+      "type": "Token",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Swap"
+    },
+    {
+      "name": "amountOut",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Swap"
+    },
+    {
+      "name": "amountOutUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Swap"
+    },
+    {
+      "name": "pool",
+      "type": "LiquidityPool",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Swap"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Token"
+    },
+    {
+      "name": "name",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Token"
+    },
+    {
+      "name": "symbol",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Token"
+    },
+    {
+      "name": "decimals",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Token"
+    },
+    {
+      "name": "isBasePoolLpToken",
+      "type": "Boolean",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Token"
+    },
+    {
+      "name": "lastPriceUSD",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "curveAvalanche",
+      "parent": "Token"
+    },
+    {
+      "name": "lastPriceBlockNumber",
+      "type": "BigInt",
+      "kind": "SCALAR",
+      "api": "curveAvalanche",
+      "parent": "Token"
+    },
+    {
+      "name": "oracleType",
+      "type": "String",
+      "kind": "SCALAR",
+      "api": "curveAvalanche",
+      "parent": "Token"
+    },
+    {
+      "name": "_totalSupply",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Token"
+    },
+    {
+      "name": "_totalValueLockedUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Token"
+    },
+    {
+      "name": "_largePriceChangeBuffer",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Token"
+    },
+    {
+      "name": "_largeTVLImpactBuffer",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Token"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "UsageMetricsDailySnapshot"
+    },
+    {
+      "name": "protocol",
+      "type": "DexAmmProtocol",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "UsageMetricsDailySnapshot"
+    },
+    {
+      "name": "dailyActiveUsers",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "UsageMetricsDailySnapshot"
+    },
+    {
+      "name": "cumulativeUniqueUsers",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "UsageMetricsDailySnapshot"
+    },
+    {
+      "name": "dailyTransactionCount",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "UsageMetricsDailySnapshot"
+    },
+    {
+      "name": "dailyDepositCount",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "UsageMetricsDailySnapshot"
+    },
+    {
+      "name": "dailyWithdrawCount",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "UsageMetricsDailySnapshot"
+    },
+    {
+      "name": "dailySwapCount",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "UsageMetricsDailySnapshot"
+    },
+    {
+      "name": "totalPoolCount",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "UsageMetricsDailySnapshot"
+    },
+    {
+      "name": "blockNumber",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "UsageMetricsDailySnapshot"
+    },
+    {
+      "name": "timestamp",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "UsageMetricsDailySnapshot"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "UsageMetricsHourlySnapshot"
+    },
+    {
+      "name": "protocol",
+      "type": "DexAmmProtocol",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "UsageMetricsHourlySnapshot"
+    },
+    {
+      "name": "hourlyActiveUsers",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "UsageMetricsHourlySnapshot"
+    },
+    {
+      "name": "cumulativeUniqueUsers",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "UsageMetricsHourlySnapshot"
+    },
+    {
+      "name": "hourlyTransactionCount",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "UsageMetricsHourlySnapshot"
+    },
+    {
+      "name": "hourlyDepositCount",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "UsageMetricsHourlySnapshot"
+    },
+    {
+      "name": "hourlyWithdrawCount",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "UsageMetricsHourlySnapshot"
+    },
+    {
+      "name": "hourlySwapCount",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "UsageMetricsHourlySnapshot"
+    },
+    {
+      "name": "blockNumber",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "UsageMetricsHourlySnapshot"
+    },
+    {
+      "name": "timestamp",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "UsageMetricsHourlySnapshot"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Withdraw"
+    },
+    {
+      "name": "hash",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Withdraw"
+    },
+    {
+      "name": "logIndex",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Withdraw"
+    },
+    {
+      "name": "protocol",
+      "type": "DexAmmProtocol",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Withdraw"
+    },
+    {
+      "name": "to",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Withdraw"
+    },
+    {
+      "name": "from",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Withdraw"
+    },
+    {
+      "name": "blockNumber",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Withdraw"
+    },
+    {
+      "name": "timestamp",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Withdraw"
+    },
+    {
+      "name": "inputTokens",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Withdraw"
+    },
+    {
+      "name": "outputToken",
+      "type": "Token",
+      "kind": "OBJECT",
+      "api": "curveAvalanche",
+      "parent": "Withdraw"
+    },
+    {
+      "name": "inputTokenAmounts",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Withdraw"
+    },
+    {
+      "name": "outputTokenAmount",
+      "type": "BigInt",
+      "kind": "SCALAR",
+      "api": "curveAvalanche",
+      "parent": "Withdraw"
+    },
+    {
+      "name": "amountUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Withdraw"
+    },
+    {
+      "name": "pool",
+      "type": "LiquidityPool",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "Withdraw"
+    },
+    {
+      "name": "hash",
+      "type": "Bytes",
+      "kind": "SCALAR",
+      "api": "curveAvalanche",
+      "parent": "_Block_"
+    },
+    {
+      "name": "number",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "_Block_"
+    },
+    {
+      "name": "timestamp",
+      "type": "Int",
+      "kind": "SCALAR",
+      "api": "curveAvalanche",
+      "parent": "_Block_"
+    },
+    {
+      "name": "parentHash",
+      "type": "Bytes",
+      "kind": "SCALAR",
+      "api": "curveAvalanche",
+      "parent": "_Block_"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "_CircularBuffer"
+    },
+    {
+      "name": "blocks",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "_CircularBuffer"
+    },
+    {
+      "name": "windowStartIndex",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "_CircularBuffer"
+    },
+    {
+      "name": "nextIndex",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "_CircularBuffer"
+    },
+    {
+      "name": "bufferSize",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "_CircularBuffer"
+    },
+    {
+      "name": "blocksPerDay",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "_CircularBuffer"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "_LiquidityGauge"
+    },
+    {
+      "name": "poolAddress",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "_LiquidityGauge"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "_LpToken"
+    },
+    {
+      "name": "poolAddress",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "_LpToken"
+    },
+    {
+      "name": "registryAddress",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "_LpToken"
+    },
+    {
+      "name": "block",
+      "type": "_Block_",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "_Meta_"
+    },
+    {
+      "name": "deployment",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "_Meta_"
+    },
+    {
+      "name": "hasIndexingErrors",
+      "type": "Boolean",
+      "kind": "NON_NULL",
+      "api": "curveAvalanche",
+      "parent": "_Meta_"
+    }
+  ]
+}
