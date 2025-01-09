@@ -126,27 +126,43 @@ function saveJsonOutput(fileName, data) {
   console.log(`Output saved to ${filePath}`);
 }
 
-// Save CSV output
-function saveCsvOutput(fileName, data) {
-  const csvContent = data
-    .map((row) =>
-      Object.keys(row)
-        .map((key) => `"${row[key]}"`)
-        .join(",")
-    )
-    .join("\n");
+// Save JSON output with additional metadata
+function saveJsonOutput(fileName, data, apiName) {
+  const filePath = path.join(outputDir, fileName);
+  const outputData = {
+    metadata: {
+      apiName,
+      timestamp: new Date().toISOString(),
+      totalFields: data.length,
+    },
+    fields: data,
+  };
+  fs.writeFileSync(filePath, JSON.stringify(outputData, null, 2));
+  console.log(`JSON Output saved to ${filePath}`);
+}
+
+// Save CSV output with headers
+function saveCsvOutput(fileName, data, apiName) {
+  const headers = ["Field Name", "Type", "Parent", "API"];
+  const csvContent = [
+    headers.join(","),
+    ...data.map((row) =>
+      [row.name, row.type, row.parent, apiName].map((value) => `"${value}"`).join(",")
+    ),
+  ].join("\n");
+
   const csvFilePath = path.join(outputDir, fileName);
   fs.writeFileSync(csvFilePath, csvContent);
   console.log(`CSV Output saved to ${csvFilePath}`);
 }
 
-// Save HTML output
-function saveHtmlOutput(fileName, data) {
+// Save HTML output with navigation and summaries
+function saveHtmlOutput(fileName, data, apiName) {
   const htmlContent = `
     <!DOCTYPE html>
     <html>
       <head>
-        <title>Field Mapping Report</title>
+        <title>Field Mapping Report for ${apiName}</title>
         <style>
           table { border-collapse: collapse; width: 100%; }
           th, td { border: 1px solid #ddd; padding: 8px; }
@@ -154,19 +170,20 @@ function saveHtmlOutput(fileName, data) {
         </style>
       </head>
       <body>
-        <h1>Field Mapping Report</h1>
+        <h1>Field Mapping Report for ${apiName}</h1>
+        <p><strong>Timestamp:</strong> ${new Date().toISOString()}</p>
+        <p><strong>Total Fields:</strong> ${data.length}</p>
         <table>
           <tr>
-            ${Object.keys(data[0])
-              .map((key) => `<th>${key}</th>`)
-              .join("")}
+            <th>Field Name</th>
+            <th>Type</th>
+            <th>Parent</th>
+            <th>API</th>
           </tr>
           ${data
             .map(
               (row) =>
-                `<tr>${Object.values(row)
-                  .map((value) => `<td>${value}</td>`)
-                  .join("")}</tr>`
+                `<tr><td>${row.name}</td><td>${row.type}</td><td>${row.parent}</td><td>${apiName}</td></tr>`
             )
             .join("")}
         </table>
