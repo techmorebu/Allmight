@@ -25,7 +25,6 @@ const apis = {
   balancerArbitrum: process.env.BALANCER_ARBITRUM_DEX_API,
   balancerAvalanche: process.env.BALANCER_AVALANCHE_DEX_API,
   balancerEthereum: process.env.BALANCER_ETHEREUM_DEX_API,
-  
 };
 
 // Detect WebSocket compatibility for APIs
