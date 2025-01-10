@@ -1,0 +1,2696 @@
+{
+  "metadata": {
+    "timestamp": "2025-01-10T02:03:36.994Z",
+    "totalFields": 384
+  },
+  "fields": [
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "AmpUpdate"
+    },
+    {
+      "name": "poolId",
+      "type": "Pool",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "AmpUpdate"
+    },
+    {
+      "name": "scheduledTimestamp",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "AmpUpdate"
+    },
+    {
+      "name": "startTimestamp",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "AmpUpdate"
+    },
+    {
+      "name": "endTimestamp",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "AmpUpdate"
+    },
+    {
+      "name": "startAmp",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "AmpUpdate"
+    },
+    {
+      "name": "endAmp",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "AmpUpdate"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Balancer"
+    },
+    {
+      "name": "poolCount",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Balancer"
+    },
+    {
+      "name": "pools",
+      "type": "Unknown",
+      "kind": "LIST",
+      "api": "balancerArbitrum",
+      "parent": "Balancer"
+    },
+    {
+      "name": "snapshots",
+      "type": "Unknown",
+      "kind": "LIST",
+      "api": "balancerArbitrum",
+      "parent": "Balancer"
+    },
+    {
+      "name": "totalLiquidity",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Balancer"
+    },
+    {
+      "name": "totalSwapCount",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Balancer"
+    },
+    {
+      "name": "totalSwapVolume",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Balancer"
+    },
+    {
+      "name": "totalSwapFee",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Balancer"
+    },
+    {
+      "name": "totalProtocolFee",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Balancer"
+    },
+    {
+      "name": "protocolFeesCollector",
+      "type": "Bytes",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Balancer"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "BalancerSnapshot"
+    },
+    {
+      "name": "vault",
+      "type": "Balancer",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "BalancerSnapshot"
+    },
+    {
+      "name": "timestamp",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "BalancerSnapshot"
+    },
+    {
+      "name": "poolCount",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "BalancerSnapshot"
+    },
+    {
+      "name": "totalLiquidity",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "BalancerSnapshot"
+    },
+    {
+      "name": "totalSwapCount",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "BalancerSnapshot"
+    },
+    {
+      "name": "totalSwapVolume",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "BalancerSnapshot"
+    },
+    {
+      "name": "totalSwapFee",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "BalancerSnapshot"
+    },
+    {
+      "name": "totalProtocolFee",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "BalancerSnapshot"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "CircuitBreaker"
+    },
+    {
+      "name": "pool",
+      "type": "Pool",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "CircuitBreaker"
+    },
+    {
+      "name": "token",
+      "type": "PoolToken",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "CircuitBreaker"
+    },
+    {
+      "name": "bptPrice",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "CircuitBreaker"
+    },
+    {
+      "name": "lowerBoundPercentage",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "CircuitBreaker"
+    },
+    {
+      "name": "upperBoundPercentage",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "CircuitBreaker"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "FXOracle"
+    },
+    {
+      "name": "tokens",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "FXOracle"
+    },
+    {
+      "name": "divisor",
+      "type": "String",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "FXOracle"
+    },
+    {
+      "name": "decimals",
+      "type": "Int",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "FXOracle"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "GradualWeightUpdate"
+    },
+    {
+      "name": "poolId",
+      "type": "Pool",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "GradualWeightUpdate"
+    },
+    {
+      "name": "scheduledTimestamp",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "GradualWeightUpdate"
+    },
+    {
+      "name": "startTimestamp",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "GradualWeightUpdate"
+    },
+    {
+      "name": "endTimestamp",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "GradualWeightUpdate"
+    },
+    {
+      "name": "startWeights",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "GradualWeightUpdate"
+    },
+    {
+      "name": "endWeights",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "GradualWeightUpdate"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "JoinExit"
+    },
+    {
+      "name": "type",
+      "type": "InvestType",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "JoinExit"
+    },
+    {
+      "name": "sender",
+      "type": "Bytes",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "JoinExit"
+    },
+    {
+      "name": "amounts",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "JoinExit"
+    },
+    {
+      "name": "valueUSD",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "JoinExit"
+    },
+    {
+      "name": "pool",
+      "type": "Pool",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "JoinExit"
+    },
+    {
+      "name": "user",
+      "type": "User",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "JoinExit"
+    },
+    {
+      "name": "timestamp",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "JoinExit"
+    },
+    {
+      "name": "tx",
+      "type": "Bytes",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "JoinExit"
+    },
+    {
+      "name": "block",
+      "type": "BigInt",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "JoinExit"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "LatestPrice"
+    },
+    {
+      "name": "asset",
+      "type": "Bytes",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "LatestPrice"
+    },
+    {
+      "name": "pricingAsset",
+      "type": "Bytes",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "LatestPrice"
+    },
+    {
+      "name": "poolId",
+      "type": "Pool",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "LatestPrice"
+    },
+    {
+      "name": "price",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "LatestPrice"
+    },
+    {
+      "name": "block",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "LatestPrice"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "ManagementOperation"
+    },
+    {
+      "name": "type",
+      "type": "OperationType",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "ManagementOperation"
+    },
+    {
+      "name": "cashDelta",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "ManagementOperation"
+    },
+    {
+      "name": "managedDelta",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "ManagementOperation"
+    },
+    {
+      "name": "poolTokenId",
+      "type": "PoolToken",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "ManagementOperation"
+    },
+    {
+      "name": "timestamp",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "ManagementOperation"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "address",
+      "type": "Bytes",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "poolType",
+      "type": "String",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "poolTypeVersion",
+      "type": "Int",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "factory",
+      "type": "Bytes",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "strategyType",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "oracleEnabled",
+      "type": "Boolean",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "symbol",
+      "type": "String",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "name",
+      "type": "String",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "swapEnabled",
+      "type": "Boolean",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "swapEnabledInternal",
+      "type": "Boolean",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "swapEnabledCurationSignal",
+      "type": "Boolean",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "swapFee",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "owner",
+      "type": "Bytes",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "isPaused",
+      "type": "Boolean",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "totalWeight",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "totalSwapVolume",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "totalSwapFee",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "totalLiquidity",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "totalLiquiditySansBPT",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "totalShares",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "totalProtocolFee",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "createTime",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "swapsCount",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "holdersCount",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "vaultID",
+      "type": "Balancer",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "tx",
+      "type": "Bytes",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "tokensList",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "tokens",
+      "type": "Unknown",
+      "kind": "LIST",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "joinsExits",
+      "type": "Unknown",
+      "kind": "LIST",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "swaps",
+      "type": "Unknown",
+      "kind": "LIST",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "shares",
+      "type": "Unknown",
+      "kind": "LIST",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "snapshots",
+      "type": "Unknown",
+      "kind": "LIST",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "historicalValues",
+      "type": "Unknown",
+      "kind": "LIST",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "weightUpdates",
+      "type": "Unknown",
+      "kind": "LIST",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "amp",
+      "type": "BigInt",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "latestAmpUpdate",
+      "type": "AmpUpdate",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "ampUpdates",
+      "type": "Unknown",
+      "kind": "LIST",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "priceRateProviders",
+      "type": "Unknown",
+      "kind": "LIST",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "principalToken",
+      "type": "Bytes",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "baseToken",
+      "type": "Bytes",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "expiryTime",
+      "type": "BigInt",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "unitSeconds",
+      "type": "BigInt",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "managementFee",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "joinExitEnabled",
+      "type": "Boolean",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "mustAllowlistLPs",
+      "type": "Boolean",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "managementAumFee",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "totalAumFeeCollectedInBPT",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "circuitBreakers",
+      "type": "Unknown",
+      "kind": "LIST",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "mainIndex",
+      "type": "Int",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "wrappedIndex",
+      "type": "Int",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "lowerTarget",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "upperTarget",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "sqrtAlpha",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "sqrtBeta",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "root3Alpha",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "c",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "s",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "tauAlphaX",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "tauAlphaY",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "tauBetaX",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "tauBetaY",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "u",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "v",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "w",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "z",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "dSq",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "alpha",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "beta",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "lambda",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "delta",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "epsilon",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "isInRecoveryMode",
+      "type": "Boolean",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "protocolSwapFeeCache",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "protocolYieldFeeCache",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "protocolAumFeeCache",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "totalProtocolFeePaidInBPT",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "lastJoinExitAmp",
+      "type": "BigInt",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "lastPostJoinExitInvariant",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "protocolId",
+      "type": "Int",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "protocolIdData",
+      "type": "ProtocolIdData",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Pool"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolContract"
+    },
+    {
+      "name": "pool",
+      "type": "Pool",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolContract"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolHistoricalLiquidity"
+    },
+    {
+      "name": "poolId",
+      "type": "Pool",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolHistoricalLiquidity"
+    },
+    {
+      "name": "poolTotalShares",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolHistoricalLiquidity"
+    },
+    {
+      "name": "poolLiquidity",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolHistoricalLiquidity"
+    },
+    {
+      "name": "poolShareValue",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolHistoricalLiquidity"
+    },
+    {
+      "name": "pricingAsset",
+      "type": "Bytes",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolHistoricalLiquidity"
+    },
+    {
+      "name": "block",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolHistoricalLiquidity"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolShare"
+    },
+    {
+      "name": "userAddress",
+      "type": "User",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolShare"
+    },
+    {
+      "name": "poolId",
+      "type": "Pool",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolShare"
+    },
+    {
+      "name": "balance",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolShare"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolSnapshot"
+    },
+    {
+      "name": "pool",
+      "type": "Pool",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolSnapshot"
+    },
+    {
+      "name": "amounts",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolSnapshot"
+    },
+    {
+      "name": "totalShares",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolSnapshot"
+    },
+    {
+      "name": "swapVolume",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolSnapshot"
+    },
+    {
+      "name": "protocolFee",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "PoolSnapshot"
+    },
+    {
+      "name": "swapFees",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolSnapshot"
+    },
+    {
+      "name": "liquidity",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolSnapshot"
+    },
+    {
+      "name": "swapsCount",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolSnapshot"
+    },
+    {
+      "name": "holdersCount",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolSnapshot"
+    },
+    {
+      "name": "timestamp",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolSnapshot"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolToken"
+    },
+    {
+      "name": "poolId",
+      "type": "Pool",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "PoolToken"
+    },
+    {
+      "name": "token",
+      "type": "Token",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolToken"
+    },
+    {
+      "name": "assetManager",
+      "type": "Bytes",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolToken"
+    },
+    {
+      "name": "symbol",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolToken"
+    },
+    {
+      "name": "name",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolToken"
+    },
+    {
+      "name": "decimals",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolToken"
+    },
+    {
+      "name": "index",
+      "type": "Int",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "PoolToken"
+    },
+    {
+      "name": "address",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolToken"
+    },
+    {
+      "name": "oldPriceRate",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "PoolToken"
+    },
+    {
+      "name": "priceRate",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolToken"
+    },
+    {
+      "name": "balance",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolToken"
+    },
+    {
+      "name": "paidProtocolFees",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "PoolToken"
+    },
+    {
+      "name": "cashBalance",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolToken"
+    },
+    {
+      "name": "managedBalance",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PoolToken"
+    },
+    {
+      "name": "managements",
+      "type": "Unknown",
+      "kind": "LIST",
+      "api": "balancerArbitrum",
+      "parent": "PoolToken"
+    },
+    {
+      "name": "weight",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "PoolToken"
+    },
+    {
+      "name": "isExemptFromYieldProtocolFee",
+      "type": "Boolean",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "PoolToken"
+    },
+    {
+      "name": "circuitBreaker",
+      "type": "CircuitBreaker",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "PoolToken"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PriceRateProvider"
+    },
+    {
+      "name": "poolId",
+      "type": "Pool",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PriceRateProvider"
+    },
+    {
+      "name": "token",
+      "type": "PoolToken",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PriceRateProvider"
+    },
+    {
+      "name": "address",
+      "type": "Bytes",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "PriceRateProvider"
+    },
+    {
+      "name": "rate",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "PriceRateProvider"
+    },
+    {
+      "name": "lastCached",
+      "type": "Int",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "PriceRateProvider"
+    },
+    {
+      "name": "cacheDuration",
+      "type": "Int",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "PriceRateProvider"
+    },
+    {
+      "name": "cacheExpiry",
+      "type": "Int",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "PriceRateProvider"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "ProtocolIdData"
+    },
+    {
+      "name": "name",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "ProtocolIdData"
+    },
+    {
+      "name": "balancer",
+      "type": "Balancer",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "balancers",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "pool",
+      "type": "Pool",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "pools",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "poolContract",
+      "type": "PoolContract",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "poolContracts",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "poolToken",
+      "type": "PoolToken",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "poolTokens",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "priceRateProvider",
+      "type": "PriceRateProvider",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "priceRateProviders",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "circuitBreaker",
+      "type": "CircuitBreaker",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "circuitBreakers",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "poolShare",
+      "type": "PoolShare",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "poolShares",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "user",
+      "type": "User",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "users",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "userInternalBalance",
+      "type": "UserInternalBalance",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "userInternalBalances",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "gradualWeightUpdate",
+      "type": "GradualWeightUpdate",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "gradualWeightUpdates",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "ampUpdate",
+      "type": "AmpUpdate",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "ampUpdates",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "swapFeeUpdate",
+      "type": "SwapFeeUpdate",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "swapFeeUpdates",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "swap",
+      "type": "Swap",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "swaps",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "joinExit",
+      "type": "JoinExit",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "joinExits",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "latestPrice",
+      "type": "LatestPrice",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "latestPrices",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "poolHistoricalLiquidity",
+      "type": "PoolHistoricalLiquidity",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "poolHistoricalLiquidities",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "tokenPrice",
+      "type": "TokenPrice",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "tokenPrices",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "managementOperation",
+      "type": "ManagementOperation",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "managementOperations",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "poolSnapshot",
+      "type": "PoolSnapshot",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "poolSnapshots",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "token",
+      "type": "Token",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "tokens",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "tokenSnapshot",
+      "type": "TokenSnapshot",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "tokenSnapshots",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "tradePair",
+      "type": "TradePair",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "tradePairs",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "tradePairSnapshot",
+      "type": "TradePairSnapshot",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "tradePairSnapshots",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "balancerSnapshot",
+      "type": "BalancerSnapshot",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "balancerSnapshots",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "protocolIdData",
+      "type": "ProtocolIdData",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "protocolIdDatas",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "fxoracle",
+      "type": "FXOracle",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "fxoracles",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "_meta",
+      "type": "_Meta_",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Query"
+    },
+    {
+      "name": "balancer",
+      "type": "Balancer",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "balancers",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "pool",
+      "type": "Pool",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "pools",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "poolContract",
+      "type": "PoolContract",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "poolContracts",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "poolToken",
+      "type": "PoolToken",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "poolTokens",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "priceRateProvider",
+      "type": "PriceRateProvider",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "priceRateProviders",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "circuitBreaker",
+      "type": "CircuitBreaker",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "circuitBreakers",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "poolShare",
+      "type": "PoolShare",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "poolShares",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "user",
+      "type": "User",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "users",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "userInternalBalance",
+      "type": "UserInternalBalance",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "userInternalBalances",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "gradualWeightUpdate",
+      "type": "GradualWeightUpdate",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "gradualWeightUpdates",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "ampUpdate",
+      "type": "AmpUpdate",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "ampUpdates",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "swapFeeUpdate",
+      "type": "SwapFeeUpdate",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "swapFeeUpdates",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "swap",
+      "type": "Swap",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "swaps",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "joinExit",
+      "type": "JoinExit",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "joinExits",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "latestPrice",
+      "type": "LatestPrice",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "latestPrices",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "poolHistoricalLiquidity",
+      "type": "PoolHistoricalLiquidity",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "poolHistoricalLiquidities",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "tokenPrice",
+      "type": "TokenPrice",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "tokenPrices",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "managementOperation",
+      "type": "ManagementOperation",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "managementOperations",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "poolSnapshot",
+      "type": "PoolSnapshot",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "poolSnapshots",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "token",
+      "type": "Token",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "tokens",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "tokenSnapshot",
+      "type": "TokenSnapshot",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "tokenSnapshots",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "tradePair",
+      "type": "TradePair",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "tradePairs",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "tradePairSnapshot",
+      "type": "TradePairSnapshot",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "tradePairSnapshots",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "balancerSnapshot",
+      "type": "BalancerSnapshot",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "balancerSnapshots",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "protocolIdData",
+      "type": "ProtocolIdData",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "protocolIdDatas",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "fxoracle",
+      "type": "FXOracle",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "fxoracles",
+      "type": "Unknown",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "_meta",
+      "type": "_Meta_",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Subscription"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Swap"
+    },
+    {
+      "name": "caller",
+      "type": "Bytes",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Swap"
+    },
+    {
+      "name": "tokenIn",
+      "type": "Bytes",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Swap"
+    },
+    {
+      "name": "tokenInSym",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Swap"
+    },
+    {
+      "name": "tokenOut",
+      "type": "Bytes",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Swap"
+    },
+    {
+      "name": "tokenOutSym",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Swap"
+    },
+    {
+      "name": "tokenAmountIn",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Swap"
+    },
+    {
+      "name": "tokenAmountOut",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Swap"
+    },
+    {
+      "name": "valueUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Swap"
+    },
+    {
+      "name": "poolId",
+      "type": "Pool",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Swap"
+    },
+    {
+      "name": "userAddress",
+      "type": "User",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Swap"
+    },
+    {
+      "name": "timestamp",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Swap"
+    },
+    {
+      "name": "block",
+      "type": "BigInt",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Swap"
+    },
+    {
+      "name": "tx",
+      "type": "Bytes",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Swap"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "SwapFeeUpdate"
+    },
+    {
+      "name": "pool",
+      "type": "Pool",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "SwapFeeUpdate"
+    },
+    {
+      "name": "scheduledTimestamp",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "SwapFeeUpdate"
+    },
+    {
+      "name": "startTimestamp",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "SwapFeeUpdate"
+    },
+    {
+      "name": "endTimestamp",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "SwapFeeUpdate"
+    },
+    {
+      "name": "startSwapFeePercentage",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "SwapFeeUpdate"
+    },
+    {
+      "name": "endSwapFeePercentage",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "SwapFeeUpdate"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Token"
+    },
+    {
+      "name": "symbol",
+      "type": "String",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Token"
+    },
+    {
+      "name": "name",
+      "type": "String",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Token"
+    },
+    {
+      "name": "decimals",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Token"
+    },
+    {
+      "name": "address",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Token"
+    },
+    {
+      "name": "totalBalanceUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Token"
+    },
+    {
+      "name": "totalBalanceNotional",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Token"
+    },
+    {
+      "name": "totalVolumeUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Token"
+    },
+    {
+      "name": "totalVolumeNotional",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Token"
+    },
+    {
+      "name": "totalSwapCount",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "Token"
+    },
+    {
+      "name": "latestPrice",
+      "type": "LatestPrice",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Token"
+    },
+    {
+      "name": "latestUSDPrice",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Token"
+    },
+    {
+      "name": "latestUSDPriceTimestamp",
+      "type": "BigInt",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Token"
+    },
+    {
+      "name": "latestFXPrice",
+      "type": "BigDecimal",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Token"
+    },
+    {
+      "name": "pool",
+      "type": "Pool",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "Token"
+    },
+    {
+      "name": "fxOracleDecimals",
+      "type": "Int",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "Token"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "TokenPrice"
+    },
+    {
+      "name": "poolId",
+      "type": "Pool",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "TokenPrice"
+    },
+    {
+      "name": "asset",
+      "type": "Bytes",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "TokenPrice"
+    },
+    {
+      "name": "amount",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "TokenPrice"
+    },
+    {
+      "name": "pricingAsset",
+      "type": "Bytes",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "TokenPrice"
+    },
+    {
+      "name": "price",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "TokenPrice"
+    },
+    {
+      "name": "block",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "TokenPrice"
+    },
+    {
+      "name": "timestamp",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "TokenPrice"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "TokenSnapshot"
+    },
+    {
+      "name": "token",
+      "type": "Token",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "TokenSnapshot"
+    },
+    {
+      "name": "timestamp",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "TokenSnapshot"
+    },
+    {
+      "name": "totalBalanceUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "TokenSnapshot"
+    },
+    {
+      "name": "totalBalanceNotional",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "TokenSnapshot"
+    },
+    {
+      "name": "totalVolumeUSD",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "TokenSnapshot"
+    },
+    {
+      "name": "totalVolumeNotional",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "TokenSnapshot"
+    },
+    {
+      "name": "totalSwapCount",
+      "type": "BigInt",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "TokenSnapshot"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "TradePair"
+    },
+    {
+      "name": "token0",
+      "type": "Token",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "TradePair"
+    },
+    {
+      "name": "token1",
+      "type": "Token",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "TradePair"
+    },
+    {
+      "name": "totalSwapVolume",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "TradePair"
+    },
+    {
+      "name": "totalSwapFee",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "TradePair"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "TradePairSnapshot"
+    },
+    {
+      "name": "pair",
+      "type": "TradePair",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "TradePairSnapshot"
+    },
+    {
+      "name": "timestamp",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "TradePairSnapshot"
+    },
+    {
+      "name": "totalSwapVolume",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "TradePairSnapshot"
+    },
+    {
+      "name": "totalSwapFee",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "TradePairSnapshot"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "User"
+    },
+    {
+      "name": "sharesOwned",
+      "type": "Unknown",
+      "kind": "LIST",
+      "api": "balancerArbitrum",
+      "parent": "User"
+    },
+    {
+      "name": "swaps",
+      "type": "Unknown",
+      "kind": "LIST",
+      "api": "balancerArbitrum",
+      "parent": "User"
+    },
+    {
+      "name": "userInternalBalances",
+      "type": "Unknown",
+      "kind": "LIST",
+      "api": "balancerArbitrum",
+      "parent": "User"
+    },
+    {
+      "name": "id",
+      "type": "ID",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "UserInternalBalance"
+    },
+    {
+      "name": "userAddress",
+      "type": "User",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "UserInternalBalance"
+    },
+    {
+      "name": "token",
+      "type": "Bytes",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "UserInternalBalance"
+    },
+    {
+      "name": "tokenInfo",
+      "type": "Token",
+      "kind": "OBJECT",
+      "api": "balancerArbitrum",
+      "parent": "UserInternalBalance"
+    },
+    {
+      "name": "balance",
+      "type": "BigDecimal",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "UserInternalBalance"
+    },
+    {
+      "name": "hash",
+      "type": "Bytes",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "_Block_"
+    },
+    {
+      "name": "number",
+      "type": "Int",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "_Block_"
+    },
+    {
+      "name": "timestamp",
+      "type": "Int",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "_Block_"
+    },
+    {
+      "name": "parentHash",
+      "type": "Bytes",
+      "kind": "SCALAR",
+      "api": "balancerArbitrum",
+      "parent": "_Block_"
+    },
+    {
+      "name": "block",
+      "type": "_Block_",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "_Meta_"
+    },
+    {
+      "name": "deployment",
+      "type": "String",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "_Meta_"
+    },
+    {
+      "name": "hasIndexingErrors",
+      "type": "Boolean",
+      "kind": "NON_NULL",
+      "api": "balancerArbitrum",
+      "parent": "_Meta_"
+    }
+  ]
+}
