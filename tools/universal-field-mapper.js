@@ -83,16 +83,18 @@ async function fetchApiSchema(apiName, apiUrl) {
 // Helper function to process REST API schema
 function processRestApiSchema(data) {
   const fields = [];
-  const recursiveExtractor = (obj, parent = null) => {
+  const recursiveExtractor = (obj, parent = null, depth = 0) => {
     Object.keys(obj).forEach((key) => {
       const value = obj[key];
       fields.push({
         name: key,
         type: typeof value,
         parent,
+        depth,
+        description: null // Placeholder for descriptions if available
       });
       if (typeof value === "object" && value !== null) {
-        recursiveExtractor(value, key);
+        recursiveExtractor(value, key, depth + 1);
       }
     });
   };
@@ -103,19 +105,25 @@ function processRestApiSchema(data) {
 // Function to process schema and extract fields
 function processSchema(types, apiName) {
   const fields = [];
-  types.forEach((type) => {
+  const extractFields = (type, parent = null, depth = 0) => {
     if (type.fields) {
       type.fields.forEach((field) => {
         fields.push({
           name: field.name,
           type: field.type.name || field.type.ofType?.name || "Unknown",
           kind: field.type.kind,
-          api: apiName,
-          parent: type.name,
+          parent,
+          depth,
+          description: field.description || null,
+          api: apiName
         });
+        if (field.type.kind === "OBJECT" && field.type.fields) {
+          extractFields(field.type, field.name, depth + 1);
+        }
       });
     }
-  });
+  };
+  types.forEach((type) => extractFields(type));
   return fields;
 }
 
@@ -136,11 +144,11 @@ function saveJsonOutput(fileName, data, apiName) {
 
 // Save CSV output with headers
 function saveCsvOutput(fileName, data, apiName) {
-  const headers = ["Field Name", "Type", "Parent", "API"];
+  const headers = ["Field Name", "Type", "Parent", "Depth", "API", "Description"];
   const csvContent = [
     headers.join(","),
     ...data.map((row) =>
-      [row.name, row.type, row.parent, apiName].map((value) => `"${value}"`).join(",")
+      [row.name, row.type, row.parent, row.depth, apiName, row.description || ""].map((value) => `"${value}"`).join(",")
     ),
   ].join("\n");
 
@@ -171,12 +179,14 @@ function saveHtmlOutput(fileName, data, apiName) {
             <th>Field Name</th>
             <th>Type</th>
             <th>Parent</th>
+            <th>Depth</th>
             <th>API</th>
+            <th>Description</th>
           </tr>
           ${data
             .map(
               (row) =>
-                `<tr><td>${row.name}</td><td>${row.type}</td><td>${row.parent}</td><td>${apiName}</td></tr>`
+                `<tr><td>${row.name}</td><td>${row.type}</td><td>${row.parent}</td><td>${row.depth}</td><td>${apiName}</td><td>${row.description || "N/A"}</td></tr>`
             )
             .join("")}
         </table>
