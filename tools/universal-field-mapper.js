@@ -19,7 +19,7 @@ const apis = {
   curveAvalanche: process.env.CURVE_AVALANCHE_DEX_API,
   quickswap: process.env.QUICKSWAP_DEX_API,
   balancerPolygon: process.env.BALANCER_POLYGON_DEX_API,
-  balancerOptimism: process.env. BALANCER_OPTIMISM_DEX_API,
+  balancerOptimism: process.env.BALANCER_OPTIMISM_DEX_API,
   balancerArbitrum: process.env.BALANCER_ARBITRUM_DEX_API,
   balancerAvalanche: process.env.BALANCER_AVALANCHE_DEX_API,
   balancerEthereum: process.env.BALANCER_ETHEREUM_DEX_API,
@@ -120,13 +120,6 @@ function processSchema(types, apiName) {
 }
 
 // Save JSON output
-function saveJsonOutput(fileName, data) {
-  const filePath = path.join(outputDir, fileName);
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-  console.log(`Output saved to ${filePath}`);
-}
-
-// Save JSON output with additional metadata
 function saveJsonOutput(fileName, data, apiName) {
   const filePath = path.join(outputDir, fileName);
   const outputData = {
@@ -209,9 +202,9 @@ async function runMapper() {
       const csvFileName = `${apiName}-fields-${dateStamp}.csv`;
       const htmlFileName = `${apiName}-fields-${dateStamp}.html`;
 
-      saveJsonOutput(jsonFileName, fields);
-      saveCsvOutput(csvFileName, fields);
-      saveHtmlOutput(htmlFileName, fields);
+      saveJsonOutput(jsonFileName, fields, apiName);
+      saveCsvOutput(csvFileName, fields, apiName);
+      saveHtmlOutput(htmlFileName, fields, apiName);
     }
   }
   console.log("Field mapping completed for all APIs.");
