@@ -1,7 +1,7 @@
 {
   "metadata": {
     "apiName": "sushiswap",
-    "timestamp": "2025-01-10T03:03:39.240Z",
+    "timestamp": "2025-01-10T03:24:13.092Z",
     "totalFields": 515
   },
   "fields": [
@@ -9,3606 +9,4636 @@
       "name": "id",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Account"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "positionCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Account"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "positions",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Account"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "openPositionCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Account"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "closedPositionCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Account"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "depositCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Account"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "deposits",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Account"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "withdrawCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Account"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "withdraws",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Account"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "swapCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Account"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "swaps",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Account"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "id",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "ActiveAccount"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "id",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Deposit"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hash",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Deposit"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "nonce",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Deposit"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "logIndex",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Deposit"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "gasLimit",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "Deposit"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "gasUsed",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "Deposit"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "gasPrice",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "Deposit"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "protocol",
       "type": "DexAmmProtocol",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Deposit"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "account",
       "type": "Account",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Deposit"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "position",
       "type": "Position",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Deposit"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "pool",
       "type": "LiquidityPool",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Deposit"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tickLower",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "Deposit"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tickUpper",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "Deposit"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "blockNumber",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Deposit"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "timestamp",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Deposit"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidity",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Deposit"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "inputTokens",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Deposit"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "inputTokenAmounts",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Deposit"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "reserveAmounts",
       "type": "Unknown",
       "kind": "LIST",
-      "api": "sushiswap",
-      "parent": "Deposit"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "amountUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Deposit"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "id",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "name",
       "type": "String",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "slug",
       "type": "String",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "schemaVersion",
       "type": "String",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "subgraphVersion",
       "type": "String",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "methodologyVersion",
       "type": "String",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "network",
       "type": "Network",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "type",
       "type": "ProtocolType",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "totalValueLockedUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "totalLiquidityUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "activeLiquidityUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "uncollectedProtocolSideValueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "uncollectedSupplySideValueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "protocolControlledValueUSD",
       "type": "BigDecimal",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeVolumeUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeSupplySideRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeProtocolSideRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeTotalRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeUniqueUsers",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeUniqueLPs",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeUniqueTraders",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "totalPoolCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "openPositionCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativePositionCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "lastSnapshotDayID",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "lastUpdateTimestamp",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "lastUpdateBlockNumber",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "dailyUsageMetrics",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hourlyUsageMetrics",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "financialMetrics",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "pools",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "_regenesis",
       "type": "Boolean",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "DexAmmProtocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "id",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "FinancialsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "day",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "FinancialsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "protocol",
       "type": "DexAmmProtocol",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "FinancialsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "totalValueLockedUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "FinancialsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "totalLiquidityUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "FinancialsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "activeLiquidityUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "FinancialsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "uncollectedProtocolSideValueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "FinancialsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "uncollectedSupplySideValueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "FinancialsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "protocolControlledValueUSD",
       "type": "BigDecimal",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "FinancialsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "dailyVolumeUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "FinancialsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeVolumeUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "FinancialsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "dailySupplySideRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "FinancialsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeSupplySideRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "FinancialsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "dailyProtocolSideRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "FinancialsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeProtocolSideRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "FinancialsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "dailyTotalRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "FinancialsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeTotalRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "FinancialsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "timestamp",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "FinancialsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "blockNumber",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "FinancialsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "id",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "protocol",
       "type": "DexAmmProtocol",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "name",
       "type": "String",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "symbol",
       "type": "String",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityToken",
       "type": "Token",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityTokenType",
       "type": "TokenType",
       "kind": "ENUM",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "inputTokens",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "rewardTokens",
       "type": "Unknown",
       "kind": "LIST",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "fees",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "isSingleSided",
       "type": "Boolean",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "createdTimestamp",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "createdBlockNumber",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tick",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "totalValueLockedUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "totalLiquidity",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "totalLiquidityUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "activeLiquidity",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "activeLiquidityUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "uncollectedProtocolSideTokenAmounts",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "uncollectedProtocolSideValuesUSD",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "uncollectedSupplySideTokenAmounts",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "uncollectedSupplySideValuesUSD",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeSupplySideRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeProtocolSideRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeTotalRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeVolumeByTokenAmount",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeVolumeByTokenUSD",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeVolumeUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "inputTokenBalances",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "inputTokenBalancesUSD",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "inputTokenWeights",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "stakedOutputTokenAmount",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "rewardTokenEmissionsAmount",
       "type": "Unknown",
       "kind": "LIST",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "rewardTokenEmissionsUSD",
       "type": "Unknown",
       "kind": "LIST",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeDepositCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeWithdrawCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeSwapCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "positions",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "positionCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "openPositionCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "closedPositionCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "lastSnapshotDayID",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "lastSnapshotHourID",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "lastUpdateTimestamp",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "lastUpdateBlockNumber",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "dailySnapshots",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hourlySnapshots",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "deposits",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "withdraws",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "swaps",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "id",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "day",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "protocol",
       "type": "DexAmmProtocol",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "pool",
       "type": "LiquidityPool",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tick",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "totalValueLockedUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "totalLiquidity",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "totalLiquidityUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "activeLiquidity",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "activeLiquidityUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "uncollectedProtocolSideTokenAmounts",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "uncollectedProtocolSideValuesUSD",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "uncollectedSupplySideTokenAmounts",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "uncollectedSupplySideValuesUSD",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeSupplySideRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "dailySupplySideRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeProtocolSideRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "dailyProtocolSideRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeTotalRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "dailyTotalRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeVolumeUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "dailyVolumeUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeVolumeByTokenAmount",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "dailyVolumeByTokenAmount",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeVolumeByTokenUSD",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "dailyVolumeByTokenUSD",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "inputTokenBalances",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "inputTokenBalancesUSD",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "inputTokenWeights",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "stakedOutputTokenAmount",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "rewardTokenEmissionsAmount",
       "type": "Unknown",
       "kind": "LIST",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "rewardTokenEmissionsUSD",
       "type": "Unknown",
       "kind": "LIST",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeDepositCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "dailyDepositCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeWithdrawCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "dailyWithdrawCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeSwapCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "dailySwapCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "positionCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "openPositionCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "closedPositionCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "timestamp",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "blockNumber",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "id",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolFee"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "feePercentage",
       "type": "BigDecimal",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolFee"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "feeType",
       "type": "LiquidityPoolFeeType",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolFee"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "id",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hour",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "protocol",
       "type": "DexAmmProtocol",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "pool",
       "type": "LiquidityPool",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tick",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "totalValueLockedUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "totalLiquidity",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "totalLiquidityUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "activeLiquidity",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "activeLiquidityUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "uncollectedProtocolSideTokenAmounts",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "uncollectedProtocolSideValuesUSD",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "uncollectedSupplySideTokenAmounts",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "uncollectedSupplySideValuesUSD",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeSupplySideRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hourlySupplySideRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeProtocolSideRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hourlyProtocolSideRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeTotalRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hourlyTotalRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeVolumeUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hourlyVolumeUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeVolumeByTokenAmount",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hourlyVolumeByTokenAmount",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeVolumeByTokenUSD",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hourlyVolumeByTokenUSD",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "inputTokenBalances",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "inputTokenBalancesUSD",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "inputTokenWeights",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "stakedOutputTokenAmount",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "rewardTokenEmissionsAmount",
       "type": "Unknown",
       "kind": "LIST",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "rewardTokenEmissionsUSD",
       "type": "Unknown",
       "kind": "LIST",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeDepositCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hourlyDepositCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeWithdrawCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hourlyWithdrawCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeSwapCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hourlySwapCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "positionCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "openPositionCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "closedPositionCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "timestamp",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "blockNumber",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "LiquidityPoolHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "id",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "account",
       "type": "Account",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "pool",
       "type": "LiquidityPool",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hashOpened",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hashClosed",
       "type": "Bytes",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "blockNumberOpened",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "timestampOpened",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "blockNumberClosed",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "timestampClosed",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tickLower",
       "type": "Tick",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tickUpper",
       "type": "Tick",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityToken",
       "type": "Token",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityTokenType",
       "type": "TokenType",
       "kind": "ENUM",
-      "api": "sushiswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidity",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeDepositTokenAmounts",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeDepositUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeWithdrawTokenAmounts",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeWithdrawUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeRewardUSD",
       "type": "Unknown",
       "kind": "LIST",
-      "api": "sushiswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "depositCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "deposits",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "withdrawCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "withdraws",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "snapshots",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "id",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hash",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "logIndex",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "nonce",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "position",
       "type": "Position",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityTokenType",
       "type": "TokenType",
       "kind": "ENUM",
-      "api": "sushiswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidity",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityUSD",
       "type": "BigDecimal",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeDepositTokenAmounts",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeDepositUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeWithdrawTokenAmounts",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeWithdrawUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeRewardTokenAmounts",
       "type": "Unknown",
       "kind": "LIST",
-      "api": "sushiswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeRewardUSD",
       "type": "Unknown",
       "kind": "LIST",
-      "api": "sushiswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "depositCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "withdrawCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "blockNumber",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "timestamp",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "id",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Protocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "name",
       "type": "String",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Protocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "slug",
       "type": "String",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Protocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "schemaVersion",
       "type": "String",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Protocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "subgraphVersion",
       "type": "String",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Protocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "methodologyVersion",
       "type": "String",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Protocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "network",
       "type": "Network",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Protocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "type",
       "type": "ProtocolType",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Protocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "totalValueLockedUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Protocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "protocolControlledValueUSD",
       "type": "BigDecimal",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "Protocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeSupplySideRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Protocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeProtocolSideRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Protocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeTotalRevenueUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Protocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeUniqueUsers",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Protocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "totalPoolCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Protocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "dailyUsageMetrics",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Protocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hourlyUsageMetrics",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Protocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "financialMetrics",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Protocol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "token",
       "type": "Token",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tokens",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "rewardToken",
       "type": "RewardToken",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "rewardTokens",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityPoolFee",
       "type": "LiquidityPoolFee",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityPoolFees",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "dexAmmProtocol",
       "type": "DexAmmProtocol",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "dexAmmProtocols",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "usageMetricsDailySnapshot",
       "type": "UsageMetricsDailySnapshot",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "usageMetricsDailySnapshots",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "usageMetricsHourlySnapshot",
       "type": "UsageMetricsHourlySnapshot",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "usageMetricsHourlySnapshots",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "financialsDailySnapshot",
       "type": "FinancialsDailySnapshot",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "financialsDailySnapshots",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityPool",
       "type": "LiquidityPool",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityPools",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityPoolDailySnapshot",
       "type": "LiquidityPoolDailySnapshot",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityPoolDailySnapshots",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityPoolHourlySnapshot",
       "type": "LiquidityPoolHourlySnapshot",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityPoolHourlySnapshots",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tick",
       "type": "Tick",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "ticks",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tickDailySnapshot",
       "type": "TickDailySnapshot",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tickDailySnapshots",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tickHourlySnapshot",
       "type": "TickHourlySnapshot",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tickHourlySnapshots",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "account",
       "type": "Account",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "accounts",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "position",
       "type": "Position",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "positions",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "positionSnapshot",
       "type": "PositionSnapshot",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "positionSnapshots",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "deposit",
       "type": "Deposit",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "deposits",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "withdraw",
       "type": "Withdraw",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "withdraws",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "swap",
       "type": "Swap",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "swaps",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "activeAccount",
       "type": "ActiveAccount",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "activeAccounts",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityPoolAmount",
       "type": "_LiquidityPoolAmount",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityPoolAmounts",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "helperStore",
       "type": "_HelperStore",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "helperStores",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tokenWhitelist",
       "type": "_TokenWhitelist",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tokenWhitelists",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tokenWhitelistSymbol",
       "type": "_TokenWhitelistSymbol",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tokenWhitelistSymbols",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "protocol",
       "type": "Protocol",
       "kind": "INTERFACE",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "protocols",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "_meta",
       "type": "_Meta_",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "id",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "RewardToken"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "token",
       "type": "Token",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "RewardToken"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "type",
       "type": "RewardTokenType",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "RewardToken"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "token",
       "type": "Token",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tokens",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "rewardToken",
       "type": "RewardToken",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "rewardTokens",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityPoolFee",
       "type": "LiquidityPoolFee",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityPoolFees",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "dexAmmProtocol",
       "type": "DexAmmProtocol",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "dexAmmProtocols",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "usageMetricsDailySnapshot",
       "type": "UsageMetricsDailySnapshot",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "usageMetricsDailySnapshots",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "usageMetricsHourlySnapshot",
       "type": "UsageMetricsHourlySnapshot",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "usageMetricsHourlySnapshots",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "financialsDailySnapshot",
       "type": "FinancialsDailySnapshot",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "financialsDailySnapshots",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityPool",
       "type": "LiquidityPool",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityPools",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityPoolDailySnapshot",
       "type": "LiquidityPoolDailySnapshot",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityPoolDailySnapshots",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityPoolHourlySnapshot",
       "type": "LiquidityPoolHourlySnapshot",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityPoolHourlySnapshots",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tick",
       "type": "Tick",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "ticks",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tickDailySnapshot",
       "type": "TickDailySnapshot",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tickDailySnapshots",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tickHourlySnapshot",
       "type": "TickHourlySnapshot",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tickHourlySnapshots",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "account",
       "type": "Account",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "accounts",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "position",
       "type": "Position",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "positions",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "positionSnapshot",
       "type": "PositionSnapshot",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "positionSnapshots",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "deposit",
       "type": "Deposit",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "deposits",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "withdraw",
       "type": "Withdraw",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "withdraws",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "swap",
       "type": "Swap",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "swaps",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "activeAccount",
       "type": "ActiveAccount",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "activeAccounts",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityPoolAmount",
       "type": "_LiquidityPoolAmount",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityPoolAmounts",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "helperStore",
       "type": "_HelperStore",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "helperStores",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tokenWhitelist",
       "type": "_TokenWhitelist",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tokenWhitelists",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tokenWhitelistSymbol",
       "type": "_TokenWhitelistSymbol",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tokenWhitelistSymbols",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "protocol",
       "type": "Protocol",
       "kind": "INTERFACE",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "protocols",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "_meta",
       "type": "_Meta_",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "id",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hash",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "nonce",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "logIndex",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "gasLimit",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "gasUsed",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "gasPrice",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "protocol",
       "type": "DexAmmProtocol",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "account",
       "type": "Account",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "pool",
       "type": "LiquidityPool",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "blockNumber",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "timestamp",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tick",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tokenIn",
       "type": "Token",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "amountIn",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "amountInUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tokenOut",
       "type": "Token",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "amountOut",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "amountOutUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "reserveAmounts",
       "type": "Unknown",
       "kind": "LIST",
-      "api": "sushiswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "id",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "index",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "pool",
       "type": "LiquidityPool",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "createdTimestamp",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "createdBlockNumber",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "prices",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityGross",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityGrossUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityNet",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityNetUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "lastSnapshotDayID",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "lastSnapshotHourID",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "lastUpdateTimestamp",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "lastUpdateBlockNumber",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "id",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "TickDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "day",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "TickDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tick",
       "type": "Tick",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "TickDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "pool",
       "type": "LiquidityPool",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "TickDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityGross",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "TickDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityGrossUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "TickDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityNet",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "TickDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityNetUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "TickDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "timestamp",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "TickDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "blockNumber",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "TickDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "id",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "TickHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hour",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "TickHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tick",
       "type": "Tick",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "TickHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "pool",
       "type": "LiquidityPool",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "TickHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityGross",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "TickHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityGrossUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "TickHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityNet",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "TickHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidityNetUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "TickHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "timestamp",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "TickHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "blockNumber",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "TickHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "id",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "name",
       "type": "String",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "symbol",
       "type": "String",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "decimals",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "lastPriceUSD",
       "type": "BigDecimal",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "lastPriceBlockNumber",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "_lastPricePool",
       "type": "Bytes",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "_totalSupply",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "_totalValueLockedUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "_largePriceChangeBuffer",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "_largeTVLImpactBuffer",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "id",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "UsageMetricsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "day",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "UsageMetricsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "protocol",
       "type": "DexAmmProtocol",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "UsageMetricsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "dailyActiveUsers",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "UsageMetricsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeUniqueUsers",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "UsageMetricsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "dailyTransactionCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "UsageMetricsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "totalPoolCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "UsageMetricsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "dailyDepositCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "UsageMetricsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "dailyWithdrawCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "UsageMetricsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "dailySwapCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "UsageMetricsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "timestamp",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "UsageMetricsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "blockNumber",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "UsageMetricsDailySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "id",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "UsageMetricsHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hour",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "UsageMetricsHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "protocol",
       "type": "DexAmmProtocol",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "UsageMetricsHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hourlyActiveUsers",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "UsageMetricsHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "cumulativeUniqueUsers",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "UsageMetricsHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hourlyTransactionCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "UsageMetricsHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hourlyDepositCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "UsageMetricsHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hourlyWithdrawCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "UsageMetricsHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hourlySwapCount",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "UsageMetricsHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "timestamp",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "UsageMetricsHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "blockNumber",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "UsageMetricsHourlySnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "id",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Withdraw"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hash",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Withdraw"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "nonce",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Withdraw"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "logIndex",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Withdraw"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "gasLimit",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "Withdraw"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "gasUsed",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "Withdraw"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "gasPrice",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "Withdraw"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "protocol",
       "type": "DexAmmProtocol",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Withdraw"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "account",
       "type": "Account",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Withdraw"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "position",
       "type": "Position",
       "kind": "OBJECT",
-      "api": "sushiswap",
-      "parent": "Withdraw"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tickLower",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "Withdraw"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tickUpper",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "Withdraw"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "pool",
       "type": "LiquidityPool",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Withdraw"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "blockNumber",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Withdraw"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "timestamp",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Withdraw"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "liquidity",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Withdraw"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "inputTokens",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Withdraw"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "inputTokenAmounts",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Withdraw"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "reserveAmounts",
       "type": "Unknown",
       "kind": "LIST",
-      "api": "sushiswap",
-      "parent": "Withdraw"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "amountUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "Withdraw"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hash",
       "type": "Bytes",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "_Block_"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "number",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "_Block_"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "timestamp",
       "type": "Int",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "_Block_"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "parentHash",
       "type": "Bytes",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "_Block_"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "id",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "_HelperStore"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "valueDecimalList",
       "type": "Unknown",
       "kind": "LIST",
-      "api": "sushiswap",
-      "parent": "_HelperStore"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "valueDecimal",
       "type": "BigDecimal",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "_HelperStore"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "valueInt",
       "type": "Int",
       "kind": "SCALAR",
-      "api": "sushiswap",
-      "parent": "_HelperStore"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "id",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "_LiquidityPoolAmount"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "inputTokens",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "_LiquidityPoolAmount"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "inputTokenBalances",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "_LiquidityPoolAmount"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "tokenPrices",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "_LiquidityPoolAmount"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "block",
       "type": "_Block_",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "_Meta_"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "deployment",
       "type": "String",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "_Meta_"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "hasIndexingErrors",
       "type": "Boolean",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "_Meta_"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "id",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "_TokenWhitelist"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "whitelistPools",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "_TokenWhitelist"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "id",
       "type": "ID",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "_TokenWhitelistSymbol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     },
     {
       "name": "address",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "sushiswap",
-      "parent": "_TokenWhitelistSymbol"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "sushiswap"
     }
   ]
 }

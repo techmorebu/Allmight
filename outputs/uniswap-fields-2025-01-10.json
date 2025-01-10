@@ -1,7 +1,7 @@
 {
   "metadata": {
     "apiName": "uniswap",
-    "timestamp": "2025-01-10T03:03:38.644Z",
+    "timestamp": "2025-01-10T03:24:12.512Z",
     "totalFields": 388
   },
   "fields": [
@@ -9,2717 +9,3493 @@
       "name": "id",
       "type": "ID",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Bundle"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "ethPriceUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Bundle"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "id",
       "type": "ID",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Burn"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "transaction",
       "type": "Transaction",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Burn"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "pool",
       "type": "Pool",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Burn"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "token0",
       "type": "Token",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Burn"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "token1",
       "type": "Token",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Burn"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "timestamp",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Burn"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "owner",
       "type": "Bytes",
       "kind": "SCALAR",
-      "api": "uniswap",
-      "parent": "Burn"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "origin",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Burn"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "amount",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Burn"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "amount0",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Burn"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "amount1",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Burn"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "amountUSD",
       "type": "BigDecimal",
       "kind": "SCALAR",
-      "api": "uniswap",
-      "parent": "Burn"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tickLower",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Burn"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tickUpper",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Burn"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "logIndex",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "uniswap",
-      "parent": "Burn"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "id",
       "type": "ID",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Collect"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "transaction",
       "type": "Transaction",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Collect"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "timestamp",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Collect"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "pool",
       "type": "Pool",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Collect"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "owner",
       "type": "Bytes",
       "kind": "SCALAR",
-      "api": "uniswap",
-      "parent": "Collect"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "amount0",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Collect"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "amount1",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Collect"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "amountUSD",
       "type": "BigDecimal",
       "kind": "SCALAR",
-      "api": "uniswap",
-      "parent": "Collect"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tickLower",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Collect"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tickUpper",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Collect"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "logIndex",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "uniswap",
-      "parent": "Collect"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "id",
       "type": "ID",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Factory"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "poolCount",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Factory"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "txCount",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Factory"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "totalVolumeUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Factory"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "totalVolumeETH",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Factory"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "totalFeesUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Factory"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "totalFeesETH",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Factory"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "untrackedVolumeUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Factory"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "totalValueLockedUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Factory"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "totalValueLockedETH",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Factory"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "totalValueLockedUSDUntracked",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Factory"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "totalValueLockedETHUntracked",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Factory"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "owner",
       "type": "ID",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Factory"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "id",
       "type": "ID",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Flash"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "transaction",
       "type": "Transaction",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Flash"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "timestamp",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Flash"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "pool",
       "type": "Pool",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Flash"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "sender",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Flash"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "recipient",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Flash"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "amount0",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Flash"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "amount1",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Flash"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "amountUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Flash"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "amount0Paid",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Flash"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "amount1Paid",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Flash"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "logIndex",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "uniswap",
-      "parent": "Flash"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "id",
       "type": "ID",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Mint"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "transaction",
       "type": "Transaction",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Mint"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "timestamp",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Mint"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "pool",
       "type": "Pool",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Mint"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "token0",
       "type": "Token",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Mint"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "token1",
       "type": "Token",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Mint"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "owner",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Mint"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "sender",
       "type": "Bytes",
       "kind": "SCALAR",
-      "api": "uniswap",
-      "parent": "Mint"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "origin",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Mint"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "amount",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Mint"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "amount0",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Mint"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "amount1",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Mint"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "amountUSD",
       "type": "BigDecimal",
       "kind": "SCALAR",
-      "api": "uniswap",
-      "parent": "Mint"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tickLower",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Mint"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tickUpper",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Mint"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "logIndex",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "uniswap",
-      "parent": "Mint"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "id",
       "type": "ID",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "createdAtTimestamp",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "createdAtBlockNumber",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "token0",
       "type": "Token",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "token1",
       "type": "Token",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "feeTier",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "liquidity",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "sqrtPrice",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "feeGrowthGlobal0X128",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "feeGrowthGlobal1X128",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "token0Price",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "token1Price",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tick",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "observationIndex",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volumeToken0",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volumeToken1",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volumeUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "untrackedVolumeUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "feesUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "txCount",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "collectedFeesToken0",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "collectedFeesToken1",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "collectedFeesUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "totalValueLockedToken0",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "totalValueLockedToken1",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "totalValueLockedETH",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "totalValueLockedUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "totalValueLockedUSDUntracked",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "liquidityProviderCount",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "poolHourData",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "poolDayData",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "mints",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "burns",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "swaps",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "collects",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "ticks",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Pool"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "id",
       "type": "ID",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "date",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "pool",
       "type": "Pool",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "liquidity",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "sqrtPrice",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "token0Price",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "token1Price",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tick",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "uniswap",
-      "parent": "PoolDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "feeGrowthGlobal0X128",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "feeGrowthGlobal1X128",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tvlUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volumeToken0",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volumeToken1",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volumeUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "feesUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "txCount",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "open",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "high",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "low",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "close",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "id",
       "type": "ID",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "periodStartUnix",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "pool",
       "type": "Pool",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "liquidity",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "sqrtPrice",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "token0Price",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "token1Price",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tick",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "uniswap",
-      "parent": "PoolHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "feeGrowthGlobal0X128",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "feeGrowthGlobal1X128",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tvlUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volumeToken0",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volumeToken1",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volumeUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "feesUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "txCount",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "open",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "high",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "low",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "close",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PoolHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "id",
       "type": "ID",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "owner",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "pool",
       "type": "Pool",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "token0",
       "type": "Token",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "token1",
       "type": "Token",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tickLower",
       "type": "Tick",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tickUpper",
       "type": "Tick",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "liquidity",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "depositedToken0",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "depositedToken1",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "withdrawnToken0",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "withdrawnToken1",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "collectedFeesToken0",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "collectedFeesToken1",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "transaction",
       "type": "Transaction",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "feeGrowthInside0LastX128",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "feeGrowthInside1LastX128",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Position"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "id",
       "type": "ID",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "owner",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "pool",
       "type": "Pool",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "position",
       "type": "Position",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "blockNumber",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "timestamp",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "liquidity",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "depositedToken0",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "depositedToken1",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "withdrawnToken0",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "withdrawnToken1",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "collectedFeesToken0",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "collectedFeesToken1",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "transaction",
       "type": "Transaction",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "feeGrowthInside0LastX128",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "feeGrowthInside1LastX128",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "PositionSnapshot"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "factory",
       "type": "Factory",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "factories",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "bundle",
       "type": "Bundle",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "bundles",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "token",
       "type": "Token",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tokens",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "pool",
       "type": "Pool",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "pools",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tick",
       "type": "Tick",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "ticks",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "position",
       "type": "Position",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "positions",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "positionSnapshot",
       "type": "PositionSnapshot",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "positionSnapshots",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "transaction",
       "type": "Transaction",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "transactions",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "mint",
       "type": "Mint",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "mints",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "burn",
       "type": "Burn",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "burns",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "swap",
       "type": "Swap",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "swaps",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "collect",
       "type": "Collect",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "collects",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "flash",
       "type": "Flash",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "flashes",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "uniswapDayData",
       "type": "UniswapDayData",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "uniswapDayDatas",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "poolDayData",
       "type": "PoolDayData",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "poolDayDatas",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "poolHourData",
       "type": "PoolHourData",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "poolHourDatas",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tickHourData",
       "type": "TickHourData",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tickHourDatas",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tickDayData",
       "type": "TickDayData",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tickDayDatas",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tokenDayData",
       "type": "TokenDayData",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tokenDayDatas",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tokenHourData",
       "type": "TokenHourData",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tokenHourDatas",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "_meta",
       "type": "_Meta_",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Query"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "factory",
       "type": "Factory",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "factories",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "bundle",
       "type": "Bundle",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "bundles",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "token",
       "type": "Token",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tokens",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "pool",
       "type": "Pool",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "pools",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tick",
       "type": "Tick",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "ticks",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "position",
       "type": "Position",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "positions",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "positionSnapshot",
       "type": "PositionSnapshot",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "positionSnapshots",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "transaction",
       "type": "Transaction",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "transactions",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "mint",
       "type": "Mint",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "mints",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "burn",
       "type": "Burn",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "burns",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "swap",
       "type": "Swap",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "swaps",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "collect",
       "type": "Collect",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "collects",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "flash",
       "type": "Flash",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "flashes",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "uniswapDayData",
       "type": "UniswapDayData",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "uniswapDayDatas",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "poolDayData",
       "type": "PoolDayData",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "poolDayDatas",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "poolHourData",
       "type": "PoolHourData",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "poolHourDatas",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tickHourData",
       "type": "TickHourData",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tickHourDatas",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tickDayData",
       "type": "TickDayData",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tickDayDatas",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tokenDayData",
       "type": "TokenDayData",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tokenDayDatas",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tokenHourData",
       "type": "TokenHourData",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tokenHourDatas",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "_meta",
       "type": "_Meta_",
       "kind": "OBJECT",
-      "api": "uniswap",
-      "parent": "Subscription"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "id",
       "type": "ID",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "transaction",
       "type": "Transaction",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "timestamp",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "pool",
       "type": "Pool",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "token0",
       "type": "Token",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "token1",
       "type": "Token",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "sender",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "recipient",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "origin",
       "type": "Bytes",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "amount0",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "amount1",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "amountUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "sqrtPriceX96",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tick",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "logIndex",
       "type": "BigInt",
       "kind": "SCALAR",
-      "api": "uniswap",
-      "parent": "Swap"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "id",
       "type": "ID",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "poolAddress",
       "type": "String",
       "kind": "SCALAR",
-      "api": "uniswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tickIdx",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "pool",
       "type": "Pool",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "liquidityGross",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "liquidityNet",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "price0",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "price1",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volumeToken0",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volumeToken1",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volumeUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "untrackedVolumeUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "feesUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "collectedFeesToken0",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "collectedFeesToken1",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "collectedFeesUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "createdAtTimestamp",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "createdAtBlockNumber",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "liquidityProviderCount",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "feeGrowthOutside0X128",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "feeGrowthOutside1X128",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Tick"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "id",
       "type": "ID",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TickDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "date",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TickDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "pool",
       "type": "Pool",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TickDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tick",
       "type": "Tick",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TickDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "liquidityGross",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TickDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "liquidityNet",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TickDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volumeToken0",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TickDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volumeToken1",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TickDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volumeUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TickDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "feesUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TickDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "feeGrowthOutside0X128",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TickDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "feeGrowthOutside1X128",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TickDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "id",
       "type": "ID",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TickHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "periodStartUnix",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TickHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "pool",
       "type": "Pool",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TickHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tick",
       "type": "Tick",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TickHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "liquidityGross",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TickHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "liquidityNet",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TickHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volumeToken0",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TickHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volumeToken1",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TickHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volumeUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TickHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "feesUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TickHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "id",
       "type": "ID",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "symbol",
       "type": "String",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "name",
       "type": "String",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "decimals",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "totalSupply",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volume",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volumeUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "untrackedVolumeUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "feesUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "txCount",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "poolCount",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "totalValueLocked",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "totalValueLockedUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "totalValueLockedUSDUntracked",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "derivedETH",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "whitelistPools",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tokenDayData",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Token"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "id",
       "type": "ID",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "date",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "token",
       "type": "Token",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volume",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volumeUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "untrackedVolumeUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "totalValueLocked",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "totalValueLockedUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "priceUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "feesUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "open",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "high",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "low",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "close",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "id",
       "type": "ID",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "periodStartUnix",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "token",
       "type": "Token",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volume",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volumeUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "untrackedVolumeUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "totalValueLocked",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "totalValueLockedUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "priceUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "feesUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "open",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "high",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "low",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "close",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "TokenHourData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "id",
       "type": "ID",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Transaction"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "blockNumber",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Transaction"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "timestamp",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Transaction"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "gasUsed",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Transaction"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "gasPrice",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Transaction"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "mints",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Transaction"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "burns",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Transaction"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "swaps",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Transaction"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "flashed",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Transaction"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "collects",
       "type": "Unknown",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "Transaction"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "id",
       "type": "ID",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "UniswapDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "date",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "UniswapDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volumeETH",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "UniswapDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volumeUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "UniswapDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "volumeUSDUntracked",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "UniswapDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "feesUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "UniswapDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "txCount",
       "type": "BigInt",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "UniswapDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "tvlUSD",
       "type": "BigDecimal",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "UniswapDayData"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "hash",
       "type": "Bytes",
       "kind": "SCALAR",
-      "api": "uniswap",
-      "parent": "_Block_"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "number",
       "type": "Int",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "_Block_"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "timestamp",
       "type": "Int",
       "kind": "SCALAR",
-      "api": "uniswap",
-      "parent": "_Block_"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "parentHash",
       "type": "Bytes",
       "kind": "SCALAR",
-      "api": "uniswap",
-      "parent": "_Block_"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "block",
       "type": "_Block_",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "_Meta_"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "deployment",
       "type": "String",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "_Meta_"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     },
     {
       "name": "hasIndexingErrors",
       "type": "Boolean",
       "kind": "NON_NULL",
-      "api": "uniswap",
-      "parent": "_Meta_"
+      "parent": null,
+      "depth": 0,
+      "description": null,
+      "api": "uniswap"
     }
   ]
 }
