@@ -5,6 +5,7 @@ const cron = require("node-cron");
 require("dotenv").config();
 
 const outputDir = path.join(__dirname, "../outputs");
+const aggregatedOutputFile = path.join(outputDir, "aggregated-fields.json");
 
 // Ensure output directory exists
 if (!fs.existsSync(outputDir)) {
@@ -142,6 +143,21 @@ function saveJsonOutput(fileName, data, apiName) {
   console.log(`JSON Output saved to ${filePath}`);
 }
 
+// Save aggregated JSON output
+function saveAggregatedOutput(apiName, data) {
+  let aggregatedData = [];
+  if (fs.existsSync(aggregatedOutputFile)) {
+    aggregatedData = JSON.parse(fs.readFileSync(aggregatedOutputFile, "utf-8"));
+  }
+  aggregatedData.push({
+    apiName,
+    timestamp: new Date().toISOString(),
+    fields: data
+  });
+  fs.writeFileSync(aggregatedOutputFile, JSON.stringify(aggregatedData, null, 2));
+  console.log(`Aggregated output updated at ${aggregatedOutputFile}`);
+}
+
 // Save CSV output with headers
 function saveCsvOutput(fileName, data, apiName) {
   const headers = ["Field Name", "Type", "Parent", "Depth", "API", "Description"];
@@ -215,6 +231,7 @@ async function runMapper() {
       saveJsonOutput(jsonFileName, fields, apiName);
       saveCsvOutput(csvFileName, fields, apiName);
       saveHtmlOutput(htmlFileName, fields, apiName);
+      saveAggregatedOutput(apiName, fields);
     }
   }
   console.log("Field mapping completed for all APIs.");
