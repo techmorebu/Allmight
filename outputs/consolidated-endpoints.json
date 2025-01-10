@@ -1,0 +1,97 @@
+[
+  {
+    "apiName": "uniswap",
+    "url": "https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV",
+    "type": "DEX"
+  },
+  {
+    "apiName": "sushiswap",
+    "url": "https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/3oHCddbQGTi42kPZBwyGzD2JzZR33zK2MwXtxAerNJy2",
+    "type": "DEX"
+  },
+  {
+    "apiName": "curveEthereum",
+    "url": "https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/3fy93eAT56UJsRCEht8iFhfi6wjHWXtZ9dnnbQmvFopF",
+    "type": "DEX"
+  },
+  {
+    "apiName": "curveAvalanche",
+    "url": "https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/2Vt8WtdXNZUEeaVtzyEd1dpioJf44nvomzkd4HhubfKS",
+    "type": "DEX"
+  },
+  {
+    "apiName": "quickswap",
+    "url": "https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g",
+    "type": "DEX"
+  },
+  {
+    "apiName": "balancerPolygon",
+    "url": "https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/H9oPAbXnobBRq1cB3HDmbZ1E8MWQyJYQjT1QDJMrdbNp",
+    "type": "DEX"
+  },
+  {
+    "apiName": "balancerOptimism",
+    "url": "https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FsmdxmvBJLGjUQPxKMRtcWKzuCNpomKuMTbSbtRtggZ7",
+    "type": "DEX"
+  },
+  {
+    "apiName": "balancerArbitrum",
+    "url": "https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/98cQDy6tufTJtshDCuhh9z2kWXsQWBHVh2bqnLHsGAeS",
+    "type": "DEX"
+  },
+  {
+    "apiName": "balancerAvalanche",
+    "url": "https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/7asfmtQA1KYu6CP7YVm5kv4bGxVyfAHEiptt2HMFgkHu",
+    "type": "DEX"
+  },
+  {
+    "apiName": "balancerEthereum",
+    "url": "https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/C4ayEZP2yTXRAB8vSaTrgN4m9anTe9Mdm2ViyiAuV9TV",
+    "type": "DEX"
+  },
+  {
+    "apiName": "arbitrum-tickers",
+    "url": "https://arbitrum-api.gmxinfra.io/prices/tickers",
+    "type": "GMX"
+  },
+  {
+    "apiName": "arbitrum-signedPrices",
+    "url": "https://arbitrum-api.gmxinfra.io/signed_prices/latest",
+    "type": "GMX"
+  },
+  {
+    "apiName": "arbitrum-candles",
+    "url": "https://arbitrum-api.gmxinfra.io/prices/candles",
+    "type": "GMX"
+  },
+  {
+    "apiName": "arbitrum-tokens",
+    "url": "https://arbitrum-api.gmxinfra.io/tokens",
+    "type": "GMX"
+  },
+  {
+    "apiName": "avalanche-tickers",
+    "url": "https://avalanche-api.gmxinfra.io/prices/tickers",
+    "type": "GMX"
+  },
+  {
+    "apiName": "avalanche-signedPrices",
+    "url": "https://avalanche-api.gmxinfra.io/signed_prices/latest",
+    "type": "GMX"
+  },
+  {
+    "apiName": "avalanche-candles",
+    "url": "https://avalanche-api.gmxinfra.io/prices/candles",
+    "type": "GMX"
+  },
+  {
+    "apiName": "avalanche-tokens",
+    "url": "https://avalanche-api.gmxinfra.io/tokens",
+    "type": "GMX"
+  },
+  {
+    "apiName": "DYDX",
+    "url": "wss://api.dydx.exchange/v3/ws",
+    "type": "WebSocket"
+  }
+]
