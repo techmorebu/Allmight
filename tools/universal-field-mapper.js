@@ -1,37 +1,18 @@
 const fetch = require("node-fetch");
-const WebSocket = require("ws");
-const Redis = require("ioredis");
 const fs = require("fs");
 const path = require("path");
+const cron = require("node-cron");
 require("dotenv").config();
 
 const outputDir = path.join(__dirname, "../outputs");
-const redis = new Redis(); // In-memory caching with Redis
 
 // Ensure output directory exists
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir);
 }
 
-// GMX and DYDX Endpoints
-const gmxEndpoints = {
-  arbitrum: {
-    tickers: process.env.GMX_ARBITRUM_TICKERS_URL,
-    signedPrices: process.env.GMX_ARBITRUM_SIGNED_PRICES_URL,
-    candles: process.env.GMX_ARBITRUM_CANDLES_URL,
-    tokens: process.env.GMX_ARBITRUM_TOKENS_URL,
-  },
-  avalanche: {
-    tickers: process.env.GMX_AVALANCHE_TICKERS_URL,
-    signedPrices: process.env.GMX_AVALANCHE_SIGNED_PRICES_URL,
-    candles: process.env.GMX_AVALANCHE_CANDLES_URL,
-    tokens: process.env.GMX_AVALANCHE_TOKENS_URL,
-  },
-};
-
-const dydxWebSocketUrl = process.env.DYDX_WEBSOCKET_URL;
-
-const dexEndpoints = {
+// Map your API endpoints from .env
+const apis = {
   uniswap: process.env.UNISWAP_DEX_API,
   sushiswap: process.env.SUSHISWAP_DEX_API,
   curveEthereum: process.env.CURVE_ETHEREUM_DEX_API,
@@ -44,137 +25,424 @@ const dexEndpoints = {
   balancerEthereum: process.env.BALANCER_ETHEREUM_DEX_API,
 };
 
-// Fetch GMX Data
-async function fetchGmxData(apiName, url) {
+// Helper function to fetch schema or data
+async function fetchApiSchema(apiName, apiUrl) {
+  if (!apiUrl) {
+    console.error(`Error: API URL for ${apiName} is not defined.`);
+    return null;
+  }
+
   try {
-    console.log(`Fetching GMX data: ${apiName}`);
-    const response = await fetch(url);
+    console.log(`Fetching schema for ${apiName}...`);
+    const isGraphQL = apiUrl.includes("thegraph");
+    const options = isGraphQL
+      ? {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            query: `{
+              __schema {
+                types {
+                  name
+                  kind
+                  fields {
+                    name
+                    type {
+                      name
+                      kind
+                      ofType {
+                        name
+                        kind
+                      }
+                    }
+                  }
+                }
+              }
+            }`,
+          }),
+        }
+      : null;
+
+    const response = await fetch(apiUrl, options);
     if (!response.ok) {
-      throw new Error(`Failed to fetch GMX data from ${url}: ${response.statusText}`);
+      throw new Error(`Failed to fetch schema for ${apiName}: ${response.statusText}`);
     }
+
     const data = await response.json();
-    await redis.set(apiName, JSON.stringify(data), "EX", 10); // Cache data for 10 seconds
-    return data;
+    if (data.errors) {
+      throw new Error(`API Error: ${data.errors[0].message}`);
+    }
+
+    return isGraphQL ? data.data.__schema.types : processRestApiSchema(data);
   } catch (error) {
-    console.error(`Error fetching GMX data (${apiName}):`, error.message);
+    console.error(`Error fetching schema for ${apiName}:`, error.message);
     return null;
   }
 }
 
-// Fetch DEX Data
-async function fetchDexData(apiName, url) {
-  try {
-    console.log(`Fetching DEX data: ${apiName}`);
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch DEX data from ${url}: ${response.statusText}`);
-    }
-    const data = await response.json();
-    await redis.set(apiName, JSON.stringify(data), "EX", 10); // Cache data for 10 seconds
-    return data;
-  } catch (error) {
-    console.error(`Error fetching DEX data (${apiName}):`, error.message);
-    return null;
-  }
-}
-
-// Initialize DYDX WebSocket
-function initializeDydxWebSocket() {
-  const ws = new WebSocket(dydxWebSocketUrl);
-
-  ws.on("open", () => {
-    console.log("Connected to DYDX WebSocket.");
-    ws.send(
-      JSON.stringify({
-        type: "subscribe",
-        channel: "v3_orderbook", // Example subscription, adjust as needed
-        id: "BTC-USD",
-      })
-    );
-  });
-
-  ws.on("message", (data) => {
-    const parsedData = JSON.parse(data);
-    console.log("DYDX Real-Time Data:", parsedData);
-    redis.set("dydx-realtime", JSON.stringify(parsedData), "EX", 5);
-  });
-
-  ws.on("error", (err) => {
-    console.error("DYDX WebSocket error:", err.message);
-  });
-
-  ws.on("close", () => {
-    console.log("DYDX WebSocket closed. Reconnecting...");
-    setTimeout(initializeDydxWebSocket, 5000); // Reconnect after 5 seconds
-  });
-}
-
-// Consolidated Report
-function generateConsolidatedReport() {
-  const consolidatedData = [];
-
-  for (const [apiName, url] of Object.entries(dexEndpoints)) {
-    consolidatedData.push({
-      apiName,
-      url,
-      type: "DEX",
+// Helper function to process REST API schema
+function processRestApiSchema(data) {
+  const fields = [];
+  const recursiveExtractor = (obj, parent = null) => {
+    Object.keys(obj).forEach((key) => {
+      const value = obj[key];
+      fields.push({
+        name: key,
+        type: typeof value,
+        parent,
+      });
+      if (typeof value === "object" && value !== null) {
+        recursiveExtractor(value, key);
+      }
     });
-  }
+  };
+  recursiveExtractor(data);
+  return fields;
+}
 
-  for (const [network, endpoints] of Object.entries(gmxEndpoints)) {
-    for (const [endpointName, url] of Object.entries(endpoints)) {
-      consolidatedData.push({
-        apiName: `${network}-${endpointName}`,
-        url,
-        type: "GMX",
+// Function to process schema and extract fields
+function processSchema(types, apiName) {
+  const fields = [];
+  types.forEach((type) => {
+    if (type.fields) {
+      type.fields.forEach((field) => {
+        fields.push({
+          name: field.name,
+          type: field.type.name || field.type.ofType?.name || "Unknown",
+          kind: field.type.kind,
+          api: apiName,
+          parent: type.name,
+        });
       });
     }
-  }
-
-  consolidatedData.push({
-    apiName: "DYDX",
-    url: dydxWebSocketUrl,
-    type: "WebSocket",
   });
-
-  const reportPath = path.join(outputDir, "consolidated-endpoints.json");
-  fs.writeFileSync(reportPath, JSON.stringify(consolidatedData, null, 2));
-  console.log(`Consolidated report saved to ${reportPath}`);
+  return fields;
 }
 
-// Main Data Fetching Pipeline
-async function runDataFetchingPipeline() {
-  // Fetch GMX Data
-  for (const [network, endpoints] of Object.entries(gmxEndpoints)) {
-    for (const [endpointName, url] of Object.entries(endpoints)) {
-      if (url) {
-        const data = await fetchGmxData(`${network}-${endpointName}`, url);
-        if (data) {
-          const outputPath = path.join(outputDir, `${network}-${endpointName}.json`);
-          fs.writeFileSync(outputPath, JSON.stringify(data, null, 2));
-          console.log(`GMX ${network} ${endpointName} data saved to ${outputPath}`);
+// Save JSON output
+function saveJsonOutput(fileName, data) {
+  const filePath = path.join(outputDir, fileName);
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+  console.log(`Output saved to ${filePath}`);
+}
+
+// Save JSON output with additional metadata
+function saveJsonOutput(fileName, data, apiName) {
+  const filePath = path.join(outputDir, fileName);
+  const outputData = {
+    metadata: {
+      apiName,
+      timestamp: new Date().toISOString(),
+      totalFields: data.length,
+    },
+    fields: data,
+  };
+  fs.writeFileSync(filePath, JSON.stringify(outputData, null, 2));
+  console.log(`JSON Output saved to ${filePath}`);
+}
+
+// Save CSV output with headers
+function saveCsvOutput(fileName, data, apiName) {
+  const headers = ["Field Name", "Type", "Parent", "API"];
+  const csvContent = [
+    headers.join(","),
+    ...data.map((row) =>
+      [row.name, row.type, row.parent, apiName].map((value) => `"${value}"`).join(",")
+    ),
+  ].join("\n");
+
+  const csvFilePath = path.join(outputDir, fileName);
+  fs.writeFileSync(csvFilePath, csvContent);
+  console.log(`CSV Output saved to ${csvFilePath}`);
+}
+
+// Save HTML output with navigation and summaries
+function saveHtmlOutput(fileName, data, apiName) {
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Field Mapping Report for ${apiName}</title>
+        <style>
+          table { border-collapse: collapse; width: 100%; }
+          th, td { border: 1px solid #ddd; padding: 8px; }
+          th { background-color: #f4f4f4; text-align: left; }
+        </style>
+      </head>
+      <body>
+        <h1>Field Mapping Report for ${apiName}</h1>
+        <p><strong>Timestamp:</strong> ${new Date().toISOString()}</p>
+        <p><strong>Total Fields:</strong> ${data.length}</p>
+        <table>
+          <tr>
+            <th>Field Name</th>
+            <th>Type</th>
+            <th>Parent</th>
+            <th>API</th>
+          </tr>
+          ${data
+            .map(
+              (row) =>
+                `<tr><td>${row.name}</td><td>${row.type}</td><td>${row.parent}</td><td>${apiName}</td></tr>`
+            )
+            .join("")}
+        </table>
+      </body>
+    </html>
+  `;
+  const htmlFilePath = path.join(outputDir, fileName);
+  fs.writeFileSync(htmlFilePath, htmlContent);
+  console.log(`HTML Output saved to ${htmlFilePath}`);
+}
+
+// Main function to run the mapper
+async function runMapper() {
+  for (const [apiName, apiUrl] of Object.entries(apis)) {
+    const schema = await fetchApiSchema(apiName, apiUrl);
+    if (schema) {
+      const fields = Array.isArray(schema)
+        ? processSchema(schema, apiName)
+        : schema;
+
+      const dateStamp = new Date().toISOString().split("T")[0];
+      const jsonFileName = `${apiName}-fields-${dateStamp}.json`;
+      const csvFileName = `${apiName}-fields-${dateStamp}.csv`;
+      const htmlFileName = `${apiName}-fields-${dateStamp}.html`;
+
+      saveJsonOutput(jsonFileName, fields);
+      saveCsvOutput(csvFileName, fields);
+      saveHtmlOutput(htmlFileName, fields);
+    }
+  }
+  console.log("Field mapping completed for all APIs.");
+}
+
+// Schedule periodic updates (e.g., every day at midnight)
+cron.schedule("0 0 * * *", runMapper);
+
+// Initial run
+runMapper();
+const fetch = require("node-fetch");
+const fs = require("fs");
+const path = require("path");
+const cron = require("node-cron");
+require("dotenv").config();
+
+const outputDir = path.join(__dirname, "../outputs");
+
+// Ensure output directory exists
+if (!fs.existsSync(outputDir)) {
+  fs.mkdirSync(outputDir);
+}
+
+// Map your API endpoints from .env
+const apis = {
+  uniswap: process.env.UNISWAP_DEX_API,
+  sushiswap: process.env.SUSHISWAP_DEX_API,
+  curveEthereum: process.env.CURVE_ETHEREUM_DEX_API,
+  curveAvalanche: process.env.CURVE_AVALANCHE_DEX_API,
+  quickswap: process.env.QUICKSWAP_DEX_API,
+  balancerPolygon: process.env.BALANCER_POLYGON_DEX_API,
+  balancerOptimism: process.env.BALANCER_OPTIMISM_DEX_API,
+  balancerArbitrum: process.env.BALANCER_ARBITRUM_DEX_API,
+  balancerAvalanche: process.env.BALANCER_AVALANCHE_DEX_API,
+  balancerEthereum: process.env.BALANCER_ETHEREUM_DEX_API,
+};
+
+// Helper function to fetch schema or data
+async function fetchApiSchema(apiName, apiUrl) {
+  if (!apiUrl) {
+    console.error(`Error: API URL for ${apiName} is not defined.`);
+    return null;
+  }
+
+  try {
+    console.log(`Fetching schema for ${apiName}...`);
+    const isGraphQL = apiUrl.includes("thegraph");
+    const options = isGraphQL
+      ? {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            query: `{
+              __schema {
+                types {
+                  name
+                  kind
+                  fields {
+                    name
+                    type {
+                      name
+                      kind
+                      ofType {
+                        name
+                        kind
+                      }
+                    }
+                  }
+                }
+              }
+            }`,
+          }),
         }
-      }
-    }
-  }
+      : null;
 
-  // Fetch DEX Data
-  for (const [apiName, url] of Object.entries(dexEndpoints)) {
-    if (url) {
-      const data = await fetchDexData(apiName, url);
-      if (data) {
-        const outputPath = path.join(outputDir, `${apiName}-data.json`);
-        fs.writeFileSync(outputPath, JSON.stringify(data, null, 2));
-        console.log(`DEX ${apiName} data saved to ${outputPath}`);
-      }
+    const response = await fetch(apiUrl, options);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch schema for ${apiName}: ${response.statusText}`);
     }
-  }
 
-  console.log("Data fetching pipeline completed.");
-  generateConsolidatedReport();
+    const data = await response.json();
+    if (data.errors) {
+      throw new Error(`API Error: ${data.errors[0].message}`);
+    }
+
+    return isGraphQL ? data.data.__schema.types : processRestApiSchema(data);
+  } catch (error) {
+    console.error(`Error fetching schema for ${apiName}:`, error.message);
+    return null;
+  }
 }
 
-// Initialize WebSocket and Fetch Pipeline
-initializeDydxWebSocket();
-runDataFetchingPipeline();
-setInterval(runDataFetchingPipeline, 10000); // Poll every 10 seconds
+// Helper function to process REST API schema
+function processRestApiSchema(data) {
+  const fields = [];
+  const recursiveExtractor = (obj, parent = null) => {
+    Object.keys(obj).forEach((key) => {
+      const value = obj[key];
+      fields.push({
+        name: key,
+        type: typeof value,
+        parent,
+      });
+      if (typeof value === "object" && value !== null) {
+        recursiveExtractor(value, key);
+      }
+    });
+  };
+  recursiveExtractor(data);
+  return fields;
+}
+
+// Function to process schema and extract fields
+function processSchema(types, apiName) {
+  const fields = [];
+  types.forEach((type) => {
+    if (type.fields) {
+      type.fields.forEach((field) => {
+        fields.push({
+          name: field.name,
+          type: field.type.name || field.type.ofType?.name || "Unknown",
+          kind: field.type.kind,
+          api: apiName,
+          parent: type.name,
+        });
+      });
+    }
+  });
+  return fields;
+}
+
+// Save JSON output
+function saveJsonOutput(fileName, data) {
+  const filePath = path.join(outputDir, fileName);
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+  console.log(`Output saved to ${filePath}`);
+}
+
+// Save JSON output with additional metadata
+function saveJsonOutput(fileName, data, apiName) {
+  const filePath = path.join(outputDir, fileName);
+  const outputData = {
+    metadata: {
+      apiName,
+      timestamp: new Date().toISOString(),
+      totalFields: data.length,
+    },
+    fields: data,
+  };
+  fs.writeFileSync(filePath, JSON.stringify(outputData, null, 2));
+  console.log(`JSON Output saved to ${filePath}`);
+}
+
+// Save CSV output with headers
+function saveCsvOutput(fileName, data, apiName) {
+  const headers = ["Field Name", "Type", "Parent", "API"];
+  const csvContent = [
+    headers.join(","),
+    ...data.map((row) =>
+      [row.name, row.type, row.parent, apiName].map((value) => `"${value}"`).join(",")
+    ),
+  ].join("\n");
+
+  const csvFilePath = path.join(outputDir, fileName);
+  fs.writeFileSync(csvFilePath, csvContent);
+  console.log(`CSV Output saved to ${csvFilePath}`);
+}
+
+// Save HTML output with navigation and summaries
+function saveHtmlOutput(fileName, data, apiName) {
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Field Mapping Report for ${apiName}</title>
+        <style>
+          table { border-collapse: collapse; width: 100%; }
+          th, td { border: 1px solid #ddd; padding: 8px; }
+          th { background-color: #f4f4f4; text-align: left; }
+        </style>
+      </head>
+      <body>
+        <h1>Field Mapping Report for ${apiName}</h1>
+        <p><strong>Timestamp:</strong> ${new Date().toISOString()}</p>
+        <p><strong>Total Fields:</strong> ${data.length}</p>
+        <table>
+          <tr>
+            <th>Field Name</th>
+            <th>Type</th>
+            <th>Parent</th>
+            <th>API</th>
+          </tr>
+          ${data
+            .map(
+              (row) =>
+                `<tr><td>${row.name}</td><td>${row.type}</td><td>${row.parent}</td><td>${apiName}</td></tr>`
+            )
+            .join("")}
+        </table>
+      </body>
+    </html>
+  `;
+  const htmlFilePath = path.join(outputDir, fileName);
+  fs.writeFileSync(htmlFilePath, htmlContent);
+  console.log(`HTML Output saved to ${htmlFilePath}`);
+}
+
+// Main function to run the mapper
+async function runMapper() {
+  for (const [apiName, apiUrl] of Object.entries(apis)) {
+    const schema = await fetchApiSchema(apiName, apiUrl);
+    if (schema) {
+      const fields = Array.isArray(schema)
+        ? processSchema(schema, apiName)
+        : schema;
+
+      const dateStamp = new Date().toISOString().split("T")[0];
+      const jsonFileName = `${apiName}-fields-${dateStamp}.json`;
+      const csvFileName = `${apiName}-fields-${dateStamp}.csv`;
+      const htmlFileName = `${apiName}-fields-${dateStamp}.html`;
+
+      saveJsonOutput(jsonFileName, fields);
+      saveCsvOutput(csvFileName, fields);
+      saveHtmlOutput(htmlFileName, fields);
+    }
+  }
+  console.log("Field mapping completed for all APIs.");
+}
+
+// Schedule periodic updates (e.g., every day at midnight)
+cron.schedule("0 0 * * *", runMapper);
+
+// Initial run
+runMapper();
