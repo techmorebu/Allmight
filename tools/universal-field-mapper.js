@@ -27,55 +27,51 @@ const apis = {
   balancerEthereum: process.env.BALANCER_ETHEREUM_DEX_API,
 };
 
-// Function to determine API type (placeholder logic for now)
-function determineApiType(apiUrl) {
-  if (apiUrl.includes("wss://")) return "WebSocket";
-  if (apiUrl.includes("graphql")) return "GraphQL";
-  if (apiUrl.includes("rest")) return "RESTful";
-  return "Aggregator";
-}
-
 // Helper function to fetch schema or data
 async function fetchApiSchema(apiName, apiUrl) {
   console.log(`Fetching schema for ${apiName} (${apiUrl})...`);
-  const apiType = determineApiType(apiUrl);
-  if (apiType !== "GraphQL") {
-    console.log(`Skipping non-GraphQL API: ${apiName}`);
-    return null;
-  }
-
-  const response = await fetch(apiUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      query: `{
-        __schema {
-          types {
-            name
-            kind
-            fields {
+  try {
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        query: `{
+          __schema {
+            types {
               name
-              type {
+              kind
+              fields {
                 name
-                kind
-                ofType {
+                type {
                   name
                   kind
+                  ofType {
+                    name
+                    kind
+                  }
                 }
               }
             }
           }
-        }
-      }`,
-    }),
-  });
+        }`,
+      }),
+    });
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch schema: ${response.statusText}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch schema: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    if (!data.data || !data.data.__schema) {
+      throw new Error("Not a valid GraphQL endpoint.");
+    }
+
+    console.log(`Successfully fetched schema for ${apiName}.`);
+    return data.data.__schema.types;
+  } catch (error) {
+    console.error(`Error fetching schema for ${apiName}:`, error.message);
+    return null;
   }
-
-  const data = await response.json();
-  return data.data.__schema.types;
 }
 
 // Save JSON output
