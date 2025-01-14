@@ -7,23 +7,9 @@ Select an option:
 3. Perform Arbitrage Execution
 Enter your choice: 1
 Running Universal Mapper...
-/home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js:71
-                await runMapper();
-                ^
-
-ReferenceError: runMapper is not defined
-    at /home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js:71:17
-    at [_onLine] [as _onLine] (node:internal/readline/interface:421:7)
-    at [_line] [as _line] (node:internal/readline/interface:894:18)
-    at [_ttyWrite] [as _ttyWrite] (node:internal/readline/interface:1272:22)
-    at ReadStream.onkeypress (node:internal/readline/interface:271:20)
-    at ReadStream.emit (node:events:517:28)
-    at emitKeys (node:internal/readline/utils:371:14)
-    at emitKeys.next (<anonymous>)
-    at ReadStream.onData (node:internal/readline/emitKeypressEvents:64:36)
-    at ReadStream.emit (node:events:517:28)
-
-Node.js v18.19.1
+Initializing Universal Mapper...
+Error running Universal Mapper: mapData is not a function
+Universal Mapper completed.
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/HybridArbitrage.js
 Using ethers version for Hybrid Arbitrage: 6.7.1
 Using ethers version for Flashbots: 6.7.1
@@ -33,21 +19,22 @@ Select an option:
 3. Perform Arbitrage Execution
 Enter your choice: 2
 Running Cross-Referencing...
-/home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js:77
-                await runCrossReference();
-                ^
+Initializing Cross-Referencing...
+Error running Cross-Referencing: validateFields is not a function
+Cross-Referencing completed.
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/HybridArbitrage.js3
+node:internal/modules/cjs/loader:1137
+  throw err;
+  ^
 
-ReferenceError: runCrossReference is not defined
-    at /home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js:77:17
-    at [_onLine] [as _onLine] (node:internal/readline/interface:421:7)
-    at [_line] [as _line] (node:internal/readline/interface:894:18)
-    at [_ttyWrite] [as _ttyWrite] (node:internal/readline/interface:1272:22)
-    at ReadStream.onkeypress (node:internal/readline/interface:271:20)
-    at ReadStream.emit (node:events:517:28)
-    at emitKeys (node:internal/readline/utils:371:14)
-    at emitKeys.next (<anonymous>)
-    at ReadStream.onData (node:internal/readline/emitKeypressEvents:64:36)
-    at ReadStream.emit (node:events:517:28)
+Error: Cannot find module '/home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js3'
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
+    at Module._load (node:internal/modules/cjs/loader:975:27)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
+    at node:internal/main/run_main_module:28:49 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
 
 Node.js v18.19.1
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/HybridArbitrage.js
@@ -62,3 +49,4 @@ Starting Arbitrage Execution...
 No data fetched. Exiting...
 Arbitrage Execution completed.
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
+
