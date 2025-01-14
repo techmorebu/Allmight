@@ -1,92 +1,96 @@
 {
   "balancerArbitrum": {
     "matched": [
-      "liquidity",
-      "low"
+      "volumeUSD",
+      "liquidity"
     ],
     "missing": [
       "token0Price",
       "token1Price",
-      "volumeUSD",
       "feesUSD",
       "txCount",
       "open",
       "high",
+      "low",
       "close",
       "totalValueLockedUSD"
-    ]
+    ],
+    "weightedScore": 3
   },
   "balancerAvalanche": {
     "matched": [
-      "liquidity",
-      "low"
+      "volumeUSD",
+      "liquidity"
     ],
     "missing": [
       "token0Price",
       "token1Price",
-      "volumeUSD",
       "feesUSD",
       "txCount",
       "open",
       "high",
+      "low",
       "close",
       "totalValueLockedUSD"
-    ]
+    ],
+    "weightedScore": 3
   },
   "balancerEthereum": {
     "matched": [
-      "liquidity",
-      "low"
+      "volumeUSD",
+      "liquidity"
     ],
     "missing": [
       "token0Price",
       "token1Price",
-      "volumeUSD",
       "feesUSD",
       "txCount",
       "open",
       "high",
+      "low",
       "close",
       "totalValueLockedUSD"
-    ]
+    ],
+    "weightedScore": 3
   },
   "balancerOptimism": {
     "matched": [
-      "liquidity",
-      "low"
+      "volumeUSD",
+      "liquidity"
     ],
     "missing": [
       "token0Price",
       "token1Price",
-      "volumeUSD",
       "feesUSD",
       "txCount",
       "open",
       "high",
+      "low",
       "close",
       "totalValueLockedUSD"
-    ]
+    ],
+    "weightedScore": 3
   },
   "balancerPolygon": {
     "matched": [
-      "liquidity",
-      "low"
+      "volumeUSD",
+      "liquidity"
     ],
     "missing": [
       "token0Price",
       "token1Price",
-      "volumeUSD",
       "feesUSD",
       "txCount",
       "open",
       "high",
+      "low",
       "close",
       "totalValueLockedUSD"
-    ]
+    ],
+    "weightedScore": 3
   },
   "curveAvalanche": {
     "matched": [
-      "liquidity",
       "totalValueLockedUSD"
     ],
     "missing": [
@@ -94,16 +98,17 @@
       "token1Price",
       "volumeUSD",
       "feesUSD",
+      "liquidity",
       "txCount",
       "open",
       "high",
       "low",
       "close"
-    ]
+    ],
+    "weightedScore": 2
   },
   "curveEthereum": {
     "matched": [
-      "liquidity",
       "totalValueLockedUSD"
     ],
     "missing": [
@@ -111,12 +116,14 @@
       "token1Price",
       "volumeUSD",
       "feesUSD",
+      "liquidity",
       "txCount",
       "open",
       "high",
       "low",
       "close"
-    ]
+    ],
+    "weightedScore": 2
   },
   "quickswap": {
     "matched": [
@@ -132,13 +139,13 @@
       "close",
       "totalValueLockedUSD"
     ],
-    "missing": []
+    "missing": [],
+    "weightedScore": 18
   },
   "sushiswap": {
     "matched": [
       "liquidity",
-      "open",
-      "close",
+      "txCount",
       "totalValueLockedUSD"
     ],
     "missing": [
@@ -146,10 +153,12 @@
       "token1Price",
       "volumeUSD",
       "feesUSD",
-      "txCount",
+      "open",
       "high",
-      "low"
-    ]
+      "low",
+      "close"
+    ],
+    "weightedScore": 4
   },
   "uniswap": {
     "matched": [
@@ -165,6 +174,7 @@
       "close",
       "totalValueLockedUSD"
     ],
-    "missing": []
+    "missing": [],
+    "weightedScore": 18
   }
 }
