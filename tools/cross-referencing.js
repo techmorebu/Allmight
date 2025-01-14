@@ -90,5 +90,5 @@ function runCrossReference() {
   console.log(`Debug output saved to ${debugFilePath}`);
 }
 
-// Run the script
-runCrossReference();
+// Export the cross-reference function for integration
+module.exports = { runCrossReference };
