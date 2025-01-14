@@ -25,10 +25,8 @@
     "axios-retry": "^4.5.0",
     "bottleneck": "^2.19.5",
     "dotenv": "^16.4.5",
-    "ethers67": "npm:ethers@^6.7.1",
     "ethers": "^6.13.4",
     "ethers5": "npm:ethers@^5.7.2",
-    "@flashbots/ethers-provider-bundle": "^1.0.0",
     "graphql-request": "^7.1.2",
     "ioredis": "^5.4.2",
     "node-cache": "^5.1.2",
@@ -39,8 +37,4 @@
     "winston": "^3.17.0",
     "ws": "^8.18.0",
     "xrpl": "^4.1.0"
-  },
-  "overrides": {
-    "@flashbots/ethers-provider-bundle/ethers": "ethers67"
   }
-}
