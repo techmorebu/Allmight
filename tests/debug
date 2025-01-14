@@ -1,39 +1,25 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tools/universal-field-mapper.js
-Select an option:
-1. Update Mapper
-2. Add New API
-3. Test
-4. Full Test
-Enter your choice: 4
-Running full test for all APIs...
-Fetching schema for uniswap (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV)...
-Successfully fetched schema for uniswap.
-Output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/fulltests/uniswap-fulltest.json
-Fetching schema for sushiswap (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/3oHCddbQGTi42kPZBwyGzD2JzZR33zK2MwXtxAerNJy2)...
-Successfully fetched schema for sushiswap.
-Output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/fulltests/sushiswap-fulltest.json
-Fetching schema for curveEthereum (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/3fy93eAT56UJsRCEht8iFhfi6wjHWXtZ9dnnbQmvFopF)...
-Successfully fetched schema for curveEthereum.
-Output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/fulltests/curveEthereum-fulltest.json
-Fetching schema for curveAvalanche (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/2Vt8WtdXNZUEeaVtzyEd1dpioJf44nvomzkd4HhubfKS)...
-Successfully fetched schema for curveAvalanche.
-Output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/fulltests/curveAvalanche-fulltest.json
-Fetching schema for quickswap (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g)...
-Successfully fetched schema for quickswap.
-Output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/fulltests/quickswap-fulltest.json
-Fetching schema for balancerPolygon (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/H9oPAbXnobBRq1cB3HDmbZ1E8MWQyJYQjT1QDJMrdbNp)...
-Successfully fetched schema for balancerPolygon.
-Output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/fulltests/balancerPolygon-fulltest.json
-Fetching schema for balancerOptimism (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FsmdxmvBJLGjUQPxKMRtcWKzuCNpomKuMTbSbtRtggZ7)...
-Successfully fetched schema for balancerOptimism.
-Output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/fulltests/balancerOptimism-fulltest.json
-Fetching schema for balancerArbitrum (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/98cQDy6tufTJtshDCuhh9z2kWXsQWBHVh2bqnLHsGAeS)...
-Successfully fetched schema for balancerArbitrum.
-Output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/fulltests/balancerArbitrum-fulltest.json
-Fetching schema for balancerAvalanche (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/7asfmtQA1KYu6CP7YVm5kv4bGxVyfAHEiptt2HMFgkHu)...
-Successfully fetched schema for balancerAvalanche.
-Output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/fulltests/balancerAvalanche-fulltest.json
-Fetching schema for balancerEthereum (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/C4ayEZP2yTXRAB8vSaTrgN4m9anTe9Mdm2ViyiAuV9TV)...
-Successfully fetched schema for balancerEthereum.
-Output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/fulltests/balancerEthereum-fulltest.json
-Full test completed. Results saved in ./outputs/fulltests/
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/HybridArbitrage.js
+node:internal/modules/cjs/loader:1137
+  throw err;
+  ^
+
+Error: Cannot find module '@flashbots/ethers-provider-bundle'
+Require stack:
+- /home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
+    at Module._load (node:internal/modules/cjs/loader:975:27)
+    at Module.require (node:internal/modules/cjs/loader:1225:19)
+    at require (node:internal/modules/helpers:177:18)
+    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js:5:37)
+    at Module._compile (node:internal/modules/cjs/loader:1356:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
+    at Module.load (node:internal/modules/cjs/loader:1197:32)
+    at Module._load (node:internal/modules/cjs/loader:1013:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js'
+  ]
+}
+
+Node.js v18.19.1
