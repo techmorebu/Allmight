@@ -1,16 +1,53 @@
-const ethers67 = require('ethers67'); // Alias for ethers@6.7.1
-const { FlashbotsBundleProvider } = require('@flashbots/ethers-provider-bundle');
-const universalMapper = require('./universal-field-mapper'); // Universal Mapper
-const crossReference = require('./cross-referencing'); // Cross-Reference Script
-const config = require('./config');
+// Hybrid Arbitrage System
+// Fully integrates Universal Mapper, Cross-Reference Script, and Opportunity Detection
 
-// Verify the ethers version
-console.log(`Using ethers67 version: ${ethers67.version}`);
+const ethers6 = require('ethers6'); // Explicitly import ethers6 for Hybrid Arbitrage
+const ethers67 = require('ethers67'); // Explicitly import ethers67 for Flashbots
+const { FlashbotsBundleProvider } = require('@flashbots/ethers-provider-bundle');
+const universalMapper = require("./tools/universal-field-mapper"); // Universal Mapper module
+const crossReference = require("./tools/cross-referencing"); // Optimized Cross-Reference Script
+const config = require("./config");
+
+// Verify Ethers Versions
+console.log(`Using ethers version for Hybrid Arbitrage: ${ethers.version}`);
+console.log(`Using ethers version for Flashbots: ${ethers67.version}`);
+
+// Optimized Cross-Referencing Validation with Error Thresholds
+async function validateWithCrossReference(data) {
+    console.log("Starting cross-referencing validation...");
+
+    // Use fixed required fields
+    const requiredFields = [
+        "token0Price", "token1Price", "volumeUSD", "feesUSD", "liquidity",
+        "txCount", "open", "high", "low", "close", "totalValueLockedUSD"
+    ];
+
+    const maxAllowedMissingFields = parseInt(process.env.MAX_ALLOWED_MISSING_FIELDS || "3", 10);
+
+    const validationResult = crossReference.validateFields(data, requiredFields);
+
+    // Enhanced Logging
+    if (validationResult.missing.length > 0) {
+        console.warn("Validation warnings: Missing fields detected:", validationResult.missing);
+    }
+
+    console.info("Cross-referencing validation completed successfully.", {
+        matchedFields: validationResult.matched.length,
+        missingFields: validationResult.missing.length,
+    });
+
+    // Fail-safe for critical missing fields
+    if (validationResult.missing.length > maxAllowedMissingFields) {
+        throw new Error(`Validation failed: Too many missing fields (${validationResult.missing.length}). Maximum allowed: ${maxAllowedMissingFields}`);
+    }
+
+    return validationResult;
+}
 
 // Main Workflow
 async function main() {
-    const provider = new ethers67.JsonRpcProvider(process.env.ETH_RPC_URL);
-    const wallet = new ethers67.Wallet(process.env.PRIVATE_KEY, provider);
+    const provider = new ethers.JsonRpcProvider(process.env.ETH_RPC_URL); // Using ethers6 for provider
+    const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider); // Using ethers6 for wallet
 
     // Step 1: Data Fetching
     const rawData = await fetchDexData();
@@ -23,7 +60,7 @@ async function main() {
     const standardizedData = universalMapper.mapData(rawData);
     console.log("Data standardized successfully.");
 
-    // Step 3: Cross-Referencing Validation
+    // Step 3: Cross-Referencing Validation (Optimized)
     try {
         const crossRefReport = await validateWithCrossReference(standardizedData);
     } catch (error) {
@@ -55,9 +92,35 @@ async function main() {
     console.log("Arbitrage execution completed.");
 }
 
-// Flashbots Execution
+// Data Fetching
+async function fetchDexData() {
+    const fetchPromises = config.dexApis.map(api => fetch(api.url).then(res => res.json()).catch(err => null));
+    const results = await Promise.all(fetchPromises);
+    return results.filter(res => res !== null);
+}
+
+// Opportunity Detection
+function detectOpportunities(data) {
+    const opportunities = [];
+
+    // Spatial Arbitrage
+    opportunities.push(...detectSpatialArbitrage(data));
+
+    // Triangular Arbitrage
+    opportunities.push(...detectTriangularArbitrage(data));
+
+    // Cross-Chain Arbitrage
+    opportunities.push(...detectCrossChainArbitrage(data));
+
+    // Liquidity Arbitrage
+    opportunities.push(...detectLiquidityArbitrage(data));
+
+    return opportunities.filter(op => op.netProfit > config.minProfitThreshold);
+}
+
+// Execution via Flashbots
 async function executeViaFlashbots(provider, wallet, opportunity) {
-    const flashbotsProvider = await FlashbotsBundleProvider.create(provider, wallet);
+    const flashbotsProvider = await FlashbotsBundleProvider.create(provider, wallet); // Using ethers67 implicitly
     const transactions = createTransactions(opportunity);
     const signedBundle = await flashbotsProvider.signBundle(
         transactions.map(tx => ({ signer: wallet, transaction: tx }))
@@ -74,7 +137,7 @@ async function executeViaFlashbots(provider, wallet, opportunity) {
     return true;
 }
 
-// Public Mempool Execution
+// Execution via Public Mempool
 async function executeInMempool(provider, wallet, opportunity) {
     try {
         const transactions = createTransactions(opportunity);
@@ -91,30 +154,14 @@ async function executeInMempool(provider, wallet, opportunity) {
     }
 }
 
-// Helper Functions
+// Create Transactions
 function createTransactions(opportunity) {
+    // Generate transaction objects for Flash Loan, Trade, and Repayment
     return [
-        { to: opportunity.flashLoanProvider, data: "0x...", value: 0 },
-        { to: opportunity.tradeDex, data: "0x...", value: 0 },
-        { to: opportunity.flashLoanProvider, data: "0x...", value: 0 }
+        { to: opportunity.flashLoanProvider, data: "0x...", value: 0 }, // Flash loan transaction
+        { to: opportunity.tradeDex, data: "0x...", value: 0 }, // Trade transaction
+        { to: opportunity.flashLoanProvider, data: "0x...", value: 0 } // Repayment transaction
     ];
-}
-
-// Data Fetching
-async function fetchDexData() {
-    const fetchPromises = config.dexApis.map(api => fetch(api.url).then(res => res.json()).catch(err => null));
-    const results = await Promise.all(fetchPromises);
-    return results.filter(res => res !== null);
-}
-
-// Opportunity Detection
-function detectOpportunities(data) {
-    const opportunities = [];
-    opportunities.push(...detectSpatialArbitrage(data));
-    opportunities.push(...detectTriangularArbitrage(data));
-    opportunities.push(...detectCrossChainArbitrage(data));
-    opportunities.push(...detectLiquidityArbitrage(data));
-    return opportunities.filter(op => op.netProfit > config.minProfitThreshold);
 }
 
 main();
