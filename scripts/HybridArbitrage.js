@@ -61,6 +61,10 @@ async function runMapper(outputFolder) {
                     ofType {
                       name
                       kind
+                      ofType {
+                        name
+                        kind
+                      }
                     }
                   }
                 }
@@ -79,6 +83,26 @@ async function runMapper(outputFolder) {
     }
   }
 
+  async function extractNestedFields(schema) {
+    const fields = [];
+
+    function recurse(type) {
+      if (!type || !type.fields) return;
+      type.fields.forEach((field) => {
+        fields.push(field.name);
+        if (field.type?.ofType) {
+          recurse(field.type.ofType);
+        }
+      });
+    }
+
+    schema.forEach((type) => {
+      recurse(type);
+    });
+
+    return fields;
+  }
+
   async function updateFolderContents(folderPath, apiName, data) {
     const filePath = path.join(folderPath, `${apiName}-fields.json`);
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
@@ -87,7 +111,8 @@ async function runMapper(outputFolder) {
 
   for (const [apiName, apiUrl] of Object.entries(apis)) {
     const { schema, error } = await fetchApiSchema(apiName, apiUrl);
-    const data = { schema, error };
+    const fields = schema ? await extractNestedFields(schema) : [];
+    const data = { schema, fields, error };
     await updateFolderContents(outputFolder, apiName, data);
   }
 
@@ -124,7 +149,7 @@ function runCrossReference() {
     low: ["lowestPrice", "lowPrice", "price_low", "minPrice"],
     close: ["closingPrice", "closePrice", "price_close", "endPrice"],
     totalValueLockedUSD: ["TVL", "lockedValueUSD", "totalLiquidityUSD", "valueLockedUSD", "tvl_usd"],
-};
+  };
 
   const fieldWeights = {
     token0Price: 3,
@@ -151,8 +176,7 @@ function runCrossReference() {
   dataFiles.forEach((file) => {
     const apiName = path.basename(file, "-fields.json");
     const filePath = path.join(outputDir, file);
-    const { schema } = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-    const fields = schema ? schema.flatMap((type) => (type.fields || []).map((f) => f.name)) : [];
+    const { fields } = JSON.parse(fs.readFileSync(filePath, "utf-8"));
 
     const matched = requiredFields.filter((field) => matchFields(fields, field));
     const missing = requiredFields.filter((field) => !matchFields(fields, field));
