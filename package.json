@@ -38,5 +38,8 @@
     "winston": "^3.17.0",
     "ws": "^8.18.0",
     "xrpl": "^4.1.0"
+  },
+  "resolutions": {
+  "@flashbots/ethers-provider-bundle/ethers": "6.7.1"
   }
 }
