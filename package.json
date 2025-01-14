@@ -28,7 +28,6 @@
     "dotenv": "^16.4.5",
     "ethers": "^6.13.4",
     "ethers5": "npm:ethers@^5.7.2",
-    "ethers67": "npm:ethers@^6.7.1",
     "graphql-request": "^7.1.2",
     "ioredis": "^5.4.2",
     "node-cache": "^5.1.2",
@@ -39,8 +38,5 @@
     "winston": "^3.17.0",
     "ws": "^8.18.0",
     "xrpl": "^4.1.0"
-  },
-  "resolutions": {
-    "@flashbots/ethers-provider-bundle/ethers": "6.7.1"
   }
 }
