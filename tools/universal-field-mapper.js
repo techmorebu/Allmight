@@ -84,7 +84,7 @@ function saveJsonOutput(folder, fileName, data) {
   console.log(`Output saved to ${filePath}`);
 }
 
-// Update test folder contents
+// Update folder contents
 function updateFolderContents(folderPath, apiName, data) {
   const existingFiles = fs.readdirSync(folderPath).filter(file => file.endsWith("-fields.json"));
   const apiFileName = `${apiName}-fields.json`;
@@ -120,9 +120,9 @@ function consolidateResults(folderPath, consolidatedFileName) {
   console.log(`Consolidated results saved to ${consolidatedFilePath}`);
 }
 
-// Main Live Run Functionality
-async function runLiveMapper() {
-  console.log("Running live mapper for all APIs...");
+// Main Mapper Function
+async function runMapper() {
+  console.log("Running mapper for all APIs...");
 
   for (const [apiName, apiUrl] of Object.entries(apis)) {
     try {
@@ -131,11 +131,11 @@ async function runLiveMapper() {
         updateFolderContents(outputDir, apiName, schema);
       }
     } catch (error) {
-      console.error(`Error during live run for ${apiName}:`, error.message);
+      console.error(`Error during mapper run for ${apiName}:`, error.message);
     }
   }
-  consolidateResults(outputDir, "consolidated-live.json");
-  console.log("Live mapper completed. Results saved in ./outputs/");
+  consolidateResults(outputDir, "consolidated-results.json");
+  console.log("Mapper run completed. Results saved in ./outputs/");
 }
 
 // Interactive Prompt
@@ -150,7 +150,6 @@ function startInteractivePrompt() {
   console.log("2. Add New API");
   console.log("3. Test");
   console.log("4. Full Test");
-  console.log("5. Live Run");
 
   rl.question("Enter your choice: ", async (choice) => {
     switch (choice.trim()) {
@@ -176,11 +175,8 @@ function startInteractivePrompt() {
         });
         break;
       case "4":
-        await runFullTest();
-        rl.close();
-        break;
-      case "5":
-        await runLiveMapper();
+        console.log("Running full test...");
+        await runMapper();
         rl.close();
         break;
       default:
@@ -189,21 +185,6 @@ function startInteractivePrompt() {
         break;
     }
   });
-}
-
-// Main Mapper Function
-async function runMapper() {
-  for (const [apiName, apiUrl] of Object.entries(apis)) {
-    try {
-      const schema = await fetchApiSchema(apiName, apiUrl);
-      if (schema) {
-        saveJsonOutput("", `${apiName}-fields.json`, schema);
-      }
-    } catch (error) {
-      console.error(`Error fetching schema for ${apiName}:`, error.message);
-    }
-  }
-  console.log("Field mapping completed for all APIs.");
 }
 
 // Start the interactive prompt
