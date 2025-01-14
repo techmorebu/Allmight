@@ -4,8 +4,8 @@
 const ethers = require('ethers'); // Explicitly import ethers6 for Hybrid Arbitrage
 const ethers67 = require('ethers67'); // Explicitly import ethers67 for Flashbots
 const { FlashbotsBundleProvider } = require('@flashbots/ethers-provider-bundle');
-const { mapData } = require("../tools/universal-field-mapper.js"); // Universal Mapper module
-const { validateFields } = require("../tools/cross-referencing.js"); // Cross-Referencing integration
+const { mapData } = require("./tools/universal-field-mapper.js"); // Universal Mapper module
+const { validateFields } = require("./tools/cross-referencing.js"); // Cross-Referencing integration
 require('dotenv').config();
 
 const config = {
@@ -52,7 +52,7 @@ async function validateWithCrossReference(data) {
 // Main Workflow
 async function main() {
     const provider = new ethers.JsonRpcProvider(process.env.ETH_RPC_URL); // Using ethers6 for provider
-    const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider); // Using ethers6 for wallet
+    const wallet = new ethers.Wallet(process.env.METAMASK_PRIVATE_KEY, provider); // Using ethers6 for wallet
 
     console.log("Select an option:");
     console.log("1. Run Universal Mapper");
