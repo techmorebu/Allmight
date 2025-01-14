@@ -84,6 +84,15 @@ function saveJsonOutput(folder, fileName, data) {
   console.log(`Output saved to ${filePath}`);
 }
 
+// Clear test folder
+function clearFolder(folderPath) {
+  if (fs.existsSync(folderPath)) {
+    const files = fs.readdirSync(folderPath);
+    files.forEach(file => fs.unlinkSync(path.join(folderPath, file)));
+    console.log(`Cleared all files in ${folderPath}`);
+  }
+}
+
 // Consolidate Full Test Results
 function consolidateFullTestResults() {
   console.log("Consolidating full test results...");
@@ -105,6 +114,10 @@ function consolidateFullTestResults() {
 // Full Test Functionality
 async function runFullTest() {
   console.log("Running full test for all APIs...");
+
+  // Clear previous test files
+  clearFolder(fullTestOutputDir);
+
   for (const [apiName, apiUrl] of Object.entries(apis)) {
     try {
       const schema = await fetchApiSchema(apiName, apiUrl);
