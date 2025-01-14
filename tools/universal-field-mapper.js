@@ -30,6 +30,7 @@ const apis = {
 // Helper function to fetch schema or data
 async function fetchApiSchema(apiName, apiUrl) {
   console.log(`Fetching schema for ${apiName} (${apiUrl})...`);
+  const startTime = Date.now();
   try {
     const response = await fetch(apiUrl, {
       method: "POST",
@@ -57,6 +58,9 @@ async function fetchApiSchema(apiName, apiUrl) {
       }),
     });
 
+    const duration = Date.now() - startTime;
+    console.log(`API response time for ${apiName}: ${duration}ms`);
+
     if (!response.ok) {
       throw new Error(`Failed to fetch schema: ${response.statusText}`);
     }
@@ -71,6 +75,22 @@ async function fetchApiSchema(apiName, apiUrl) {
   } catch (error) {
     console.error(`Error fetching schema for ${apiName}:`, error.message);
     return null;
+  }
+}
+
+// Validate critical fields
+function validateCriticalFields(apiName, schema) {
+  const criticalFields = ["minPrice", "maxPrice"];
+  const invalidFields = criticalFields.filter(field => {
+    return !schema.some(type =>
+      type.fields && type.fields.some(f => f.name === field && f.type && f.type.name)
+    );
+  });
+
+  if (invalidFields.length > 0) {
+    console.warn(
+      `Warning: Missing critical fields in ${apiName}: ${invalidFields.join(", ")}`
+    );
   }
 }
 
@@ -128,6 +148,7 @@ async function runMapper() {
     try {
       const schema = await fetchApiSchema(apiName, apiUrl);
       if (schema) {
+        validateCriticalFields(apiName, schema);
         updateFolderContents(outputDir, apiName, schema);
       }
     } catch (error) {
