@@ -1,9 +1,8 @@
 const fs = require("fs");
 const path = require("path");
-const fuzz = require("fuzzball"); // Install with `npm install fuzzball`
 
 // Directories for outputs and debug logs
-const outputsDir = path.join(__dirname, "../outputs");
+const outputsDir = path.resolve(__dirname, "../outputs");
 const debugDir = path.join(outputsDir, "debug");
 if (!fs.existsSync(debugDir)) {
   fs.mkdirSync(debugDir, { recursive: true });
@@ -12,19 +11,19 @@ if (!fs.existsSync(debugDir)) {
 const debugFilePath = path.join(debugDir, "chatcrossdebug.json");
 const debugOutput = [];
 
-// Required fields with optional descriptions for semantic matching
+// Required fields
 const requiredFields = [
-  { name: "token0Price", description: "Price of the first token in the pair" },
-  { name: "token1Price", description: "Price of the second token in the pair" },
-  { name: "volumeUSD", description: "Total trading volume in USD" },
-  { name: "feesUSD", description: "Total fees generated in USD" },
-  { name: "liquidity", description: "Current pool liquidity" },
-  { name: "txCount", description: "Transaction count" },
-  { name: "open", description: "Opening price" },
-  { name: "high", description: "Highest price" },
-  { name: "low", description: "Lowest price" },
-  { name: "close", description: "Closing price" },
-  { name: "totalValueLockedUSD", description: "Total value locked in USD" }
+  "token0Price",
+  "token1Price",
+  "volumeUSD",
+  "feesUSD",
+  "liquidity",
+  "txCount",
+  "open",
+  "high",
+  "low",
+  "close",
+  "totalValueLockedUSD",
 ];
 
 // Load JSON files
@@ -39,46 +38,23 @@ function loadFieldMappings(filePath) {
   }
 }
 
-// Fuzzy and semantic matching
-function fuzzyMatchFields(requiredField, fieldMappings) {
-  const matches = fieldMappings.map((field) => {
-    const nameSimilarity = fuzz.ratio(requiredField.name, field.name || field); // Field could be a string or object
-    const descSimilarity = requiredField.description && field.description
-      ? fuzz.ratio(requiredField.description, field.description)
-      : 0;
-
-    const weightedScore = 0.8 * nameSimilarity + 0.2 * descSimilarity;
-    return { field: field.name || field, score: weightedScore };
-  });
-
-  // Return the best match above a threshold
-  return matches.reduce(
-    (bestMatch, match) => (match.score > bestMatch.score ? match : bestMatch),
-    { field: null, score: 0 }
-  );
-}
-
 // Cross-reference logic
 function crossReferenceFields(apiName, fieldMappings) {
   const matched = [];
   const missing = [];
-
   requiredFields.forEach((requiredField) => {
-    const bestMatch = fuzzyMatchFields(requiredField, fieldMappings);
-    if (bestMatch.score > 80) { // Adjust threshold as needed
-      matched.push({ requiredField: requiredField.name, matchedField: bestMatch.field, score: bestMatch.score });
+    if (fieldMappings.includes(requiredField)) {
+      matched.push(requiredField);
     } else {
-      missing.push(requiredField.name);
+      missing.push(requiredField);
     }
   });
-
   debugOutput.push({
     type: "debug",
     message: `Cross-referenced fields for ${apiName}`,
     matchedFields: matched,
-    missingFields: missing
+    missingFields: missing,
   });
-
   return { matched, missing };
 }
 
