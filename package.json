@@ -1,43 +1,42 @@
-echbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npm install ethers67@npm:ethers@6.7.1
-
-added 6 packages, and audited 399 packages in 6s
-
-81 packages are looking for funding
-  run `npm fund` for details
-
-22 vulnerabilities (19 low, 3 high)
-
-To address issues that do not require attention, run:
-  npm audit fix
-
-To address all issues possible (including breaking changes), run:
-  npm audit fix --force
-
-Some issues need review, and may require choosing
-a different dependency.
-
-Run `npm audit` for details.
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npm install --save @flashbots/ethers-provider-bundle
-npm error code ERESOLVE
-npm error ERESOLVE unable to resolve dependency tree
-npm error
-npm error While resolving: ofa-project@1.0.0
-npm error Found: ethers@6.13.5
-npm error node_modules/ethers
-npm error   ethers@"^6.13.4" from the root project
-npm error
-npm error Could not resolve dependency:
-npm error peer ethers@"6.7.1" from @flashbots/ethers-provider-bundle@1.0.0
-npm error node_modules/@flashbots/ethers-provider-bundle
-npm error   @flashbots/ethers-provider-bundle@"*" from the root project
-npm error
-npm error Fix the upstream dependency conflict, or retry
-npm error this command with --force or --legacy-peer-deps
-npm error to accept an incorrect (and potentially broken) dependency resolution.
-npm error
-npm error
-npm error For a full report see:
-npm error /home/techbu/.npm/_logs/2025-01-14T06_28_12_730Z-eresolve-report.txt
-npm error A complete log of this run can be found in: /home/techbu/.npm/_logs/2025-01-14T06_28_12_730Z-debug-0.log
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
-
+{
+  "name": "ofa-project",
+  "version": "1.0.0",
+  "description": "The OFA project is an AI-driven arbitrage and accumulation bot for cross-chain DeFi trading. It optimizes MATIC accumulation and profit generation, dynamically toggling between arbitrage and pair trading strategies.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^5.1.2",
+    "hardhat": "^2.22.16",
+    "mocha": "^10.8.2"
+  },
+  "dependencies": {
+    "@ethersproject/abstract-provider": "^5.7.0",
+    "@ethersproject/providers": "^5.7.2",
+    "@ethersproject/units": "^5.7.0",
+    "@nomicfoundation/hardhat-ethers": "^3.0.8",
+    "@uniswap/sdk-core": "^3.0.0",
+    "@uniswap/v3-sdk": "^3.19.0",
+    "axios": "^1.7.7",
+    "axios-retry": "^4.5.0",
+    "bottleneck": "^2.19.5",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.4",
+    "ethers5": "npm:ethers@^5.7.2",
+    "ethers67": "npm:ethers@^6.7.1",
+    "graphql-request": "^7.1.2",
+    "ioredis": "^5.4.2",
+    "node-cache": "^5.1.2",
+    "node-cron": "^3.0.3",
+    "node-fetch": "^2.7.0",
+    "npm-force-resolutions": "^0.0.10",
+    "redis": "^4.7.0",
+    "winston": "^3.17.0",
+    "ws": "^8.18.0",
+    "xrpl": "^4.1.0"
+  }
+}
