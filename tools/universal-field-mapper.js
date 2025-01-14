@@ -84,13 +84,22 @@ function saveJsonOutput(folder, fileName, data) {
   console.log(`Output saved to ${filePath}`);
 }
 
-// Clear test folder
-function clearFolder(folderPath) {
-  if (fs.existsSync(folderPath)) {
-    const files = fs.readdirSync(folderPath);
-    files.forEach(file => fs.unlinkSync(path.join(folderPath, file)));
-    console.log(`Cleared all files in ${folderPath}`);
-  }
+// Update test folder contents
+function updateTestFolder(folderPath, apiName, data) {
+  const existingFiles = fs.readdirSync(folderPath).filter(file => file.endsWith("-fulltest.json"));
+  const apiFileName = `${apiName}-fulltest.json`;
+  const apiFilePath = path.join(folderPath, apiFileName);
+
+  // Overwrite or add new file
+  fs.writeFileSync(apiFilePath, JSON.stringify(data, null, 2));
+  console.log(`Updated test file: ${apiFilePath}`);
+
+  // Remove files not part of the current test
+  const filesToRemove = existingFiles.filter(file => !Object.keys(apis).includes(file.replace("-fulltest.json", "")));
+  filesToRemove.forEach(file => {
+    fs.unlinkSync(path.join(folderPath, file));
+    console.log(`Removed outdated test file: ${file}`);
+  });
 }
 
 // Consolidate Full Test Results
@@ -115,14 +124,11 @@ function consolidateFullTestResults() {
 async function runFullTest() {
   console.log("Running full test for all APIs...");
 
-  // Clear previous test files
-  clearFolder(fullTestOutputDir);
-
   for (const [apiName, apiUrl] of Object.entries(apis)) {
     try {
       const schema = await fetchApiSchema(apiName, apiUrl);
       if (schema) {
-        saveJsonOutput("fulltests", `${apiName}-fulltest.json`, schema);
+        updateTestFolder(fullTestOutputDir, apiName, schema);
       }
     } catch (error) {
       console.error(`Error during full test for ${apiName}:`, error.message);
