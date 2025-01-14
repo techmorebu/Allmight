@@ -124,22 +124,34 @@ function consolidateResults(folderPath, consolidatedFileName) {
   console.log(`Consolidated results saved to ${consolidatedFilePath}`);
 }
 
+// Clear Full Test Folder
+function clearFullTestFolder() {
+  console.log("Clearing full test folder...");
+  const files = fs.readdirSync(fullTestOutputDir);
+  files.forEach(file => {
+    fs.unlinkSync(path.join(fullTestOutputDir, file));
+    console.log(`Removed file: ${file}`);
+  });
+  console.log("Full test folder cleared.");
+}
+
 // Main Mapper Function
-async function runMapper() {
-  console.log("Running mapper for all APIs...");
+async function runMapper(outputFolder) {
+  console.log(`Running mapper for all APIs. Output folder: ${outputFolder}`);
 
   for (const [apiName, apiUrl] of Object.entries(apis)) {
     try {
       const schema = await fetchApiSchema(apiName, apiUrl);
       if (schema) {
-        updateFolderContents(outputDir, apiName, schema);
+        updateFolderContents(outputFolder, apiName, schema);
       }
     } catch (error) {
       console.error(`Error during mapper run for ${apiName}:`, error.message);
     }
   }
-  consolidateResults(outputDir, "consolidated-results.json");
-  console.log("Mapper run completed. Results saved in ./outputs/");
+  const consolidatedFileName = outputFolder === fullTestOutputDir ? "consolidated-fulltests.json" : "consolidated-results.json";
+  consolidateResults(outputFolder, consolidatedFileName);
+  console.log(`Mapper run completed. Results saved in ${outputFolder}`);
   process.exit(0);
 }
 
@@ -154,13 +166,12 @@ function startInteractivePrompt() {
   console.log("1. Update Mapper");
   console.log("2. Add New API");
   console.log("3. Test");
-  console.log("4. Full Test");
 
   rl.question("Enter your choice: ", async (choice) => {
     switch (choice.trim()) {
       case "1":
         console.log("Updating Mapper...");
-        await runMapper();
+        await runMapper(outputDir);
         break;
       case "2":
         rl.question("Enter new API name: ", (apiName) => {
@@ -172,17 +183,36 @@ function startInteractivePrompt() {
         });
         break;
       case "3":
-        rl.question("Enter API name to test: ", (apiName) => {
-          rl.question("Enter API URL to test: ", async (apiUrl) => {
-            await testApi(apiName, apiUrl);
-            rl.close();
-          });
+        console.log("Test Options:");
+        console.log("1. Full Test");
+        console.log("2. Add New API Test");
+        console.log("3. Clear Full Test Folder");
+
+        rl.question("Enter your test option: ", async (testOption) => {
+          switch (testOption.trim()) {
+            case "1":
+              console.log("Running full test...");
+              await runMapper(fullTestOutputDir);
+              break;
+            case "2":
+              rl.question("Enter new API name: ", (apiName) => {
+                rl.question("Enter new API URL: ", (apiUrl) => {
+                  apis[apiName] = apiUrl;
+                  console.log(`Added new API: ${apiName} -> ${apiUrl}`);
+                  rl.close();
+                });
+              });
+              break;
+            case "3":
+              clearFullTestFolder();
+              rl.close();
+              break;
+            default:
+              console.log("Invalid test option.");
+              rl.close();
+              break;
+          }
         });
-        break;
-      case "4":
-        console.log("Running full test...");
-        await runMapper();
-        rl.close();
         break;
       default:
         console.log("Invalid choice.");
