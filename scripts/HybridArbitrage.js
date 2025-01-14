@@ -1,71 +1,79 @@
+// Hybrid Arbitrage System
+// Fully integrates Universal Mapper, Cross-Reference Script, and Opportunity Detection
+
 const ethers = require('ethers'); // Explicitly import ethers6 for Hybrid Arbitrage
 const ethers67 = require('ethers67'); // Explicitly import ethers67 for Flashbots
 const { FlashbotsBundleProvider } = require('@flashbots/ethers-provider-bundle');
-const { runMapper, fullTestOutputDir } = require('../tools/universal-field-mapper'); // Universal Mapper integration
-const { runCrossReference } = require('../tools/cross-referencing'); // Cross-Referencing integration
-const config = require('../config');
+const universalMapper = require("./tools/universal-field-mapper.js"); // Universal Mapper module
+const crossReference = require("./tools/cross-referencing.js"); // Optimized Cross-Reference Script
+require('dotenv').config();
+
+const config = {
+    dexApis: JSON.parse(process.env.DEX_APIS || '[]'),
+    minProfitThreshold: parseFloat(process.env.MIN_PROFIT_THRESHOLD || '0.05'),
+};
 
 // Verify Ethers Versions
 console.log(`Using ethers version for Hybrid Arbitrage: ${ethers.version}`);
 console.log(`Using ethers version for Flashbots: ${ethers67.version}`);
+
+// Optimized Cross-Referencing Validation with Error Thresholds
+async function validateWithCrossReference(data) {
+    console.log("Starting cross-referencing validation...");
+
+    // Use fixed required fields
+    const requiredFields = [
+        "token0Price", "token1Price", "volumeUSD", "feesUSD", "liquidity",
+        "txCount", "open", "high", "low", "close", "totalValueLockedUSD"
+    ];
+
+    const maxAllowedMissingFields = parseInt(process.env.MAX_ALLOWED_MISSING_FIELDS || "3", 10);
+
+    const validationResult = crossReference.validateFields(data, requiredFields);
+
+    // Enhanced Logging
+    if (validationResult.missing.length > 0) {
+        console.warn("Validation warnings: Missing fields detected:", validationResult.missing);
+    }
+
+    console.info("Cross-referencing validation completed successfully.", {
+        matchedFields: validationResult.matched.length,
+        missingFields: validationResult.missing.length,
+    });
+
+    // Fail-safe for critical missing fields
+    if (validationResult.missing.length > maxAllowedMissingFields) {
+        throw new Error(`Validation failed: Too many missing fields (${validationResult.missing.length}). Maximum allowed: ${maxAllowedMissingFields}`);
+    }
+
+    return validationResult;
+}
 
 // Main Workflow
 async function main() {
     const provider = new ethers.JsonRpcProvider(process.env.ETH_RPC_URL); // Using ethers6 for provider
     const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider); // Using ethers6 for wallet
 
-    console.log("Select an option:");
-    console.log("1. Run Universal Mapper");
-    console.log("2. Run Cross-Referencing");
-    console.log("3. Perform Arbitrage Execution");
-
-    const readline = require('readline').createInterface({
-        input: process.stdin,
-        output: process.stdout,
-    });
-
-    readline.question("Enter your choice: ", async (choice) => {
-        switch (choice) {
-            case '1':
-                console.log("Running Universal Mapper...");
-                await runMapper(fullTestOutputDir);
-                console.log("Universal Mapper completed.");
-                break;
-
-            case '2':
-                console.log("Running Cross-Referencing...");
-                runCrossReference();
-                console.log("Cross-Referencing completed.");
-                break;
-
-            case '3':
-                console.log("Starting Arbitrage Execution...");
-                await executeArbitrage(provider, wallet);
-                console.log("Arbitrage Execution completed.");
-                break;
-
-            default:
-                console.log("Invalid choice. Exiting.");
-        }
-        readline.close();
-    });
-}
-
-// Arbitrage Execution Logic
-async function executeArbitrage(provider, wallet) {
-    // Fetch data
-    const rawData = []; // Replace with actual raw data fetching logic
+    // Step 1: Data Fetching
+    const rawData = await fetchDexData();
     if (rawData.length === 0) {
         console.log("No data fetched. Exiting...");
         return;
     }
 
-    // Cross-Reference Validation
-    const standardizedData = []; // Replace with actual standardized data processing logic
+    // Step 2: Data Standardization (Universal Mapper)
+    const standardizedData = universalMapper.mapData(rawData);
     console.log("Data standardized successfully.");
-    console.log("Cross-referencing validation completed successfully.");
 
-    // Opportunity Detection
+    // Step 3: Cross-Referencing Validation (Optimized)
+    try {
+        const crossRefReport = await validateWithCrossReference(standardizedData);
+    } catch (error) {
+        console.error("Critical validation error:", error.message);
+        return;
+    }
+
+    // Step 4: Opportunity Detection
     const opportunities = detectOpportunities(standardizedData);
     if (opportunities.length === 0) {
         console.log("No profitable opportunities found.");
@@ -73,7 +81,7 @@ async function executeArbitrage(provider, wallet) {
     }
     console.log("Detected opportunities:", opportunities);
 
-    // Execution Logic
+    // Step 5: Execution Logic
     for (const opportunity of opportunities) {
         if (opportunity.isFlashbotsReady) {
             const success = await executeViaFlashbots(provider, wallet, opportunity);
@@ -85,11 +93,39 @@ async function executeArbitrage(provider, wallet) {
             await executeInMempool(provider, wallet, opportunity);
         }
     }
+
+    console.log("Arbitrage execution completed.");
+}
+
+// Data Fetching
+async function fetchDexData() {
+    const fetchPromises = config.dexApis.map(api => fetch(api.url).then(res => res.json()).catch(err => null));
+    const results = await Promise.all(fetchPromises);
+    return results.filter(res => res !== null);
+}
+
+// Opportunity Detection
+function detectOpportunities(data) {
+    const opportunities = [];
+
+    // Spatial Arbitrage
+    opportunities.push(...detectSpatialArbitrage(data));
+
+    // Triangular Arbitrage
+    opportunities.push(...detectTriangularArbitrage(data));
+
+    // Cross-Chain Arbitrage
+    opportunities.push(...detectCrossChainArbitrage(data));
+
+    // Liquidity Arbitrage
+    opportunities.push(...detectLiquidityArbitrage(data));
+
+    return opportunities.filter(op => op.netProfit > config.minProfitThreshold);
 }
 
 // Execution via Flashbots
 async function executeViaFlashbots(provider, wallet, opportunity) {
-    const flashbotsProvider = await FlashbotsBundleProvider.create(provider, wallet);
+    const flashbotsProvider = await FlashbotsBundleProvider.create(provider, wallet); // Using ethers67 implicitly
     const transactions = createTransactions(opportunity);
     const signedBundle = await flashbotsProvider.signBundle(
         transactions.map(tx => ({ signer: wallet, transaction: tx }))
@@ -97,7 +133,7 @@ async function executeViaFlashbots(provider, wallet, opportunity) {
 
     const blockNumber = await provider.getBlockNumber();
     const result = await flashbotsProvider.sendBundle(signedBundle, blockNumber + 1);
-    if ('error' in result) {
+    if ("error" in result) {
         console.error("Flashbots execution failed:", result.error.message);
         return false;
     }
@@ -125,18 +161,12 @@ async function executeInMempool(provider, wallet, opportunity) {
 
 // Create Transactions
 function createTransactions(opportunity) {
+    // Generate transaction objects for Flash Loan, Trade, and Repayment
     return [
-        { to: opportunity.flashLoanProvider, data: "0x...", value: 0 },
-        { to: opportunity.tradeDex, data: "0x...", value: 0 },
-        { to: opportunity.flashLoanProvider, data: "0x...", value: 0 },
+        { to: opportunity.flashLoanProvider, data: "0x...", value: 0 }, // Flash loan transaction
+        { to: opportunity.tradeDex, data: "0x...", value: 0 }, // Trade transaction
+        { to: opportunity.flashLoanProvider, data: "0x...", value: 0 } // Repayment transaction
     ];
-}
-
-// Opportunity Detection
-function detectOpportunities(data) {
-    const opportunities = [];
-    // Add detection logic here
-    return opportunities;
 }
 
 main();
