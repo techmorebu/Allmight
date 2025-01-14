@@ -1,4 +1,4 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/HybridArbitrage.js
+echbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/HybridArbitrage.js
 Using ethers version for Hybrid Arbitrage: 6.7.1
 Using ethers version for Flashbots: 6.7.1
 Select an option:
@@ -8,45 +8,65 @@ Select an option:
 Enter your choice: 1
 Running Universal Mapper...
 Initializing Universal Mapper...
-Error running Universal Mapper: mapData is not a function
+Running mapper for all APIs. Output folder: ../outputs
+Fetching schema for uniswap (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV)...
+Mapping completed. Output saved to: ../outputs
 Universal Mapper completed.
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/HybridArbitrage.js
-Using ethers version for Hybrid Arbitrage: 6.7.1
-Using ethers version for Flashbots: 6.7.1
-Select an option:
-1. Run Universal Mapper
-2. Run Cross-Referencing
-3. Perform Arbitrage Execution
-Enter your choice: 2
-Running Cross-Referencing...
-Initializing Cross-Referencing...
-Error running Cross-Referencing: validateFields is not a function
-Cross-Referencing completed.
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/HybridArbitrage.js3
-node:internal/modules/cjs/loader:1137
-  throw err;
+API response time for uniswap: 663ms
+Successfully fetched schema for uniswap.
+Error during mapper run for uniswap: ENOENT: no such file or directory, scandir '../outputs'
+Fetching schema for sushiswap (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/3oHCddbQGTi42kPZBwyGzD2JzZR33zK2MwXtxAerNJy2)...
+API response time for sushiswap: 577ms
+Successfully fetched schema for sushiswap.
+Error during mapper run for sushiswap: ENOENT: no such file or directory, scandir '../outputs'
+Fetching schema for curveEthereum (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/3fy93eAT56UJsRCEht8iFhfi6wjHWXtZ9dnnbQmvFopF)...
+API response time for curveEthereum: 610ms
+Successfully fetched schema for curveEthereum.
+Error during mapper run for curveEthereum: ENOENT: no such file or directory, scandir '../outputs'
+Fetching schema for curveAvalanche (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/2Vt8WtdXNZUEeaVtzyEd1dpioJf44nvomzkd4HhubfKS)...
+API response time for curveAvalanche: 610ms
+Successfully fetched schema for curveAvalanche.
+Error during mapper run for curveAvalanche: ENOENT: no such file or directory, scandir '../outputs'
+Fetching schema for quickswap (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g)...
+API response time for quickswap: 133ms
+Successfully fetched schema for quickswap.
+Error during mapper run for quickswap: ENOENT: no such file or directory, scandir '../outputs'
+Fetching schema for balancerPolygon (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/H9oPAbXnobBRq1cB3HDmbZ1E8MWQyJYQjT1QDJMrdbNp)...
+API response time for balancerPolygon: 436ms
+Successfully fetched schema for balancerPolygon.
+Error during mapper run for balancerPolygon: ENOENT: no such file or directory, scandir '../outputs'
+Fetching schema for balancerOptimism (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FsmdxmvBJLGjUQPxKMRtcWKzuCNpomKuMTbSbtRtggZ7)...
+API response time for balancerOptimism: 185ms
+Successfully fetched schema for balancerOptimism.
+Error during mapper run for balancerOptimism: ENOENT: no such file or directory, scandir '../outputs'
+Fetching schema for balancerArbitrum (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/98cQDy6tufTJtshDCuhh9z2kWXsQWBHVh2bqnLHsGAeS)...
+API response time for balancerArbitrum: 152ms
+Successfully fetched schema for balancerArbitrum.
+Error during mapper run for balancerArbitrum: ENOENT: no such file or directory, scandir '../outputs'
+Fetching schema for balancerAvalanche (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/7asfmtQA1KYu6CP7YVm5kv4bGxVyfAHEiptt2HMFgkHu)...
+API response time for balancerAvalanche: 219ms
+Successfully fetched schema for balancerAvalanche.
+Error during mapper run for balancerAvalanche: ENOENT: no such file or directory, scandir '../outputs'
+Fetching schema for balancerEthereum (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/C4ayEZP2yTXRAB8vSaTrgN4m9anTe9Mdm2ViyiAuV9TV)...
+API response time for balancerEthereum: 859ms
+Successfully fetched schema for balancerEthereum.
+Error during mapper run for balancerEthereum: ENOENT: no such file or directory, scandir '../outputs'
+Consolidating results...
+node:fs:1525
+  handleErrorFromBinding(ctx);
   ^
 
-Error: Cannot find module '/home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js3'
-    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
-    at Module._load (node:internal/modules/cjs/loader:975:27)
-    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
-    at node:internal/main/run_main_module:28:49 {
-  code: 'MODULE_NOT_FOUND',
-  requireStack: []
+Error: ENOENT: no such file or directory, scandir '../outputs'
+    at Object.readdirSync (node:fs:1525:3)
+    at consolidateResults (/home/techbu/OFA_Project_Local/ofa-project/tools/universal-field-mapper.js:112:20)
+    at Object.runMapper (/home/techbu/OFA_Project_Local/ofa-project/tools/universal-field-mapper.js:159:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5) {
+  errno: -2,
+  syscall: 'scandir',
+  code: 'ENOENT',
+  path: '../outputs'
 }
 
 Node.js v18.19.1
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/HybridArbitrage.js
-Using ethers version for Hybrid Arbitrage: 6.7.1
-Using ethers version for Flashbots: 6.7.1
-Select an option:
-1. Run Universal Mapper
-2. Run Cross-Referencing
-3. Perform Arbitrage Execution
-Enter your choice: 3
-Starting Arbitrage Execution...
-No data fetched. Exiting...
-Arbitrage Execution completed.
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tools/universal-field-mapper.js
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
-
