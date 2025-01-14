@@ -6,14 +6,12 @@ require("dotenv").config();
 
 const outputDir = path.join(__dirname, "../outputs");
 const testOutputDir = path.join(outputDir, "apitests");
+const fullTestOutputDir = path.join(outputDir, "fulltests");
 
 // Ensure output directories exist
-if (!fs.existsSync(outputDir)) {
-  fs.mkdirSync(outputDir);
-}
-if (!fs.existsSync(testOutputDir)) {
-  fs.mkdirSync(testOutputDir);
-}
+if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir);
+if (!fs.existsSync(testOutputDir)) fs.mkdirSync(testOutputDir);
+if (!fs.existsSync(fullTestOutputDir)) fs.mkdirSync(fullTestOutputDir);
 
 // Map your API endpoints from .env
 const apis = {
@@ -31,64 +29,79 @@ const apis = {
 
 // Function to determine API type (placeholder logic for now)
 function determineApiType(apiUrl) {
-  if (apiUrl.includes("wss://")) {
-    return "WebSocket";
-  } else if (apiUrl.includes("graphql")) {
-    return "GraphQL";
-  } else if (apiUrl.includes("rest")) {
-    return "RESTful";
-  } else {
-    return "Aggregator";
-  }
+  if (apiUrl.includes("wss://")) return "WebSocket";
+  if (apiUrl.includes("graphql")) return "GraphQL";
+  if (apiUrl.includes("rest")) return "RESTful";
+  return "Aggregator";
 }
 
-// Test API functionality
-async function testApi(apiName, apiUrl) {
-  console.log(`Testing API: ${apiName} (${apiUrl})`);
+// Helper function to fetch schema or data
+async function fetchApiSchema(apiName, apiUrl) {
+  console.log(`Fetching schema for ${apiName} (${apiUrl})...`);
   const apiType = determineApiType(apiUrl);
-  const testResult = {
-    apiName,
-    apiUrl,
-    apiType,
-    status: "", // success or error
-    sampleData: null,
-    errorMessage: null,
-  };
-
-  try {
-    if (apiType === "GraphQL") {
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: "{ __typename }" }),
-      });
-      if (!response.ok) {
-        throw new Error(`API Test Failed: ${response.statusText}`);
-      }
-      const data = await response.json();
-      testResult.status = "success";
-      testResult.sampleData = data;
-    } else {
-      testResult.status = "unsupported";
-      testResult.errorMessage = `API type '${apiType}' is not supported for testing yet.`;
-    }
-  } catch (error) {
-    testResult.status = "error";
-    testResult.errorMessage = error.message;
+  if (apiType !== "GraphQL") {
+    console.log(`Skipping non-GraphQL API: ${apiName}`);
+    return null;
   }
 
-  const testFilePath = path.join(testOutputDir, `${apiName}-test.json`);
-  fs.writeFileSync(testFilePath, JSON.stringify(testResult, null, 2));
-  console.log(`Test result saved to ${testFilePath}`);
+  const response = await fetch(apiUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      query: `{
+        __schema {
+          types {
+            name
+            kind
+            fields {
+              name
+              type {
+                name
+                kind
+                ofType {
+                  name
+                  kind
+                }
+              }
+            }
+          }
+        }
+      }`,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch schema: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data.data.__schema.types;
 }
 
-// Clear all test files
-function clearTestFiles() {
-  const files = fs.readdirSync(testOutputDir);
-  files.forEach((file) => {
-    fs.unlinkSync(path.join(testOutputDir, file));
-  });
-  console.log("All test files cleared.");
+// Save JSON output
+function saveJsonOutput(folder, fileName, data) {
+  const dirPath = path.join(outputDir, folder);
+  if (!fs.existsSync(dirPath)) fs.mkdirSync(dirPath);
+
+  const filePath = path.join(dirPath, fileName);
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+  console.log(`Output saved to ${filePath}`);
+}
+
+// Full Test Functionality
+async function runFullTest() {
+  console.log("Running full test for all APIs...");
+  for (const [apiName, apiUrl] of Object.entries(apis)) {
+    try {
+      const schema = await fetchApiSchema(apiName, apiUrl);
+      if (schema) {
+        saveJsonOutput("fulltests", `${apiName}-fulltest.json`, schema);
+      }
+    } catch (error) {
+      console.error(`Error during full test for ${apiName}:`, error.message);
+    }
+  }
+  console.log("Full test completed. Results saved in ./outputs/fulltests/");
 }
 
 // Interactive Prompt
@@ -102,6 +115,7 @@ function startInteractivePrompt() {
   console.log("1. Update Mapper");
   console.log("2. Add New API");
   console.log("3. Test");
+  console.log("4. Full Test");
 
   rl.question("Enter your choice: ", async (choice) => {
     switch (choice.trim()) {
@@ -119,35 +133,16 @@ function startInteractivePrompt() {
         });
         break;
       case "3":
-        console.log("Test Options:");
-        console.log("1. Run New Test (Clear All Files)");
-        console.log("2. Retry (Overwrite Existing Files)");
-
-        rl.question("Enter your test option: ", async (testOption) => {
-          switch (testOption.trim()) {
-            case "1":
-              clearTestFiles();
-              rl.question("Enter API name to test: ", (apiName) => {
-                rl.question("Enter API URL to test: ", async (apiUrl) => {
-                  await testApi(apiName, apiUrl);
-                  rl.close();
-                });
-              });
-              break;
-            case "2":
-              rl.question("Enter API name to test: ", (apiName) => {
-                rl.question("Enter API URL to test: ", async (apiUrl) => {
-                  await testApi(apiName, apiUrl); // Overwrites existing files
-                  rl.close();
-                });
-              });
-              break;
-            default:
-              console.log("Invalid test option.");
-              rl.close();
-              break;
-          }
+        rl.question("Enter API name to test: ", (apiName) => {
+          rl.question("Enter API URL to test: ", async (apiUrl) => {
+            await testApi(apiName, apiUrl);
+            rl.close();
+          });
         });
+        break;
+      case "4":
+        await runFullTest();
+        rl.close();
         break;
       default:
         console.log("Invalid choice.");
@@ -157,23 +152,16 @@ function startInteractivePrompt() {
   });
 }
 
-// Main function to run the mapper
+// Main Mapper Function
 async function runMapper() {
   for (const [apiName, apiUrl] of Object.entries(apis)) {
-    const schema = await fetchApiSchema(apiName, apiUrl);
-    if (schema) {
-      const fields = Array.isArray(schema)
-        ? processSchema(schema, apiName)
-        : schema;
-
-      const dateStamp = new Date().toISOString().split("T")[0];
-      const jsonFileName = `${apiName}-fields-${dateStamp}.json`;
-      const csvFileName = `${apiName}-fields-${dateStamp}.csv`;
-      const htmlFileName = `${apiName}-fields-${dateStamp}.html`;
-
-      saveJsonOutput(jsonFileName, fields, apiName);
-      saveCsvOutput(csvFileName, fields, apiName);
-      saveHtmlOutput(htmlFileName, fields, apiName);
+    try {
+      const schema = await fetchApiSchema(apiName, apiUrl);
+      if (schema) {
+        saveJsonOutput("", `${apiName}-fields.json`, schema);
+      }
+    } catch (error) {
+      console.error(`Error fetching schema for ${apiName}:`, error.message);
     }
   }
   console.log("Field mapping completed for all APIs.");
