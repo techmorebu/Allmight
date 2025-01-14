@@ -4,8 +4,8 @@
 const ethers = require('ethers'); // Explicitly import ethers6 for Hybrid Arbitrage
 const ethers67 = require('ethers67'); // Explicitly import ethers67 for Flashbots
 const { FlashbotsBundleProvider } = require('@flashbots/ethers-provider-bundle');
-const { mapData } = require("../tools/universal-field-mapper.js"); // Universal Mapper module
-const { validateFields } = require("../tools/cross-referencing.js"); // Cross-Referencing integration
+const mapper = require("./tools/universal-field-mapper.js"); // Universal Mapper module
+const crossReference = require("./tools/cross-referencing.js"); // Cross-Referencing integration
 require('dotenv').config();
 
 const config = {
@@ -17,44 +17,12 @@ const config = {
 console.log(`Using ethers version for Hybrid Arbitrage: ${ethers.version}`);
 console.log(`Using ethers version for Flashbots: ${ethers67.version}`);
 
-// Optimized Cross-Referencing Validation with Error Thresholds
-async function validateWithCrossReference(data) {
-    console.log("Starting cross-referencing validation...");
-
-    // Use fixed required fields
-    const requiredFields = [
-        "token0Price", "token1Price", "volumeUSD", "feesUSD", "liquidity",
-        "txCount", "open", "high", "low", "close", "totalValueLockedUSD"
-    ];
-
-    const maxAllowedMissingFields = parseInt(process.env.MAX_ALLOWED_MISSING_FIELDS || "3", 10);
-
-    const validationResult = validateFields(data, requiredFields);
-
-    // Enhanced Logging
-    if (validationResult.missing.length > 0) {
-        console.warn("Validation warnings: Missing fields detected:", validationResult.missing);
-    }
-
-    console.info("Cross-referencing validation completed successfully.", {
-        matchedFields: validationResult.matched.length,
-        missingFields: validationResult.missing.length,
-    });
-
-    // Fail-safe for critical missing fields
-    if (validationResult.missing.length > maxAllowedMissingFields) {
-        throw new Error(`Validation failed: Too many missing fields (${validationResult.missing.length}). Maximum allowed: ${maxAllowedMissingFields}`);
-    }
-
-    return validationResult;
-}
-
 // Run Universal Mapper
 async function runMapper() {
     console.log("Initializing Universal Mapper...");
     const outputDir = "./outputs/mapped-data"; // Example output directory
     try {
-        await mapData(outputDir); // Ensure mapData supports asynchronous operations
+        const result = mapper.runMapper(outputDir); // Ensure runMapper is implemented in the Universal Mapper module
         console.log(`Mapping completed. Output saved to: ${outputDir}`);
     } catch (error) {
         console.error("Error running Universal Mapper:", error.message);
@@ -66,7 +34,7 @@ async function runCrossReference() {
     console.log("Initializing Cross-Referencing...");
     const inputDir = "./outputs/mapped-data"; // Example input directory
     try {
-        const result = validateFields(inputDir);
+        const result = crossReference.runCrossReference(inputDir); // Ensure runCrossReference is implemented in the Cross-Referencing module
         console.log("Cross-Referencing Results:", result);
     } catch (error) {
         console.error("Error running Cross-Referencing:", error.message);
@@ -125,12 +93,13 @@ async function executeArbitrage(provider, wallet) {
     }
 
     // Data Standardization (Universal Mapper)
-    const standardizedData = mapData(rawData);
+    const standardizedData = mapper.mapData(rawData);
     console.log("Data standardized successfully.");
 
     // Cross-Reference Validation
     try {
-        await validateWithCrossReference(standardizedData);
+        const crossRefResult = crossReference.validateFields(standardizedData);
+        console.log("Cross-referencing validation completed successfully.", crossRefResult);
     } catch (error) {
         console.error("Critical validation error:", error.message);
         return;
