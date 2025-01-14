@@ -1,12 +1,14 @@
 // Hybrid Arbitrage System
 // Fully integrates Universal Mapper, Cross-Reference Script, and Opportunity Detection
 
-const fetch = require("node-fetch");
-const { FlashbotsBundleProvider } = require("@flashbots/ethers-provider-bundle");
-const ethers = require("ethers");
+const ethers = require('ethers'); // Explicitly import ethers6
+const { FlashbotsBundleProvider } = require('@flashbots/ethers-provider-bundle');
 const universalMapper = require("./universal-field-mapper"); // Universal Mapper module
 const crossReference = require("./cross-referencing"); // Optimized Cross-Reference Script
 const config = require("./config");
+
+// Verify Ethers Version
+console.log(`Using ethers version: ${ethers.version}`);
 
 // Optimized Cross-Referencing Validation with Error Thresholds
 async function validateWithCrossReference(data) {
@@ -42,7 +44,7 @@ async function validateWithCrossReference(data) {
 
 // Main Workflow
 async function main() {
-    const provider = new ethers.providers.JsonRpcProvider(process.env.ETH_RPC_URL);
+    const provider = new ethers.JsonRpcProvider(process.env.ETH_RPC_URL);
     const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
     // Step 1: Data Fetching
