@@ -1,30 +1,64 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/HybridArbitrage.js
+Using ethers version for Hybrid Arbitrage: 6.7.1
+Using ethers version for Flashbots: 6.7.1
 Select an option:
-1. Update Mapper
-2. Add New API
-3. Test
-Enter your choice: Debug output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/debug/chatcrossdebug.json
-node:internal/modules/cjs/loader:1137
-  throw err;
-  ^
+1. Run Universal Mapper
+2. Run Cross-Referencing
+3. Perform Arbitrage Execution
+Enter your choice: 1
+Running Universal Mapper...
+/home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js:71
+                await runMapper();
+                ^
 
-Error: Cannot find module '../config'
-Require stack:
-- /home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js
-    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
-    at Module._load (node:internal/modules/cjs/loader:975:27)
-    at Module.require (node:internal/modules/cjs/loader:1225:19)
-    at require (node:internal/modules/helpers:177:18)
-    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js:9:16)
-    at Module._compile (node:internal/modules/cjs/loader:1356:14)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
-    at Module.load (node:internal/modules/cjs/loader:1197:32)
-    at Module._load (node:internal/modules/cjs/loader:1013:12)
-    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12) {
-  code: 'MODULE_NOT_FOUND',
-  requireStack: [
-    '/home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js'
-  ]
-}
+ReferenceError: runMapper is not defined
+    at /home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js:71:17
+    at [_onLine] [as _onLine] (node:internal/readline/interface:421:7)
+    at [_line] [as _line] (node:internal/readline/interface:894:18)
+    at [_ttyWrite] [as _ttyWrite] (node:internal/readline/interface:1272:22)
+    at ReadStream.onkeypress (node:internal/readline/interface:271:20)
+    at ReadStream.emit (node:events:517:28)
+    at emitKeys (node:internal/readline/utils:371:14)
+    at emitKeys.next (<anonymous>)
+    at ReadStream.onData (node:internal/readline/emitKeypressEvents:64:36)
+    at ReadStream.emit (node:events:517:28)
 
 Node.js v18.19.1
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/HybridArbitrage.js
+Using ethers version for Hybrid Arbitrage: 6.7.1
+Using ethers version for Flashbots: 6.7.1
+Select an option:
+1. Run Universal Mapper
+2. Run Cross-Referencing
+3. Perform Arbitrage Execution
+Enter your choice: 2
+Running Cross-Referencing...
+/home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js:77
+                await runCrossReference();
+                ^
+
+ReferenceError: runCrossReference is not defined
+    at /home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js:77:17
+    at [_onLine] [as _onLine] (node:internal/readline/interface:421:7)
+    at [_line] [as _line] (node:internal/readline/interface:894:18)
+    at [_ttyWrite] [as _ttyWrite] (node:internal/readline/interface:1272:22)
+    at ReadStream.onkeypress (node:internal/readline/interface:271:20)
+    at ReadStream.emit (node:events:517:28)
+    at emitKeys (node:internal/readline/utils:371:14)
+    at emitKeys.next (<anonymous>)
+    at ReadStream.onData (node:internal/readline/emitKeypressEvents:64:36)
+    at ReadStream.emit (node:events:517:28)
+
+Node.js v18.19.1
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/HybridArbitrage.js
+Using ethers version for Hybrid Arbitrage: 6.7.1
+Using ethers version for Flashbots: 6.7.1
+Select an option:
+1. Run Universal Mapper
+2. Run Cross-Referencing
+3. Perform Arbitrage Execution
+Enter your choice: 3
+Starting Arbitrage Execution...
+No data fetched. Exiting...
+Arbitrage Execution completed.
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
