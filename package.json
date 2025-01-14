@@ -41,6 +41,6 @@
     "xrpl": "^4.1.0"
   },
   "overrides": {
-    "@flashbots/ethers-provider-bundle/ethers": "npm:ethers67"
+    "@flashbots/ethers-provider-bundle/ethers": "ethers67"
   }
 }
