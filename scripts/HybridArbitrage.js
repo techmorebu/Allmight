@@ -122,6 +122,10 @@ function runCrossReference() {
     const matched = requiredFields.filter((field) => fields.includes(field));
     const missing = requiredFields.filter((field) => !fields.includes(field));
 
+    if (fields.length === 0) {
+      console.warn(`No fields found for API: ${apiName}. Schema might be incomplete or malformed.`);
+    }
+
     report[apiName] = { matched, missing };
   });
 
