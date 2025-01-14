@@ -1,112 +1,12 @@
-Run `npm audit` for details.
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npm install ethers67@npm:ethers@6.7.1
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npm ls ethers @flashbots/ethers-provider-bundle
+ofa-project@1.0.0 /home/techbu/OFA_Project_Local/ofa-project
+├─┬ @flashbots/ethers-provider-bundle@1.0.0
+│ └── ethers@6.13.5 deduped invalid: "6.7.1" from node_modules/@flashbots/ethers-provider-bundle
+├─┬ @nomicfoundation/hardhat-ethers@3.0.8
+│ └── ethers@6.13.5 deduped invalid: "6.7.1" from node_modules/@flashbots/ethers-provider-bundle
+└── ethers@6.13.5 invalid: "6.7.1" from node_modules/@flashbots/ethers-provider-bundle
 
-added 6 packages, and audited 399 packages in 6s
-
-81 packages are looking for funding
-  run `npm fund` for details
-
-22 vulnerabilities (19 low, 3 high)
-
-To address issues that do not require attention, run:
-  npm audit fix
-
-To address all issues possible (including breaking changes), run:
-  npm audit fix --force
-
-Some issues need review, and may require choosing
-a different dependency.
-
-Run `npm audit` for details.
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npm install --save @flashbots/ethers-provider-bundle
-npm error code ERESOLVE
-npm error ERESOLVE unable to resolve dependency tree
-npm error
-npm error While resolving: ofa-project@1.0.0
-npm error Found: ethers@6.13.5
-npm error node_modules/ethers
-npm error   ethers@"^6.13.4" from the root project
-npm error
-npm error Could not resolve dependency:
-npm error peer ethers@"6.7.1" from @flashbots/ethers-provider-bundle@1.0.0
-npm error node_modules/@flashbots/ethers-provider-bundle
-npm error   @flashbots/ethers-provider-bundle@"*" from the root project
-npm error
-npm error Fix the upstream dependency conflict, or retry
-npm error this command with --force or --legacy-peer-deps
-npm error to accept an incorrect (and potentially broken) dependency resolution.
-npm error
-npm error
-npm error For a full report see:
-npm error /home/techbu/.npm/_logs/2025-01-14T06_28_12_730Z-eresolve-report.txt
-npm error A complete log of this run can be found in: /home/techbu/.npm/_logs/2025-01-14T06_28_12_730Z-debug-0.log
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npx-force-resolutions
-npx-force-resolutions: command not found
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npx npm-force-resolutions
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npm install
-
-removed 4 packages, and audited 395 packages in 21s
-
-81 packages are looking for funding
-  run `npm fund` for details
-
-22 vulnerabilities (19 low, 3 high)
-
-To address issues that do not require attention, run:
-  npm audit fix
-
-To address all issues possible (including breaking changes), run:
-  npm audit fix --force
-
-Some issues need review, and may require choosing
-a different dependency.
-
-Run `npm audit` for details.
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/HybridArbitrage.js
-node:internal/modules/cjs/loader:1137
-  throw err;
-  ^
-
-Error: Cannot find module '@flashbots/ethers-provider-bundle'
-Require stack:
-- /home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js
-    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
-    at Module._load (node:internal/modules/cjs/loader:975:27)
-    at Module.require (node:internal/modules/cjs/loader:1225:19)
-    at require (node:internal/modules/helpers:177:18)
-    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js:2:37)
-    at Module._compile (node:internal/modules/cjs/loader:1356:14)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
-    at Module.load (node:internal/modules/cjs/loader:1197:32)
-    at Module._load (node:internal/modules/cjs/loader:1013:12)
-    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12) {
-  code: 'MODULE_NOT_FOUND',
-  requireStack: [
-    '/home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js'
-  ]
-}
-
-Node.js v18.19.1
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npm install --save @flashbots/ethers-provider-bundle
-npm error code ERESOLVE
-npm error ERESOLVE unable to resolve dependency tree
-npm error
-npm error While resolving: ofa-project@1.0.0
-npm error Found: ethers@6.13.5
-npm error node_modules/ethers
-npm error   ethers@"^6.13.4" from the root project
-npm error
-npm error Could not resolve dependency:
-npm error peer ethers@"6.7.1" from @flashbots/ethers-provider-bundle@1.0.0
-npm error node_modules/@flashbots/ethers-provider-bundle
-npm error   @flashbots/ethers-provider-bundle@"*" from the root project
-npm error
-npm error Fix the upstream dependency conflict, or retry
-npm error this command with --force or --legacy-peer-deps
-npm error to accept an incorrect (and potentially broken) dependency resolution.
-npm error
-npm error
-npm error For a full report see:
-npm error /home/techbu/.npm/_logs/2025-01-14T06_35_00_060Z-eresolve-report.txt
-npm error A complete log of this run can be found in: /home/techbu/.npm/_logs/2025-01-14T06_35_00_060Z-debug-0.log
+npm error code ELSPROBLEMS
+npm error invalid: ethers@6.13.5 /home/techbu/OFA_Project_Local/ofa-project/node_modules/ethers
+npm error A complete log of this run can be found in: /home/techbu/.npm/_logs/2025-01-14T06_40_05_435Z-debug-0.log
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
