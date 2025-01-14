@@ -1,16 +1,21 @@
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/HybridArbitrage.js
+Select an option:
+1. Update Mapper
+2. Add New API
+3. Test
+Enter your choice: Debug output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/debug/chatcrossdebug.json
 node:internal/modules/cjs/loader:1137
   throw err;
   ^
 
-Error: Cannot find module './tools/universal-field-mapper.js'
+Error: Cannot find module '../config'
 Require stack:
 - /home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js
     at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
     at Module._load (node:internal/modules/cjs/loader:975:27)
     at Module.require (node:internal/modules/cjs/loader:1225:19)
     at require (node:internal/modules/helpers:177:18)
-    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js:7:25)
+    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js:9:16)
     at Module._compile (node:internal/modules/cjs/loader:1356:14)
     at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
     at Module.load (node:internal/modules/cjs/loader:1197:32)
@@ -23,5 +28,3 @@ Require stack:
 }
 
 Node.js v18.19.1
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
-
