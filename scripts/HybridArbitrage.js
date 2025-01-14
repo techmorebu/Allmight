@@ -8,6 +8,11 @@ const mapper = require("../tools/universal-field-mapper.js"); // Universal Mappe
 const crossReference = require("../tools/cross-referencing.js"); // Cross-Referencing integration
 require('dotenv').config();
 
+const path = require("path");
+
+const outputDir = path.resolve(__dirname, "../outputs");
+if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
+
 const config = {
     dexApis: JSON.parse(process.env.DEX_APIS || '[]'),
     minProfitThreshold: parseFloat(process.env.MIN_PROFIT_THRESHOLD || '0.05'),
@@ -20,7 +25,6 @@ console.log(`Using ethers version for Flashbots: ${ethers67.version}`);
 // Run Universal Mapper
 async function runMapper() {
     console.log("Initializing Universal Mapper...");
-    const outputDir = "../outputs";
     try {
         const result = mapper.runMapper(outputDir); // Ensure runMapper is implemented in the Universal Mapper module
         console.log(`Mapping completed. Output saved to: ${outputDir}`);
@@ -32,9 +36,8 @@ async function runMapper() {
 // Run Cross-Referencing
 async function runCrossReference() {
     console.log("Initializing Cross-Referencing...");
-    const inputDir = "../outputs"; // Example input directory
     try {
-        const result = crossReference.runCrossReference(inputDir); // Ensure runCrossReference is implemented in the Cross-Referencing module
+        const result = crossReference.runCrossReference(); // Ensure runCrossReference is implemented in the Cross-Referencing module
         console.log("Cross-Referencing Results:", result);
     } catch (error) {
         console.error("Error running Cross-Referencing:", error.message);
