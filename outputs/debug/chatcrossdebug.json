@@ -1,0 +1,252 @@
+[
+  {
+    "type": "info",
+    "message": "Loaded data from /home/techbu/OFA_Project_Local/ofa-project/outputs/balancerArbitrum-fields.json"
+  },
+  {
+    "type": "debug",
+    "message": "Cross-referenced fields for balancerArbitrum",
+    "matchedFields": [],
+    "missingFields": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "feesUSD",
+      "liquidity",
+      "txCount",
+      "open",
+      "high",
+      "low",
+      "close",
+      "totalValueLockedUSD"
+    ]
+  },
+  {
+    "type": "info",
+    "message": "Loaded data from /home/techbu/OFA_Project_Local/ofa-project/outputs/balancerAvalanche-fields.json"
+  },
+  {
+    "type": "debug",
+    "message": "Cross-referenced fields for balancerAvalanche",
+    "matchedFields": [],
+    "missingFields": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "feesUSD",
+      "liquidity",
+      "txCount",
+      "open",
+      "high",
+      "low",
+      "close",
+      "totalValueLockedUSD"
+    ]
+  },
+  {
+    "type": "info",
+    "message": "Loaded data from /home/techbu/OFA_Project_Local/ofa-project/outputs/balancerEthereum-fields.json"
+  },
+  {
+    "type": "debug",
+    "message": "Cross-referenced fields for balancerEthereum",
+    "matchedFields": [],
+    "missingFields": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "feesUSD",
+      "liquidity",
+      "txCount",
+      "open",
+      "high",
+      "low",
+      "close",
+      "totalValueLockedUSD"
+    ]
+  },
+  {
+    "type": "info",
+    "message": "Loaded data from /home/techbu/OFA_Project_Local/ofa-project/outputs/balancerOptimism-fields.json"
+  },
+  {
+    "type": "debug",
+    "message": "Cross-referenced fields for balancerOptimism",
+    "matchedFields": [],
+    "missingFields": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "feesUSD",
+      "liquidity",
+      "txCount",
+      "open",
+      "high",
+      "low",
+      "close",
+      "totalValueLockedUSD"
+    ]
+  },
+  {
+    "type": "info",
+    "message": "Loaded data from /home/techbu/OFA_Project_Local/ofa-project/outputs/balancerPolygon-fields.json"
+  },
+  {
+    "type": "debug",
+    "message": "Cross-referenced fields for balancerPolygon",
+    "matchedFields": [],
+    "missingFields": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "feesUSD",
+      "liquidity",
+      "txCount",
+      "open",
+      "high",
+      "low",
+      "close",
+      "totalValueLockedUSD"
+    ]
+  },
+  {
+    "type": "info",
+    "message": "Loaded data from /home/techbu/OFA_Project_Local/ofa-project/outputs/curveAvalanche-fields.json"
+  },
+  {
+    "type": "debug",
+    "message": "Cross-referenced fields for curveAvalanche",
+    "matchedFields": [],
+    "missingFields": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "feesUSD",
+      "liquidity",
+      "txCount",
+      "open",
+      "high",
+      "low",
+      "close",
+      "totalValueLockedUSD"
+    ]
+  },
+  {
+    "type": "info",
+    "message": "Loaded data from /home/techbu/OFA_Project_Local/ofa-project/outputs/curveEthereum-fields.json"
+  },
+  {
+    "type": "debug",
+    "message": "Cross-referenced fields for curveEthereum",
+    "matchedFields": [],
+    "missingFields": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "feesUSD",
+      "liquidity",
+      "txCount",
+      "open",
+      "high",
+      "low",
+      "close",
+      "totalValueLockedUSD"
+    ]
+  },
+  {
+    "type": "info",
+    "message": "Loaded data from /home/techbu/OFA_Project_Local/ofa-project/outputs/quickswap-fields.json"
+  },
+  {
+    "type": "debug",
+    "message": "Cross-referenced fields for quickswap",
+    "matchedFields": [],
+    "missingFields": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "feesUSD",
+      "liquidity",
+      "txCount",
+      "open",
+      "high",
+      "low",
+      "close",
+      "totalValueLockedUSD"
+    ]
+  },
+  {
+    "type": "info",
+    "message": "Loaded data from /home/techbu/OFA_Project_Local/ofa-project/outputs/sushiswap-fields.json"
+  },
+  {
+    "type": "debug",
+    "message": "Cross-referenced fields for sushiswap",
+    "matchedFields": [],
+    "missingFields": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "feesUSD",
+      "liquidity",
+      "txCount",
+      "open",
+      "high",
+      "low",
+      "close",
+      "totalValueLockedUSD"
+    ]
+  },
+  {
+    "type": "info",
+    "message": "Loaded data from /home/techbu/OFA_Project_Local/ofa-project/outputs/uniswap-fields.json"
+  },
+  {
+    "type": "debug",
+    "message": "Cross-referenced fields for uniswap",
+    "matchedFields": [],
+    "missingFields": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "feesUSD",
+      "liquidity",
+      "txCount",
+      "open",
+      "high",
+      "low",
+      "close",
+      "totalValueLockedUSD"
+    ]
+  },
+  {
+    "type": "info",
+    "message": "Consolidated results file found, integrating..."
+  },
+  {
+    "type": "info",
+    "message": "Loaded data from /home/techbu/OFA_Project_Local/ofa-project/outputs/consolidated-results.json"
+  },
+  {
+    "type": "debug",
+    "message": "Cross-referenced fields for consolidated",
+    "matchedFields": [],
+    "missingFields": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "feesUSD",
+      "liquidity",
+      "txCount",
+      "open",
+      "high",
+      "low",
+      "close",
+      "totalValueLockedUSD"
+    ]
+  },
+  {
+    "type": "info",
+    "message": "Cross-reference report saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/cross-reference-report.json"
+  }
+]

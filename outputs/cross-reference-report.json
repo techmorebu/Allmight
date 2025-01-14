@@ -1,0 +1,178 @@
+{
+  "balancerArbitrum": {
+    "matched": [],
+    "missing": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "feesUSD",
+      "liquidity",
+      "txCount",
+      "open",
+      "high",
+      "low",
+      "close",
+      "totalValueLockedUSD"
+    ]
+  },
+  "balancerAvalanche": {
+    "matched": [],
+    "missing": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "feesUSD",
+      "liquidity",
+      "txCount",
+      "open",
+      "high",
+      "low",
+      "close",
+      "totalValueLockedUSD"
+    ]
+  },
+  "balancerEthereum": {
+    "matched": [],
+    "missing": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "feesUSD",
+      "liquidity",
+      "txCount",
+      "open",
+      "high",
+      "low",
+      "close",
+      "totalValueLockedUSD"
+    ]
+  },
+  "balancerOptimism": {
+    "matched": [],
+    "missing": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "feesUSD",
+      "liquidity",
+      "txCount",
+      "open",
+      "high",
+      "low",
+      "close",
+      "totalValueLockedUSD"
+    ]
+  },
+  "balancerPolygon": {
+    "matched": [],
+    "missing": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "feesUSD",
+      "liquidity",
+      "txCount",
+      "open",
+      "high",
+      "low",
+      "close",
+      "totalValueLockedUSD"
+    ]
+  },
+  "curveAvalanche": {
+    "matched": [],
+    "missing": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "feesUSD",
+      "liquidity",
+      "txCount",
+      "open",
+      "high",
+      "low",
+      "close",
+      "totalValueLockedUSD"
+    ]
+  },
+  "curveEthereum": {
+    "matched": [],
+    "missing": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "feesUSD",
+      "liquidity",
+      "txCount",
+      "open",
+      "high",
+      "low",
+      "close",
+      "totalValueLockedUSD"
+    ]
+  },
+  "quickswap": {
+    "matched": [],
+    "missing": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "feesUSD",
+      "liquidity",
+      "txCount",
+      "open",
+      "high",
+      "low",
+      "close",
+      "totalValueLockedUSD"
+    ]
+  },
+  "sushiswap": {
+    "matched": [],
+    "missing": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "feesUSD",
+      "liquidity",
+      "txCount",
+      "open",
+      "high",
+      "low",
+      "close",
+      "totalValueLockedUSD"
+    ]
+  },
+  "uniswap": {
+    "matched": [],
+    "missing": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "feesUSD",
+      "liquidity",
+      "txCount",
+      "open",
+      "high",
+      "low",
+      "close",
+      "totalValueLockedUSD"
+    ]
+  },
+  "consolidated": {
+    "matched": [],
+    "missing": [
+      "token0Price",
+      "token1Price",
+      "volumeUSD",
+      "feesUSD",
+      "liquidity",
+      "txCount",
+      "open",
+      "high",
+      "low",
+      "close",
+      "totalValueLockedUSD"
+    ]
+  }
+}
