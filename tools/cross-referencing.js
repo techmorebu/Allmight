@@ -12,18 +12,17 @@ const debugFilePath = path.join(debugDir, "chatcrossdebug.json");
 const debugOutput = [];
 
 // Required fields
-const requiredFields = [
-  "token0Price",
-  "token1Price",
-  "volumeUSD",
-  "feesUSD",
-  "liquidity",
-  "txCount",
-  "open",
-  "high",
-  "low",
-  "close",
-  "totalValueLockedUSD",
+const requiredFields = { name: "token0Price", description: "Price of the first token in the pair" },
+  { name: "token1Price", description: "Price of the second token in the pair" },
+  { name: "volumeUSD", description: "Total trading volume in USD" },
+  { name: "feesUSD", description: "Total fees generated in USD" },
+  { name: "liquidity", description: "Current pool liquidity" },
+  { name: "txCount", description: "Transaction count" },
+  { name: "open", description: "Opening price" },
+  { name: "high", description: "Highest price" },
+  { name: "low", description: "Lowest price" },
+  { name: "close", description: "Closing price" },
+  { name: "totalValueLockedUSD", description: "Total value locked in USD" }
 ];
 
 // Load JSON files
