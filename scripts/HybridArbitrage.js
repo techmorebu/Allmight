@@ -6,7 +6,7 @@ const ethers67 = require('ethers67'); // Explicitly import ethers67 for Flashbot
 const { FlashbotsBundleProvider } = require('@flashbots/ethers-provider-bundle');
 const universalMapper = require("../tools/universal-field-mapper.js"); // Universal Mapper module
 const crossReference = require("../tools/cross-referencing.js"); // Optimized Cross-Reference Script
-const config = require("./config");
+const config = require("../config");
 
 // Verify Ethers Versions
 console.log(`Using ethers version for Hybrid Arbitrage: ${ethers.version}`);
