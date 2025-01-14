@@ -1,0 +1,4330 @@
+[
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "Aggregation_interval"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "poolId",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "Pool"
+          }
+        }
+      },
+      {
+        "name": "scheduledTimestamp",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Int"
+          }
+        }
+      },
+      {
+        "name": "startTimestamp",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigInt"
+          }
+        }
+      },
+      {
+        "name": "endTimestamp",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigInt"
+          }
+        }
+      },
+      {
+        "name": "startAmp",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigInt"
+          }
+        }
+      },
+      {
+        "name": "endAmp",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigInt"
+          }
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "AmpUpdate"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "AmpUpdate_filter"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "AmpUpdate_orderBy"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "poolCount",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Int"
+          }
+        }
+      },
+      {
+        "name": "pools",
+        "type": {
+          "kind": "LIST",
+          "name": null,
+          "ofType": {
+            "kind": "NON_NULL",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "snapshots",
+        "type": {
+          "kind": "LIST",
+          "name": null,
+          "ofType": {
+            "kind": "NON_NULL",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "totalLiquidity",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "totalSwapCount",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigInt"
+          }
+        }
+      },
+      {
+        "name": "totalSwapVolume",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "totalSwapFee",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "totalProtocolFee",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "protocolFeesCollector",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Bytes",
+          "ofType": null
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "Balancer"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "vault",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "Balancer"
+          }
+        }
+      },
+      {
+        "name": "timestamp",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Int"
+          }
+        }
+      },
+      {
+        "name": "poolCount",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Int"
+          }
+        }
+      },
+      {
+        "name": "totalLiquidity",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "totalSwapCount",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigInt"
+          }
+        }
+      },
+      {
+        "name": "totalSwapVolume",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "totalSwapFee",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "totalProtocolFee",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "BalancerSnapshot"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "BalancerSnapshot_filter"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "BalancerSnapshot_orderBy"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "Balancer_filter"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "Balancer_orderBy"
+  },
+  {
+    "fields": null,
+    "kind": "SCALAR",
+    "name": "BigDecimal"
+  },
+  {
+    "fields": null,
+    "kind": "SCALAR",
+    "name": "BigInt"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "BlockChangedFilter"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "Block_height"
+  },
+  {
+    "fields": null,
+    "kind": "SCALAR",
+    "name": "Boolean"
+  },
+  {
+    "fields": null,
+    "kind": "SCALAR",
+    "name": "Bytes"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "pool",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "Pool"
+          }
+        }
+      },
+      {
+        "name": "token",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "PoolToken"
+          }
+        }
+      },
+      {
+        "name": "bptPrice",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "lowerBoundPercentage",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "upperBoundPercentage",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "CircuitBreaker"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "CircuitBreaker_filter"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "CircuitBreaker_orderBy"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "tokens",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "divisor",
+        "type": {
+          "kind": "SCALAR",
+          "name": "String",
+          "ofType": null
+        }
+      },
+      {
+        "name": "decimals",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Int",
+          "ofType": null
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "FXOracle"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "FXOracle_filter"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "FXOracle_orderBy"
+  },
+  {
+    "fields": null,
+    "kind": "SCALAR",
+    "name": "Float"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "poolId",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "Pool"
+          }
+        }
+      },
+      {
+        "name": "scheduledTimestamp",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Int"
+          }
+        }
+      },
+      {
+        "name": "startTimestamp",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigInt"
+          }
+        }
+      },
+      {
+        "name": "endTimestamp",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigInt"
+          }
+        }
+      },
+      {
+        "name": "startWeights",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "endWeights",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "GradualWeightUpdate"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "GradualWeightUpdate_filter"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "GradualWeightUpdate_orderBy"
+  },
+  {
+    "fields": null,
+    "kind": "SCALAR",
+    "name": "ID"
+  },
+  {
+    "fields": null,
+    "kind": "SCALAR",
+    "name": "Int"
+  },
+  {
+    "fields": null,
+    "kind": "SCALAR",
+    "name": "Int8"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "InvestType"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "type",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "ENUM",
+            "name": "InvestType"
+          }
+        }
+      },
+      {
+        "name": "sender",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Bytes"
+          }
+        }
+      },
+      {
+        "name": "amounts",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "valueUSD",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "pool",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "Pool"
+          }
+        }
+      },
+      {
+        "name": "user",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "User"
+          }
+        }
+      },
+      {
+        "name": "timestamp",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Int"
+          }
+        }
+      },
+      {
+        "name": "tx",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Bytes"
+          }
+        }
+      },
+      {
+        "name": "block",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigInt",
+          "ofType": null
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "JoinExit"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "JoinExit_filter"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "JoinExit_orderBy"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "asset",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Bytes"
+          }
+        }
+      },
+      {
+        "name": "pricingAsset",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Bytes"
+          }
+        }
+      },
+      {
+        "name": "poolId",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "Pool"
+          }
+        }
+      },
+      {
+        "name": "price",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "block",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigInt"
+          }
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "LatestPrice"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "LatestPrice_filter"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "LatestPrice_orderBy"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "type",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "ENUM",
+            "name": "OperationType"
+          }
+        }
+      },
+      {
+        "name": "cashDelta",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "managedDelta",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "poolTokenId",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "PoolToken"
+          }
+        }
+      },
+      {
+        "name": "timestamp",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Int"
+          }
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "ManagementOperation"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "ManagementOperation_filter"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "ManagementOperation_orderBy"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "OperationType"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "OrderDirection"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "address",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Bytes"
+          }
+        }
+      },
+      {
+        "name": "poolType",
+        "type": {
+          "kind": "SCALAR",
+          "name": "String",
+          "ofType": null
+        }
+      },
+      {
+        "name": "poolTypeVersion",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Int",
+          "ofType": null
+        }
+      },
+      {
+        "name": "factory",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Bytes",
+          "ofType": null
+        }
+      },
+      {
+        "name": "strategyType",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Int"
+          }
+        }
+      },
+      {
+        "name": "oracleEnabled",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Boolean"
+          }
+        }
+      },
+      {
+        "name": "symbol",
+        "type": {
+          "kind": "SCALAR",
+          "name": "String",
+          "ofType": null
+        }
+      },
+      {
+        "name": "name",
+        "type": {
+          "kind": "SCALAR",
+          "name": "String",
+          "ofType": null
+        }
+      },
+      {
+        "name": "isInitialized",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Boolean",
+          "ofType": null
+        }
+      },
+      {
+        "name": "swapEnabled",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Boolean"
+          }
+        }
+      },
+      {
+        "name": "swapEnabledInternal",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Boolean",
+          "ofType": null
+        }
+      },
+      {
+        "name": "swapEnabledCurationSignal",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Boolean",
+          "ofType": null
+        }
+      },
+      {
+        "name": "swapFee",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "owner",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Bytes",
+          "ofType": null
+        }
+      },
+      {
+        "name": "isPaused",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Boolean",
+          "ofType": null
+        }
+      },
+      {
+        "name": "totalWeight",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "totalSwapVolume",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "totalSwapFee",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "totalLiquidity",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "totalLiquiditySansBPT",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "totalShares",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "totalProtocolFee",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "createTime",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Int"
+          }
+        }
+      },
+      {
+        "name": "swapsCount",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigInt"
+          }
+        }
+      },
+      {
+        "name": "holdersCount",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigInt"
+          }
+        }
+      },
+      {
+        "name": "vaultID",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "Balancer"
+          }
+        }
+      },
+      {
+        "name": "tx",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Bytes",
+          "ofType": null
+        }
+      },
+      {
+        "name": "tokensList",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "tokens",
+        "type": {
+          "kind": "LIST",
+          "name": null,
+          "ofType": {
+            "kind": "NON_NULL",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "joinsExits",
+        "type": {
+          "kind": "LIST",
+          "name": null,
+          "ofType": {
+            "kind": "NON_NULL",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "swaps",
+        "type": {
+          "kind": "LIST",
+          "name": null,
+          "ofType": {
+            "kind": "NON_NULL",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "shares",
+        "type": {
+          "kind": "LIST",
+          "name": null,
+          "ofType": {
+            "kind": "NON_NULL",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "snapshots",
+        "type": {
+          "kind": "LIST",
+          "name": null,
+          "ofType": {
+            "kind": "NON_NULL",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "historicalValues",
+        "type": {
+          "kind": "LIST",
+          "name": null,
+          "ofType": {
+            "kind": "NON_NULL",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "weightUpdates",
+        "type": {
+          "kind": "LIST",
+          "name": null,
+          "ofType": {
+            "kind": "NON_NULL",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "amp",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigInt",
+          "ofType": null
+        }
+      },
+      {
+        "name": "latestAmpUpdate",
+        "type": {
+          "kind": "OBJECT",
+          "name": "AmpUpdate",
+          "ofType": null
+        }
+      },
+      {
+        "name": "ampUpdates",
+        "type": {
+          "kind": "LIST",
+          "name": null,
+          "ofType": {
+            "kind": "NON_NULL",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "priceRateProviders",
+        "type": {
+          "kind": "LIST",
+          "name": null,
+          "ofType": {
+            "kind": "NON_NULL",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "principalToken",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Bytes",
+          "ofType": null
+        }
+      },
+      {
+        "name": "baseToken",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Bytes",
+          "ofType": null
+        }
+      },
+      {
+        "name": "expiryTime",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigInt",
+          "ofType": null
+        }
+      },
+      {
+        "name": "unitSeconds",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigInt",
+          "ofType": null
+        }
+      },
+      {
+        "name": "managementFee",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "joinExitEnabled",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Boolean",
+          "ofType": null
+        }
+      },
+      {
+        "name": "mustAllowlistLPs",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Boolean",
+          "ofType": null
+        }
+      },
+      {
+        "name": "managementAumFee",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "totalAumFeeCollectedInBPT",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "circuitBreakers",
+        "type": {
+          "kind": "LIST",
+          "name": null,
+          "ofType": {
+            "kind": "NON_NULL",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "mainIndex",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Int",
+          "ofType": null
+        }
+      },
+      {
+        "name": "wrappedIndex",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Int",
+          "ofType": null
+        }
+      },
+      {
+        "name": "lowerTarget",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "upperTarget",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "sqrtAlpha",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "sqrtBeta",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "root3Alpha",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "c",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "s",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "tauAlphaX",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "tauAlphaY",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "tauBetaX",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "tauBetaY",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "u",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "v",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "w",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "z",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "dSq",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "alpha",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "beta",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "lambda",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "delta",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "epsilon",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "isInRecoveryMode",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Boolean",
+          "ofType": null
+        }
+      },
+      {
+        "name": "protocolSwapFeeCache",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "protocolYieldFeeCache",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "protocolAumFeeCache",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "totalProtocolFeePaidInBPT",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "lastJoinExitAmp",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigInt",
+          "ofType": null
+        }
+      },
+      {
+        "name": "lastPostJoinExitInvariant",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "protocolId",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Int",
+          "ofType": null
+        }
+      },
+      {
+        "name": "protocolIdData",
+        "type": {
+          "kind": "OBJECT",
+          "name": "ProtocolIdData",
+          "ofType": null
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "Pool"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "pool",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "Pool"
+          }
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "PoolContract"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "PoolContract_filter"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "PoolContract_orderBy"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "poolId",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "Pool"
+          }
+        }
+      },
+      {
+        "name": "poolTotalShares",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "poolLiquidity",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "poolShareValue",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "pricingAsset",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Bytes"
+          }
+        }
+      },
+      {
+        "name": "block",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigInt"
+          }
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "PoolHistoricalLiquidity"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "PoolHistoricalLiquidity_filter"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "PoolHistoricalLiquidity_orderBy"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "userAddress",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "User"
+          }
+        }
+      },
+      {
+        "name": "poolId",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "Pool"
+          }
+        }
+      },
+      {
+        "name": "balance",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "PoolShare"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "PoolShare_filter"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "PoolShare_orderBy"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "pool",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "Pool"
+          }
+        }
+      },
+      {
+        "name": "amounts",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "totalShares",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "swapVolume",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "protocolFee",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "swapFees",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "liquidity",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "swapsCount",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigInt"
+          }
+        }
+      },
+      {
+        "name": "holdersCount",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigInt"
+          }
+        }
+      },
+      {
+        "name": "timestamp",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Int"
+          }
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "PoolSnapshot"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "PoolSnapshot_filter"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "PoolSnapshot_orderBy"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "poolId",
+        "type": {
+          "kind": "OBJECT",
+          "name": "Pool",
+          "ofType": null
+        }
+      },
+      {
+        "name": "token",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "Token"
+          }
+        }
+      },
+      {
+        "name": "assetManager",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Bytes"
+          }
+        }
+      },
+      {
+        "name": "symbol",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "String"
+          }
+        }
+      },
+      {
+        "name": "name",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "String"
+          }
+        }
+      },
+      {
+        "name": "decimals",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Int"
+          }
+        }
+      },
+      {
+        "name": "index",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Int",
+          "ofType": null
+        }
+      },
+      {
+        "name": "address",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "String"
+          }
+        }
+      },
+      {
+        "name": "oldPriceRate",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "priceRate",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "balance",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "paidProtocolFees",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "cashBalance",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "managedBalance",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "managements",
+        "type": {
+          "kind": "LIST",
+          "name": null,
+          "ofType": {
+            "kind": "NON_NULL",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "weight",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "isExemptFromYieldProtocolFee",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Boolean",
+          "ofType": null
+        }
+      },
+      {
+        "name": "circuitBreaker",
+        "type": {
+          "kind": "OBJECT",
+          "name": "CircuitBreaker",
+          "ofType": null
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "PoolToken"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "PoolToken_filter"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "PoolToken_orderBy"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "Pool_filter"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "Pool_orderBy"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "poolId",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "Pool"
+          }
+        }
+      },
+      {
+        "name": "token",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "PoolToken"
+          }
+        }
+      },
+      {
+        "name": "address",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Bytes"
+          }
+        }
+      },
+      {
+        "name": "rate",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "lastCached",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Int",
+          "ofType": null
+        }
+      },
+      {
+        "name": "cacheDuration",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Int",
+          "ofType": null
+        }
+      },
+      {
+        "name": "cacheExpiry",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Int",
+          "ofType": null
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "PriceRateProvider"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "PriceRateProvider_filter"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "PriceRateProvider_orderBy"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "name",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "String"
+          }
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "ProtocolIdData"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "ProtocolIdData_filter"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "ProtocolIdData_orderBy"
+  },
+  {
+    "fields": [
+      {
+        "name": "balancer",
+        "type": {
+          "kind": "OBJECT",
+          "name": "Balancer",
+          "ofType": null
+        }
+      },
+      {
+        "name": "balancers",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "pool",
+        "type": {
+          "kind": "OBJECT",
+          "name": "Pool",
+          "ofType": null
+        }
+      },
+      {
+        "name": "pools",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "poolContract",
+        "type": {
+          "kind": "OBJECT",
+          "name": "PoolContract",
+          "ofType": null
+        }
+      },
+      {
+        "name": "poolContracts",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "poolToken",
+        "type": {
+          "kind": "OBJECT",
+          "name": "PoolToken",
+          "ofType": null
+        }
+      },
+      {
+        "name": "poolTokens",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "priceRateProvider",
+        "type": {
+          "kind": "OBJECT",
+          "name": "PriceRateProvider",
+          "ofType": null
+        }
+      },
+      {
+        "name": "priceRateProviders",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "circuitBreaker",
+        "type": {
+          "kind": "OBJECT",
+          "name": "CircuitBreaker",
+          "ofType": null
+        }
+      },
+      {
+        "name": "circuitBreakers",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "poolShare",
+        "type": {
+          "kind": "OBJECT",
+          "name": "PoolShare",
+          "ofType": null
+        }
+      },
+      {
+        "name": "poolShares",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "user",
+        "type": {
+          "kind": "OBJECT",
+          "name": "User",
+          "ofType": null
+        }
+      },
+      {
+        "name": "users",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "userInternalBalance",
+        "type": {
+          "kind": "OBJECT",
+          "name": "UserInternalBalance",
+          "ofType": null
+        }
+      },
+      {
+        "name": "userInternalBalances",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "gradualWeightUpdate",
+        "type": {
+          "kind": "OBJECT",
+          "name": "GradualWeightUpdate",
+          "ofType": null
+        }
+      },
+      {
+        "name": "gradualWeightUpdates",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "ampUpdate",
+        "type": {
+          "kind": "OBJECT",
+          "name": "AmpUpdate",
+          "ofType": null
+        }
+      },
+      {
+        "name": "ampUpdates",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "swapFeeUpdate",
+        "type": {
+          "kind": "OBJECT",
+          "name": "SwapFeeUpdate",
+          "ofType": null
+        }
+      },
+      {
+        "name": "swapFeeUpdates",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "swap",
+        "type": {
+          "kind": "OBJECT",
+          "name": "Swap",
+          "ofType": null
+        }
+      },
+      {
+        "name": "swaps",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "joinExit",
+        "type": {
+          "kind": "OBJECT",
+          "name": "JoinExit",
+          "ofType": null
+        }
+      },
+      {
+        "name": "joinExits",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "latestPrice",
+        "type": {
+          "kind": "OBJECT",
+          "name": "LatestPrice",
+          "ofType": null
+        }
+      },
+      {
+        "name": "latestPrices",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "poolHistoricalLiquidity",
+        "type": {
+          "kind": "OBJECT",
+          "name": "PoolHistoricalLiquidity",
+          "ofType": null
+        }
+      },
+      {
+        "name": "poolHistoricalLiquidities",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "tokenPrice",
+        "type": {
+          "kind": "OBJECT",
+          "name": "TokenPrice",
+          "ofType": null
+        }
+      },
+      {
+        "name": "tokenPrices",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "managementOperation",
+        "type": {
+          "kind": "OBJECT",
+          "name": "ManagementOperation",
+          "ofType": null
+        }
+      },
+      {
+        "name": "managementOperations",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "poolSnapshot",
+        "type": {
+          "kind": "OBJECT",
+          "name": "PoolSnapshot",
+          "ofType": null
+        }
+      },
+      {
+        "name": "poolSnapshots",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "token",
+        "type": {
+          "kind": "OBJECT",
+          "name": "Token",
+          "ofType": null
+        }
+      },
+      {
+        "name": "tokens",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "tokenSnapshot",
+        "type": {
+          "kind": "OBJECT",
+          "name": "TokenSnapshot",
+          "ofType": null
+        }
+      },
+      {
+        "name": "tokenSnapshots",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "tradePair",
+        "type": {
+          "kind": "OBJECT",
+          "name": "TradePair",
+          "ofType": null
+        }
+      },
+      {
+        "name": "tradePairs",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "tradePairSnapshot",
+        "type": {
+          "kind": "OBJECT",
+          "name": "TradePairSnapshot",
+          "ofType": null
+        }
+      },
+      {
+        "name": "tradePairSnapshots",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "balancerSnapshot",
+        "type": {
+          "kind": "OBJECT",
+          "name": "BalancerSnapshot",
+          "ofType": null
+        }
+      },
+      {
+        "name": "balancerSnapshots",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "protocolIdData",
+        "type": {
+          "kind": "OBJECT",
+          "name": "ProtocolIdData",
+          "ofType": null
+        }
+      },
+      {
+        "name": "protocolIdDatas",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "fxoracle",
+        "type": {
+          "kind": "OBJECT",
+          "name": "FXOracle",
+          "ofType": null
+        }
+      },
+      {
+        "name": "fxoracles",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "_meta",
+        "type": {
+          "kind": "OBJECT",
+          "name": "_Meta_",
+          "ofType": null
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "Query"
+  },
+  {
+    "fields": null,
+    "kind": "SCALAR",
+    "name": "String"
+  },
+  {
+    "fields": [
+      {
+        "name": "balancer",
+        "type": {
+          "kind": "OBJECT",
+          "name": "Balancer",
+          "ofType": null
+        }
+      },
+      {
+        "name": "balancers",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "pool",
+        "type": {
+          "kind": "OBJECT",
+          "name": "Pool",
+          "ofType": null
+        }
+      },
+      {
+        "name": "pools",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "poolContract",
+        "type": {
+          "kind": "OBJECT",
+          "name": "PoolContract",
+          "ofType": null
+        }
+      },
+      {
+        "name": "poolContracts",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "poolToken",
+        "type": {
+          "kind": "OBJECT",
+          "name": "PoolToken",
+          "ofType": null
+        }
+      },
+      {
+        "name": "poolTokens",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "priceRateProvider",
+        "type": {
+          "kind": "OBJECT",
+          "name": "PriceRateProvider",
+          "ofType": null
+        }
+      },
+      {
+        "name": "priceRateProviders",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "circuitBreaker",
+        "type": {
+          "kind": "OBJECT",
+          "name": "CircuitBreaker",
+          "ofType": null
+        }
+      },
+      {
+        "name": "circuitBreakers",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "poolShare",
+        "type": {
+          "kind": "OBJECT",
+          "name": "PoolShare",
+          "ofType": null
+        }
+      },
+      {
+        "name": "poolShares",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "user",
+        "type": {
+          "kind": "OBJECT",
+          "name": "User",
+          "ofType": null
+        }
+      },
+      {
+        "name": "users",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "userInternalBalance",
+        "type": {
+          "kind": "OBJECT",
+          "name": "UserInternalBalance",
+          "ofType": null
+        }
+      },
+      {
+        "name": "userInternalBalances",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "gradualWeightUpdate",
+        "type": {
+          "kind": "OBJECT",
+          "name": "GradualWeightUpdate",
+          "ofType": null
+        }
+      },
+      {
+        "name": "gradualWeightUpdates",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "ampUpdate",
+        "type": {
+          "kind": "OBJECT",
+          "name": "AmpUpdate",
+          "ofType": null
+        }
+      },
+      {
+        "name": "ampUpdates",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "swapFeeUpdate",
+        "type": {
+          "kind": "OBJECT",
+          "name": "SwapFeeUpdate",
+          "ofType": null
+        }
+      },
+      {
+        "name": "swapFeeUpdates",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "swap",
+        "type": {
+          "kind": "OBJECT",
+          "name": "Swap",
+          "ofType": null
+        }
+      },
+      {
+        "name": "swaps",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "joinExit",
+        "type": {
+          "kind": "OBJECT",
+          "name": "JoinExit",
+          "ofType": null
+        }
+      },
+      {
+        "name": "joinExits",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "latestPrice",
+        "type": {
+          "kind": "OBJECT",
+          "name": "LatestPrice",
+          "ofType": null
+        }
+      },
+      {
+        "name": "latestPrices",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "poolHistoricalLiquidity",
+        "type": {
+          "kind": "OBJECT",
+          "name": "PoolHistoricalLiquidity",
+          "ofType": null
+        }
+      },
+      {
+        "name": "poolHistoricalLiquidities",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "tokenPrice",
+        "type": {
+          "kind": "OBJECT",
+          "name": "TokenPrice",
+          "ofType": null
+        }
+      },
+      {
+        "name": "tokenPrices",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "managementOperation",
+        "type": {
+          "kind": "OBJECT",
+          "name": "ManagementOperation",
+          "ofType": null
+        }
+      },
+      {
+        "name": "managementOperations",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "poolSnapshot",
+        "type": {
+          "kind": "OBJECT",
+          "name": "PoolSnapshot",
+          "ofType": null
+        }
+      },
+      {
+        "name": "poolSnapshots",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "token",
+        "type": {
+          "kind": "OBJECT",
+          "name": "Token",
+          "ofType": null
+        }
+      },
+      {
+        "name": "tokens",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "tokenSnapshot",
+        "type": {
+          "kind": "OBJECT",
+          "name": "TokenSnapshot",
+          "ofType": null
+        }
+      },
+      {
+        "name": "tokenSnapshots",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "tradePair",
+        "type": {
+          "kind": "OBJECT",
+          "name": "TradePair",
+          "ofType": null
+        }
+      },
+      {
+        "name": "tradePairs",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "tradePairSnapshot",
+        "type": {
+          "kind": "OBJECT",
+          "name": "TradePairSnapshot",
+          "ofType": null
+        }
+      },
+      {
+        "name": "tradePairSnapshots",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "balancerSnapshot",
+        "type": {
+          "kind": "OBJECT",
+          "name": "BalancerSnapshot",
+          "ofType": null
+        }
+      },
+      {
+        "name": "balancerSnapshots",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "protocolIdData",
+        "type": {
+          "kind": "OBJECT",
+          "name": "ProtocolIdData",
+          "ofType": null
+        }
+      },
+      {
+        "name": "protocolIdDatas",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "fxoracle",
+        "type": {
+          "kind": "OBJECT",
+          "name": "FXOracle",
+          "ofType": null
+        }
+      },
+      {
+        "name": "fxoracles",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "LIST",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "_meta",
+        "type": {
+          "kind": "OBJECT",
+          "name": "_Meta_",
+          "ofType": null
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "Subscription"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "caller",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Bytes"
+          }
+        }
+      },
+      {
+        "name": "tokenIn",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Bytes"
+          }
+        }
+      },
+      {
+        "name": "tokenInSym",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "String"
+          }
+        }
+      },
+      {
+        "name": "tokenOut",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Bytes"
+          }
+        }
+      },
+      {
+        "name": "tokenOutSym",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "String"
+          }
+        }
+      },
+      {
+        "name": "tokenAmountIn",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "tokenAmountOut",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "valueUSD",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "poolId",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "Pool"
+          }
+        }
+      },
+      {
+        "name": "userAddress",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "User"
+          }
+        }
+      },
+      {
+        "name": "timestamp",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Int"
+          }
+        }
+      },
+      {
+        "name": "block",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigInt",
+          "ofType": null
+        }
+      },
+      {
+        "name": "tx",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Bytes"
+          }
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "Swap"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "pool",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "Pool"
+          }
+        }
+      },
+      {
+        "name": "scheduledTimestamp",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Int"
+          }
+        }
+      },
+      {
+        "name": "startTimestamp",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigInt"
+          }
+        }
+      },
+      {
+        "name": "endTimestamp",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigInt"
+          }
+        }
+      },
+      {
+        "name": "startSwapFeePercentage",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "endSwapFeePercentage",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "SwapFeeUpdate"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "SwapFeeUpdate_filter"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "SwapFeeUpdate_orderBy"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "Swap_filter"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "Swap_orderBy"
+  },
+  {
+    "fields": null,
+    "kind": "SCALAR",
+    "name": "Timestamp"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "symbol",
+        "type": {
+          "kind": "SCALAR",
+          "name": "String",
+          "ofType": null
+        }
+      },
+      {
+        "name": "name",
+        "type": {
+          "kind": "SCALAR",
+          "name": "String",
+          "ofType": null
+        }
+      },
+      {
+        "name": "decimals",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Int"
+          }
+        }
+      },
+      {
+        "name": "address",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "String"
+          }
+        }
+      },
+      {
+        "name": "totalBalanceUSD",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "totalBalanceNotional",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "totalVolumeUSD",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "totalVolumeNotional",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "totalSwapCount",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigInt"
+          }
+        }
+      },
+      {
+        "name": "latestPrice",
+        "type": {
+          "kind": "OBJECT",
+          "name": "LatestPrice",
+          "ofType": null
+        }
+      },
+      {
+        "name": "latestUSDPrice",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "latestUSDPriceTimestamp",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigInt",
+          "ofType": null
+        }
+      },
+      {
+        "name": "latestFXPrice",
+        "type": {
+          "kind": "SCALAR",
+          "name": "BigDecimal",
+          "ofType": null
+        }
+      },
+      {
+        "name": "pool",
+        "type": {
+          "kind": "OBJECT",
+          "name": "Pool",
+          "ofType": null
+        }
+      },
+      {
+        "name": "fxOracleDecimals",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Int",
+          "ofType": null
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "Token"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "poolId",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "Pool"
+          }
+        }
+      },
+      {
+        "name": "asset",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Bytes"
+          }
+        }
+      },
+      {
+        "name": "amount",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "pricingAsset",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Bytes"
+          }
+        }
+      },
+      {
+        "name": "price",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "block",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigInt"
+          }
+        }
+      },
+      {
+        "name": "timestamp",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Int"
+          }
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "TokenPrice"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "TokenPrice_filter"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "TokenPrice_orderBy"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "token",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "Token"
+          }
+        }
+      },
+      {
+        "name": "timestamp",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Int"
+          }
+        }
+      },
+      {
+        "name": "totalBalanceUSD",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "totalBalanceNotional",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "totalVolumeUSD",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "totalVolumeNotional",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "totalSwapCount",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigInt"
+          }
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "TokenSnapshot"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "TokenSnapshot_filter"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "TokenSnapshot_orderBy"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "Token_filter"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "Token_orderBy"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "token0",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "Token"
+          }
+        }
+      },
+      {
+        "name": "token1",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "Token"
+          }
+        }
+      },
+      {
+        "name": "totalSwapVolume",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "totalSwapFee",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "TradePair"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "pair",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "TradePair"
+          }
+        }
+      },
+      {
+        "name": "timestamp",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Int"
+          }
+        }
+      },
+      {
+        "name": "totalSwapVolume",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      },
+      {
+        "name": "totalSwapFee",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "TradePairSnapshot"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "TradePairSnapshot_filter"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "TradePairSnapshot_orderBy"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "TradePair_filter"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "TradePair_orderBy"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "sharesOwned",
+        "type": {
+          "kind": "LIST",
+          "name": null,
+          "ofType": {
+            "kind": "NON_NULL",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "swaps",
+        "type": {
+          "kind": "LIST",
+          "name": null,
+          "ofType": {
+            "kind": "NON_NULL",
+            "name": null
+          }
+        }
+      },
+      {
+        "name": "userInternalBalances",
+        "type": {
+          "kind": "LIST",
+          "name": null,
+          "ofType": {
+            "kind": "NON_NULL",
+            "name": null
+          }
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "User"
+  },
+  {
+    "fields": [
+      {
+        "name": "id",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "ID"
+          }
+        }
+      },
+      {
+        "name": "userAddress",
+        "type": {
+          "kind": "OBJECT",
+          "name": "User",
+          "ofType": null
+        }
+      },
+      {
+        "name": "token",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Bytes"
+          }
+        }
+      },
+      {
+        "name": "tokenInfo",
+        "type": {
+          "kind": "OBJECT",
+          "name": "Token",
+          "ofType": null
+        }
+      },
+      {
+        "name": "balance",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "BigDecimal"
+          }
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "UserInternalBalance"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "UserInternalBalance_filter"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "UserInternalBalance_orderBy"
+  },
+  {
+    "fields": null,
+    "kind": "INPUT_OBJECT",
+    "name": "User_filter"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "User_orderBy"
+  },
+  {
+    "fields": [
+      {
+        "name": "hash",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Bytes",
+          "ofType": null
+        }
+      },
+      {
+        "name": "number",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Int"
+          }
+        }
+      },
+      {
+        "name": "timestamp",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Int",
+          "ofType": null
+        }
+      },
+      {
+        "name": "parentHash",
+        "type": {
+          "kind": "SCALAR",
+          "name": "Bytes",
+          "ofType": null
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "_Block_"
+  },
+  {
+    "fields": [
+      {
+        "name": "block",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "OBJECT",
+            "name": "_Block_"
+          }
+        }
+      },
+      {
+        "name": "deployment",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "String"
+          }
+        }
+      },
+      {
+        "name": "hasIndexingErrors",
+        "type": {
+          "kind": "NON_NULL",
+          "name": null,
+          "ofType": {
+            "kind": "SCALAR",
+            "name": "Boolean"
+          }
+        }
+      }
+    ],
+    "kind": "OBJECT",
+    "name": "_Meta_"
+  },
+  {
+    "fields": null,
+    "kind": "ENUM",
+    "name": "_SubgraphErrorPolicy_"
+  }
+]
