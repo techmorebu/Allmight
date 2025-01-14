@@ -1,7 +1,7 @@
 // Hybrid Arbitrage System
 // Fully integrates Universal Mapper, Cross-Reference Script, and Opportunity Detection
 
-const ethers6 = require('ethers6'); // Explicitly import ethers6 for Hybrid Arbitrage
+const ethers = require('ethers'); // Explicitly import ethers6 for Hybrid Arbitrage
 const ethers67 = require('ethers67'); // Explicitly import ethers67 for Flashbots
 const { FlashbotsBundleProvider } = require('@flashbots/ethers-provider-bundle');
 const universalMapper = require("./tools/universal-field-mapper.js"); // Universal Mapper module
