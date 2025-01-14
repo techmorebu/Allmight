@@ -131,6 +131,17 @@ function consolidateResults(folderPath, consolidatedFileName) {
   console.log(`Consolidated results saved to ${consolidatedFilePath}`);
 }
 
+// Clear Full Test Folder
+function clearFullTestFolder() {
+  console.log("Clearing full test folder...");
+  const files = fs.readdirSync(fullTestOutputDir);
+  files.forEach(file => {
+    fs.unlinkSync(path.join(fullTestOutputDir, file));
+    console.log(`Removed file: ${file}`);
+  });
+  console.log("Full test folder cleared.");
+}
+
 // Main Mapper Function
 async function runMapper(outputFolder) {
   console.log(`Running mapper for all APIs. Output folder: ${outputFolder}`);
@@ -199,7 +210,23 @@ function startInteractivePrompt() {
               });
               break;
             case "3":
-              console.log("Clearing full test folder...");
-              const files = fs.readdirSync(fullTestOutputDir);
-              files.forEach(file => {
-                fs.unlinkSync(path.join(fullTestOutputDir, file));
+              clearFullTestFolder();
+              rl.close();
+              break;
+            default:
+              console.log("Invalid test option.");
+              rl.close();
+              break;
+          }
+        });
+        break;
+      default:
+        console.log("Invalid choice.");
+        rl.close();
+        break;
+    }
+  });
+}
+
+// Start the interactive prompt
+startInteractivePrompt();
