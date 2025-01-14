@@ -20,7 +20,7 @@ console.log(`Using ethers version for Flashbots: ${ethers67.version}`);
 // Run Universal Mapper
 async function runMapper() {
     console.log("Initializing Universal Mapper...");
-    const outputDir = "./outputs/mapped-data"; // Example output directory
+    const outputDir = "../outputs";
     try {
         const result = mapper.runMapper(outputDir); // Ensure runMapper is implemented in the Universal Mapper module
         console.log(`Mapping completed. Output saved to: ${outputDir}`);
@@ -32,7 +32,7 @@ async function runMapper() {
 // Run Cross-Referencing
 async function runCrossReference() {
     console.log("Initializing Cross-Referencing...");
-    const inputDir = "./outputs/mapped-data"; // Example input directory
+    const inputDir = "../outputs"; // Example input directory
     try {
         const result = crossReference.runCrossReference(inputDir); // Ensure runCrossReference is implemented in the Cross-Referencing module
         console.log("Cross-Referencing Results:", result);
