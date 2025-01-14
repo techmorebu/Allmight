@@ -97,6 +97,7 @@ async function runMapper(outputFolder) {
 // Cross-Referencing Functionality
 function runCrossReference() {
   console.log("Running Cross-Referencing...");
+
   const requiredFields = [
     "token0Price",
     "token1Price",
@@ -110,6 +111,40 @@ function runCrossReference() {
     "close",
     "totalValueLockedUSD",
   ];
+
+  const fieldSynonyms = {
+    token0Price: ["price0", "priceToken0", "baseTokenPrice", "price_base", "token0_rate"],
+    token1Price: ["price1", "priceToken1", "quoteTokenPrice", "price_quote", "token1_rate"],
+    volumeUSD: ["usdVolume", "tradingVolumeUSD", "volume_usd", "totalVolumeUSD", "tradeVolumeUSD"],
+    feesUSD: ["usdFees", "tradingFeesUSD", "fees_usd", "totalFeesUSD", "feeVolumeUSD"],
+    liquidity: ["poolLiquidity", "totalLiquidity", "liquidityUSD", "currentLiquidity", "availableLiquidity"],
+    txCount: ["transactionCount", "tx_count", "tradeCount", "swapCount", "numberOfTransactions"],
+    open: ["openingPrice", "openPrice", "price_open", "startPrice"],
+    high: ["highestPrice", "highPrice", "price_high", "maxPrice"],
+    low: ["lowestPrice", "lowPrice", "price_low", "minPrice"],
+    close: ["closingPrice", "closePrice", "price_close", "endPrice"],
+    totalValueLockedUSD: ["TVL", "lockedValueUSD", "totalLiquidityUSD", "valueLockedUSD", "tvl_usd"],
+};
+
+  const fieldWeights = {
+    token0Price: 3,
+    token1Price: 3,
+    volumeUSD: 2,
+    feesUSD: 2,
+    liquidity: 1,
+    txCount: 1,
+    open: 1,
+    high: 1,
+    low: 1,
+    close: 1,
+    totalValueLockedUSD: 2,
+  };
+
+  function matchFields(fields, requiredField) {
+    const synonyms = fieldSynonyms[requiredField] || [];
+    return fields.some((f) => f === requiredField || synonyms.includes(f));
+  }
+
   const dataFiles = fs.readdirSync(outputDir).filter((file) => file.endsWith("-fields.json"));
   const report = {};
 
@@ -119,14 +154,15 @@ function runCrossReference() {
     const { schema } = JSON.parse(fs.readFileSync(filePath, "utf-8"));
     const fields = schema ? schema.flatMap((type) => (type.fields || []).map((f) => f.name)) : [];
 
-    const matched = requiredFields.filter((field) => fields.some(f => f.includes(field)));
-    const missing = requiredFields.filter((field) => !fields.some(f => f.includes(field)));
+    const matched = requiredFields.filter((field) => matchFields(fields, field));
+    const missing = requiredFields.filter((field) => !matchFields(fields, field));
+    const weightedScore = matched.reduce((sum, field) => sum + (fieldWeights[field] || 0), 0);
 
     if (fields.length === 0) {
       console.warn(`No fields found for API: ${apiName}. Schema might be incomplete or malformed.`);
     }
 
-    report[apiName] = { matched, missing };
+    report[apiName] = { matched, missing, weightedScore };
   });
 
   const reportPath = path.join(outputDir, "cross-reference-report.json");
