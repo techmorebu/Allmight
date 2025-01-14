@@ -8,10 +8,19 @@ const universalMapper = require("./universal-field-mapper"); // Universal Mapper
 const crossReference = require("./cross-referencing"); // Optimized Cross-Reference Script
 const config = require("./config");
 
-// Optimized Cross-Referencing Validation
+// Optimized Cross-Referencing Validation with Error Thresholds
 async function validateWithCrossReference(data) {
     console.log("Starting cross-referencing validation...");
-    const validationResult = crossReference.validateFields(data);
+
+    // Use fixed required fields
+    const requiredFields = [
+        "token0Price", "token1Price", "volumeUSD", "feesUSD", "liquidity",
+        "txCount", "open", "high", "low", "close", "totalValueLockedUSD"
+    ];
+
+    const maxAllowedMissingFields = parseInt(process.env.MAX_ALLOWED_MISSING_FIELDS || "3", 10);
+
+    const validationResult = crossReference.validateFields(data, requiredFields);
 
     // Enhanced Logging
     if (validationResult.missing.length > 0) {
@@ -24,8 +33,8 @@ async function validateWithCrossReference(data) {
     });
 
     // Fail-safe for critical missing fields
-    if (validationResult.criticalMissing && validationResult.criticalMissing.length > 0) {
-        throw new Error(`Critical fields missing: ${validationResult.criticalMissing.join(", ")}`);
+    if (validationResult.missing.length > maxAllowedMissingFields) {
+        throw new Error(`Validation failed: Too many missing fields (${validationResult.missing.length}). Maximum allowed: ${maxAllowedMissingFields}`);
     }
 
     return validationResult;
