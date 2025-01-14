@@ -61,6 +61,7 @@ function crossReferenceFields(apiName, fieldMappings) {
 // Main function
 function runCrossReference() {
   const dataFiles = fs.readdirSync(outputsDir).filter((file) => file.endsWith("-fields.json"));
+  const consolidatedFilePath = path.join(outputsDir, "consolidated-results.json");
   const crossReferenceReport = {};
 
   dataFiles.forEach((file) => {
@@ -70,6 +71,15 @@ function runCrossReference() {
     const result = crossReferenceFields(apiName, fieldMappings);
     crossReferenceReport[apiName] = result;
   });
+
+  // Include consolidated results if available
+  if (fs.existsSync(consolidatedFilePath)) {
+    debugOutput.push({ type: "info", message: "Consolidated results file found, integrating..." });
+    const consolidatedData = loadFieldMappings(consolidatedFilePath);
+    crossReferenceReport["consolidated"] = crossReferenceFields("consolidated", consolidatedData);
+  } else {
+    debugOutput.push({ type: "warn", message: "No consolidated results file found." });
+  }
 
   const reportPath = path.join(outputsDir, "cross-reference-report.json");
   fs.writeFileSync(reportPath, JSON.stringify(crossReferenceReport, null, 2));
