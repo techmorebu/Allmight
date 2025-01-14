@@ -1,12 +1,27 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npm ls ethers @flashbots/ethers-provider-bundle
-ofa-project@1.0.0 /home/techbu/OFA_Project_Local/ofa-project
-├─┬ @flashbots/ethers-provider-bundle@1.0.0
-│ └── ethers@6.13.5 deduped invalid: "6.7.1" from node_modules/@flashbots/ethers-provider-bundle
-├─┬ @nomicfoundation/hardhat-ethers@3.0.8
-│ └── ethers@6.13.5 deduped invalid: "6.7.1" from node_modules/@flashbots/ethers-provider-bundle
-└── ethers@6.13.5 invalid: "6.7.1" from node_modules/@flashbots/ethers-provider-bundle
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/HybridArbitrage.js
+node:internal/modules/cjs/loader:1137
+  throw err;
+  ^
 
-npm error code ELSPROBLEMS
-npm error invalid: ethers@6.13.5 /home/techbu/OFA_Project_Local/ofa-project/node_modules/ethers
-npm error A complete log of this run can be found in: /home/techbu/.npm/_logs/2025-01-14T06_40_05_435Z-debug-0.log
+Error: Cannot find module './tools/universal-field-mapper.js'
+Require stack:
+- /home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
+    at Module._load (node:internal/modules/cjs/loader:975:27)
+    at Module.require (node:internal/modules/cjs/loader:1225:19)
+    at require (node:internal/modules/helpers:177:18)
+    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js:7:25)
+    at Module._compile (node:internal/modules/cjs/loader:1356:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
+    at Module.load (node:internal/modules/cjs/loader:1197:32)
+    at Module._load (node:internal/modules/cjs/loader:1013:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js'
+  ]
+}
+
+Node.js v18.19.1
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
+
