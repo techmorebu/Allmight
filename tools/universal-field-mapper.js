@@ -71,10 +71,10 @@ async function fetchApiSchema(apiName, apiUrl) {
     }
 
     console.log(`Successfully fetched schema for ${apiName}.`);
-    return data.data.__schema.types;
+    return { schema: data.data.__schema.types, responseTime: duration };
   } catch (error) {
     console.error(`Error fetching schema for ${apiName}:`, error.message);
-    return null;
+    return { schema: null, error: error.message, responseTime: null };
   }
 }
 
@@ -110,29 +110,25 @@ function updateFolderContents(folderPath, apiName, data) {
 function consolidateResults(folderPath, consolidatedFileName) {
   console.log("Consolidating results...");
   const files = fs.readdirSync(folderPath).filter(file => file.endsWith(".json"));
-  const consolidatedResults = {};
+  const consolidatedResults = { metadata: { apiCount: 0, totalFields: 0, missingFields: [] }, data: {} };
 
   files.forEach(file => {
     const filePath = path.join(folderPath, file);
     const apiName = file.replace("-fields.json", "");
     const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-    consolidatedResults[apiName] = data;
+    consolidatedResults.data[apiName] = data;
+    consolidatedResults.metadata.apiCount += 1;
+
+    if (data.schema) {
+      consolidatedResults.metadata.totalFields += data.schema.reduce((sum, type) => sum + (type.fields ? type.fields.length : 0), 0);
+    } else {
+      consolidatedResults.metadata.missingFields.push(apiName);
+    }
   });
 
   const consolidatedFilePath = path.join(folderPath, consolidatedFileName);
   fs.writeFileSync(consolidatedFilePath, JSON.stringify(consolidatedResults, null, 2));
   console.log(`Consolidated results saved to ${consolidatedFilePath}`);
-}
-
-// Clear Full Test Folder
-function clearFullTestFolder() {
-  console.log("Clearing full test folder...");
-  const files = fs.readdirSync(fullTestOutputDir);
-  files.forEach(file => {
-    fs.unlinkSync(path.join(fullTestOutputDir, file));
-    console.log(`Removed file: ${file}`);
-  });
-  console.log("Full test folder cleared.");
 }
 
 // Main Mapper Function
@@ -141,10 +137,9 @@ async function runMapper(outputFolder) {
 
   for (const [apiName, apiUrl] of Object.entries(apis)) {
     try {
-      const schema = await fetchApiSchema(apiName, apiUrl);
-      if (schema) {
-        updateFolderContents(outputFolder, apiName, schema);
-      }
+      const { schema, responseTime, error } = await fetchApiSchema(apiName, apiUrl);
+      const data = { schema, responseTime, error };
+      updateFolderContents(outputFolder, apiName, data);
     } catch (error) {
       console.error(`Error during mapper run for ${apiName}:`, error.message);
     }
@@ -204,23 +199,7 @@ function startInteractivePrompt() {
               });
               break;
             case "3":
-              clearFullTestFolder();
-              rl.close();
-              break;
-            default:
-              console.log("Invalid test option.");
-              rl.close();
-              break;
-          }
-        });
-        break;
-      default:
-        console.log("Invalid choice.");
-        rl.close();
-        break;
-    }
-  });
-}
-
-// Start the interactive prompt
-startInteractivePrompt();
+              console.log("Clearing full test folder...");
+              const files = fs.readdirSync(fullTestOutputDir);
+              files.forEach(file => {
+                fs.unlinkSync(path.join(fullTestOutputDir, file));
