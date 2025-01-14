@@ -4,8 +4,8 @@
 const ethers = require('ethers'); // Explicitly import ethers6 for Hybrid Arbitrage
 const ethers67 = require('ethers67'); // Explicitly import ethers67 for Flashbots
 const { FlashbotsBundleProvider } = require('@flashbots/ethers-provider-bundle');
-const mapper = require("./tools/universal-field-mapper.js"); // Universal Mapper module
-const crossReference = require("./tools/cross-referencing.js"); // Cross-Referencing integration
+const mapper = require("../tools/universal-field-mapper.js"); // Universal Mapper module
+const crossReference = require("../tools/cross-referencing.js"); // Cross-Referencing integration
 require('dotenv').config();
 
 const config = {
