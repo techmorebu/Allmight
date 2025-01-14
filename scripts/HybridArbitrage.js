@@ -5,8 +5,31 @@ const fetch = require("node-fetch");
 const { FlashbotsBundleProvider } = require("@flashbots/ethers-provider-bundle");
 const ethers = require("ethers");
 const universalMapper = require("./universal-field-mapper"); // Universal Mapper module
-const crossReference = require("./cross-referencing"); // Cross-Reference Script
+const crossReference = require("./cross-referencing"); // Optimized Cross-Reference Script
 const config = require("./config");
+
+// Optimized Cross-Referencing Validation
+async function validateWithCrossReference(data) {
+    console.log("Starting cross-referencing validation...");
+    const validationResult = crossReference.validateFields(data);
+
+    // Enhanced Logging
+    if (validationResult.missing.length > 0) {
+        console.warn("Validation warnings: Missing fields detected:", validationResult.missing);
+    }
+
+    console.info("Cross-referencing validation completed successfully.", {
+        matchedFields: validationResult.matched.length,
+        missingFields: validationResult.missing.length,
+    });
+
+    // Fail-safe for critical missing fields
+    if (validationResult.criticalMissing && validationResult.criticalMissing.length > 0) {
+        throw new Error(`Critical fields missing: ${validationResult.criticalMissing.join(", ")}`);
+    }
+
+    return validationResult;
+}
 
 // Main Workflow
 async function main() {
@@ -24,13 +47,13 @@ async function main() {
     const standardizedData = universalMapper.mapData(rawData);
     console.log("Data standardized successfully.");
 
-    // Step 3: Cross-Referencing Validation
-    const crossRefReport = crossReference.validateFields(standardizedData);
-    if (crossRefReport.missing.length > 0) {
-        console.log("Missing fields detected:", crossRefReport.missing);
+    // Step 3: Cross-Referencing Validation (Optimized)
+    try {
+        const crossRefReport = await validateWithCrossReference(standardizedData);
+    } catch (error) {
+        console.error("Critical validation error:", error.message);
         return;
     }
-    console.log("Cross-referencing completed successfully.");
 
     // Step 4: Opportunity Detection
     const opportunities = detectOpportunities(standardizedData);
