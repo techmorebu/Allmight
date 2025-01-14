@@ -1,24 +1,8 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npm install --save @flashbots/ethers-provider-bundle
-npm error code ERESOLVE
-npm error ERESOLVE unable to resolve dependency tree
-npm error
-npm error While resolving: ofa-project@1.0.0
-npm error Found: ethers@6.13.5
-npm error node_modules/ethers
-npm error   ethers@"^6.13.4" from the root project
-npm error
-npm error Could not resolve dependency:
-npm error peer ethers@"6.7.1" from @flashbots/ethers-provider-bundle@1.0.0
-npm error node_modules/@flashbots/ethers-provider-bundle
-npm error   @flashbots/ethers-provider-bundle@"*" from the root project
-npm error
-npm error Fix the upstream dependency conflict, or retry
-npm error this command with --force or --legacy-peer-deps
-npm error to accept an incorrect (and potentially broken) dependency resolution.
-npm error
-npm error
-npm error For a full report see:
-npm error /home/techbu/.npm/_logs/2025-01-14T04_10_03_660Z-eresolve-report.txt
-npm error A complete log of this run can be found in: /home/techbu/.npm/_logs/2025-01-14T04_10_03_660Z-debug-0.log
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npm install
+npm error code EJSONPARSE
+npm error path /home/techbu/OFA_Project_Local/ofa-project/package.json
+npm error JSON.parse Unexpected token "/" (0x2F) in JSON at position 950 while parsing near "...npm:ethers@^6.7.1\", // Corrected alias n..."
+npm error JSON.parse Failed to parse JSON data.
+npm error JSON.parse Note: package.json must be actual JSON, not just JavaScript.
+npm error A complete log of this run can be found in: /home/techbu/.npm/_logs/2025-01-14T06_09_45_809Z-debug-0.log
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
-dw
