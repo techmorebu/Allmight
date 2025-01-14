@@ -158,75 +158,13 @@ async function runMapper(outputFolder) {
   const consolidatedFileName = outputFolder === fullTestOutputDir ? "consolidated-fulltests.json" : "consolidated-results.json";
   consolidateResults(outputFolder, consolidatedFileName);
   console.log(`Mapper run completed. Results saved in ${outputFolder}`);
-  process.exit(0);
 }
 
-// Interactive Prompt
-function startInteractivePrompt() {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-
-  console.log("Select an option:");
-  console.log("1. Update Mapper");
-  console.log("2. Add New API");
-  console.log("3. Test");
-
-  rl.question("Enter your choice: ", async (choice) => {
-    switch (choice.trim()) {
-      case "1":
-        console.log("Updating Mapper...");
-        await runMapper(outputDir);
-        break;
-      case "2":
-        rl.question("Enter new API name: ", (apiName) => {
-          rl.question("Enter new API URL: ", (apiUrl) => {
-            apis[apiName] = apiUrl;
-            console.log(`Added new API: ${apiName} -> ${apiUrl}`);
-            rl.close();
-          });
-        });
-        break;
-      case "3":
-        console.log("Test Options:");
-        console.log("1. Full Test");
-        console.log("2. Add New API Test");
-        console.log("3. Clear Full Test Folder");
-
-        rl.question("Enter your test option: ", async (testOption) => {
-          switch (testOption.trim()) {
-            case "1":
-              console.log("Running full test...");
-              await runMapper(fullTestOutputDir);
-              break;
-            case "2":
-              rl.question("Enter new API name: ", (apiName) => {
-                rl.question("Enter new API URL: ", (apiUrl) => {
-                  apis[apiName] = apiUrl;
-                  console.log(`Added new API: ${apiName} -> ${apiUrl}`);
-                  rl.close();
-                });
-              });
-              break;
-            case "3":
-              clearFullTestFolder();
-              rl.close();
-              break;
-            default:
-              console.log("Invalid test option.");
-              rl.close();
-              break;
-          }
-        });
-        break;
-      default:
-        console.log("Invalid choice.");
-        rl.close();
-        break;
-    }
-  });
-}
-
-// Start the interactive prompt
-startInteractivePrompt();
+// Exports for integration
+module.exports = {
+  runMapper,
+  outputDir,
+  testOutputDir,
+  fullTestOutputDir,
+  clearFullTestFolder,
+};
