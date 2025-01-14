@@ -4,8 +4,8 @@
 const ethers = require('ethers'); // Explicitly import ethers6 for Hybrid Arbitrage
 const ethers67 = require('ethers67'); // Explicitly import ethers67 for Flashbots
 const { FlashbotsBundleProvider } = require('@flashbots/ethers-provider-bundle');
-const universalMapper = require("../tools/universal-field-mapper.js"); // Universal Mapper module
-const crossReference = require("../tools/cross-referencing.js"); // Optimized Cross-Reference Script
+const { mapData } = require("./tools/universal-field-mapper.js"); // Universal Mapper module
+const { validateFields } = require("./tools/cross-referencing.js"); // Cross-Referencing integration
 require('dotenv').config();
 
 const config = {
@@ -29,7 +29,7 @@ async function validateWithCrossReference(data) {
 
     const maxAllowedMissingFields = parseInt(process.env.MAX_ALLOWED_MISSING_FIELDS || "3", 10);
 
-    const validationResult = crossReference.validateFields(data, requiredFields);
+    const validationResult = validateFields(data, requiredFields);
 
     // Enhanced Logging
     if (validationResult.missing.length > 0) {
@@ -54,26 +54,65 @@ async function main() {
     const provider = new ethers.JsonRpcProvider(process.env.ETH_RPC_URL); // Using ethers6 for provider
     const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider); // Using ethers6 for wallet
 
-    // Step 1: Data Fetching
+    console.log("Select an option:");
+    console.log("1. Run Universal Mapper");
+    console.log("2. Run Cross-Referencing");
+    console.log("3. Perform Arbitrage Execution");
+
+    const readline = require('readline').createInterface({
+        input: process.stdin,
+        output: process.stdout,
+    });
+
+    readline.question("Enter your choice: ", async (choice) => {
+        switch (choice) {
+            case '1':
+                console.log("Running Universal Mapper...");
+                await runMapper();
+                console.log("Universal Mapper completed.");
+                break;
+
+            case '2':
+                console.log("Running Cross-Referencing...");
+                await runCrossReference();
+                console.log("Cross-Referencing completed.");
+                break;
+
+            case '3':
+                console.log("Starting Arbitrage Execution...");
+                await executeArbitrage(provider, wallet);
+                console.log("Arbitrage Execution completed.");
+                break;
+
+            default:
+                console.log("Invalid choice. Exiting.");
+        }
+        readline.close();
+    });
+}
+
+// Arbitrage Execution Logic
+async function executeArbitrage(provider, wallet) {
+    // Fetch data
     const rawData = await fetchDexData();
     if (rawData.length === 0) {
         console.log("No data fetched. Exiting...");
         return;
     }
 
-    // Step 2: Data Standardization (Universal Mapper)
-    const standardizedData = universalMapper.mapData(rawData);
+    // Data Standardization (Universal Mapper)
+    const standardizedData = mapData(rawData);
     console.log("Data standardized successfully.");
 
-    // Step 3: Cross-Referencing Validation (Optimized)
+    // Cross-Reference Validation
     try {
-        const crossRefReport = await validateWithCrossReference(standardizedData);
+        await validateWithCrossReference(standardizedData);
     } catch (error) {
         console.error("Critical validation error:", error.message);
         return;
     }
 
-    // Step 4: Opportunity Detection
+    // Opportunity Detection
     const opportunities = detectOpportunities(standardizedData);
     if (opportunities.length === 0) {
         console.log("No profitable opportunities found.");
@@ -81,7 +120,7 @@ async function main() {
     }
     console.log("Detected opportunities:", opportunities);
 
-    // Step 5: Execution Logic
+    // Execution Logic
     for (const opportunity of opportunities) {
         if (opportunity.isFlashbotsReady) {
             const success = await executeViaFlashbots(provider, wallet, opportunity);
@@ -93,8 +132,6 @@ async function main() {
             await executeInMempool(provider, wallet, opportunity);
         }
     }
-
-    console.log("Arbitrage execution completed.");
 }
 
 // Data Fetching
@@ -133,7 +170,7 @@ async function executeViaFlashbots(provider, wallet, opportunity) {
 
     const blockNumber = await provider.getBlockNumber();
     const result = await flashbotsProvider.sendBundle(signedBundle, blockNumber + 1);
-    if ("error" in result) {
+    if ('error' in result) {
         console.error("Flashbots execution failed:", result.error.message);
         return false;
     }
@@ -163,9 +200,9 @@ async function executeInMempool(provider, wallet, opportunity) {
 function createTransactions(opportunity) {
     // Generate transaction objects for Flash Loan, Trade, and Repayment
     return [
-        { to: opportunity.flashLoanProvider, data: "0x...", value: 0 }, // Flash loan transaction
-        { to: opportunity.tradeDex, data: "0x...", value: 0 }, // Trade transaction
-        { to: opportunity.flashLoanProvider, data: "0x...", value: 0 } // Repayment transaction
+        { to: opportunity.flashLoanProvider, data: "0x...", value: 0 },
+        { to: opportunity.tradeDex, data: "0x...", value: 0 },
+        { to: opportunity.flashLoanProvider, data: "0x...", value: 0 },
     ];
 }
 
