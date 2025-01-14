@@ -84,6 +84,24 @@ function saveJsonOutput(folder, fileName, data) {
   console.log(`Output saved to ${filePath}`);
 }
 
+// Consolidate Full Test Results
+function consolidateFullTestResults() {
+  console.log("Consolidating full test results...");
+  const files = fs.readdirSync(fullTestOutputDir).filter(file => file.endsWith("-fulltest.json"));
+  const consolidatedResults = {};
+
+  files.forEach(file => {
+    const filePath = path.join(fullTestOutputDir, file);
+    const apiName = file.replace("-fulltest.json", "");
+    const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+    consolidatedResults[apiName] = data;
+  });
+
+  const consolidatedFilePath = path.join(fullTestOutputDir, "consolidated-fulltests.json");
+  fs.writeFileSync(consolidatedFilePath, JSON.stringify(consolidatedResults, null, 2));
+  console.log(`Consolidated results saved to ${consolidatedFilePath}`);
+}
+
 // Full Test Functionality
 async function runFullTest() {
   console.log("Running full test for all APIs...");
@@ -97,6 +115,7 @@ async function runFullTest() {
       console.error(`Error during full test for ${apiName}:`, error.message);
     }
   }
+  consolidateFullTestResults();
   console.log("Full test completed. Results saved in ./outputs/fulltests/");
 }
 
