@@ -1,8 +1,5 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npm install
-npm error code EJSONPARSE
-npm error path /home/techbu/OFA_Project_Local/ofa-project/package.json
-npm error JSON.parse Unexpected token "/" (0x2F) in JSON at position 950 while parsing near "...npm:ethers@^6.7.1\", // Corrected alias n..."
-npm error JSON.parse Failed to parse JSON data.
-npm error JSON.parse Note: package.json must be actual JSON, not just JavaScript.
-npm error A complete log of this run can be found in: /home/techbu/.npm/_logs/2025-01-14T06_09_45_809Z-debug-0.log
+echbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npm install
+npm error Override without name: @flashbots/ethers-provider-bundle/ethers
+npm error A complete log of this run can be found in: /home/techbu/.npm/_logs/2025-01-14T06_12_43_404Z-debug-0.log
 techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
+
