@@ -4,14 +4,14 @@ const path = require("path");
 const readline = require("readline");
 require("dotenv").config();
 
-const outputDir = path.join(__dirname, "../outputs");
+const outputDir = path.resolve(__dirname, "../outputs");
 const testOutputDir = path.join(outputDir, "apitests");
 const fullTestOutputDir = path.join(outputDir, "fulltests");
 
 // Ensure output directories exist
-if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir);
-if (!fs.existsSync(testOutputDir)) fs.mkdirSync(testOutputDir);
-if (!fs.existsSync(fullTestOutputDir)) fs.mkdirSync(fullTestOutputDir);
+if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
+if (!fs.existsSync(testOutputDir)) fs.mkdirSync(testOutputDir, { recursive: true });
+if (!fs.existsSync(fullTestOutputDir)) fs.mkdirSync(fullTestOutputDir, { recursive: true });
 
 // Map your API endpoints from .env
 const apis = {
@@ -81,7 +81,7 @@ async function fetchApiSchema(apiName, apiUrl) {
 // Save JSON output
 function saveJsonOutput(folder, fileName, data) {
   const dirPath = path.join(outputDir, folder);
-  if (!fs.existsSync(dirPath)) fs.mkdirSync(dirPath);
+  if (!fs.existsSync(dirPath)) fs.mkdirSync(dirPath, { recursive: true });
 
   const filePath = path.join(dirPath, fileName);
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
