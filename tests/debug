@@ -1,4 +1,18 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node data-collection/masterFetcher/fetch-curve-metaregistry.js
-Fetching Curve pools for token: 0x6B175474E89094C44Da98b954EedeAC495271d0F...
-Error fetching Curve Metaregistry data: Cannot read properties of undefined (reading 'JsonRpcProvider')
-Fetched Curve Metaregistry pools: []
+Updating Mapper...
+/home/techbu/OFA_Project_Local/ofa-project/tools/universal-field-mapper.js:163
+    const schema = await fetchApiSchema(apiName, apiUrl);
+                   ^
+
+ReferenceError: fetchApiSchema is not defined
+    at runMapper (/home/techbu/OFA_Project_Local/ofa-project/tools/universal-field-mapper.js:163:20)
+    at /home/techbu/OFA_Project_Local/ofa-project/tools/universal-field-mapper.js:110:15
+    at [_onLine] [as _onLine] (node:internal/readline/interface:421:7)
+    at [_line] [as _line] (node:internal/readline/interface:894:18)
+    at [_ttyWrite] [as _ttyWrite] (node:internal/readline/interface:1272:22)
+    at ReadStream.onkeypress (node:internal/readline/interface:271:20)
+    at ReadStream.emit (node:events:517:28)
+    at emitKeys (node:internal/readline/utils:371:14)
+    at emitKeys.next (<anonymous>)
+    at ReadStream.onData (node:internal/readline/emitKeypressEvents:64:36)
+
+Node.js v18.19.1
