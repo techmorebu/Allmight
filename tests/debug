@@ -1,25 +1,23 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/HybridArbitrage.js
-node:internal/modules/cjs/loader:1137
-  throw err;
-  ^
-
-Error: Cannot find module '@flashbots/ethers-provider-bundle'
-Require stack:
-- /home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js
-    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
-    at Module._load (node:internal/modules/cjs/loader:975:27)
-    at Module.require (node:internal/modules/cjs/loader:1225:19)
-    at require (node:internal/modules/helpers:177:18)
-    at Object.<anonymous> (/home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js:5:37)
-    at Module._compile (node:internal/modules/cjs/loader:1356:14)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
-    at Module.load (node:internal/modules/cjs/loader:1197:32)
-    at Module._load (node:internal/modules/cjs/loader:1013:12)
-    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12) {
-  code: 'MODULE_NOT_FOUND',
-  requireStack: [
-    '/home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js'
-  ]
-}
-
-Node.js v18.19.1
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ npm install --save @flashbots/ethers-provider-bundle
+npm error code ERESOLVE
+npm error ERESOLVE unable to resolve dependency tree
+npm error
+npm error While resolving: ofa-project@1.0.0
+npm error Found: ethers@6.13.5
+npm error node_modules/ethers
+npm error   ethers@"^6.13.4" from the root project
+npm error
+npm error Could not resolve dependency:
+npm error peer ethers@"6.7.1" from @flashbots/ethers-provider-bundle@1.0.0
+npm error node_modules/@flashbots/ethers-provider-bundle
+npm error   @flashbots/ethers-provider-bundle@"*" from the root project
+npm error
+npm error Fix the upstream dependency conflict, or retry
+npm error this command with --force or --legacy-peer-deps
+npm error to accept an incorrect (and potentially broken) dependency resolution.
+npm error
+npm error
+npm error For a full report see:
+npm error /home/techbu/.npm/_logs/2025-01-14T03_43_51_551Z-eresolve-report.txt
+npm error A complete log of this run can be found in: /home/techbu/.npm/_logs/2025-01-14T03_43_51_551Z-debug-0.log
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
