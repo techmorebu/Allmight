@@ -81,15 +81,15 @@ async function fetchApiSchema(apiName, apiUrl) {
 // Validate critical fields
 function validateCriticalFields(apiName, schema) {
   const criticalFields = ["minPrice", "maxPrice"];
-  const invalidFields = criticalFields.filter(field => {
+  const missingFields = criticalFields.filter(field => {
     return !schema.some(type =>
       type.fields && type.fields.some(f => f.name === field && f.type && f.type.name)
     );
   });
 
-  if (invalidFields.length > 0) {
+  if (missingFields.length > 0) {
     console.warn(
-      `Warning: Missing critical fields in ${apiName}: ${invalidFields.join(", ")}`
+      `Warning: ${apiName} is missing critical fields: ${missingFields.join(", ")}`
     );
   }
 }
@@ -157,6 +157,7 @@ async function runMapper() {
   }
   consolidateResults(outputDir, "consolidated-results.json");
   console.log("Mapper run completed. Results saved in ./outputs/");
+  process.exit(0);
 }
 
 // Interactive Prompt
