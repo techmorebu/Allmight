@@ -25,7 +25,7 @@
     "axios-retry": "^4.5.0",
     "bottleneck": "^2.19.5",
     "dotenv": "^16.4.5",
-    "ethers67": "npm:ethers@^6.7.1", // Corrected alias name
+    "ethers67": "npm:ethers@^6.7.1",
     "ethers": "^6.13.4",
     "ethers5": "npm:ethers@^5.7.2",
     "@flashbots/ethers-provider-bundle": "^1.0.0",
