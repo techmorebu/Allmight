@@ -85,57 +85,57 @@ function saveJsonOutput(folder, fileName, data) {
 }
 
 // Update test folder contents
-function updateTestFolder(folderPath, apiName, data) {
-  const existingFiles = fs.readdirSync(folderPath).filter(file => file.endsWith("-fulltest.json"));
-  const apiFileName = `${apiName}-fulltest.json`;
+function updateFolderContents(folderPath, apiName, data) {
+  const existingFiles = fs.readdirSync(folderPath).filter(file => file.endsWith("-fields.json"));
+  const apiFileName = `${apiName}-fields.json`;
   const apiFilePath = path.join(folderPath, apiFileName);
 
   // Overwrite or add new file
   fs.writeFileSync(apiFilePath, JSON.stringify(data, null, 2));
-  console.log(`Updated test file: ${apiFilePath}`);
+  console.log(`Updated file: ${apiFilePath}`);
 
-  // Remove files not part of the current test
-  const filesToRemove = existingFiles.filter(file => !Object.keys(apis).includes(file.replace("-fulltest.json", "")));
+  // Remove files not part of the current run
+  const filesToRemove = existingFiles.filter(file => !Object.keys(apis).includes(file.replace("-fields.json", "")));
   filesToRemove.forEach(file => {
     fs.unlinkSync(path.join(folderPath, file));
-    console.log(`Removed outdated test file: ${file}`);
+    console.log(`Removed outdated file: ${file}`);
   });
 }
 
-// Consolidate Full Test Results
-function consolidateFullTestResults() {
-  console.log("Consolidating full test results...");
-  const files = fs.readdirSync(fullTestOutputDir).filter(file => file.endsWith("-fulltest.json"));
+// Consolidate Results
+function consolidateResults(folderPath, consolidatedFileName) {
+  console.log("Consolidating results...");
+  const files = fs.readdirSync(folderPath).filter(file => file.endsWith(".json"));
   const consolidatedResults = {};
 
   files.forEach(file => {
-    const filePath = path.join(fullTestOutputDir, file);
-    const apiName = file.replace("-fulltest.json", "");
+    const filePath = path.join(folderPath, file);
+    const apiName = file.replace("-fields.json", "");
     const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
     consolidatedResults[apiName] = data;
   });
 
-  const consolidatedFilePath = path.join(fullTestOutputDir, "consolidated-fulltests.json");
+  const consolidatedFilePath = path.join(folderPath, consolidatedFileName);
   fs.writeFileSync(consolidatedFilePath, JSON.stringify(consolidatedResults, null, 2));
   console.log(`Consolidated results saved to ${consolidatedFilePath}`);
 }
 
-// Full Test Functionality
-async function runFullTest() {
-  console.log("Running full test for all APIs...");
+// Main Live Run Functionality
+async function runLiveMapper() {
+  console.log("Running live mapper for all APIs...");
 
   for (const [apiName, apiUrl] of Object.entries(apis)) {
     try {
       const schema = await fetchApiSchema(apiName, apiUrl);
       if (schema) {
-        updateTestFolder(fullTestOutputDir, apiName, schema);
+        updateFolderContents(outputDir, apiName, schema);
       }
     } catch (error) {
-      console.error(`Error during full test for ${apiName}:`, error.message);
+      console.error(`Error during live run for ${apiName}:`, error.message);
     }
   }
-  consolidateFullTestResults();
-  console.log("Full test completed. Results saved in ./outputs/fulltests/");
+  consolidateResults(outputDir, "consolidated-live.json");
+  console.log("Live mapper completed. Results saved in ./outputs/");
 }
 
 // Interactive Prompt
@@ -150,6 +150,7 @@ function startInteractivePrompt() {
   console.log("2. Add New API");
   console.log("3. Test");
   console.log("4. Full Test");
+  console.log("5. Live Run");
 
   rl.question("Enter your choice: ", async (choice) => {
     switch (choice.trim()) {
@@ -176,6 +177,10 @@ function startInteractivePrompt() {
         break;
       case "4":
         await runFullTest();
+        rl.close();
+        break;
+      case "5":
+        await runLiveMapper();
         rl.close();
         break;
       default:
