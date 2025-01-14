@@ -4,8 +4,8 @@
 const ethers = require('ethers'); // Explicitly import ethers6 for Hybrid Arbitrage
 const ethers67 = require('ethers67'); // Explicitly import ethers67 for Flashbots
 const { FlashbotsBundleProvider } = require('@flashbots/ethers-provider-bundle');
-const { mapData } = require("../tools/universal-field-mapper.js"); // Universal Mapper module
-const { validateFields } = require("../tools/cross-referencing.js"); // Cross-Referencing integration
+const { mapData } = require("./tools/universal-field-mapper.js"); // Universal Mapper module
+const { validateFields } = require("./tools/cross-referencing.js"); // Cross-Referencing integration
 require('dotenv').config();
 
 const config = {
@@ -47,6 +47,30 @@ async function validateWithCrossReference(data) {
     }
 
     return validationResult;
+}
+
+// Run Universal Mapper
+async function runMapper() {
+    console.log("Initializing Universal Mapper...");
+    const outputDir = "./outputs/mapped-data"; // Example output directory
+    try {
+        await mapData(outputDir); // Ensure mapData supports asynchronous operations
+        console.log(`Mapping completed. Output saved to: ${outputDir}`);
+    } catch (error) {
+        console.error("Error running Universal Mapper:", error.message);
+    }
+}
+
+// Run Cross-Referencing
+async function runCrossReference() {
+    console.log("Initializing Cross-Referencing...");
+    const inputDir = "./outputs/mapped-data"; // Example input directory
+    try {
+        const result = validateFields(inputDir);
+        console.log("Cross-Referencing Results:", result);
+    } catch (error) {
+        console.error("Error running Cross-Referencing:", error.message);
+    }
 }
 
 // Main Workflow
@@ -136,7 +160,14 @@ async function executeArbitrage(provider, wallet) {
 
 // Data Fetching
 async function fetchDexData() {
-    const fetchPromises = config.dexApis.map(api => fetch(api.url).then(res => res.json()).catch(err => null));
+    const fetchPromises = config.dexApis.map(api =>
+        fetch(api.url)
+            .then(res => res.json())
+            .catch(err => {
+                console.error(`Error fetching data from ${api.name}:`, err.message);
+                return null;
+            })
+    );
     const results = await Promise.all(fetchPromises);
     return results.filter(res => res !== null);
 }
