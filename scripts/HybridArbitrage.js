@@ -119,8 +119,8 @@ function runCrossReference() {
     const { schema } = JSON.parse(fs.readFileSync(filePath, "utf-8"));
     const fields = schema ? schema.flatMap((type) => (type.fields || []).map((f) => f.name)) : [];
 
-    const matched = requiredFields.filter((field) => fields.includes(field));
-    const missing = requiredFields.filter((field) => !fields.includes(field));
+    const matched = requiredFields.filter((field) => fields.some(f => f.includes(field)));
+    const missing = requiredFields.filter((field) => !fields.some(f => f.includes(field)));
 
     if (fields.length === 0) {
       console.warn(`No fields found for API: ${apiName}. Schema might be incomplete or malformed.`);
