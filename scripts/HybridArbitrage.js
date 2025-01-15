@@ -1,4 +1,4 @@
-// Hybrid Arbitrage System
+l// Hybrid Arbitrage System
 // Fully integrates Universal Mapper, Cross-Reference Script, and Opportunity Detection
 
 const fs = require("fs");
@@ -221,19 +221,4 @@ function mainMenu() {
     switch (choice.trim()) {
       case "1":
         await runMapper(outputDir);
-        break;
-      case "2":
-        runCrossReference(outputDir);
-        break;
-      case "3":
-        await executeArbitrage(outputDir);
-        break;
-      default:
-        console.log("Invalid choice.");
-    }
-    rl.close();
-    mainMenu();
-  });
-}
-
-mainMenu();
+        break
