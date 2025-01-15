@@ -10,7 +10,7 @@ const { FlashbotsBundleProvider } = require("@flashbots/ethers-provider-bundle")
 require("dotenv").config();
 
 const outputDir = path.resolve(__dirname, "../outputs");
-const testOutputDir = path.join(outputDir, "apitests");
+const testOutputDir = path.join(outputDir, "tests");
 const fullTestOutputDir = path.join(outputDir, "fulltests");
 if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 if (!fs.existsSync(testOutputDir)) fs.mkdirSync(testOutputDir, { recursive: true });
@@ -23,6 +23,33 @@ const config = {
 
 console.log(`Using ethers version for Hybrid Arbitrage: ${ethers.version}`);
 console.log(`Using ethers version for Flashbots: ${ethers67.version}`);
+
+// Utility Functions
+function clearFolder(folderPath) {
+  if (fs.existsSync(folderPath)) {
+    const files = fs.readdirSync(folderPath);
+    files.forEach((file) => fs.unlinkSync(path.join(folderPath, file)));
+    console.log(`Cleared folder: ${folderPath}`);
+  } else {
+    console.log(`Folder does not exist: ${folderPath}`);
+  }
+}
+
+async function confirmAction(promptMessage, action) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  rl.question(promptMessage, (confirmation) => {
+    if (confirmation.toLowerCase() === "yes") {
+      action();
+    } else {
+      console.log("Action canceled.");
+    }
+    rl.close();
+  });
+}
 
 // Universal Mapper Functionality
 async function runMapper(outputFolder) {
@@ -119,94 +146,6 @@ async function runMapper(outputFolder) {
   console.log(`Mapper run completed. Results saved in ${outputFolder}`);
 }
 
-// Cross-Referencing Functionality
-function runCrossReference() {
-  console.log("Running Cross-Referencing...");
-
-  const requiredFields = [
-    "token0Price",
-    "token1Price",
-    "volumeUSD",
-    "feesUSD",
-    "liquidity",
-    "txCount",
-    "open",
-    "high",
-    "low",
-    "close",
-    "totalValueLockedUSD",
-  ];
-
-  const fieldSynonyms = {
-    token0Price: ["price0", "priceToken0", "baseTokenPrice", "price_base", "token0_rate"],
-    token1Price: ["price1", "priceToken1", "quoteTokenPrice", "price_quote", "token1_rate"],
-    volumeUSD: ["usdVolume", "tradingVolumeUSD", "volume_usd", "totalVolumeUSD", "tradeVolumeUSD"],
-    feesUSD: ["usdFees", "tradingFeesUSD", "fees_usd", "totalFeesUSD", "feeVolumeUSD"],
-    liquidity: ["poolLiquidity", "totalLiquidity", "liquidityUSD", "currentLiquidity", "availableLiquidity"],
-    txCount: ["transactionCount", "tx_count", "tradeCount", "swapCount", "numberOfTransactions"],
-    open: ["openingPrice", "openPrice", "price_open", "startPrice"],
-    high: ["highestPrice", "highPrice", "price_high", "maxPrice"],
-    low: ["lowestPrice", "lowPrice", "price_low", "minPrice"],
-    close: ["closingPrice", "closePrice", "price_close", "endPrice"],
-    totalValueLockedUSD: ["TVL", "lockedValueUSD", "totalLiquidityUSD", "valueLockedUSD", "tvl_usd"],
-  };
-
-  const fieldWeights = {
-    token0Price: 3,
-    token1Price: 3,
-    volumeUSD: 2,
-    feesUSD: 2,
-    liquidity: 1,
-    txCount: 1,
-    open: 1,
-    high: 1,
-    low: 1,
-    close: 1,
-    totalValueLockedUSD: 2,
-  };
-
-  function matchFields(fields, requiredField) {
-    const synonyms = fieldSynonyms[requiredField] || [];
-    return fields.some((f) => f === requiredField || synonyms.includes(f));
-  }
-
-  const dataFiles = fs.readdirSync(outputDir).filter((file) => file.endsWith("-fields.json"));
-  const report = {};
-
-  dataFiles.forEach((file) => {
-    const apiName = path.basename(file, "-fields.json");
-    const filePath = path.join(outputDir, file);
-    const { fields } = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-
-    const matched = requiredFields.filter((field) => matchFields(fields, field));
-    const missing = requiredFields.filter((field) => !matchFields(fields, field));
-    const weightedScore = matched.reduce((sum, field) => sum + (fieldWeights[field] || 0), 0);
-
-    if (fields.length === 0) {
-      console.warn(`No fields found for API: ${apiName}. Schema might be incomplete or malformed.`);
-    }
-
-    report[apiName] = { matched, missing, weightedScore };
-  });
-
-  const reportPath = path.join(outputDir, "cross-reference-report.json");
-  fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
-  console.log(`Cross-Referencing Report saved to ${reportPath}`);
-}
-
-// Arbitrage Execution Functionality
-async function executeArbitrage() {
-  console.log("Starting Arbitrage Execution...");
-  const opportunities = [{ mockOpportunity: true, netProfit: 0.1 }]; // Placeholder for detected opportunities
-
-  for (const opportunity of opportunities) {
-    console.log("Executing opportunity:", opportunity);
-    // Execution logic goes here
-  }
-
-  console.log("Arbitrage Execution completed.");
-}
-
 // Main Interactive Menu
 function mainMenu() {
   const rl = readline.createInterface({
@@ -216,8 +155,9 @@ function mainMenu() {
 
   console.log("\nSelect an option:");
   console.log("1. Run Universal Mapper");
-  console.log("2. Run Cross-Referencing");
-  console.log("3. Perform Arbitrage Execution");
+  console.log("2. Run Universal Mapper (Test Mode)");
+  console.log("3. Full Clear Test Folder");
+  console.log("4. Full Clear Live Data (Confirm Required)");
 
   rl.question("Enter your choice: ", async (choice) => {
     switch (choice.trim()) {
@@ -225,10 +165,16 @@ function mainMenu() {
         await runMapper(outputDir);
         break;
       case "2":
-        runCrossReference();
+        await runMapper(testOutputDir);
         break;
       case "3":
-        await executeArbitrage();
+        clearFolder(testOutputDir);
+        break;
+      case "4":
+        confirmAction(
+          "This will clear the entire live data folder except the test folder. Type 'yes' to confirm: ",
+          () => clearFolder(outputDir)
+        );
         break;
       default:
         console.log("Invalid choice.");
