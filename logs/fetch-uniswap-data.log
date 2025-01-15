@@ -7,3 +7,143 @@
 {"level":"error","message":"Error fetching Uniswap data (Attempt 1 of 3): Invalid response structure","timestamp":"2024-12-23T06:08:54.105Z"}
 {"level":"error","message":"Error fetching Uniswap data (Attempt 2 of 3): Invalid response structure","timestamp":"2024-12-23T06:08:54.234Z"}
 {"level":"error","message":"Error fetching Uniswap data (Attempt 3 of 3): Invalid response structure","timestamp":"2024-12-23T06:08:54.417Z"}
+node:internal/modules/cjs/loader:1137
+  throw err;
+  ^
+
+Error: Cannot find module '/home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js'
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
+    at Module._load (node:internal/modules/cjs/loader:975:27)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
+    at node:internal/main/run_main_module:28:49 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+
+Node.js v18.19.1
+node:internal/modules/cjs/loader:1137
+  throw err;
+  ^
+
+Error: Cannot find module '/home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js'
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
+    at Module._load (node:internal/modules/cjs/loader:975:27)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
+    at node:internal/main/run_main_module:28:49 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+
+Node.js v18.19.1
+node:internal/modules/cjs/loader:1137
+  throw err;
+  ^
+
+Error: Cannot find module '/home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js'
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
+    at Module._load (node:internal/modules/cjs/loader:975:27)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
+    at node:internal/main/run_main_module:28:49 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+
+Node.js v18.19.1
+node:internal/modules/cjs/loader:1137
+  throw err;
+  ^
+
+Error: Cannot find module '/home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js'
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
+    at Module._load (node:internal/modules/cjs/loader:975:27)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
+    at node:internal/main/run_main_module:28:49 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+
+Node.js v18.19.1
+node:internal/modules/cjs/loader:1137
+  throw err;
+  ^
+
+Error: Cannot find module '/home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js'
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
+    at Module._load (node:internal/modules/cjs/loader:975:27)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
+    at node:internal/main/run_main_module:28:49 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+
+Node.js v18.19.1
+node:internal/modules/cjs/loader:1137
+  throw err;
+  ^
+
+Error: Cannot find module '/home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js'
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
+    at Module._load (node:internal/modules/cjs/loader:975:27)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
+    at node:internal/main/run_main_module:28:49 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+
+Node.js v18.19.1
+node:internal/modules/cjs/loader:1137
+  throw err;
+  ^
+
+Error: Cannot find module '/home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js'
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
+    at Module._load (node:internal/modules/cjs/loader:975:27)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
+    at node:internal/main/run_main_module:28:49 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+
+Node.js v18.19.1
+node:internal/modules/cjs/loader:1137
+  throw err;
+  ^
+
+Error: Cannot find module '/home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js'
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
+    at Module._load (node:internal/modules/cjs/loader:975:27)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
+    at node:internal/main/run_main_module:28:49 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+
+Node.js v18.19.1
+node:internal/modules/cjs/loader:1137
+  throw err;
+  ^
+
+Error: Cannot find module '/home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js'
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
+    at Module._load (node:internal/modules/cjs/loader:975:27)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
+    at node:internal/main/run_main_module:28:49 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+
+Node.js v18.19.1
+node:internal/modules/cjs/loader:1137
+  throw err;
+  ^
+
+Error: Cannot find module '/home/techbu/OFA_Project_Local/ofa-project/trade-execution/fetch-uniswap-data.js'
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1134:15)
+    at Module._load (node:internal/modules/cjs/loader:975:27)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
+    at node:internal/main/run_main_module:28:49 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+
+Node.js v18.19.1
