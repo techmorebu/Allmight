@@ -56,6 +56,79 @@ function createConsolidatedReport() {
   console.log(`Consolidated report saved to ${consolidatedFilePath}`);
 }
 
+// Cross-Referencing Functionality
+function runCrossReference() {
+  console.log("Running Cross-Referencing...");
+
+  const requiredFields = [
+    "token0Price",
+    "token1Price",
+    "volumeUSD",
+    "feesUSD",
+    "liquidity",
+    "txCount",
+    "open",
+    "high",
+    "low",
+    "close",
+    "totalValueLockedUSD",
+  ];
+
+  const fieldSynonyms = {
+    token0Price: ["price0", "priceToken0", "baseTokenPrice", "price_base", "token0_rate"],
+    token1Price: ["price1", "priceToken1", "quoteTokenPrice", "price_quote", "token1_rate"],
+    volumeUSD: ["usdVolume", "tradingVolumeUSD", "volume_usd", "totalVolumeUSD", "tradeVolumeUSD"],
+    feesUSD: ["usdFees", "tradingFeesUSD", "fees_usd", "totalFeesUSD", "feeVolumeUSD"],
+    liquidity: ["poolLiquidity", "totalLiquidity", "liquidityUSD", "currentLiquidity", "availableLiquidity"],
+    txCount: ["transactionCount", "tx_count", "tradeCount", "swapCount", "numberOfTransactions"],
+    open: ["openingPrice", "openPrice", "price_open", "startPrice"],
+    high: ["highestPrice", "highPrice", "price_high", "maxPrice"],
+    low: ["lowestPrice", "lowPrice", "price_low", "minPrice"],
+    close: ["closingPrice", "closePrice", "price_close", "endPrice"],
+    totalValueLockedUSD: ["TVL", "lockedValueUSD", "totalLiquidityUSD", "valueLockedUSD", "tvl_usd"],
+  };
+
+  const fieldWeights = {
+    token0Price: 3,
+    token1Price: 3,
+    volumeUSD: 2,
+    feesUSD: 2,
+    liquidity: 1,
+    txCount: 1,
+    open: 1,
+    high: 1,
+    low: 1,
+    close: 1,
+    totalValueLockedUSD: 2,
+  };
+
+  const reportPath = path.join(outputDir, "cross-reference-report.json");
+  const dataFiles = fs.readdirSync(outputDir).filter((file) => file.endsWith("-fields.json"));
+  const crossReferenceReport = {};
+
+  dataFiles.forEach((file) => {
+    const filePath = path.join(outputDir, file);
+    const apiName = path.basename(file, "-fields.json");
+    const { fields } = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+
+    const matched = requiredFields.filter((field) =>
+      fields.some((f) => f === field || (fieldSynonyms[field] || []).includes(f))
+    );
+    const missing = requiredFields.filter((field) =>
+      !fields.some((f) => f === field || (fieldSynonyms[field] || []).includes(f))
+    );
+
+    crossReferenceReport[apiName] = {
+      matched,
+      missing,
+      weightedScore: matched.reduce((sum, field) => sum + (fieldWeights[field] || 0), 0),
+    };
+  });
+
+  fs.writeFileSync(reportPath, JSON.stringify(crossReferenceReport, null, 2));
+  console.log(`Cross-Referencing Report saved to ${reportPath}`);
+}
+
 // Universal Mapper Functionality
 async function runMapper(outputFolder) {
   console.log(`Running mapper for all APIs. Output folder: ${outputFolder}`);
@@ -171,7 +244,7 @@ function mainMenu() {
         await runMapper(outputDir);
         break;
       case "2":
-        console.log("Running Cross-Referencing...");
+        runCrossReference();
         break;
       case "3":
         console.log("Performing Arbitrage Execution...");
