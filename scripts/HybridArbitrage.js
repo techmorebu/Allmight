@@ -56,79 +56,6 @@ function createConsolidatedReport() {
   console.log(`Consolidated report saved to ${consolidatedFilePath}`);
 }
 
-// Cross-Referencing Functionality
-function runCrossReference() {
-  console.log("Running Cross-Referencing...");
-
-  const requiredFields = [
-    "token0Price",
-    "token1Price",
-    "volumeUSD",
-    "feesUSD",
-    "liquidity",
-    "txCount",
-    "open",
-    "high",
-    "low",
-    "close",
-    "totalValueLockedUSD",
-  ];
-
-  const fieldSynonyms = {
-    token0Price: ["price0", "priceToken0", "baseTokenPrice", "price_base", "token0_rate"],
-    token1Price: ["price1", "priceToken1", "quoteTokenPrice", "price_quote", "token1_rate"],
-    volumeUSD: ["usdVolume", "tradingVolumeUSD", "volume_usd", "totalVolumeUSD", "tradeVolumeUSD"],
-    feesUSD: ["usdFees", "tradingFeesUSD", "fees_usd", "totalFeesUSD", "feeVolumeUSD"],
-    liquidity: ["poolLiquidity", "totalLiquidity", "liquidityUSD", "currentLiquidity", "availableLiquidity"],
-    txCount: ["transactionCount", "tx_count", "tradeCount", "swapCount", "numberOfTransactions"],
-    open: ["openingPrice", "openPrice", "price_open", "startPrice"],
-    high: ["highestPrice", "highPrice", "price_high", "maxPrice"],
-    low: ["lowestPrice", "lowPrice", "price_low", "minPrice"],
-    close: ["closingPrice", "closePrice", "price_close", "endPrice"],
-    totalValueLockedUSD: ["TVL", "lockedValueUSD", "totalLiquidityUSD", "valueLockedUSD", "tvl_usd"],
-  };
-
-  const fieldWeights = {
-    token0Price: 3,
-    token1Price: 3,
-    volumeUSD: 2,
-    feesUSD: 2,
-    liquidity: 1,
-    txCount: 1,
-    open: 1,
-    high: 1,
-    low: 1,
-    close: 1,
-    totalValueLockedUSD: 2,
-  };
-
-  const reportPath = path.join(outputDir, "cross-reference-report.json");
-  const dataFiles = fs.readdirSync(outputDir).filter((file) => file.endsWith("-fields.json"));
-  const crossReferenceReport = {};
-
-  dataFiles.forEach((file) => {
-    const filePath = path.join(outputDir, file);
-    const apiName = path.basename(file, "-fields.json");
-    const { fields } = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-
-    const matched = requiredFields.filter((field) =>
-      fields.some((f) => f === field || (fieldSynonyms[field] || []).includes(f))
-    );
-    const missing = requiredFields.filter((field) =>
-      !fields.some((f) => f === field || (fieldSynonyms[field] || []).includes(f))
-    );
-
-    crossReferenceReport[apiName] = {
-      matched,
-      missing,
-      weightedScore: matched.reduce((sum, field) => sum + (fieldWeights[field] || 0), 0),
-    };
-  });
-
-  fs.writeFileSync(reportPath, JSON.stringify(crossReferenceReport, null, 2));
-  console.log(`Cross-Referencing Report saved to ${reportPath}`);
-}
-
 // Universal Mapper Functionality
 async function runMapper(outputFolder) {
   console.log(`Running mapper for all APIs. Output folder: ${outputFolder}`);
@@ -188,6 +115,51 @@ async function runMapper(outputFolder) {
     }
   }
 
+  async function fetchApiIntrospection(apiName, apiUrl) {
+    console.log(`Fetching introspection for ${apiName} (${apiUrl})...`);
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: `{
+            __type(name: "Query") {
+              fields {
+                name
+                args {
+                  name
+                  type {
+                    name
+                    kind
+                    ofType {
+                      name
+                      kind
+                    }
+                  }
+                }
+                type {
+                  name
+                  kind
+                  ofType {
+                    name
+                    kind
+                  }
+                }
+              }
+            }
+          }`,
+        }),
+      });
+      if (!response.ok) throw new Error(`Failed to fetch introspection: ${response.statusText}`);
+      const data = await response.json();
+      if (!data.data || !data.data.__type) throw new Error("Not a valid GraphQL endpoint.");
+      return data.data.__type.fields;
+    } catch (error) {
+      console.error(`Error fetching introspection for ${apiName}:`, error.message);
+      return null;
+    }
+  }
+
   async function extractNestedFields(schema) {
     const fields = [];
 
@@ -215,14 +187,60 @@ async function runMapper(outputFolder) {
   }
 
   for (const [apiName, apiUrl] of Object.entries(apis)) {
-    const { schema, error } = await fetchApiSchema(apiName, apiUrl);
-    const fields = schema ? await extractNestedFields(schema) : [];
-    const data = { schema, fields, error };
+    const schemaData = await fetchApiSchema(apiName, apiUrl);
+    const introspectionData = await fetchApiIntrospection(apiName, apiUrl);
+
+    const fields = schemaData.schema ? await extractNestedFields(schemaData.schema) : [];
+    const data = { schema: schemaData.schema, introspection: introspectionData, fields, error: schemaData.error };
+
     await updateFolderContents(outputFolder, apiName, data);
   }
 
   createConsolidatedReport();
   console.log(`Mapper run completed. Results saved in ${outputFolder}`);
+}
+
+// Options Menu
+function optionsMenu(rl) {
+  console.log("Options:\n1. Add API\n2. Remove API\n3. Clear All (Excluding Specific Files)");
+
+  rl.question("Select an option: ", (option) => {
+    switch (option.trim()) {
+      case "1":
+        rl.question("Enter API tag: ", (tag) => {
+          rl.question("Enter API URL: ", (url) => {
+            const envPath = path.resolve(__dirname, "../.env");
+            const newEntry = `${tag}=${url}\\n`;
+            fs.appendFileSync(envPath, newEntry);
+            console.log(`Added API to .env: ${tag}`);
+            rl.close();
+            mainMenu();
+          });
+        });
+        break;
+      case "2":
+        rl.question("Enter API tag to remove: ", (tag) => {
+          const envPath = path.resolve(__dirname, "../.env");
+          const envContent = fs.readFileSync(envPath, "utf8").split("\\n");
+          const updatedContent = envContent.filter((line) => !line.startsWith(tag));
+          fs.writeFileSync(envPath, updatedContent.join("\\n"));
+          console.log(`Removed API from .env: ${tag}`);
+          rl.close();
+          mainMenu();
+        });
+        break;
+      case "3":
+        clearFolderExcept(outputDir, ["fulltests", "debug"]);
+        console.log("Cleared outputs folder except for 'fulltests' and 'debug'.");
+        rl.close();
+        mainMenu();
+        break;
+      default:
+        console.log("Invalid option.");
+        rl.close();
+        mainMenu();
+    }
+  });
 }
 
 // Main Interactive Menu
@@ -242,21 +260,27 @@ function mainMenu() {
     switch (choice.trim()) {
       case "1":
         await runMapper(outputDir);
+        rl.close();
+        mainMenu();
         break;
       case "2":
-        runCrossReference();
+        console.log("Running Cross-Referencing...");
+        rl.close();
+        mainMenu();
         break;
       case "3":
         console.log("Performing Arbitrage Execution...");
+        rl.close();
+        mainMenu();
         break;
       case "4":
-        console.log("Options:\n1. Add API\n2. Remove API\n3. Clear All (Excluding Specific Files)");
+        optionsMenu(rl);
         break;
       default:
         console.log("Invalid choice.");
+        rl.close();
+        mainMenu();
     }
-    rl.close();
-    mainMenu();
   });
 }
 
