@@ -38,29 +38,22 @@ function clearFolderExcept(folderPath, ignoreFiles) {
   }
 }
 
-function addApiToEnv(tag, url) {
-  const envPath = path.resolve(__dirname, "../.env");
-  const newEntry = `${tag}=${url}\n`;
+function createConsolidatedReport() {
+  console.log("Generating consolidated report...");
+  const consolidatedFilePath = path.join(outputDir, "consolidated-results.json");
+  const dataFiles = fs.readdirSync(outputDir).filter((file) => file.endsWith("-fields.json"));
 
-  if (fs.existsSync(envPath)) {
-    fs.appendFileSync(envPath, newEntry);
-    console.log(`Added API to .env: ${tag}`);
-  } else {
-    console.log(".env file not found. Cannot add API.");
-  }
-}
+  const consolidatedReport = {};
 
-function removeApiFromEnv(tag) {
-  const envPath = path.resolve(__dirname, "../.env");
+  dataFiles.forEach((file) => {
+    const filePath = path.join(outputDir, file);
+    const apiName = path.basename(file, "-fields.json");
+    const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+    consolidatedReport[apiName] = data;
+  });
 
-  if (fs.existsSync(envPath)) {
-    const envContent = fs.readFileSync(envPath, "utf8").split("\n");
-    const updatedContent = envContent.filter((line) => !line.startsWith(tag));
-    fs.writeFileSync(envPath, updatedContent.join("\n"));
-    console.log(`Removed API from .env: ${tag}`);
-  } else {
-    console.log(".env file not found. Cannot remove API.");
-  }
+  fs.writeFileSync(consolidatedFilePath, JSON.stringify(consolidatedReport, null, 2));
+  console.log(`Consolidated report saved to ${consolidatedFilePath}`);
 }
 
 // Universal Mapper Functionality
@@ -155,6 +148,7 @@ async function runMapper(outputFolder) {
     await updateFolderContents(outputFolder, apiName, data);
   }
 
+  createConsolidatedReport();
   console.log(`Mapper run completed. Results saved in ${outputFolder}`);
 }
 
@@ -184,41 +178,12 @@ function mainMenu() {
         break;
       case "4":
         console.log("Options:\n1. Add API\n2. Remove API\n3. Clear All (Excluding Specific Files)");
-        rl.question("Select an option: ", (option) => {
-          switch (option.trim()) {
-            case "1":
-              rl.question("Enter API tag: ", (tag) => {
-                rl.question("Enter API URL: ", (url) => {
-                  addApiToEnv(tag, url);
-                  rl.close();
-                  mainMenu();
-                });
-              });
-              break;
-            case "2":
-              rl.question("Enter API tag to remove: ", (tag) => {
-                removeApiFromEnv(tag);
-                rl.close();
-                mainMenu();
-              });
-              break;
-            case "3":
-              clearFolderExcept(outputDir, ["fulltests", "debug"]);
-              rl.close();
-              mainMenu();
-              break;
-            default:
-              console.log("Invalid option.");
-              rl.close();
-              mainMenu();
-          }
-        });
         break;
       default:
         console.log("Invalid choice.");
-        rl.close();
-        mainMenu();
     }
+    rl.close();
+    mainMenu();
   });
 }
 
