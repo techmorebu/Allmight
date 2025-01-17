@@ -14,7 +14,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "ID"
+              "name": "ID",
+              "ofType": null
             }
           }
         },
@@ -25,7 +26,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "Pool"
+              "name": "Pool",
+              "ofType": null
             }
           }
         },
@@ -36,7 +38,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Int"
+              "name": "Int",
+              "ofType": null
             }
           }
         },
@@ -47,7 +50,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigInt"
+              "name": "BigInt",
+              "ofType": null
             }
           }
         },
@@ -58,7 +62,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigInt"
+              "name": "BigInt",
+              "ofType": null
             }
           }
         },
@@ -69,7 +74,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigInt"
+              "name": "BigInt",
+              "ofType": null
             }
           }
         },
@@ -80,7 +86,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigInt"
+              "name": "BigInt",
+              "ofType": null
             }
           }
         }
@@ -107,7 +114,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "ID"
+              "name": "ID",
+              "ofType": null
             }
           }
         },
@@ -118,7 +126,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Int"
+              "name": "Int",
+              "ofType": null
             }
           }
         },
@@ -129,7 +138,11 @@
             "name": null,
             "ofType": {
               "kind": "NON_NULL",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Pool"
+              }
             }
           }
         },
@@ -140,7 +153,11 @@
             "name": null,
             "ofType": {
               "kind": "NON_NULL",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "BalancerSnapshot"
+              }
             }
           }
         },
@@ -151,7 +168,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -162,7 +180,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigInt"
+              "name": "BigInt",
+              "ofType": null
             }
           }
         },
@@ -173,7 +192,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -184,7 +204,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -217,7 +238,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "ID"
+              "name": "ID",
+              "ofType": null
             }
           }
         },
@@ -228,7 +250,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "Balancer"
+              "name": "Balancer",
+              "ofType": null
             }
           }
         },
@@ -239,7 +262,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Int"
+              "name": "Int",
+              "ofType": null
             }
           }
         },
@@ -250,7 +274,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Int"
+              "name": "Int",
+              "ofType": null
             }
           }
         },
@@ -261,7 +286,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -272,7 +298,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigInt"
+              "name": "BigInt",
+              "ofType": null
             }
           }
         },
@@ -283,7 +310,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -294,7 +322,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -369,7 +398,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "ID"
+              "name": "ID",
+              "ofType": null
             }
           }
         },
@@ -380,7 +410,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "Pool"
+              "name": "Pool",
+              "ofType": null
             }
           }
         },
@@ -391,7 +422,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "PoolToken"
+              "name": "PoolToken",
+              "ofType": null
             }
           }
         },
@@ -402,7 +434,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -413,7 +446,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -424,7 +458,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         }
@@ -451,7 +486,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "ID"
+              "name": "ID",
+              "ofType": null
             }
           }
         },
@@ -462,7 +498,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -510,7 +550,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "ID"
+              "name": "ID",
+              "ofType": null
             }
           }
         },
@@ -521,7 +562,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "Pool"
+              "name": "Pool",
+              "ofType": null
             }
           }
         },
@@ -532,7 +574,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Int"
+              "name": "Int",
+              "ofType": null
             }
           }
         },
@@ -543,7 +586,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigInt"
+              "name": "BigInt",
+              "ofType": null
             }
           }
         },
@@ -554,7 +598,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigInt"
+              "name": "BigInt",
+              "ofType": null
             }
           }
         },
@@ -565,7 +610,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -576,7 +625,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         }
@@ -623,7 +676,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "ID"
+              "name": "ID",
+              "ofType": null
             }
           }
         },
@@ -634,7 +688,8 @@
             "name": null,
             "ofType": {
               "kind": "ENUM",
-              "name": "InvestType"
+              "name": "InvestType",
+              "ofType": null
             }
           }
         },
@@ -645,7 +700,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Bytes"
+              "name": "Bytes",
+              "ofType": null
             }
           }
         },
@@ -656,7 +712,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -675,7 +735,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "Pool"
+              "name": "Pool",
+              "ofType": null
             }
           }
         },
@@ -686,7 +747,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "User"
+              "name": "User",
+              "ofType": null
             }
           }
         },
@@ -697,7 +759,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Int"
+              "name": "Int",
+              "ofType": null
             }
           }
         },
@@ -708,7 +771,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Bytes"
+              "name": "Bytes",
+              "ofType": null
             }
           }
         },
@@ -743,7 +807,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "ID"
+              "name": "ID",
+              "ofType": null
             }
           }
         },
@@ -754,7 +819,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Bytes"
+              "name": "Bytes",
+              "ofType": null
             }
           }
         },
@@ -765,7 +831,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Bytes"
+              "name": "Bytes",
+              "ofType": null
             }
           }
         },
@@ -776,7 +843,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "Pool"
+              "name": "Pool",
+              "ofType": null
             }
           }
         },
@@ -787,7 +855,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -798,7 +867,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigInt"
+              "name": "BigInt",
+              "ofType": null
             }
           }
         }
@@ -825,7 +895,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "ID"
+              "name": "ID",
+              "ofType": null
             }
           }
         },
@@ -836,7 +907,8 @@
             "name": null,
             "ofType": {
               "kind": "ENUM",
-              "name": "OperationType"
+              "name": "OperationType",
+              "ofType": null
             }
           }
         },
@@ -847,7 +919,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -858,7 +931,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -869,7 +943,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "PoolToken"
+              "name": "PoolToken",
+              "ofType": null
             }
           }
         },
@@ -880,7 +955,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Int"
+              "name": "Int",
+              "ofType": null
             }
           }
         }
@@ -917,7 +993,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "ID"
+              "name": "ID",
+              "ofType": null
             }
           }
         },
@@ -928,7 +1005,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Bytes"
+              "name": "Bytes",
+              "ofType": null
             }
           }
         },
@@ -963,7 +1041,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Int"
+              "name": "Int",
+              "ofType": null
             }
           }
         },
@@ -974,7 +1053,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Boolean"
+              "name": "Boolean",
+              "ofType": null
             }
           }
         },
@@ -1009,7 +1089,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Boolean"
+              "name": "Boolean",
+              "ofType": null
             }
           }
         },
@@ -1036,7 +1117,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -1071,7 +1153,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -1082,7 +1165,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -1093,7 +1177,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -1112,7 +1197,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -1131,7 +1217,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Int"
+              "name": "Int",
+              "ofType": null
             }
           }
         },
@@ -1142,7 +1229,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigInt"
+              "name": "BigInt",
+              "ofType": null
             }
           }
         },
@@ -1153,7 +1241,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigInt"
+              "name": "BigInt",
+              "ofType": null
             }
           }
         },
@@ -1164,7 +1253,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "Balancer"
+              "name": "Balancer",
+              "ofType": null
             }
           }
         },
@@ -1183,7 +1273,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -1194,7 +1288,11 @@
             "name": null,
             "ofType": {
               "kind": "NON_NULL",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "PoolToken"
+              }
             }
           }
         },
@@ -1205,7 +1303,11 @@
             "name": null,
             "ofType": {
               "kind": "NON_NULL",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "JoinExit"
+              }
             }
           }
         },
@@ -1216,7 +1318,11 @@
             "name": null,
             "ofType": {
               "kind": "NON_NULL",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Swap"
+              }
             }
           }
         },
@@ -1227,7 +1333,11 @@
             "name": null,
             "ofType": {
               "kind": "NON_NULL",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "PoolShare"
+              }
             }
           }
         },
@@ -1238,7 +1348,11 @@
             "name": null,
             "ofType": {
               "kind": "NON_NULL",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "PoolSnapshot"
+              }
             }
           }
         },
@@ -1249,7 +1363,11 @@
             "name": null,
             "ofType": {
               "kind": "NON_NULL",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "PoolHistoricalLiquidity"
+              }
             }
           }
         },
@@ -1260,7 +1378,11 @@
             "name": null,
             "ofType": {
               "kind": "NON_NULL",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "GradualWeightUpdate"
+              }
             }
           }
         },
@@ -1287,7 +1409,11 @@
             "name": null,
             "ofType": {
               "kind": "NON_NULL",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "AmpUpdate"
+              }
             }
           }
         },
@@ -1298,7 +1424,11 @@
             "name": null,
             "ofType": {
               "kind": "NON_NULL",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "PriceRateProvider"
+              }
             }
           }
         },
@@ -1381,7 +1511,11 @@
             "name": null,
             "ofType": {
               "kind": "NON_NULL",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "CircuitBreaker"
+              }
             }
           }
         },
@@ -1654,7 +1788,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "ID"
+              "name": "ID",
+              "ofType": null
             }
           }
         },
@@ -1665,7 +1800,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "Pool"
+              "name": "Pool",
+              "ofType": null
             }
           }
         }
@@ -1692,7 +1828,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "ID"
+              "name": "ID",
+              "ofType": null
             }
           }
         },
@@ -1703,7 +1840,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "Pool"
+              "name": "Pool",
+              "ofType": null
             }
           }
         },
@@ -1714,7 +1852,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -1725,7 +1864,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -1736,7 +1876,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -1747,7 +1888,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Bytes"
+              "name": "Bytes",
+              "ofType": null
             }
           }
         },
@@ -1758,7 +1900,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigInt"
+              "name": "BigInt",
+              "ofType": null
             }
           }
         }
@@ -1785,7 +1928,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "ID"
+              "name": "ID",
+              "ofType": null
             }
           }
         },
@@ -1796,7 +1940,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "User"
+              "name": "User",
+              "ofType": null
             }
           }
         },
@@ -1807,7 +1952,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "Pool"
+              "name": "Pool",
+              "ofType": null
             }
           }
         },
@@ -1818,7 +1964,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         }
@@ -1845,7 +1992,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "ID"
+              "name": "ID",
+              "ofType": null
             }
           }
         },
@@ -1856,7 +2004,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "Pool"
+              "name": "Pool",
+              "ofType": null
             }
           }
         },
@@ -1867,7 +2016,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -1878,7 +2031,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -1889,7 +2043,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -1908,7 +2063,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -1919,7 +2075,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -1930,7 +2087,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigInt"
+              "name": "BigInt",
+              "ofType": null
             }
           }
         },
@@ -1941,7 +2099,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigInt"
+              "name": "BigInt",
+              "ofType": null
             }
           }
         },
@@ -1952,7 +2111,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Int"
+              "name": "Int",
+              "ofType": null
             }
           }
         }
@@ -1979,7 +2139,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "ID"
+              "name": "ID",
+              "ofType": null
             }
           }
         },
@@ -1998,7 +2159,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "Token"
+              "name": "Token",
+              "ofType": null
             }
           }
         },
@@ -2009,7 +2171,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Bytes"
+              "name": "Bytes",
+              "ofType": null
             }
           }
         },
@@ -2020,7 +2183,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "String"
+              "name": "String",
+              "ofType": null
             }
           }
         },
@@ -2031,7 +2195,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "String"
+              "name": "String",
+              "ofType": null
             }
           }
         },
@@ -2042,7 +2207,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Int"
+              "name": "Int",
+              "ofType": null
             }
           }
         },
@@ -2061,7 +2227,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "String"
+              "name": "String",
+              "ofType": null
             }
           }
         },
@@ -2080,7 +2247,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -2091,7 +2259,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -2110,7 +2279,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -2121,7 +2291,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -2132,7 +2303,11 @@
             "name": null,
             "ofType": {
               "kind": "NON_NULL",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "ManagementOperation"
+              }
             }
           }
         },
@@ -2193,7 +2368,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "ID"
+              "name": "ID",
+              "ofType": null
             }
           }
         },
@@ -2204,7 +2380,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "Pool"
+              "name": "Pool",
+              "ofType": null
             }
           }
         },
@@ -2215,7 +2392,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "PoolToken"
+              "name": "PoolToken",
+              "ofType": null
             }
           }
         },
@@ -2226,7 +2404,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Bytes"
+              "name": "Bytes",
+              "ofType": null
             }
           }
         },
@@ -2285,7 +2464,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "ID"
+              "name": "ID",
+              "ofType": null
             }
           }
         },
@@ -2296,7 +2476,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "String"
+              "name": "String",
+              "ofType": null
             }
           }
         }
@@ -2331,7 +2512,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2350,7 +2535,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2369,7 +2558,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2388,7 +2581,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2407,7 +2604,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2426,7 +2627,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2445,7 +2650,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2464,7 +2673,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2483,7 +2696,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2502,7 +2719,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2521,7 +2742,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2540,7 +2765,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2559,7 +2788,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2578,7 +2811,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2597,7 +2834,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2616,7 +2857,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2635,7 +2880,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2654,7 +2903,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2673,7 +2926,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2692,7 +2949,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2711,7 +2972,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2730,7 +2995,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2749,7 +3018,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2768,7 +3041,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2787,7 +3064,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2806,7 +3087,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2844,7 +3129,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2863,7 +3152,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2882,7 +3175,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2901,7 +3198,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2920,7 +3221,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2939,7 +3244,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2958,7 +3267,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2977,7 +3290,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -2996,7 +3313,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -3015,7 +3336,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -3034,7 +3359,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -3053,7 +3382,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -3072,7 +3405,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -3091,7 +3428,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -3110,7 +3451,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -3129,7 +3474,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -3148,7 +3497,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -3167,7 +3520,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -3186,7 +3543,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -3205,7 +3566,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -3224,7 +3589,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -3243,7 +3612,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -3262,7 +3635,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -3281,7 +3658,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -3300,7 +3681,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -3319,7 +3704,11 @@
             "name": null,
             "ofType": {
               "kind": "LIST",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null
+              }
             }
           }
         },
@@ -3344,7 +3733,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "ID"
+              "name": "ID",
+              "ofType": null
             }
           }
         },
@@ -3355,7 +3745,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Bytes"
+              "name": "Bytes",
+              "ofType": null
             }
           }
         },
@@ -3366,7 +3757,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Bytes"
+              "name": "Bytes",
+              "ofType": null
             }
           }
         },
@@ -3377,7 +3769,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "String"
+              "name": "String",
+              "ofType": null
             }
           }
         },
@@ -3388,7 +3781,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Bytes"
+              "name": "Bytes",
+              "ofType": null
             }
           }
         },
@@ -3399,7 +3793,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "String"
+              "name": "String",
+              "ofType": null
             }
           }
         },
@@ -3410,7 +3805,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -3421,7 +3817,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -3432,7 +3829,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -3443,7 +3841,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "Pool"
+              "name": "Pool",
+              "ofType": null
             }
           }
         },
@@ -3454,7 +3853,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "User"
+              "name": "User",
+              "ofType": null
             }
           }
         },
@@ -3465,7 +3865,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Int"
+              "name": "Int",
+              "ofType": null
             }
           }
         },
@@ -3484,7 +3885,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Bytes"
+              "name": "Bytes",
+              "ofType": null
             }
           }
         }
@@ -3501,7 +3903,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "ID"
+              "name": "ID",
+              "ofType": null
             }
           }
         },
@@ -3512,7 +3915,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "Pool"
+              "name": "Pool",
+              "ofType": null
             }
           }
         },
@@ -3523,7 +3927,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Int"
+              "name": "Int",
+              "ofType": null
             }
           }
         },
@@ -3534,7 +3939,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigInt"
+              "name": "BigInt",
+              "ofType": null
             }
           }
         },
@@ -3545,7 +3951,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigInt"
+              "name": "BigInt",
+              "ofType": null
             }
           }
         },
@@ -3556,7 +3963,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -3567,7 +3975,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         }
@@ -3609,7 +4018,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "ID"
+              "name": "ID",
+              "ofType": null
             }
           }
         },
@@ -3636,7 +4046,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Int"
+              "name": "Int",
+              "ofType": null
             }
           }
         },
@@ -3647,7 +4058,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "String"
+              "name": "String",
+              "ofType": null
             }
           }
         },
@@ -3658,7 +4070,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -3669,7 +4082,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -3680,7 +4094,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -3691,7 +4106,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -3702,7 +4118,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigInt"
+              "name": "BigInt",
+              "ofType": null
             }
           }
         },
@@ -3767,7 +4184,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "ID"
+              "name": "ID",
+              "ofType": null
             }
           }
         },
@@ -3778,7 +4196,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "Pool"
+              "name": "Pool",
+              "ofType": null
             }
           }
         },
@@ -3789,7 +4208,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Bytes"
+              "name": "Bytes",
+              "ofType": null
             }
           }
         },
@@ -3800,7 +4220,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -3811,7 +4232,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Bytes"
+              "name": "Bytes",
+              "ofType": null
             }
           }
         },
@@ -3822,7 +4244,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -3833,7 +4256,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigInt"
+              "name": "BigInt",
+              "ofType": null
             }
           }
         },
@@ -3844,7 +4268,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Int"
+              "name": "Int",
+              "ofType": null
             }
           }
         }
@@ -3871,7 +4296,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "ID"
+              "name": "ID",
+              "ofType": null
             }
           }
         },
@@ -3882,7 +4308,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "Token"
+              "name": "Token",
+              "ofType": null
             }
           }
         },
@@ -3893,7 +4320,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Int"
+              "name": "Int",
+              "ofType": null
             }
           }
         },
@@ -3904,7 +4332,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -3915,7 +4344,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -3926,7 +4356,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -3937,7 +4368,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -3948,7 +4380,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigInt"
+              "name": "BigInt",
+              "ofType": null
             }
           }
         }
@@ -3985,7 +4418,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "ID"
+              "name": "ID",
+              "ofType": null
             }
           }
         },
@@ -3996,7 +4430,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "Token"
+              "name": "Token",
+              "ofType": null
             }
           }
         },
@@ -4007,7 +4442,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "Token"
+              "name": "Token",
+              "ofType": null
             }
           }
         },
@@ -4018,7 +4454,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -4029,7 +4466,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         }
@@ -4046,7 +4484,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "ID"
+              "name": "ID",
+              "ofType": null
             }
           }
         },
@@ -4057,7 +4496,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "TradePair"
+              "name": "TradePair",
+              "ofType": null
             }
           }
         },
@@ -4068,7 +4508,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Int"
+              "name": "Int",
+              "ofType": null
             }
           }
         },
@@ -4079,7 +4520,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         },
@@ -4090,7 +4532,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         }
@@ -4127,7 +4570,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "ID"
+              "name": "ID",
+              "ofType": null
             }
           }
         },
@@ -4138,7 +4582,11 @@
             "name": null,
             "ofType": {
               "kind": "NON_NULL",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "PoolShare"
+              }
             }
           }
         },
@@ -4149,7 +4597,11 @@
             "name": null,
             "ofType": {
               "kind": "NON_NULL",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Swap"
+              }
             }
           }
         },
@@ -4160,7 +4612,11 @@
             "name": null,
             "ofType": {
               "kind": "NON_NULL",
-              "name": null
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "UserInternalBalance"
+              }
             }
           }
         }
@@ -4177,7 +4633,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "ID"
+              "name": "ID",
+              "ofType": null
             }
           }
         },
@@ -4196,7 +4653,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Bytes"
+              "name": "Bytes",
+              "ofType": null
             }
           }
         },
@@ -4215,7 +4673,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "BigDecimal"
+              "name": "BigDecimal",
+              "ofType": null
             }
           }
         }
@@ -4260,7 +4719,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Int"
+              "name": "Int",
+              "ofType": null
             }
           }
         },
@@ -4293,7 +4753,8 @@
             "name": null,
             "ofType": {
               "kind": "OBJECT",
-              "name": "_Block_"
+              "name": "_Block_",
+              "ofType": null
             }
           }
         },
@@ -4304,7 +4765,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "String"
+              "name": "String",
+              "ofType": null
             }
           }
         },
@@ -4315,7 +4777,8 @@
             "name": null,
             "ofType": {
               "kind": "SCALAR",
-              "name": "Boolean"
+              "name": "Boolean",
+              "ofType": null
             }
           }
         }
@@ -4328,5 +4791,392 @@
       "kind": "ENUM",
       "name": "_SubgraphErrorPolicy_"
     }
+  ],
+  "fields": [
+    "id",
+    "poolId",
+    "scheduledTimestamp",
+    "startTimestamp",
+    "endTimestamp",
+    "startAmp",
+    "endAmp",
+    "id",
+    "poolCount",
+    "pools",
+    "snapshots",
+    "totalLiquidity",
+    "totalSwapCount",
+    "totalSwapVolume",
+    "totalSwapFee",
+    "totalProtocolFee",
+    "protocolFeesCollector",
+    "id",
+    "vault",
+    "timestamp",
+    "poolCount",
+    "totalLiquidity",
+    "totalSwapCount",
+    "totalSwapVolume",
+    "totalSwapFee",
+    "totalProtocolFee",
+    "id",
+    "pool",
+    "token",
+    "bptPrice",
+    "lowerBoundPercentage",
+    "upperBoundPercentage",
+    "id",
+    "tokens",
+    "divisor",
+    "decimals",
+    "id",
+    "poolId",
+    "scheduledTimestamp",
+    "startTimestamp",
+    "endTimestamp",
+    "startWeights",
+    "endWeights",
+    "id",
+    "type",
+    "sender",
+    "amounts",
+    "valueUSD",
+    "pool",
+    "user",
+    "timestamp",
+    "tx",
+    "block",
+    "id",
+    "asset",
+    "pricingAsset",
+    "poolId",
+    "price",
+    "block",
+    "id",
+    "type",
+    "cashDelta",
+    "managedDelta",
+    "poolTokenId",
+    "timestamp",
+    "id",
+    "address",
+    "poolType",
+    "poolTypeVersion",
+    "factory",
+    "strategyType",
+    "oracleEnabled",
+    "symbol",
+    "name",
+    "isInitialized",
+    "swapEnabled",
+    "swapEnabledInternal",
+    "swapEnabledCurationSignal",
+    "swapFee",
+    "owner",
+    "isPaused",
+    "totalWeight",
+    "totalSwapVolume",
+    "totalSwapFee",
+    "totalLiquidity",
+    "totalLiquiditySansBPT",
+    "totalShares",
+    "totalProtocolFee",
+    "createTime",
+    "swapsCount",
+    "holdersCount",
+    "vaultID",
+    "tx",
+    "tokensList",
+    "tokens",
+    "joinsExits",
+    "swaps",
+    "shares",
+    "snapshots",
+    "historicalValues",
+    "weightUpdates",
+    "amp",
+    "latestAmpUpdate",
+    "ampUpdates",
+    "priceRateProviders",
+    "principalToken",
+    "baseToken",
+    "expiryTime",
+    "unitSeconds",
+    "managementFee",
+    "joinExitEnabled",
+    "mustAllowlistLPs",
+    "managementAumFee",
+    "totalAumFeeCollectedInBPT",
+    "circuitBreakers",
+    "mainIndex",
+    "wrappedIndex",
+    "lowerTarget",
+    "upperTarget",
+    "sqrtAlpha",
+    "sqrtBeta",
+    "root3Alpha",
+    "c",
+    "s",
+    "tauAlphaX",
+    "tauAlphaY",
+    "tauBetaX",
+    "tauBetaY",
+    "u",
+    "v",
+    "w",
+    "z",
+    "dSq",
+    "alpha",
+    "beta",
+    "lambda",
+    "delta",
+    "epsilon",
+    "isInRecoveryMode",
+    "protocolSwapFeeCache",
+    "protocolYieldFeeCache",
+    "protocolAumFeeCache",
+    "totalProtocolFeePaidInBPT",
+    "lastJoinExitAmp",
+    "lastPostJoinExitInvariant",
+    "protocolId",
+    "protocolIdData",
+    "id",
+    "pool",
+    "id",
+    "poolId",
+    "poolTotalShares",
+    "poolLiquidity",
+    "poolShareValue",
+    "pricingAsset",
+    "block",
+    "id",
+    "userAddress",
+    "poolId",
+    "balance",
+    "id",
+    "pool",
+    "amounts",
+    "totalShares",
+    "swapVolume",
+    "protocolFee",
+    "swapFees",
+    "liquidity",
+    "swapsCount",
+    "holdersCount",
+    "timestamp",
+    "id",
+    "poolId",
+    "token",
+    "assetManager",
+    "symbol",
+    "name",
+    "decimals",
+    "index",
+    "address",
+    "oldPriceRate",
+    "priceRate",
+    "balance",
+    "paidProtocolFees",
+    "cashBalance",
+    "managedBalance",
+    "managements",
+    "weight",
+    "isExemptFromYieldProtocolFee",
+    "circuitBreaker",
+    "id",
+    "poolId",
+    "token",
+    "address",
+    "rate",
+    "lastCached",
+    "cacheDuration",
+    "cacheExpiry",
+    "id",
+    "name",
+    "balancer",
+    "balancers",
+    "pool",
+    "pools",
+    "poolContract",
+    "poolContracts",
+    "poolToken",
+    "poolTokens",
+    "priceRateProvider",
+    "priceRateProviders",
+    "circuitBreaker",
+    "circuitBreakers",
+    "poolShare",
+    "poolShares",
+    "user",
+    "users",
+    "userInternalBalance",
+    "userInternalBalances",
+    "gradualWeightUpdate",
+    "gradualWeightUpdates",
+    "ampUpdate",
+    "ampUpdates",
+    "swapFeeUpdate",
+    "swapFeeUpdates",
+    "swap",
+    "swaps",
+    "joinExit",
+    "joinExits",
+    "latestPrice",
+    "latestPrices",
+    "poolHistoricalLiquidity",
+    "poolHistoricalLiquidities",
+    "tokenPrice",
+    "tokenPrices",
+    "managementOperation",
+    "managementOperations",
+    "poolSnapshot",
+    "poolSnapshots",
+    "token",
+    "tokens",
+    "tokenSnapshot",
+    "tokenSnapshots",
+    "tradePair",
+    "tradePairs",
+    "tradePairSnapshot",
+    "tradePairSnapshots",
+    "balancerSnapshot",
+    "balancerSnapshots",
+    "protocolIdData",
+    "protocolIdDatas",
+    "fxoracle",
+    "fxoracles",
+    "_meta",
+    "balancer",
+    "balancers",
+    "pool",
+    "pools",
+    "poolContract",
+    "poolContracts",
+    "poolToken",
+    "poolTokens",
+    "priceRateProvider",
+    "priceRateProviders",
+    "circuitBreaker",
+    "circuitBreakers",
+    "poolShare",
+    "poolShares",
+    "user",
+    "users",
+    "userInternalBalance",
+    "userInternalBalances",
+    "gradualWeightUpdate",
+    "gradualWeightUpdates",
+    "ampUpdate",
+    "ampUpdates",
+    "swapFeeUpdate",
+    "swapFeeUpdates",
+    "swap",
+    "swaps",
+    "joinExit",
+    "joinExits",
+    "latestPrice",
+    "latestPrices",
+    "poolHistoricalLiquidity",
+    "poolHistoricalLiquidities",
+    "tokenPrice",
+    "tokenPrices",
+    "managementOperation",
+    "managementOperations",
+    "poolSnapshot",
+    "poolSnapshots",
+    "token",
+    "tokens",
+    "tokenSnapshot",
+    "tokenSnapshots",
+    "tradePair",
+    "tradePairs",
+    "tradePairSnapshot",
+    "tradePairSnapshots",
+    "balancerSnapshot",
+    "balancerSnapshots",
+    "protocolIdData",
+    "protocolIdDatas",
+    "fxoracle",
+    "fxoracles",
+    "_meta",
+    "id",
+    "caller",
+    "tokenIn",
+    "tokenInSym",
+    "tokenOut",
+    "tokenOutSym",
+    "tokenAmountIn",
+    "tokenAmountOut",
+    "valueUSD",
+    "poolId",
+    "userAddress",
+    "timestamp",
+    "block",
+    "tx",
+    "id",
+    "pool",
+    "scheduledTimestamp",
+    "startTimestamp",
+    "endTimestamp",
+    "startSwapFeePercentage",
+    "endSwapFeePercentage",
+    "id",
+    "symbol",
+    "name",
+    "decimals",
+    "address",
+    "totalBalanceUSD",
+    "totalBalanceNotional",
+    "totalVolumeUSD",
+    "totalVolumeNotional",
+    "totalSwapCount",
+    "latestPrice",
+    "latestUSDPrice",
+    "latestUSDPriceTimestamp",
+    "latestFXPrice",
+    "pool",
+    "fxOracleDecimals",
+    "id",
+    "poolId",
+    "asset",
+    "amount",
+    "pricingAsset",
+    "price",
+    "block",
+    "timestamp",
+    "id",
+    "token",
+    "timestamp",
+    "totalBalanceUSD",
+    "totalBalanceNotional",
+    "totalVolumeUSD",
+    "totalVolumeNotional",
+    "totalSwapCount",
+    "id",
+    "token0",
+    "token1",
+    "totalSwapVolume",
+    "totalSwapFee",
+    "id",
+    "pair",
+    "timestamp",
+    "totalSwapVolume",
+    "totalSwapFee",
+    "id",
+    "sharesOwned",
+    "swaps",
+    "userInternalBalances",
+    "id",
+    "userAddress",
+    "token",
+    "tokenInfo",
+    "balance",
+    "hash",
+    "number",
+    "timestamp",
+    "parentHash",
+    "block",
+    "deployment",
+    "hasIndexingErrors"
   ]
 }
