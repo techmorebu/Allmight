@@ -22,6 +22,47 @@ const config = {
 console.log(`Using ethers version for Hybrid Arbitrage: ${ethers.version}`);
 console.log(`Using ethers version for Flashbots: ${ethers67.version}`);
 
+// Utility Functions
+function clearFolderExcept(folderPath, ignoreFiles) {
+  if (fs.existsSync(folderPath)) {
+    const files = fs.readdirSync(folderPath);
+    files.forEach((file) => {
+      if (!ignoreFiles.includes(file)) {
+        fs.unlinkSync(path.join(folderPath, file));
+        console.log(`Deleted file: ${file}`);
+      }
+    });
+    console.log(`Cleared folder except ignored files: ${folderPath}`);
+  } else {
+    console.log(`Folder does not exist: ${folderPath}`);
+  }
+}
+
+function addApiToEnv(tag, url) {
+  const envPath = path.resolve(__dirname, "../.env");
+  const newEntry = `${tag}=${url}\n`;
+
+  if (fs.existsSync(envPath)) {
+    fs.appendFileSync(envPath, newEntry);
+    console.log(`Added API to .env: ${tag}`);
+  } else {
+    console.log(".env file not found. Cannot add API.");
+  }
+}
+
+function removeApiFromEnv(tag) {
+  const envPath = path.resolve(__dirname, "../.env");
+
+  if (fs.existsSync(envPath)) {
+    const envContent = fs.readFileSync(envPath, "utf8").split("\n");
+    const updatedContent = envContent.filter((line) => !line.startsWith(tag));
+    fs.writeFileSync(envPath, updatedContent.join("\n"));
+    console.log(`Removed API from .env: ${tag}`);
+  } else {
+    console.log(".env file not found. Cannot remove API.");
+  }
+}
+
 // Universal Mapper Functionality
 async function runMapper(outputFolder) {
   console.log(`Running mapper for all APIs. Output folder: ${outputFolder}`);
@@ -117,94 +158,6 @@ async function runMapper(outputFolder) {
   console.log(`Mapper run completed. Results saved in ${outputFolder}`);
 }
 
-// Cross-Referencing Functionality
-function runCrossReference() {
-  console.log("Running Cross-Referencing...");
-
-  const requiredFields = [
-    "token0Price",
-    "token1Price",
-    "volumeUSD",
-    "feesUSD",
-    "liquidity",
-    "txCount",
-    "open",
-    "high",
-    "low",
-    "close",
-    "totalValueLockedUSD",
-  ];
-
-  const fieldSynonyms = {
-    token0Price: ["price0", "priceToken0", "baseTokenPrice", "price_base", "token0_rate"],
-    token1Price: ["price1", "priceToken1", "quoteTokenPrice", "price_quote", "token1_rate"],
-    volumeUSD: ["usdVolume", "tradingVolumeUSD", "volume_usd", "totalVolumeUSD", "tradeVolumeUSD"],
-    feesUSD: ["usdFees", "tradingFeesUSD", "fees_usd", "totalFeesUSD", "feeVolumeUSD"],
-    liquidity: ["poolLiquidity", "totalLiquidity", "liquidityUSD", "currentLiquidity", "availableLiquidity"],
-    txCount: ["transactionCount", "tx_count", "tradeCount", "swapCount", "numberOfTransactions"],
-    open: ["openingPrice", "openPrice", "price_open", "startPrice"],
-    high: ["highestPrice", "highPrice", "price_high", "maxPrice"],
-    low: ["lowestPrice", "lowPrice", "price_low", "minPrice"],
-    close: ["closingPrice", "closePrice", "price_close", "endPrice"],
-    totalValueLockedUSD: ["TVL", "lockedValueUSD", "totalLiquidityUSD", "valueLockedUSD", "tvl_usd"],
-  };
-
-  const fieldWeights = {
-    token0Price: 3,
-    token1Price: 3,
-    volumeUSD: 2,
-    feesUSD: 2,
-    liquidity: 1,
-    txCount: 1,
-    open: 1,
-    high: 1,
-    low: 1,
-    close: 1,
-    totalValueLockedUSD: 2,
-  };
-
-  function matchFields(fields, requiredField) {
-    const synonyms = fieldSynonyms[requiredField] || [];
-    return fields.some((f) => f === requiredField || synonyms.includes(f));
-  }
-
-  const dataFiles = fs.readdirSync(outputDir).filter((file) => file.endsWith("-fields.json"));
-  const report = {};
-
-  dataFiles.forEach((file) => {
-    const apiName = path.basename(file, "-fields.json");
-    const filePath = path.join(outputDir, file);
-    const { fields } = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-
-    const matched = requiredFields.filter((field) => matchFields(fields, field));
-    const missing = requiredFields.filter((field) => !matchFields(fields, field));
-    const weightedScore = matched.reduce((sum, field) => sum + (fieldWeights[field] || 0), 0);
-
-    if (fields.length === 0) {
-      console.warn(`No fields found for API: ${apiName}. Schema might be incomplete or malformed.`);
-    }
-
-    report[apiName] = { matched, missing, weightedScore };
-  });
-
-  const reportPath = path.join(outputDir, "cross-reference-report.json");
-  fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
-  console.log(`Cross-Referencing Report saved to ${reportPath}`);
-}
-
-// Arbitrage Execution Functionality
-async function executeArbitrage() {
-  console.log("Starting Arbitrage Execution...");
-  const opportunities = [{ mockOpportunity: true, netProfit: 0.1 }]; // Placeholder for detected opportunities
-
-  for (const opportunity of opportunities) {
-    console.log("Executing opportunity:", opportunity);
-    // Execution logic goes here
-  }
-
-  console.log("Arbitrage Execution completed.");
-}
-
 // Main Interactive Menu
 function mainMenu() {
   const rl = readline.createInterface({
@@ -216,6 +169,7 @@ function mainMenu() {
   console.log("1. Run Universal Mapper");
   console.log("2. Run Cross-Referencing");
   console.log("3. Perform Arbitrage Execution");
+  console.log("4. Options");
 
   rl.question("Enter your choice: ", async (choice) => {
     switch (choice.trim()) {
@@ -223,16 +177,48 @@ function mainMenu() {
         await runMapper(outputDir);
         break;
       case "2":
-        runCrossReference(outputDir);
+        console.log("Running Cross-Referencing...");
         break;
       case "3":
-        await executeArbitrage(outputDir);
+        console.log("Performing Arbitrage Execution...");
+        break;
+      case "4":
+        console.log("Options:\n1. Add API\n2. Remove API\n3. Clear All (Excluding Specific Files)");
+        rl.question("Select an option: ", (option) => {
+          switch (option.trim()) {
+            case "1":
+              rl.question("Enter API tag: ", (tag) => {
+                rl.question("Enter API URL: ", (url) => {
+                  addApiToEnv(tag, url);
+                  rl.close();
+                  mainMenu();
+                });
+              });
+              break;
+            case "2":
+              rl.question("Enter API tag to remove: ", (tag) => {
+                removeApiFromEnv(tag);
+                rl.close();
+                mainMenu();
+              });
+              break;
+            case "3":
+              clearFolderExcept(outputDir, ["fulltests", "debug"]);
+              rl.close();
+              mainMenu();
+              break;
+            default:
+              console.log("Invalid option.");
+              rl.close();
+              mainMenu();
+          }
+        });
         break;
       default:
         console.log("Invalid choice.");
+        rl.close();
+        mainMenu();
     }
-    rl.close();
-    mainMenu();
   });
 }
 
