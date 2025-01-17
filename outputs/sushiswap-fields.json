@@ -6695,6 +6695,2826 @@
       "name": "_TokenWhitelist_orderBy"
     }
   ],
+  "introspection": [
+    {
+      "args": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "ID"
+            }
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "token",
+      "type": {
+        "kind": "OBJECT",
+        "name": "Token",
+        "ofType": null
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "skip",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "first",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderBy",
+          "type": {
+            "kind": "ENUM",
+            "name": "Token_orderBy",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderDirection",
+          "type": {
+            "kind": "ENUM",
+            "name": "OrderDirection",
+            "ofType": null
+          }
+        },
+        {
+          "name": "where",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Token_filter",
+            "ofType": null
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "tokens",
+      "type": {
+        "kind": "NON_NULL",
+        "name": null,
+        "ofType": {
+          "kind": "LIST",
+          "name": null
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "ID"
+            }
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "rewardToken",
+      "type": {
+        "kind": "OBJECT",
+        "name": "RewardToken",
+        "ofType": null
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "skip",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "first",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderBy",
+          "type": {
+            "kind": "ENUM",
+            "name": "RewardToken_orderBy",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderDirection",
+          "type": {
+            "kind": "ENUM",
+            "name": "OrderDirection",
+            "ofType": null
+          }
+        },
+        {
+          "name": "where",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "RewardToken_filter",
+            "ofType": null
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "rewardTokens",
+      "type": {
+        "kind": "NON_NULL",
+        "name": null,
+        "ofType": {
+          "kind": "LIST",
+          "name": null
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "ID"
+            }
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "liquidityPoolFee",
+      "type": {
+        "kind": "OBJECT",
+        "name": "LiquidityPoolFee",
+        "ofType": null
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "skip",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "first",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderBy",
+          "type": {
+            "kind": "ENUM",
+            "name": "LiquidityPoolFee_orderBy",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderDirection",
+          "type": {
+            "kind": "ENUM",
+            "name": "OrderDirection",
+            "ofType": null
+          }
+        },
+        {
+          "name": "where",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "LiquidityPoolFee_filter",
+            "ofType": null
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "liquidityPoolFees",
+      "type": {
+        "kind": "NON_NULL",
+        "name": null,
+        "ofType": {
+          "kind": "LIST",
+          "name": null
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "ID"
+            }
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "dexAmmProtocol",
+      "type": {
+        "kind": "OBJECT",
+        "name": "DexAmmProtocol",
+        "ofType": null
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "skip",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "first",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderBy",
+          "type": {
+            "kind": "ENUM",
+            "name": "DexAmmProtocol_orderBy",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderDirection",
+          "type": {
+            "kind": "ENUM",
+            "name": "OrderDirection",
+            "ofType": null
+          }
+        },
+        {
+          "name": "where",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "DexAmmProtocol_filter",
+            "ofType": null
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "dexAmmProtocols",
+      "type": {
+        "kind": "NON_NULL",
+        "name": null,
+        "ofType": {
+          "kind": "LIST",
+          "name": null
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "ID"
+            }
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "usageMetricsDailySnapshot",
+      "type": {
+        "kind": "OBJECT",
+        "name": "UsageMetricsDailySnapshot",
+        "ofType": null
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "skip",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "first",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderBy",
+          "type": {
+            "kind": "ENUM",
+            "name": "UsageMetricsDailySnapshot_orderBy",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderDirection",
+          "type": {
+            "kind": "ENUM",
+            "name": "OrderDirection",
+            "ofType": null
+          }
+        },
+        {
+          "name": "where",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "UsageMetricsDailySnapshot_filter",
+            "ofType": null
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "usageMetricsDailySnapshots",
+      "type": {
+        "kind": "NON_NULL",
+        "name": null,
+        "ofType": {
+          "kind": "LIST",
+          "name": null
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "ID"
+            }
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "usageMetricsHourlySnapshot",
+      "type": {
+        "kind": "OBJECT",
+        "name": "UsageMetricsHourlySnapshot",
+        "ofType": null
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "skip",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "first",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderBy",
+          "type": {
+            "kind": "ENUM",
+            "name": "UsageMetricsHourlySnapshot_orderBy",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderDirection",
+          "type": {
+            "kind": "ENUM",
+            "name": "OrderDirection",
+            "ofType": null
+          }
+        },
+        {
+          "name": "where",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "UsageMetricsHourlySnapshot_filter",
+            "ofType": null
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "usageMetricsHourlySnapshots",
+      "type": {
+        "kind": "NON_NULL",
+        "name": null,
+        "ofType": {
+          "kind": "LIST",
+          "name": null
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "ID"
+            }
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "financialsDailySnapshot",
+      "type": {
+        "kind": "OBJECT",
+        "name": "FinancialsDailySnapshot",
+        "ofType": null
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "skip",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "first",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderBy",
+          "type": {
+            "kind": "ENUM",
+            "name": "FinancialsDailySnapshot_orderBy",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderDirection",
+          "type": {
+            "kind": "ENUM",
+            "name": "OrderDirection",
+            "ofType": null
+          }
+        },
+        {
+          "name": "where",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "FinancialsDailySnapshot_filter",
+            "ofType": null
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "financialsDailySnapshots",
+      "type": {
+        "kind": "NON_NULL",
+        "name": null,
+        "ofType": {
+          "kind": "LIST",
+          "name": null
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "ID"
+            }
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "liquidityPool",
+      "type": {
+        "kind": "OBJECT",
+        "name": "LiquidityPool",
+        "ofType": null
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "skip",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "first",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderBy",
+          "type": {
+            "kind": "ENUM",
+            "name": "LiquidityPool_orderBy",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderDirection",
+          "type": {
+            "kind": "ENUM",
+            "name": "OrderDirection",
+            "ofType": null
+          }
+        },
+        {
+          "name": "where",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "LiquidityPool_filter",
+            "ofType": null
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "liquidityPools",
+      "type": {
+        "kind": "NON_NULL",
+        "name": null,
+        "ofType": {
+          "kind": "LIST",
+          "name": null
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "ID"
+            }
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "liquidityPoolDailySnapshot",
+      "type": {
+        "kind": "OBJECT",
+        "name": "LiquidityPoolDailySnapshot",
+        "ofType": null
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "skip",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "first",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderBy",
+          "type": {
+            "kind": "ENUM",
+            "name": "LiquidityPoolDailySnapshot_orderBy",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderDirection",
+          "type": {
+            "kind": "ENUM",
+            "name": "OrderDirection",
+            "ofType": null
+          }
+        },
+        {
+          "name": "where",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "LiquidityPoolDailySnapshot_filter",
+            "ofType": null
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "liquidityPoolDailySnapshots",
+      "type": {
+        "kind": "NON_NULL",
+        "name": null,
+        "ofType": {
+          "kind": "LIST",
+          "name": null
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "ID"
+            }
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "liquidityPoolHourlySnapshot",
+      "type": {
+        "kind": "OBJECT",
+        "name": "LiquidityPoolHourlySnapshot",
+        "ofType": null
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "skip",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "first",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderBy",
+          "type": {
+            "kind": "ENUM",
+            "name": "LiquidityPoolHourlySnapshot_orderBy",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderDirection",
+          "type": {
+            "kind": "ENUM",
+            "name": "OrderDirection",
+            "ofType": null
+          }
+        },
+        {
+          "name": "where",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "LiquidityPoolHourlySnapshot_filter",
+            "ofType": null
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "liquidityPoolHourlySnapshots",
+      "type": {
+        "kind": "NON_NULL",
+        "name": null,
+        "ofType": {
+          "kind": "LIST",
+          "name": null
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "ID"
+            }
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "tick",
+      "type": {
+        "kind": "OBJECT",
+        "name": "Tick",
+        "ofType": null
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "skip",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "first",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderBy",
+          "type": {
+            "kind": "ENUM",
+            "name": "Tick_orderBy",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderDirection",
+          "type": {
+            "kind": "ENUM",
+            "name": "OrderDirection",
+            "ofType": null
+          }
+        },
+        {
+          "name": "where",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Tick_filter",
+            "ofType": null
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "ticks",
+      "type": {
+        "kind": "NON_NULL",
+        "name": null,
+        "ofType": {
+          "kind": "LIST",
+          "name": null
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "ID"
+            }
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "tickDailySnapshot",
+      "type": {
+        "kind": "OBJECT",
+        "name": "TickDailySnapshot",
+        "ofType": null
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "skip",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "first",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderBy",
+          "type": {
+            "kind": "ENUM",
+            "name": "TickDailySnapshot_orderBy",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderDirection",
+          "type": {
+            "kind": "ENUM",
+            "name": "OrderDirection",
+            "ofType": null
+          }
+        },
+        {
+          "name": "where",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "TickDailySnapshot_filter",
+            "ofType": null
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "tickDailySnapshots",
+      "type": {
+        "kind": "NON_NULL",
+        "name": null,
+        "ofType": {
+          "kind": "LIST",
+          "name": null
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "ID"
+            }
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "tickHourlySnapshot",
+      "type": {
+        "kind": "OBJECT",
+        "name": "TickHourlySnapshot",
+        "ofType": null
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "skip",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "first",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderBy",
+          "type": {
+            "kind": "ENUM",
+            "name": "TickHourlySnapshot_orderBy",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderDirection",
+          "type": {
+            "kind": "ENUM",
+            "name": "OrderDirection",
+            "ofType": null
+          }
+        },
+        {
+          "name": "where",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "TickHourlySnapshot_filter",
+            "ofType": null
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "tickHourlySnapshots",
+      "type": {
+        "kind": "NON_NULL",
+        "name": null,
+        "ofType": {
+          "kind": "LIST",
+          "name": null
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "ID"
+            }
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "account",
+      "type": {
+        "kind": "OBJECT",
+        "name": "Account",
+        "ofType": null
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "skip",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "first",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderBy",
+          "type": {
+            "kind": "ENUM",
+            "name": "Account_orderBy",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderDirection",
+          "type": {
+            "kind": "ENUM",
+            "name": "OrderDirection",
+            "ofType": null
+          }
+        },
+        {
+          "name": "where",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Account_filter",
+            "ofType": null
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "accounts",
+      "type": {
+        "kind": "NON_NULL",
+        "name": null,
+        "ofType": {
+          "kind": "LIST",
+          "name": null
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "ID"
+            }
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "position",
+      "type": {
+        "kind": "OBJECT",
+        "name": "Position",
+        "ofType": null
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "skip",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "first",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderBy",
+          "type": {
+            "kind": "ENUM",
+            "name": "Position_orderBy",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderDirection",
+          "type": {
+            "kind": "ENUM",
+            "name": "OrderDirection",
+            "ofType": null
+          }
+        },
+        {
+          "name": "where",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Position_filter",
+            "ofType": null
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "positions",
+      "type": {
+        "kind": "NON_NULL",
+        "name": null,
+        "ofType": {
+          "kind": "LIST",
+          "name": null
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "ID"
+            }
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "positionSnapshot",
+      "type": {
+        "kind": "OBJECT",
+        "name": "PositionSnapshot",
+        "ofType": null
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "skip",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "first",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderBy",
+          "type": {
+            "kind": "ENUM",
+            "name": "PositionSnapshot_orderBy",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderDirection",
+          "type": {
+            "kind": "ENUM",
+            "name": "OrderDirection",
+            "ofType": null
+          }
+        },
+        {
+          "name": "where",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "PositionSnapshot_filter",
+            "ofType": null
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "positionSnapshots",
+      "type": {
+        "kind": "NON_NULL",
+        "name": null,
+        "ofType": {
+          "kind": "LIST",
+          "name": null
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "ID"
+            }
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "deposit",
+      "type": {
+        "kind": "OBJECT",
+        "name": "Deposit",
+        "ofType": null
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "skip",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "first",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderBy",
+          "type": {
+            "kind": "ENUM",
+            "name": "Deposit_orderBy",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderDirection",
+          "type": {
+            "kind": "ENUM",
+            "name": "OrderDirection",
+            "ofType": null
+          }
+        },
+        {
+          "name": "where",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Deposit_filter",
+            "ofType": null
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "deposits",
+      "type": {
+        "kind": "NON_NULL",
+        "name": null,
+        "ofType": {
+          "kind": "LIST",
+          "name": null
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "ID"
+            }
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "withdraw",
+      "type": {
+        "kind": "OBJECT",
+        "name": "Withdraw",
+        "ofType": null
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "skip",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "first",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderBy",
+          "type": {
+            "kind": "ENUM",
+            "name": "Withdraw_orderBy",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderDirection",
+          "type": {
+            "kind": "ENUM",
+            "name": "OrderDirection",
+            "ofType": null
+          }
+        },
+        {
+          "name": "where",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Withdraw_filter",
+            "ofType": null
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "withdraws",
+      "type": {
+        "kind": "NON_NULL",
+        "name": null,
+        "ofType": {
+          "kind": "LIST",
+          "name": null
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "ID"
+            }
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "swap",
+      "type": {
+        "kind": "OBJECT",
+        "name": "Swap",
+        "ofType": null
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "skip",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "first",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderBy",
+          "type": {
+            "kind": "ENUM",
+            "name": "Swap_orderBy",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderDirection",
+          "type": {
+            "kind": "ENUM",
+            "name": "OrderDirection",
+            "ofType": null
+          }
+        },
+        {
+          "name": "where",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Swap_filter",
+            "ofType": null
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "swaps",
+      "type": {
+        "kind": "NON_NULL",
+        "name": null,
+        "ofType": {
+          "kind": "LIST",
+          "name": null
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "ID"
+            }
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "activeAccount",
+      "type": {
+        "kind": "OBJECT",
+        "name": "ActiveAccount",
+        "ofType": null
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "skip",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "first",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderBy",
+          "type": {
+            "kind": "ENUM",
+            "name": "ActiveAccount_orderBy",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderDirection",
+          "type": {
+            "kind": "ENUM",
+            "name": "OrderDirection",
+            "ofType": null
+          }
+        },
+        {
+          "name": "where",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "ActiveAccount_filter",
+            "ofType": null
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "activeAccounts",
+      "type": {
+        "kind": "NON_NULL",
+        "name": null,
+        "ofType": {
+          "kind": "LIST",
+          "name": null
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "ID"
+            }
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "liquidityPoolAmount",
+      "type": {
+        "kind": "OBJECT",
+        "name": "_LiquidityPoolAmount",
+        "ofType": null
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "skip",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "first",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderBy",
+          "type": {
+            "kind": "ENUM",
+            "name": "_LiquidityPoolAmount_orderBy",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderDirection",
+          "type": {
+            "kind": "ENUM",
+            "name": "OrderDirection",
+            "ofType": null
+          }
+        },
+        {
+          "name": "where",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "_LiquidityPoolAmount_filter",
+            "ofType": null
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "liquidityPoolAmounts",
+      "type": {
+        "kind": "NON_NULL",
+        "name": null,
+        "ofType": {
+          "kind": "LIST",
+          "name": null
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "ID"
+            }
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "helperStore",
+      "type": {
+        "kind": "OBJECT",
+        "name": "_HelperStore",
+        "ofType": null
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "skip",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "first",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderBy",
+          "type": {
+            "kind": "ENUM",
+            "name": "_HelperStore_orderBy",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderDirection",
+          "type": {
+            "kind": "ENUM",
+            "name": "OrderDirection",
+            "ofType": null
+          }
+        },
+        {
+          "name": "where",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "_HelperStore_filter",
+            "ofType": null
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "helperStores",
+      "type": {
+        "kind": "NON_NULL",
+        "name": null,
+        "ofType": {
+          "kind": "LIST",
+          "name": null
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "ID"
+            }
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "tokenWhitelist",
+      "type": {
+        "kind": "OBJECT",
+        "name": "_TokenWhitelist",
+        "ofType": null
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "skip",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "first",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderBy",
+          "type": {
+            "kind": "ENUM",
+            "name": "_TokenWhitelist_orderBy",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderDirection",
+          "type": {
+            "kind": "ENUM",
+            "name": "OrderDirection",
+            "ofType": null
+          }
+        },
+        {
+          "name": "where",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "_TokenWhitelist_filter",
+            "ofType": null
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "tokenWhitelists",
+      "type": {
+        "kind": "NON_NULL",
+        "name": null,
+        "ofType": {
+          "kind": "LIST",
+          "name": null
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "ID"
+            }
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "tokenWhitelistSymbol",
+      "type": {
+        "kind": "OBJECT",
+        "name": "_TokenWhitelistSymbol",
+        "ofType": null
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "skip",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "first",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderBy",
+          "type": {
+            "kind": "ENUM",
+            "name": "_TokenWhitelistSymbol_orderBy",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderDirection",
+          "type": {
+            "kind": "ENUM",
+            "name": "OrderDirection",
+            "ofType": null
+          }
+        },
+        {
+          "name": "where",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "_TokenWhitelistSymbol_filter",
+            "ofType": null
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "tokenWhitelistSymbols",
+      "type": {
+        "kind": "NON_NULL",
+        "name": null,
+        "ofType": {
+          "kind": "LIST",
+          "name": null
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "SCALAR",
+              "name": "ID"
+            }
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "protocol",
+      "type": {
+        "kind": "INTERFACE",
+        "name": "Protocol",
+        "ofType": null
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "skip",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "first",
+          "type": {
+            "kind": "SCALAR",
+            "name": "Int",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderBy",
+          "type": {
+            "kind": "ENUM",
+            "name": "Protocol_orderBy",
+            "ofType": null
+          }
+        },
+        {
+          "name": "orderDirection",
+          "type": {
+            "kind": "ENUM",
+            "name": "OrderDirection",
+            "ofType": null
+          }
+        },
+        {
+          "name": "where",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Protocol_filter",
+            "ofType": null
+          }
+        },
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        },
+        {
+          "name": "subgraphError",
+          "type": {
+            "kind": "NON_NULL",
+            "name": null,
+            "ofType": {
+              "kind": "ENUM",
+              "name": "_SubgraphErrorPolicy_"
+            }
+          }
+        }
+      ],
+      "name": "protocols",
+      "type": {
+        "kind": "NON_NULL",
+        "name": null,
+        "ofType": {
+          "kind": "LIST",
+          "name": null
+        }
+      }
+    },
+    {
+      "args": [
+        {
+          "name": "block",
+          "type": {
+            "kind": "INPUT_OBJECT",
+            "name": "Block_height",
+            "ofType": null
+          }
+        }
+      ],
+      "name": "_meta",
+      "type": {
+        "kind": "OBJECT",
+        "name": "_Meta_",
+        "ofType": null
+      }
+    }
+  ],
   "fields": [
     "id",
     "positionCount",
