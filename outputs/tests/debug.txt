@@ -1,0 +1,61 @@
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tools/universal-field-mapper.js
+Fetching schema for uniswap
+Schema saved for uniswap at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/uniswap-schema.json
+Fetching schema for sushiswap
+Schema saved for sushiswap at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/sushiswap-schema.json
+Fetching schema for curveEthereum
+Schema saved for curveEthereum at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/curveEthereum-schema.json
+Fetching schema for curveAvalanche
+Schema saved for curveAvalanche at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/curveAvalanche-schema.json
+Fetching schema for quickswap
+Schema saved for quickswap at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/quickswap-schema.json
+Fetching schema for balancerPolygon
+Schema saved for balancerPolygon at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/balancerPolygon-schema.json
+Fetching schema for balancerOptimism
+Schema saved for balancerOptimism at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/balancerOptimism-schema.json
+Fetching schema for balancerArbitrum
+Schema saved for balancerArbitrum at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/balancerArbitrum-schema.json
+Fetching schema for balancerAvalanche
+Schema saved for balancerAvalanche at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/balancerAvalanche-schema.json
+Fetching schema for balancerEthereum
+Schema saved for balancerEthereum at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/balancerEthereum-schema.json
+Processing API: uniswap
+Schema saved for uniswap at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/uniswap-schema.json
+Processed pools for uniswap: []
+Processing API: sushiswap
+Schema saved for sushiswap at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/sushiswap-schema.json
+No pool fields found in schema for sushiswap, skipping.
+No pool fields found in schema for sushiswap, skipping.
+No pool fields found in schema for sushiswap, skipping.
+Processed pools for sushiswap: []
+Processing API: curveEthereum
+Schema saved for curveEthereum at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/curveEthereum-schema.json
+No pool fields found in schema for curveEthereum, skipping.
+No pool fields found in schema for curveEthereum, skipping.
+No pool fields found in schema for curveEthereum, skipping.
+Processed pools for curveEthereum: []
+Processing API: curveAvalanche
+Schema saved for curveAvalanche at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/curveAvalanche-schema.json
+No pool fields found in schema for curveAvalanche, skipping.
+No pool fields found in schema for curveAvalanche, skipping.
+No pool fields found in schema for curveAvalanche, skipping.
+Processed pools for curveAvalanche: []
+Processing API: quickswap
+Schema saved for quickswap at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/quickswap-schema.json
+Processed pools for quickswap: []
+Processing API: balancerPolygon
+Schema saved for balancerPolygon at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/balancerPolygon-schema.json
+Processed pools for balancerPolygon: []
+Processing API: balancerOptimism
+Schema saved for balancerOptimism at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/balancerOptimism-schema.json
+Processed pools for balancerOptimism: []
+Processing API: balancerArbitrum
+Schema saved for balancerArbitrum at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/balancerArbitrum-schema.json
+Processed pools for balancerArbitrum: []
+Processing API: balancerAvalanche
+Schema saved for balancerAvalanche at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/balancerAvalanche-schema.json
+Processed pools for balancerAvalanche: []
+Processing API: balancerEthereum
+Schema saved for balancerEthereum at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/balancerEthereum-schema.json
+Processed pools for balancerEthereum: []
+Consolidated output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/consolidated-fields.json
