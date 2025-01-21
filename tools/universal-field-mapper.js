@@ -5,6 +5,7 @@ require("dotenv").config();
 
 const outputDir = path.join(__dirname, "../outputs");
 const consolidatedFile = path.join(outputDir, "consolidated-fields.json");
+const rawDataFile = path.join(outputDir, "raw-data.json");
 const crossReferenceReport = path.join(outputDir, "cross-reference-report.json");
 const requiredFields = ["price", "volume", "liquidity", "fees", "volatility", "RSI", "movingAverage", "correlation", "zScore", "spread"];
 const TRANSACTION_THRESHOLD = 300;
@@ -97,18 +98,19 @@ async function fetchPoolData(apiUrl, poolId) {
   }
 }
 
-// Filter pools based on transaction count and liquidity thresholds
+// Filter pools based on transaction count OR liquidity thresholds
 function filterPools(poolData) {
   return poolData.filter((pool) => {
     const txCount = parseInt(pool.txCount, 10) || 0;
     const liquidity = parseFloat(pool.liquidity) || 0;
-    return txCount >= TRANSACTION_THRESHOLD && liquidity >= LIQUIDITY_THRESHOLD;
+    return txCount >= TRANSACTION_THRESHOLD || liquidity >= LIQUIDITY_THRESHOLD;
   });
 }
 
 // Fetch and process data for each API
 async function runMapper() {
   const consolidatedData = [];
+  const rawData = [];
 
   for (const [apiName, apiUrl] of Object.entries(apis)) {
     console.log(`Processing API: ${apiName}`);
@@ -126,9 +128,10 @@ async function runMapper() {
     for (const poolId of poolIds) {
       const poolData = await fetchPoolData(apiUrl, poolId);
       if (poolData && poolData.pool) {
+        rawData.push(poolData.pool); // Save raw data for all pools
         const txCount = parseInt(poolData.pool.txCount, 10) || 0;
         const liquidity = parseFloat(poolData.pool.liquidity) || 0;
-        if (txCount >= TRANSACTION_THRESHOLD && liquidity >= LIQUIDITY_THRESHOLD) {
+        if (txCount >= TRANSACTION_THRESHOLD || liquidity >= LIQUIDITY_THRESHOLD) {
           validPools.push(poolData.pool);
         }
       }
@@ -142,6 +145,10 @@ async function runMapper() {
 
     console.log(`Filtered pools for ${apiName}:`, validPools);
   }
+
+  // Save raw data output
+  fs.writeFileSync(rawDataFile, JSON.stringify(rawData, null, 2));
+  console.log(`Raw data saved to ${rawDataFile}`);
 
   // Save consolidated output
   fs.writeFileSync(consolidatedFile, JSON.stringify(consolidatedData, null, 2));
