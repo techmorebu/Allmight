@@ -90,22 +90,6 @@ async function fetchPoolData(apiUrl, poolId) {
       totalValueLockedToken1
       timestamp
     }
-    poolDayData(pool: "${poolId}") {
-      date
-      volumeUSD
-      feesUSD
-      txCount
-      high
-      low
-      close
-      open
-    }
-    poolHourData(pool: "${poolId}") {
-      periodStartUnix
-      volumeUSD
-      feesUSD
-      txCount
-    }
   }`;
 
   try {
@@ -120,7 +104,7 @@ async function fetchPoolData(apiUrl, poolId) {
     }
 
     const data = await response.json();
-    return data.data;
+    return data.data.pool;
   } catch (error) {
     console.error(`Error fetching pool data for ${poolId}:`, error.message);
     return null;
@@ -132,7 +116,9 @@ function filterPools(poolData) {
   return poolData.filter((pool) => {
     const txCount = parseInt(pool.txCount, 10) || 0;
     const liquidity = parseFloat(pool.liquidity) || 0;
-    return txCount >= TRANSACTION_THRESHOLD || liquidity >= LIQUIDITY_THRESHOLD;
+    const include = txCount >= TRANSACTION_THRESHOLD || liquidity >= LIQUIDITY_THRESHOLD;
+    console.log(`Pool ID: ${pool.id}, TxCount: ${txCount}, Liquidity: ${liquidity}, Included: ${include}`);
+    return include;
   });
 }
 
@@ -159,9 +145,10 @@ async function runMapper() {
       const txCount = parseInt(pool.txCount, 10) || 0;
       const liquidity = parseFloat(pool.liquidity) || 0;
       if (txCount >= TRANSACTION_THRESHOLD || liquidity >= LIQUIDITY_THRESHOLD) {
+        console.log(`Fetching detailed data for pool ID: ${pool.id}`);
         const detailedPoolData = await fetchPoolData(apiUrl, pool.id);
-        if (detailedPoolData && detailedPoolData.pool) {
-          validPools.push(detailedPoolData.pool);
+        if (detailedPoolData) {
+          validPools.push(detailedPoolData);
         }
       }
     }
