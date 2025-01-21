@@ -1,287 +1,209 @@
 // Hybrid Arbitrage System
 // Fully integrates Universal Mapper, Cross-Reference Script, and Opportunity Detection
 
-const fs = require("fs");
-const path = require("path");
-const readline = require("readline");
-const ethers = require("ethers");
-const ethers67 = require("ethers67");
-const { FlashbotsBundleProvider } = require("@flashbots/ethers-provider-bundle");
-require("dotenv").config();
-
-const outputDir = path.resolve(__dirname, "../outputs");
-const testOutputDir = path.join(outputDir, "tests");
-if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
-if (!fs.existsSync(testOutputDir)) fs.mkdirSync(testOutputDir, { recursive: true });
+const ethers = require('ethers'); // Explicitly import ethers6 for Hybrid Arbitrage
+const ethers67 = require('ethers67'); // Explicitly import ethers67 for Flashbots
+const { FlashbotsBundleProvider } = require('@flashbots/ethers-provider-bundle');
+const mapper = require("../tools/universal-field-mapper.js"); // Universal Mapper module
+const crossReference = require("../tools/cross-referencing.js"); // Cross-Referencing integration
+require('dotenv').config();
 
 const config = {
-  dexApis: JSON.parse(process.env.DEX_APIS || "[]"),
-  minProfitThreshold: parseFloat(process.env.MIN_PROFIT_THRESHOLD || "0.05"),
+    dexApis: JSON.parse(process.env.DEX_APIS || '[]'),
+    minProfitThreshold: parseFloat(process.env.MIN_PROFIT_THRESHOLD || '0.05'),
 };
 
+// Verify Ethers Versions
 console.log(`Using ethers version for Hybrid Arbitrage: ${ethers.version}`);
 console.log(`Using ethers version for Flashbots: ${ethers67.version}`);
 
-// Utility Functions
-function clearFolderExcept(folderPath, ignoreFiles) {
-  if (fs.existsSync(folderPath)) {
-    const files = fs.readdirSync(folderPath);
-    files.forEach((file) => {
-      if (!ignoreFiles.includes(file)) {
-        fs.unlinkSync(path.join(folderPath, file));
-        console.log(`Deleted file: ${file}`);
-      }
+// Run Universal Mapper
+async function runMapper() {
+    console.log("Initializing Universal Mapper...");
+    const outputDir = "../outputs";
+    try {
+        const result = await mapper.runMapper(outputDir); // Ensure runMapper supports async
+        console.log(`Mapping completed. Output saved to: ${outputDir}`);
+    } catch (error) {
+        console.error("Error running Universal Mapper:", error.message);
+    }
+}
+
+// Run Cross-Referencing
+async function runCrossReference() {
+    console.log("Initializing Cross-Referencing...");
+    const inputDir = "../outputs"; // Example input directory
+    try {
+        const result = await crossReference.runCrossReference(inputDir); // Ensure runCrossReference supports async
+        console.log("Cross-Referencing Results:", result);
+    } catch (error) {
+        console.error("Error running Cross-Referencing:", error.message);
+    }
+}
+
+// Main Workflow
+async function main() {
+    const provider = new ethers.JsonRpcProvider(process.env.ETH_RPC_URL); // Using ethers6 for provider
+    const wallet = new ethers.Wallet(process.env.METAMASK_PRIVATE_KEY, provider); // Using ethers6 for wallet
+
+    console.log("Select an option:");
+    console.log("1. Run Universal Mapper");
+    console.log("2. Run Cross-Referencing");
+    console.log("3. Perform Arbitrage Execution");
+
+    const readline = require('readline').createInterface({
+        input: process.stdin,
+        output: process.stdout,
     });
-    console.log(`Cleared folder except ignored files: ${folderPath}`);
-  } else {
-    console.log(`Folder does not exist: ${folderPath}`);
-  }
-}
 
-function createConsolidatedReport() {
-  console.log("Generating consolidated report...");
-  const consolidatedFilePath = path.join(outputDir, "consolidated-results.json");
-  const dataFiles = fs.readdirSync(outputDir).filter((file) => file.endsWith("-fields.json"));
+    readline.question("Enter your choice: ", async (choice) => {
+        switch (choice) {
+            case '1':
+                console.log("Running Universal Mapper...");
+                await runMapper();
+                console.log("Universal Mapper completed.");
+                break;
 
-  const consolidatedReport = {};
+            case '2':
+                console.log("Running Cross-Referencing...");
+                await runCrossReference();
+                console.log("Cross-Referencing completed.");
+                break;
 
-  dataFiles.forEach((file) => {
-    const filePath = path.join(outputDir, file);
-    const apiName = path.basename(file, "-fields.json");
-    const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-    consolidatedReport[apiName] = data;
-  });
+            case '3':
+                console.log("Starting Arbitrage Execution...");
+                await executeArbitrage(provider, wallet);
+                console.log("Arbitrage Execution completed.");
+                break;
 
-  fs.writeFileSync(consolidatedFilePath, JSON.stringify(consolidatedReport, null, 2));
-  console.log(`Consolidated report saved to ${consolidatedFilePath}`);
-}
-
-// Universal Mapper Functionality
-async function runMapper(outputFolder) {
-  console.log(`Running mapper for all APIs. Output folder: ${outputFolder}`);
-
-  const apis = {
-    uniswap: process.env.UNISWAP_DEX_API,
-    sushiswap: process.env.SUSHISWAP_DEX_API,
-    curveEthereum: process.env.CURVE_ETHEREUM_DEX_API,
-    curveAvalanche: process.env.CURVE_AVALANCHE_DEX_API,
-    quickswap: process.env.QUICKSWAP_DEX_API,
-    balancerPolygon: process.env.BALANCER_POLYGON_DEX_API,
-    balancerOptimism: process.env.BALANCER_OPTIMISM_DEX_API,
-    balancerArbitrum: process.env.BALANCER_ARBITRUM_DEX_API,
-    balancerAvalanche: process.env.BALANCER_AVALANCHE_DEX_API,
-    balancerEthereum: process.env.BALANCER_ETHEREUM_DEX_API,
-  };
-
-  async function fetchApiSchema(apiName, apiUrl) {
-    console.log(`Fetching schema for ${apiName} (${apiUrl})...`);
-    try {
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          query: `{
-            __schema {
-              types {
-                name
-                kind
-                fields {
-                  name
-                  type {
-                    name
-                    kind
-                    ofType {
-                      name
-                      kind
-                      ofType {
-                        name
-                        kind
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }`,
-        }),
-      });
-      if (!response.ok) throw new Error(`Failed to fetch schema: ${response.statusText}`);
-      const data = await response.json();
-      if (!data.data || !data.data.__schema) throw new Error("Not a valid GraphQL endpoint.");
-      return { schema: data.data.__schema.types };
-    } catch (error) {
-      console.error(`Error fetching schema for ${apiName}:`, error.message);
-      return { schema: null, error: error.message };
-    }
-  }
-
-  async function fetchApiIntrospection(apiName, apiUrl) {
-    console.log(`Fetching introspection for ${apiName} (${apiUrl})...`);
-    try {
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          query: `{
-            __type(name: "Query") {
-              fields {
-                name
-                args {
-                  name
-                  type {
-                    name
-                    kind
-                    ofType {
-                      name
-                      kind
-                    }
-                  }
-                }
-                type {
-                  name
-                  kind
-                  ofType {
-                    name
-                    kind
-                  }
-                }
-              }
-            }
-          }`,
-        }),
-      });
-      if (!response.ok) throw new Error(`Failed to fetch introspection: ${response.statusText}`);
-      const data = await response.json();
-      if (!data.data || !data.data.__type) throw new Error("Not a valid GraphQL endpoint.");
-      return data.data.__type.fields;
-    } catch (error) {
-      console.error(`Error fetching introspection for ${apiName}:`, error.message);
-      return null;
-    }
-  }
-
-  async function extractNestedFields(schema) {
-    const fields = [];
-
-    function recurse(type) {
-      if (!type || !type.fields) return;
-      type.fields.forEach((field) => {
-        fields.push(field.name);
-        if (field.type?.ofType) {
-          recurse(field.type.ofType);
+            default:
+                console.log("Invalid choice. Exiting.");
         }
-      });
-    }
-
-    schema.forEach((type) => {
-      recurse(type);
+        readline.close();
     });
-
-    return fields;
-  }
-
-  async function updateFolderContents(folderPath, apiName, data) {
-    const filePath = path.join(folderPath, `${apiName}-fields.json`);
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-    console.log(`Saved data for ${apiName} to ${filePath}`);
-  }
-
-  for (const [apiName, apiUrl] of Object.entries(apis)) {
-    const schemaData = await fetchApiSchema(apiName, apiUrl);
-    const introspectionData = await fetchApiIntrospection(apiName, apiUrl);
-
-    const fields = schemaData.schema ? await extractNestedFields(schemaData.schema) : [];
-    const data = { schema: schemaData.schema, introspection: introspectionData, fields, error: schemaData.error };
-
-    await updateFolderContents(outputFolder, apiName, data);
-  }
-
-  createConsolidatedReport();
-  console.log(`Mapper run completed. Results saved in ${outputFolder}`);
 }
 
-// Options Menu
-function optionsMenu(rl) {
-  console.log("Options:\n1. Add API\n2. Remove API\n3. Clear All (Excluding Specific Files)");
-
-  rl.question("Select an option: ", (option) => {
-    switch (option.trim()) {
-      case "1":
-        rl.question("Enter API tag: ", (tag) => {
-          rl.question("Enter API URL: ", (url) => {
-            const envPath = path.resolve(__dirname, "../.env");
-            const newEntry = `${tag}=${url}\\n`;
-            fs.appendFileSync(envPath, newEntry);
-            console.log(`Added API to .env: ${tag}`);
-            rl.close();
-            mainMenu();
-          });
-        });
-        break;
-      case "2":
-        rl.question("Enter API tag to remove: ", (tag) => {
-          const envPath = path.resolve(__dirname, "../.env");
-          const envContent = fs.readFileSync(envPath, "utf8").split("\\n");
-          const updatedContent = envContent.filter((line) => !line.startsWith(tag));
-          fs.writeFileSync(envPath, updatedContent.join("\\n"));
-          console.log(`Removed API from .env: ${tag}`);
-          rl.close();
-          mainMenu();
-        });
-        break;
-      case "3":
-        clearFolderExcept(outputDir, ["fulltests", "debug"]);
-        console.log("Cleared outputs folder except for 'fulltests' and 'debug'.");
-        rl.close();
-        mainMenu();
-        break;
-      default:
-        console.log("Invalid option.");
-        rl.close();
-        mainMenu();
+// Arbitrage Execution Logic
+async function executeArbitrage(provider, wallet) {
+    // Fetch data
+    const rawData = await fetchDexData();
+    if (rawData.length === 0) {
+        console.log("No data fetched. Exiting...");
+        return;
     }
-  });
-}
 
-// Main Interactive Menu
-function mainMenu() {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
+    // Data Standardization (Universal Mapper)
+    const standardizedData = await mapper.mapData(rawData);
+    console.log("Data standardized successfully.");
 
-  console.log("\nSelect an option:");
-  console.log("1. Run Universal Mapper");
-  console.log("2. Run Cross-Referencing");
-  console.log("3. Perform Arbitrage Execution");
-  console.log("4. Options");
-
-  rl.question("Enter your choice: ", async (choice) => {
-    switch (choice.trim()) {
-      case "1":
-        await runMapper(outputDir);
-        rl.close();
-        mainMenu();
-        break;
-      case "2":
-        console.log("Running Cross-Referencing...");
-        rl.close();
-        mainMenu();
-        break;
-      case "3":
-        console.log("Performing Arbitrage Execution...");
-        rl.close();
-        mainMenu();
-        break;
-      case "4":
-        optionsMenu(rl);
-        break;
-      default:
-        console.log("Invalid choice.");
-        rl.close();
-        mainMenu();
+    // Cross-Reference Validation
+    try {
+        const crossRefResult = await crossReference.validateFields(standardizedData);
+        console.log("Cross-referencing validation completed successfully.", crossRefResult);
+    } catch (error) {
+        console.error("Critical validation error:", error.message);
+        return;
     }
-  });
+
+    // Opportunity Detection
+    const opportunities = detectOpportunities(standardizedData);
+    if (opportunities.length === 0) {
+        console.log("No profitable opportunities found.");
+        return;
+    }
+    console.log("Detected opportunities:", opportunities);
+
+    // Execution Logic
+    for (const opportunity of opportunities) {
+        if (opportunity.isFlashbotsReady) {
+            const success = await executeViaFlashbots(provider, wallet, opportunity);
+            if (!success) {
+                console.log("Flashbots execution failed. Retrying in public mempool...");
+                await executeInMempool(provider, wallet, opportunity);
+            }
+        } else {
+            await executeInMempool(provider, wallet, opportunity);
+        }
+    }
 }
 
-mainMenu();
+// Data Fetching
+async function fetchDexData() {
+    const fetchPromises = config.dexApis.map(api =>
+        fetch(api.url)
+            .then(res => res.json())
+            .catch(err => {
+                console.error(`Error fetching data from ${api.name}:`, err.message);
+                return null;
+            })
+    );
+    const results = await Promise.all(fetchPromises);
+    return results.filter(res => res !== null);
+}
+
+// Opportunity Detection
+function detectOpportunities(data) {
+    const opportunities = [];
+
+    // Spatial Arbitrage
+    opportunities.push(...detectSpatialArbitrage(data));
+
+    // Triangular Arbitrage
+    opportunities.push(...detectTriangularArbitrage(data));
+
+    // Cross-Chain Arbitrage
+    opportunities.push(...detectCrossChainArbitrage(data));
+
+    // Liquidity Arbitrage
+    opportunities.push(...detectLiquidityArbitrage(data));
+
+    return opportunities.filter(op => op.netProfit > config.minProfitThreshold);
+}
+
+// Execution via Flashbots
+async function executeViaFlashbots(provider, wallet, opportunity) {
+    const flashbotsProvider = await FlashbotsBundleProvider.create(provider, wallet); // Using ethers67 implicitly
+    const transactions = createTransactions(opportunity);
+    const signedBundle = await flashbotsProvider.signBundle(
+        transactions.map(tx => ({ signer: wallet, transaction: tx }))
+    );
+
+    const blockNumber = await provider.getBlockNumber();
+    const result = await flashbotsProvider.sendBundle(signedBundle, blockNumber + 1);
+    if ('error' in result) {
+        console.error("Flashbots execution failed:", result.error.message);
+        return false;
+    }
+
+    console.log("Flashbots execution succeeded.");
+    return true;
+}
+
+// Execution via Public Mempool
+async function executeInMempool(provider, wallet, opportunity) {
+    try {
+        const transactions = createTransactions(opportunity);
+        for (const tx of transactions) {
+            const signedTx = await wallet.signTransaction(tx);
+            const txReceipt = await provider.sendTransaction(signedTx);
+            await txReceipt.wait(1);
+            console.log("Transaction confirmed:", txReceipt.hash);
+        }
+        return true;
+    } catch (error) {
+        console.error("Public mempool execution failed:", error.message);
+        return false;
+    }
+}
+
+// Create Transactions
+function createTransactions(opportunity) {
+    // Generate transaction objects for Flash Loan, Trade, and Repayment
+    return [
+        { to: opportunity.flashLoanProvider, data: "0x...", value: 0 },
+        { to: opportunity.tradeDex, data: "0x...", value: 0 },
+        { to: opportunity.flashLoanProvider, data: "0x...", value: 0 },
+    ];
+}
+
+main();
