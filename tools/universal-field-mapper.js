@@ -4,111 +4,111 @@ const path = require("path");
 require("dotenv").config();
 
 const outputDir = path.join(__dirname, "../outputs");
-const schemaDir = path.join(outputDir, "schemas");
-const schemaAnalysisFile = path.join(schemaDir, "uniswap-schema-analysis.json");
+const uniswapDataFile = path.join(outputDir, "uniswap-data.json");
+const uniswapRawDataFile = path.join(outputDir, "uniswap-raw-data.json");
 
 // Ensure output directories exist
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir);
 }
-if (!fs.existsSync(schemaDir)) {
-  fs.mkdirSync(schemaDir);
-}
 
 // Define Uniswap API endpoint
 const uniswapApiUrl = process.env.UNISWAP_DEX_API;
 
-// GraphQL introspection query
-const introspectionQuery = `{
-  __schema {
-    types {
-      name
-      kind
-      fields {
-        name
-        description
-        type {
-          name
-          kind
-          ofType {
-            name
-            kind
-          }
-        }
+// Transaction and Volume Thresholds
+const TRANSACTION_THRESHOLD = 200;
+const VOLUME_THRESHOLD = 50000;
+
+// Function to fetch pool data dynamically
+async function fetchPools(apiUrl) {
+  const query = `{
+    pools(first: 100) {
+      id
+      token0 {
+        symbol
+        priceUSD
+      }
+      token1 {
+        symbol
+        priceUSD
+      }
+      liquidity
+      volumeUSD
+      txCount
+      collectedFeesToken0
+      collectedFeesToken1
+      poolDayData {
+        date
+        volumeUSD
+        feesUSD
+        txCount
+      }
+      poolHourData {
+        periodStartUnix
+        volumeUSD
+        feesUSD
+        txCount
       }
     }
-  }
-}`;
+  }`;
 
-// Function to fetch schema
-async function fetchSchema(apiUrl, apiName) {
   try {
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query: introspectionQuery }),
+      body: JSON.stringify({ query }),
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch schema for ${apiName}: ${response.statusText}`);
+      throw new Error(`Failed to fetch pools: ${response.statusText}`);
     }
 
     const data = await response.json();
-    const schemaFile = path.join(schemaDir, `${apiName}-schema.json`);
-    fs.writeFileSync(schemaFile, JSON.stringify(data, null, 2));
-    console.log(`Schema saved for ${apiName} at ${schemaFile}`);
-    return data.data.__schema.types;
+    return data.data.pools || [];
   } catch (error) {
-    console.error(`Error fetching schema for ${apiName}:`, error.message);
-    return null;
+    console.error("Error fetching pools:", error.message);
+    return [];
   }
 }
 
-// Function to analyze schema for relevant types and fields
-function analyzeSchema(types) {
-  const relevantTypes = [];
-
-  types.forEach((type) => {
-    if (type.kind === "OBJECT" && type.fields) {
-      const relevantFields = type.fields.filter((field) =>
-        ["pool", "swap", "liquidity", "volume", "token"].some((keyword) =>
-          field.name.toLowerCase().includes(keyword)
-        )
-      );
-
-      if (relevantFields.length > 0) {
-        relevantTypes.push({
-          name: type.name,
-          fields: relevantFields.map((field) => field.name),
-        });
-      }
-    }
+// Filter pools based on thresholds
+function filterPools(pools) {
+  return pools.filter((pool) => {
+    const txCount = parseInt(pool.txCount, 10) || 0;
+    const volumeUSD = parseFloat(pool.volumeUSD) || 0;
+    return txCount >= TRANSACTION_THRESHOLD && volumeUSD >= VOLUME_THRESHOLD;
   });
-
-  return relevantTypes;
 }
 
-// Main function to fetch and analyze schema
-async function fetchAndAnalyzeSchema() {
-  console.log("Fetching and analyzing schema for Uniswap...");
+// Fetch and process data for Uniswap
+async function fetchUniswapData() {
+  console.log("Fetching data for Uniswap...");
 
-  const types = await fetchSchema(uniswapApiUrl, "uniswap");
-  if (!types) {
-    console.error("Failed to fetch schema. Exiting...");
+  const pools = await fetchPools(uniswapApiUrl);
+  if (!pools.length) {
+    console.warn("No pools retrieved.");
     return;
   }
 
-  const analyzedSchema = analyzeSchema(types);
-  fs.writeFileSync(schemaAnalysisFile, JSON.stringify(analyzedSchema, null, 2));
-  console.log(`Analyzed schema saved to ${schemaAnalysisFile}`);
+  // Save raw data
+  fs.writeFileSync(uniswapRawDataFile, JSON.stringify(pools, null, 2));
+  console.log(`Raw data saved to ${uniswapRawDataFile}`);
+
+  // Filter pools
+  const filteredPools = filterPools(pools);
+  console.log(`Filtered ${filteredPools.length} pools based on thresholds.`);
+
+  // Save filtered data
+  fs.writeFileSync(uniswapDataFile, JSON.stringify(filteredPools, null, 2));
+  console.log(`Filtered data saved to ${uniswapDataFile}`);
 }
 
-// Run the schema fetch and analysis
+// Run the Uniswap fetcher
 (async () => {
   try {
-    await fetchAndAnalyzeSchema();
-    console.log("Schema fetch and analysis completed.");
+    await fetchUniswapData();
+    console.log("Uniswap data fetch completed.");
   } catch (error) {
-    console.error("Error during schema fetch and analysis:", error.message);
+    console.error("Error during Uniswap data fetch:", error.message);
   }
 })();
