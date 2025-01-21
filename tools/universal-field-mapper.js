@@ -4,185 +4,111 @@ const path = require("path");
 require("dotenv").config();
 
 const outputDir = path.join(__dirname, "../outputs");
-const consolidatedFile = path.join(outputDir, "consolidated-fields.json");
-const rawDataFile = path.join(outputDir, "raw-data.json");
-const crossReferenceReport = path.join(outputDir, "cross-reference-report.json");
-const requiredFields = ["price", "volume", "liquidity", "fees", "volatility", "RSI", "movingAverage", "correlation", "zScore", "spread"];
-const TRANSACTION_THRESHOLD = 200;
-const VOLUME_THRESHOLD = 50000;
+const schemaDir = path.join(outputDir, "schemas");
+const schemaAnalysisFile = path.join(schemaDir, "uniswap-schema-analysis.json");
 
-// Ensure output directory exists
+// Ensure output directories exist
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir);
 }
-
-// Map your API endpoints from .env
-const apis = {
-  uniswap: process.env.UNISWAP_DEX_API,
-  sushiswap: process.env.SUSHISWAP_DEX_API,
-  curveEthereum: process.env.CURVE_ETHEREUM_DEX_API,
-  curveAvalanche: process.env.CURVE_AVALANCHE_DEX_API,
-  quickswap: process.env.QUICKSWAP_DEX_API,
-  balancerPolygon: process.env.BALANCER_POLYGON_DEX_API,
-  balancerOptimism: process.env.BALANCER_OPTIMISM_DEX_API,
-  balancerArbitrum: process.env.BALANCER_ARBITRUM_DEX_API,
-  balancerAvalanche: process.env.BALANCER_AVALANCHE_DEX_API,
-  balancerEthereum: process.env.BALANCER_ETHEREUM_DEX_API,
-  pancake: process.env.PANCAKE_DEX_API
-};
-
-// Function to determine API type
-function determineApiType(apiUrl) {
-  if (apiUrl.includes("thegraph.com")) {
-    return "GraphQL";
-  } else {
-    return "Unknown";
-  }
+if (!fs.existsSync(schemaDir)) {
+  fs.mkdirSync(schemaDir);
 }
 
-// Fetch pool IDs dynamically
-async function fetchPoolIds(apiUrl) {
-  const query = `{
-    pools(first: 100) {
-      id
-      txCount
-      volumeUSD
-    }
-  }`;
+// Define Uniswap API endpoint
+const uniswapApiUrl = process.env.UNISWAP_DEX_API;
 
+// GraphQL introspection query
+const introspectionQuery = `{
+  __schema {
+    types {
+      name
+      kind
+      fields {
+        name
+        description
+        type {
+          name
+          kind
+          ofType {
+            name
+            kind
+          }
+        }
+      }
+    }
+  }
+}`;
+
+// Function to fetch schema
+async function fetchSchema(apiUrl, apiName) {
   try {
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query }),
+      body: JSON.stringify({ query: introspectionQuery }),
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch pool IDs: ${response.statusText}`);
+      throw new Error(`Failed to fetch schema for ${apiName}: ${response.statusText}`);
     }
 
     const data = await response.json();
-    return data.data.pools || [];
+    const schemaFile = path.join(schemaDir, `${apiName}-schema.json`);
+    fs.writeFileSync(schemaFile, JSON.stringify(data, null, 2));
+    console.log(`Schema saved for ${apiName} at ${schemaFile}`);
+    return data.data.__schema.types;
   } catch (error) {
-    console.error(`Error fetching pool IDs:`, error.message);
-    return [];
-  }
-}
-
-// Fetch pool data using dynamic queries
-async function fetchPoolData(apiUrl, poolId) {
-  const query = `{
-    pool(id: "${poolId}") {
-      id
-      token0 {
-        symbol
-        priceUSD
-      }
-      token1 {
-        symbol
-        priceUSD
-      }
-      volumeUSD
-      feesUSD
-      txCount
-      totalValueLockedUSD
-      totalValueLockedToken0
-      totalValueLockedToken1
-      timestamp
-    }
-    poolDayData(pool: "${poolId}") {
-      date
-      volumeUSD
-      feesUSD
-      txCount
-      high
-      low
-      close
-      open
-    }
-    poolHourData(pool: "${poolId}") {
-      periodStartUnix
-      volumeUSD
-      feesUSD
-      txCount
-    }
-  }`;
-
-  try {
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch pool data: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return data.data;
-  } catch (error) {
-    console.error(`Error fetching pool data for ${poolId}:`, error.message);
+    console.error(`Error fetching schema for ${apiName}:`, error.message);
     return null;
   }
 }
 
-// Filter pools based on transaction count AND volume thresholds
-function filterPools(poolData) {
-  return poolData.filter((pool) => {
-    const txCount = parseInt(pool.txCount, 10) || 0;
-    const volumeUSD = parseFloat(pool.volumeUSD) || 0;
-    return txCount >= TRANSACTION_THRESHOLD && volumeUSD >= VOLUME_THRESHOLD;
-  });
-}
+// Function to analyze schema for relevant types and fields
+function analyzeSchema(types) {
+  const relevantTypes = [];
 
-// Fetch and process data for each API
-async function runMapper() {
-  const consolidatedData = [];
-  const rawData = [];
+  types.forEach((type) => {
+    if (type.kind === "OBJECT" && type.fields) {
+      const relevantFields = type.fields.filter((field) =>
+        ["pool", "swap", "liquidity", "volume", "token"].some((keyword) =>
+          field.name.toLowerCase().includes(keyword)
+        )
+      );
 
-  for (const [apiName, apiUrl] of Object.entries(apis)) {
-    console.log(`Processing API: ${apiName}`);
-
-    const apiType = determineApiType(apiUrl);
-    if (apiType !== "GraphQL") {
-      console.log(`Skipping ${apiName}: Unsupported API type.`);
-      continue;
-    }
-
-    // Dynamically fetch pool IDs
-    const pools = await fetchPoolIds(apiUrl);
-    const validPools = [];
-
-    for (const pool of pools) {
-      rawData.push(pool); // Save raw data for all pools
-      const txCount = parseInt(pool.txCount, 10) || 0;
-      const volumeUSD = parseFloat(pool.volumeUSD) || 0;
-      if (txCount >= TRANSACTION_THRESHOLD && volumeUSD >= VOLUME_THRESHOLD) {
-        const detailedPoolData = await fetchPoolData(apiUrl, pool.id);
-        if (detailedPoolData && detailedPoolData.pool) {
-          validPools.push(detailedPoolData.pool);
-        }
+      if (relevantFields.length > 0) {
+        relevantTypes.push({
+          name: type.name,
+          fields: relevantFields.map((field) => field.name),
+        });
       }
     }
+  });
 
-    consolidatedData.push({
-      apiName,
-      timestamp: new Date().toISOString(),
-      pools: validPools,
-    });
-
-    console.log(`Filtered pools for ${apiName}:`, validPools);
-  }
-
-  // Save raw data output
-  fs.writeFileSync(rawDataFile, JSON.stringify(rawData, null, 2));
-  console.log(`Raw data saved to ${rawDataFile}`);
-
-  // Save consolidated output
-  fs.writeFileSync(consolidatedFile, JSON.stringify(consolidatedData, null, 2));
-  console.log(`Consolidated output saved to ${consolidatedFile}`);
+  return relevantTypes;
 }
 
-// Run the mapper
-runMapper();
+// Main function to fetch and analyze schema
+async function fetchAndAnalyzeSchema() {
+  console.log("Fetching and analyzing schema for Uniswap...");
+
+  const types = await fetchSchema(uniswapApiUrl, "uniswap");
+  if (!types) {
+    console.error("Failed to fetch schema. Exiting...");
+    return;
+  }
+
+  const analyzedSchema = analyzeSchema(types);
+  fs.writeFileSync(schemaAnalysisFile, JSON.stringify(analyzedSchema, null, 2));
+  console.log(`Analyzed schema saved to ${schemaAnalysisFile}`);
+}
+
+// Run the schema fetch and analysis
+(async () => {
+  try {
+    await fetchAndAnalyzeSchema();
+    console.log("Schema fetch and analysis completed.");
+  } catch (error) {
+    console.error("Error during schema fetch and analysis:", error.message);
+  }
+})();
