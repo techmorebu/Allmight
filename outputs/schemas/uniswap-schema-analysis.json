@@ -1,0 +1,244 @@
+[
+  {
+    "name": "Burn",
+    "fields": [
+      "pool",
+      "token0",
+      "token1"
+    ]
+  },
+  {
+    "name": "Collect",
+    "fields": [
+      "pool"
+    ]
+  },
+  {
+    "name": "Factory",
+    "fields": [
+      "poolCount",
+      "totalVolumeUSD",
+      "totalVolumeETH",
+      "untrackedVolumeUSD"
+    ]
+  },
+  {
+    "name": "Flash",
+    "fields": [
+      "pool"
+    ]
+  },
+  {
+    "name": "Mint",
+    "fields": [
+      "pool",
+      "token0",
+      "token1"
+    ]
+  },
+  {
+    "name": "Pool",
+    "fields": [
+      "token0",
+      "token1",
+      "liquidity",
+      "token0Price",
+      "token1Price",
+      "volumeToken0",
+      "volumeToken1",
+      "volumeUSD",
+      "untrackedVolumeUSD",
+      "collectedFeesToken0",
+      "collectedFeesToken1",
+      "totalValueLockedToken0",
+      "totalValueLockedToken1",
+      "liquidityProviderCount",
+      "poolHourData",
+      "poolDayData",
+      "swaps"
+    ]
+  },
+  {
+    "name": "PoolDayData",
+    "fields": [
+      "pool",
+      "liquidity",
+      "token0Price",
+      "token1Price",
+      "volumeToken0",
+      "volumeToken1",
+      "volumeUSD"
+    ]
+  },
+  {
+    "name": "PoolHourData",
+    "fields": [
+      "pool",
+      "liquidity",
+      "token0Price",
+      "token1Price",
+      "volumeToken0",
+      "volumeToken1",
+      "volumeUSD"
+    ]
+  },
+  {
+    "name": "Position",
+    "fields": [
+      "pool",
+      "token0",
+      "token1",
+      "liquidity",
+      "depositedToken0",
+      "depositedToken1",
+      "withdrawnToken0",
+      "withdrawnToken1",
+      "collectedFeesToken0",
+      "collectedFeesToken1"
+    ]
+  },
+  {
+    "name": "PositionSnapshot",
+    "fields": [
+      "pool",
+      "liquidity",
+      "depositedToken0",
+      "depositedToken1",
+      "withdrawnToken0",
+      "withdrawnToken1",
+      "collectedFeesToken0",
+      "collectedFeesToken1"
+    ]
+  },
+  {
+    "name": "Query",
+    "fields": [
+      "token",
+      "tokens",
+      "pool",
+      "pools",
+      "swap",
+      "swaps",
+      "uniswapDayData",
+      "uniswapDayDatas",
+      "poolDayData",
+      "poolDayDatas",
+      "poolHourData",
+      "poolHourDatas",
+      "tokenDayData",
+      "tokenDayDatas",
+      "tokenHourData",
+      "tokenHourDatas"
+    ]
+  },
+  {
+    "name": "Subscription",
+    "fields": [
+      "token",
+      "tokens",
+      "pool",
+      "pools",
+      "swap",
+      "swaps",
+      "uniswapDayData",
+      "uniswapDayDatas",
+      "poolDayData",
+      "poolDayDatas",
+      "poolHourData",
+      "poolHourDatas",
+      "tokenDayData",
+      "tokenDayDatas",
+      "tokenHourData",
+      "tokenHourDatas"
+    ]
+  },
+  {
+    "name": "Swap",
+    "fields": [
+      "pool",
+      "token0",
+      "token1"
+    ]
+  },
+  {
+    "name": "Tick",
+    "fields": [
+      "poolAddress",
+      "pool",
+      "liquidityGross",
+      "liquidityNet",
+      "volumeToken0",
+      "volumeToken1",
+      "volumeUSD",
+      "untrackedVolumeUSD",
+      "collectedFeesToken0",
+      "collectedFeesToken1",
+      "liquidityProviderCount"
+    ]
+  },
+  {
+    "name": "TickDayData",
+    "fields": [
+      "pool",
+      "liquidityGross",
+      "liquidityNet",
+      "volumeToken0",
+      "volumeToken1",
+      "volumeUSD"
+    ]
+  },
+  {
+    "name": "TickHourData",
+    "fields": [
+      "pool",
+      "liquidityGross",
+      "liquidityNet",
+      "volumeToken0",
+      "volumeToken1",
+      "volumeUSD"
+    ]
+  },
+  {
+    "name": "Token",
+    "fields": [
+      "volume",
+      "volumeUSD",
+      "untrackedVolumeUSD",
+      "poolCount",
+      "whitelistPools",
+      "tokenDayData"
+    ]
+  },
+  {
+    "name": "TokenDayData",
+    "fields": [
+      "token",
+      "volume",
+      "volumeUSD",
+      "untrackedVolumeUSD"
+    ]
+  },
+  {
+    "name": "TokenHourData",
+    "fields": [
+      "token",
+      "volume",
+      "volumeUSD",
+      "untrackedVolumeUSD"
+    ]
+  },
+  {
+    "name": "Transaction",
+    "fields": [
+      "swaps"
+    ]
+  },
+  {
+    "name": "UniswapDayData",
+    "fields": [
+      "volumeETH",
+      "volumeUSD",
+      "volumeUSDUntracked"
+    ]
+  }
+]
