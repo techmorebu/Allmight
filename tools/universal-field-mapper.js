@@ -5,7 +5,10 @@ require("dotenv").config();
 
 const outputDir = path.join(__dirname, "../outputs");
 const schemaDir = path.join(outputDir, "schemas");
+const queriesDir = path.join(outputDir, "queries");
 const schemaConsolidatedFile = path.join(schemaDir, "consolidated-schema.json");
+
+// Map your API endpoints from .env
 const apis = {
   uniswap: process.env.UNISWAP_DEX_API,
   sushiswap: process.env.SUSHISWAP_DEX_API,
@@ -19,89 +22,60 @@ const apis = {
   balancerEthereum: process.env.BALANCER_ETHEREUM_DEX_API,
 };
 
-// Ensure schema directory exists
+// Ensure output directories exist
+if (!fs.existsSync(outputDir)) {
+  fs.mkdirSync(outputDir);
+}
 if (!fs.existsSync(schemaDir)) {
   fs.mkdirSync(schemaDir);
 }
+if (!fs.existsSync(queriesDir)) {
+  fs.mkdirSync(queriesDir);
+}
 
-// Function to introspect and refine API schema
-async function fetchAndRefineSchema(apiUrl, apiName) {
-  const query = `{
-    __schema {
-      types {
-        name
-        fields {
-          name
-          description
-          type {
-            name
-            kind
-            ofType {
-              name
-              kind
-            }
-          }
+// Load consolidated schema
+const consolidatedSchema = JSON.parse(fs.readFileSync(schemaConsolidatedFile));
+
+// Generate queries dynamically for each API and type
+function generateQueries(apiName) {
+  const schema = consolidatedSchema[apiName];
+  if (!schema) {
+    console.warn(`Schema not found for API: ${apiName}`);
+    return;
+  }
+
+  const queries = {};
+
+  schema.forEach((type) => {
+    if (type.kind === "OBJECT" && type.fields && type.fields.length > 0) {
+      const fields = type.fields.map((field) => field.name).join(" ");
+      queries[type.name] = `{
+        ${type.name.toLowerCase()} {
+          ${fields}
         }
-      }
+      }`;
     }
-  }`;
+  });
 
-  try {
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch schema for ${apiName}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    const refinedSchema = data.data.__schema.types.map((type) => {
-      return {
-        name: type.name,
-        kind: type.kind,
-        fields: type.fields ? type.fields.map((field) => ({
-          name: field.name,
-          description: field.description || "",
-          type: field.type.name || (field.type.ofType ? field.type.ofType.name : "Unknown"),
-          kind: field.type.kind,
-        })) : [],
-      };
-    });
-
-    const schemaFile = path.join(schemaDir, `${apiName}-refined-schema.json`);
-    fs.writeFileSync(schemaFile, JSON.stringify(refinedSchema, null, 2));
-    console.log(`Refined schema saved for ${apiName} at ${schemaFile}`);
-    return refinedSchema;
-  } catch (error) {
-    console.error(`Error refining schema for ${apiName}:`, error.message);
-    return null;
-  }
+  const queryFile = path.join(queriesDir, `${apiName}-queries.json`);
+  fs.writeFileSync(queryFile, JSON.stringify(queries, null, 2));
+  console.log(`Generated queries saved for ${apiName} at ${queryFile}`);
 }
 
-// Consolidate all refined schemas into a single file
-async function consolidateSchemas() {
-  const consolidatedSchema = {};
-
-  for (const [apiName, apiUrl] of Object.entries(apis)) {
-    console.log(`Refining schema for ${apiName}`);
-    const refinedSchema = await fetchAndRefineSchema(apiUrl, apiName);
-    if (refinedSchema) {
-      consolidatedSchema[apiName] = refinedSchema;
-    }
-  }
-
-  fs.writeFileSync(schemaConsolidatedFile, JSON.stringify(consolidatedSchema, null, 2));
-  console.log(`Consolidated refined schema saved at ${schemaConsolidatedFile}`);
+// Generate queries for all APIs
+async function generateAllQueries() {
+  Object.keys(consolidatedSchema).forEach((apiName) => {
+    console.log(`Generating queries for API: ${apiName}`);
+    generateQueries(apiName);
+  });
 }
 
-// Run schema refinement and consolidation
+// Refine schema and generate queries
 (async () => {
   try {
-    await consolidateSchemas();
+    await generateAllQueries();
+    console.log("Dynamic query generation completed.");
   } catch (error) {
-    console.error("Error during schema refinement:", error.message);
+    console.error("Error during query generation:", error.message);
   }
 })();
