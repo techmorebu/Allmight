@@ -4,12 +4,12 @@
       "types": [
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "Aggregation_interval"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -21,7 +21,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolId",
               "type": {
                 "kind": "NON_NULL",
@@ -33,7 +32,6 @@
               }
             },
             {
-              "description": null,
               "name": "scheduledTimestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -45,7 +43,6 @@
               }
             },
             {
-              "description": null,
               "name": "startTimestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -57,7 +54,6 @@
               }
             },
             {
-              "description": null,
               "name": "endTimestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -69,7 +65,6 @@
               }
             },
             {
-              "description": null,
               "name": "startAmp",
               "type": {
                 "kind": "NON_NULL",
@@ -81,7 +76,6 @@
               }
             },
             {
-              "description": null,
               "name": "endAmp",
               "type": {
                 "kind": "NON_NULL",
@@ -93,20 +87,22 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "AmpUpdate"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "AmpUpdate_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "AmpUpdate_orderBy"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -118,7 +114,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolCount",
               "type": {
                 "kind": "NON_NULL",
@@ -130,7 +125,6 @@
               }
             },
             {
-              "description": null,
               "name": "pools",
               "type": {
                 "kind": "LIST",
@@ -142,7 +136,6 @@
               }
             },
             {
-              "description": null,
               "name": "snapshots",
               "type": {
                 "kind": "LIST",
@@ -154,7 +147,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalLiquidity",
               "type": {
                 "kind": "NON_NULL",
@@ -166,7 +158,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalSwapCount",
               "type": {
                 "kind": "NON_NULL",
@@ -178,7 +169,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalSwapVolume",
               "type": {
                 "kind": "NON_NULL",
@@ -190,7 +180,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalSwapFee",
               "type": {
                 "kind": "NON_NULL",
@@ -202,7 +191,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalProtocolFee",
               "type": {
                 "kind": "SCALAR",
@@ -211,7 +199,6 @@
               }
             },
             {
-              "description": null,
               "name": "protocolFeesCollector",
               "type": {
                 "kind": "SCALAR",
@@ -220,12 +207,12 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "Balancer"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -237,7 +224,6 @@
               }
             },
             {
-              "description": null,
               "name": "vault",
               "type": {
                 "kind": "NON_NULL",
@@ -249,7 +235,6 @@
               }
             },
             {
-              "description": null,
               "name": "timestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -261,7 +246,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolCount",
               "type": {
                 "kind": "NON_NULL",
@@ -273,7 +257,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalLiquidity",
               "type": {
                 "kind": "NON_NULL",
@@ -285,7 +268,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalSwapCount",
               "type": {
                 "kind": "NON_NULL",
@@ -297,7 +279,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalSwapVolume",
               "type": {
                 "kind": "NON_NULL",
@@ -309,7 +290,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalSwapFee",
               "type": {
                 "kind": "NON_NULL",
@@ -321,7 +301,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalProtocolFee",
               "type": {
                 "kind": "SCALAR",
@@ -330,52 +309,62 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "BalancerSnapshot"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "BalancerSnapshot_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "BalancerSnapshot_orderBy"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "Balancer_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "Balancer_orderBy"
         },
         {
           "fields": null,
+          "kind": "SCALAR",
           "name": "BigDecimal"
         },
         {
           "fields": null,
+          "kind": "SCALAR",
           "name": "BigInt"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "BlockChangedFilter"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "Block_height"
         },
         {
           "fields": null,
+          "kind": "SCALAR",
           "name": "Boolean"
         },
         {
           "fields": null,
+          "kind": "SCALAR",
           "name": "Bytes"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -387,7 +376,6 @@
               }
             },
             {
-              "description": null,
               "name": "pool",
               "type": {
                 "kind": "NON_NULL",
@@ -399,7 +387,6 @@
               }
             },
             {
-              "description": null,
               "name": "token",
               "type": {
                 "kind": "NON_NULL",
@@ -411,7 +398,6 @@
               }
             },
             {
-              "description": null,
               "name": "bptPrice",
               "type": {
                 "kind": "NON_NULL",
@@ -423,7 +409,6 @@
               }
             },
             {
-              "description": null,
               "name": "lowerBoundPercentage",
               "type": {
                 "kind": "NON_NULL",
@@ -435,7 +420,6 @@
               }
             },
             {
-              "description": null,
               "name": "upperBoundPercentage",
               "type": {
                 "kind": "NON_NULL",
@@ -447,20 +431,22 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "CircuitBreaker"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "CircuitBreaker_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "CircuitBreaker_orderBy"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -472,7 +458,6 @@
               }
             },
             {
-              "description": null,
               "name": "tokens",
               "type": {
                 "kind": "NON_NULL",
@@ -484,7 +469,6 @@
               }
             },
             {
-              "description": null,
               "name": "divisor",
               "type": {
                 "kind": "SCALAR",
@@ -493,7 +477,6 @@
               }
             },
             {
-              "description": null,
               "name": "decimals",
               "type": {
                 "kind": "SCALAR",
@@ -502,24 +485,27 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "FXOracle"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "FXOracle_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "FXOracle_orderBy"
         },
         {
           "fields": null,
+          "kind": "SCALAR",
           "name": "Float"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -531,7 +517,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolId",
               "type": {
                 "kind": "NON_NULL",
@@ -543,7 +528,6 @@
               }
             },
             {
-              "description": null,
               "name": "scheduledTimestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -555,7 +539,6 @@
               }
             },
             {
-              "description": null,
               "name": "startTimestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -567,7 +550,6 @@
               }
             },
             {
-              "description": null,
               "name": "endTimestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -579,7 +561,6 @@
               }
             },
             {
-              "description": null,
               "name": "startWeights",
               "type": {
                 "kind": "NON_NULL",
@@ -591,7 +572,6 @@
               }
             },
             {
-              "description": null,
               "name": "endWeights",
               "type": {
                 "kind": "NON_NULL",
@@ -603,36 +583,42 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "GradualWeightUpdate"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "GradualWeightUpdate_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "GradualWeightUpdate_orderBy"
         },
         {
           "fields": null,
+          "kind": "SCALAR",
           "name": "ID"
         },
         {
           "fields": null,
+          "kind": "SCALAR",
           "name": "Int"
         },
         {
           "fields": null,
+          "kind": "SCALAR",
           "name": "Int8"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "InvestType"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -644,7 +630,6 @@
               }
             },
             {
-              "description": null,
               "name": "type",
               "type": {
                 "kind": "NON_NULL",
@@ -656,7 +641,6 @@
               }
             },
             {
-              "description": null,
               "name": "sender",
               "type": {
                 "kind": "NON_NULL",
@@ -668,7 +652,6 @@
               }
             },
             {
-              "description": null,
               "name": "amounts",
               "type": {
                 "kind": "NON_NULL",
@@ -680,7 +663,6 @@
               }
             },
             {
-              "description": null,
               "name": "valueUSD",
               "type": {
                 "kind": "SCALAR",
@@ -689,7 +671,6 @@
               }
             },
             {
-              "description": null,
               "name": "pool",
               "type": {
                 "kind": "NON_NULL",
@@ -701,7 +682,6 @@
               }
             },
             {
-              "description": null,
               "name": "user",
               "type": {
                 "kind": "NON_NULL",
@@ -713,7 +693,6 @@
               }
             },
             {
-              "description": null,
               "name": "timestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -725,7 +704,6 @@
               }
             },
             {
-              "description": null,
               "name": "tx",
               "type": {
                 "kind": "NON_NULL",
@@ -737,7 +715,6 @@
               }
             },
             {
-              "description": null,
               "name": "block",
               "type": {
                 "kind": "SCALAR",
@@ -746,20 +723,22 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "JoinExit"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "JoinExit_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "JoinExit_orderBy"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -771,7 +750,6 @@
               }
             },
             {
-              "description": null,
               "name": "asset",
               "type": {
                 "kind": "NON_NULL",
@@ -783,7 +761,6 @@
               }
             },
             {
-              "description": null,
               "name": "pricingAsset",
               "type": {
                 "kind": "NON_NULL",
@@ -795,7 +772,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolId",
               "type": {
                 "kind": "NON_NULL",
@@ -807,7 +783,6 @@
               }
             },
             {
-              "description": null,
               "name": "price",
               "type": {
                 "kind": "NON_NULL",
@@ -819,7 +794,6 @@
               }
             },
             {
-              "description": null,
               "name": "block",
               "type": {
                 "kind": "NON_NULL",
@@ -831,20 +805,22 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "LatestPrice"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "LatestPrice_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "LatestPrice_orderBy"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -856,7 +832,6 @@
               }
             },
             {
-              "description": null,
               "name": "type",
               "type": {
                 "kind": "NON_NULL",
@@ -868,7 +843,6 @@
               }
             },
             {
-              "description": null,
               "name": "cashDelta",
               "type": {
                 "kind": "NON_NULL",
@@ -880,7 +854,6 @@
               }
             },
             {
-              "description": null,
               "name": "managedDelta",
               "type": {
                 "kind": "NON_NULL",
@@ -892,7 +865,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolTokenId",
               "type": {
                 "kind": "NON_NULL",
@@ -904,7 +876,6 @@
               }
             },
             {
-              "description": null,
               "name": "timestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -916,28 +887,32 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "ManagementOperation"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "ManagementOperation_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "ManagementOperation_orderBy"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "OperationType"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "OrderDirection"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -949,7 +924,6 @@
               }
             },
             {
-              "description": null,
               "name": "address",
               "type": {
                 "kind": "NON_NULL",
@@ -961,7 +935,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolType",
               "type": {
                 "kind": "SCALAR",
@@ -970,7 +943,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolTypeVersion",
               "type": {
                 "kind": "SCALAR",
@@ -979,7 +951,6 @@
               }
             },
             {
-              "description": null,
               "name": "factory",
               "type": {
                 "kind": "SCALAR",
@@ -988,7 +959,6 @@
               }
             },
             {
-              "description": null,
               "name": "strategyType",
               "type": {
                 "kind": "NON_NULL",
@@ -1000,7 +970,6 @@
               }
             },
             {
-              "description": null,
               "name": "oracleEnabled",
               "type": {
                 "kind": "NON_NULL",
@@ -1012,7 +981,6 @@
               }
             },
             {
-              "description": null,
               "name": "symbol",
               "type": {
                 "kind": "SCALAR",
@@ -1021,7 +989,6 @@
               }
             },
             {
-              "description": null,
               "name": "name",
               "type": {
                 "kind": "SCALAR",
@@ -1030,7 +997,6 @@
               }
             },
             {
-              "description": null,
               "name": "isInitialized",
               "type": {
                 "kind": "SCALAR",
@@ -1039,7 +1005,6 @@
               }
             },
             {
-              "description": "Indicates if a pool can be swapped against. Combines multiple sources, including offchain curation",
               "name": "swapEnabled",
               "type": {
                 "kind": "NON_NULL",
@@ -1051,7 +1016,6 @@
               }
             },
             {
-              "description": "The native swapEnabled boolean. internal to the pool. Only applies to Gyro, LBPs and InvestmentPools",
               "name": "swapEnabledInternal",
               "type": {
                 "kind": "SCALAR",
@@ -1060,7 +1024,6 @@
               }
             },
             {
-              "description": "External indication from an offchain permissioned actor",
               "name": "swapEnabledCurationSignal",
               "type": {
                 "kind": "SCALAR",
@@ -1069,7 +1032,6 @@
               }
             },
             {
-              "description": null,
               "name": "swapFee",
               "type": {
                 "kind": "NON_NULL",
@@ -1081,7 +1043,6 @@
               }
             },
             {
-              "description": null,
               "name": "owner",
               "type": {
                 "kind": "SCALAR",
@@ -1090,7 +1051,6 @@
               }
             },
             {
-              "description": null,
               "name": "isPaused",
               "type": {
                 "kind": "SCALAR",
@@ -1099,7 +1059,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalWeight",
               "type": {
                 "kind": "SCALAR",
@@ -1108,7 +1067,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalSwapVolume",
               "type": {
                 "kind": "NON_NULL",
@@ -1120,7 +1078,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalSwapFee",
               "type": {
                 "kind": "NON_NULL",
@@ -1132,7 +1089,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalLiquidity",
               "type": {
                 "kind": "NON_NULL",
@@ -1144,7 +1100,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalLiquiditySansBPT",
               "type": {
                 "kind": "SCALAR",
@@ -1153,7 +1108,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalShares",
               "type": {
                 "kind": "NON_NULL",
@@ -1165,7 +1119,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalProtocolFee",
               "type": {
                 "kind": "SCALAR",
@@ -1174,7 +1127,6 @@
               }
             },
             {
-              "description": null,
               "name": "createTime",
               "type": {
                 "kind": "NON_NULL",
@@ -1186,7 +1138,6 @@
               }
             },
             {
-              "description": null,
               "name": "swapsCount",
               "type": {
                 "kind": "NON_NULL",
@@ -1198,7 +1149,6 @@
               }
             },
             {
-              "description": null,
               "name": "holdersCount",
               "type": {
                 "kind": "NON_NULL",
@@ -1210,7 +1160,6 @@
               }
             },
             {
-              "description": null,
               "name": "vaultID",
               "type": {
                 "kind": "NON_NULL",
@@ -1222,7 +1171,6 @@
               }
             },
             {
-              "description": null,
               "name": "tx",
               "type": {
                 "kind": "SCALAR",
@@ -1231,7 +1179,6 @@
               }
             },
             {
-              "description": null,
               "name": "tokensList",
               "type": {
                 "kind": "NON_NULL",
@@ -1243,7 +1190,6 @@
               }
             },
             {
-              "description": null,
               "name": "tokens",
               "type": {
                 "kind": "LIST",
@@ -1255,7 +1201,6 @@
               }
             },
             {
-              "description": null,
               "name": "joinsExits",
               "type": {
                 "kind": "LIST",
@@ -1267,7 +1212,6 @@
               }
             },
             {
-              "description": null,
               "name": "swaps",
               "type": {
                 "kind": "LIST",
@@ -1279,7 +1223,6 @@
               }
             },
             {
-              "description": null,
               "name": "shares",
               "type": {
                 "kind": "LIST",
@@ -1291,7 +1234,6 @@
               }
             },
             {
-              "description": null,
               "name": "snapshots",
               "type": {
                 "kind": "LIST",
@@ -1303,7 +1245,6 @@
               }
             },
             {
-              "description": null,
               "name": "historicalValues",
               "type": {
                 "kind": "LIST",
@@ -1315,7 +1256,6 @@
               }
             },
             {
-              "description": null,
               "name": "weightUpdates",
               "type": {
                 "kind": "LIST",
@@ -1327,7 +1267,6 @@
               }
             },
             {
-              "description": null,
               "name": "amp",
               "type": {
                 "kind": "SCALAR",
@@ -1336,7 +1275,6 @@
               }
             },
             {
-              "description": null,
               "name": "latestAmpUpdate",
               "type": {
                 "kind": "OBJECT",
@@ -1345,7 +1283,6 @@
               }
             },
             {
-              "description": null,
               "name": "ampUpdates",
               "type": {
                 "kind": "LIST",
@@ -1357,7 +1294,6 @@
               }
             },
             {
-              "description": null,
               "name": "priceRateProviders",
               "type": {
                 "kind": "LIST",
@@ -1369,7 +1305,6 @@
               }
             },
             {
-              "description": null,
               "name": "principalToken",
               "type": {
                 "kind": "SCALAR",
@@ -1378,7 +1313,6 @@
               }
             },
             {
-              "description": null,
               "name": "baseToken",
               "type": {
                 "kind": "SCALAR",
@@ -1387,7 +1321,6 @@
               }
             },
             {
-              "description": null,
               "name": "expiryTime",
               "type": {
                 "kind": "SCALAR",
@@ -1396,7 +1329,6 @@
               }
             },
             {
-              "description": null,
               "name": "unitSeconds",
               "type": {
                 "kind": "SCALAR",
@@ -1405,7 +1337,6 @@
               }
             },
             {
-              "description": null,
               "name": "managementFee",
               "type": {
                 "kind": "SCALAR",
@@ -1414,7 +1345,6 @@
               }
             },
             {
-              "description": null,
               "name": "joinExitEnabled",
               "type": {
                 "kind": "SCALAR",
@@ -1423,7 +1353,6 @@
               }
             },
             {
-              "description": null,
               "name": "mustAllowlistLPs",
               "type": {
                 "kind": "SCALAR",
@@ -1432,7 +1361,6 @@
               }
             },
             {
-              "description": null,
               "name": "managementAumFee",
               "type": {
                 "kind": "SCALAR",
@@ -1441,7 +1369,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalAumFeeCollectedInBPT",
               "type": {
                 "kind": "SCALAR",
@@ -1450,7 +1377,6 @@
               }
             },
             {
-              "description": null,
               "name": "circuitBreakers",
               "type": {
                 "kind": "LIST",
@@ -1462,7 +1388,6 @@
               }
             },
             {
-              "description": null,
               "name": "mainIndex",
               "type": {
                 "kind": "SCALAR",
@@ -1471,7 +1396,6 @@
               }
             },
             {
-              "description": null,
               "name": "wrappedIndex",
               "type": {
                 "kind": "SCALAR",
@@ -1480,7 +1404,6 @@
               }
             },
             {
-              "description": null,
               "name": "lowerTarget",
               "type": {
                 "kind": "SCALAR",
@@ -1489,7 +1412,6 @@
               }
             },
             {
-              "description": null,
               "name": "upperTarget",
               "type": {
                 "kind": "SCALAR",
@@ -1498,7 +1420,6 @@
               }
             },
             {
-              "description": null,
               "name": "sqrtAlpha",
               "type": {
                 "kind": "SCALAR",
@@ -1507,7 +1428,6 @@
               }
             },
             {
-              "description": null,
               "name": "sqrtBeta",
               "type": {
                 "kind": "SCALAR",
@@ -1516,7 +1436,6 @@
               }
             },
             {
-              "description": null,
               "name": "root3Alpha",
               "type": {
                 "kind": "SCALAR",
@@ -1525,7 +1444,6 @@
               }
             },
             {
-              "description": null,
               "name": "c",
               "type": {
                 "kind": "SCALAR",
@@ -1534,7 +1452,6 @@
               }
             },
             {
-              "description": null,
               "name": "s",
               "type": {
                 "kind": "SCALAR",
@@ -1543,7 +1460,6 @@
               }
             },
             {
-              "description": null,
               "name": "tauAlphaX",
               "type": {
                 "kind": "SCALAR",
@@ -1552,7 +1468,6 @@
               }
             },
             {
-              "description": null,
               "name": "tauAlphaY",
               "type": {
                 "kind": "SCALAR",
@@ -1561,7 +1476,6 @@
               }
             },
             {
-              "description": null,
               "name": "tauBetaX",
               "type": {
                 "kind": "SCALAR",
@@ -1570,7 +1484,6 @@
               }
             },
             {
-              "description": null,
               "name": "tauBetaY",
               "type": {
                 "kind": "SCALAR",
@@ -1579,7 +1492,6 @@
               }
             },
             {
-              "description": null,
               "name": "u",
               "type": {
                 "kind": "SCALAR",
@@ -1588,7 +1500,6 @@
               }
             },
             {
-              "description": null,
               "name": "v",
               "type": {
                 "kind": "SCALAR",
@@ -1597,7 +1508,6 @@
               }
             },
             {
-              "description": null,
               "name": "w",
               "type": {
                 "kind": "SCALAR",
@@ -1606,7 +1516,6 @@
               }
             },
             {
-              "description": null,
               "name": "z",
               "type": {
                 "kind": "SCALAR",
@@ -1615,7 +1524,6 @@
               }
             },
             {
-              "description": null,
               "name": "dSq",
               "type": {
                 "kind": "SCALAR",
@@ -1624,7 +1532,6 @@
               }
             },
             {
-              "description": null,
               "name": "alpha",
               "type": {
                 "kind": "SCALAR",
@@ -1633,7 +1540,6 @@
               }
             },
             {
-              "description": null,
               "name": "beta",
               "type": {
                 "kind": "SCALAR",
@@ -1642,7 +1548,6 @@
               }
             },
             {
-              "description": null,
               "name": "lambda",
               "type": {
                 "kind": "SCALAR",
@@ -1651,7 +1556,6 @@
               }
             },
             {
-              "description": null,
               "name": "delta",
               "type": {
                 "kind": "SCALAR",
@@ -1660,7 +1564,6 @@
               }
             },
             {
-              "description": null,
               "name": "epsilon",
               "type": {
                 "kind": "SCALAR",
@@ -1669,7 +1572,6 @@
               }
             },
             {
-              "description": null,
               "name": "isInRecoveryMode",
               "type": {
                 "kind": "SCALAR",
@@ -1678,7 +1580,6 @@
               }
             },
             {
-              "description": null,
               "name": "protocolSwapFeeCache",
               "type": {
                 "kind": "SCALAR",
@@ -1687,7 +1588,6 @@
               }
             },
             {
-              "description": null,
               "name": "protocolYieldFeeCache",
               "type": {
                 "kind": "SCALAR",
@@ -1696,7 +1596,6 @@
               }
             },
             {
-              "description": null,
               "name": "protocolAumFeeCache",
               "type": {
                 "kind": "SCALAR",
@@ -1705,7 +1604,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalProtocolFeePaidInBPT",
               "type": {
                 "kind": "SCALAR",
@@ -1714,7 +1612,6 @@
               }
             },
             {
-              "description": null,
               "name": "lastJoinExitAmp",
               "type": {
                 "kind": "SCALAR",
@@ -1723,7 +1620,6 @@
               }
             },
             {
-              "description": null,
               "name": "lastPostJoinExitInvariant",
               "type": {
                 "kind": "SCALAR",
@@ -1732,7 +1628,6 @@
               }
             },
             {
-              "description": null,
               "name": "protocolId",
               "type": {
                 "kind": "SCALAR",
@@ -1741,7 +1636,6 @@
               }
             },
             {
-              "description": null,
               "name": "protocolIdData",
               "type": {
                 "kind": "OBJECT",
@@ -1750,12 +1644,12 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "Pool"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -1767,7 +1661,6 @@
               }
             },
             {
-              "description": null,
               "name": "pool",
               "type": {
                 "kind": "NON_NULL",
@@ -1779,20 +1672,22 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "PoolContract"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "PoolContract_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "PoolContract_orderBy"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -1804,7 +1699,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolId",
               "type": {
                 "kind": "NON_NULL",
@@ -1816,7 +1710,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolTotalShares",
               "type": {
                 "kind": "NON_NULL",
@@ -1828,7 +1721,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolLiquidity",
               "type": {
                 "kind": "NON_NULL",
@@ -1840,7 +1732,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolShareValue",
               "type": {
                 "kind": "NON_NULL",
@@ -1852,7 +1743,6 @@
               }
             },
             {
-              "description": null,
               "name": "pricingAsset",
               "type": {
                 "kind": "NON_NULL",
@@ -1864,7 +1754,6 @@
               }
             },
             {
-              "description": null,
               "name": "block",
               "type": {
                 "kind": "NON_NULL",
@@ -1876,20 +1765,22 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "PoolHistoricalLiquidity"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "PoolHistoricalLiquidity_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "PoolHistoricalLiquidity_orderBy"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -1901,7 +1792,6 @@
               }
             },
             {
-              "description": null,
               "name": "userAddress",
               "type": {
                 "kind": "NON_NULL",
@@ -1913,7 +1803,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolId",
               "type": {
                 "kind": "NON_NULL",
@@ -1925,7 +1814,6 @@
               }
             },
             {
-              "description": null,
               "name": "balance",
               "type": {
                 "kind": "NON_NULL",
@@ -1937,20 +1825,22 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "PoolShare"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "PoolShare_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "PoolShare_orderBy"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -1962,7 +1852,6 @@
               }
             },
             {
-              "description": null,
               "name": "pool",
               "type": {
                 "kind": "NON_NULL",
@@ -1974,7 +1863,6 @@
               }
             },
             {
-              "description": null,
               "name": "amounts",
               "type": {
                 "kind": "NON_NULL",
@@ -1986,7 +1874,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalShares",
               "type": {
                 "kind": "NON_NULL",
@@ -1998,7 +1885,6 @@
               }
             },
             {
-              "description": null,
               "name": "swapVolume",
               "type": {
                 "kind": "NON_NULL",
@@ -2010,7 +1896,6 @@
               }
             },
             {
-              "description": null,
               "name": "protocolFee",
               "type": {
                 "kind": "SCALAR",
@@ -2019,7 +1904,6 @@
               }
             },
             {
-              "description": null,
               "name": "swapFees",
               "type": {
                 "kind": "NON_NULL",
@@ -2031,7 +1915,6 @@
               }
             },
             {
-              "description": null,
               "name": "liquidity",
               "type": {
                 "kind": "NON_NULL",
@@ -2043,7 +1926,6 @@
               }
             },
             {
-              "description": null,
               "name": "swapsCount",
               "type": {
                 "kind": "NON_NULL",
@@ -2055,7 +1937,6 @@
               }
             },
             {
-              "description": null,
               "name": "holdersCount",
               "type": {
                 "kind": "NON_NULL",
@@ -2067,7 +1948,6 @@
               }
             },
             {
-              "description": null,
               "name": "timestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -2079,20 +1959,22 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "PoolSnapshot"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "PoolSnapshot_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "PoolSnapshot_orderBy"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -2104,7 +1986,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolId",
               "type": {
                 "kind": "OBJECT",
@@ -2113,7 +1994,6 @@
               }
             },
             {
-              "description": null,
               "name": "token",
               "type": {
                 "kind": "NON_NULL",
@@ -2125,7 +2005,6 @@
               }
             },
             {
-              "description": null,
               "name": "assetManager",
               "type": {
                 "kind": "NON_NULL",
@@ -2137,7 +2016,6 @@
               }
             },
             {
-              "description": null,
               "name": "symbol",
               "type": {
                 "kind": "NON_NULL",
@@ -2149,7 +2027,6 @@
               }
             },
             {
-              "description": null,
               "name": "name",
               "type": {
                 "kind": "NON_NULL",
@@ -2161,7 +2038,6 @@
               }
             },
             {
-              "description": null,
               "name": "decimals",
               "type": {
                 "kind": "NON_NULL",
@@ -2173,7 +2049,6 @@
               }
             },
             {
-              "description": null,
               "name": "index",
               "type": {
                 "kind": "SCALAR",
@@ -2182,7 +2057,6 @@
               }
             },
             {
-              "description": null,
               "name": "address",
               "type": {
                 "kind": "NON_NULL",
@@ -2194,7 +2068,6 @@
               }
             },
             {
-              "description": null,
               "name": "oldPriceRate",
               "type": {
                 "kind": "SCALAR",
@@ -2203,7 +2076,6 @@
               }
             },
             {
-              "description": null,
               "name": "priceRate",
               "type": {
                 "kind": "NON_NULL",
@@ -2215,7 +2087,6 @@
               }
             },
             {
-              "description": null,
               "name": "balance",
               "type": {
                 "kind": "NON_NULL",
@@ -2227,7 +2098,6 @@
               }
             },
             {
-              "description": null,
               "name": "paidProtocolFees",
               "type": {
                 "kind": "SCALAR",
@@ -2236,7 +2106,6 @@
               }
             },
             {
-              "description": null,
               "name": "cashBalance",
               "type": {
                 "kind": "NON_NULL",
@@ -2248,7 +2117,6 @@
               }
             },
             {
-              "description": null,
               "name": "managedBalance",
               "type": {
                 "kind": "NON_NULL",
@@ -2260,7 +2128,6 @@
               }
             },
             {
-              "description": null,
               "name": "managements",
               "type": {
                 "kind": "LIST",
@@ -2272,7 +2139,6 @@
               }
             },
             {
-              "description": null,
               "name": "weight",
               "type": {
                 "kind": "SCALAR",
@@ -2281,7 +2147,6 @@
               }
             },
             {
-              "description": null,
               "name": "isExemptFromYieldProtocolFee",
               "type": {
                 "kind": "SCALAR",
@@ -2290,7 +2155,6 @@
               }
             },
             {
-              "description": null,
               "name": "circuitBreaker",
               "type": {
                 "kind": "OBJECT",
@@ -2299,28 +2163,32 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "PoolToken"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "PoolToken_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "PoolToken_orderBy"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "Pool_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "Pool_orderBy"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -2332,7 +2200,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolId",
               "type": {
                 "kind": "NON_NULL",
@@ -2344,7 +2211,6 @@
               }
             },
             {
-              "description": null,
               "name": "token",
               "type": {
                 "kind": "NON_NULL",
@@ -2356,7 +2222,6 @@
               }
             },
             {
-              "description": null,
               "name": "address",
               "type": {
                 "kind": "NON_NULL",
@@ -2368,7 +2233,6 @@
               }
             },
             {
-              "description": null,
               "name": "rate",
               "type": {
                 "kind": "SCALAR",
@@ -2377,7 +2241,6 @@
               }
             },
             {
-              "description": null,
               "name": "lastCached",
               "type": {
                 "kind": "SCALAR",
@@ -2386,7 +2249,6 @@
               }
             },
             {
-              "description": null,
               "name": "cacheDuration",
               "type": {
                 "kind": "SCALAR",
@@ -2395,7 +2257,6 @@
               }
             },
             {
-              "description": null,
               "name": "cacheExpiry",
               "type": {
                 "kind": "SCALAR",
@@ -2404,20 +2265,22 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "PriceRateProvider"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "PriceRateProvider_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "PriceRateProvider_orderBy"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -2429,7 +2292,6 @@
               }
             },
             {
-              "description": null,
               "name": "name",
               "type": {
                 "kind": "NON_NULL",
@@ -2441,20 +2303,22 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "ProtocolIdData"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "ProtocolIdData_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "ProtocolIdData_orderBy"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "balancer",
               "type": {
                 "kind": "OBJECT",
@@ -2463,7 +2327,6 @@
               }
             },
             {
-              "description": null,
               "name": "balancers",
               "type": {
                 "kind": "NON_NULL",
@@ -2475,7 +2338,6 @@
               }
             },
             {
-              "description": null,
               "name": "pool",
               "type": {
                 "kind": "OBJECT",
@@ -2484,7 +2346,6 @@
               }
             },
             {
-              "description": null,
               "name": "pools",
               "type": {
                 "kind": "NON_NULL",
@@ -2496,7 +2357,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolContract",
               "type": {
                 "kind": "OBJECT",
@@ -2505,7 +2365,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolContracts",
               "type": {
                 "kind": "NON_NULL",
@@ -2517,7 +2376,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolToken",
               "type": {
                 "kind": "OBJECT",
@@ -2526,7 +2384,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolTokens",
               "type": {
                 "kind": "NON_NULL",
@@ -2538,7 +2395,6 @@
               }
             },
             {
-              "description": null,
               "name": "priceRateProvider",
               "type": {
                 "kind": "OBJECT",
@@ -2547,7 +2403,6 @@
               }
             },
             {
-              "description": null,
               "name": "priceRateProviders",
               "type": {
                 "kind": "NON_NULL",
@@ -2559,7 +2414,6 @@
               }
             },
             {
-              "description": null,
               "name": "circuitBreaker",
               "type": {
                 "kind": "OBJECT",
@@ -2568,7 +2422,6 @@
               }
             },
             {
-              "description": null,
               "name": "circuitBreakers",
               "type": {
                 "kind": "NON_NULL",
@@ -2580,7 +2433,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolShare",
               "type": {
                 "kind": "OBJECT",
@@ -2589,7 +2441,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolShares",
               "type": {
                 "kind": "NON_NULL",
@@ -2601,7 +2452,6 @@
               }
             },
             {
-              "description": null,
               "name": "user",
               "type": {
                 "kind": "OBJECT",
@@ -2610,7 +2460,6 @@
               }
             },
             {
-              "description": null,
               "name": "users",
               "type": {
                 "kind": "NON_NULL",
@@ -2622,7 +2471,6 @@
               }
             },
             {
-              "description": null,
               "name": "userInternalBalance",
               "type": {
                 "kind": "OBJECT",
@@ -2631,7 +2479,6 @@
               }
             },
             {
-              "description": null,
               "name": "userInternalBalances",
               "type": {
                 "kind": "NON_NULL",
@@ -2643,7 +2490,6 @@
               }
             },
             {
-              "description": null,
               "name": "gradualWeightUpdate",
               "type": {
                 "kind": "OBJECT",
@@ -2652,7 +2498,6 @@
               }
             },
             {
-              "description": null,
               "name": "gradualWeightUpdates",
               "type": {
                 "kind": "NON_NULL",
@@ -2664,7 +2509,6 @@
               }
             },
             {
-              "description": null,
               "name": "ampUpdate",
               "type": {
                 "kind": "OBJECT",
@@ -2673,7 +2517,6 @@
               }
             },
             {
-              "description": null,
               "name": "ampUpdates",
               "type": {
                 "kind": "NON_NULL",
@@ -2685,7 +2528,6 @@
               }
             },
             {
-              "description": null,
               "name": "swapFeeUpdate",
               "type": {
                 "kind": "OBJECT",
@@ -2694,7 +2536,6 @@
               }
             },
             {
-              "description": null,
               "name": "swapFeeUpdates",
               "type": {
                 "kind": "NON_NULL",
@@ -2706,7 +2547,6 @@
               }
             },
             {
-              "description": null,
               "name": "swap",
               "type": {
                 "kind": "OBJECT",
@@ -2715,7 +2555,6 @@
               }
             },
             {
-              "description": null,
               "name": "swaps",
               "type": {
                 "kind": "NON_NULL",
@@ -2727,7 +2566,6 @@
               }
             },
             {
-              "description": null,
               "name": "joinExit",
               "type": {
                 "kind": "OBJECT",
@@ -2736,7 +2574,6 @@
               }
             },
             {
-              "description": null,
               "name": "joinExits",
               "type": {
                 "kind": "NON_NULL",
@@ -2748,7 +2585,6 @@
               }
             },
             {
-              "description": null,
               "name": "latestPrice",
               "type": {
                 "kind": "OBJECT",
@@ -2757,7 +2593,6 @@
               }
             },
             {
-              "description": null,
               "name": "latestPrices",
               "type": {
                 "kind": "NON_NULL",
@@ -2769,7 +2604,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolHistoricalLiquidity",
               "type": {
                 "kind": "OBJECT",
@@ -2778,7 +2612,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolHistoricalLiquidities",
               "type": {
                 "kind": "NON_NULL",
@@ -2790,7 +2623,6 @@
               }
             },
             {
-              "description": null,
               "name": "tokenPrice",
               "type": {
                 "kind": "OBJECT",
@@ -2799,7 +2631,6 @@
               }
             },
             {
-              "description": null,
               "name": "tokenPrices",
               "type": {
                 "kind": "NON_NULL",
@@ -2811,7 +2642,6 @@
               }
             },
             {
-              "description": null,
               "name": "managementOperation",
               "type": {
                 "kind": "OBJECT",
@@ -2820,7 +2650,6 @@
               }
             },
             {
-              "description": null,
               "name": "managementOperations",
               "type": {
                 "kind": "NON_NULL",
@@ -2832,7 +2661,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolSnapshot",
               "type": {
                 "kind": "OBJECT",
@@ -2841,7 +2669,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolSnapshots",
               "type": {
                 "kind": "NON_NULL",
@@ -2853,7 +2680,6 @@
               }
             },
             {
-              "description": null,
               "name": "token",
               "type": {
                 "kind": "OBJECT",
@@ -2862,7 +2688,6 @@
               }
             },
             {
-              "description": null,
               "name": "tokens",
               "type": {
                 "kind": "NON_NULL",
@@ -2874,7 +2699,6 @@
               }
             },
             {
-              "description": null,
               "name": "tokenSnapshot",
               "type": {
                 "kind": "OBJECT",
@@ -2883,7 +2707,6 @@
               }
             },
             {
-              "description": null,
               "name": "tokenSnapshots",
               "type": {
                 "kind": "NON_NULL",
@@ -2895,7 +2718,6 @@
               }
             },
             {
-              "description": null,
               "name": "tradePair",
               "type": {
                 "kind": "OBJECT",
@@ -2904,7 +2726,6 @@
               }
             },
             {
-              "description": null,
               "name": "tradePairs",
               "type": {
                 "kind": "NON_NULL",
@@ -2916,7 +2737,6 @@
               }
             },
             {
-              "description": null,
               "name": "tradePairSnapshot",
               "type": {
                 "kind": "OBJECT",
@@ -2925,7 +2745,6 @@
               }
             },
             {
-              "description": null,
               "name": "tradePairSnapshots",
               "type": {
                 "kind": "NON_NULL",
@@ -2937,7 +2756,6 @@
               }
             },
             {
-              "description": null,
               "name": "balancerSnapshot",
               "type": {
                 "kind": "OBJECT",
@@ -2946,7 +2764,6 @@
               }
             },
             {
-              "description": null,
               "name": "balancerSnapshots",
               "type": {
                 "kind": "NON_NULL",
@@ -2958,7 +2775,6 @@
               }
             },
             {
-              "description": null,
               "name": "protocolIdData",
               "type": {
                 "kind": "OBJECT",
@@ -2967,7 +2783,6 @@
               }
             },
             {
-              "description": null,
               "name": "protocolIdDatas",
               "type": {
                 "kind": "NON_NULL",
@@ -2979,7 +2794,6 @@
               }
             },
             {
-              "description": null,
               "name": "fxoracle",
               "type": {
                 "kind": "OBJECT",
@@ -2988,7 +2802,6 @@
               }
             },
             {
-              "description": null,
               "name": "fxoracles",
               "type": {
                 "kind": "NON_NULL",
@@ -3000,7 +2813,6 @@
               }
             },
             {
-              "description": "Access to subgraph metadata",
               "name": "_meta",
               "type": {
                 "kind": "OBJECT",
@@ -3009,16 +2821,17 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "Query"
         },
         {
           "fields": null,
+          "kind": "SCALAR",
           "name": "String"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "balancer",
               "type": {
                 "kind": "OBJECT",
@@ -3027,7 +2840,6 @@
               }
             },
             {
-              "description": null,
               "name": "balancers",
               "type": {
                 "kind": "NON_NULL",
@@ -3039,7 +2851,6 @@
               }
             },
             {
-              "description": null,
               "name": "pool",
               "type": {
                 "kind": "OBJECT",
@@ -3048,7 +2859,6 @@
               }
             },
             {
-              "description": null,
               "name": "pools",
               "type": {
                 "kind": "NON_NULL",
@@ -3060,7 +2870,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolContract",
               "type": {
                 "kind": "OBJECT",
@@ -3069,7 +2878,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolContracts",
               "type": {
                 "kind": "NON_NULL",
@@ -3081,7 +2889,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolToken",
               "type": {
                 "kind": "OBJECT",
@@ -3090,7 +2897,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolTokens",
               "type": {
                 "kind": "NON_NULL",
@@ -3102,7 +2908,6 @@
               }
             },
             {
-              "description": null,
               "name": "priceRateProvider",
               "type": {
                 "kind": "OBJECT",
@@ -3111,7 +2916,6 @@
               }
             },
             {
-              "description": null,
               "name": "priceRateProviders",
               "type": {
                 "kind": "NON_NULL",
@@ -3123,7 +2927,6 @@
               }
             },
             {
-              "description": null,
               "name": "circuitBreaker",
               "type": {
                 "kind": "OBJECT",
@@ -3132,7 +2935,6 @@
               }
             },
             {
-              "description": null,
               "name": "circuitBreakers",
               "type": {
                 "kind": "NON_NULL",
@@ -3144,7 +2946,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolShare",
               "type": {
                 "kind": "OBJECT",
@@ -3153,7 +2954,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolShares",
               "type": {
                 "kind": "NON_NULL",
@@ -3165,7 +2965,6 @@
               }
             },
             {
-              "description": null,
               "name": "user",
               "type": {
                 "kind": "OBJECT",
@@ -3174,7 +2973,6 @@
               }
             },
             {
-              "description": null,
               "name": "users",
               "type": {
                 "kind": "NON_NULL",
@@ -3186,7 +2984,6 @@
               }
             },
             {
-              "description": null,
               "name": "userInternalBalance",
               "type": {
                 "kind": "OBJECT",
@@ -3195,7 +2992,6 @@
               }
             },
             {
-              "description": null,
               "name": "userInternalBalances",
               "type": {
                 "kind": "NON_NULL",
@@ -3207,7 +3003,6 @@
               }
             },
             {
-              "description": null,
               "name": "gradualWeightUpdate",
               "type": {
                 "kind": "OBJECT",
@@ -3216,7 +3011,6 @@
               }
             },
             {
-              "description": null,
               "name": "gradualWeightUpdates",
               "type": {
                 "kind": "NON_NULL",
@@ -3228,7 +3022,6 @@
               }
             },
             {
-              "description": null,
               "name": "ampUpdate",
               "type": {
                 "kind": "OBJECT",
@@ -3237,7 +3030,6 @@
               }
             },
             {
-              "description": null,
               "name": "ampUpdates",
               "type": {
                 "kind": "NON_NULL",
@@ -3249,7 +3041,6 @@
               }
             },
             {
-              "description": null,
               "name": "swapFeeUpdate",
               "type": {
                 "kind": "OBJECT",
@@ -3258,7 +3049,6 @@
               }
             },
             {
-              "description": null,
               "name": "swapFeeUpdates",
               "type": {
                 "kind": "NON_NULL",
@@ -3270,7 +3060,6 @@
               }
             },
             {
-              "description": null,
               "name": "swap",
               "type": {
                 "kind": "OBJECT",
@@ -3279,7 +3068,6 @@
               }
             },
             {
-              "description": null,
               "name": "swaps",
               "type": {
                 "kind": "NON_NULL",
@@ -3291,7 +3079,6 @@
               }
             },
             {
-              "description": null,
               "name": "joinExit",
               "type": {
                 "kind": "OBJECT",
@@ -3300,7 +3087,6 @@
               }
             },
             {
-              "description": null,
               "name": "joinExits",
               "type": {
                 "kind": "NON_NULL",
@@ -3312,7 +3098,6 @@
               }
             },
             {
-              "description": null,
               "name": "latestPrice",
               "type": {
                 "kind": "OBJECT",
@@ -3321,7 +3106,6 @@
               }
             },
             {
-              "description": null,
               "name": "latestPrices",
               "type": {
                 "kind": "NON_NULL",
@@ -3333,7 +3117,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolHistoricalLiquidity",
               "type": {
                 "kind": "OBJECT",
@@ -3342,7 +3125,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolHistoricalLiquidities",
               "type": {
                 "kind": "NON_NULL",
@@ -3354,7 +3136,6 @@
               }
             },
             {
-              "description": null,
               "name": "tokenPrice",
               "type": {
                 "kind": "OBJECT",
@@ -3363,7 +3144,6 @@
               }
             },
             {
-              "description": null,
               "name": "tokenPrices",
               "type": {
                 "kind": "NON_NULL",
@@ -3375,7 +3155,6 @@
               }
             },
             {
-              "description": null,
               "name": "managementOperation",
               "type": {
                 "kind": "OBJECT",
@@ -3384,7 +3163,6 @@
               }
             },
             {
-              "description": null,
               "name": "managementOperations",
               "type": {
                 "kind": "NON_NULL",
@@ -3396,7 +3174,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolSnapshot",
               "type": {
                 "kind": "OBJECT",
@@ -3405,7 +3182,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolSnapshots",
               "type": {
                 "kind": "NON_NULL",
@@ -3417,7 +3193,6 @@
               }
             },
             {
-              "description": null,
               "name": "token",
               "type": {
                 "kind": "OBJECT",
@@ -3426,7 +3201,6 @@
               }
             },
             {
-              "description": null,
               "name": "tokens",
               "type": {
                 "kind": "NON_NULL",
@@ -3438,7 +3212,6 @@
               }
             },
             {
-              "description": null,
               "name": "tokenSnapshot",
               "type": {
                 "kind": "OBJECT",
@@ -3447,7 +3220,6 @@
               }
             },
             {
-              "description": null,
               "name": "tokenSnapshots",
               "type": {
                 "kind": "NON_NULL",
@@ -3459,7 +3231,6 @@
               }
             },
             {
-              "description": null,
               "name": "tradePair",
               "type": {
                 "kind": "OBJECT",
@@ -3468,7 +3239,6 @@
               }
             },
             {
-              "description": null,
               "name": "tradePairs",
               "type": {
                 "kind": "NON_NULL",
@@ -3480,7 +3250,6 @@
               }
             },
             {
-              "description": null,
               "name": "tradePairSnapshot",
               "type": {
                 "kind": "OBJECT",
@@ -3489,7 +3258,6 @@
               }
             },
             {
-              "description": null,
               "name": "tradePairSnapshots",
               "type": {
                 "kind": "NON_NULL",
@@ -3501,7 +3269,6 @@
               }
             },
             {
-              "description": null,
               "name": "balancerSnapshot",
               "type": {
                 "kind": "OBJECT",
@@ -3510,7 +3277,6 @@
               }
             },
             {
-              "description": null,
               "name": "balancerSnapshots",
               "type": {
                 "kind": "NON_NULL",
@@ -3522,7 +3288,6 @@
               }
             },
             {
-              "description": null,
               "name": "protocolIdData",
               "type": {
                 "kind": "OBJECT",
@@ -3531,7 +3296,6 @@
               }
             },
             {
-              "description": null,
               "name": "protocolIdDatas",
               "type": {
                 "kind": "NON_NULL",
@@ -3543,7 +3307,6 @@
               }
             },
             {
-              "description": null,
               "name": "fxoracle",
               "type": {
                 "kind": "OBJECT",
@@ -3552,7 +3315,6 @@
               }
             },
             {
-              "description": null,
               "name": "fxoracles",
               "type": {
                 "kind": "NON_NULL",
@@ -3564,7 +3326,6 @@
               }
             },
             {
-              "description": "Access to subgraph metadata",
               "name": "_meta",
               "type": {
                 "kind": "OBJECT",
@@ -3573,12 +3334,12 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "Subscription"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -3590,7 +3351,6 @@
               }
             },
             {
-              "description": null,
               "name": "caller",
               "type": {
                 "kind": "NON_NULL",
@@ -3602,7 +3362,6 @@
               }
             },
             {
-              "description": null,
               "name": "tokenIn",
               "type": {
                 "kind": "NON_NULL",
@@ -3614,7 +3373,6 @@
               }
             },
             {
-              "description": null,
               "name": "tokenInSym",
               "type": {
                 "kind": "NON_NULL",
@@ -3626,7 +3384,6 @@
               }
             },
             {
-              "description": null,
               "name": "tokenOut",
               "type": {
                 "kind": "NON_NULL",
@@ -3638,7 +3395,6 @@
               }
             },
             {
-              "description": null,
               "name": "tokenOutSym",
               "type": {
                 "kind": "NON_NULL",
@@ -3650,7 +3406,6 @@
               }
             },
             {
-              "description": null,
               "name": "tokenAmountIn",
               "type": {
                 "kind": "NON_NULL",
@@ -3662,7 +3417,6 @@
               }
             },
             {
-              "description": null,
               "name": "tokenAmountOut",
               "type": {
                 "kind": "NON_NULL",
@@ -3674,7 +3428,6 @@
               }
             },
             {
-              "description": null,
               "name": "valueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -3686,7 +3439,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolId",
               "type": {
                 "kind": "NON_NULL",
@@ -3698,7 +3450,6 @@
               }
             },
             {
-              "description": null,
               "name": "userAddress",
               "type": {
                 "kind": "NON_NULL",
@@ -3710,7 +3461,6 @@
               }
             },
             {
-              "description": null,
               "name": "timestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -3722,7 +3472,6 @@
               }
             },
             {
-              "description": null,
               "name": "block",
               "type": {
                 "kind": "SCALAR",
@@ -3731,7 +3480,6 @@
               }
             },
             {
-              "description": null,
               "name": "tx",
               "type": {
                 "kind": "NON_NULL",
@@ -3743,12 +3491,12 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "Swap"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -3760,7 +3508,6 @@
               }
             },
             {
-              "description": null,
               "name": "pool",
               "type": {
                 "kind": "NON_NULL",
@@ -3772,7 +3519,6 @@
               }
             },
             {
-              "description": null,
               "name": "scheduledTimestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -3784,7 +3530,6 @@
               }
             },
             {
-              "description": null,
               "name": "startTimestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -3796,7 +3541,6 @@
               }
             },
             {
-              "description": null,
               "name": "endTimestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -3808,7 +3552,6 @@
               }
             },
             {
-              "description": null,
               "name": "startSwapFeePercentage",
               "type": {
                 "kind": "NON_NULL",
@@ -3820,7 +3563,6 @@
               }
             },
             {
-              "description": null,
               "name": "endSwapFeePercentage",
               "type": {
                 "kind": "NON_NULL",
@@ -3832,32 +3574,37 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "SwapFeeUpdate"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "SwapFeeUpdate_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "SwapFeeUpdate_orderBy"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "Swap_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "Swap_orderBy"
         },
         {
           "fields": null,
+          "kind": "SCALAR",
           "name": "Timestamp"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -3869,7 +3616,6 @@
               }
             },
             {
-              "description": null,
               "name": "symbol",
               "type": {
                 "kind": "SCALAR",
@@ -3878,7 +3624,6 @@
               }
             },
             {
-              "description": null,
               "name": "name",
               "type": {
                 "kind": "SCALAR",
@@ -3887,7 +3632,6 @@
               }
             },
             {
-              "description": null,
               "name": "decimals",
               "type": {
                 "kind": "NON_NULL",
@@ -3899,7 +3643,6 @@
               }
             },
             {
-              "description": null,
               "name": "address",
               "type": {
                 "kind": "NON_NULL",
@@ -3911,7 +3654,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalBalanceUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -3923,7 +3665,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalBalanceNotional",
               "type": {
                 "kind": "NON_NULL",
@@ -3935,7 +3676,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalVolumeUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -3947,7 +3687,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalVolumeNotional",
               "type": {
                 "kind": "NON_NULL",
@@ -3959,7 +3698,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalSwapCount",
               "type": {
                 "kind": "NON_NULL",
@@ -3971,7 +3709,6 @@
               }
             },
             {
-              "description": null,
               "name": "latestPrice",
               "type": {
                 "kind": "OBJECT",
@@ -3980,7 +3717,6 @@
               }
             },
             {
-              "description": null,
               "name": "latestUSDPrice",
               "type": {
                 "kind": "SCALAR",
@@ -3989,7 +3725,6 @@
               }
             },
             {
-              "description": null,
               "name": "latestUSDPriceTimestamp",
               "type": {
                 "kind": "SCALAR",
@@ -3998,7 +3733,6 @@
               }
             },
             {
-              "description": null,
               "name": "latestFXPrice",
               "type": {
                 "kind": "SCALAR",
@@ -4007,7 +3741,6 @@
               }
             },
             {
-              "description": null,
               "name": "pool",
               "type": {
                 "kind": "OBJECT",
@@ -4016,7 +3749,6 @@
               }
             },
             {
-              "description": null,
               "name": "fxOracleDecimals",
               "type": {
                 "kind": "SCALAR",
@@ -4025,12 +3757,12 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "Token"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -4042,7 +3774,6 @@
               }
             },
             {
-              "description": null,
               "name": "poolId",
               "type": {
                 "kind": "NON_NULL",
@@ -4054,7 +3785,6 @@
               }
             },
             {
-              "description": null,
               "name": "asset",
               "type": {
                 "kind": "NON_NULL",
@@ -4066,7 +3796,6 @@
               }
             },
             {
-              "description": null,
               "name": "amount",
               "type": {
                 "kind": "NON_NULL",
@@ -4078,7 +3807,6 @@
               }
             },
             {
-              "description": null,
               "name": "pricingAsset",
               "type": {
                 "kind": "NON_NULL",
@@ -4090,7 +3818,6 @@
               }
             },
             {
-              "description": null,
               "name": "price",
               "type": {
                 "kind": "NON_NULL",
@@ -4102,7 +3829,6 @@
               }
             },
             {
-              "description": null,
               "name": "block",
               "type": {
                 "kind": "NON_NULL",
@@ -4114,7 +3840,6 @@
               }
             },
             {
-              "description": null,
               "name": "timestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -4126,20 +3851,22 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "TokenPrice"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "TokenPrice_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "TokenPrice_orderBy"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -4151,7 +3878,6 @@
               }
             },
             {
-              "description": null,
               "name": "token",
               "type": {
                 "kind": "NON_NULL",
@@ -4163,7 +3889,6 @@
               }
             },
             {
-              "description": null,
               "name": "timestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -4175,7 +3900,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalBalanceUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -4187,7 +3911,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalBalanceNotional",
               "type": {
                 "kind": "NON_NULL",
@@ -4199,7 +3922,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalVolumeUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -4211,7 +3933,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalVolumeNotional",
               "type": {
                 "kind": "NON_NULL",
@@ -4223,7 +3944,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalSwapCount",
               "type": {
                 "kind": "NON_NULL",
@@ -4235,28 +3955,32 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "TokenSnapshot"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "TokenSnapshot_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "TokenSnapshot_orderBy"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "Token_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "Token_orderBy"
         },
         {
           "fields": [
             {
-              "description": "Token Address - Token Address",
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -4268,7 +3992,6 @@
               }
             },
             {
-              "description": null,
               "name": "token0",
               "type": {
                 "kind": "NON_NULL",
@@ -4280,7 +4003,6 @@
               }
             },
             {
-              "description": null,
               "name": "token1",
               "type": {
                 "kind": "NON_NULL",
@@ -4292,7 +4014,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalSwapVolume",
               "type": {
                 "kind": "NON_NULL",
@@ -4304,7 +4025,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalSwapFee",
               "type": {
                 "kind": "NON_NULL",
@@ -4316,12 +4036,12 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "TradePair"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -4333,7 +4053,6 @@
               }
             },
             {
-              "description": null,
               "name": "pair",
               "type": {
                 "kind": "NON_NULL",
@@ -4345,7 +4064,6 @@
               }
             },
             {
-              "description": null,
               "name": "timestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -4357,7 +4075,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalSwapVolume",
               "type": {
                 "kind": "NON_NULL",
@@ -4369,7 +4086,6 @@
               }
             },
             {
-              "description": null,
               "name": "totalSwapFee",
               "type": {
                 "kind": "NON_NULL",
@@ -4381,28 +4097,32 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "TradePairSnapshot"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "TradePairSnapshot_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "TradePairSnapshot_orderBy"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "TradePair_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "TradePair_orderBy"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -4414,7 +4134,6 @@
               }
             },
             {
-              "description": null,
               "name": "sharesOwned",
               "type": {
                 "kind": "LIST",
@@ -4426,7 +4145,6 @@
               }
             },
             {
-              "description": null,
               "name": "swaps",
               "type": {
                 "kind": "LIST",
@@ -4438,7 +4156,6 @@
               }
             },
             {
-              "description": null,
               "name": "userInternalBalances",
               "type": {
                 "kind": "LIST",
@@ -4450,12 +4167,12 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "User"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -4467,7 +4184,6 @@
               }
             },
             {
-              "description": null,
               "name": "userAddress",
               "type": {
                 "kind": "OBJECT",
@@ -4476,7 +4192,6 @@
               }
             },
             {
-              "description": null,
               "name": "token",
               "type": {
                 "kind": "NON_NULL",
@@ -4488,7 +4203,6 @@
               }
             },
             {
-              "description": null,
               "name": "tokenInfo",
               "type": {
                 "kind": "OBJECT",
@@ -4497,7 +4211,6 @@
               }
             },
             {
-              "description": null,
               "name": "balance",
               "type": {
                 "kind": "NON_NULL",
@@ -4509,28 +4222,32 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "UserInternalBalance"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "UserInternalBalance_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "UserInternalBalance_orderBy"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "User_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "User_orderBy"
         },
         {
           "fields": [
             {
-              "description": "The hash of the block",
               "name": "hash",
               "type": {
                 "kind": "SCALAR",
@@ -4539,7 +4256,6 @@
               }
             },
             {
-              "description": "The block number",
               "name": "number",
               "type": {
                 "kind": "NON_NULL",
@@ -4551,7 +4267,6 @@
               }
             },
             {
-              "description": "Integer representation of the timestamp stored in blocks for the chain",
               "name": "timestamp",
               "type": {
                 "kind": "SCALAR",
@@ -4560,7 +4275,6 @@
               }
             },
             {
-              "description": "The hash of the parent block",
               "name": "parentHash",
               "type": {
                 "kind": "SCALAR",
@@ -4569,12 +4283,12 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "_Block_"
         },
         {
           "fields": [
             {
-              "description": "Information about a specific subgraph block. The hash of the block\nwill be null if the _meta field has a block constraint that asks for\na block number. It will be filled if the _meta field has no block constraint\nand therefore asks for the latest  block\n",
               "name": "block",
               "type": {
                 "kind": "NON_NULL",
@@ -4586,7 +4300,6 @@
               }
             },
             {
-              "description": "The deployment ID",
               "name": "deployment",
               "type": {
                 "kind": "NON_NULL",
@@ -4598,7 +4311,6 @@
               }
             },
             {
-              "description": "If `true`, the subgraph encountered indexing errors at some past block",
               "name": "hasIndexingErrors",
               "type": {
                 "kind": "NON_NULL",
@@ -4610,10 +4322,12 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "_Meta_"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "_SubgraphErrorPolicy_"
         }
       ]

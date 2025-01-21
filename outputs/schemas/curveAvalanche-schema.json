@@ -5,7 +5,6 @@
         {
           "fields": [
             {
-              "description": " Address of the account ",
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -17,20 +16,22 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "Account"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "Account_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "Account_orderBy"
         },
         {
           "fields": [
             {
-              "description": " { daily/hourly }-{ Address of the account }-{ Days/hours since Unix epoch } ",
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -42,48 +43,57 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "ActiveAccount"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "ActiveAccount_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "ActiveAccount_orderBy"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "Aggregation_interval"
         },
         {
           "fields": null,
+          "kind": "SCALAR",
           "name": "BigDecimal"
         },
         {
           "fields": null,
+          "kind": "SCALAR",
           "name": "BigInt"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "BlockChangedFilter"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "Block_height"
         },
         {
           "fields": null,
+          "kind": "SCALAR",
           "name": "Boolean"
         },
         {
           "fields": null,
+          "kind": "SCALAR",
           "name": "Bytes"
         },
         {
           "fields": [
             {
-              "description": " deposit-{ Transaction hash }-{ Log index } ",
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -95,7 +105,6 @@
               }
             },
             {
-              "description": " Transaction hash of the transaction that emitted this event ",
               "name": "hash",
               "type": {
                 "kind": "NON_NULL",
@@ -107,7 +116,6 @@
               }
             },
             {
-              "description": " Event log index. For transactions that don't emit event, create arbitrary index starting from 0 ",
               "name": "logIndex",
               "type": {
                 "kind": "NON_NULL",
@@ -119,7 +127,6 @@
               }
             },
             {
-              "description": " The protocol this transaction belongs to ",
               "name": "protocol",
               "type": {
                 "kind": "NON_NULL",
@@ -131,7 +138,6 @@
               }
             },
             {
-              "description": " Address that received the tokens ",
               "name": "to",
               "type": {
                 "kind": "NON_NULL",
@@ -143,7 +149,6 @@
               }
             },
             {
-              "description": " Address that sent the tokens ",
               "name": "from",
               "type": {
                 "kind": "NON_NULL",
@@ -155,7 +160,6 @@
               }
             },
             {
-              "description": " Block number of this event ",
               "name": "blockNumber",
               "type": {
                 "kind": "NON_NULL",
@@ -167,7 +171,6 @@
               }
             },
             {
-              "description": " Timestamp of this event ",
               "name": "timestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -179,7 +182,6 @@
               }
             },
             {
-              "description": " Input tokens of the pool. E.g. WETH and USDC to a WETH-USDC pool ",
               "name": "inputTokens",
               "type": {
                 "kind": "NON_NULL",
@@ -191,7 +193,6 @@
               }
             },
             {
-              "description": " Output token of the pool. E.g. the UNI-LP token ",
               "name": "outputToken",
               "type": {
                 "kind": "OBJECT",
@@ -200,7 +201,6 @@
               }
             },
             {
-              "description": " Amount of input tokens in the token's native unit ",
               "name": "inputTokenAmounts",
               "type": {
                 "kind": "NON_NULL",
@@ -212,7 +212,6 @@
               }
             },
             {
-              "description": " Amount of output tokens in the token's native unit ",
               "name": "outputTokenAmount",
               "type": {
                 "kind": "SCALAR",
@@ -221,7 +220,6 @@
               }
             },
             {
-              "description": " USD-normalized value of the transaction of the underlying (e.g. sum of tokens deposited into a pool) ",
               "name": "amountUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -233,7 +231,6 @@
               }
             },
             {
-              "description": " The pool involving this transaction ",
               "name": "pool",
               "type": {
                 "kind": "NON_NULL",
@@ -245,20 +242,22 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "Deposit"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "Deposit_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "Deposit_orderBy"
         },
         {
           "fields": [
             {
-              "description": " Smart contract address of the protocol's main contract (Factory, Registry, etc) ",
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -270,7 +269,6 @@
               }
             },
             {
-              "description": " Name of the protocol, including version. e.g. Uniswap v3 ",
               "name": "name",
               "type": {
                 "kind": "NON_NULL",
@@ -282,7 +280,6 @@
               }
             },
             {
-              "description": " Slug of protocol, including version. e.g. uniswap-v3 ",
               "name": "slug",
               "type": {
                 "kind": "NON_NULL",
@@ -294,7 +291,6 @@
               }
             },
             {
-              "description": " Version of the subgraph schema, in SemVer format (e.g. 1.0.0) ",
               "name": "schemaVersion",
               "type": {
                 "kind": "NON_NULL",
@@ -306,7 +302,6 @@
               }
             },
             {
-              "description": " Version of the subgraph implementation, in SemVer format (e.g. 1.0.0) ",
               "name": "subgraphVersion",
               "type": {
                 "kind": "NON_NULL",
@@ -318,7 +313,6 @@
               }
             },
             {
-              "description": " Version of the methodology used to compute metrics, loosely based on SemVer format (e.g. 1.0.0) ",
               "name": "methodologyVersion",
               "type": {
                 "kind": "NON_NULL",
@@ -330,7 +324,6 @@
               }
             },
             {
-              "description": " The blockchain network this subgraph is indexing on ",
               "name": "network",
               "type": {
                 "kind": "NON_NULL",
@@ -342,7 +335,6 @@
               }
             },
             {
-              "description": " The type of protocol (e.g. DEX, Lending, Yield, etc) ",
               "name": "type",
               "type": {
                 "kind": "NON_NULL",
@@ -354,7 +346,6 @@
               }
             },
             {
-              "description": " Current TVL (Total Value Locked) of the entire protocol ",
               "name": "totalValueLockedUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -366,7 +357,6 @@
               }
             },
             {
-              "description": " Current PCV (Protocol Controlled Value). Only relevant for protocols with PCV. ",
               "name": "protocolControlledValueUSD",
               "type": {
                 "kind": "SCALAR",
@@ -375,7 +365,6 @@
               }
             },
             {
-              "description": " All historical volume in USD ",
               "name": "cumulativeVolumeUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -387,7 +376,6 @@
               }
             },
             {
-              "description": " Revenue claimed by suppliers to the protocol. LPs on DEXs (e.g. 0.25% of the swap fee in Sushiswap). Depositors on Lending Protocols. NFT sellers on OpenSea. ",
               "name": "cumulativeSupplySideRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -399,7 +387,6 @@
               }
             },
             {
-              "description": " Gross revenue for the protocol (revenue claimed by protocol). Examples: AMM protocol fee (Sushi’s 0.05%). OpenSea 10% sell fee. ",
               "name": "cumulativeProtocolSideRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -411,7 +398,6 @@
               }
             },
             {
-              "description": " All revenue generated by the protocol. e.g. 0.30% of swap fee in Sushiswap, all yield generated by Yearn. ",
               "name": "cumulativeTotalRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -423,7 +409,6 @@
               }
             },
             {
-              "description": " Number of cumulative unique users ",
               "name": "cumulativeUniqueUsers",
               "type": {
                 "kind": "NON_NULL",
@@ -435,7 +420,6 @@
               }
             },
             {
-              "description": " Total number of pools ",
               "name": "totalPoolCount",
               "type": {
                 "kind": "NON_NULL",
@@ -447,7 +431,6 @@
               }
             },
             {
-              "description": " Daily usage metrics for this protocol ",
               "name": "dailyUsageMetrics",
               "type": {
                 "kind": "NON_NULL",
@@ -459,7 +442,6 @@
               }
             },
             {
-              "description": " Hourly usage metrics for this protocol ",
               "name": "hourlyUsageMetrics",
               "type": {
                 "kind": "NON_NULL",
@@ -471,7 +453,6 @@
               }
             },
             {
-              "description": " Daily financial metrics for this protocol ",
               "name": "financialMetrics",
               "type": {
                 "kind": "NON_NULL",
@@ -483,7 +464,6 @@
               }
             },
             {
-              "description": " All pools that belong to this protocol ",
               "name": "pools",
               "type": {
                 "kind": "NON_NULL",
@@ -495,7 +475,6 @@
               }
             },
             {
-              "description": null,
               "name": "_poolIds",
               "type": {
                 "kind": "NON_NULL",
@@ -507,20 +486,22 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "DexAmmProtocol"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "DexAmmProtocol_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "DexAmmProtocol_orderBy"
         },
         {
           "fields": [
             {
-              "description": " { Event type }-{ Transaction hash }-{ Log index } ",
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -532,7 +513,6 @@
               }
             },
             {
-              "description": " Transaction hash of the transaction that emitted this event ",
               "name": "hash",
               "type": {
                 "kind": "NON_NULL",
@@ -544,7 +524,6 @@
               }
             },
             {
-              "description": " Event log index. For transactions that don't emit event, create arbitrary index starting from 0 ",
               "name": "logIndex",
               "type": {
                 "kind": "NON_NULL",
@@ -556,7 +535,6 @@
               }
             },
             {
-              "description": " The protocol this transaction belongs to ",
               "name": "protocol",
               "type": {
                 "kind": "NON_NULL",
@@ -568,7 +546,6 @@
               }
             },
             {
-              "description": " Address that received the tokens ",
               "name": "to",
               "type": {
                 "kind": "NON_NULL",
@@ -580,7 +557,6 @@
               }
             },
             {
-              "description": " Address that sent the tokens ",
               "name": "from",
               "type": {
                 "kind": "NON_NULL",
@@ -592,7 +568,6 @@
               }
             },
             {
-              "description": " Block number of this event ",
               "name": "blockNumber",
               "type": {
                 "kind": "NON_NULL",
@@ -604,7 +579,6 @@
               }
             },
             {
-              "description": " Timestamp of this event ",
               "name": "timestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -616,20 +590,22 @@
               }
             }
           ],
+          "kind": "INTERFACE",
           "name": "Event"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "Event_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "Event_orderBy"
         },
         {
           "fields": [
             {
-              "description": " ID is # of days since Unix epoch time ",
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -641,7 +617,6 @@
               }
             },
             {
-              "description": " Protocol this snapshot is associated with ",
               "name": "protocol",
               "type": {
                 "kind": "NON_NULL",
@@ -653,7 +628,6 @@
               }
             },
             {
-              "description": " Current TVL (Total Value Locked) of the entire protocol ",
               "name": "totalValueLockedUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -665,7 +639,6 @@
               }
             },
             {
-              "description": " Current PCV (Protocol Controlled Value). Only relevant for protocols with PCV. ",
               "name": "protocolControlledValueUSD",
               "type": {
                 "kind": "SCALAR",
@@ -674,7 +647,6 @@
               }
             },
             {
-              "description": " All trade volume occurred in a given day, in USD ",
               "name": "dailyVolumeUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -686,7 +658,6 @@
               }
             },
             {
-              "description": " All historical trade volume in USD ",
               "name": "cumulativeVolumeUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -698,7 +669,6 @@
               }
             },
             {
-              "description": " Revenue claimed by suppliers to the protocol. LPs on DEXs (e.g. 0.25% of the swap fee in Sushiswap). Depositors on Lending Protocols. NFT sellers on OpenSea. ",
               "name": "dailySupplySideRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -710,7 +680,6 @@
               }
             },
             {
-              "description": " Revenue claimed by suppliers to the protocol. LPs on DEXs (e.g. 0.25% of the swap fee in Sushiswap). Depositors on Lending Protocols. NFT sellers on OpenSea. ",
               "name": "cumulativeSupplySideRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -722,7 +691,6 @@
               }
             },
             {
-              "description": " Gross revenue for the protocol (revenue claimed by protocol). Examples: AMM protocol fee (Sushi’s 0.05%). OpenSea 10% sell fee. ",
               "name": "dailyProtocolSideRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -734,7 +702,6 @@
               }
             },
             {
-              "description": " Gross revenue for the protocol (revenue claimed by protocol). Examples: AMM protocol fee (Sushi’s 0.05%). OpenSea 10% sell fee. ",
               "name": "cumulativeProtocolSideRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -746,7 +713,6 @@
               }
             },
             {
-              "description": " All revenue generated by the protocol. e.g. 0.30% of swap fee in Sushiswap, all yield generated by Yearn. ",
               "name": "dailyTotalRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -758,7 +724,6 @@
               }
             },
             {
-              "description": " All revenue generated by the protocol. e.g. 0.30% of swap fee in Sushiswap, all yield generated by Yearn. ",
               "name": "cumulativeTotalRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -770,7 +735,6 @@
               }
             },
             {
-              "description": " Block number of this snapshot ",
               "name": "blockNumber",
               "type": {
                 "kind": "NON_NULL",
@@ -782,7 +746,6 @@
               }
             },
             {
-              "description": " Timestamp of this snapshot ",
               "name": "timestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -794,36 +757,42 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "FinancialsDailySnapshot"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "FinancialsDailySnapshot_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "FinancialsDailySnapshot_orderBy"
         },
         {
           "fields": null,
+          "kind": "SCALAR",
           "name": "Float"
         },
         {
           "fields": null,
+          "kind": "SCALAR",
           "name": "ID"
         },
         {
           "fields": null,
+          "kind": "SCALAR",
           "name": "Int"
         },
         {
           "fields": null,
+          "kind": "SCALAR",
           "name": "Int8"
         },
         {
           "fields": [
             {
-              "description": " Smart contract address of the pool ",
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -835,7 +804,6 @@
               }
             },
             {
-              "description": " The protocol this pool belongs to ",
               "name": "protocol",
               "type": {
                 "kind": "NON_NULL",
@@ -847,7 +815,6 @@
               }
             },
             {
-              "description": " Name of liquidity pool (e.g. Curve.fi DAI/USDC/USDT) ",
               "name": "name",
               "type": {
                 "kind": "SCALAR",
@@ -856,7 +823,6 @@
               }
             },
             {
-              "description": " Symbol of liquidity pool (e.g. 3CRV) ",
               "name": "symbol",
               "type": {
                 "kind": "SCALAR",
@@ -865,7 +831,6 @@
               }
             },
             {
-              "description": " Tokens that need to be deposited to take a position in protocol. e.g. WETH and USDC to deposit into the WETH-USDC pool. Array to account for multi-asset pools like Curve and Balancer ",
               "name": "inputTokens",
               "type": {
                 "kind": "NON_NULL",
@@ -877,7 +842,6 @@
               }
             },
             {
-              "description": " inputTokens in native (contract) order ",
               "name": "_inputTokensOrdered",
               "type": {
                 "kind": "NON_NULL",
@@ -889,7 +853,6 @@
               }
             },
             {
-              "description": " Token that is minted to track ownership of position in protocol ",
               "name": "outputToken",
               "type": {
                 "kind": "OBJECT",
@@ -898,7 +861,6 @@
               }
             },
             {
-              "description": " Aditional tokens that are given as reward for position in a protocol, usually in liquidity mining programs. e.g. SUSHI in the Onsen program, MATIC for Aave Polygon, usually in liquidity mining programs. e.g. SUSHI in the Onsen program, MATIC for Aave Polygon ",
               "name": "rewardTokens",
               "type": {
                 "kind": "LIST",
@@ -910,7 +872,6 @@
               }
             },
             {
-              "description": " Fees per trade incurred to the user. Should include all fees that apply to a pool (e.g. Curve has a trading fee AND an admin fee, which is a portion of the trading fee. Uniswap only has a trading fee and no protocol fee. ) ",
               "name": "fees",
               "type": {
                 "kind": "NON_NULL",
@@ -922,7 +883,6 @@
               }
             },
             {
-              "description": " Whether this pool is single-sided (e.g. Bancor, Platypus's Alternative Pool). The specifics of the implementation depends on the protocol. ",
               "name": "isSingleSided",
               "type": {
                 "kind": "NON_NULL",
@@ -934,7 +894,6 @@
               }
             },
             {
-              "description": " Creation timestamp ",
               "name": "createdTimestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -946,7 +905,6 @@
               }
             },
             {
-              "description": " Creation block number ",
               "name": "createdBlockNumber",
               "type": {
                 "kind": "NON_NULL",
@@ -958,7 +916,6 @@
               }
             },
             {
-              "description": " Current TVL (Total Value Locked) of this pool in USD ",
               "name": "totalValueLockedUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -970,7 +927,6 @@
               }
             },
             {
-              "description": " Current TVL (Total Value Locked) of this pool in USD excluding base pool lp tokens ",
               "name": "_tvlUSDExcludingBasePoolLpTokens",
               "type": {
                 "kind": "NON_NULL",
@@ -982,7 +938,6 @@
               }
             },
             {
-              "description": " All revenue generated by the liquidity pool, accrued to the supply side. ",
               "name": "cumulativeSupplySideRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -994,7 +949,6 @@
               }
             },
             {
-              "description": " All revenue generated by the liquidity pool, accrued to the protocol. ",
               "name": "cumulativeProtocolSideRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1006,7 +960,6 @@
               }
             },
             {
-              "description": " All revenue generated by the liquidity pool. ",
               "name": "cumulativeTotalRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1018,7 +971,6 @@
               }
             },
             {
-              "description": " All historical trade volume occurred in this pool, in USD ",
               "name": "cumulativeVolumeUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1030,7 +982,6 @@
               }
             },
             {
-              "description": " Amount of input tokens in the pool. The ordering should be the same as the pool's `inputTokens` field. ",
               "name": "inputTokenBalances",
               "type": {
                 "kind": "NON_NULL",
@@ -1042,7 +993,6 @@
               }
             },
             {
-              "description": " Weights of input tokens in the liquidity pool in percentage values. For example, 50/50 for Uniswap pools, 48.2/51.8 for a Curve pool, 10/10/80 for a Balancer pool ",
               "name": "inputTokenWeights",
               "type": {
                 "kind": "NON_NULL",
@@ -1054,7 +1004,6 @@
               }
             },
             {
-              "description": " Total supply of output token. Note that certain DEXes don't have an output token (e.g. Bancor) ",
               "name": "outputTokenSupply",
               "type": {
                 "kind": "SCALAR",
@@ -1063,7 +1012,6 @@
               }
             },
             {
-              "description": " Price per share of output token in USD ",
               "name": "outputTokenPriceUSD",
               "type": {
                 "kind": "SCALAR",
@@ -1072,7 +1020,6 @@
               }
             },
             {
-              "description": " Total supply of output tokens that are staked (usually in the MasterChef contract). Used to calculate reward APY. ",
               "name": "stakedOutputTokenAmount",
               "type": {
                 "kind": "SCALAR",
@@ -1081,7 +1028,6 @@
               }
             },
             {
-              "description": " Per-block reward token emission as of the current block normalized to a day, in token's native amount. This should be ideally calculated as the theoretical rate instead of the realized amount. ",
               "name": "rewardTokenEmissionsAmount",
               "type": {
                 "kind": "LIST",
@@ -1093,7 +1039,6 @@
               }
             },
             {
-              "description": " Per-block reward token emission as of the current block normalized to a day, in USD value. This should be ideally calculated as the theoretical rate instead of the realized amount. ",
               "name": "rewardTokenEmissionsUSD",
               "type": {
                 "kind": "LIST",
@@ -1105,7 +1050,6 @@
               }
             },
             {
-              "description": " Liquidity pool daily snapshots ",
               "name": "dailySnapshots",
               "type": {
                 "kind": "NON_NULL",
@@ -1117,7 +1061,6 @@
               }
             },
             {
-              "description": " Liquidity pool hourly snapshots ",
               "name": "hourlySnapshots",
               "type": {
                 "kind": "NON_NULL",
@@ -1129,7 +1072,6 @@
               }
             },
             {
-              "description": " All deposit (add liquidity) events occurred in this pool ",
               "name": "deposits",
               "type": {
                 "kind": "NON_NULL",
@@ -1141,7 +1083,6 @@
               }
             },
             {
-              "description": " All withdraw (remove liquidity) events occurred in this pool ",
               "name": "withdraws",
               "type": {
                 "kind": "NON_NULL",
@@ -1153,7 +1094,6 @@
               }
             },
             {
-              "description": " All trade (swap) events occurred in this pool ",
               "name": "swaps",
               "type": {
                 "kind": "NON_NULL",
@@ -1165,7 +1105,6 @@
               }
             },
             {
-              "description": " Registry that deployed this pool ",
               "name": "_registryAddress",
               "type": {
                 "kind": "NON_NULL",
@@ -1177,7 +1116,6 @@
               }
             },
             {
-              "description": " Liquidity Gauge assocaited with this pool ",
               "name": "_gaugeAddress",
               "type": {
                 "kind": "NON_NULL",
@@ -1189,7 +1127,6 @@
               }
             },
             {
-              "description": null,
               "name": "_isMetapool",
               "type": {
                 "kind": "NON_NULL",
@@ -1201,12 +1138,12 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "LiquidityPool"
         },
         {
           "fields": [
             {
-              "description": " { Smart contract address of the pool }-{ # of days since Unix epoch time } ",
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -1218,7 +1155,6 @@
               }
             },
             {
-              "description": " The protocol this snapshot belongs to ",
               "name": "protocol",
               "type": {
                 "kind": "NON_NULL",
@@ -1230,7 +1166,6 @@
               }
             },
             {
-              "description": " The pool this snapshot belongs to ",
               "name": "pool",
               "type": {
                 "kind": "NON_NULL",
@@ -1242,7 +1177,6 @@
               }
             },
             {
-              "description": " Block number of this snapshot ",
               "name": "blockNumber",
               "type": {
                 "kind": "NON_NULL",
@@ -1254,7 +1188,6 @@
               }
             },
             {
-              "description": " Timestamp of this snapshot ",
               "name": "timestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -1266,7 +1199,6 @@
               }
             },
             {
-              "description": " Current TVL (Total Value Locked) of this pool ",
               "name": "totalValueLockedUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1278,7 +1210,6 @@
               }
             },
             {
-              "description": " All revenue generated by the liquidity pool, accrued to the supply side. ",
               "name": "cumulativeSupplySideRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1290,7 +1221,6 @@
               }
             },
             {
-              "description": " Daily revenue generated by the liquidity pool, accrued to the supply side. ",
               "name": "dailySupplySideRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1302,7 +1232,6 @@
               }
             },
             {
-              "description": " All revenue generated by the liquidity pool, accrued to the protocol. ",
               "name": "cumulativeProtocolSideRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1314,7 +1243,6 @@
               }
             },
             {
-              "description": " Daily revenue generated by the liquidity pool, accrued to the protocol. ",
               "name": "dailyProtocolSideRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1326,7 +1254,6 @@
               }
             },
             {
-              "description": " All revenue generated by the liquidity pool. ",
               "name": "cumulativeTotalRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1338,7 +1265,6 @@
               }
             },
             {
-              "description": " Daily revenue generated by the liquidity pool. ",
               "name": "dailyTotalRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1350,7 +1276,6 @@
               }
             },
             {
-              "description": " All trade volume occurred in a given day, in USD ",
               "name": "dailyVolumeUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1362,7 +1287,6 @@
               }
             },
             {
-              "description": " All trade volume occurred in a given day for a specific input token, in native amount. The ordering should be the same as the pool's `inputTokens` field. ",
               "name": "dailyVolumeByTokenAmount",
               "type": {
                 "kind": "NON_NULL",
@@ -1374,7 +1298,6 @@
               }
             },
             {
-              "description": " All trade volume occurred in a given day for a specific input token, in USD. The ordering should be the same as the pool's `inputTokens` field. ",
               "name": "dailyVolumeByTokenUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1386,7 +1309,6 @@
               }
             },
             {
-              "description": " All historical trade volume occurred in this pool, in USD ",
               "name": "cumulativeVolumeUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1398,7 +1320,6 @@
               }
             },
             {
-              "description": " Amount of input tokens in the pool. The ordering should be the same as the pool's `inputTokens` field. ",
               "name": "inputTokenBalances",
               "type": {
                 "kind": "NON_NULL",
@@ -1410,7 +1331,6 @@
               }
             },
             {
-              "description": " Weights of input tokens in the liquidity pool in percentage values. For example, 50/50 for Uniswap pools, 48.2/51.8 for a Curve pool, 10/10/80 for a Balancer pool ",
               "name": "inputTokenWeights",
               "type": {
                 "kind": "NON_NULL",
@@ -1422,7 +1342,6 @@
               }
             },
             {
-              "description": " Total supply of output token. Note that certain DEXes don't have an output token (e.g. Bancor) ",
               "name": "outputTokenSupply",
               "type": {
                 "kind": "SCALAR",
@@ -1431,7 +1350,6 @@
               }
             },
             {
-              "description": " Price per share of output token in USD ",
               "name": "outputTokenPriceUSD",
               "type": {
                 "kind": "SCALAR",
@@ -1440,7 +1358,6 @@
               }
             },
             {
-              "description": " Total supply of output tokens that are staked (usually in the MasterChef contract). Used to calculate reward APY. ",
               "name": "stakedOutputTokenAmount",
               "type": {
                 "kind": "SCALAR",
@@ -1449,7 +1366,6 @@
               }
             },
             {
-              "description": " Per-block reward token emission as of the current block normalized to a day, in token's native amount. This should be ideally calculated as the theoretical rate instead of the realized amount. ",
               "name": "rewardTokenEmissionsAmount",
               "type": {
                 "kind": "LIST",
@@ -1461,7 +1377,6 @@
               }
             },
             {
-              "description": " Per-block reward token emission as of the current block normalized to a day, in USD value. This should be ideally calculated as the theoretical rate instead of the realized amount. ",
               "name": "rewardTokenEmissionsUSD",
               "type": {
                 "kind": "LIST",
@@ -1473,20 +1388,22 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "LiquidityPoolDailySnapshot"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "LiquidityPoolDailySnapshot_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "LiquidityPoolDailySnapshot_orderBy"
         },
         {
           "fields": [
             {
-              "description": " { Fee type }-{ Pool address } ",
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -1498,7 +1415,6 @@
               }
             },
             {
-              "description": " Fee as a percentage of the trade (swap) amount. Does not always apply ",
               "name": "feePercentage",
               "type": {
                 "kind": "SCALAR",
@@ -1507,7 +1423,6 @@
               }
             },
             {
-              "description": " Type of fee this pool uses ",
               "name": "feeType",
               "type": {
                 "kind": "NON_NULL",
@@ -1519,24 +1434,27 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "LiquidityPoolFee"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "LiquidityPoolFeeType"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "LiquidityPoolFee_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "LiquidityPoolFee_orderBy"
         },
         {
           "fields": [
             {
-              "description": " { Smart contract address of the pool }-{ # of hours since Unix epoch time } ",
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -1548,7 +1466,6 @@
               }
             },
             {
-              "description": " The protocol this snapshot belongs to ",
               "name": "protocol",
               "type": {
                 "kind": "NON_NULL",
@@ -1560,7 +1477,6 @@
               }
             },
             {
-              "description": " The pool this snapshot belongs to ",
               "name": "pool",
               "type": {
                 "kind": "NON_NULL",
@@ -1572,7 +1488,6 @@
               }
             },
             {
-              "description": " Block number of this snapshot ",
               "name": "blockNumber",
               "type": {
                 "kind": "NON_NULL",
@@ -1584,7 +1499,6 @@
               }
             },
             {
-              "description": " Timestamp of this snapshot ",
               "name": "timestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -1596,7 +1510,6 @@
               }
             },
             {
-              "description": " Current TVL (Total Value Locked) of this pool ",
               "name": "totalValueLockedUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1608,7 +1521,6 @@
               }
             },
             {
-              "description": " All revenue generated by the liquidity pool, accrued to the supply side. ",
               "name": "cumulativeSupplySideRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1620,7 +1532,6 @@
               }
             },
             {
-              "description": " Hourly revenue generated by the liquidity pool, accrued to the supply side. ",
               "name": "hourlySupplySideRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1632,7 +1543,6 @@
               }
             },
             {
-              "description": " All revenue generated by the liquidity pool, accrued to the protocol. ",
               "name": "cumulativeProtocolSideRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1644,7 +1554,6 @@
               }
             },
             {
-              "description": " Hourly revenue generated by the liquidity pool, accrued to the protocol. ",
               "name": "hourlyProtocolSideRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1656,7 +1565,6 @@
               }
             },
             {
-              "description": " All revenue generated by the liquidity pool. ",
               "name": "cumulativeTotalRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1668,7 +1576,6 @@
               }
             },
             {
-              "description": " Hourly revenue generated by the liquidity pool. ",
               "name": "hourlyTotalRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1680,7 +1587,6 @@
               }
             },
             {
-              "description": " All trade volume occurred in a given hour, in USD ",
               "name": "hourlyVolumeUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1692,7 +1598,6 @@
               }
             },
             {
-              "description": " All trade volume occurred in a given hour for a specific input token, in native amount. The ordering should be the same as the pool's `inputTokens` field. ",
               "name": "hourlyVolumeByTokenAmount",
               "type": {
                 "kind": "NON_NULL",
@@ -1704,7 +1609,6 @@
               }
             },
             {
-              "description": " All trade volume occurred in a given hour for a specific input token, in USD. The ordering should be the same as the pool's `inputTokens` field. ",
               "name": "hourlyVolumeByTokenUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1716,7 +1620,6 @@
               }
             },
             {
-              "description": " All historical trade volume occurred in this pool, in USD ",
               "name": "cumulativeVolumeUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1728,7 +1631,6 @@
               }
             },
             {
-              "description": " Amount of input tokens in the pool. The ordering should be the same as the pool's `inputTokens` field. ",
               "name": "inputTokenBalances",
               "type": {
                 "kind": "NON_NULL",
@@ -1740,7 +1642,6 @@
               }
             },
             {
-              "description": " Weights of input tokens in the liquidity pool in percentage values. For example, 50/50 for Uniswap pools, 48.2/51.8 for a Curve pool, 10/10/80 for a Balancer pool ",
               "name": "inputTokenWeights",
               "type": {
                 "kind": "NON_NULL",
@@ -1752,7 +1653,6 @@
               }
             },
             {
-              "description": " Total supply of output token. Note that certain DEXes don't have an output token (e.g. Bancor) ",
               "name": "outputTokenSupply",
               "type": {
                 "kind": "SCALAR",
@@ -1761,7 +1661,6 @@
               }
             },
             {
-              "description": " Price per share of output token in USD ",
               "name": "outputTokenPriceUSD",
               "type": {
                 "kind": "SCALAR",
@@ -1770,7 +1669,6 @@
               }
             },
             {
-              "description": " Total supply of output tokens that are staked (usually in the MasterChef contract). Used to calculate reward APY. ",
               "name": "stakedOutputTokenAmount",
               "type": {
                 "kind": "SCALAR",
@@ -1779,7 +1677,6 @@
               }
             },
             {
-              "description": " Per-block reward token emission as of the current block normalized to a day (not hour), in token's native amount. This should be ideally calculated as the theoretical rate instead of the realized amount. ",
               "name": "rewardTokenEmissionsAmount",
               "type": {
                 "kind": "LIST",
@@ -1791,7 +1688,6 @@
               }
             },
             {
-              "description": " Per-block reward token emission as of the current block normalized to a day (not hour), in USD value. This should be ideally calculated as the theoretical rate instead of the realized amount. ",
               "name": "rewardTokenEmissionsUSD",
               "type": {
                 "kind": "LIST",
@@ -1803,36 +1699,42 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "LiquidityPoolHourlySnapshot"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "LiquidityPoolHourlySnapshot_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "LiquidityPoolHourlySnapshot_orderBy"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "LiquidityPool_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "LiquidityPool_orderBy"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "Network"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "OrderDirection"
         },
         {
           "fields": [
             {
-              "description": " Smart contract address of the protocol's main contract (Factory, Registry, etc) ",
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -1844,7 +1746,6 @@
               }
             },
             {
-              "description": " Name of the protocol, including version. e.g. Uniswap v3 ",
               "name": "name",
               "type": {
                 "kind": "NON_NULL",
@@ -1856,7 +1757,6 @@
               }
             },
             {
-              "description": " Slug of protocol, including version. e.g. uniswap-v3 ",
               "name": "slug",
               "type": {
                 "kind": "NON_NULL",
@@ -1868,7 +1768,6 @@
               }
             },
             {
-              "description": " Version of the subgraph schema, in SemVer format (e.g. 1.0.0) ",
               "name": "schemaVersion",
               "type": {
                 "kind": "NON_NULL",
@@ -1880,7 +1779,6 @@
               }
             },
             {
-              "description": " Version of the subgraph implementation, in SemVer format (e.g. 1.0.0) ",
               "name": "subgraphVersion",
               "type": {
                 "kind": "NON_NULL",
@@ -1892,7 +1790,6 @@
               }
             },
             {
-              "description": " Version of the methodology used to compute metrics, loosely based on SemVer format (e.g. 1.0.0) ",
               "name": "methodologyVersion",
               "type": {
                 "kind": "NON_NULL",
@@ -1904,7 +1801,6 @@
               }
             },
             {
-              "description": " The blockchain network this subgraph is indexing on ",
               "name": "network",
               "type": {
                 "kind": "NON_NULL",
@@ -1916,7 +1812,6 @@
               }
             },
             {
-              "description": " The type of protocol (e.g. DEX, Lending, Yield, etc) ",
               "name": "type",
               "type": {
                 "kind": "NON_NULL",
@@ -1928,7 +1823,6 @@
               }
             },
             {
-              "description": " Current TVL (Total Value Locked) of the entire protocol ",
               "name": "totalValueLockedUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1940,7 +1834,6 @@
               }
             },
             {
-              "description": " Current PCV (Protocol Controlled Value). Only relevant for protocols with PCV. ",
               "name": "protocolControlledValueUSD",
               "type": {
                 "kind": "SCALAR",
@@ -1949,7 +1842,6 @@
               }
             },
             {
-              "description": " Revenue claimed by suppliers to the protocol. LPs on DEXs (e.g. 0.25% of the swap fee in Sushiswap). Depositors on Lending Protocols. NFT sellers on OpenSea. ",
               "name": "cumulativeSupplySideRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1961,7 +1853,6 @@
               }
             },
             {
-              "description": " Gross revenue for the protocol (revenue claimed by protocol). Examples: AMM protocol fee (Sushi’s 0.05%). OpenSea 10% sell fee. ",
               "name": "cumulativeProtocolSideRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1973,7 +1864,6 @@
               }
             },
             {
-              "description": " All revenue generated by the protocol. e.g. 0.30% of swap fee in Sushiswap, all yield generated by Yearn. ",
               "name": "cumulativeTotalRevenueUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -1985,7 +1875,6 @@
               }
             },
             {
-              "description": " Number of cumulative unique users ",
               "name": "cumulativeUniqueUsers",
               "type": {
                 "kind": "NON_NULL",
@@ -1997,7 +1886,6 @@
               }
             },
             {
-              "description": " Total number of pools ",
               "name": "totalPoolCount",
               "type": {
                 "kind": "NON_NULL",
@@ -2009,7 +1897,6 @@
               }
             },
             {
-              "description": " Daily usage metrics for this protocol ",
               "name": "dailyUsageMetrics",
               "type": {
                 "kind": "NON_NULL",
@@ -2021,7 +1908,6 @@
               }
             },
             {
-              "description": " Hourly usage metrics for this protocol ",
               "name": "hourlyUsageMetrics",
               "type": {
                 "kind": "NON_NULL",
@@ -2033,7 +1919,6 @@
               }
             },
             {
-              "description": " Daily financial metrics for this protocol ",
               "name": "financialMetrics",
               "type": {
                 "kind": "NON_NULL",
@@ -2045,24 +1930,27 @@
               }
             }
           ],
+          "kind": "INTERFACE",
           "name": "Protocol"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "ProtocolType"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "Protocol_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "Protocol_orderBy"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "token",
               "type": {
                 "kind": "OBJECT",
@@ -2071,7 +1959,6 @@
               }
             },
             {
-              "description": null,
               "name": "tokens",
               "type": {
                 "kind": "NON_NULL",
@@ -2083,7 +1970,6 @@
               }
             },
             {
-              "description": null,
               "name": "rewardToken",
               "type": {
                 "kind": "OBJECT",
@@ -2092,7 +1978,6 @@
               }
             },
             {
-              "description": null,
               "name": "rewardTokens",
               "type": {
                 "kind": "NON_NULL",
@@ -2104,7 +1989,6 @@
               }
             },
             {
-              "description": null,
               "name": "liquidityPoolFee",
               "type": {
                 "kind": "OBJECT",
@@ -2113,7 +1997,6 @@
               }
             },
             {
-              "description": null,
               "name": "liquidityPoolFees",
               "type": {
                 "kind": "NON_NULL",
@@ -2125,7 +2008,6 @@
               }
             },
             {
-              "description": null,
               "name": "dexAmmProtocol",
               "type": {
                 "kind": "OBJECT",
@@ -2134,7 +2016,6 @@
               }
             },
             {
-              "description": null,
               "name": "dexAmmProtocols",
               "type": {
                 "kind": "NON_NULL",
@@ -2146,7 +2027,6 @@
               }
             },
             {
-              "description": null,
               "name": "usageMetricsDailySnapshot",
               "type": {
                 "kind": "OBJECT",
@@ -2155,7 +2035,6 @@
               }
             },
             {
-              "description": null,
               "name": "usageMetricsDailySnapshots",
               "type": {
                 "kind": "NON_NULL",
@@ -2167,7 +2046,6 @@
               }
             },
             {
-              "description": null,
               "name": "usageMetricsHourlySnapshot",
               "type": {
                 "kind": "OBJECT",
@@ -2176,7 +2054,6 @@
               }
             },
             {
-              "description": null,
               "name": "usageMetricsHourlySnapshots",
               "type": {
                 "kind": "NON_NULL",
@@ -2188,7 +2065,6 @@
               }
             },
             {
-              "description": null,
               "name": "financialsDailySnapshot",
               "type": {
                 "kind": "OBJECT",
@@ -2197,7 +2073,6 @@
               }
             },
             {
-              "description": null,
               "name": "financialsDailySnapshots",
               "type": {
                 "kind": "NON_NULL",
@@ -2209,7 +2084,6 @@
               }
             },
             {
-              "description": null,
               "name": "liquidityPool",
               "type": {
                 "kind": "OBJECT",
@@ -2218,7 +2092,6 @@
               }
             },
             {
-              "description": null,
               "name": "liquidityPools",
               "type": {
                 "kind": "NON_NULL",
@@ -2230,7 +2103,6 @@
               }
             },
             {
-              "description": null,
               "name": "liquidityPoolDailySnapshot",
               "type": {
                 "kind": "OBJECT",
@@ -2239,7 +2111,6 @@
               }
             },
             {
-              "description": null,
               "name": "liquidityPoolDailySnapshots",
               "type": {
                 "kind": "NON_NULL",
@@ -2251,7 +2122,6 @@
               }
             },
             {
-              "description": null,
               "name": "liquidityPoolHourlySnapshot",
               "type": {
                 "kind": "OBJECT",
@@ -2260,7 +2130,6 @@
               }
             },
             {
-              "description": null,
               "name": "liquidityPoolHourlySnapshots",
               "type": {
                 "kind": "NON_NULL",
@@ -2272,7 +2141,6 @@
               }
             },
             {
-              "description": null,
               "name": "deposit",
               "type": {
                 "kind": "OBJECT",
@@ -2281,7 +2149,6 @@
               }
             },
             {
-              "description": null,
               "name": "deposits",
               "type": {
                 "kind": "NON_NULL",
@@ -2293,7 +2160,6 @@
               }
             },
             {
-              "description": null,
               "name": "withdraw",
               "type": {
                 "kind": "OBJECT",
@@ -2302,7 +2168,6 @@
               }
             },
             {
-              "description": null,
               "name": "withdraws",
               "type": {
                 "kind": "NON_NULL",
@@ -2314,7 +2179,6 @@
               }
             },
             {
-              "description": null,
               "name": "swap",
               "type": {
                 "kind": "OBJECT",
@@ -2323,7 +2187,6 @@
               }
             },
             {
-              "description": null,
               "name": "swaps",
               "type": {
                 "kind": "NON_NULL",
@@ -2335,7 +2198,6 @@
               }
             },
             {
-              "description": null,
               "name": "account",
               "type": {
                 "kind": "OBJECT",
@@ -2344,7 +2206,6 @@
               }
             },
             {
-              "description": null,
               "name": "accounts",
               "type": {
                 "kind": "NON_NULL",
@@ -2356,7 +2217,6 @@
               }
             },
             {
-              "description": null,
               "name": "activeAccount",
               "type": {
                 "kind": "OBJECT",
@@ -2365,7 +2225,6 @@
               }
             },
             {
-              "description": null,
               "name": "activeAccounts",
               "type": {
                 "kind": "NON_NULL",
@@ -2377,7 +2236,6 @@
               }
             },
             {
-              "description": null,
               "name": "liquidityGauge",
               "type": {
                 "kind": "OBJECT",
@@ -2386,7 +2244,6 @@
               }
             },
             {
-              "description": null,
               "name": "liquidityGauges",
               "type": {
                 "kind": "NON_NULL",
@@ -2398,7 +2255,6 @@
               }
             },
             {
-              "description": null,
               "name": "lpToken",
               "type": {
                 "kind": "OBJECT",
@@ -2407,7 +2263,6 @@
               }
             },
             {
-              "description": null,
               "name": "lpTokens",
               "type": {
                 "kind": "NON_NULL",
@@ -2419,7 +2274,6 @@
               }
             },
             {
-              "description": null,
               "name": "circularBuffer",
               "type": {
                 "kind": "OBJECT",
@@ -2428,7 +2282,6 @@
               }
             },
             {
-              "description": null,
               "name": "circularBuffers",
               "type": {
                 "kind": "NON_NULL",
@@ -2440,7 +2293,6 @@
               }
             },
             {
-              "description": null,
               "name": "protocol",
               "type": {
                 "kind": "INTERFACE",
@@ -2449,7 +2301,6 @@
               }
             },
             {
-              "description": null,
               "name": "protocols",
               "type": {
                 "kind": "NON_NULL",
@@ -2461,7 +2312,6 @@
               }
             },
             {
-              "description": null,
               "name": "event",
               "type": {
                 "kind": "INTERFACE",
@@ -2470,7 +2320,6 @@
               }
             },
             {
-              "description": null,
               "name": "events",
               "type": {
                 "kind": "NON_NULL",
@@ -2482,7 +2331,6 @@
               }
             },
             {
-              "description": "Access to subgraph metadata",
               "name": "_meta",
               "type": {
                 "kind": "OBJECT",
@@ -2491,12 +2339,12 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "Query"
         },
         {
           "fields": [
             {
-              "description": " { Reward token type }-{ Smart contract address of the reward token } ",
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -2508,7 +2356,6 @@
               }
             },
             {
-              "description": " Reference to the actual token ",
               "name": "token",
               "type": {
                 "kind": "NON_NULL",
@@ -2520,7 +2367,6 @@
               }
             },
             {
-              "description": " The type of the reward token ",
               "name": "type",
               "type": {
                 "kind": "NON_NULL",
@@ -2532,28 +2378,32 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "RewardToken"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "RewardTokenType"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "RewardToken_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "RewardToken_orderBy"
         },
         {
           "fields": null,
+          "kind": "SCALAR",
           "name": "String"
         },
         {
           "fields": [
             {
-              "description": null,
               "name": "token",
               "type": {
                 "kind": "OBJECT",
@@ -2562,7 +2412,6 @@
               }
             },
             {
-              "description": null,
               "name": "tokens",
               "type": {
                 "kind": "NON_NULL",
@@ -2574,7 +2423,6 @@
               }
             },
             {
-              "description": null,
               "name": "rewardToken",
               "type": {
                 "kind": "OBJECT",
@@ -2583,7 +2431,6 @@
               }
             },
             {
-              "description": null,
               "name": "rewardTokens",
               "type": {
                 "kind": "NON_NULL",
@@ -2595,7 +2442,6 @@
               }
             },
             {
-              "description": null,
               "name": "liquidityPoolFee",
               "type": {
                 "kind": "OBJECT",
@@ -2604,7 +2450,6 @@
               }
             },
             {
-              "description": null,
               "name": "liquidityPoolFees",
               "type": {
                 "kind": "NON_NULL",
@@ -2616,7 +2461,6 @@
               }
             },
             {
-              "description": null,
               "name": "dexAmmProtocol",
               "type": {
                 "kind": "OBJECT",
@@ -2625,7 +2469,6 @@
               }
             },
             {
-              "description": null,
               "name": "dexAmmProtocols",
               "type": {
                 "kind": "NON_NULL",
@@ -2637,7 +2480,6 @@
               }
             },
             {
-              "description": null,
               "name": "usageMetricsDailySnapshot",
               "type": {
                 "kind": "OBJECT",
@@ -2646,7 +2488,6 @@
               }
             },
             {
-              "description": null,
               "name": "usageMetricsDailySnapshots",
               "type": {
                 "kind": "NON_NULL",
@@ -2658,7 +2499,6 @@
               }
             },
             {
-              "description": null,
               "name": "usageMetricsHourlySnapshot",
               "type": {
                 "kind": "OBJECT",
@@ -2667,7 +2507,6 @@
               }
             },
             {
-              "description": null,
               "name": "usageMetricsHourlySnapshots",
               "type": {
                 "kind": "NON_NULL",
@@ -2679,7 +2518,6 @@
               }
             },
             {
-              "description": null,
               "name": "financialsDailySnapshot",
               "type": {
                 "kind": "OBJECT",
@@ -2688,7 +2526,6 @@
               }
             },
             {
-              "description": null,
               "name": "financialsDailySnapshots",
               "type": {
                 "kind": "NON_NULL",
@@ -2700,7 +2537,6 @@
               }
             },
             {
-              "description": null,
               "name": "liquidityPool",
               "type": {
                 "kind": "OBJECT",
@@ -2709,7 +2545,6 @@
               }
             },
             {
-              "description": null,
               "name": "liquidityPools",
               "type": {
                 "kind": "NON_NULL",
@@ -2721,7 +2556,6 @@
               }
             },
             {
-              "description": null,
               "name": "liquidityPoolDailySnapshot",
               "type": {
                 "kind": "OBJECT",
@@ -2730,7 +2564,6 @@
               }
             },
             {
-              "description": null,
               "name": "liquidityPoolDailySnapshots",
               "type": {
                 "kind": "NON_NULL",
@@ -2742,7 +2575,6 @@
               }
             },
             {
-              "description": null,
               "name": "liquidityPoolHourlySnapshot",
               "type": {
                 "kind": "OBJECT",
@@ -2751,7 +2583,6 @@
               }
             },
             {
-              "description": null,
               "name": "liquidityPoolHourlySnapshots",
               "type": {
                 "kind": "NON_NULL",
@@ -2763,7 +2594,6 @@
               }
             },
             {
-              "description": null,
               "name": "deposit",
               "type": {
                 "kind": "OBJECT",
@@ -2772,7 +2602,6 @@
               }
             },
             {
-              "description": null,
               "name": "deposits",
               "type": {
                 "kind": "NON_NULL",
@@ -2784,7 +2613,6 @@
               }
             },
             {
-              "description": null,
               "name": "withdraw",
               "type": {
                 "kind": "OBJECT",
@@ -2793,7 +2621,6 @@
               }
             },
             {
-              "description": null,
               "name": "withdraws",
               "type": {
                 "kind": "NON_NULL",
@@ -2805,7 +2632,6 @@
               }
             },
             {
-              "description": null,
               "name": "swap",
               "type": {
                 "kind": "OBJECT",
@@ -2814,7 +2640,6 @@
               }
             },
             {
-              "description": null,
               "name": "swaps",
               "type": {
                 "kind": "NON_NULL",
@@ -2826,7 +2651,6 @@
               }
             },
             {
-              "description": null,
               "name": "account",
               "type": {
                 "kind": "OBJECT",
@@ -2835,7 +2659,6 @@
               }
             },
             {
-              "description": null,
               "name": "accounts",
               "type": {
                 "kind": "NON_NULL",
@@ -2847,7 +2670,6 @@
               }
             },
             {
-              "description": null,
               "name": "activeAccount",
               "type": {
                 "kind": "OBJECT",
@@ -2856,7 +2678,6 @@
               }
             },
             {
-              "description": null,
               "name": "activeAccounts",
               "type": {
                 "kind": "NON_NULL",
@@ -2868,7 +2689,6 @@
               }
             },
             {
-              "description": null,
               "name": "liquidityGauge",
               "type": {
                 "kind": "OBJECT",
@@ -2877,7 +2697,6 @@
               }
             },
             {
-              "description": null,
               "name": "liquidityGauges",
               "type": {
                 "kind": "NON_NULL",
@@ -2889,7 +2708,6 @@
               }
             },
             {
-              "description": null,
               "name": "lpToken",
               "type": {
                 "kind": "OBJECT",
@@ -2898,7 +2716,6 @@
               }
             },
             {
-              "description": null,
               "name": "lpTokens",
               "type": {
                 "kind": "NON_NULL",
@@ -2910,7 +2727,6 @@
               }
             },
             {
-              "description": null,
               "name": "circularBuffer",
               "type": {
                 "kind": "OBJECT",
@@ -2919,7 +2735,6 @@
               }
             },
             {
-              "description": null,
               "name": "circularBuffers",
               "type": {
                 "kind": "NON_NULL",
@@ -2931,7 +2746,6 @@
               }
             },
             {
-              "description": null,
               "name": "protocol",
               "type": {
                 "kind": "INTERFACE",
@@ -2940,7 +2754,6 @@
               }
             },
             {
-              "description": null,
               "name": "protocols",
               "type": {
                 "kind": "NON_NULL",
@@ -2952,7 +2765,6 @@
               }
             },
             {
-              "description": null,
               "name": "event",
               "type": {
                 "kind": "INTERFACE",
@@ -2961,7 +2773,6 @@
               }
             },
             {
-              "description": null,
               "name": "events",
               "type": {
                 "kind": "NON_NULL",
@@ -2973,7 +2784,6 @@
               }
             },
             {
-              "description": "Access to subgraph metadata",
               "name": "_meta",
               "type": {
                 "kind": "OBJECT",
@@ -2982,12 +2792,12 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "Subscription"
         },
         {
           "fields": [
             {
-              "description": " swap-{ Transaction hash }-{ Log index } ",
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -2999,7 +2809,6 @@
               }
             },
             {
-              "description": " Transaction hash of the transaction that emitted this event ",
               "name": "hash",
               "type": {
                 "kind": "NON_NULL",
@@ -3011,7 +2820,6 @@
               }
             },
             {
-              "description": " Event log index. For transactions that don't emit event, create arbitrary index starting from 0 ",
               "name": "logIndex",
               "type": {
                 "kind": "NON_NULL",
@@ -3023,7 +2831,6 @@
               }
             },
             {
-              "description": " The protocol this transaction belongs to ",
               "name": "protocol",
               "type": {
                 "kind": "NON_NULL",
@@ -3035,7 +2842,6 @@
               }
             },
             {
-              "description": " Address that received the tokens ",
               "name": "to",
               "type": {
                 "kind": "NON_NULL",
@@ -3047,7 +2853,6 @@
               }
             },
             {
-              "description": " Address that sent the tokens ",
               "name": "from",
               "type": {
                 "kind": "NON_NULL",
@@ -3059,7 +2864,6 @@
               }
             },
             {
-              "description": " Block number of this event ",
               "name": "blockNumber",
               "type": {
                 "kind": "NON_NULL",
@@ -3071,7 +2875,6 @@
               }
             },
             {
-              "description": " Timestamp of this event ",
               "name": "timestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -3083,7 +2886,6 @@
               }
             },
             {
-              "description": " Token deposited into pool ",
               "name": "tokenIn",
               "type": {
                 "kind": "NON_NULL",
@@ -3095,7 +2897,6 @@
               }
             },
             {
-              "description": " Amount of token deposited into pool in native units ",
               "name": "amountIn",
               "type": {
                 "kind": "NON_NULL",
@@ -3107,7 +2908,6 @@
               }
             },
             {
-              "description": " Amount of token deposited into pool in USD ",
               "name": "amountInUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -3119,7 +2919,6 @@
               }
             },
             {
-              "description": " Token withdrawn from pool ",
               "name": "tokenOut",
               "type": {
                 "kind": "NON_NULL",
@@ -3131,7 +2930,6 @@
               }
             },
             {
-              "description": " Amount of token withdrawn from pool in native units ",
               "name": "amountOut",
               "type": {
                 "kind": "NON_NULL",
@@ -3143,7 +2941,6 @@
               }
             },
             {
-              "description": " Amount of token withdrawn from pool in USD ",
               "name": "amountOutUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -3155,7 +2952,6 @@
               }
             },
             {
-              "description": " The pool involving this transaction ",
               "name": "pool",
               "type": {
                 "kind": "NON_NULL",
@@ -3167,24 +2963,27 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "Swap"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "Swap_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "Swap_orderBy"
         },
         {
           "fields": null,
+          "kind": "SCALAR",
           "name": "Timestamp"
         },
         {
           "fields": [
             {
-              "description": " Smart contract address of the token ",
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -3196,7 +2995,6 @@
               }
             },
             {
-              "description": " Name of the token, mirrored from the smart contract ",
               "name": "name",
               "type": {
                 "kind": "NON_NULL",
@@ -3208,7 +3006,6 @@
               }
             },
             {
-              "description": " Symbol of the token, mirrored from the smart contract ",
               "name": "symbol",
               "type": {
                 "kind": "NON_NULL",
@@ -3220,7 +3017,6 @@
               }
             },
             {
-              "description": " The number of decimal places this token uses, default to 18 ",
               "name": "decimals",
               "type": {
                 "kind": "NON_NULL",
@@ -3232,7 +3028,6 @@
               }
             },
             {
-              "description": " Whether this token is a curve lp token ",
               "name": "isBasePoolLpToken",
               "type": {
                 "kind": "NON_NULL",
@@ -3244,7 +3039,6 @@
               }
             },
             {
-              "description": " Optional field to track the price of a token, mostly for caching purposes ",
               "name": "lastPriceUSD",
               "type": {
                 "kind": "SCALAR",
@@ -3253,7 +3047,6 @@
               }
             },
             {
-              "description": " Optional field to track the block number of the last token price ",
               "name": "lastPriceBlockNumber",
               "type": {
                 "kind": "SCALAR",
@@ -3262,7 +3055,6 @@
               }
             },
             {
-              "description": " Optional field to track the method used for fetching the token price ",
               "name": "oracleType",
               "type": {
                 "kind": "SCALAR",
@@ -3271,7 +3063,6 @@
               }
             },
             {
-              "description": " amount of tokens in the protocol ",
               "name": "_totalSupply",
               "type": {
                 "kind": "NON_NULL",
@@ -3283,7 +3074,6 @@
               }
             },
             {
-              "description": " Total value locked in the protocol ",
               "name": "_totalValueLockedUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -3295,7 +3085,6 @@
               }
             },
             {
-              "description": null,
               "name": "_largePriceChangeBuffer",
               "type": {
                 "kind": "NON_NULL",
@@ -3307,7 +3096,6 @@
               }
             },
             {
-              "description": null,
               "name": "_largeTVLImpactBuffer",
               "type": {
                 "kind": "NON_NULL",
@@ -3319,20 +3107,22 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "Token"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "Token_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "Token_orderBy"
         },
         {
           "fields": [
             {
-              "description": " ID is # of days since Unix epoch time ",
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -3344,7 +3134,6 @@
               }
             },
             {
-              "description": " Protocol this snapshot is associated with ",
               "name": "protocol",
               "type": {
                 "kind": "NON_NULL",
@@ -3356,7 +3145,6 @@
               }
             },
             {
-              "description": " Number of unique daily active users ",
               "name": "dailyActiveUsers",
               "type": {
                 "kind": "NON_NULL",
@@ -3368,7 +3156,6 @@
               }
             },
             {
-              "description": " Number of cumulative unique users ",
               "name": "cumulativeUniqueUsers",
               "type": {
                 "kind": "NON_NULL",
@@ -3380,7 +3167,6 @@
               }
             },
             {
-              "description": " Total number of transactions occurred in a day. Transactions include all entities that implement the Event interface. ",
               "name": "dailyTransactionCount",
               "type": {
                 "kind": "NON_NULL",
@@ -3392,7 +3178,6 @@
               }
             },
             {
-              "description": " Total number of deposits (add liquidity) in a day ",
               "name": "dailyDepositCount",
               "type": {
                 "kind": "NON_NULL",
@@ -3404,7 +3189,6 @@
               }
             },
             {
-              "description": " Total number of withdrawals (remove liquidity) in a day ",
               "name": "dailyWithdrawCount",
               "type": {
                 "kind": "NON_NULL",
@@ -3416,7 +3200,6 @@
               }
             },
             {
-              "description": " Total number of trades (swaps) in a day ",
               "name": "dailySwapCount",
               "type": {
                 "kind": "NON_NULL",
@@ -3428,7 +3211,6 @@
               }
             },
             {
-              "description": " Total number of pools ",
               "name": "totalPoolCount",
               "type": {
                 "kind": "NON_NULL",
@@ -3440,7 +3222,6 @@
               }
             },
             {
-              "description": " Block number of this snapshot ",
               "name": "blockNumber",
               "type": {
                 "kind": "NON_NULL",
@@ -3452,7 +3233,6 @@
               }
             },
             {
-              "description": " Timestamp of this snapshot ",
               "name": "timestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -3464,20 +3244,22 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "UsageMetricsDailySnapshot"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "UsageMetricsDailySnapshot_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "UsageMetricsDailySnapshot_orderBy"
         },
         {
           "fields": [
             {
-              "description": " { # of hours since Unix epoch time } ",
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -3489,7 +3271,6 @@
               }
             },
             {
-              "description": " Protocol this snapshot is associated with ",
               "name": "protocol",
               "type": {
                 "kind": "NON_NULL",
@@ -3501,7 +3282,6 @@
               }
             },
             {
-              "description": " Number of unique hourly active users ",
               "name": "hourlyActiveUsers",
               "type": {
                 "kind": "NON_NULL",
@@ -3513,7 +3293,6 @@
               }
             },
             {
-              "description": " Number of cumulative unique users ",
               "name": "cumulativeUniqueUsers",
               "type": {
                 "kind": "NON_NULL",
@@ -3525,7 +3304,6 @@
               }
             },
             {
-              "description": " Total number of transactions occurred in an hour. Transactions include all entities that implement the Event interface. ",
               "name": "hourlyTransactionCount",
               "type": {
                 "kind": "NON_NULL",
@@ -3537,7 +3315,6 @@
               }
             },
             {
-              "description": " Total number of deposits (add liquidity) in an hour ",
               "name": "hourlyDepositCount",
               "type": {
                 "kind": "NON_NULL",
@@ -3549,7 +3326,6 @@
               }
             },
             {
-              "description": " Total number of withdrawals (remove liquidity) in an hour ",
               "name": "hourlyWithdrawCount",
               "type": {
                 "kind": "NON_NULL",
@@ -3561,7 +3337,6 @@
               }
             },
             {
-              "description": " Total number of trades (swaps) in an hour ",
               "name": "hourlySwapCount",
               "type": {
                 "kind": "NON_NULL",
@@ -3573,7 +3348,6 @@
               }
             },
             {
-              "description": " Block number of this snapshot ",
               "name": "blockNumber",
               "type": {
                 "kind": "NON_NULL",
@@ -3585,7 +3359,6 @@
               }
             },
             {
-              "description": " Timestamp of this snapshot ",
               "name": "timestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -3597,20 +3370,22 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "UsageMetricsHourlySnapshot"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "UsageMetricsHourlySnapshot_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "UsageMetricsHourlySnapshot_orderBy"
         },
         {
           "fields": [
             {
-              "description": " withdraw-{ Transaction hash }-{ Log index }",
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -3622,7 +3397,6 @@
               }
             },
             {
-              "description": " Transaction hash of the transaction that emitted this event ",
               "name": "hash",
               "type": {
                 "kind": "NON_NULL",
@@ -3634,7 +3408,6 @@
               }
             },
             {
-              "description": " Event log index. For transactions that don't emit event, create arbitrary index starting from 0 ",
               "name": "logIndex",
               "type": {
                 "kind": "NON_NULL",
@@ -3646,7 +3419,6 @@
               }
             },
             {
-              "description": " The protocol this transaction belongs to ",
               "name": "protocol",
               "type": {
                 "kind": "NON_NULL",
@@ -3658,7 +3430,6 @@
               }
             },
             {
-              "description": " Address that received the tokens ",
               "name": "to",
               "type": {
                 "kind": "NON_NULL",
@@ -3670,7 +3441,6 @@
               }
             },
             {
-              "description": " Address that sent the tokens ",
               "name": "from",
               "type": {
                 "kind": "NON_NULL",
@@ -3682,7 +3452,6 @@
               }
             },
             {
-              "description": " Block number of this event ",
               "name": "blockNumber",
               "type": {
                 "kind": "NON_NULL",
@@ -3694,7 +3463,6 @@
               }
             },
             {
-              "description": " Timestamp of this event ",
               "name": "timestamp",
               "type": {
                 "kind": "NON_NULL",
@@ -3706,7 +3474,6 @@
               }
             },
             {
-              "description": " Input tokens of the pool (not input tokens of the event/transaction). E.g. WETH and USDC from a WETH-USDC pool ",
               "name": "inputTokens",
               "type": {
                 "kind": "NON_NULL",
@@ -3718,7 +3485,6 @@
               }
             },
             {
-              "description": " Output token of the pool (not output token of the event/transaction). E.g. the UNI-LP token ",
               "name": "outputToken",
               "type": {
                 "kind": "OBJECT",
@@ -3727,7 +3493,6 @@
               }
             },
             {
-              "description": " Amount of input tokens in the token's native unit ",
               "name": "inputTokenAmounts",
               "type": {
                 "kind": "NON_NULL",
@@ -3739,7 +3504,6 @@
               }
             },
             {
-              "description": " Amount of output tokens in the token's native unit ",
               "name": "outputTokenAmount",
               "type": {
                 "kind": "SCALAR",
@@ -3748,7 +3512,6 @@
               }
             },
             {
-              "description": " USD-normalized value of the transaction of the underlying (e.g. sum of tokens withdrawn from a pool) ",
               "name": "amountUSD",
               "type": {
                 "kind": "NON_NULL",
@@ -3760,7 +3523,6 @@
               }
             },
             {
-              "description": " The pool involving this transaction ",
               "name": "pool",
               "type": {
                 "kind": "NON_NULL",
@@ -3772,20 +3534,22 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "Withdraw"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "Withdraw_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "Withdraw_orderBy"
         },
         {
           "fields": [
             {
-              "description": "The hash of the block",
               "name": "hash",
               "type": {
                 "kind": "SCALAR",
@@ -3794,7 +3558,6 @@
               }
             },
             {
-              "description": "The block number",
               "name": "number",
               "type": {
                 "kind": "NON_NULL",
@@ -3806,7 +3569,6 @@
               }
             },
             {
-              "description": "Integer representation of the timestamp stored in blocks for the chain",
               "name": "timestamp",
               "type": {
                 "kind": "SCALAR",
@@ -3815,7 +3577,6 @@
               }
             },
             {
-              "description": "The hash of the parent block",
               "name": "parentHash",
               "type": {
                 "kind": "SCALAR",
@@ -3824,12 +3585,12 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "_Block_"
         },
         {
           "fields": [
             {
-              "description": " 'CIRCULAR_BUFFER' ",
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -3841,7 +3602,6 @@
               }
             },
             {
-              "description": " Array of sorted block numbers sorted continuously ",
               "name": "blocks",
               "type": {
                 "kind": "NON_NULL",
@@ -3853,7 +3613,6 @@
               }
             },
             {
-              "description": " The index in the blocks array which will be used with the newest block to calculate block speed (Usally set to about a day before newest block) ",
               "name": "windowStartIndex",
               "type": {
                 "kind": "NON_NULL",
@@ -3865,7 +3624,6 @@
               }
             },
             {
-              "description": " The next index in the blocks array that will be replaced with the newest block ",
               "name": "nextIndex",
               "type": {
                 "kind": "NON_NULL",
@@ -3877,7 +3635,6 @@
               }
             },
             {
-              "description": " This determines the size of the blocks array. Should be set to contain at least a days worth of blocks according to a 1 day window for measuring speed",
               "name": "bufferSize",
               "type": {
                 "kind": "NON_NULL",
@@ -3889,7 +3646,6 @@
               }
             },
             {
-              "description": " The current calculated number of blocks per day based on calculated block speed ",
               "name": "blocksPerDay",
               "type": {
                 "kind": "NON_NULL",
@@ -3901,20 +3657,22 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "_CircularBuffer"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "_CircularBuffer_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "_CircularBuffer_orderBy"
         },
         {
           "fields": [
             {
-              "description": " { Address of the Liquidity Gauge } ",
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -3926,7 +3684,6 @@
               }
             },
             {
-              "description": " Address of the pool associated with this liquidity gauge ",
               "name": "poolAddress",
               "type": {
                 "kind": "NON_NULL",
@@ -3938,20 +3695,22 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "_LiquidityGauge"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "_LiquidityGauge_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "_LiquidityGauge_orderBy"
         },
         {
           "fields": [
             {
-              "description": " { Address of the LP Token } ",
               "name": "id",
               "type": {
                 "kind": "NON_NULL",
@@ -3963,7 +3722,6 @@
               }
             },
             {
-              "description": " Address of the pool associated with this token ",
               "name": "poolAddress",
               "type": {
                 "kind": "NON_NULL",
@@ -3975,7 +3733,6 @@
               }
             },
             {
-              "description": " Address of the registry associated with this token ",
               "name": "registryAddress",
               "type": {
                 "kind": "NON_NULL",
@@ -3987,20 +3744,22 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "_LpToken"
         },
         {
           "fields": null,
+          "kind": "INPUT_OBJECT",
           "name": "_LpToken_filter"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "_LpToken_orderBy"
         },
         {
           "fields": [
             {
-              "description": "Information about a specific subgraph block. The hash of the block\nwill be null if the _meta field has a block constraint that asks for\na block number. It will be filled if the _meta field has no block constraint\nand therefore asks for the latest  block\n",
               "name": "block",
               "type": {
                 "kind": "NON_NULL",
@@ -4012,7 +3771,6 @@
               }
             },
             {
-              "description": "The deployment ID",
               "name": "deployment",
               "type": {
                 "kind": "NON_NULL",
@@ -4024,7 +3782,6 @@
               }
             },
             {
-              "description": "If `true`, the subgraph encountered indexing errors at some past block",
               "name": "hasIndexingErrors",
               "type": {
                 "kind": "NON_NULL",
@@ -4036,10 +3793,12 @@
               }
             }
           ],
+          "kind": "OBJECT",
           "name": "_Meta_"
         },
         {
           "fields": null,
+          "kind": "ENUM",
           "name": "_SubgraphErrorPolicy_"
         }
       ]
