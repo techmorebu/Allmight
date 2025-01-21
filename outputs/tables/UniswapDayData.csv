@@ -1,0 +1,9 @@
+Type,Field,Description,FieldType,FieldKind
+UniswapDayData,id,,ID,NON_NULL
+UniswapDayData,date,,Int,NON_NULL
+UniswapDayData,volumeETH,,BigDecimal,NON_NULL
+UniswapDayData,volumeUSD,,BigDecimal,NON_NULL
+UniswapDayData,volumeUSDUntracked,,BigDecimal,NON_NULL
+UniswapDayData,feesUSD,,BigDecimal,NON_NULL
+UniswapDayData,txCount,,BigInt,NON_NULL
+UniswapDayData,tvlUSD,,BigDecimal,NON_NULL

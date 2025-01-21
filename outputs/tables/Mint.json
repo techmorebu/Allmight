@@ -1,0 +1,114 @@
+[
+  {
+    "Type": "Mint",
+    "Field": "id",
+    "Description": "",
+    "FieldType": "ID",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Mint",
+    "Field": "transaction",
+    "Description": "",
+    "FieldType": "Transaction",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Mint",
+    "Field": "timestamp",
+    "Description": "",
+    "FieldType": "BigInt",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Mint",
+    "Field": "pool",
+    "Description": "",
+    "FieldType": "Pool",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Mint",
+    "Field": "token0",
+    "Description": "",
+    "FieldType": "Token",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Mint",
+    "Field": "token1",
+    "Description": "",
+    "FieldType": "Token",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Mint",
+    "Field": "owner",
+    "Description": "",
+    "FieldType": "Bytes",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Mint",
+    "Field": "sender",
+    "Description": "",
+    "FieldType": "Bytes",
+    "FieldKind": "SCALAR"
+  },
+  {
+    "Type": "Mint",
+    "Field": "origin",
+    "Description": "",
+    "FieldType": "Bytes",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Mint",
+    "Field": "amount",
+    "Description": "",
+    "FieldType": "BigInt",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Mint",
+    "Field": "amount0",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Mint",
+    "Field": "amount1",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Mint",
+    "Field": "amountUSD",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "SCALAR"
+  },
+  {
+    "Type": "Mint",
+    "Field": "tickLower",
+    "Description": "",
+    "FieldType": "BigInt",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Mint",
+    "Field": "tickUpper",
+    "Description": "",
+    "FieldType": "BigInt",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Mint",
+    "Field": "logIndex",
+    "Description": "",
+    "FieldType": "BigInt",
+    "FieldKind": "SCALAR"
+  }
+]

@@ -1,0 +1,142 @@
+[
+  {
+    "Type": "PoolDayData",
+    "Field": "id",
+    "Description": "",
+    "FieldType": "ID",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PoolDayData",
+    "Field": "date",
+    "Description": "",
+    "FieldType": "Int",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PoolDayData",
+    "Field": "pool",
+    "Description": "",
+    "FieldType": "Pool",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PoolDayData",
+    "Field": "liquidity",
+    "Description": "",
+    "FieldType": "BigInt",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PoolDayData",
+    "Field": "sqrtPrice",
+    "Description": "",
+    "FieldType": "BigInt",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PoolDayData",
+    "Field": "token0Price",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PoolDayData",
+    "Field": "token1Price",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PoolDayData",
+    "Field": "tick",
+    "Description": "",
+    "FieldType": "BigInt",
+    "FieldKind": "SCALAR"
+  },
+  {
+    "Type": "PoolDayData",
+    "Field": "feeGrowthGlobal0X128",
+    "Description": "",
+    "FieldType": "BigInt",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PoolDayData",
+    "Field": "feeGrowthGlobal1X128",
+    "Description": "",
+    "FieldType": "BigInt",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PoolDayData",
+    "Field": "tvlUSD",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PoolDayData",
+    "Field": "volumeToken0",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PoolDayData",
+    "Field": "volumeToken1",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PoolDayData",
+    "Field": "volumeUSD",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PoolDayData",
+    "Field": "feesUSD",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PoolDayData",
+    "Field": "txCount",
+    "Description": "",
+    "FieldType": "BigInt",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PoolDayData",
+    "Field": "open",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PoolDayData",
+    "Field": "high",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PoolDayData",
+    "Field": "low",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PoolDayData",
+    "Field": "close",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  }
+]

@@ -1,0 +1,15 @@
+Type,Field,Description,FieldType,FieldKind
+TokenDayData,id,,ID,NON_NULL
+TokenDayData,date,,Int,NON_NULL
+TokenDayData,token,,Token,NON_NULL
+TokenDayData,volume,,BigDecimal,NON_NULL
+TokenDayData,volumeUSD,,BigDecimal,NON_NULL
+TokenDayData,untrackedVolumeUSD,,BigDecimal,NON_NULL
+TokenDayData,totalValueLocked,,BigDecimal,NON_NULL
+TokenDayData,totalValueLockedUSD,,BigDecimal,NON_NULL
+TokenDayData,priceUSD,,BigDecimal,NON_NULL
+TokenDayData,feesUSD,,BigDecimal,NON_NULL
+TokenDayData,open,,BigDecimal,NON_NULL
+TokenDayData,high,,BigDecimal,NON_NULL
+TokenDayData,low,,BigDecimal,NON_NULL
+TokenDayData,close,,BigDecimal,NON_NULL

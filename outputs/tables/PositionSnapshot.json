@@ -1,0 +1,114 @@
+[
+  {
+    "Type": "PositionSnapshot",
+    "Field": "id",
+    "Description": "",
+    "FieldType": "ID",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PositionSnapshot",
+    "Field": "owner",
+    "Description": "",
+    "FieldType": "Bytes",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PositionSnapshot",
+    "Field": "pool",
+    "Description": "",
+    "FieldType": "Pool",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PositionSnapshot",
+    "Field": "position",
+    "Description": "",
+    "FieldType": "Position",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PositionSnapshot",
+    "Field": "blockNumber",
+    "Description": "",
+    "FieldType": "BigInt",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PositionSnapshot",
+    "Field": "timestamp",
+    "Description": "",
+    "FieldType": "BigInt",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PositionSnapshot",
+    "Field": "liquidity",
+    "Description": "",
+    "FieldType": "BigInt",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PositionSnapshot",
+    "Field": "depositedToken0",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PositionSnapshot",
+    "Field": "depositedToken1",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PositionSnapshot",
+    "Field": "withdrawnToken0",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PositionSnapshot",
+    "Field": "withdrawnToken1",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PositionSnapshot",
+    "Field": "collectedFeesToken0",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PositionSnapshot",
+    "Field": "collectedFeesToken1",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PositionSnapshot",
+    "Field": "transaction",
+    "Description": "",
+    "FieldType": "Transaction",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PositionSnapshot",
+    "Field": "feeGrowthInside0LastX128",
+    "Description": "",
+    "FieldType": "BigInt",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "PositionSnapshot",
+    "Field": "feeGrowthInside1LastX128",
+    "Description": "",
+    "FieldType": "BigInt",
+    "FieldKind": "NON_NULL"
+  }
+]

@@ -1,0 +1,23 @@
+[
+  {
+    "Type": "_Meta_",
+    "Field": "block",
+    "Description": "Information about a specific subgraph block. The hash of the block\nwill be null if the _meta field has a block constraint that asks for\na block number. It will be filled if the _meta field has no block constraint\nand therefore asks for the latest  block\n",
+    "FieldType": "_Block_",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "_Meta_",
+    "Field": "deployment",
+    "Description": "The deployment ID",
+    "FieldType": "String",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "_Meta_",
+    "Field": "hasIndexingErrors",
+    "Description": "If `true`, the subgraph encountered indexing errors at some past block",
+    "FieldType": "Boolean",
+    "FieldKind": "NON_NULL"
+  }
+]

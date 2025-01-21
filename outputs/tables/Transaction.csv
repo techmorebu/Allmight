@@ -1,0 +1,11 @@
+Type,Field,Description,FieldType,FieldKind
+Transaction,id,,ID,NON_NULL
+Transaction,blockNumber,,BigInt,NON_NULL
+Transaction,timestamp,,BigInt,NON_NULL
+Transaction,gasUsed,,BigInt,NON_NULL
+Transaction,gasPrice,,BigInt,NON_NULL
+Transaction,mints,,Unknown,NON_NULL
+Transaction,burns,,Unknown,NON_NULL
+Transaction,swaps,,Unknown,NON_NULL
+Transaction,flashed,,Unknown,NON_NULL
+Transaction,collects,,Unknown,NON_NULL

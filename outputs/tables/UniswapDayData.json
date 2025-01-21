@@ -1,0 +1,58 @@
+[
+  {
+    "Type": "UniswapDayData",
+    "Field": "id",
+    "Description": "",
+    "FieldType": "ID",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "UniswapDayData",
+    "Field": "date",
+    "Description": "",
+    "FieldType": "Int",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "UniswapDayData",
+    "Field": "volumeETH",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "UniswapDayData",
+    "Field": "volumeUSD",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "UniswapDayData",
+    "Field": "volumeUSDUntracked",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "UniswapDayData",
+    "Field": "feesUSD",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "UniswapDayData",
+    "Field": "txCount",
+    "Description": "",
+    "FieldType": "BigInt",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "UniswapDayData",
+    "Field": "tvlUSD",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  }
+]

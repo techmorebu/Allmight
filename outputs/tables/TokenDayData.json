@@ -1,0 +1,100 @@
+[
+  {
+    "Type": "TokenDayData",
+    "Field": "id",
+    "Description": "",
+    "FieldType": "ID",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "TokenDayData",
+    "Field": "date",
+    "Description": "",
+    "FieldType": "Int",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "TokenDayData",
+    "Field": "token",
+    "Description": "",
+    "FieldType": "Token",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "TokenDayData",
+    "Field": "volume",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "TokenDayData",
+    "Field": "volumeUSD",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "TokenDayData",
+    "Field": "untrackedVolumeUSD",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "TokenDayData",
+    "Field": "totalValueLocked",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "TokenDayData",
+    "Field": "totalValueLockedUSD",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "TokenDayData",
+    "Field": "priceUSD",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "TokenDayData",
+    "Field": "feesUSD",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "TokenDayData",
+    "Field": "open",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "TokenDayData",
+    "Field": "high",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "TokenDayData",
+    "Field": "low",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "TokenDayData",
+    "Field": "close",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  }
+]

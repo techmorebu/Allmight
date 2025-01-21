@@ -1,0 +1,86 @@
+[
+  {
+    "Type": "Flash",
+    "Field": "id",
+    "Description": "",
+    "FieldType": "ID",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Flash",
+    "Field": "transaction",
+    "Description": "",
+    "FieldType": "Transaction",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Flash",
+    "Field": "timestamp",
+    "Description": "",
+    "FieldType": "BigInt",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Flash",
+    "Field": "pool",
+    "Description": "",
+    "FieldType": "Pool",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Flash",
+    "Field": "sender",
+    "Description": "",
+    "FieldType": "Bytes",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Flash",
+    "Field": "recipient",
+    "Description": "",
+    "FieldType": "Bytes",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Flash",
+    "Field": "amount0",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Flash",
+    "Field": "amount1",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Flash",
+    "Field": "amountUSD",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Flash",
+    "Field": "amount0Paid",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Flash",
+    "Field": "amount1Paid",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Flash",
+    "Field": "logIndex",
+    "Description": "",
+    "FieldType": "BigInt",
+    "FieldKind": "SCALAR"
+  }
+]

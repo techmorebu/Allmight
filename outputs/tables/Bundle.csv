@@ -1,0 +1,3 @@
+Type,Field,Description,FieldType,FieldKind
+Bundle,id,,ID,NON_NULL
+Bundle,ethPriceUSD,,BigDecimal,NON_NULL

@@ -1,0 +1,11 @@
+Type,Field,Description,FieldType,FieldKind
+TickHourData,id,,ID,NON_NULL
+TickHourData,periodStartUnix,,Int,NON_NULL
+TickHourData,pool,,Pool,NON_NULL
+TickHourData,tick,,Tick,NON_NULL
+TickHourData,liquidityGross,,BigInt,NON_NULL
+TickHourData,liquidityNet,,BigInt,NON_NULL
+TickHourData,volumeToken0,,BigDecimal,NON_NULL
+TickHourData,volumeToken1,,BigDecimal,NON_NULL
+TickHourData,volumeUSD,,BigDecimal,NON_NULL
+TickHourData,feesUSD,,BigDecimal,NON_NULL

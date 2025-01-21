@@ -1,0 +1,16 @@
+Type,Field,Description,FieldType,FieldKind
+Burn,id,,ID,NON_NULL
+Burn,transaction,,Transaction,NON_NULL
+Burn,pool,,Pool,NON_NULL
+Burn,token0,,Token,NON_NULL
+Burn,token1,,Token,NON_NULL
+Burn,timestamp,,BigInt,NON_NULL
+Burn,owner,,Bytes,SCALAR
+Burn,origin,,Bytes,NON_NULL
+Burn,amount,,BigInt,NON_NULL
+Burn,amount0,,BigDecimal,NON_NULL
+Burn,amount1,,BigDecimal,NON_NULL
+Burn,amountUSD,,BigDecimal,SCALAR
+Burn,tickLower,,BigInt,NON_NULL
+Burn,tickUpper,,BigInt,NON_NULL
+Burn,logIndex,,BigInt,SCALAR

@@ -1,0 +1,30 @@
+[
+  {
+    "Type": "_Block_",
+    "Field": "hash",
+    "Description": "The hash of the block",
+    "FieldType": "Bytes",
+    "FieldKind": "SCALAR"
+  },
+  {
+    "Type": "_Block_",
+    "Field": "number",
+    "Description": "The block number",
+    "FieldType": "Int",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "_Block_",
+    "Field": "timestamp",
+    "Description": "Integer representation of the timestamp stored in blocks for the chain",
+    "FieldType": "Int",
+    "FieldKind": "SCALAR"
+  },
+  {
+    "Type": "_Block_",
+    "Field": "parentHash",
+    "Description": "The hash of the parent block",
+    "FieldType": "Bytes",
+    "FieldKind": "SCALAR"
+  }
+]

@@ -1,0 +1,16 @@
+[
+  {
+    "Type": "Bundle",
+    "Field": "id",
+    "Description": "",
+    "FieldType": "ID",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Bundle",
+    "Field": "ethPriceUSD",
+    "Description": "",
+    "FieldType": "BigDecimal",
+    "FieldKind": "NON_NULL"
+  }
+]

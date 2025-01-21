@@ -1,0 +1,289 @@
+[
+  {
+    "Type": "Query",
+    "Field": "factory",
+    "Description": "",
+    "FieldType": "Factory",
+    "FieldKind": "OBJECT"
+  },
+  {
+    "Type": "Query",
+    "Field": "factories",
+    "Description": "",
+    "FieldType": "Unknown",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Query",
+    "Field": "bundle",
+    "Description": "",
+    "FieldType": "Bundle",
+    "FieldKind": "OBJECT"
+  },
+  {
+    "Type": "Query",
+    "Field": "bundles",
+    "Description": "",
+    "FieldType": "Unknown",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Query",
+    "Field": "token",
+    "Description": "",
+    "FieldType": "Token",
+    "FieldKind": "OBJECT"
+  },
+  {
+    "Type": "Query",
+    "Field": "tokens",
+    "Description": "",
+    "FieldType": "Unknown",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Query",
+    "Field": "pool",
+    "Description": "",
+    "FieldType": "Pool",
+    "FieldKind": "OBJECT"
+  },
+  {
+    "Type": "Query",
+    "Field": "pools",
+    "Description": "",
+    "FieldType": "Unknown",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Query",
+    "Field": "tick",
+    "Description": "",
+    "FieldType": "Tick",
+    "FieldKind": "OBJECT"
+  },
+  {
+    "Type": "Query",
+    "Field": "ticks",
+    "Description": "",
+    "FieldType": "Unknown",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Query",
+    "Field": "position",
+    "Description": "",
+    "FieldType": "Position",
+    "FieldKind": "OBJECT"
+  },
+  {
+    "Type": "Query",
+    "Field": "positions",
+    "Description": "",
+    "FieldType": "Unknown",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Query",
+    "Field": "positionSnapshot",
+    "Description": "",
+    "FieldType": "PositionSnapshot",
+    "FieldKind": "OBJECT"
+  },
+  {
+    "Type": "Query",
+    "Field": "positionSnapshots",
+    "Description": "",
+    "FieldType": "Unknown",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Query",
+    "Field": "transaction",
+    "Description": "",
+    "FieldType": "Transaction",
+    "FieldKind": "OBJECT"
+  },
+  {
+    "Type": "Query",
+    "Field": "transactions",
+    "Description": "",
+    "FieldType": "Unknown",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Query",
+    "Field": "mint",
+    "Description": "",
+    "FieldType": "Mint",
+    "FieldKind": "OBJECT"
+  },
+  {
+    "Type": "Query",
+    "Field": "mints",
+    "Description": "",
+    "FieldType": "Unknown",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Query",
+    "Field": "burn",
+    "Description": "",
+    "FieldType": "Burn",
+    "FieldKind": "OBJECT"
+  },
+  {
+    "Type": "Query",
+    "Field": "burns",
+    "Description": "",
+    "FieldType": "Unknown",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Query",
+    "Field": "swap",
+    "Description": "",
+    "FieldType": "Swap",
+    "FieldKind": "OBJECT"
+  },
+  {
+    "Type": "Query",
+    "Field": "swaps",
+    "Description": "",
+    "FieldType": "Unknown",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Query",
+    "Field": "collect",
+    "Description": "",
+    "FieldType": "Collect",
+    "FieldKind": "OBJECT"
+  },
+  {
+    "Type": "Query",
+    "Field": "collects",
+    "Description": "",
+    "FieldType": "Unknown",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Query",
+    "Field": "flash",
+    "Description": "",
+    "FieldType": "Flash",
+    "FieldKind": "OBJECT"
+  },
+  {
+    "Type": "Query",
+    "Field": "flashes",
+    "Description": "",
+    "FieldType": "Unknown",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Query",
+    "Field": "uniswapDayData",
+    "Description": "",
+    "FieldType": "UniswapDayData",
+    "FieldKind": "OBJECT"
+  },
+  {
+    "Type": "Query",
+    "Field": "uniswapDayDatas",
+    "Description": "",
+    "FieldType": "Unknown",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Query",
+    "Field": "poolDayData",
+    "Description": "",
+    "FieldType": "PoolDayData",
+    "FieldKind": "OBJECT"
+  },
+  {
+    "Type": "Query",
+    "Field": "poolDayDatas",
+    "Description": "",
+    "FieldType": "Unknown",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Query",
+    "Field": "poolHourData",
+    "Description": "",
+    "FieldType": "PoolHourData",
+    "FieldKind": "OBJECT"
+  },
+  {
+    "Type": "Query",
+    "Field": "poolHourDatas",
+    "Description": "",
+    "FieldType": "Unknown",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Query",
+    "Field": "tickHourData",
+    "Description": "",
+    "FieldType": "TickHourData",
+    "FieldKind": "OBJECT"
+  },
+  {
+    "Type": "Query",
+    "Field": "tickHourDatas",
+    "Description": "",
+    "FieldType": "Unknown",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Query",
+    "Field": "tickDayData",
+    "Description": "",
+    "FieldType": "TickDayData",
+    "FieldKind": "OBJECT"
+  },
+  {
+    "Type": "Query",
+    "Field": "tickDayDatas",
+    "Description": "",
+    "FieldType": "Unknown",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Query",
+    "Field": "tokenDayData",
+    "Description": "",
+    "FieldType": "TokenDayData",
+    "FieldKind": "OBJECT"
+  },
+  {
+    "Type": "Query",
+    "Field": "tokenDayDatas",
+    "Description": "",
+    "FieldType": "Unknown",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Query",
+    "Field": "tokenHourData",
+    "Description": "",
+    "FieldType": "TokenHourData",
+    "FieldKind": "OBJECT"
+  },
+  {
+    "Type": "Query",
+    "Field": "tokenHourDatas",
+    "Description": "",
+    "FieldType": "Unknown",
+    "FieldKind": "NON_NULL"
+  },
+  {
+    "Type": "Query",
+    "Field": "_meta",
+    "Description": "Access to subgraph metadata",
+    "FieldType": "_Meta_",
+    "FieldKind": "OBJECT"
+  }
+]
