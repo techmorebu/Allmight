@@ -4,144 +4,185 @@ const path = require("path");
 require("dotenv").config();
 
 const outputDir = path.join(__dirname, "../outputs");
-const refinedDataDir = path.join(outputDir, "refined_data");
-const schemaAnalysisFile = path.join(outputDir, "schema-analysis.json");
+const consolidatedFile = path.join(outputDir, "consolidated-fields.json");
+const rawDataFile = path.join(outputDir, "raw-data.json");
+const crossReferenceReport = path.join(outputDir, "cross-reference-report.json");
+const requiredFields = ["price", "volume", "liquidity", "fees", "volatility", "RSI", "movingAverage", "correlation", "zScore", "spread"];
+const TRANSACTION_THRESHOLD = 200;
+const VOLUME_THRESHOLD = 50000;
 
-// Map your API endpoints from .env
-const apis = {
-  sushiswap: process.env.SUSHISWAP_DEX_API,
-  balancer: process.env.BALANCER_DEX_API,
-  curve: process.env.CURVE_DEX_API,
-};
-
-// Ensure output directories exist
+// Ensure output directory exists
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir);
 }
-if (!fs.existsSync(refinedDataDir)) {
-  fs.mkdirSync(refinedDataDir);
-}
 
-// Refined queries for each API
-const refinedQueries = {
-  sushiswap: `{
-    liquiditypool {
-      id
-      liquidity
-      volumeUSD
-      txCount
-      feesUSD
-      token0 { symbol priceUSD }
-      token1 { symbol priceUSD }
-    }
-    liquidityPoolDailySnapshot {
-      day
-      totalValueLockedUSD
-      dailyVolumeUSD
-      dailyTotalRevenueUSD
-    }
-    swap {
-      timestamp
-      amountUSD
-    }
-  }`,
-  balancer: `{
-    pool {
-      id
-      liquidity
-      totalSwapVolume
-      totalSwapFee
-      totalLiquidity
-      tokens {
-        symbol
-        priceUSD
-      }
-      poolSnapshots {
-        timestamp
-        liquidity
-        swapVolume
-      }
-    }
-  }`,
-  curve: `{
-    liquiditypool {
-      id
-      liquidity
-      volumeUSD
-      txCount
-      rewardTokenEmissionsUSD
-    }
-    liquidityPoolDailySnapshot {
-      day
-      totalValueLockedUSD
-      dailyVolumeUSD
-      dailyProtocolSideRevenueUSD
-    }
-  }`,
+// Map your API endpoints from .env
+const apis = {
+  uniswap: process.env.UNISWAP_DEX_API,
+  sushiswap: process.env.SUSHISWAP_DEX_API,
+  curveEthereum: process.env.CURVE_ETHEREUM_DEX_API,
+  curveAvalanche: process.env.CURVE_AVALANCHE_DEX_API,
+  quickswap: process.env.QUICKSWAP_DEX_API,
+  balancerPolygon: process.env.BALANCER_POLYGON_DEX_API,
+  balancerOptimism: process.env.BALANCER_OPTIMISM_DEX_API,
+  balancerArbitrum: process.env.BALANCER_ARBITRUM_DEX_API,
+  balancerAvalanche: process.env.BALANCER_AVALANCHE_DEX_API,
+  balancerEthereum: process.env.BALANCER_ETHEREUM_DEX_API,
+  pancake: process.env.PANCAKE_DEX_API
 };
 
-// Function to execute a GraphQL query
-async function executeQuery(apiName, url, query) {
+// Function to determine API type
+function determineApiType(apiUrl) {
+  if (apiUrl.includes("thegraph.com")) {
+    return "GraphQL";
+  } else {
+    return "Unknown";
+  }
+}
+
+// Fetch pool IDs dynamically
+async function fetchPoolIds(apiUrl) {
+  const query = `{
+    pools(first: 100) {
+      id
+      txCount
+      volumeUSD
+    }
+  }`;
+
   try {
-    const response = await fetch(url, {
+    const response = await fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query }),
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch data for ${apiName}: ${response.statusText}`);
+      throw new Error(`Failed to fetch pool IDs: ${response.statusText}`);
     }
 
     const data = await response.json();
-    if (data.data) {
-      return data.data;
-    } else {
-      console.warn(`No data returned for ${apiName}:`, data);
-      return {};
-    }
+    return data.data.pools || [];
   } catch (error) {
-    console.error(`Error executing query for ${apiName}:`, error.message);
-    return {};
+    console.error(`Error fetching pool IDs:`, error.message);
+    return [];
   }
 }
 
-// Fetch and save refined data for all APIs
-async function fetchAndSaveRefinedData() {
-  const consolidatedData = {};
+// Fetch pool data using dynamic queries
+async function fetchPoolData(apiUrl, poolId) {
+  const query = `{
+    pool(id: "${poolId}") {
+      id
+      token0 {
+        symbol
+        priceUSD
+      }
+      token1 {
+        symbol
+        priceUSD
+      }
+      volumeUSD
+      feesUSD
+      txCount
+      totalValueLockedUSD
+      totalValueLockedToken0
+      totalValueLockedToken1
+      timestamp
+    }
+    poolDayData(pool: "${poolId}") {
+      date
+      volumeUSD
+      feesUSD
+      txCount
+      high
+      low
+      close
+      open
+    }
+    poolHourData(pool: "${poolId}") {
+      periodStartUnix
+      volumeUSD
+      feesUSD
+      txCount
+    }
+  }`;
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch pool data: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error(`Error fetching pool data for ${poolId}:`, error.message);
+    return null;
+  }
+}
+
+// Filter pools based on transaction count AND volume thresholds
+function filterPools(poolData) {
+  return poolData.filter((pool) => {
+    const txCount = parseInt(pool.txCount, 10) || 0;
+    const volumeUSD = parseFloat(pool.volumeUSD) || 0;
+    return txCount >= TRANSACTION_THRESHOLD && volumeUSD >= VOLUME_THRESHOLD;
+  });
+}
+
+// Fetch and process data for each API
+async function runMapper() {
+  const consolidatedData = [];
+  const rawData = [];
 
   for (const [apiName, apiUrl] of Object.entries(apis)) {
-    console.log(`Fetching refined data for ${apiName}...`);
-    const query = refinedQueries[apiName];
+    console.log(`Processing API: ${apiName}`);
 
-    if (!query) {
-      console.warn(`No query defined for ${apiName}, skipping.`);
+    const apiType = determineApiType(apiUrl);
+    if (apiType !== "GraphQL") {
+      console.log(`Skipping ${apiName}: Unsupported API type.`);
       continue;
     }
 
-    const result = await executeQuery(apiName, apiUrl, query);
-    if (Object.keys(result).length > 0) {
-      consolidatedData[apiName] = result;
+    // Dynamically fetch pool IDs
+    const pools = await fetchPoolIds(apiUrl);
+    const validPools = [];
 
-      // Save individual API result
-      const outputFile = path.join(refinedDataDir, `${apiName}_refined_data.json`);
-      fs.writeFileSync(outputFile, JSON.stringify(result, null, 2));
-      console.log(`Refined data for ${apiName} saved to ${outputFile}`);
+    for (const pool of pools) {
+      rawData.push(pool); // Save raw data for all pools
+      const txCount = parseInt(pool.txCount, 10) || 0;
+      const volumeUSD = parseFloat(pool.volumeUSD) || 0;
+      if (txCount >= TRANSACTION_THRESHOLD && volumeUSD >= VOLUME_THRESHOLD) {
+        const detailedPoolData = await fetchPoolData(apiUrl, pool.id);
+        if (detailedPoolData && detailedPoolData.pool) {
+          validPools.push(detailedPoolData.pool);
+        }
+      }
     }
+
+    consolidatedData.push({
+      apiName,
+      timestamp: new Date().toISOString(),
+      pools: validPools,
+    });
+
+    console.log(`Filtered pools for ${apiName}:`, validPools);
   }
 
-  // Save consolidated data
-  const consolidatedFile = path.join(refinedDataDir, "consolidated_refined_data.json");
+  // Save raw data output
+  fs.writeFileSync(rawDataFile, JSON.stringify(rawData, null, 2));
+  console.log(`Raw data saved to ${rawDataFile}`);
+
+  // Save consolidated output
   fs.writeFileSync(consolidatedFile, JSON.stringify(consolidatedData, null, 2));
-  console.log(`Consolidated refined data saved to ${consolidatedFile}`);
+  console.log(`Consolidated output saved to ${consolidatedFile}`);
 }
 
-// Run the mapper to fetch refined data
-(async () => {
-  try {
-    await fetchAndSaveRefinedData();
-    console.log("Refined data fetch and save completed.");
-  } catch (error) {
-    console.error("Error during refined data fetching:", error.message);
-  }
-})();
+// Run the mapper
+runMapper();
