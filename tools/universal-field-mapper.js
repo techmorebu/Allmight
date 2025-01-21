@@ -27,104 +27,13 @@ const apis = {
   balancerEthereum: process.env.BALANCER_ETHEREUM_DEX_API,
 };
 
-// Cross-reference mapped fields with enhanced logic
-function crossReferenceFields(mappedData) {
-  const report = mappedData.map((api) => {
-    const availableFields = api.fields;
-
-    // Exact matches
-    const exactMatches = requiredFields.filter((field) =>
-      availableFields.some((available) => available.name === field)
-    );
-
-    // Fuzzy matches
-    const fuzzyMatches = fuzzyMatchFields(requiredFields, availableFields);
-
-    // Metadata-based matches
-    const metadataMatches = requiredFields.reduce((acc, field) => {
-      acc[field] = findMetadataRelatedFields(availableFields, field);
-      return acc;
-    }, {});
-
-    // Missing fields
-    const missingFields = requiredFields.filter((field) => !exactMatches.includes(field));
-
-    // Consolidated report for this API
-    return {
-      apiName: api.apiName,
-      exactMatches,
-      fuzzyMatches,
-      metadataMatches,
-      missingFields,
-      completeness: ((requiredFields.length - missingFields.length) / requiredFields.length) * 100,
-    };
-  });
-
-  // Save enhanced cross-reference report
-  console.log("Enhanced Cross-Reference Report:", JSON.stringify(report, null, 2));
-  fs.writeFileSync(crossReferenceReport, JSON.stringify(report, null, 2));
-}
-
-// Utility: Calculate string similarity
-function calculateStringSimilarity(a, b) {
-  const common = a.split(" ").filter((word) => b.includes(word)).length;
-  return (2 * common) / (a.split(" ").length + b.split(" ").length);
-}
-
-// Utility: Fuzzy match fields
-function fuzzyMatchFields(requiredFields, availableFields) {
-  const threshold = 0.7; // Similarity threshold
-  const similarFields = {};
-
-  requiredFields.forEach((requiredField) => {
-    similarFields[requiredField] = availableFields.filter((field) => {
-      const similarity = calculateStringSimilarity(requiredField, field.name);
-      return similarity >= threshold;
-    });
-  });
-
-  return similarFields;
-}
-
-// Utility: Metadata-based matching
-function findMetadataRelatedFields(fields, requiredField) {
-  return fields.filter((field) =>
-    field.description && field.description.toLowerCase().includes(requiredField.toLowerCase())
-  );
-}
-
-// Recursive function to map fields, including trend and statistical placeholders
-function recursiveMapFields(fields, parent = null, depth = 0) {
-  const mappedFields = [];
-  const dynamicFields = ["movingAverage", "RSI", "volatility", "priceMomentum", "spread", "correlation", "zScore"];
-
-  fields.forEach((field) => {
-    const mappedField = {
-      name: field.name,
-      type: field.type.name || field.type.ofType?.name || "Unknown",
-      kind: field.type.kind,
-      parent,
-      depth,
-      description: field.description || "N/A",
-      args: field.args.map((arg) => ({
-        name: arg.name,
-        type: arg.type.name || arg.type.ofType?.name || "Unknown",
-        description: arg.description || "N/A",
-      })),
-    };
-
-    dynamicFields.forEach((dynamicField) => {
-      mappedField[dynamicField] = null; // Placeholder for trend and statistical data
-    });
-
-    mappedFields.push(mappedField);
-
-    if (field.type.kind === "OBJECT" && field.type.fields) {
-      mappedFields.push(...recursiveMapFields(field.type.fields, field.name, depth + 1));
-    }
-  });
-
-  return mappedFields;
+// Function to determine API type
+function determineApiType(apiUrl) {
+  if (apiUrl.includes("thegraph.com")) {
+    return "GraphQL";
+  } else {
+    return "Unknown";
+  }
 }
 
 // Fetch schema and fields recursively for GraphQL
@@ -179,6 +88,101 @@ async function fetchGraphQLSchema(apiUrl) {
     console.error(`Error fetching GraphQL schema: ${error.message}`);
     return null;
   }
+}
+
+// Utility: Calculate string similarity
+function calculateStringSimilarity(a, b) {
+  const common = a.split(" ").filter((word) => b.includes(word)).length;
+  return (2 * common) / (a.split(" ").length + b.split(" ").length);
+}
+
+// Utility: Fuzzy match fields
+function fuzzyMatchFields(requiredFields, availableFields) {
+  const threshold = 0.7; // Similarity threshold
+  const similarFields = {};
+
+  requiredFields.forEach((requiredField) => {
+    similarFields[requiredField] = availableFields.filter((field) => {
+      const similarity = calculateStringSimilarity(requiredField, field.name);
+      return similarity >= threshold;
+    });
+  });
+
+  return similarFields;
+}
+
+// Utility: Metadata-based matching
+function findMetadataRelatedFields(fields, requiredField) {
+  return fields.filter((field) =>
+    field.description && field.description.toLowerCase().includes(requiredField.toLowerCase())
+  );
+}
+
+// Cross-reference mapped fields with enhanced logic
+function crossReferenceFields(mappedData) {
+  const report = mappedData.map((api) => {
+    const availableFields = api.fields;
+
+    const exactMatches = requiredFields.filter((field) =>
+      availableFields.some((available) => available.name === field)
+    );
+
+    const fuzzyMatches = fuzzyMatchFields(requiredFields, availableFields);
+
+    const metadataMatches = requiredFields.reduce((acc, field) => {
+      acc[field] = findMetadataRelatedFields(availableFields, field);
+      return acc;
+    }, {});
+
+    const missingFields = requiredFields.filter((field) => !exactMatches.includes(field));
+
+    return {
+      apiName: api.apiName,
+      exactMatches,
+      fuzzyMatches,
+      metadataMatches,
+      missingFields,
+      completeness: ((requiredFields.length - missingFields.length) / requiredFields.length) * 100,
+    };
+  });
+
+  // Save enhanced cross-reference report
+  console.log("Enhanced Cross-Reference Report:", JSON.stringify(report, null, 2));
+  fs.writeFileSync(crossReferenceReport, JSON.stringify(report, null, 2));
+}
+
+// Recursive function to map fields, including trend and statistical placeholders
+function recursiveMapFields(fields, parent = null, depth = 0) {
+  const mappedFields = [];
+  const dynamicFields = ["movingAverage", "RSI", "volatility", "priceMomentum", "spread", "correlation", "zScore"];
+
+  fields.forEach((field) => {
+    const mappedField = {
+      name: field.name,
+      type: field.type.name || field.type.ofType?.name || "Unknown",
+      kind: field.type.kind,
+      parent,
+      depth,
+      description: field.description || "N/A",
+      args: field.args.map((arg) => ({
+        name: arg.name,
+        type: arg.type.name || arg.type.ofType?.name || "Unknown",
+        description: arg.description || "N/A",
+      })),
+    };
+
+    dynamicFields.forEach((dynamicField) => {
+      mappedField[dynamicField] = null; // Placeholder for trend and statistical data
+    });
+
+    mappedFields.push(mappedField);
+
+    if (field.type.kind === "OBJECT" && field.type.fields) {
+      mappedFields.push(...recursiveMapFields(field.type.fields, field.name, depth + 1));
+    }
+  });
+
+  return mappedFields;
 }
 
 // Fetch and process data for each API
