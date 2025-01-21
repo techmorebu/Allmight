@@ -5,6 +5,9 @@ require("dotenv").config();
 
 const outputDir = path.join(__dirname, "../outputs");
 const consolidatedFile = path.join(outputDir, "consolidated-fields.json");
+const crossReferenceReport = path.join(outputDir, "cross-reference-report.json");
+const historicalDataFile = path.join(outputDir, "historical-pairs-data.json");
+const requiredFields = ["price", "volume", "liquidity", "fees", "volatility", "RSI", "movingAverage", "correlation", "zScore", "spread"];
 
 // Ensure output directory exists
 if (!fs.existsSync(outputDir)) {
@@ -88,10 +91,70 @@ async function fetchGraphQLSchema(apiUrl) {
   }
 }
 
-// Recursive function to map fields, including trend placeholders
+// Utility: Calculate string similarity
+function calculateStringSimilarity(a, b) {
+  const common = a.split(" ").filter((word) => b.includes(word)).length;
+  return (2 * common) / (a.split(" ").length + b.split(" ").length);
+}
+
+// Utility: Fuzzy match fields
+function fuzzyMatchFields(requiredFields, availableFields) {
+  const threshold = 0.7; // Similarity threshold
+  const similarFields = {};
+
+  requiredFields.forEach((requiredField) => {
+    similarFields[requiredField] = availableFields.filter((field) => {
+      const similarity = calculateStringSimilarity(requiredField, field.name);
+      return similarity >= threshold;
+    });
+  });
+
+  return similarFields;
+}
+
+// Utility: Metadata-based matching
+function findMetadataRelatedFields(fields, requiredField) {
+  return fields.filter((field) =>
+    field.description && field.description.toLowerCase().includes(requiredField.toLowerCase())
+  );
+}
+
+// Cross-reference mapped fields with enhanced logic
+function crossReferenceFields(mappedData) {
+  const report = mappedData.map((api) => {
+    const availableFields = api.fields;
+
+    const exactMatches = requiredFields.filter((field) =>
+      availableFields.some((available) => available.name === field)
+    );
+
+    const fuzzyMatches = fuzzyMatchFields(requiredFields, availableFields);
+
+    const metadataMatches = requiredFields.reduce((acc, field) => {
+      acc[field] = findMetadataRelatedFields(availableFields, field);
+      return acc;
+    }, {});
+
+    const missingFields = requiredFields.filter((field) => !exactMatches.includes(field));
+
+    return {
+      apiName: api.apiName,
+      exactMatches,
+      fuzzyMatches,
+      metadataMatches,
+      missingFields,
+      completeness: ((requiredFields.length - missingFields.length) / requiredFields.length) * 100,
+    };
+  });
+
+  console.log("Enhanced Cross-Reference Report:", JSON.stringify(report, null, 2));
+  fs.writeFileSync(crossReferenceReport, JSON.stringify(report, null, 2));
+}
+
+// Recursive function to map fields, including trend and statistical placeholders
 function recursiveMapFields(fields, parent = null, depth = 0) {
   const mappedFields = [];
-  const dynamicFields = ["movingAverage", "RSI", "volatility", "priceMomentum", "spread"];
+  const dynamicFields = ["movingAverage", "RSI", "volatility", "priceMomentum", "spread", "correlation", "zScore"];
 
   fields.forEach((field) => {
     const mappedField = {
@@ -109,7 +172,7 @@ function recursiveMapFields(fields, parent = null, depth = 0) {
     };
 
     dynamicFields.forEach((dynamicField) => {
-      mappedField[dynamicField] = null; // Placeholder for trend-related data
+      mappedField[dynamicField] = null; // Placeholder for trend and statistical data
     });
 
     mappedFields.push(mappedField);
@@ -162,6 +225,9 @@ async function runMapper() {
   // Save consolidated output
   fs.writeFileSync(consolidatedFile, JSON.stringify(consolidatedData, null, 2));
   console.log(`Consolidated output saved to ${consolidatedFile}`);
+
+  // Cross-reference fields with enhanced logic
+  crossReferenceFields(consolidatedData);
 }
 
 // Run the mapper
