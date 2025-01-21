@@ -88,12 +88,13 @@ async function fetchGraphQLSchema(apiUrl) {
   }
 }
 
-// Recursive function to map fields
+// Recursive function to map fields, including trend placeholders
 function recursiveMapFields(fields, parent = null, depth = 0) {
   const mappedFields = [];
+  const dynamicFields = ["movingAverage", "RSI", "volatility", "priceMomentum", "spread"];
 
   fields.forEach((field) => {
-    mappedFields.push({
+    const mappedField = {
       name: field.name,
       type: field.type.name || field.type.ofType?.name || "Unknown",
       kind: field.type.kind,
@@ -105,7 +106,13 @@ function recursiveMapFields(fields, parent = null, depth = 0) {
         type: arg.type.name || arg.type.ofType?.name || "Unknown",
         description: arg.description || "N/A",
       })),
+    };
+
+    dynamicFields.forEach((dynamicField) => {
+      mappedField[dynamicField] = null; // Placeholder for trend-related data
     });
+
+    mappedFields.push(mappedField);
 
     if (field.type.kind === "OBJECT" && field.type.fields) {
       mappedFields.push(...recursiveMapFields(field.type.fields, field.name, depth + 1));
