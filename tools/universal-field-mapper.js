@@ -8,8 +8,8 @@ const consolidatedFile = path.join(outputDir, "consolidated-fields.json");
 const rawDataFile = path.join(outputDir, "raw-data.json");
 const crossReferenceReport = path.join(outputDir, "cross-reference-report.json");
 const requiredFields = ["price", "volume", "liquidity", "fees", "volatility", "RSI", "movingAverage", "correlation", "zScore", "spread"];
-const TRANSACTION_THRESHOLD = 300;
-const LIQUIDITY_THRESHOLD = 50000;
+const TRANSACTION_THRESHOLD = 200;
+const VOLUME_THRESHOLD = 50000;
 
 // Ensure output directory exists
 if (!fs.existsSync(outputDir)) {
@@ -45,7 +45,7 @@ async function fetchPoolIds(apiUrl) {
     pools(first: 100) {
       id
       txCount
-      liquidity
+      volumeUSD
     }
   }`;
 
@@ -81,7 +81,6 @@ async function fetchPoolData(apiUrl, poolId) {
         symbol
         priceUSD
       }
-      liquidity
       volumeUSD
       feesUSD
       txCount
@@ -114,13 +113,13 @@ async function fetchPoolData(apiUrl, poolId) {
   }
 }
 
-// Filter pools based on transaction count OR liquidity thresholds
+// Filter pools based on transaction count AND volume thresholds
 function filterPools(poolData) {
   return poolData.filter((pool) => {
     const txCount = parseInt(pool.txCount, 10) || 0;
-    const liquidity = parseFloat(pool.liquidity) || 0;
-    const include = txCount >= TRANSACTION_THRESHOLD || liquidity >= LIQUIDITY_THRESHOLD;
-    console.log(`Pool ID: ${pool.id}, TxCount: ${txCount}, Liquidity: ${liquidity}, Included: ${include}`);
+    const volumeUSD = parseFloat(pool.volumeUSD) || 0;
+    const include = txCount >= TRANSACTION_THRESHOLD && volumeUSD >= VOLUME_THRESHOLD;
+    console.log(`Pool ID: ${pool.id}, TxCount: ${txCount}, VolumeUSD: ${volumeUSD}, Included: ${include}`);
     return include;
   });
 }
@@ -146,8 +145,8 @@ async function runMapper() {
     for (const pool of pools) {
       rawData.push(pool); // Save raw data for all pools
       const txCount = parseInt(pool.txCount, 10) || 0;
-      const liquidity = parseFloat(pool.liquidity) || 0;
-      if (txCount >= TRANSACTION_THRESHOLD || liquidity >= LIQUIDITY_THRESHOLD) {
+      const volumeUSD = parseFloat(pool.volumeUSD) || 0;
+      if (txCount >= TRANSACTION_THRESHOLD && volumeUSD >= VOLUME_THRESHOLD) {
         console.log(`Fetching detailed data for pool ID: ${pool.id}`);
         const detailedPoolData = await fetchPoolData(apiUrl, pool.id);
         if (detailedPoolData) {
