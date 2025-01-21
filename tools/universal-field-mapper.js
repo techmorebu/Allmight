@@ -126,9 +126,10 @@ async function runMapper() {
     for (const poolId of poolIds) {
       const poolData = await fetchPoolData(apiUrl, poolId);
       if (poolData && poolData.pool) {
-        const filtered = filterPools([poolData.pool]);
-        if (filtered.length > 0) {
-          validPools.push(...filtered);
+        const txCount = parseInt(poolData.pool.txCount, 10) || 0;
+        const liquidity = parseFloat(poolData.pool.liquidity) || 0;
+        if (txCount >= TRANSACTION_THRESHOLD && liquidity >= LIQUIDITY_THRESHOLD) {
+          validPools.push(poolData.pool);
         }
       }
     }
