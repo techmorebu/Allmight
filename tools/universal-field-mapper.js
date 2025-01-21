@@ -4,79 +4,48 @@ const path = require("path");
 require("dotenv").config();
 
 const outputDir = path.join(__dirname, "../outputs");
-const uniswapDataFile = path.join(outputDir, "uniswap-data.json");
-const uniswapRawDataFile = path.join(outputDir, "uniswap-raw-data.json");
+const schemaDir = path.join(outputDir, "schemas");
+const schemaAnalysisFile = path.join(schemaDir, "uniswap-schema-analysis.json");
+const tableOutputDir = path.join(outputDir, "tables");
 
 // Ensure output directories exist
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir);
 }
+if (!fs.existsSync(schemaDir)) {
+  fs.mkdirSync(schemaDir);
+}
+if (!fs.existsSync(tableOutputDir)) {
+  fs.mkdirSync(tableOutputDir);
+}
 
 // Define Uniswap API endpoint
 const uniswapApiUrl = process.env.UNISWAP_DEX_API;
 
-// Transaction and Volume Thresholds
-const TRANSACTION_THRESHOLD = 200;
-const VOLUME_THRESHOLD = 50000;
-
-// Function to fetch pool data dynamically with pagination
-async function fetchPools(apiUrl, skip = 0) {
+// Function to fetch schema
+async function fetchSchema(apiUrl, apiName) {
   const query = `{
-    pools(first: 100, skip: ${skip}) {
-      id
-      token0 {
-        symbol
-        priceUSD
+    __schema {
+      types {
+        name
+        kind
+        fields {
+          name
+          description
+          type {
+            name
+            kind
+            ofType {
+              name
+              kind
+            }
+          }
+        }
       }
-      token1 {
-        symbol
-        priceUSD
-      }
-      liquidity
-      volumeUSD
-      txCount
-      collectedFeesToken0
-      collectedFeesToken1
-      poolDayData {
-        date
-        volumeUSD
-        feesUSD
-        txCount
-      }
-      poolHourData {
-        periodStartUnix
-        volumeUSD
-        feesUSD
-        txCount
-      }
-    }
-    swaps(first: 100, skip: ${skip}) {
-      id
-      amountUSD
-      timestamp
-      token0 {
-        symbol
-        priceUSD
-      }
-      token1 {
-        symbol
-        priceUSD
-      }
-    }
-    mints(first: 100, skip: ${skip}) {
-      id
-      amountUSD
-      timestamp
-    }
-    burns(first: 100, skip: ${skip}) {
-      id
-      amountUSD
-      timestamp
     }
   }`;
 
   try {
-    console.log(`Fetching pools and transactions with skip=${skip}...`);
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -84,87 +53,103 @@ async function fetchPools(apiUrl, skip = 0) {
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch pools and transactions: ${response.statusText}`);
+      throw new Error(`Failed to fetch schema for ${apiName}: ${response.statusText}`);
     }
 
     const data = await response.json();
-
-    if (!data || !data.data) {
-      console.warn("No data returned from the API. Response:", JSON.stringify(data, null, 2));
-      return { pools: [], swaps: [], mints: [], burns: [] };
-    }
-
-    return {
-      pools: data.data.pools || [],
-      swaps: data.data.swaps || [],
-      mints: data.data.mints || [],
-      burns: data.data.burns || []
-    };
+    const schemaFile = path.join(schemaDir, `${apiName}-schema.json`);
+    fs.writeFileSync(schemaFile, JSON.stringify(data, null, 2));
+    console.log(`Schema saved for ${apiName} at ${schemaFile}`);
+    return data.data.__schema.types;
   } catch (error) {
-    console.error("Error fetching pools and transactions:", error.message);
-    return { pools: [], swaps: [], mints: [], burns: [] };
+    console.error(`Error fetching schema for ${apiName}:`, error.message);
+    return null;
   }
 }
 
-// Filter pools based on thresholds
-function filterPools(pools) {
-  return pools.filter((pool) => {
-    const txCount = parseInt(pool.txCount, 10) || 0;
-    const volumeUSD = parseFloat(pool.volumeUSD) || 0;
-    const include = txCount >= TRANSACTION_THRESHOLD && volumeUSD >= VOLUME_THRESHOLD;
-    console.log(`Pool ID: ${pool.id}, TxCount: ${txCount}, VolumeUSD: ${volumeUSD}, Included: ${include}`);
-    return include;
+// Function to analyze schema for relevant types and fields
+function analyzeSchema(types) {
+  const relevantTypes = [];
+
+  types.forEach((type) => {
+    if (type.kind === "OBJECT" && type.fields) {
+      const relevantFields = type.fields.map((field) => ({
+        name: field.name,
+        description: field.description || "",
+        type: field.type.name || field.type.ofType?.name || "Unknown",
+        kind: field.type.kind || field.type.ofType?.kind || "Unknown",
+      }));
+
+      relevantTypes.push({
+        name: type.name,
+        kind: type.kind,
+        fields: relevantFields,
+      });
+    }
+  });
+
+  return relevantTypes;
+}
+
+// Function to convert schema analysis into data tables
+function generateDataTables(analysis) {
+  const tables = {};
+
+  analysis.forEach((type) => {
+    const tableData = type.fields.map((field) => ({
+      Type: type.name,
+      Field: field.name,
+      Description: field.description,
+      FieldType: field.type,
+      FieldKind: field.kind,
+    }));
+    tables[type.name] = tableData;
+  });
+
+  return tables;
+}
+
+// Save tables as JSON and CSV
+function saveTables(tables) {
+  Object.entries(tables).forEach(([typeName, rows]) => {
+    const jsonFile = path.join(tableOutputDir, `${typeName}.json`);
+    const csvFile = path.join(tableOutputDir, `${typeName}.csv`);
+
+    fs.writeFileSync(jsonFile, JSON.stringify(rows, null, 2));
+    console.log(`Table for ${typeName} saved as JSON at ${jsonFile}`);
+
+    const csvData = rows.map((row) => Object.values(row).join(",")).join("\n");
+    const csvHeaders = Object.keys(rows[0]).join(",");
+    fs.writeFileSync(csvFile, `${csvHeaders}\n${csvData}`);
+    console.log(`Table for ${typeName} saved as CSV at ${csvFile}`);
   });
 }
 
-// Fetch and process data for Uniswap
-async function fetchUniswapData() {
-  console.log("Fetching comprehensive data for Uniswap...");
+// Main function to fetch and analyze schema
+async function fetchAndAnalyzeSchema() {
+  console.log("Fetching and analyzing schema for Uniswap...");
 
-  let skip = 0;
-  let allPools = [];
-  let allSwaps = [];
-  let allMints = [];
-  let allBurns = [];
-
-  while (true) {
-    const { pools, swaps, mints, burns } = await fetchPools(uniswapApiUrl, skip);
-    if (!pools.length && !swaps.length && !mints.length && !burns.length) break;
-
-    allPools = allPools.concat(pools);
-    allSwaps = allSwaps.concat(swaps);
-    allMints = allMints.concat(mints);
-    allBurns = allBurns.concat(burns);
-
-    skip += 100;
-  }
-
-  if (!allPools.length) {
-    console.warn("No pools retrieved. Check the API endpoint or schema.");
+  const types = await fetchSchema(uniswapApiUrl, "uniswap");
+  if (!types) {
+    console.error("Failed to fetch schema. Exiting...");
     return;
   }
 
-  // Save raw data
-  const rawData = { pools: allPools, swaps: allSwaps, mints: allMints, burns: allBurns };
-  fs.writeFileSync(uniswapRawDataFile, JSON.stringify(rawData, null, 2));
-  console.log(`Raw data saved to ${uniswapRawDataFile}`);
+  const analyzedSchema = analyzeSchema(types);
+  const analysisFile = path.join(schemaDir, "uniswap-analyzed-schema.json");
+  fs.writeFileSync(analysisFile, JSON.stringify(analyzedSchema, null, 2));
+  console.log(`Analyzed schema saved to ${analysisFile}`);
 
-  // Filter pools
-  const filteredPools = filterPools(allPools);
-  console.log(`Filtered ${filteredPools.length} pools based on thresholds.`);
-
-  // Save filtered data
-  const filteredData = { pools: filteredPools, swaps: allSwaps, mints: allMints, burns: allBurns };
-  fs.writeFileSync(uniswapDataFile, JSON.stringify(filteredData, null, 2));
-  console.log(`Filtered data saved to ${uniswapDataFile}`);
+  const tables = generateDataTables(analyzedSchema);
+  saveTables(tables);
 }
 
-// Run the Uniswap fetcher
+// Run schema fetch and analysis
 (async () => {
   try {
-    await fetchUniswapData();
-    console.log("Uniswap comprehensive data fetch completed.");
+    await fetchAndAnalyzeSchema();
+    console.log("Schema fetch and analysis completed.");
   } catch (error) {
-    console.error("Error during Uniswap data fetch:", error.message);
+    console.error("Error during schema fetch and analysis:", error.message);
   }
 })();
