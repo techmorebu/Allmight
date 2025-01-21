@@ -1,0 +1,52 @@
+[
+  {
+    "apiName": "uniswap",
+    "timestamp": "2025-01-21T05:43:41.401Z",
+    "pools": []
+  },
+  {
+    "apiName": "sushiswap",
+    "timestamp": "2025-01-21T05:43:42.669Z",
+    "pools": []
+  },
+  {
+    "apiName": "curveEthereum",
+    "timestamp": "2025-01-21T05:43:43.095Z",
+    "pools": []
+  },
+  {
+    "apiName": "curveAvalanche",
+    "timestamp": "2025-01-21T05:43:43.675Z",
+    "pools": []
+  },
+  {
+    "apiName": "quickswap",
+    "timestamp": "2025-01-21T05:43:45.750Z",
+    "pools": []
+  },
+  {
+    "apiName": "balancerPolygon",
+    "timestamp": "2025-01-21T05:43:46.913Z",
+    "pools": []
+  },
+  {
+    "apiName": "balancerOptimism",
+    "timestamp": "2025-01-21T05:43:47.958Z",
+    "pools": []
+  },
+  {
+    "apiName": "balancerArbitrum",
+    "timestamp": "2025-01-21T05:43:48.879Z",
+    "pools": []
+  },
+  {
+    "apiName": "balancerAvalanche",
+    "timestamp": "2025-01-21T05:43:50.108Z",
+    "pools": []
+  },
+  {
+    "apiName": "balancerEthereum",
+    "timestamp": "2025-01-21T05:43:51.218Z",
+    "pools": []
+  }
+]
