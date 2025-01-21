@@ -39,6 +39,35 @@ function determineApiType(apiUrl) {
   }
 }
 
+// Fetch pool IDs dynamically
+async function fetchPoolIds(apiUrl) {
+  const query = `{
+    pools(first: 100) {
+      id
+      txCount
+      liquidity
+    }
+  }`;
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch pool IDs: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.data.pools || [];
+  } catch (error) {
+    console.error(`Error fetching pool IDs:`, error.message);
+    return [];
+  }
+}
+
 // Fetch pool data using dynamic queries
 async function fetchPoolData(apiUrl, poolId) {
   const query = `{
@@ -121,18 +150,18 @@ async function runMapper() {
       continue;
     }
 
-    // Replace this with actual pool IDs you want to query
-    const poolIds = ["POOL_ID_1", "POOL_ID_2", "POOL_ID_3"]; 
+    // Dynamically fetch pool IDs
+    const pools = await fetchPoolIds(apiUrl);
     const validPools = [];
 
-    for (const poolId of poolIds) {
-      const poolData = await fetchPoolData(apiUrl, poolId);
-      if (poolData && poolData.pool) {
-        rawData.push(poolData.pool); // Save raw data for all pools
-        const txCount = parseInt(poolData.pool.txCount, 10) || 0;
-        const liquidity = parseFloat(poolData.pool.liquidity) || 0;
-        if (txCount >= TRANSACTION_THRESHOLD || liquidity >= LIQUIDITY_THRESHOLD) {
-          validPools.push(poolData.pool);
+    for (const pool of pools) {
+      rawData.push(pool); // Save raw data for all pools
+      const txCount = parseInt(pool.txCount, 10) || 0;
+      const liquidity = parseFloat(pool.liquidity) || 0;
+      if (txCount >= TRANSACTION_THRESHOLD || liquidity >= LIQUIDITY_THRESHOLD) {
+        const detailedPoolData = await fetchPoolData(apiUrl, pool.id);
+        if (detailedPoolData && detailedPoolData.pool) {
+          validPools.push(detailedPoolData.pool);
         }
       }
     }
