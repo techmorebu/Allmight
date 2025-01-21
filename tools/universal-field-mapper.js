@@ -94,6 +94,14 @@ async function consolidateSchemas() {
   console.log(`Consolidated schema saved at ${schemaConsolidatedFile}`);
 }
 
+// Fetch schema for all APIs
+async function fetchAllSchemas() {
+  for (const [apiName, apiUrl] of Object.entries(apis)) {
+    console.log(`Fetching schema for ${apiName}`);
+    await fetchSchema(apiUrl, apiName);
+  }
+}
+
 // Fetch pool data dynamically using saved schemas
 async function fetchDynamicPoolData(apiUrl, apiName, poolId) {
   const schemaFile = path.join(schemaDir, `${apiName}-schema.json`);
@@ -171,7 +179,11 @@ async function runMapper() {
 
 // Run schema fetching, consolidation, and mapper
 (async () => {
-  await fetchAllSchemas();
-  await consolidateSchemas();
-  await runMapper();
+  try {
+    await fetchAllSchemas();
+    await consolidateSchemas();
+    await runMapper();
+  } catch (error) {
+    console.error("Error during execution:", error.message);
+  }
 })();
