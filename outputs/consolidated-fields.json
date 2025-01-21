@@ -1,7 +1,7 @@
 [
   {
     "apiName": "uniswap",
-    "timestamp": "2025-01-21T03:28:14.873Z",
+    "timestamp": "2025-01-21T03:48:58.739Z",
     "fields": [
       {
         "name": "id",
@@ -8671,7 +8671,7 @@
   },
   {
     "apiName": "sushiswap",
-    "timestamp": "2025-01-21T03:28:15.787Z",
+    "timestamp": "2025-01-21T03:48:59.344Z",
     "fields": [
       {
         "name": "id",
@@ -19865,7 +19865,7 @@
   },
   {
     "apiName": "curveEthereum",
-    "timestamp": "2025-01-21T03:28:16.050Z",
+    "timestamp": "2025-01-21T03:48:59.956Z",
     "fields": [
       {
         "name": "id",
@@ -27095,7 +27095,7 @@
   },
   {
     "apiName": "curveAvalanche",
-    "timestamp": "2025-01-21T03:28:16.708Z",
+    "timestamp": "2025-01-21T03:49:00.572Z",
     "fields": [
       {
         "name": "id",
@@ -34325,7 +34325,7 @@
   },
   {
     "apiName": "quickswap",
-    "timestamp": "2025-01-21T03:28:17.059Z",
+    "timestamp": "2025-01-21T03:49:01.182Z",
     "fields": [
       {
         "name": "id",
@@ -43763,7 +43763,7 @@
   },
   {
     "apiName": "balancerPolygon",
-    "timestamp": "2025-01-21T03:28:17.646Z",
+    "timestamp": "2025-01-21T03:49:01.502Z",
     "fields": [
       {
         "name": "id",
@@ -53045,7 +53045,7 @@
   },
   {
     "apiName": "balancerOptimism",
-    "timestamp": "2025-01-21T03:28:17.937Z",
+    "timestamp": "2025-01-21T03:49:01.816Z",
     "fields": [
       {
         "name": "id",
@@ -62327,7 +62327,7 @@
   },
   {
     "apiName": "balancerArbitrum",
-    "timestamp": "2025-01-21T03:28:18.237Z",
+    "timestamp": "2025-01-21T03:49:02.414Z",
     "fields": [
       {
         "name": "id",
@@ -71609,7 +71609,7 @@
   },
   {
     "apiName": "balancerAvalanche",
-    "timestamp": "2025-01-21T03:28:18.611Z",
+    "timestamp": "2025-01-21T03:49:03.051Z",
     "fields": [
       {
         "name": "id",
@@ -80907,7 +80907,7 @@
   },
   {
     "apiName": "balancerEthereum",
-    "timestamp": "2025-01-21T03:28:18.959Z",
+    "timestamp": "2025-01-21T03:49:03.642Z",
     "fields": [
       {
         "name": "id",
