@@ -4,16 +4,18 @@ const path = require("path");
 require("dotenv").config();
 
 const outputDir = path.join(__dirname, "../outputs");
+const schemaDir = path.join(outputDir, "schemas");
 const consolidatedFile = path.join(outputDir, "consolidated-fields.json");
-const rawDataFile = path.join(outputDir, "raw-data.json");
-const crossReferenceReport = path.join(outputDir, "cross-reference-report.json");
-const requiredFields = ["price", "volume", "liquidity", "fees", "volatility", "RSI", "movingAverage", "correlation", "zScore", "spread"];
-const TRANSACTION_THRESHOLD = 300;
-const LIQUIDITY_THRESHOLD = 50000;
+const schemaConsolidatedFile = path.join(schemaDir, "consolidated-schema.json");
+const TRANSACTION_THRESHOLD = 200;
+const VOLUME_THRESHOLD = 50000;
 
-// Ensure output directory exists
+// Ensure output and schema directories exist
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir);
+}
+if (!fs.existsSync(schemaDir)) {
+  fs.mkdirSync(schemaDir);
 }
 
 // Map your API endpoints from .env
@@ -30,22 +32,25 @@ const apis = {
   balancerEthereum: process.env.BALANCER_ETHEREUM_DEX_API,
 };
 
-// Function to determine API type
-function determineApiType(apiUrl) {
-  if (apiUrl.includes("thegraph.com")) {
-    return "GraphQL";
-  } else {
-    return "Unknown";
-  }
-}
-
-// Fetch pool IDs dynamically
-async function fetchPoolIds(apiUrl) {
+// Function to introspect API schema
+async function fetchSchema(apiUrl, apiName) {
   const query = `{
-    pools(first: 100) {
-      id
-      txCount
-      liquidity
+    __schema {
+      types {
+        name
+        fields {
+          name
+          description
+          type {
+            name
+            kind
+            ofType {
+              name
+              kind
+            }
+          }
+        }
+      }
     }
   }`;
 
@@ -57,112 +62,96 @@ async function fetchPoolIds(apiUrl) {
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch pool IDs: ${response.statusText}`);
+      throw new Error(`Failed to fetch schema for ${apiName}: ${response.statusText}`);
     }
 
     const data = await response.json();
-    return data.data.pools || [];
+    const schemaFile = path.join(schemaDir, `${apiName}-schema.json`);
+    fs.writeFileSync(schemaFile, JSON.stringify(data, null, 2));
+    console.log(`Schema saved for ${apiName} at ${schemaFile}`);
+    return data;
   } catch (error) {
-    console.error(`Error fetching pool IDs:`, error.message);
-    return [];
-  }
-}
-
-// Fetch pool data using dynamic queries
-async function fetchPoolData(apiUrl, poolId) {
-  const query = `{
-    pool(id: "${poolId}") {
-      id
-      token0 {
-        symbol
-        priceUSD
-      }
-      token1 {
-        symbol
-        priceUSD
-      }
-      liquidity
-      volumeUSD
-      feesUSD
-      txCount
-      totalValueLockedUSD
-      totalValueLockedToken0
-      totalValueLockedToken1
-      timestamp
-    }
-    poolDayData(pool: "${poolId}") {
-      date
-      volumeUSD
-      feesUSD
-      txCount
-      high
-      low
-      close
-      open
-    }
-    poolHourData(pool: "${poolId}") {
-      periodStartUnix
-      volumeUSD
-      feesUSD
-      txCount
-    }
-  }`;
-
-  try {
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch pool data: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return data.data;
-  } catch (error) {
-    console.error(`Error fetching pool data for ${poolId}:`, error.message);
+    console.error(`Error fetching schema for ${apiName}:`, error.message);
     return null;
   }
 }
 
-// Filter pools based on transaction count OR liquidity thresholds
-function filterPools(poolData) {
-  return poolData.filter((pool) => {
-    const txCount = parseInt(pool.txCount, 10) || 0;
-    const liquidity = parseFloat(pool.liquidity) || 0;
-    return txCount >= TRANSACTION_THRESHOLD || liquidity >= LIQUIDITY_THRESHOLD;
-  });
+// Consolidate schemas into a single file
+async function consolidateSchemas() {
+  const consolidatedSchema = {};
+
+  for (const [apiName, apiUrl] of Object.entries(apis)) {
+    const schemaFile = path.join(schemaDir, `${apiName}-schema.json`);
+    if (fs.existsSync(schemaFile)) {
+      const schema = JSON.parse(fs.readFileSync(schemaFile));
+      consolidatedSchema[apiName] = schema.data.__schema.types;
+    } else {
+      console.warn(`Schema file not found for ${apiName}, skipping.`);
+    }
+  }
+
+  fs.writeFileSync(schemaConsolidatedFile, JSON.stringify(consolidatedSchema, null, 2));
+  console.log(`Consolidated schema saved at ${schemaConsolidatedFile}`);
+}
+
+// Fetch pool data dynamically using saved schemas
+async function fetchDynamicPoolData(apiUrl, apiName, poolId) {
+  const schemaFile = path.join(schemaDir, `${apiName}-schema.json`);
+
+  if (!fs.existsSync(schemaFile)) {
+    console.warn(`Schema not found for ${apiName}, skipping.`);
+    return null;
+  }
+
+  const schema = JSON.parse(fs.readFileSync(schemaFile));
+  const poolType = schema.data.__schema.types.find((type) => type.name.toLowerCase().includes("pool"));
+  if (!poolType || !poolType.fields) {
+    console.warn(`No valid pool type found in schema for ${apiName}, skipping.`);
+    return null;
+  }
+
+  const poolFields = poolType.fields.map((field) => field.name).join(" ");
+
+  const query = `{
+    ${poolType.name}(id: "${poolId}") {
+      ${poolFields}
+    }
+  }`;
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch pool data for ${poolId} from ${apiName}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.data[poolType.name];
+  } catch (error) {
+    console.error(`Error fetching pool data for ${poolId} from ${apiName}:`, error.message);
+    return null;
+  }
 }
 
 // Fetch and process data for each API
 async function runMapper() {
   const consolidatedData = [];
-  const rawData = [];
 
   for (const [apiName, apiUrl] of Object.entries(apis)) {
     console.log(`Processing API: ${apiName}`);
 
-    const apiType = determineApiType(apiUrl);
-    if (apiType !== "GraphQL") {
-      console.log(`Skipping ${apiName}: Unsupported API type.`);
-      continue;
-    }
-
-    // Dynamically fetch pool IDs
-    const pools = await fetchPoolIds(apiUrl);
+    // Placeholder pool IDs for demonstration
+    const poolIds = ["POOL_ID_1", "POOL_ID_2", "POOL_ID_3"];
     const validPools = [];
 
-    for (const pool of pools) {
-      rawData.push(pool); // Save raw data for all pools
-      const txCount = parseInt(pool.txCount, 10) || 0;
-      const liquidity = parseFloat(pool.liquidity) || 0;
-      if (txCount >= TRANSACTION_THRESHOLD || liquidity >= LIQUIDITY_THRESHOLD) {
-        const detailedPoolData = await fetchPoolData(apiUrl, pool.id);
-        if (detailedPoolData && detailedPoolData.pool) {
-          validPools.push(detailedPoolData.pool);
-        }
+    for (const poolId of poolIds) {
+      const poolData = await fetchDynamicPoolData(apiUrl, apiName, poolId);
+      if (poolData) {
+        validPools.push(poolData);
       }
     }
 
@@ -172,17 +161,17 @@ async function runMapper() {
       pools: validPools,
     });
 
-    console.log(`Filtered pools for ${apiName}:`, validPools);
+    console.log(`Processed pools for ${apiName}:`, validPools);
   }
-
-  // Save raw data output
-  fs.writeFileSync(rawDataFile, JSON.stringify(rawData, null, 2));
-  console.log(`Raw data saved to ${rawDataFile}`);
 
   // Save consolidated output
   fs.writeFileSync(consolidatedFile, JSON.stringify(consolidatedData, null, 2));
   console.log(`Consolidated output saved to ${consolidatedFile}`);
 }
 
-// Run the mapper
-runMapper();
+// Run schema fetching, consolidation, and mapper
+(async () => {
+  await fetchAllSchemas();
+  await consolidateSchemas();
+  await runMapper();
+})();
