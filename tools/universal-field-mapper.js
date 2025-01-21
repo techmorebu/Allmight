@@ -104,6 +104,9 @@ async function fetchPoolData(apiUrl, poolId) {
     }
 
     const data = await response.json();
+    if (!data.data.pool) {
+      console.warn(`API response for pool ID ${poolId} returned no pool data:`, JSON.stringify(data, null, 2));
+    }
     return data.data.pool;
   } catch (error) {
     console.error(`Error fetching pool data for ${poolId}:`, error.message);
@@ -149,6 +152,9 @@ async function runMapper() {
         const detailedPoolData = await fetchPoolData(apiUrl, pool.id);
         if (detailedPoolData) {
           validPools.push(detailedPoolData);
+        } else {
+          console.warn(`Using raw data as fallback for pool ID: ${pool.id}`);
+          validPools.push(pool); // Fallback to raw data
         }
       }
     }
