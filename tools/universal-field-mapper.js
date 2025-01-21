@@ -64,7 +64,13 @@ async function fetchPools(apiUrl) {
     }
 
     const data = await response.json();
-    return data.data.pools || [];
+
+    if (!data || !data.data || !data.data.pools) {
+      console.warn("No pools data returned from the API.");
+      return [];
+    }
+
+    return data.data.pools;
   } catch (error) {
     console.error("Error fetching pools:", error.message);
     return [];
