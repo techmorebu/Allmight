@@ -6,7 +6,7 @@ require("dotenv").config();
 const outputDir = path.join(__dirname, "../outputs");
 const schemaDir = path.join(outputDir, "schemas");
 const consolidatedFile = path.join(outputDir, "consolidated-fields.json");
-const rawDataFile = path.join(outputDir, "raw-data.json");
+const schemaConsolidatedFile = path.join(schemaDir, "consolidated-schema.json");
 const TRANSACTION_THRESHOLD = 200;
 const VOLUME_THRESHOLD = 50000;
 
@@ -69,17 +69,29 @@ async function fetchSchema(apiUrl, apiName) {
     const schemaFile = path.join(schemaDir, `${apiName}-schema.json`);
     fs.writeFileSync(schemaFile, JSON.stringify(data, null, 2));
     console.log(`Schema saved for ${apiName} at ${schemaFile}`);
+    return data;
   } catch (error) {
     console.error(`Error fetching schema for ${apiName}:`, error.message);
+    return null;
   }
 }
 
-// Fetch schema for all APIs
-async function fetchAllSchemas() {
+// Consolidate schemas into a single file
+async function consolidateSchemas() {
+  const consolidatedSchema = {};
+
   for (const [apiName, apiUrl] of Object.entries(apis)) {
-    console.log(`Fetching schema for ${apiName}`);
-    await fetchSchema(apiUrl, apiName);
+    const schemaFile = path.join(schemaDir, `${apiName}-schema.json`);
+    if (fs.existsSync(schemaFile)) {
+      const schema = JSON.parse(fs.readFileSync(schemaFile));
+      consolidatedSchema[apiName] = schema.data.__schema.types;
+    } else {
+      console.warn(`Schema file not found for ${apiName}, skipping.`);
+    }
   }
+
+  fs.writeFileSync(schemaConsolidatedFile, JSON.stringify(consolidatedSchema, null, 2));
+  console.log(`Consolidated schema saved at ${schemaConsolidatedFile}`);
 }
 
 // Fetch pool data dynamically using saved schemas
@@ -92,18 +104,16 @@ async function fetchDynamicPoolData(apiUrl, apiName, poolId) {
   }
 
   const schema = JSON.parse(fs.readFileSync(schemaFile));
-  const poolFields = schema.data.__schema.types
-    .find((type) => type.name === "Pool")?.fields
-    .map((field) => field.name)
-    .join(" ");
-
-  if (!poolFields) {
-    console.warn(`No pool fields found in schema for ${apiName}, skipping.`);
+  const poolType = schema.data.__schema.types.find((type) => type.name.toLowerCase().includes("pool"));
+  if (!poolType || !poolType.fields) {
+    console.warn(`No valid pool type found in schema for ${apiName}, skipping.`);
     return null;
   }
 
+  const poolFields = poolType.fields.map((field) => field.name).join(" ");
+
   const query = `{
-    pool(id: "${poolId}") {
+    ${poolType.name}(id: "${poolId}") {
       ${poolFields}
     }
   }`;
@@ -120,7 +130,7 @@ async function fetchDynamicPoolData(apiUrl, apiName, poolId) {
     }
 
     const data = await response.json();
-    return data.data.pool;
+    return data.data[poolType.name];
   } catch (error) {
     console.error(`Error fetching pool data for ${poolId} from ${apiName}:`, error.message);
     return null;
@@ -133,9 +143,6 @@ async function runMapper() {
 
   for (const [apiName, apiUrl] of Object.entries(apis)) {
     console.log(`Processing API: ${apiName}`);
-
-    // Dynamically fetch schema if not already fetched
-    await fetchSchema(apiUrl, apiName);
 
     // Placeholder pool IDs for demonstration
     const poolIds = ["POOL_ID_1", "POOL_ID_2", "POOL_ID_3"];
@@ -162,8 +169,9 @@ async function runMapper() {
   console.log(`Consolidated output saved to ${consolidatedFile}`);
 }
 
-// Run schema fetching and mapper
+// Run schema fetching, consolidation, and mapper
 (async () => {
   await fetchAllSchemas();
+  await consolidateSchemas();
   await runMapper();
 })();
