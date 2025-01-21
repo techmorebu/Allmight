@@ -1,173 +1,201 @@
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/HybridArbitrage.js
-Using ethers version for Hybrid Arbitrage: 6.7.1
-Using ethers version for Flashbots: 6.7.1
-
-Select an option:
-1. Run Universal Mapper
-2. Run Cross-Referencing
-3. Perform Arbitrage Execution
-Enter your choice: 1
-Running mapper for all APIs. Output folder: /home/techbu/OFA_Project_Local/ofa-project/outputs
-Fetching schema for uniswap (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV)...
-Saved data for uniswap to /home/techbu/OFA_Project_Local/ofa-project/outputs/uniswap-fields.json
-Fetching schema for sushiswap (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/3oHCddbQGTi42kPZBwyGzD2JzZR33zK2MwXtxAerNJy2)...
-Saved data for sushiswap to /home/techbu/OFA_Project_Local/ofa-project/outputs/sushiswap-fields.json
-Fetching schema for curveEthereum (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/3fy93eAT56UJsRCEht8iFhfi6wjHWXtZ9dnnbQmvFopF)...
-Saved data for curveEthereum to /home/techbu/OFA_Project_Local/ofa-project/outputs/curveEthereum-fields.json
-Fetching schema for curveAvalanche (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/2Vt8WtdXNZUEeaVtzyEd1dpioJf44nvomzkd4HhubfKS)...
-Saved data for curveAvalanche to /home/techbu/OFA_Project_Local/ofa-project/outputs/curveAvalanche-fields.json
-Fetching schema for quickswap (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g)...
-Saved data for quickswap to /home/techbu/OFA_Project_Local/ofa-project/outputs/quickswap-fields.json
-Fetching schema for balancerPolygon (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/H9oPAbXnobBRq1cB3HDmbZ1E8MWQyJYQjT1QDJMrdbNp)...
-Saved data for balancerPolygon to /home/techbu/OFA_Project_Local/ofa-project/outputs/balancerPolygon-fields.json
-Fetching schema for balancerOptimism (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FsmdxmvBJLGjUQPxKMRtcWKzuCNpomKuMTbSbtRtggZ7)...
-Saved data for balancerOptimism to /home/techbu/OFA_Project_Local/ofa-project/outputs/balancerOptimism-fields.json
-Fetching schema for balancerArbitrum (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/98cQDy6tufTJtshDCuhh9z2kWXsQWBHVh2bqnLHsGAeS)...
-Saved data for balancerArbitrum to /home/techbu/OFA_Project_Local/ofa-project/outputs/balancerArbitrum-fields.json
-Fetching schema for balancerAvalanche (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/7asfmtQA1KYu6CP7YVm5kv4bGxVyfAHEiptt2HMFgkHu)...
-Saved data for balancerAvalanche to /home/techbu/OFA_Project_Local/ofa-project/outputs/balancerAvalanche-fields.json
-Fetching schema for balancerEthereum (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/C4ayEZP2yTXRAB8vSaTrgN4m9anTe9Mdm2ViyiAuV9TV)...
-Saved data for balancerEthereum to /home/techbu/OFA_Project_Local/ofa-project/outputs/balancerEthereum-fields.json
-Mapper run completed. Results saved in /home/techbu/OFA_Project_Local/ofa-project/outputs
-
-Select an option:
-1. Run Universal Mapper
-2. Run Cross-Referencing
-3. Perform Arbitrage Execution
-Enter your choice: 2
-Running Cross-Referencing...
-Cross-Referencing Report saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/cross-reference-report.json
-
-Select an option:
-1. Run Universal Mapper
-2. Run Cross-Referencing
-3. Perform Arbitrage Execution
-Enter your choice: techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/HybridArbitrage.js
-Using ethers version for Hybrid Arbitrage: 6.7.1
-Using ethers version for Flashbots: 6.7.1
-
-Select an option:
-1. Run Universal Mapper
-2. Run Cross-Referencing
-3. Perform Arbitrage Execution
-4. Options
-Enter your choice: 4
-Options:
-1. Add API
-2. Remove API
-3. Clear All (Excluding Specific Files)
-Select an option: 3
-node:internal/readline/emitKeypressEvents:74
-            throw err;
-            ^
-
-Error: EISDIR: illegal operation on a directory, unlink '/home/techbu/OFA_Project_Local/ofa-project/outputs/apitests'
-    at Object.unlinkSync (node:fs:1881:3)
-    at /home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js:31:12
-    at Array.forEach (<anonymous>)
-    at clearFolderExcept (/home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js:29:11)
-    at /home/techbu/OFA_Project_Local/ofa-project/scripts/HybridArbitrage.js:206:15
-    at [_onLine] [as _onLine] (node:internal/readline/interface:421:7)
-    at [_line] [as _line] (node:internal/readline/interface:894:18)
-    at [_ttyWrite] [as _ttyWrite] (node:internal/readline/interface:1272:22)
-    at ReadStream.onkeypress (node:internal/readline/interface:271:20)
-    at ReadStream.emit (node:events:517:28) {
-  errno: -21,
-  syscall: 'unlink',
-  code: 'EISDIR',
-  path: '/home/techbu/OFA_Project_Local/ofa-project/outputs/apitests'
-}
-
-Node.js v18.19.1
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/HybridArbitrage.js
-Using ethers version for Hybrid Arbitrage: 6.7.1
-Using ethers version for Flashbots: 6.7.1
-
-Select an option:
-1. Run Universal Mapper
-2. Run Cross-Referencing
-3. Perform Arbitrage Execution
-4. Options
-Enter your choice: 4
-Options:
-1. Add API
-2. Remove API
-3. Clear All (Excluding Specific Files)
-Select an option: 1
-Enter API tag: techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/HybridArbitrage.js
-Using ethers version for Hybrid Arbitrage: 6.7.1
-Using ethers version for Flashbots: 6.7.1
-
-Select an option:
-1. Run Universal Mapper
-2. Run Cross-Referencing
-3. Perform Arbitrage Execution
-4. Options
-Enter your choice: 1
-Running mapper for all APIs. Output folder: /home/techbu/OFA_Project_Local/ofa-project/outputs
-Fetching schema for uniswap (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV)...
-Saved data for uniswap to /home/techbu/OFA_Project_Local/ofa-project/outputs/uniswap-fields.json
-Fetching schema for sushiswap (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/3oHCddbQGTi42kPZBwyGzD2JzZR33zK2MwXtxAerNJy2)...
-Saved data for sushiswap to /home/techbu/OFA_Project_Local/ofa-project/outputs/sushiswap-fields.json
-Fetching schema for curveEthereum (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/3fy93eAT56UJsRCEht8iFhfi6wjHWXtZ9dnnbQmvFopF)...
-Saved data for curveEthereum to /home/techbu/OFA_Project_Local/ofa-project/outputs/curveEthereum-fields.json
-Fetching schema for curveAvalanche (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/2Vt8WtdXNZUEeaVtzyEd1dpioJf44nvomzkd4HhubfKS)...
-Saved data for curveAvalanche to /home/techbu/OFA_Project_Local/ofa-project/outputs/curveAvalanche-fields.json
-Fetching schema for quickswap (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g)...
-Saved data for quickswap to /home/techbu/OFA_Project_Local/ofa-project/outputs/quickswap-fields.json
-Fetching schema for balancerPolygon (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/H9oPAbXnobBRq1cB3HDmbZ1E8MWQyJYQjT1QDJMrdbNp)...
-Saved data for balancerPolygon to /home/techbu/OFA_Project_Local/ofa-project/outputs/balancerPolygon-fields.json
-Fetching schema for balancerOptimism (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FsmdxmvBJLGjUQPxKMRtcWKzuCNpomKuMTbSbtRtggZ7)...
-Saved data for balancerOptimism to /home/techbu/OFA_Project_Local/ofa-project/outputs/balancerOptimism-fields.json
-Fetching schema for balancerArbitrum (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/98cQDy6tufTJtshDCuhh9z2kWXsQWBHVh2bqnLHsGAeS)...
-Saved data for balancerArbitrum to /home/techbu/OFA_Project_Local/ofa-project/outputs/balancerArbitrum-fields.json
-Fetching schema for balancerAvalanche (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/7asfmtQA1KYu6CP7YVm5kv4bGxVyfAHEiptt2HMFgkHu)...
-Saved data for balancerAvalanche to /home/techbu/OFA_Project_Local/ofa-project/outputs/balancerAvalanche-fields.json
-Fetching schema for balancerEthereum (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/C4ayEZP2yTXRAB8vSaTrgN4m9anTe9Mdm2ViyiAuV9TV)...
-Saved data for balancerEthereum to /home/techbu/OFA_Project_Local/ofa-project/outputs/balancerEthereum-fields.json
-Mapper run completed. Results saved in /home/techbu/OFA_Project_Local/ofa-project/outputs
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/HybridArbitrage.js
-Using ethers version for Hybrid Arbitrage: 6.7.1
-Using ethers version for Flashbots: 6.7.1
-
-Select an option:
-1. Run Universal Mapper
-2. Run Cross-Referencing
-3. Perform Arbitrage Execution
-4. Options
-Enter your choice: 1
-Running mapper for all APIs. Output folder: /home/techbu/OFA_Project_Local/ofa-project/outputs
-Fetching schema for uniswap (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV)...
-Saved data for uniswap to /home/techbu/OFA_Project_Local/ofa-project/outputs/uniswap-fields.json
-Fetching schema for sushiswap (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/3oHCddbQGTi42kPZBwyGzD2JzZR33zK2MwXtxAerNJy2)...
-Saved data for sushiswap to /home/techbu/OFA_Project_Local/ofa-project/outputs/sushiswap-fields.json
-Fetching schema for curveEthereum (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/3fy93eAT56UJsRCEht8iFhfi6wjHWXtZ9dnnbQmvFopF)...
-Saved data for curveEthereum to /home/techbu/OFA_Project_Local/ofa-project/outputs/curveEthereum-fields.json
-Fetching schema for curveAvalanche (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/2Vt8WtdXNZUEeaVtzyEd1dpioJf44nvomzkd4HhubfKS)...
-Saved data for curveAvalanche to /home/techbu/OFA_Project_Local/ofa-project/outputs/curveAvalanche-fields.json
-Fetching schema for quickswap (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FqsRcH1XqSjqVx9GRTvEJe959aCbKrcyGgDWBrUkG24g)...
-Saved data for quickswap to /home/techbu/OFA_Project_Local/ofa-project/outputs/quickswap-fields.json
-Fetching schema for balancerPolygon (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/H9oPAbXnobBRq1cB3HDmbZ1E8MWQyJYQjT1QDJMrdbNp)...
-Saved data for balancerPolygon to /home/techbu/OFA_Project_Local/ofa-project/outputs/balancerPolygon-fields.json
-Fetching schema for balancerOptimism (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/FsmdxmvBJLGjUQPxKMRtcWKzuCNpomKuMTbSbtRtggZ7)...
-Saved data for balancerOptimism to /home/techbu/OFA_Project_Local/ofa-project/outputs/balancerOptimism-fields.json
-Fetching schema for balancerArbitrum (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/98cQDy6tufTJtshDCuhh9z2kWXsQWBHVh2bqnLHsGAeS)...
-Saved data for balancerArbitrum to /home/techbu/OFA_Project_Local/ofa-project/outputs/balancerArbitrum-fields.json
-Fetching schema for balancerAvalanche (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/7asfmtQA1KYu6CP7YVm5kv4bGxVyfAHEiptt2HMFgkHu)...
-Saved data for balancerAvalanche to /home/techbu/OFA_Project_Local/ofa-project/outputs/balancerAvalanche-fields.json
-Fetching schema for balancerEthereum (https://gateway.thegraph.com/api/4093f720be8b88ee6d5e70fcf6e78da5/subgraphs/id/C4ayEZP2yTXRAB8vSaTrgN4m9anTe9Mdm2ViyiAuV9TV)...
-Saved data for balancerEthereum to /home/techbu/OFA_Project_Local/ofa-project/outputs/balancerEthereum-fields.json
-Mapper run completed. Results saved in /home/techbu/OFA_Project_Local/ofa-project/outputs
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
-techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node scripts/HybridArbitrage.js
-Using ethers version for Hybrid Arbitrage: 6.7.1
-Using ethers version for Flashbots: 6.7.1
-
-Select an option:
-1. Run Universal Mapper
-2. Run Cross-Referencing
-3. Perform Arbitrage Execution
-4. Options
-Enter your choice: 2
-Running Cross-Referencing...
-
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ node tools/universal-field-mapper.js
+Processing API: uniswap
+Fetching detailed data for pool ID: 0x0001fcbba8eb491c3ccfeddc5a5caba1a98c4c28
+Error fetching pool data for 0x0001fcbba8eb491c3ccfeddc5a5caba1a98c4c28: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x0002e63328169d7feea121f1e32e4f620abf0352
+Error fetching pool data for 0x0002e63328169d7feea121f1e32e4f620abf0352: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x0004cd8474e882278e32e584699090be496f410e
+Error fetching pool data for 0x0004cd8474e882278e32e584699090be496f410e: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x000ba527862e5b82cff0f7c66b646af023274aa1
+Error fetching pool data for 0x000ba527862e5b82cff0f7c66b646af023274aa1: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x000c0d31f6b7cecde4645eef0c4ec6a492659d62
+Error fetching pool data for 0x000c0d31f6b7cecde4645eef0c4ec6a492659d62: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x000ea4a83acefdd62b1b43e9ccc281f442651520
+Error fetching pool data for 0x000ea4a83acefdd62b1b43e9ccc281f442651520: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x0012c1c4da19861a5f299b9dcc1dcb5cfa4770aa
+Error fetching pool data for 0x0012c1c4da19861a5f299b9dcc1dcb5cfa4770aa: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x001d6b301b939dc0dd2b982378d30b049d1d7e91
+Error fetching pool data for 0x001d6b301b939dc0dd2b982378d30b049d1d7e91: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x0025ade782cc2b2415d1e841a8d52ff5dce33dfe
+Error fetching pool data for 0x0025ade782cc2b2415d1e841a8d52ff5dce33dfe: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x0026040bcab8c8e352e2ec3f66e4c4b8ca4658b2
+Error fetching pool data for 0x0026040bcab8c8e352e2ec3f66e4c4b8ca4658b2: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x00299231273752123aed17229810c0e9a7681ce6
+Error fetching pool data for 0x00299231273752123aed17229810c0e9a7681ce6: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x0037337bfea0ca0bd1ef594dc73d36c1818aeab0
+Error fetching pool data for 0x0037337bfea0ca0bd1ef594dc73d36c1818aeab0: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x0038955d12bf880849c7a984e9bdf3ff02035d8b
+Error fetching pool data for 0x0038955d12bf880849c7a984e9bdf3ff02035d8b: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x00631e7e8be695f1d52536bafe937e5a7709c469
+Error fetching pool data for 0x00631e7e8be695f1d52536bafe937e5a7709c469: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x0072adf9e6c1840804e56be890d78788600834b6
+Error fetching pool data for 0x0072adf9e6c1840804e56be890d78788600834b6: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x0073ce82d9a8ffa9b695cca63cd3993c3eaef4dc
+Error fetching pool data for 0x0073ce82d9a8ffa9b695cca63cd3993c3eaef4dc: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x007a3f1527991382a238bcd352bffbf51c8161cf
+Error fetching pool data for 0x007a3f1527991382a238bcd352bffbf51c8161cf: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x008432bdcc8b9569450f0134a8174c71ddc2b047
+Error fetching pool data for 0x008432bdcc8b9569450f0134a8174c71ddc2b047: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x00916eb312b2982eb86a7714be64546baebc1a5c
+Error fetching pool data for 0x00916eb312b2982eb86a7714be64546baebc1a5c: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x0097093ca2709413528229d01a48de16a765558b
+Error fetching pool data for 0x0097093ca2709413528229d01a48de16a765558b: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x00a151b39b43f6a79366f9129222b9370e30a702
+Error fetching pool data for 0x00a151b39b43f6a79366f9129222b9370e30a702: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x00a7af7f910f98d7e03ce41d7a73c759d51dc36e
+Error fetching pool data for 0x00a7af7f910f98d7e03ce41d7a73c759d51dc36e: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x00b9ec4ed8b667647a6c193855c20751e5701892
+Error fetching pool data for 0x00b9ec4ed8b667647a6c193855c20751e5701892: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x00c07a7e77c9ffa6e0e3c58790e0dcb81cef89e1
+Error fetching pool data for 0x00c07a7e77c9ffa6e0e3c58790e0dcb81cef89e1: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x00c23703d02565ec5536f58f8b586ec052195d08
+Error fetching pool data for 0x00c23703d02565ec5536f58f8b586ec052195d08: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x00c6a247a868dee7e84d16eba22d1ab903108a44
+Error fetching pool data for 0x00c6a247a868dee7e84d16eba22d1ab903108a44: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x00cc0523b7a2b97f1d52bea1b7a0c50027e0a706
+Error fetching pool data for 0x00cc0523b7a2b97f1d52bea1b7a0c50027e0a706: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x00cef0386ed94d738c8f8a74e8bfd0376926d24c
+Error fetching pool data for 0x00cef0386ed94d738c8f8a74e8bfd0376926d24c: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x00d336082e3f555dcfd3ef17bb2fafb5708a61e9
+Error fetching pool data for 0x00d336082e3f555dcfd3ef17bb2fafb5708a61e9: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x00da578acb3381f48f187374cda78d6824676f27
+Error fetching pool data for 0x00da578acb3381f48f187374cda78d6824676f27: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x00dbd02706a86e391ea30d53aa88f7df53a06b85
+Error fetching pool data for 0x00dbd02706a86e391ea30d53aa88f7df53a06b85: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x00dc4f81f0b3fdcfbcc27655c8518a2275e93cf9
+Error fetching pool data for 0x00dc4f81f0b3fdcfbcc27655c8518a2275e93cf9: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x00dce1deb188ee420ea8be0cf95888521fbc13a3
+Error fetching pool data for 0x00dce1deb188ee420ea8be0cf95888521fbc13a3: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x00e0e850070c1131e0004330b0a16172f78ffec9
+Error fetching pool data for 0x00e0e850070c1131e0004330b0a16172f78ffec9: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x00e5066de0a0265815699a1c8b448398af33cbe9
+Error fetching pool data for 0x00e5066de0a0265815699a1c8b448398af33cbe9: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x00e60e96f423be482a56d22d460c6c1da8c65650
+Error fetching pool data for 0x00e60e96f423be482a56d22d460c6c1da8c65650: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x00e8d9811c8fee0d8dedbe4891fafda493d6ac66
+Error fetching pool data for 0x00e8d9811c8fee0d8dedbe4891fafda493d6ac66: Cannot read properties of null (reading 'pool')
+Filtered pools for uniswap: []
+Processing API: sushiswap
+Error fetching pool IDs: Cannot read properties of null (reading 'pools')
+Filtered pools for sushiswap: []
+Processing API: curveEthereum
+Error fetching pool IDs: Cannot read properties of null (reading 'pools')
+Filtered pools for curveEthereum: []
+Processing API: curveAvalanche
+Error fetching pool IDs: Cannot read properties of null (reading 'pools')
+Filtered pools for curveAvalanche: []
+Processing API: quickswap
+Fetching detailed data for pool ID: 0x006db79e11e50e02f90cee1a1e15a771e235bb49
+Error fetching pool data for 0x006db79e11e50e02f90cee1a1e15a771e235bb49: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x0080c1cb52682de5a1f183923134f8ccd2632c90
+Error fetching pool data for 0x0080c1cb52682de5a1f183923134f8ccd2632c90: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x00841185ce96c3f0523063674975e846c99a33ce
+Error fetching pool data for 0x00841185ce96c3f0523063674975e846c99a33ce: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x0090f56042f338dc03621d8f1ed7d906bed0667b
+Error fetching pool data for 0x0090f56042f338dc03621d8f1ed7d906bed0667b: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x0097ac50b31d5b8ae008c337b325241053b4eda7
+Error fetching pool data for 0x0097ac50b31d5b8ae008c337b325241053b4eda7: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x00a43cf8a1c2d38b3ea4a5f10ae83a4bfcfad991
+Error fetching pool data for 0x00a43cf8a1c2d38b3ea4a5f10ae83a4bfcfad991: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x00a6177c6455a29b8daa7144b2befc9f2147bb7e
+Error fetching pool data for 0x00a6177c6455a29b8daa7144b2befc9f2147bb7e: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x00a7d20885d0980f601903585884bb4d9e29ca0b
+Error fetching pool data for 0x00a7d20885d0980f601903585884bb4d9e29ca0b: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x00c2a7e30bb6d6ea1e1393353423ea9bc0e17f74
+Error fetching pool data for 0x00c2a7e30bb6d6ea1e1393353423ea9bc0e17f74: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x00df93b1f3b1185c0048d50ab3281311b64836c2
+Error fetching pool data for 0x00df93b1f3b1185c0048d50ab3281311b64836c2: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x0129ac021d3bf8eec3074903bf5bf520de809ec2
+Error fetching pool data for 0x0129ac021d3bf8eec3074903bf5bf520de809ec2: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x017c6b99c23cfb87f7cc4a73f21ea09c36105b72
+Error fetching pool data for 0x017c6b99c23cfb87f7cc4a73f21ea09c36105b72: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x01e0d3b51b8a005951d8ff6b0ad147a7faead9d5
+Error fetching pool data for 0x01e0d3b51b8a005951d8ff6b0ad147a7faead9d5: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x0205038a9e2d644dcf73b5b0310b07bf67611502
+Error fetching pool data for 0x0205038a9e2d644dcf73b5b0310b07bf67611502: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x022df0b3341b3a0157eea97dd024a93f7496d631
+Error fetching pool data for 0x022df0b3341b3a0157eea97dd024a93f7496d631: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x0230b8549d0590c6acd58c86195deb5f6c853341
+Error fetching pool data for 0x0230b8549d0590c6acd58c86195deb5f6c853341: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x0238344d13ff4e01ea1e36e4bdfa891a960bce33
+Error fetching pool data for 0x0238344d13ff4e01ea1e36e4bdfa891a960bce33: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x023f7b4b64dce7d3185af4bfba5a9930329bc493
+Error fetching pool data for 0x023f7b4b64dce7d3185af4bfba5a9930329bc493: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x024bc4547af770edfcdfb4c2ddb52c9ae3dc3440
+Error fetching pool data for 0x024bc4547af770edfcdfb4c2ddb52c9ae3dc3440: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x028f068fa35b5774ee4b504629512cfc3901a0a9
+Error fetching pool data for 0x028f068fa35b5774ee4b504629512cfc3901a0a9: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x0292dfc3068587a70e43c8c9e4d1c3fb34951e9a
+Error fetching pool data for 0x0292dfc3068587a70e43c8c9e4d1c3fb34951e9a: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x0299fdb23d60bbd5e450cda77c84ac050e6d762f
+Error fetching pool data for 0x0299fdb23d60bbd5e450cda77c84ac050e6d762f: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x02ab9b24bb7e6162dcda631aeb0b09675bb5a2a9
+Error fetching pool data for 0x02ab9b24bb7e6162dcda631aeb0b09675bb5a2a9: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x02ba675fec5a601d206e65a8d6f23b2fe694a61c
+Error fetching pool data for 0x02ba675fec5a601d206e65a8d6f23b2fe694a61c: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x02d0fd36ff534aec8ace74722728f46c61eaa523
+Error fetching pool data for 0x02d0fd36ff534aec8ace74722728f46c61eaa523: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x03143cff7e9126bc8098b7fec3eb6ec4e126a716
+Error fetching pool data for 0x03143cff7e9126bc8098b7fec3eb6ec4e126a716: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x031c060d898eb6ec0cdcdbd915a86df4fdfb89b2
+Error fetching pool data for 0x031c060d898eb6ec0cdcdbd915a86df4fdfb89b2: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x034156c1a0a3dad71ef68b25ac1ae4faa2ff5363
+Error fetching pool data for 0x034156c1a0a3dad71ef68b25ac1ae4faa2ff5363: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x03478bc1db3ae1f18e8a528b04d44ba0d36383a6
+Error fetching pool data for 0x03478bc1db3ae1f18e8a528b04d44ba0d36383a6: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x03492ab2881f6186230497f6db09c20c6769733c
+Error fetching pool data for 0x03492ab2881f6186230497f6db09c20c6769733c: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x03521ae78430b04b2c5fb048dd172b16db833ee1
+Error fetching pool data for 0x03521ae78430b04b2c5fb048dd172b16db833ee1: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x0355a133e8946a5a29672fddd2906a08f97bb88e
+Error fetching pool data for 0x0355a133e8946a5a29672fddd2906a08f97bb88e: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x0368ac306dd3d97fe72f09640894104d0b453d30
+Error fetching pool data for 0x0368ac306dd3d97fe72f09640894104d0b453d30: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x03a731653c36fe8b37ce2ac7cb6a4740011fe4ec
+Error fetching pool data for 0x03a731653c36fe8b37ce2ac7cb6a4740011fe4ec: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x03b6353989a8a50dacaab4a69bac829f08c21013
+Error fetching pool data for 0x03b6353989a8a50dacaab4a69bac829f08c21013: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x03c3eaf54ea6be927b43914f19483ef5e79d2ea4
+Error fetching pool data for 0x03c3eaf54ea6be927b43914f19483ef5e79d2ea4: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x03f3d7eb495098c403904b77246a56b56fd5fad0
+Error fetching pool data for 0x03f3d7eb495098c403904b77246a56b56fd5fad0: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x0410ffe134c121be176e03ff4474ee5fb9cc867d
+Error fetching pool data for 0x0410ffe134c121be176e03ff4474ee5fb9cc867d: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x0416e7f87ae8954a5f9302adcd440444d90452d6
+Error fetching pool data for 0x0416e7f87ae8954a5f9302adcd440444d90452d6: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x041a1a7117fd6b116778af7bf8d826032f9653fc
+Error fetching pool data for 0x041a1a7117fd6b116778af7bf8d826032f9653fc: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x0426f23edeec1fafb26b45ebd2638f6b273a5bc3
+Error fetching pool data for 0x0426f23edeec1fafb26b45ebd2638f6b273a5bc3: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x043dba2287d720dc9a341cd2e91405611a87c051
+Error fetching pool data for 0x043dba2287d720dc9a341cd2e91405611a87c051: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x04520ba3144345eba167addfb2a8879467253076
+Error fetching pool data for 0x04520ba3144345eba167addfb2a8879467253076: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x046a00f4ebbea8867a563e30ff835864e27198f1
+Error fetching pool data for 0x046a00f4ebbea8867a563e30ff835864e27198f1: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x046d950c6320e1d289403755093e7e068331c2de
+Error fetching pool data for 0x046d950c6320e1d289403755093e7e068331c2de: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x0496986d730c4f1ef67e01db9413262ec97f535c
+Error fetching pool data for 0x0496986d730c4f1ef67e01db9413262ec97f535c: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x049e37180f6cc04ac8a3497d2fcff1bc9f762209
+Error fetching pool data for 0x049e37180f6cc04ac8a3497d2fcff1bc9f762209: Cannot read properties of null (reading 'pool')
+Fetching detailed data for pool ID: 0x04f13fc2130bc88febe94ae64a1cdee7b3090b99
+Error fetching pool data for 0x04f13fc2130bc88febe94ae64a1cdee7b3090b99: Cannot read properties of null (reading 'pool')
+Filtered pools for quickswap: []
+Processing API: balancerPolygon
+Error fetching pool IDs: Cannot read properties of null (reading 'pools')
+Filtered pools for balancerPolygon: []
+Processing API: balancerOptimism
+Error fetching pool IDs: Cannot read properties of null (reading 'pools')
+Filtered pools for balancerOptimism: []
+Processing API: balancerArbitrum
+Error fetching pool IDs: Cannot read properties of null (reading 'pools')
+Filtered pools for balancerArbitrum: []
+Processing API: balancerAvalanche
+Error fetching pool IDs: Cannot read properties of null (reading 'pools')
+Filtered pools for balancerAvalanche: []
+Processing API: balancerEthereum
+Error fetching pool IDs: Cannot read properties of null (reading 'pools')
+Filtered pools for balancerEthereum: []
+Raw data saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/raw-data.json
+Consolidated output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/consolidated-fields.json
