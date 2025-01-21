@@ -1,52 +1,52 @@
 [
   {
     "apiName": "uniswap",
-    "timestamp": "2025-01-21T05:43:41.401Z",
+    "timestamp": "2025-01-21T06:24:15.415Z",
     "pools": []
   },
   {
     "apiName": "sushiswap",
-    "timestamp": "2025-01-21T05:43:42.669Z",
+    "timestamp": "2025-01-21T06:24:16.953Z",
     "pools": []
   },
   {
     "apiName": "curveEthereum",
-    "timestamp": "2025-01-21T05:43:43.095Z",
+    "timestamp": "2025-01-21T06:24:17.534Z",
     "pools": []
   },
   {
     "apiName": "curveAvalanche",
-    "timestamp": "2025-01-21T05:43:43.675Z",
+    "timestamp": "2025-01-21T06:24:17.936Z",
     "pools": []
   },
   {
     "apiName": "quickswap",
-    "timestamp": "2025-01-21T05:43:45.750Z",
+    "timestamp": "2025-01-21T06:24:18.526Z",
     "pools": []
   },
   {
     "apiName": "balancerPolygon",
-    "timestamp": "2025-01-21T05:43:46.913Z",
+    "timestamp": "2025-01-21T06:24:19.574Z",
     "pools": []
   },
   {
     "apiName": "balancerOptimism",
-    "timestamp": "2025-01-21T05:43:47.958Z",
+    "timestamp": "2025-01-21T06:24:20.453Z",
     "pools": []
   },
   {
     "apiName": "balancerArbitrum",
-    "timestamp": "2025-01-21T05:43:48.879Z",
+    "timestamp": "2025-01-21T06:24:21.102Z",
     "pools": []
   },
   {
     "apiName": "balancerAvalanche",
-    "timestamp": "2025-01-21T05:43:50.108Z",
+    "timestamp": "2025-01-21T06:24:21.894Z",
     "pools": []
   },
   {
     "apiName": "balancerEthereum",
-    "timestamp": "2025-01-21T05:43:51.218Z",
+    "timestamp": "2025-01-21T06:24:22.950Z",
     "pools": []
   }
 ]

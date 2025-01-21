@@ -19,43 +19,56 @@ Fetching schema for balancerAvalanche
 Schema saved for balancerAvalanche at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/balancerAvalanche-schema.json
 Fetching schema for balancerEthereum
 Schema saved for balancerEthereum at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/balancerEthereum-schema.json
+Consolidated schema saved at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/consolidated-schema.json
 Processing API: uniswap
-Schema saved for uniswap at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/uniswap-schema.json
+Error fetching pool data for POOL_ID_1 from uniswap: Cannot read properties of null (reading 'Pool')
+Error fetching pool data for POOL_ID_2 from uniswap: Cannot read properties of null (reading 'Pool')
+Error fetching pool data for POOL_ID_3 from uniswap: Cannot read properties of null (reading 'Pool')
 Processed pools for uniswap: []
 Processing API: sushiswap
-Schema saved for sushiswap at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/sushiswap-schema.json
-No pool fields found in schema for sushiswap, skipping.
-No pool fields found in schema for sushiswap, skipping.
-No pool fields found in schema for sushiswap, skipping.
+Error fetching pool data for POOL_ID_1 from sushiswap: Cannot read properties of null (reading 'LiquidityPool')
+Error fetching pool data for POOL_ID_2 from sushiswap: Cannot read properties of null (reading 'LiquidityPool')
+Error fetching pool data for POOL_ID_3 from sushiswap: Cannot read properties of null (reading 'LiquidityPool')
 Processed pools for sushiswap: []
 Processing API: curveEthereum
-Schema saved for curveEthereum at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/curveEthereum-schema.json
-No pool fields found in schema for curveEthereum, skipping.
-No pool fields found in schema for curveEthereum, skipping.
-No pool fields found in schema for curveEthereum, skipping.
+Error fetching pool data for POOL_ID_1 from curveEthereum: Cannot read properties of null (reading 'LiquidityPool')
+Error fetching pool data for POOL_ID_2 from curveEthereum: Cannot read properties of null (reading 'LiquidityPool')
+Error fetching pool data for POOL_ID_3 from curveEthereum: Cannot read properties of null (reading 'LiquidityPool')
 Processed pools for curveEthereum: []
 Processing API: curveAvalanche
-Schema saved for curveAvalanche at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/curveAvalanche-schema.json
-No pool fields found in schema for curveAvalanche, skipping.
-No pool fields found in schema for curveAvalanche, skipping.
-No pool fields found in schema for curveAvalanche, skipping.
+Error fetching pool data for POOL_ID_1 from curveAvalanche: Cannot read properties of null (reading 'LiquidityPool')
+Error fetching pool data for POOL_ID_2 from curveAvalanche: Cannot read properties of null (reading 'LiquidityPool')
+Error fetching pool data for POOL_ID_3 from curveAvalanche: Cannot read properties of null (reading 'LiquidityPool')
 Processed pools for curveAvalanche: []
 Processing API: quickswap
-Schema saved for quickswap at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/quickswap-schema.json
+Error fetching pool data for POOL_ID_1 from quickswap: Cannot read properties of null (reading 'Pool')
+Error fetching pool data for POOL_ID_2 from quickswap: Cannot read properties of null (reading 'Pool')
+Error fetching pool data for POOL_ID_3 from quickswap: Cannot read properties of null (reading 'Pool')
 Processed pools for quickswap: []
 Processing API: balancerPolygon
-Schema saved for balancerPolygon at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/balancerPolygon-schema.json
+Error fetching pool data for POOL_ID_1 from balancerPolygon: Cannot read properties of null (reading 'Pool')
+Error fetching pool data for POOL_ID_2 from balancerPolygon: Cannot read properties of null (reading 'Pool')
+Error fetching pool data for POOL_ID_3 from balancerPolygon: Cannot read properties of null (reading 'Pool')
 Processed pools for balancerPolygon: []
 Processing API: balancerOptimism
-Schema saved for balancerOptimism at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/balancerOptimism-schema.json
+Error fetching pool data for POOL_ID_1 from balancerOptimism: Cannot read properties of null (reading 'Pool')
+Error fetching pool data for POOL_ID_2 from balancerOptimism: Cannot read properties of null (reading 'Pool')
+Error fetching pool data for POOL_ID_3 from balancerOptimism: Cannot read properties of null (reading 'Pool')
 Processed pools for balancerOptimism: []
 Processing API: balancerArbitrum
-Schema saved for balancerArbitrum at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/balancerArbitrum-schema.json
+Error fetching pool data for POOL_ID_1 from balancerArbitrum: Cannot read properties of null (reading 'Pool')
+Error fetching pool data for POOL_ID_2 from balancerArbitrum: Cannot read properties of null (reading 'Pool')
+Error fetching pool data for POOL_ID_3 from balancerArbitrum: Cannot read properties of null (reading 'Pool')
 Processed pools for balancerArbitrum: []
 Processing API: balancerAvalanche
-Schema saved for balancerAvalanche at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/balancerAvalanche-schema.json
+Error fetching pool data for POOL_ID_1 from balancerAvalanche: Cannot read properties of null (reading 'Pool')
+Error fetching pool data for POOL_ID_2 from balancerAvalanche: Cannot read properties of null (reading 'Pool')
+Error fetching pool data for POOL_ID_3 from balancerAvalanche: Cannot read properties of null (reading 'Pool')
 Processed pools for balancerAvalanche: []
 Processing API: balancerEthereum
-Schema saved for balancerEthereum at /home/techbu/OFA_Project_Local/ofa-project/outputs/schemas/balancerEthereum-schema.json
+Error fetching pool data for POOL_ID_1 from balancerEthereum: Cannot read properties of null (reading 'Pool')
+Error fetching pool data for POOL_ID_2 from balancerEthereum: Cannot read properties of null (reading 'Pool')
+Error fetching pool data for POOL_ID_3 from balancerEthereum: Cannot read properties of null (reading 'Pool')
 Processed pools for balancerEthereum: []
 Consolidated output saved to /home/techbu/OFA_Project_Local/ofa-project/outputs/consolidated-fields.json
+techbu@techbu-TP401CA:~/OFA_Project_Local/ofa-project$ 
