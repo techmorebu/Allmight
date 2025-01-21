@@ -53,6 +53,7 @@ async function fetchPools(apiUrl) {
   }`;
 
   try {
+    console.log("Fetching pools from Uniswap API...");
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -66,10 +67,11 @@ async function fetchPools(apiUrl) {
     const data = await response.json();
 
     if (!data || !data.data || !data.data.pools) {
-      console.warn("No pools data returned from the API.");
+      console.warn("No pools data returned from the API. Response:", JSON.stringify(data, null, 2));
       return [];
     }
 
+    console.log(`Retrieved ${data.data.pools.length} pools from Uniswap API.`);
     return data.data.pools;
   } catch (error) {
     console.error("Error fetching pools:", error.message);
@@ -82,7 +84,9 @@ function filterPools(pools) {
   return pools.filter((pool) => {
     const txCount = parseInt(pool.txCount, 10) || 0;
     const volumeUSD = parseFloat(pool.volumeUSD) || 0;
-    return txCount >= TRANSACTION_THRESHOLD && volumeUSD >= VOLUME_THRESHOLD;
+    const include = txCount >= TRANSACTION_THRESHOLD && volumeUSD >= VOLUME_THRESHOLD;
+    console.log(`Pool ID: ${pool.id}, TxCount: ${txCount}, VolumeUSD: ${volumeUSD}, Included: ${include}`);
+    return include;
   });
 }
 
@@ -92,7 +96,7 @@ async function fetchUniswapData() {
 
   const pools = await fetchPools(uniswapApiUrl);
   if (!pools.length) {
-    console.warn("No pools retrieved.");
+    console.warn("No pools retrieved. Check the API endpoint or schema.");
     return;
   }
 
