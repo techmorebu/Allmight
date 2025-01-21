@@ -27,7 +27,7 @@ const apis = {
 
 // Function to determine API type (GraphQL-focused for now)
 function determineApiType(apiUrl) {
-  if (apiUrl.includes("graphql")) {
+  if (apiUrl.includes("thegraph.com")) {
     return "GraphQL";
   } else {
     return "Unknown";
