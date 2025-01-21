@@ -5,20 +5,7 @@ require("dotenv").config();
 
 const outputDir = path.join(__dirname, "../outputs");
 const schemaDir = path.join(outputDir, "schemas");
-const consolidatedFile = path.join(outputDir, "consolidated-fields.json");
 const schemaConsolidatedFile = path.join(schemaDir, "consolidated-schema.json");
-const TRANSACTION_THRESHOLD = 200;
-const VOLUME_THRESHOLD = 50000;
-
-// Ensure output and schema directories exist
-if (!fs.existsSync(outputDir)) {
-  fs.mkdirSync(outputDir);
-}
-if (!fs.existsSync(schemaDir)) {
-  fs.mkdirSync(schemaDir);
-}
-
-// Map your API endpoints from .env
 const apis = {
   uniswap: process.env.UNISWAP_DEX_API,
   sushiswap: process.env.SUSHISWAP_DEX_API,
@@ -32,8 +19,13 @@ const apis = {
   balancerEthereum: process.env.BALANCER_ETHEREUM_DEX_API,
 };
 
-// Function to introspect API schema
-async function fetchSchema(apiUrl, apiName) {
+// Ensure schema directory exists
+if (!fs.existsSync(schemaDir)) {
+  fs.mkdirSync(schemaDir);
+}
+
+// Function to introspect and refine API schema
+async function fetchAndRefineSchema(apiUrl, apiName) {
   const query = `{
     __schema {
       types {
@@ -66,124 +58,50 @@ async function fetchSchema(apiUrl, apiName) {
     }
 
     const data = await response.json();
-    const schemaFile = path.join(schemaDir, `${apiName}-schema.json`);
-    fs.writeFileSync(schemaFile, JSON.stringify(data, null, 2));
-    console.log(`Schema saved for ${apiName} at ${schemaFile}`);
-    return data;
+    const refinedSchema = data.data.__schema.types.map((type) => {
+      return {
+        name: type.name,
+        kind: type.kind,
+        fields: type.fields ? type.fields.map((field) => ({
+          name: field.name,
+          description: field.description || "",
+          type: field.type.name || (field.type.ofType ? field.type.ofType.name : "Unknown"),
+          kind: field.type.kind,
+        })) : [],
+      };
+    });
+
+    const schemaFile = path.join(schemaDir, `${apiName}-refined-schema.json`);
+    fs.writeFileSync(schemaFile, JSON.stringify(refinedSchema, null, 2));
+    console.log(`Refined schema saved for ${apiName} at ${schemaFile}`);
+    return refinedSchema;
   } catch (error) {
-    console.error(`Error fetching schema for ${apiName}:`, error.message);
+    console.error(`Error refining schema for ${apiName}:`, error.message);
     return null;
   }
 }
 
-// Consolidate schemas into a single file
+// Consolidate all refined schemas into a single file
 async function consolidateSchemas() {
   const consolidatedSchema = {};
 
   for (const [apiName, apiUrl] of Object.entries(apis)) {
-    const schemaFile = path.join(schemaDir, `${apiName}-schema.json`);
-    if (fs.existsSync(schemaFile)) {
-      const schema = JSON.parse(fs.readFileSync(schemaFile));
-      consolidatedSchema[apiName] = schema.data.__schema.types;
-    } else {
-      console.warn(`Schema file not found for ${apiName}, skipping.`);
+    console.log(`Refining schema for ${apiName}`);
+    const refinedSchema = await fetchAndRefineSchema(apiUrl, apiName);
+    if (refinedSchema) {
+      consolidatedSchema[apiName] = refinedSchema;
     }
   }
 
   fs.writeFileSync(schemaConsolidatedFile, JSON.stringify(consolidatedSchema, null, 2));
-  console.log(`Consolidated schema saved at ${schemaConsolidatedFile}`);
+  console.log(`Consolidated refined schema saved at ${schemaConsolidatedFile}`);
 }
 
-// Fetch schema for all APIs
-async function fetchAllSchemas() {
-  for (const [apiName, apiUrl] of Object.entries(apis)) {
-    console.log(`Fetching schema for ${apiName}`);
-    await fetchSchema(apiUrl, apiName);
-  }
-}
-
-// Fetch pool data dynamically using saved schemas
-async function fetchDynamicPoolData(apiUrl, apiName, poolId) {
-  const schemaFile = path.join(schemaDir, `${apiName}-schema.json`);
-
-  if (!fs.existsSync(schemaFile)) {
-    console.warn(`Schema not found for ${apiName}, skipping.`);
-    return null;
-  }
-
-  const schema = JSON.parse(fs.readFileSync(schemaFile));
-  const poolType = schema.data.__schema.types.find((type) => type.name.toLowerCase().includes("pool"));
-  if (!poolType || !poolType.fields) {
-    console.warn(`No valid pool type found in schema for ${apiName}, skipping.`);
-    return null;
-  }
-
-  const poolFields = poolType.fields.map((field) => field.name).join(" ");
-
-  const query = `{
-    ${poolType.name}(id: "${poolId}") {
-      ${poolFields}
-    }
-  }`;
-
-  try {
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch pool data for ${poolId} from ${apiName}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return data.data[poolType.name];
-  } catch (error) {
-    console.error(`Error fetching pool data for ${poolId} from ${apiName}:`, error.message);
-    return null;
-  }
-}
-
-// Fetch and process data for each API
-async function runMapper() {
-  const consolidatedData = [];
-
-  for (const [apiName, apiUrl] of Object.entries(apis)) {
-    console.log(`Processing API: ${apiName}`);
-
-    // Placeholder pool IDs for demonstration
-    const poolIds = ["POOL_ID_1", "POOL_ID_2", "POOL_ID_3"];
-    const validPools = [];
-
-    for (const poolId of poolIds) {
-      const poolData = await fetchDynamicPoolData(apiUrl, apiName, poolId);
-      if (poolData) {
-        validPools.push(poolData);
-      }
-    }
-
-    consolidatedData.push({
-      apiName,
-      timestamp: new Date().toISOString(),
-      pools: validPools,
-    });
-
-    console.log(`Processed pools for ${apiName}:`, validPools);
-  }
-
-  // Save consolidated output
-  fs.writeFileSync(consolidatedFile, JSON.stringify(consolidatedData, null, 2));
-  console.log(`Consolidated output saved to ${consolidatedFile}`);
-}
-
-// Run schema fetching, consolidation, and mapper
+// Run schema refinement and consolidation
 (async () => {
   try {
-    await fetchAllSchemas();
     await consolidateSchemas();
-    await runMapper();
   } catch (error) {
-    console.error("Error during execution:", error.message);
+    console.error("Error during schema refinement:", error.message);
   }
 })();
