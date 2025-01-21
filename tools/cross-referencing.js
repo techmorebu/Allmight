@@ -1,17 +1,10 @@
 const fs = require("fs");
 const path = require("path");
+const stringSimilarity = require("string-similarity");
 
-// Directories for outputs and debug logs
 const outputsDir = path.resolve(__dirname, "../outputs");
-const debugDir = path.join(outputsDir, "debug");
-if (!fs.existsSync(debugDir)) {
-  fs.mkdirSync(debugDir, { recursive: true });
-}
+const reportPath = path.join(outputsDir, "cross-reference-report.json");
 
-const debugFilePath = path.join(debugDir, "chatcrossdebug.json");
-const debugOutput = [];
-
-// Required fields
 const requiredFields = [
   "token0Price",
   "token1Price",
@@ -26,69 +19,66 @@ const requiredFields = [
   "totalValueLockedUSD",
 ];
 
-// Load JSON files
-function loadFieldMappings(filePath) {
-  try {
-    const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
-    debugOutput.push({ type: "info", message: `Loaded data from ${filePath}` });
-    return data.fields || [];
-  } catch (error) {
-    debugOutput.push({ type: "error", message: `Failed to load data from ${filePath}: ${error.message}` });
-    return [];
-  }
-}
+const fieldSynonyms = {
+  token0Price: ["price0", "priceToken0", "baseTokenPrice", "price_base"],
+  volumeUSD: ["usdVolume", "tradingVolumeUSD", "volume_usd", "totalVolumeUSD"],
+  feesUSD: ["usdFees", "tradingFeesUSD", "fees_usd", "totalFeesUSD"],
+  liquidity: ["poolLiquidity", "totalLiquidity", "liquidityUSD"],
+  txCount: ["transactionCount", "tradeCount", "swapCount", "numberOfTransactions"],
+  open: ["openingPrice", "startPrice"],
+  high: ["highestPrice", "maxPrice"],
+  low: ["lowestPrice", "minPrice"],
+  close: ["closingPrice", "endPrice"],
+  totalValueLockedUSD: ["TVL", "lockedValueUSD", "valueLockedUSD", "tvl_usd"],
+};
 
-// Cross-reference logic
-function crossReferenceFields(apiName, fieldMappings) {
-  const matched = [];
-  const missing = [];
-  requiredFields.forEach((requiredField) => {
-    if (fieldMappings.includes(requiredField)) {
-      matched.push(requiredField);
-    } else {
-      missing.push(requiredField);
-    }
-  });
-  debugOutput.push({
-    type: "debug",
-    message: `Cross-referenced fields for ${apiName}`,
-    matchedFields: matched,
-    missingFields: missing,
-  });
-  return { matched, missing };
-}
+const fieldWeights = {
+  token0Price: 3,
+  token1Price: 3,
+  volumeUSD: 2,
+  feesUSD: 2,
+  liquidity: 1,
+  txCount: 1,
+  open: 1,
+  high: 1,
+  low: 1,
+  close: 1,
+  totalValueLockedUSD: 2,
+};
 
-// Main function
 function runCrossReference() {
+  console.log("Running Cross-Referencing...");
+
   const dataFiles = fs.readdirSync(outputsDir).filter((file) => file.endsWith("-fields.json"));
-  const consolidatedFilePath = path.join(outputsDir, "consolidated-results.json");
   const crossReferenceReport = {};
 
   dataFiles.forEach((file) => {
     const filePath = path.join(outputsDir, file);
     const apiName = path.basename(file, "-fields.json");
-    const fieldMappings = loadFieldMappings(filePath);
-    const result = crossReferenceFields(apiName, fieldMappings);
-    crossReferenceReport[apiName] = result;
+    const { fields } = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+
+    const matched = [];
+    const missing = [];
+
+    requiredFields.forEach((requiredField) => {
+      const synonyms = fieldSynonyms[requiredField] || [];
+      const allOptions = [requiredField, ...synonyms];
+      const bestMatch = stringSimilarity.findBestMatch(requiredField, fields);
+
+      if (bestMatch.bestMatch.rating > 0.8 || fields.some((f) => allOptions.includes(f))) {
+        matched.push(requiredField);
+      } else {
+        missing.push(requiredField);
+      }
+    });
+
+    const weightedScore = matched.reduce((sum, field) => sum + (fieldWeights[field] || 0), 0);
+
+    crossReferenceReport[apiName] = { matched, missing, weightedScore };
   });
 
-  // Include consolidated results if available
-  if (fs.existsSync(consolidatedFilePath)) {
-    debugOutput.push({ type: "info", message: "Consolidated results file found, integrating..." });
-    const consolidatedData = loadFieldMappings(consolidatedFilePath);
-    crossReferenceReport["consolidated"] = crossReferenceFields("consolidated", consolidatedData);
-  } else {
-    debugOutput.push({ type: "warn", message: "No consolidated results file found." });
-  }
-
-  const reportPath = path.join(outputsDir, "cross-reference-report.json");
   fs.writeFileSync(reportPath, JSON.stringify(crossReferenceReport, null, 2));
-  debugOutput.push({ type: "info", message: `Cross-reference report saved to ${reportPath}` });
-
-  // Save debug output
-  fs.writeFileSync(debugFilePath, JSON.stringify(debugOutput, null, 2));
-  console.log(`Debug output saved to ${debugFilePath}`);
+  console.log(`Cross-Referencing Report saved to ${reportPath}`);
 }
 
-// Export the cross-reference function for integration
 module.exports = { runCrossReference };
