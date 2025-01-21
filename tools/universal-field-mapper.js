@@ -25,7 +25,7 @@ const apis = {
   balancerEthereum: process.env.BALANCER_ETHEREUM_DEX_API,
 };
 
-// Function to determine API type (GraphQL-focused for now)
+// Function to determine API type
 function determineApiType(apiUrl) {
   if (apiUrl.includes("thegraph.com")) {
     return "GraphQL";
