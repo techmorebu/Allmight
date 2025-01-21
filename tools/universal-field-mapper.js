@@ -4,6 +4,7 @@ const path = require("path");
 require("dotenv").config();
 
 const outputDir = path.join(__dirname, "../outputs");
+const consolidatedFile = path.join(outputDir, "consolidated-fields.json");
 
 // Ensure output directory exists
 if (!fs.existsSync(outputDir)) {
@@ -24,7 +25,16 @@ const apis = {
   balancerEthereum: process.env.BALANCER_ETHEREUM_DEX_API,
 };
 
-// Fetch schema and fields recursively
+// Function to determine API type (GraphQL-focused for now)
+function determineApiType(apiUrl) {
+  if (apiUrl.includes("graphql")) {
+    return "GraphQL";
+  } else {
+    return "Unknown";
+  }
+}
+
+// Fetch schema and fields recursively for GraphQL
 async function fetchGraphQLSchema(apiUrl) {
   const introspectionQuery = `{
     __schema {
@@ -107,8 +117,16 @@ function recursiveMapFields(fields, parent = null, depth = 0) {
 
 // Fetch and process data for each API
 async function runMapper() {
+  const consolidatedData = [];
+
   for (const [apiName, apiUrl] of Object.entries(apis)) {
     console.log(`Processing API: ${apiName}`);
+
+    const apiType = determineApiType(apiUrl);
+    if (apiType !== "GraphQL") {
+      console.log(`Skipping ${apiName}: Unsupported API type.`);
+      continue;
+    }
 
     const schema = await fetchGraphQLSchema(apiUrl);
     if (!schema) {
@@ -125,14 +143,18 @@ async function runMapper() {
       }
     });
 
-    const dateStamp = new Date().toISOString().split("T")[0];
-    const outputFile = path.join(outputDir, `${apiName}-fields-${dateStamp}.json`);
+    consolidatedData.push({
+      apiName,
+      timestamp: new Date().toISOString(),
+      fields: mappedData,
+    });
 
-    fs.writeFileSync(outputFile, JSON.stringify(mappedData, null, 2));
-    console.log(`Mapped fields saved to ${outputFile}`);
+    console.log(`Mapped fields for ${apiName} processed.`);
   }
 
-  console.log("Field mapping completed for all APIs.");
+  // Save consolidated output
+  fs.writeFileSync(consolidatedFile, JSON.stringify(consolidatedData, null, 2));
+  console.log(`Consolidated output saved to ${consolidatedFile}`);
 }
 
 // Run the mapper
