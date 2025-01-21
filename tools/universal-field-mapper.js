@@ -19,10 +19,10 @@ const uniswapApiUrl = process.env.UNISWAP_DEX_API;
 const TRANSACTION_THRESHOLD = 200;
 const VOLUME_THRESHOLD = 50000;
 
-// Function to fetch pool data dynamically
-async function fetchPools(apiUrl) {
+// Function to fetch pool data dynamically with pagination
+async function fetchPools(apiUrl, skip = 0) {
   const query = `{
-    pools(first: 100) {
+    pools(first: 100, skip: ${skip}) {
       id
       token0 {
         symbol
@@ -50,10 +50,33 @@ async function fetchPools(apiUrl) {
         txCount
       }
     }
+    swaps(first: 100, skip: ${skip}) {
+      id
+      amountUSD
+      timestamp
+      token0 {
+        symbol
+        priceUSD
+      }
+      token1 {
+        symbol
+        priceUSD
+      }
+    }
+    mints(first: 100, skip: ${skip}) {
+      id
+      amountUSD
+      timestamp
+    }
+    burns(first: 100, skip: ${skip}) {
+      id
+      amountUSD
+      timestamp
+    }
   }`;
 
   try {
-    console.log("Fetching pools from Uniswap API...");
+    console.log(`Fetching pools and transactions with skip=${skip}...`);
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -61,21 +84,25 @@ async function fetchPools(apiUrl) {
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch pools: ${response.statusText}`);
+      throw new Error(`Failed to fetch pools and transactions: ${response.statusText}`);
     }
 
     const data = await response.json();
 
-    if (!data || !data.data || !data.data.pools) {
-      console.warn("No pools data returned from the API. Response:", JSON.stringify(data, null, 2));
-      return [];
+    if (!data || !data.data) {
+      console.warn("No data returned from the API. Response:", JSON.stringify(data, null, 2));
+      return { pools: [], swaps: [], mints: [], burns: [] };
     }
 
-    console.log(`Retrieved ${data.data.pools.length} pools from Uniswap API.`);
-    return data.data.pools;
+    return {
+      pools: data.data.pools || [],
+      swaps: data.data.swaps || [],
+      mints: data.data.mints || [],
+      burns: data.data.burns || []
+    };
   } catch (error) {
-    console.error("Error fetching pools:", error.message);
-    return [];
+    console.error("Error fetching pools and transactions:", error.message);
+    return { pools: [], swaps: [], mints: [], burns: [] };
   }
 }
 
@@ -92,24 +119,43 @@ function filterPools(pools) {
 
 // Fetch and process data for Uniswap
 async function fetchUniswapData() {
-  console.log("Fetching data for Uniswap...");
+  console.log("Fetching comprehensive data for Uniswap...");
 
-  const pools = await fetchPools(uniswapApiUrl);
-  if (!pools.length) {
+  let skip = 0;
+  let allPools = [];
+  let allSwaps = [];
+  let allMints = [];
+  let allBurns = [];
+
+  while (true) {
+    const { pools, swaps, mints, burns } = await fetchPools(uniswapApiUrl, skip);
+    if (!pools.length && !swaps.length && !mints.length && !burns.length) break;
+
+    allPools = allPools.concat(pools);
+    allSwaps = allSwaps.concat(swaps);
+    allMints = allMints.concat(mints);
+    allBurns = allBurns.concat(burns);
+
+    skip += 100;
+  }
+
+  if (!allPools.length) {
     console.warn("No pools retrieved. Check the API endpoint or schema.");
     return;
   }
 
   // Save raw data
-  fs.writeFileSync(uniswapRawDataFile, JSON.stringify(pools, null, 2));
+  const rawData = { pools: allPools, swaps: allSwaps, mints: allMints, burns: allBurns };
+  fs.writeFileSync(uniswapRawDataFile, JSON.stringify(rawData, null, 2));
   console.log(`Raw data saved to ${uniswapRawDataFile}`);
 
   // Filter pools
-  const filteredPools = filterPools(pools);
+  const filteredPools = filterPools(allPools);
   console.log(`Filtered ${filteredPools.length} pools based on thresholds.`);
 
   // Save filtered data
-  fs.writeFileSync(uniswapDataFile, JSON.stringify(filteredPools, null, 2));
+  const filteredData = { pools: filteredPools, swaps: allSwaps, mints: allMints, burns: allBurns };
+  fs.writeFileSync(uniswapDataFile, JSON.stringify(filteredData, null, 2));
   console.log(`Filtered data saved to ${uniswapDataFile}`);
 }
 
@@ -117,7 +163,7 @@ async function fetchUniswapData() {
 (async () => {
   try {
     await fetchUniswapData();
-    console.log("Uniswap data fetch completed.");
+    console.log("Uniswap comprehensive data fetch completed.");
   } catch (error) {
     console.error("Error during Uniswap data fetch:", error.message);
   }
