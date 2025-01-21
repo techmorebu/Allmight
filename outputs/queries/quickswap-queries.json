@@ -1,1 +1,20 @@
-{}
+{
+  "AlgebraDayData": "{\n          algebradaydata {\n            volumeUSD volumeUSDUntracked feesUSD txCount\n          }\n        }",
+  "Burn": "{\n          burn {\n            token0 token1\n          }\n        }",
+  "Factory": "{\n          factory {\n            txCount\n          }\n        }",
+  "Mint": "{\n          mint {\n            token0 token1\n          }\n        }",
+  "Pool": "{\n          pool {\n            token0 token1 liquidity token0Price token1Price volumeUSD feesUSD txCount liquidityProviderCount poolHourData poolDayData\n          }\n        }",
+  "PoolDayData": "{\n          pooldaydata {\n            liquidity token0Price token1Price volumeUSD feesUSD txCount\n          }\n        }",
+  "PoolHourData": "{\n          poolhourdata {\n            liquidity token0Price token1Price volumeUSD feesUSD txCount\n          }\n        }",
+  "Position": "{\n          position {\n            token0 token1 liquidity token0Tvl token1Tvl\n          }\n        }",
+  "PositionSnapshot": "{\n          positionsnapshot {\n            liquidity\n          }\n        }",
+  "Query": "{\n          query {\n            poolDayData poolDayDatas poolHourData poolHourDatas\n          }\n        }",
+  "Subscription": "{\n          subscription {\n            poolDayData poolDayDatas poolHourData poolHourDatas\n          }\n        }",
+  "Swap": "{\n          swap {\n            token0 token1 liquidity\n          }\n        }",
+  "Tick": "{\n          tick {\n            liquidityGross liquidityNet volumeUSD feesUSD liquidityProviderCount\n          }\n        }",
+  "TickDayData": "{\n          tickdaydata {\n            liquidityGross liquidityNet volumeUSD feesUSD\n          }\n        }",
+  "TickHourData": "{\n          tickhourdata {\n            liquidityGross liquidityNet volumeUSD feesUSD\n          }\n        }",
+  "Token": "{\n          token {\n            volumeUSD feesUSD txCount\n          }\n        }",
+  "TokenDayData": "{\n          tokendaydata {\n            volumeUSD priceUSD feesUSD\n          }\n        }",
+  "TokenHourData": "{\n          tokenhourdata {\n            volumeUSD priceUSD feesUSD\n          }\n        }"
+}

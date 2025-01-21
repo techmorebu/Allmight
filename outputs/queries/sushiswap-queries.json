@@ -1,1 +1,12 @@
-{}
+{
+  "Deposit": "{\n          deposit {\n            liquidity\n          }\n        }",
+  "LiquidityPool": "{\n          liquiditypool {\n            liquidityToken liquidityTokenType\n          }\n        }",
+  "Position": "{\n          position {\n            liquidityToken liquidityTokenType liquidity liquidityUSD\n          }\n        }",
+  "PositionSnapshot": "{\n          positionsnapshot {\n            liquidityTokenType liquidity liquidityUSD\n          }\n        }",
+  "Query": "{\n          query {\n            liquidityPoolFee liquidityPoolFees liquidityPool liquidityPools liquidityPoolDailySnapshot liquidityPoolDailySnapshots liquidityPoolHourlySnapshot liquidityPoolHourlySnapshots liquidityPoolAmount liquidityPoolAmounts\n          }\n        }",
+  "Subscription": "{\n          subscription {\n            liquidityPoolFee liquidityPoolFees liquidityPool liquidityPools liquidityPoolDailySnapshot liquidityPoolDailySnapshots liquidityPoolHourlySnapshot liquidityPoolHourlySnapshots liquidityPoolAmount liquidityPoolAmounts\n          }\n        }",
+  "Tick": "{\n          tick {\n            liquidityGross liquidityGrossUSD liquidityNet liquidityNetUSD\n          }\n        }",
+  "TickDailySnapshot": "{\n          tickdailysnapshot {\n            liquidityGross liquidityGrossUSD liquidityNet liquidityNetUSD\n          }\n        }",
+  "TickHourlySnapshot": "{\n          tickhourlysnapshot {\n            liquidityGross liquidityGrossUSD liquidityNet liquidityNetUSD\n          }\n        }",
+  "Withdraw": "{\n          withdraw {\n            liquidity\n          }\n        }"
+}

@@ -1,1 +1,4 @@
-{}
+{
+  "PoolSnapshot": "{\n          poolsnapshot {\n            liquidity\n          }\n        }",
+  "TradePair": "{\n          tradepair {\n            token0 token1\n          }\n        }"
+}

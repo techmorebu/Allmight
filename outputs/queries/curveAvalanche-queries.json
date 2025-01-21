@@ -1,1 +1,4 @@
-{}
+{
+  "Query": "{\n          query {\n            liquidityPoolFee liquidityPoolFees liquidityPool liquidityPools liquidityPoolDailySnapshot liquidityPoolDailySnapshots liquidityPoolHourlySnapshot liquidityPoolHourlySnapshots liquidityGauge liquidityGauges\n          }\n        }",
+  "Subscription": "{\n          subscription {\n            liquidityPoolFee liquidityPoolFees liquidityPool liquidityPools liquidityPoolDailySnapshot liquidityPoolDailySnapshots liquidityPoolHourlySnapshot liquidityPoolHourlySnapshots liquidityGauge liquidityGauges\n          }\n        }"
+}
