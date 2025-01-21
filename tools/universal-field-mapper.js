@@ -1,18 +1,13 @@
 const fetch = require("node-fetch");
 const fs = require("fs");
 const path = require("path");
-const readline = require("readline");
 require("dotenv").config();
 
 const outputDir = path.join(__dirname, "../outputs");
-const testOutputDir = path.join(outputDir, "apitests");
 
-// Ensure output directories exist
+// Ensure output directory exists
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir);
-}
-if (!fs.existsSync(testOutputDir)) {
-  fs.mkdirSync(testOutputDir);
 }
 
 // Map your API endpoints from .env
@@ -29,155 +24,116 @@ const apis = {
   balancerEthereum: process.env.BALANCER_ETHEREUM_DEX_API,
 };
 
-// Function to determine API type (placeholder logic for now)
-function determineApiType(apiUrl) {
-  if (apiUrl.includes("wss://")) {
-    return "WebSocket";
-  } else if (apiUrl.includes("graphql")) {
-    return "GraphQL";
-  } else if (apiUrl.includes("rest")) {
-    return "RESTful";
-  } else {
-    return "Aggregator";
-  }
-}
-
-// Test API functionality
-async function testApi(apiName, apiUrl) {
-  console.log(`Testing API: ${apiName} (${apiUrl})`);
-  const apiType = determineApiType(apiUrl);
-  const testResult = {
-    apiName,
-    apiUrl,
-    apiType,
-    status: "", // success or error
-    sampleData: null,
-    errorMessage: null,
-  };
+// Fetch schema and fields recursively
+async function fetchGraphQLSchema(apiUrl) {
+  const introspectionQuery = `{
+    __schema {
+      types {
+        name
+        kind
+        fields {
+          name
+          description
+          args {
+            name
+            description
+            type {
+              name
+              kind
+              ofType {
+                name
+                kind
+              }
+            }
+          }
+          type {
+            name
+            kind
+            ofType {
+              name
+              kind
+            }
+          }
+        }
+      }
+    }
+  }`;
 
   try {
-    if (apiType === "GraphQL") {
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: "{ __typename }" }),
-      });
-      if (!response.ok) {
-        throw new Error(`API Test Failed: ${response.statusText}`);
-      }
-      const data = await response.json();
-      testResult.status = "success";
-      testResult.sampleData = data;
-    } else {
-      testResult.status = "unsupported";
-      testResult.errorMessage = `API type '${apiType}' is not supported for testing yet.`;
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: introspectionQuery }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch schema: ${response.statusText}`);
     }
+
+    const data = await response.json();
+    return data.data.__schema.types;
   } catch (error) {
-    testResult.status = "error";
-    testResult.errorMessage = error.message;
+    console.error(`Error fetching GraphQL schema: ${error.message}`);
+    return null;
   }
-
-  const testFilePath = path.join(testOutputDir, `${apiName}-test.json`);
-  fs.writeFileSync(testFilePath, JSON.stringify(testResult, null, 2));
-  console.log(`Test result saved to ${testFilePath}`);
 }
 
-// Clear all test files
-function clearTestFiles() {
-  const files = fs.readdirSync(testOutputDir);
-  files.forEach((file) => {
-    fs.unlinkSync(path.join(testOutputDir, file));
-  });
-  console.log("All test files cleared.");
-}
+// Recursive function to map fields
+function recursiveMapFields(fields, parent = null, depth = 0) {
+  const mappedFields = [];
 
-// Interactive Prompt
-function startInteractivePrompt() {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
+  fields.forEach((field) => {
+    mappedFields.push({
+      name: field.name,
+      type: field.type.name || field.type.ofType?.name || "Unknown",
+      kind: field.type.kind,
+      parent,
+      depth,
+      description: field.description || "N/A",
+      args: field.args.map((arg) => ({
+        name: arg.name,
+        type: arg.type.name || arg.type.ofType?.name || "Unknown",
+        description: arg.description || "N/A",
+      })),
+    });
 
-  console.log("Select an option:");
-  console.log("1. Update Mapper");
-  console.log("2. Add New API");
-  console.log("3. Test");
-
-  rl.question("Enter your choice: ", async (choice) => {
-    switch (choice.trim()) {
-      case "1":
-        console.log("Updating Mapper...");
-        await runMapper();
-        break;
-      case "2":
-        rl.question("Enter new API name: ", (apiName) => {
-          rl.question("Enter new API URL: ", (apiUrl) => {
-            apis[apiName] = apiUrl;
-            console.log(`Added new API: ${apiName} -> ${apiUrl}`);
-            rl.close();
-          });
-        });
-        break;
-      case "3":
-        console.log("Test Options:");
-        console.log("1. Run New Test (Clear All Files)");
-        console.log("2. Retry (Overwrite Existing Files)");
-
-        rl.question("Enter your test option: ", async (testOption) => {
-          switch (testOption.trim()) {
-            case "1":
-              clearTestFiles();
-              rl.question("Enter API name to test: ", (apiName) => {
-                rl.question("Enter API URL to test: ", async (apiUrl) => {
-                  await testApi(apiName, apiUrl);
-                  rl.close();
-                });
-              });
-              break;
-            case "2":
-              rl.question("Enter API name to test: ", (apiName) => {
-                rl.question("Enter API URL to test: ", async (apiUrl) => {
-                  await testApi(apiName, apiUrl); // Overwrites existing files
-                  rl.close();
-                });
-              });
-              break;
-            default:
-              console.log("Invalid test option.");
-              rl.close();
-              break;
-          }
-        });
-        break;
-      default:
-        console.log("Invalid choice.");
-        rl.close();
-        break;
+    if (field.type.kind === "OBJECT" && field.type.fields) {
+      mappedFields.push(...recursiveMapFields(field.type.fields, field.name, depth + 1));
     }
   });
+
+  return mappedFields;
 }
 
-// Main function to run the mapper
+// Fetch and process data for each API
 async function runMapper() {
   for (const [apiName, apiUrl] of Object.entries(apis)) {
-    const schema = await fetchApiSchema(apiName, apiUrl);
-    if (schema) {
-      const fields = Array.isArray(schema)
-        ? processSchema(schema, apiName)
-        : schema;
+    console.log(`Processing API: ${apiName}`);
 
-      const dateStamp = new Date().toISOString().split("T")[0];
-      const jsonFileName = `${apiName}-fields-${dateStamp}.json`;
-      const csvFileName = `${apiName}-fields-${dateStamp}.csv`;
-      const htmlFileName = `${apiName}-fields-${dateStamp}.html`;
-
-      saveJsonOutput(jsonFileName, fields, apiName);
-      saveCsvOutput(csvFileName, fields, apiName);
-      saveHtmlOutput(htmlFileName, fields, apiName);
+    const schema = await fetchGraphQLSchema(apiUrl);
+    if (!schema) {
+      console.error(`Skipping ${apiName} due to schema fetch error.`);
+      continue;
     }
+
+    const relevantTypes = schema.filter((type) => type.kind === "OBJECT" && !type.name.startsWith("__"));
+    const mappedData = [];
+
+    relevantTypes.forEach((type) => {
+      if (type.fields) {
+        mappedData.push(...recursiveMapFields(type.fields, type.name));
+      }
+    });
+
+    const dateStamp = new Date().toISOString().split("T")[0];
+    const outputFile = path.join(outputDir, `${apiName}-fields-${dateStamp}.json`);
+
+    fs.writeFileSync(outputFile, JSON.stringify(mappedData, null, 2));
+    console.log(`Mapped fields saved to ${outputFile}`);
   }
+
   console.log("Field mapping completed for all APIs.");
 }
 
-// Start the interactive prompt
-startInteractivePrompt();
+// Run the mapper
+runMapper();
