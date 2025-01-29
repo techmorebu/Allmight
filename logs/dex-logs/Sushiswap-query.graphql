@@ -1,1 +1,0 @@
-query { pools { id, token0 { symbol }, token1 { symbol }, liquidity, volumeUSD } }
