@@ -1,3 +1,5 @@
+//Legacy
+
 const { startGmxWebSocket } = require('../data-collection/fetch-gmx-websocket');
 const { startUniswapWebSocket } = require('../data-collection/fetch-uniswap-websocket');
 const { startDydxWebSocket } = require('../data-collection/fetch-dydx-websocket');
