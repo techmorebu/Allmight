@@ -1,3 +1,4 @@
+//Legacy
 // File: scripts/validate-redis-orderbook.js
 const Redis = require('ioredis');
 const { logger } = require('../monitoring/logger');
