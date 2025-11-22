@@ -1,84 +1,160 @@
+// cross-reference-fields.js
+// Scans outputs from universal-field-mapper and reports which required fields
+// each API provides or is missing.
+
+require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
-const stringSimilarity = require("string-similarity");
 
-const outputsDir = path.resolve(__dirname, "../outputs");
-const reportPath = path.join(outputsDir, "cross-reference-report.json");
+const LOG_LEVEL = (process.env.LOG_LEVEL || "info").toLowerCase();
+const LEVEL_RANK = { debug: 10, info: 20, warn: 30, error: 40 };
 
+function log(level, message, meta = {}) {
+  if (!(level in LEVEL_RANK)) level = "info";
+  if (LEVEL_RANK[level] < LEVEL_RANK[LOG_LEVEL]) return;
+
+  const ts = new Date().toISOString();
+  const base = `[FIELD-XREF][${level.toUpperCase()}][${ts}] ${message}`;
+  if (Object.keys(meta).length > 0) {
+    console.log(base, JSON.stringify(meta));
+  } else {
+    console.log(base);
+  }
+}
+
+const outputDir = path.resolve(__dirname, "../../outputs");
+const reportFile = path.join(outputDir, "field-matching-report.json");
+
+// This should be aligned with what the arbitrage engine needs.
 const requiredFields = [
   "token0Price",
   "token1Price",
   "volumeUSD",
-  "feesUSD",
   "liquidity",
-  "txCount",
-  "open",
-  "high",
-  "low",
-  "close",
-  "totalValueLockedUSD",
+  "feesUSD",
+  "reserve0",
+  "reserve1",
+  "totalSupply",
 ];
 
-const fieldSynonyms = {
-  token0Price: ["price0", "priceToken0", "baseTokenPrice", "price_base"],
-  volumeUSD: ["usdVolume", "tradingVolumeUSD", "volume_usd", "totalVolumeUSD"],
-  feesUSD: ["usdFees", "tradingFeesUSD", "fees_usd", "totalFeesUSD"],
-  liquidity: ["poolLiquidity", "totalLiquidity", "liquidityUSD"],
-  txCount: ["transactionCount", "tradeCount", "swapCount", "numberOfTransactions"],
-  open: ["openingPrice", "startPrice"],
-  high: ["highestPrice", "maxPrice"],
-  low: ["lowestPrice", "minPrice"],
-  close: ["closingPrice", "endPrice"],
-  totalValueLockedUSD: ["TVL", "lockedValueUSD", "valueLockedUSD", "tvl_usd"],
-};
+// Reads one JSON mapping file and extracts field names.
+function loadApiFields(filePath) {
+  try {
+    const raw = fs.readFileSync(filePath, "utf8");
+    const data = JSON.parse(raw);
 
-const fieldWeights = {
-  token0Price: 3,
-  token1Price: 3,
-  volumeUSD: 2,
-  feesUSD: 2,
-  liquidity: 1,
-  txCount: 1,
-  open: 1,
-  high: 1,
-  low: 1,
-  close: 1,
-  totalValueLockedUSD: 2,
-};
+    // New format: { metadata, fields: [...] }
+    if (data && Array.isArray(data.fields)) {
+      return data.fields.map((f) => f.name).filter(Boolean);
+    }
 
-function runCrossReference() {
-  console.log("Running Cross-Referencing...");
+    // Legacy format: [ { name, ... }, ... ]
+    if (Array.isArray(data)) {
+      return data.map((f) => f.name).filter(Boolean);
+    }
 
-  const dataFiles = fs.readdirSync(outputsDir).filter((file) => file.endsWith("-fields.json"));
-  const crossReferenceReport = {};
-
-  dataFiles.forEach((file) => {
-    const filePath = path.join(outputsDir, file);
-    const apiName = path.basename(file, "-fields.json");
-    const { fields } = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-
-    const matched = [];
-    const missing = [];
-
-    requiredFields.forEach((requiredField) => {
-      const synonyms = fieldSynonyms[requiredField] || [];
-      const allOptions = [requiredField, ...synonyms];
-      const bestMatch = stringSimilarity.findBestMatch(requiredField, fields);
-
-      if (bestMatch.bestMatch.rating > 0.8 || fields.some((f) => allOptions.includes(f))) {
-        matched.push(requiredField);
-      } else {
-        missing.push(requiredField);
-      }
+    log("warn", "Unrecognized JSON structure for mapping file", {
+      filePath,
+      typeof: typeof data,
     });
-
-    const weightedScore = matched.reduce((sum, field) => sum + (fieldWeights[field] || 0), 0);
-
-    crossReferenceReport[apiName] = { matched, missing, weightedScore };
-  });
-
-  fs.writeFileSync(reportPath, JSON.stringify(crossReferenceReport, null, 2));
-  console.log(`Cross-Referencing Report saved to ${reportPath}`);
+    return [];
+  } catch (err) {
+    log("error", "Failed to load mapping file", {
+      filePath,
+      error: err.message,
+    });
+    return [];
+  }
 }
 
-module.exports = { runCrossReference };
+// Main cross-reference routine.
+function runCrossReference() {
+  if (!fs.existsSync(outputDir)) {
+    log("warn", "Output directory does not exist; nothing to cross-reference", {
+      outputDir,
+    });
+    return {};
+  }
+
+  const files = fs
+    .readdirSync(outputDir, { withFileTypes: true })
+    .filter((d) => d.isFile() && d.name.endsWith(".json") && !d.name.includes("field-matching-report"))
+    .map((d) => d.name);
+
+  if (files.length === 0) {
+    log("warn", "No JSON field mapping files found to cross-reference", { outputDir });
+    return {};
+  }
+
+  log("info", "Discovered mapping files", { files });
+
+  const report = {};
+  for (const fileName of files) {
+    const filePath = path.join(outputDir, fileName);
+    const apiName = fileName.replace(/-fields-.+\.json$/, "");
+
+    const fieldNames = loadApiFields(filePath);
+    if (fieldNames.length === 0) {
+      log("warn", "No field names found in mapping file", {
+        apiName,
+        fileName,
+      });
+    }
+
+    const matchedFields = [];
+    const missingFields = [];
+
+    for (const required of requiredFields) {
+      if (fieldNames.includes(required)) {
+        matchedFields.push(required);
+      } else {
+        missingFields.push(required);
+      }
+    }
+
+    report[apiName] = {
+      apiName,
+      mappingFile: fileName,
+      matchedFields,
+      missingFields,
+      totalMatched: matchedFields.length,
+      totalMissing: missingFields.length,
+      timestamp: new Date().toISOString(),
+    };
+
+    log("info", "Cross-reference completed for API", {
+      apiName,
+      totalMatched: matchedFields.length,
+      totalMissing: missingFields.length,
+    });
+  }
+
+  try {
+    fs.writeFileSync(reportFile, JSON.stringify(report, null, 2), "utf8");
+    log("info", "Field-matching report written", { reportFile });
+  } catch (err) {
+    log("error", "Failed to write field-matching report", {
+      reportFile,
+      error: err.message,
+    });
+  }
+
+  return report;
+}
+
+// CLI entry
+if (require.main === module) {
+  try {
+    runCrossReference();
+  } catch (err) {
+    log("error", "Unhandled error during cross-reference run", {
+      error: err.message,
+      stack: err.stack,
+    });
+    process.exitCode = 1;
+  }
+}
+
+module.exports = {
+  runCrossReference,
+};
