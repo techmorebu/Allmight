@@ -1,0 +1,79 @@
+DEBUGGING NOTES – PHASE 0 (Allmight)
+
+LOG LEVELS
+- Controlled via LOG_LEVEL env var (default: "info").
+- Levels: debug < info < warn < error.
+- Example:
+  LOG_LEVEL=debug node scripts/universal-field-mapper.js
+
+KEY SCRIPTS
+1) master-fetcher.js
+   - Loads fetchers from ../data-collection/masterFetcher/.
+   - Each file must export an async function.
+   - Results written to Redis keys:
+     - fetcher:<name>
+     - fetcher:<name>:error (on failure)
+   - Env:
+     - LOG_LEVEL
+     - MASTER_FETCHER_CRON (cron expression)
+
+   - Quick test:
+     - Create data-collection/masterFetcher/testFetcher.js:
+       module.exports = async () => ({ ok: true, ts: new Date().toISOString() });
+     - Run:
+       node scripts/master-fetcher.js
+     - Expected: logs for testFetcher, mock or real Redis SET.
+
+2) universal-field-mapper.js
+   - Reads DEX API URLs from env:
+     UNISWAP_DEX_API, SUSHISWAP_DEX_API, CURVE_ETHEREUM_DEX_API, CURVE_AVALANCHE_DEX_API,
+     QUICKSWAP_DEX_API, BALANCER_*_DEX_API
+   - Detects GraphQL endpoints via:
+     - URL includes "thegraph" or ends with "/graphql".
+   - GraphQL:
+     - Uses schema introspection query.
+     - Processes types + fields into flat descriptors.
+   - REST:
+     - Requests sample data.
+     - Infers fields by walking JSON.
+   - Outputs written to /outputs:
+     - <api>-fields-YYYY-MM-DD.json
+     - <api>-fields-YYYY-MM-DD.csv
+     - <api>-fields-YYYY-MM-DD.html
+
+   - Failure modes:
+     - Bad endpoint: logs error with apiName + URL.
+     - Empty data: warning, zero fields recorded.
+     - File write failures: error with path.
+
+   - One-shot:
+     - node scripts/universal-field-mapper.js
+   - Cron:
+     - FIELD_MAPPER_CRON="0 0 * * *" node scripts/universal-field-mapper.js cron
+
+3) cross-reference-fields.js
+   - Reads all JSON mapping files in /outputs (excluding field-matching-report.json).
+   - Accepts both JSON formats:
+     - { metadata, fields: [...] }
+     - [ { name, type, ... }, ... ]
+   - requiredFields array defines which fields arbitrage engine needs.
+   - Produces /outputs/field-matching-report.json with:
+     - apiName, mappingFile, matchedFields, missingFields, totals, timestamp.
+
+   - Quick run:
+     - node scripts/cross-reference-fields.js
+
+COMMON ENV / FILE ISSUES
+- Missing .env values:
+  - Script logs "No API URL defined in env; skipping" and continues.
+- Missing /outputs directory:
+  - Mapper creates it automatically; xref logs warning if missing.
+- Redis not running:
+  - master-fetcher falls back to mock Redis client that logs SET operations.
+
+DEBUGGING WORKFLOW
+1) Set LOG_LEVEL=debug and run universal-field-mapper once.
+2) Inspect /outputs/*.json/.csv/.html for at least one API.
+3) Run cross-reference-fields.js and verify field-matching-report.json.
+4) Run master-fetcher.js with at least one dummy fetcher.
+5) Address any errors using logged messages (API URL, file path, Redis connection).
