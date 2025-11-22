@@ -1,3 +1,4 @@
+//Legacy
 const redisClient = require('./redis-client');
 
 /**
