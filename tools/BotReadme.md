@@ -1,3 +1,5 @@
+//Legacy
+
 Here's the README framework for the opportunity analysis, trend analysis, and backtesting bots. This will serve as a foundation for integrating these functionalities into the broader pipeline.
 
 
