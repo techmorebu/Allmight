@@ -1,3 +1,4 @@
+//Legacy
 const Redis = require('ioredis');
 require('dotenv').config();
 
