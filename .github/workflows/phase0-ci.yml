@@ -1,0 +1,78 @@
+You can tweak text later, but this gives you a solid baseline.
+
+---
+
+## 4. GitHub Actions Workflow – `phase0-ci.yml`
+
+Create:
+
+> `.github/workflows/phase0-ci.yml`
+
+(with nested folders `.github` → `workflows` if they don’t exist yet).
+
+Content:
+
+```yaml
+name: Phase 0 CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - dev
+  pull_request:
+    branches:
+      - main
+      - master
+      - dev
+
+jobs:
+  phase0-smoke-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node from .nvmrc (fallback to 18)
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          # If .nvmrc is missing, you can hard-set:
+          # node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          npm ci || npm install
+
+      - name: Create minimal .env for CI
+        run: |
+          cat << 'EOF' > .env
+          # Dummy/private values for CI; replace with real in self-hosted if needed.
+          METAMASK_PRIVATE_KEY=0000000000000000000000000000000000000000000000000000000000000000
+
+          ETHEREUM_MAINNET_RPC_URL_1=https://rpc.ankr.com/eth
+          ETHEREUM_TESTNET_SEPOLIA_RPC_URL=https://rpc.ankr.com/eth_sepolia
+          POLYGON_MAINNET_RPC_URL_1=https://rpc.ankr.com/polygon
+          ZKSYNC_MAINNET_RPC_URL=https://mainnet.era.zksync.io
+
+          UNISWAP_DEX_API=https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3
+          SUSHISWAP_DEX_API=https://api.thegraph.com/subgraphs/name/sushiswap/exchange
+          CURVE_ETHEREUM_DEX_API=https://api.thegraph.com/subgraphs/name/curvefi/curve
+          CURVE_AVALANCHE_DEX_API=https://api.thegraph.com/subgraphs/name/curvefi/curve-avalanche
+          QUICKSWAP_DEX_API=https://api.thegraph.com/subgraphs/name/sameepsi/quickswap05
+
+          BALANCER_POLYGON_DEX_API=https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-polygon-v2
+          BALANCER_OPTIMISM_DEX_API=https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-optimism-v2
+          BALANCER_ARBITRUM_DEX_API=https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-arbitrum-v2
+          BALANCER_AVALANCHE_DEX_API=https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-avalanche-v2
+          BALANCER_ETHEREUM_DEX_API=https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-v2
+
+          REDIS_URL=redis://localhost:6379
+          LOG_LEVEL=info
+          EOF
+
+      - name: Run Phase 0 smoke test
+        run: |
+          npm run phase0:smoke
