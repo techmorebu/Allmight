@@ -1,25 +1,25 @@
 Vault,Description,Example Use,Notes
 Core Engine Vault,Main trading/arb capital,Capital directly used in engines,Higher risk/higher return
 Compounding Vault,Profit bucket dedicated to reinvestment,Receives a % of weekly realized gains,Used to scale engine size
-Weekly Income Lane,Bucket used to pay yourself weekly,Fills from realized yield after allocations,Target: 300/500/750/1000/2000 per week milestones
+Weekly Income Lane,Bucket used to pay yourself weekly,Fills from realized yield after allocations,"Target: 300/500/750/1000/2000 per week milestones"
 Safety/Reserve Vault,Defensive capital,Black-swan buffer and macro hedge,Can also fund metals or off-chain reserves
 
-"Engine Size Range (USD)",Weekly Yield Target (%),Max % of Yield to Withdraw,Min % To Reinvest,Notes
-"0-2,000",1.0,0,100,Focus on growth only; no withdrawals
-"2,000-5,000",1.0-1.5,20,80,Begin small weekly income if stable
-"5,000-15,000",1.0-1.5,25,75,Weekly income milestones 300-500
-"15,000-50,000",1.0-2.0,30,70,Weekly income milestones 500-1000
-"50,000-100,000",1.0-2.0,40,60,Weekly income milestones 1000-2000
-"100,000+",1.0-2.0,50,50,Engine considered "mature"; high income flexibility
+"Engine Size Range (USD)","Weekly Yield Target (%)","Max % of Yield to Withdraw","Min % To Reinvest",Notes
+"0-2,000",1.0,0,100,"Focus on growth only; no withdrawals"
+"2,000-5,000","1.0-1.5",20,80,"Begin small weekly income if stable"
+"5,000-15,000","1.0-1.5",25,75,"Weekly income milestones 300-500"
+"15,000-50,000","1.0-2.0",30,70,"Weekly income milestones 500-1000"
+"50,000-100,000","1.0-2.0",40,60,"Weekly income milestones 1000-2000"
+"100,000+","1.0-2.0",50,50,"Engine considered mature; high income flexibility"
 
-Flow Source,Flow Destination,Default %,Regime Override?,Notes
+Flow Source,Flow Destination,"Default %","Regime Override?",Notes
 Engine Realized Profit,Compounding Vault,40,Yes,"Default growth allocation; can be reduced in PANIC"
 Engine Realized Profit,Weekly Income Lane,30,Yes,"Percent grows with engine size and milestone tier"
-Engine Realized Profit,Metals Vault,15,Yes,"Macro hedge; %, may increase when Instability Index is high"
+Engine Realized Profit,Metals Vault,15,Yes,"Macro hedge; percent may increase when Instability Index is high"
 Engine Realized Profit,XRP/ISO Allocation,10,Yes,"Long-term asymmetric bets"
 Engine Realized Profit,Dividend Basket,5,Yes,"Traditional cash-flow hedge"
 
-Wage Deposit Preset,Core Engine Vault %,Compounding Vault %,Weekly Income Lane %,Safety/Reserve %,Notes
-PRESET A - Growth,40,30,0,30,"Aggressive engine growth; no wage income taken"
-PRESET B - Defensive,20,20,0,60,"High safety focus"
-PRESET C - XRP-Heavy,20,20,0,60,"Reserve + XRP allocation managed elsewhere"
+Wage Deposit Preset,"Core Engine Vault %","Compounding Vault %","Weekly Income Lane %","Safety/Reserve %",Notes
+"PRESET A - Growth",40,30,0,30,"Aggressive engine growth; no wage income taken"
+"PRESET B - Defensive",20,20,0,60,"High safety focus"
+"PRESET C - XRP-Heavy",20,20,0,60,"Reserve plus XRP allocation managed elsewhere"
