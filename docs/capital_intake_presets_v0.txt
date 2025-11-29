@@ -1,1 +1,68 @@
+CAPITAL INTAKE PRESETS – v0
 
+Purpose:
+- Define how new capital (wages, lump-sum deposits, windfalls) is routed into the system
+  BEFORE any code is written.
+- Phase 0 = manual logging in a sheet; Phase 2+ = config-driven logic.
+
+------------------------------------------------------------
+PRESET A – GROWTH
+------------------------------------------------------------
+Objective:
+- Maximize engine growth and compounding early.
+
+Default Allocation:
+- 40% → Arb / flashloan liquidity (Engine Vault)
+- 30% → DeFi yield (Compounding Vault / DeFi lanes)
+- 20% → XRP / ISO Tier 1 allocation
+- 10% → Metals (physical or tokenized gold/silver)
+
+Usage:
+- Early phase when engine is small and user is comfortable with higher risk.
+
+------------------------------------------------------------
+PRESET B – DEFENSIVE
+------------------------------------------------------------
+Objective:
+- Protect capital and build hedges.
+
+Default Allocation:
+- 20% → Arb / engine operations
+- 20% → DeFi yield (safer or more conservative farms)
+- 30% → Metals
+- 20% → XRP
+- 10% → Dividend stocks / ETFs
+
+Usage:
+- During RISK_OFF_STRONG or PANIC regimes.
+- When personal financial situation demands lower risk.
+
+------------------------------------------------------------
+PRESET C – XRP-HEAVY
+------------------------------------------------------------
+Objective:
+- Accumulate XRP aggressively in anticipation of macro revaluation.
+
+Default Allocation:
+- 30–40% → XRP directly
+- Remaining:
+  - 20–30% → Arb / engine
+  - 10–20% → Metals
+  - 10–20% → DeFi yield
+
+Usage:
+- When user conviction in XRP macro thesis is very high.
+- Ideally not used during worst PANIC conditions unless funded from profits, not core capital.
+
+------------------------------------------------------------
+PHASE 0 RULE:
+------------------------------------------------------------
+- Every time new cash is added:
+  - Choose PRESET A, B, or C.
+  - Log the date, amount, and preset in a sheet or doc.
+  - Manually apply the allocation.
+
+- Later (Phase 2+):
+  - These presets become configuration objects:
+    - e.g. presetA = { engine: 0.4, defi: 0.3, xrp: 0.2, metals: 0.1 }
+  - The engine uses them automatically when "new capital" events occur.
