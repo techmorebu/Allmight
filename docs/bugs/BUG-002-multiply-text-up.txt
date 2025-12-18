@@ -1,0 +1,12 @@
+BUG-002: MULTIPLY expects numbers but 'UP' is text
+Symptom:
+- Error message: MULTIPLY parameter expects number values. But 'UP' is text.
+
+Root cause:
+- TrendSimple ("UP/DOWN/FLAT") referenced in arithmetic formulas, or column drift caused text cells to be used in numeric math.
+
+Fix:
+- Ensure score formulas only reference numeric inputs (Close, PrevClose, ATR, etc.)
+- If trend is needed as numeric, convert:
+  =IF(Trend="UP",1, IF(Trend="DOWN",-1,0))
+- Re-check header alignment and column references.
