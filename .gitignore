@@ -9,3 +9,4 @@ outputs/.gitkeep
 data/staging/
 logs/
 outputs/
+data/processed/
