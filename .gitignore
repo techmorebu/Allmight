@@ -3,3 +3,9 @@ node_modules
 .env
 outputs/
 outputs/.gitkeep
+
+# --- Generated / local-only ---
+.venv/
+data/staging/
+logs/
+outputs/
