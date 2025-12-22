@@ -10,3 +10,17 @@ data/staging/
 logs/
 outputs/
 data/processed/
+
+# ---- AllMight: local runtime & generated artifacts ----
+.venv/
+__pycache__/
+*.pyc
+.env
+.env.*
+secrets.yaml
+config/secrets.yaml
+outputs/*
+data/raw/*
+data/processed/*
+data/replay/*
+data/derived/*
