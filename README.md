@@ -1,58 +1,24 @@
-# Project AllMight
+# AllMight
 
-AllMight is a modular crypto arbitrage and yield engine designed to:
+Status: **Active Development**
 
-- Talk to multiple DEXes and chains
-- Map and normalize their data schemas
-- Run arbitrage and yield strategies across CEX/DEX/L2 environments
-- Eventually power a fully automated, GPU-backed “ATM” for passive income
+## Phase Map
+- Phase 0: Paper Brain (frozen, reference only)
+- Phase 1: Data + Replay Engines (**LOCKED**)
+- Phase 2: Regime & Confluence (**ACTIVE**)
+- Phase 3+: Execution, AI scaling (future)
 
-This repo currently focuses on **Phase 0** of the architecture: introspection, data mapping, and fetcher skeletons.
+## Do Not Touch
+- Phase 1 logic
+- Replay-relative engines
+- Historical validation outputs
 
----
+## Where to Work
+- `src/regime/` — regime detection
+- `src/confluence/` — MCS fusion
+- `src/signals/` — derived indicators
 
-## Project Structure (Phase 0 Focus)
+## Docs
+Start at: `docs/INDEX.md`
 
-- `hardhat.config.js`  
-  Hardhat configuration for Solidity `0.8.20` with networks:
-  - Ethereum mainnet
-  - Sepolia
-  - Polygon
-  - zkSync
-
-- `scripts/`  
-  Phase 0 scripts:
-  - `universal-field-mapper.js` – Introspects DEX APIs and writes field mappings.
-  - `cross-reference-fields.js` – Checks which required fields each API exposes.
-  - `master-fetcher.js` – Central runner for data fetchers, storing results in Redis (or a mock).
-  - `phase0_smoke_test.js` – Orchestrates mapper → xref → fetcher as a single health check.
-
-- `utils/`
-  - `redis-client.js` – Redis client with safe fallback to a mock client if Redis is unavailable.
-
-- `data-collection/masterFetcher/`
-  - `testFetcher.js` – Dummy fetcher used to validate Phase 0 wiring.
-
-- `outputs/`
-  - Generated JSON/CSV/HTML field mappings.
-  - `field-matching-report.json` summarizing required-field coverage by API.
-
----
-
-## Prerequisites
-
-- Git
-- Node.js (recommended via `nvm`)
-  - `18.x` is the current baseline (see `.nvmrc`)
-- npm
-- (Optional for full runtime) Redis server
-
----
-
-## Setup
-
-### 1. Clone the repo
-
-```bash
-git clone https://github.com/techmorebu/Allmight.git
-cd Allmight
+If you are unsure where something belongs, stop and check the index.
