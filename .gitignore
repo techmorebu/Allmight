@@ -24,3 +24,7 @@ data/raw/*
 data/processed/*
 data/replay/*
 data/derived/*
+
+# ---- runtime logs ----
+logs/
+*.log
