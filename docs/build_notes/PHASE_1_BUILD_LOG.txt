@@ -1,0 +1,146 @@
+PROJECT: AllMight
+PHASE: 1D – Deterministic Replay Harness
+STATUS: COMPLETE & STABLE
+DATE: 2025-12-22
+TAG: phase-1d-replay-stable
+
+
+1. PHASE OBJECTIVE
+------------------
+Establish a deterministic, replay-relative computation layer that faithfully
+reproduces Phase 0 Excel semantics across:
+
+- Shared Inputs
+- Structure Engine (L0)
+- Institutional Pressure Engine (L1)
+
+This phase explicitly eliminates:
+- Latest-row bias
+- Implicit Excel row coupling
+- Indicator drift from future leakage
+
+
+2. CORE DELIVERABLES
+-------------------
+
+2.1 Replay OHLCV Window
+----------------------
+Module:
+scripts/data/replay_ohlcv_window.py
+
+Capabilities:
+- Deterministic OHLCV slicing by AssetID + Timeframe
+- As-of index or timestamp selection
+- Ascending timestamp order (oldest → newest)
+- Fixed window size (N)
+- Wipe + rebuild support
+
+Guarantees:
+- Replay window reflects historical truth at that moment
+- No future candles included
+- Stable across runs
+
+
+2.2 Shared Inputs – Replay-Relative
+----------------------------------
+Module:
+scripts/shared_inputs/calc_shared_inputs_replay.py
+
+Features:
+- Operates strictly on replay OHLCV window
+- Explicit asof_index or asof_timestamp
+- Outputs single-row snapshot
+- Excel-faithful calculations:
+  - Last_Close
+  - Prev_Close
+  - SwingHigh_20 / SwingLow_20
+  - ATR_14
+  - TrendSimple
+  - VolatilityScore
+  - Last_Volume / AvgVol_20
+  - VolSpikeFlag
+
+Key Validation:
+- Metrics correctly change when shifting as-of index
+- Confirmed using last vs i60 comparisons
+
+
+2.3 Structure Engine L0 – Replay-Relative
+----------------------------------------
+Module:
+scripts/structure/calc_structure_l0_replay.py
+
+Implements:
+- Breakout detection
+- Counter-trend detection
+- Market structure states:
+  - ACCUM
+  - DISTRIBUTION
+  - EXPANSION
+  - MARKDOWN
+- Structure bias derivation
+- SSP total structure score
+
+Guarantee:
+- Structure state reflects only information known at that candle
+
+
+2.4 Institutional Pressure Engine L1 – Replay-Relative
+------------------------------------------------------
+Module:
+scripts/pressure/calc_pressure_replay.py
+
+Implements (Excel-faithful):
+- Return vs ATR scoring
+- Trend alignment scoring
+- Volatility gating
+- Volume spike gating
+- Conflict penalty
+- Final pressure score (0–3)
+
+Validated Behaviors:
+- Pressure diverges between last and i60
+- Volume spike gate activates correctly (e.g., XAU)
+- Grid ordering preserved
+
+
+2.5 Multi-Asset Grid Harness
+----------------------------
+Module:
+scripts/pressure/run_pressure_grid.py
+
+Capabilities:
+- End-to-end replay for multiple assets
+- Deterministic grid ordering
+- Generates:
+  - Shared Inputs
+  - Structure L0
+  - Pressure L1
+- Computes deltas between replay slices
+
+Verified Assets:
+- BTC
+- ETH
+- XRP
+- XAU (via PAXG/USD ingestion)
+
+
+3. VALIDATION SUMMARY
+--------------------
+Replay determinism:            PASS
+Excel parity (L0, L1):         PASS
+As-of sensitivity:             PASS
+Grid stability:                PASS
+Coinbase ingestion:            PASS
+Cross-asset consistency:       PASS
+
+
+4. PHASE EXIT CRITERIA
+---------------------
+- Replay harness deterministic
+- Phase 0 sheet semantics fully reproduced
+- No future leakage
+- Safe foundation for Phase 2+
+
+PHASE 1D IS LOCKED.
+No refactors permitted without a version bump.

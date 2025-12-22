@@ -1,8 +1,0 @@
-Type,Field,Description,FieldType,FieldKind
-_Meta_,block,Information about a specific subgraph block. The hash of the block
-will be null if the _meta field has a block constraint that asks for
-a block number. It will be filled if the _meta field has no block constraint
-and therefore asks for the latest  block
-,_Block_,NON_NULL
-_Meta_,deployment,The deployment ID,String,NON_NULL
-_Meta_,hasIndexingErrors,If `true`, the subgraph encountered indexing errors at some past block,Boolean,NON_NULL

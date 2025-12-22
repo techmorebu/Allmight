@@ -1,5 +1,0 @@
-Type,Field,Description,FieldType,FieldKind
-_Block_,hash,The hash of the block,Bytes,SCALAR
-_Block_,number,The block number,Int,NON_NULL
-_Block_,timestamp,Integer representation of the timestamp stored in blocks for the chain,Int,SCALAR
-_Block_,parentHash,The hash of the parent block,Bytes,SCALAR
