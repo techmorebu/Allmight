@@ -1,0 +1,19 @@
+BUG-004: Sheet window mismatch vs "latest-only" calculations
+
+Symptom:
+- Shared_Inputs windows (SwingLow_20, ATR_14, AvgVol_20) differ between XLSX and Python when Python uses tail() of latest candles.
+
+Root cause:
+- Phase 0 spreadsheet calculations are replay-relative:
+  - Windows are anchored to an evaluation row position (implicit via Active Grid / row context).
+  - FILTER() preserves source row order (does not sort by Timestamp).
+  - Therefore "last N" means "last N rows up to the evaluation row", not "latest N overall".
+
+Fix:
+- Use replay-relative semantics:
+  - Input: replay file + asof_index (or timestamp)
+  - Compute windows relative to asof_index
+  - Preserve file order (no sorting)
+
+Resolution:
+- Implemented scripts/shared_inputs/calc_shared_inputs_replay.py
