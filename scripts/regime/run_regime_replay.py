@@ -75,7 +75,7 @@ def _state_to_jsonable(state) -> Dict:
         "regime": state.regime,
         "confidence": state.confidence,
         "activation_band": state.activation_band,
-                "mcs_total": state.mcs_total,
+        "mcs_total": state.mcs_total,
         "macro_score": state.macro_score,
         "risk_penalty": state.risk_penalty,
         "dominant_drivers": [
@@ -86,7 +86,7 @@ def _state_to_jsonable(state) -> Dict:
                 "structure_score": d.structure_score,
                 "pressure_score": d.pressure_score,
                 "activation_band": state.activation_band,
-                "mcs_total": state.mcs_total,
+        "mcs_total": state.mcs_total,
                 "macro_score": state.macro_score,
                 "risk_penalty": state.risk_penalty,
                 "bias_source": d.bias_source,
