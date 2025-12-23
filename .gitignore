@@ -34,3 +34,6 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .venv/
+
+# local source PDFs (do not commit)
+docs/source_pdfs/*.pdf
