@@ -74,6 +74,10 @@ def _state_to_jsonable(state) -> Dict:
         "asof_index": state.asof_index,
         "regime": state.regime,
         "confidence": state.confidence,
+        "activation_band": state.activation_band,
+        "mcs_total": state.mcs_total,
+        "macro_score": state.macro_score,
+        "risk_penalty": state.risk_penalty,
         "dominant_drivers": [
             {
                 "symbol": d.symbol,
