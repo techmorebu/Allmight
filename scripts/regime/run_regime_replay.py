@@ -75,7 +75,7 @@ def _state_to_jsonable(state) -> Dict:
         "regime": state.regime,
         "confidence": state.confidence,
         "activation_band": state.activation_band,
-        "mcs_total": state.mcs_total,
+                "mcs_total": state.mcs_total,
         "macro_score": state.macro_score,
         "risk_penalty": state.risk_penalty,
         "dominant_drivers": [
@@ -97,7 +97,7 @@ def _state_to_jsonable(state) -> Dict:
         "allow_directional": state.allow_directional,
         "allow_flashloan": state.allow_flashloan,
         "suppress_execution": state.suppress_execution,
-        "audit": state.audit,
+        "audit": {k:v for k,v in state.audit.items() if k not in ("activation_band","activation_band_str")},
     }
 
 
