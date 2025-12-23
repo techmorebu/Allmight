@@ -1,0 +1,58 @@
+## Source: docs/source_pdfs/Phase 0 workbook.pdf
+```
+444:Regime DNA
+450:40. Regime Classification
+451:41. Weight Profiles
+452:42. Genetic Weight Evolution
+453:43. Liquidity Migration
+454:44. Macro-Micro Bridge
+455:45. Cross-Market Triggers
+457:-------------------------------------------------------------TAB 46 — MCS (MASTER CONFLUENCE SYSTEM)
+460:MCS = Σ(EngineScore × EngineWeight × RegimeWeight × VarianceScale × DecayFactor)
+522:Regime
+```
+
+
+## Source: docs/source_pdfs/Phase 0 Blueprint — Final Edition.pdf
+```
+32:Regime logic
+84:37. Predictive – Regime DNA
+85:38. Predictive – Regime Transition
+87:40. Regime Classification
+88:41. Dynamic Weight Profiles
+89:42. Genetic Weight Evolution
+90:43. Liquidity Migration Tracker
+91:44. Macro-Micro Bridge
+92:45. Cross-Market Triggers
+256:--2B.11 Liquidity Migration
+332:Regime DNA Engine
+334:RegimeDNAClusterID
+337:Regime Transition Forecast
+348:Genetic Weight Evolution
+383:MCS = Σ(EngineScore_i × Weight_i × RegimeWeight_i × VarianceScale_i × Decay_i)
+396:2. Regime OK
+460:Regime tables filled
+```
+
+
+## Source: docs/source_pdfs/Phase 0 Blueprint — Final Edition Appended.pdf
+```
+32:Regime logic
+84:37. Predictive – Regime DNA
+85:38. Predictive – Regime Transition
+87:40. Regime Classification
+88:41. Dynamic Weight Profiles
+89:42. Genetic Weight Evolution
+90:43. Liquidity Migration Tracker
+91:44. Macro-Micro Bridge
+92:45. Cross-Market Triggers
+256:--2B.11 Liquidity Migration
+332:Regime DNA Engine
+334:RegimeDNAClusterID
+337:Regime Transition Forecast
+348:Genetic Weight Evolution
+383:MCS = Σ(EngineScore_i × Weight_i × RegimeWeight_i × VarianceScale_i × Decay_i)
+396:2. Regime OK
+460:Regime tables filled
+```
+

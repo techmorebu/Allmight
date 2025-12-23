@@ -1,0 +1,44 @@
+{
+  "phase0_source": {
+    "workbook": "phase0/Phase0_PaperBrain.xlsx",
+    "mcs_sheet": "21_MCS_Aggregator",
+    "macro_sheet": "17_Macro_WhaleFlow_Narrative_Pl"
+  },
+  "macro_regime_score_map": {
+    "RISK_ON": 3,
+    "RISK_OFF_SOFT": 2,
+    "RISK_OFF_STRONG": 1,
+    "PANIC": 0
+  },
+  "panic_flag_rule": "PANIC => TRUE else FALSE",
+  "mcs_weights": {
+    "SSP_Score": 3,
+    "PressureScore": 3,
+    "SweepScore": 2,
+    "LiquidityArchScore": 2,
+    "MacroScore": 3,
+    "RiskPenalty": -3
+  },
+  "activation_band_thresholds": [
+    {
+      "lt": 15,
+      "band": "ARB+YIELD_ONLY"
+    },
+    {
+      "lt": 21,
+      "band": "LIGHT_DIRECTIONAL"
+    },
+    {
+      "lt": 25,
+      "band": "FULL_DIRECTIONAL"
+    },
+    {
+      "else": true,
+      "band": "FLASHLOAN_CLUSTER"
+    }
+  ],
+  "phase2_bootstrap_missing_inputs_policy": {
+    "missing_inputs_value": 0.0,
+    "audit_missing": true
+  }
+}
