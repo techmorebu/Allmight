@@ -102,6 +102,11 @@ def calc_institutional_regime_replay(
     active_grid_symbols: List[str],
     l0_by_symbol: Dict[str, Dict],
     l1_by_symbol: Dict[str, Dict],
+    sweep_by_symbol: Dict[str, float] | None = None,
+    liquidity_arch_by_symbol: Dict[str, float] | None = None,
+    macro_by_symbol: Dict[str, float] | None = None,
+    risk_penalty_by_symbol: Dict[str, float] | None = None,
+    allow_missing_components: bool = False,
     cfg: Dict = None,
 ) -> InstitutionalRegimeState:
     """
@@ -154,18 +159,32 @@ def calc_institutional_regime_replay(
     missing_policy = c["phase2_bootstrap_missing_inputs_policy"]
     missing_val = float(missing_policy.get("missing_inputs_value", 0.0))
 
-    # We have SSP + Pressure from L0/L1 per-asset. Other engines are not replay-produced yet in Phase 2,
-    # so we bootstrap them as missing_val (deterministic).
-    sweep = float(cfg.get("sweep_score", missing_val))
-    liq_arch = float(cfg.get("liquidity_arch_score", missing_val))
-    macro_score = float(cfg.get("macro_score", missing_val))
-    risk_penalty = float(cfg.get("risk_penalty", missing_val))
+    # Phase 3: SSP + Pressure come from L0/L1 per-asset.
+    # Sweep/LiquidityArch/Macro/RiskPenalty must come from replay-produced maps.
+    # Policy: default to missing_val ONLY if allow_missing_components=True.
+    def _get_component(m: Dict[str, float] | None, name: str, sym: str) -> float:
+        if m is None:
+            if not allow_missing_components:
+                raise ValueError(
+                    f"Missing component map: {name}. Provide Phase 3 CSVs or pass --allow-missing-components."
+                )
+            return missing_val
+        if sym in m:
+            return float(m[sym])
+        if not allow_missing_components:
+            raise ValueError(f"Component {name} missing symbol={sym} (grid order is authoritative)")
+        return missing_val
 
     per_asset_mcs: Dict[str, float] = {}
     for ctb in contribs:
+        sym = ctb.symbol
         ssp = float(ctb.structure_score)
         pressure = float(ctb.pressure_score)
-        per_asset_mcs[ctb.symbol] = (
+        sweep = _get_component(sweep_by_symbol, "SweepScore", sym)
+        liq_arch = _get_component(liquidity_arch_by_symbol, "LiquidityArchScore", sym)
+        macro_score = _get_component(macro_by_symbol, "MacroScore", sym)
+        risk_penalty = _get_component(risk_penalty_by_symbol, "RiskPenalty", sym)
+        per_asset_mcs[sym] = (
             ssp * float(w["SSP_Score"])
             + pressure * float(w["PressureScore"])
             + sweep * float(w["SweepScore"])

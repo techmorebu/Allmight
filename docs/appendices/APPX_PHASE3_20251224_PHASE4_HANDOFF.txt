@@ -1,0 +1,20 @@
+PHASE 4 HANDOFF INSTRUCTIONS
+
+Phase 4 May Assume
+------------------
+- Phase 3 MCS inputs are stable
+- Regime activation uses real replay data
+- Grid ordering is authoritative
+- Missing inputs require explicit allowance
+
+Phase 4 Focus (Recommended)
+---------------------------
+- Activation band sensitivity analysis
+- Threshold calibration
+- Execution gating logic
+- Vault / execution policy wiring
+
+Forbidden in Phase 4
+--------------------
+- Re-architecting Phase 3 generators
+- Changing score scales without appendices

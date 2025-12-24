@@ -1,0 +1,23 @@
+PHASE 3 BUG NOTES
+
+Resolved Issues
+---------------
+1. Wayland clipboard corruption
+   - Cause: MIME mismatch
+   - Fix: wl-paste --no-newline | bash only
+
+2. ComponentRow vs dict mismatch
+   - Cause: inconsistent generator output
+   - Fix: standardized ComponentRow emission
+
+3. Silent grid symbol drops
+   - Cause: permissive CSV parsing
+   - Fix: grid is authoritative; missing symbols raise
+
+4. CLI / function divergence
+   - Cause: untested CLI path
+   - Fix: CLI mirrors function behavior exactly
+
+Status
+------
+All issues validated closed via pytest and replay runs.
