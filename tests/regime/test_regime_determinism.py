@@ -17,10 +17,12 @@ def test_regime_is_deterministic_and_tie_stable():
     }
 
     a = calc_institutional_regime_replay(
-        asof_index=100, active_grid_symbols=grid, l0_by_symbol=l0, l1_by_symbol=l1
+        asof_index=100, active_grid_symbols=grid, l0_by_symbol=l0, l1_by_symbol=l1,
+        allow_missing_components=True,
     )
     b = calc_institutional_regime_replay(
-        asof_index=100, active_grid_symbols=grid, l0_by_symbol=l0, l1_by_symbol=l1
+        asof_index=100, active_grid_symbols=grid, l0_by_symbol=l0, l1_by_symbol=l1,
+        allow_missing_components=True,
     )
 
     assert a == b

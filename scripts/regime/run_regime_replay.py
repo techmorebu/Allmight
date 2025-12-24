@@ -4,9 +4,12 @@ import argparse
 import csv
 import json
 import os
+from pathlib import Path
 from typing import Dict, List, Tuple
 
 from scripts.regime.calc_regime_replay import calc_institutional_regime_replay
+from scripts.mcs_components.replay_component_io import read_component_csv_as_map
+from scripts.mcs_components.replay_component_io import read_component_csv_as_map
 
 
 def _read_grid_csv(path: str) -> List[Dict[str, str]]:
@@ -108,6 +111,11 @@ def main() -> int:
     p.add_argument("--grid", default="BTC,ETH,XRP,XAU", help="Comma-separated grid order (must match GRID CSV order)")
     p.add_argument("--outputs-dir", default="outputs/replay")
     p.add_argument("--asof-index", type=int, default=-1, help="As-of index tag stored in output only (default -1 for label runs)")
+    p.add_argument("--sweep-csv", default="", help="Phase 3 SweepScore CSV (grid-ordered)")
+    p.add_argument("--liquidity-arch-csv", default="", help="Phase 3 LiquidityArchScore CSV (grid-ordered)")
+    p.add_argument("--macro-score-csv", default="", help="Phase 3 MacroScore CSV (grid-ordered)")
+    p.add_argument("--risk-penalty-csv", default="", help="Phase 3 RiskPenalty CSV (grid-ordered)")
+    p.add_argument("--allow-missing-components", action="store_true", help="Allow missing Phase 3 inputs to default to policy missing value (audited)")
     args = p.parse_args()
 
     tf = args.timeframe
@@ -134,11 +142,31 @@ def main() -> int:
     l0_by = _to_l0_by_symbol(l0_rows)
     l1_by = _to_l1_by_symbol(l1_rows)
 
+    # Phase 3 component inputs
+    sweep_by = None
+    liq_by = None
+    macro_by = None
+    risk_by = None
+
+    if args.sweep_csv:
+        sweep_by, _ = read_component_csv_as_map(Path(args.sweep_csv), grid_syms, component_name="SweepScore", allow_missing=args.allow_missing_components)
+    if args.liquidity_arch_csv:
+        liq_by, _ = read_component_csv_as_map(Path(args.liquidity_arch_csv), grid_syms, component_name="LiquidityArchScore", allow_missing=args.allow_missing_components)
+    if args.macro_score_csv:
+        macro_by, _ = read_component_csv_as_map(Path(args.macro_score_csv), grid_syms, component_name="MacroScore", allow_missing=args.allow_missing_components)
+    if args.risk_penalty_csv:
+        risk_by, _ = read_component_csv_as_map(Path(args.risk_penalty_csv), grid_syms, component_name="RiskPenalty", allow_missing=args.allow_missing_components)
+
     state = calc_institutional_regime_replay(
         asof_index=args.asof_index,
         active_grid_symbols=grid_syms,
         l0_by_symbol=l0_by,
         l1_by_symbol=l1_by,
+        sweep_by_symbol=sweep_by,
+        liquidity_arch_by_symbol=liq_by,
+        macro_by_symbol=macro_by,
+        risk_penalty_by_symbol=risk_by,
+        allow_missing_components=bool(args.allow_missing_components),
     )
 
     os.makedirs(outdir, exist_ok=True)
