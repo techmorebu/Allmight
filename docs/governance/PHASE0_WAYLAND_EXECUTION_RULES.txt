@@ -1,0 +1,88 @@
+PHASE-0 GOVERNANCE: WAYLAND-SAFE EXECUTION RULES (ANTI-PASTE-CORRUPTION)
+======================================================================
+
+Status: REQUIRED (Project-wide)
+Applies to: all instructions, patches, code edits, tests, and runbooks.
+
+Problem
+-------
+Copy/paste into terminal can silently corrupt commands and code (prompt fragments, missing quotes,
+wrapped lines, broken heredocs, partial blocks). This has repeatedly caused syntax errors, bad patches,
+and phantom failures.
+
+Policy (The Rule)
+-----------------
+All non-trivial terminal instructions MUST be executed using Wayland clipboard piping:
+    wl-paste --no-newline | bash
+or (for Python code blocks):
+    wl-paste --no-newline | python
+or (for one-liners where bash is unsafe):
+    wl-paste --no-newline | sh
+
+This is the ONLY supported method for multi-line instructions and patches.
+
+Required Tools
+--------------
+- Wayland session
+- wl-clipboard package providing: wl-copy, wl-paste
+Check:
+    command -v wl-paste >/dev/null && echo "wl-clipboard OK"
+
+Golden Patterns
+---------------
+1) Bash command blocks (multi-line):
+   - Copy a bash block into clipboard
+   - Run: wl-paste --no-newline | bash
+
+2) Python “writer pattern” patches (preferred for file edits):
+   - Copy a python writer block into clipboard
+   - Run: wl-paste --no-newline | bash
+   (The bash block should invoke: python - <<'PY' ... PY)
+
+3) Python execution directly:
+   - Copy python code into clipboard
+   - Run: wl-paste --no-newline | python
+
+4) Show clipboard to verify before running:
+   - wl-paste | sed -n '1,200p'
+
+Critical Rules (DO THIS OR SUFFER)
+----------------------------------
+- NEVER paste directly into the terminal input line for multi-line blocks.
+- NEVER include your shell prompt (e.g., "allmight@deku:~/Allmight$") in clipboard content.
+- ALWAYS include all needed variables inside the clipboard script itself.
+  Do NOT rely on previously-set $TF/$LABEL/$GRID unless they are re-declared in the same block.
+- Prefer explicit literals for critical args:
+    --asof-label "last"   (not $LABEL)
+- Treat every clipboard execution as a “fresh script context”.
+
+When to Use Wayland Method
+--------------------------
+Use wl-paste piping for:
+- Any block > 1 line
+- Any patch/edit to repo files
+- Any command sequence with variables
+- Any test or run procedure you’ll repeat later
+- Any time you see corruption symptoms: missing chars, broken indentation, random inserted text
+
+When Direct Typing Is OK
+------------------------
+Only for SHORT single commands you type manually (no paste), e.g.:
+    ls
+    git status
+    pytest -q
+But if you copied it, run it via wl-paste.
+
+Incident Response (If Corruption Happens)
+-----------------------------------------
+1) STOP. Don’t keep retrying corrupted pastes.
+2) Print clipboard:
+      wl-paste | sed -n '1,120p'
+3) Re-copy the correct block cleanly.
+4) Re-run with:
+      wl-paste --no-newline | bash
+
+Enforcement
+-----------
+- PRs / patches must follow this policy.
+- Instructions provided to future chats must include these steps.
