@@ -41,7 +41,6 @@ def _halt(outdir: Path, report: HaltReport) -> int:
 
 
 def _select_input(args: argparse.Namespace, outdir: Path) -> Optional[Path]:
-    # Exactly one of --input or --inputs-dir
     if bool(args.input) == bool(args.inputs_dir):
         _halt(
             outdir,
@@ -94,6 +93,41 @@ def _select_input(args: argparse.Namespace, outdir: Path) -> Optional[Path]:
     return cand[0]
 
 
+def _payload_template(enabled: bool, mode: str) -> Dict[str, Any]:
+    # Deterministic placeholders ONLY. No timestamps. No randomness.
+    # Downstream phases may fill these in; Phase-5 never executes.
+    if mode == "arbitrage":
+        return {
+            "enabled": enabled,
+            "venues": None,            # e.g. ["coinbase", "kraken", "uniswap_v3"] (placeholder)
+            "route_hints": None,       # e.g. "CEX->DEX->CEX" (placeholder)
+            "max_notional_usd": None,  # placeholder risk limit
+            "slippage_bps": None,      # placeholder
+            "min_edge_bps": None,      # placeholder
+            "gas_policy": None,        # placeholder (L2 choice etc.)
+            "notes": "placeholder_only",
+        }
+    if mode == "directional":
+        return {
+            "enabled": enabled,
+            "strategy_id": None,       # placeholder (e.g. "MACD_BB_v2")
+            "timeframe": None,         # placeholder
+            "max_notional_usd": None,  # placeholder risk limit
+            "risk_policy": None,       # placeholder (stops, sizing rules)
+            "notes": "placeholder_only",
+        }
+    if mode == "flashloan":
+        return {
+            "enabled": enabled,
+            "protocols": None,         # placeholder (Aave, Balancer, etc.)
+            "max_notional_usd": None,  # placeholder
+            "safety_policy": None,     # placeholder (simulation required, revert conditions)
+            "notes": "placeholder_only",
+        }
+    # unreachable in current contract
+    return {"enabled": enabled, "notes": "placeholder_only"}
+
+
 def main(argv: Optional[list[str]] = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--asof", required=True, choices=["last", "i60"])
@@ -109,103 +143,40 @@ def main(argv: Optional[list[str]] = None) -> int:
         return EXIT_HALT
 
     if not in_path.exists():
-        return _halt(
-            outdir,
-            HaltReport(
-                code="E_NO_INPUT_FILE",
-                message="Phase-4 input file not found.",
-                details={"input": str(in_path)},
-            ),
-        )
+        return _halt(outdir, HaltReport(code="E_NO_INPUT_FILE", message="Phase-4 input file not found.", details={"input": str(in_path)}))
 
     try:
         data = _read_json(in_path)
     except Exception as e:
-        return _halt(
-            outdir,
-            HaltReport(
-                code="E_BAD_JSON",
-                message="Failed to parse Phase-4 JSON.",
-                details={"input": str(in_path), "error": repr(e)},
-            ),
-        )
+        return _halt(outdir, HaltReport(code="E_BAD_JSON", message="Failed to parse Phase-4 JSON.", details={"input": str(in_path), "error": repr(e)}))
 
     if not isinstance(data, dict):
-        return _halt(
-            outdir,
-            HaltReport(
-                code="E_SCHEMA_TOPLEVEL_NOT_DICT",
-                message="Phase-4 JSON top-level must be a dict.",
-                details={"input": str(in_path), "toplevel_type": type(data).__name__},
-            ),
-        )
+        return _halt(outdir, HaltReport(code="E_SCHEMA_TOPLEVEL_NOT_DICT", message="Phase-4 JSON top-level must be a dict.", details={"input": str(in_path), "toplevel_type": type(data).__name__}))
 
     if data.get("phase") != 4:
-        return _halt(
-            outdir,
-            HaltReport(
-                code="E_PHASE_NOT_4",
-                message="Phase-4 input must have phase==4.",
-                details={"input": str(in_path), "phase": data.get("phase")},
-            ),
-        )
+        return _halt(outdir, HaltReport(code="E_PHASE_NOT_4", message="Phase-4 input must have phase==4.", details={"input": str(in_path), "phase": data.get("phase")}))
 
     file_asof = data.get("asof")
     if file_asof != args.asof:
-        return _halt(
-            outdir,
-            HaltReport(
-                code="E_ASOF_MISMATCH",
-                message="Input asof does not match requested asof; refusing to mix horizons.",
-                details={"input": str(in_path), "file_asof": file_asof, "requested_asof": args.asof},
-            ),
-        )
+        return _halt(outdir, HaltReport(code="E_ASOF_MISMATCH", message="Input asof does not match requested asof; refusing to mix horizons.", details={"input": str(in_path), "file_asof": file_asof, "requested_asof": args.asof}))
 
     assets = data.get("assets")
     if not isinstance(assets, dict):
-        return _halt(
-            outdir,
-            HaltReport(
-                code="E_SCHEMA_ASSETS_NOT_DICT",
-                message="Phase-4 input must include assets as a dict.",
-                details={"input": str(in_path), "assets_type": type(assets).__name__},
-            ),
-        )
+        return _halt(outdir, HaltReport(code="E_SCHEMA_ASSETS_NOT_DICT", message="Phase-4 input must include assets as a dict.", details={"input": str(in_path), "assets_type": type(assets).__name__}))
 
     intents: list[dict[str, Any]] = []
     for asset in sorted(assets.keys()):
         node = assets[asset]
         if not isinstance(node, dict):
-            return _halt(
-                outdir,
-                HaltReport(
-                    code="E_SCHEMA_ASSET_NODE_NOT_DICT",
-                    message="Each assets.<ASSET> node must be a dict.",
-                    details={"input": str(in_path), "asset": asset, "node_type": type(node).__name__},
-                ),
-            )
+            return _halt(outdir, HaltReport(code="E_SCHEMA_ASSET_NODE_NOT_DICT", message="Each assets.<ASSET> node must be a dict.", details={"input": str(in_path), "asset": asset, "node_type": type(node).__name__}))
 
         perms = node.get("permissions")
         if not isinstance(perms, dict):
-            return _halt(
-                outdir,
-                HaltReport(
-                    code="E_SCHEMA_PERMISSIONS_NOT_DICT",
-                    message="Each assets.<ASSET>.permissions must be a dict.",
-                    details={"input": str(in_path), "asset": asset, "permissions_type": type(perms).__name__},
-                ),
-            )
+            return _halt(outdir, HaltReport(code="E_SCHEMA_PERMISSIONS_NOT_DICT", message="Each assets.<ASSET>.permissions must be a dict.", details={"input": str(in_path), "asset": asset, "permissions_type": type(perms).__name__}))
 
         missing = [k for k in ("allow_arbitrage", "allow_directional", "allow_flashloan") if k not in perms]
         if missing:
-            return _halt(
-                outdir,
-                HaltReport(
-                    code="E_SCHEMA_MISSING_PERMISSION_KEYS",
-                    message="Missing required permission keys.",
-                    details={"input": str(in_path), "asset": asset, "missing": missing},
-                ),
-            )
+            return _halt(outdir, HaltReport(code="E_SCHEMA_MISSING_PERMISSION_KEYS", message="Missing required permission keys.", details={"input": str(in_path), "asset": asset, "missing": missing}))
 
         allow_arbitrage = bool(perms["allow_arbitrage"])
         allow_directional = bool(perms["allow_directional"])
@@ -231,12 +202,10 @@ def main(argv: Optional[list[str]] = None) -> int:
 
         if not allowed_modes:
             status = "SUPPRESSED"
-            reasons.insert(0, {"code": "S_SUPPRESSION_INFERRED_FROM_PERMISSIONS", "severity": "SUPPRESS",
-                               "msg": "No execution modes permitted by Phase-4 permissions (compatibility suppression)."})
+            reasons.insert(0, {"code": "S_SUPPRESSION_INFERRED_FROM_PERMISSIONS", "severity": "SUPPRESS", "msg": "No execution modes permitted by Phase-4 permissions (compatibility suppression)."})
         else:
             status = "ALLOWED"
-            reasons.insert(0, {"code": "A_ALLOWED_BY_CONTROL", "severity": "ALLOW",
-                               "msg": "One or more execution modes permitted by Phase-4 permissions."})
+            reasons.insert(0, {"code": "A_ALLOWED_BY_CONTROL", "severity": "ALLOW", "msg": "One or more execution modes permitted by Phase-4 permissions."})
 
         phase4_evidence = {
             "activation_band": node.get("activation_band"),
@@ -246,12 +215,21 @@ def main(argv: Optional[list[str]] = None) -> int:
             "inputs": {"global_confidence": (data.get("inputs") or {}).get("global_confidence")},
         }
 
+        # Payload placeholders (deterministic)
+        enabled_set = set(allowed_modes)
+        intent_payload = {
+            "arbitrage": _payload_template("arbitrage" in enabled_set, "arbitrage"),
+            "directional": _payload_template("directional" in enabled_set, "directional"),
+            "flashloan": _payload_template("flashloan" in enabled_set, "flashloan"),
+        }
+
         intents.append({
             "asset": asset,
             "grid": data.get("grid"),
             "asof": args.asof,
             "status": status,
             "allowed_modes": allowed_modes,
+            "intent_payload": intent_payload,
             "phase4_evidence": phase4_evidence,
             "phase4_permissions": {
                 "allow_arbitrage": allow_arbitrage,
@@ -261,7 +239,7 @@ def main(argv: Optional[list[str]] = None) -> int:
             "reasons": reasons,
         })
 
-    # Human-readable audit
+    # Human audit (include payload enabled flags only)
     lines: list[str] = []
     lines.append("PHASE 5 — EXECUTION LAYER AUDIT")
     lines.append("==============================")
@@ -288,6 +266,14 @@ def main(argv: Optional[list[str]] = None) -> int:
         lines.append(f"activation_band: {ev.get('activation_band')}")
         lines.append(f"activation_band_flip: {ev.get('activation_band_flip')}")
         lines.append(f"activation_band_prev: {ev.get('activation_band_prev')}")
+
+        pl = it.get("intent_payload") or {}
+        lines.append(
+            "payload_enabled: "
+            f"arb={pl.get('arbitrage', {}).get('enabled')} "
+            f"dir={pl.get('directional', {}).get('enabled')} "
+            f"fl={pl.get('flashloan', {}).get('enabled')}"
+        )
 
         codes = [r.get("code") for r in (it.get("reasons") or []) if isinstance(r, dict)]
         lines.append("reason_codes: " + (" ".join([c for c in codes if c]) if codes else "<none>"))

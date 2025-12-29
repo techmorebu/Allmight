@@ -71,3 +71,29 @@ This Phase-5 v0 is a “truth spine” component:
 - If suppressed => defer
 - If allowed => describe intent, do not execute trade
 
+
+v1 — Intent Payload Placeholders
+--------------------------------
+Timestamp (UTC): 2025-12-29T10:09:09Z
+
+Change Summary
+- Added deterministic intent_payload blocks for each mode:
+  - arbitrage, directional, flashloan
+- Each payload includes:
+  - enabled flag (must match allowed_modes)
+  - schema-only placeholders (no execution fields, no timestamps)
+
+Audit Update
+- phase5_audit.txt now includes payload_enabled flags per asset:
+  - arb=<bool> dir=<bool> fl=<bool>
+
+Tests Added
+- test_phase5_payload_flags_match_allowed_modes.py
+- test_phase5_payload_keys_exist.py
+
+Contract Update
+- config/phase5/intent_schema_v1.txt updated to include intent_payload specification.
+
+Notes
+- Payloads are placeholders only; downstream phases may populate them.
+- Phase-5 continues to enforce: if uncertain => HALT.

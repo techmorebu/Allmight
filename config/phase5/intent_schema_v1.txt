@@ -62,6 +62,37 @@ Intent object (required fields)
 - allowed_modes: list[str]
   - allowed values: "arbitrage" | "directional" | "flashloan"
   - ordering: arbitrage, directional, flashloan
+- intent_payload: object (deterministic placeholders; Phase-5 never executes)
+  - arbitrage: object
+      - enabled: bool (must match whether "arbitrage" in allowed_modes)
+      - venues: null | list[str]
+      - route_hints: null | string
+      - max_notional_usd: null | float
+      - slippage_bps: null | float
+      - min_edge_bps: null | float
+      - gas_policy: null | object|string
+      - notes: "placeholder_only"
+  - directional: object
+      - enabled: bool (must match whether "directional" in allowed_modes)
+      - strategy_id: null | string
+      - timeframe: null | string
+      - max_notional_usd: null | float
+      - risk_policy: null | object|string
+      - notes: "placeholder_only"
+  - flashloan: object
+      - enabled: bool (must match whether "flashloan" in allowed_modes)
+      - protocols: null | list[str]
+      - max_notional_usd: null | float
+      - safety_policy: null | object|string
+      - notes: "placeholder_only"
+- phase4_permissions: object
+- asset: string (e.g., "BTC")
+- grid: string | null (copied from Phase-4)
+- asof: "last" | "i60"
+- status: "ALLOWED" | "SUPPRESSED"
+- allowed_modes: list[str]
+  - allowed values: "arbitrage" | "directional" | "flashloan"
+  - ordering: arbitrage, directional, flashloan
 - phase4_permissions: object
   - allow_arbitrage: bool
   - allow_directional: bool
