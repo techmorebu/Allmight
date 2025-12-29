@@ -1,0 +1,22 @@
+schema_version: 1
+components:
+  sweep_l2:
+    method: range
+    min: 0.0
+    max: 3.858344
+    invert: false
+  liquidity_arch_l3:
+    method: range
+    min: 9.208666
+    max: 9.854754
+    invert: false
+  macro_score:
+    method: range
+    min: -1.0
+    max: 1.0
+    invert: false
+  risk_penalty:
+    method: range
+    min: 0.0
+    max: 1.0
+    invert: true

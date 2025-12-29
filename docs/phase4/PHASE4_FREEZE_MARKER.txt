@@ -1,0 +1,31 @@
+PHASE 4 — FROZEN
+
+Status: FROZEN (no behavioral changes allowed without explicit UNFREEZE note)
+Scope: Phase-4 Intelligence & Control Layer
+
+Freeze intent:
+- Phase-4 runner behavior is locked
+- Phase-4 configs (weights/normalization/execution_matrix) are locked
+- Phase-4 tests are locked
+- Phase-3 generators remain untouched (Phase-3 stays locked)
+
+Allowed while frozen:
+- Documentation additions (no behavior change)
+- New appendices describing what already exists
+- CI / formatting changes that do not alter outputs
+
+NOT allowed while frozen:
+- Changing gating logic, thresholds, defaults, band_rank
+- Changing normalization ranges/constants
+- Changing weights
+- Changing output JSON schema
+- Any change that alters outputs/phase4 JSON
+
+Unfreeze procedure:
+1) Add docs/phase4/PHASE4_UNFREEZE_NOTE.txt explaining why + scope
+2) Add/adjust tests first (prove intent)
+3) Apply changes with audit trail
+4) Re-freeze with a new marker entry (append below)
+
+Freeze applied on: __FILL_IN_DATE__
+Applied by: __FILL_IN_OPERATOR__

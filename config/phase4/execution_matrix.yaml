@@ -1,0 +1,25 @@
+schema_version: 1
+bands:
+  ARB+YIELD_ONLY:
+    allow_directional: false
+    allow_flashloan: false
+    allow_arbitrage: true
+  FLASHLOAN_CLUSTER:
+    allow_directional: false
+    allow_flashloan: true
+    allow_arbitrage: true
+regime_overrides: {}
+confidence:
+  enabled: true
+  min_confidence:
+    default: 0.25
+    on_flip: 0.35
+risk_penalty:
+  enabled: true
+  disable_flashloan_at: 0.7
+promotion:
+  enabled: true
+  min_confidence: 0.6
+band_rank:
+  ARB+YIELD_ONLY: 10
+  FLASHLOAN_CLUSTER: 20
