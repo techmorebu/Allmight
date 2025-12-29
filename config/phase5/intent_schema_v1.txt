@@ -52,6 +52,18 @@ Top-level fields (required)
 - asof: "last" | "i60"
 - grid: string | null (copied from Phase-4)
 - source_input: string (path to the Phase-4 file used)
+- execution_policy: object (deterministic safety defaults; does not grant permission)
+  - mode_preference_order: ["arbitrage","directional","flashloan"]
+  - max_concurrent_intents: int (default 1)
+  - require_simulation: bool (default true)
+  - dry_run_only: bool (default true)
+  - notes: string
+- intents: list[Intent]
+- status: "OK"
+- phase: 5
+- asof: "last" | "i60"
+- grid: string | null (copied from Phase-4)
+- source_input: string (path to the Phase-4 file used)
 - intents: list[Intent]
 
 Intent object (required fields)

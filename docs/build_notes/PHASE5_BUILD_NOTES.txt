@@ -97,3 +97,26 @@ Contract Update
 Notes
 - Payloads are placeholders only; downstream phases may populate them.
 - Phase-5 continues to enforce: if uncertain => HALT.
+
+v2 — execution_policy Hook (Deterministic Safety Defaults)
+----------------------------------------------------------
+Timestamp (UTC): 2025-12-29T10:18:12Z
+
+Change Summary
+- Added top-level execution_policy to phase5_execution_intents.json.
+- Policy is deterministic and constraint-only (never grants permission):
+  - mode_preference_order: ["arbitrage","directional","flashloan"]
+  - max_concurrent_intents: 1
+  - require_simulation: true
+  - dry_run_only: true
+
+Rationale
+- Provides a stable “policy hook” for downstream execution systems while preserving
+  Phase-4 authority and Phase-5 non-execution scope.
+
+Tests Added
+- test_phase5_execution_policy_present.py
+- test_phase5_policy_never_enables_modes.py
+
+Contract Update
+- config/phase5/intent_schema_v1.txt updated to specify execution_policy fields.

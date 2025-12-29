@@ -93,6 +93,17 @@ def _select_input(args: argparse.Namespace, outdir: Path) -> Optional[Path]:
     return cand[0]
 
 
+def _default_execution_policy() -> Dict[str, Any]:
+    # Deterministic defaults. Policy never grants permission; it only constrains and documents.
+    return {
+        "mode_preference_order": ["arbitrage", "directional", "flashloan"],
+        "max_concurrent_intents": 1,
+        "require_simulation": True,
+        "dry_run_only": True,
+        "notes": "policy_hook_placeholder",
+    }
+
+
 def _payload_template(enabled: bool, mode: str) -> Dict[str, Any]:
     # Deterministic placeholders ONLY. No timestamps. No randomness.
     # Downstream phases may fill these in; Phase-5 never executes.
@@ -287,6 +298,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         "asof": args.asof,
         "grid": data.get("grid"),
         "source_input": str(in_path),
+        "execution_policy": _default_execution_policy(),
         "intents": intents,
     })
 
