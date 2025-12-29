@@ -1,0 +1,102 @@
+PHASE-0 PRESENTATION & COMMUNICATION PROTOCOL
+=================================================
+
+Status: Canonical
+Scope: ALL phases, ALL chats, ALL documentation
+Authority: Phase-0 Governance (non-optional)
+
+----------------------------------------------------------------
+CORE PRINCIPLE
+----------------------------------------------------------------
+Information is only valid if it can be understood, justified,
+and reused by someone who was not present.
+
+Every artifact MUST answer:
+- What exists
+- Why it exists
+- How it works
+- What is allowed
+- What is forbidden
+
+If any are missing, the artifact is incomplete.
+
+----------------------------------------------------------------
+MANDATORY PRESENTATION STRUCTURE
+----------------------------------------------------------------
+
+1. CONTEXT — What problem is being addressed
+   - Phase number
+   - System layer
+   - Triggering limitation or failure
+   - Assumptions being replaced
+
+2. OBJECTIVE — What success looks like
+   - Explicit, testable outcomes
+   - What is in-scope
+   - What is explicitly out-of-scope
+
+3. DESIGN INTENT — Why this approach was chosen
+   - Alternatives considered
+   - Tradeoffs accepted
+   - Decisions intentionally rejected
+
+4. IMPLEMENTATION SUMMARY — What was built
+   - New files/modules
+   - Modified interfaces
+   - Removed hacks/placeholders
+   - Inputs and outputs
+
+5. DETAILED MECHANICS — How it works
+   - Data flow
+   - Ordering rules
+   - Determinism guarantees
+   - Defaults and fallbacks
+   - Error handling
+
+6. CONSTRAINTS & INVARIANTS — What must never change
+   - Schema contracts
+   - Ordering guarantees
+   - Required inputs
+   - Forbidden mutations
+
+7. FAILURE MODES & LESSONS — What went wrong
+   - Tooling failures
+   - Data corruption causes
+   - Invalid assumptions
+   - Root causes (no blame)
+
+8. VALIDATION & PROOF — How correctness is proven
+   - Tests
+   - Determinism checks
+   - Reproduction steps
+
+9. HANDOFF CONTRACT — What the next phase may assume
+   - Guaranteed artifacts
+   - Stable interfaces
+   - Safe extension points
+   - Explicitly forbidden changes
+
+----------------------------------------------------------------
+CHAT-SPECIFIC RULES
+----------------------------------------------------------------
+
+- Chats are proto-documentation
+- No silent jumps
+- Step-by-step progression
+- Explicit system state summaries
+- Commands must be copy-safe
+
+Wayland / Clipboard Rule:
+- If pasting is unsafe, an alternative execution method MUST be provided
+- Python writer pattern is the default for file creation
+
+----------------------------------------------------------------
+ENFORCEMENT RULE
+----------------------------------------------------------------
+If content cannot be copied verbatim into an appendix without
+modification, it is not complete.
+
+----------------------------------------------------------------
+STATUS
+----------------------------------------------------------------
+This protocol is binding for ALL phases and ALL future work.
