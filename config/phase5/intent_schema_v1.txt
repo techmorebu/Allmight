@@ -1,0 +1,125 @@
+PHASE 5 — EXECUTION INTENT SCHEMA v1
+=====================================
+
+This document defines the Phase-5 Execution Layer output contract.
+
+Phase-5 consumes Phase-4 control outputs (immutable inputs) and produces
+execution intents ONLY. Phase-5 does not trade. Phase-5 does not compute
+signals. Phase-5 does not re-derive confidence, scores, bands, or overrides.
+
+Artifacts
+---------
+1) phase5_execution_intents.json
+2) phase5_audit.txt
+3) phase5_halt_report.json (only on HALT)
+
+Invariants
+----------
+- Phase-4 is authoritative and immutable input.
+- Phase-5 must never compute indicators, signals, scores, bands, or confidence.
+- Phase-5 must never override Phase-4 permissions or suppression outcomes.
+- Temporal integrity: never mix horizons. Requested --asof must equal input.asof.
+- If data is uncertain or ambiguous, Phase-5 must HALT and emit halt report.
+- Determinism:
+  - assets are processed in sorted(asset) order
+  - allowed_modes are ordered: arbitrage, directional, flashloan
+  - reason_codes are emitted in deterministic order (primary allow/suppress code first)
+
+Temporal integrity
+------------------
+- Supported horizons: last, i60
+- Phase-5 must reject asof mismatch:
+  - requested --asof != phase4_file.asof => HALT (E_ASOF_MISMATCH)
+- Phase-5 inputs-dir selection must never mix horizons:
+  - selects only files matching suffix _{asof}.json
+
+Input selection
+---------------
+- Exactly one of:
+  - --input <phase4_control_*.json>
+  - --inputs-dir <dir containing phase4_control_*.json>
+- --inputs-dir selection rules:
+  - consider only files matching: phase4_control_*.json
+  - filter to those ending with _{asof}.json
+  - 0 matches => HALT (E_NO_PHASE4_FILES)
+  - >1 matches => HALT (E_AMBIGUOUS_PHASE4_INPUTS)
+
+phase5_execution_intents.json
+-----------------------------
+Top-level fields (required)
+- status: "OK"
+- phase: 5
+- asof: "last" | "i60"
+- grid: string | null (copied from Phase-4)
+- source_input: string (path to the Phase-4 file used)
+- intents: list[Intent]
+
+Intent object (required fields)
+- asset: string (e.g., "BTC")
+- grid: string | null (copied from Phase-4)
+- asof: "last" | "i60"
+- status: "ALLOWED" | "SUPPRESSED"
+- allowed_modes: list[str]
+  - allowed values: "arbitrage" | "directional" | "flashloan"
+  - ordering: arbitrage, directional, flashloan
+- phase4_permissions: object
+  - allow_arbitrage: bool
+  - allow_directional: bool
+  - allow_flashloan: bool
+- phase4_evidence: object (copied verbatim from Phase-4; Phase-5 must not reinterpret)
+  - activation_band: string | null
+  - activation_band_flip: bool | null
+  - activation_band_prev: string | null
+  - overrides_applied: list | null
+  - inputs:
+      - global_confidence: float | null
+- reasons: list[Reason]
+  - ordering:
+    - primary allow/suppress code first
+    - then per-mode suppress codes in fixed mode order
+
+Reason object
+-------------
+Fields:
+- code: string
+- severity: "ALLOW" | "SUPPRESS" | "HALT"
+- msg: string
+
+Known reason codes (Phase-5 v0)
+-------------------------------
+- A_ALLOWED_BY_CONTROL
+- S_SUPPRESSION_INFERRED_FROM_PERMISSIONS
+- S_PERM_ARBITRAGE_FALSE
+- S_PERM_DIRECTIONAL_FALSE
+- S_PERM_FLASHLOAN_FALSE
+
+phase5_audit.txt
+----------------
+Human-readable deterministic audit derived from phase5_execution_intents.json.
+Minimum content:
+- header with asof, grid, global_confidence
+- per-asset sections: status, allowed_modes, permissions, activation_band(+flip), reason_codes
+
+phase5_halt_report.json
+-----------------------
+Emitted only on HALT. Shape:
+- status: "HALT"
+- code: string
+- message: string
+- details: object
+
+Known halt codes (non-exhaustive)
+---------------------------------
+- E_INPUT_SELECTION
+- E_NO_INPUTS_DIR
+- E_NO_INPUT_FILE
+- E_NO_PHASE4_FILES
+- E_AMBIGUOUS_PHASE4_INPUTS
+- E_BAD_JSON
+- E_SCHEMA_TOPLEVEL_NOT_DICT
+- E_PHASE_NOT_4
+- E_ASOF_MISMATCH
+- E_SCHEMA_ASSETS_NOT_DICT
+- E_SCHEMA_ASSET_NODE_NOT_DICT
+- E_SCHEMA_PERMISSIONS_NOT_DICT
+- E_SCHEMA_MISSING_PERMISSION_KEYS

@@ -1,0 +1,19 @@
+PHASE 5 — BUG NOTES (v0)
+===========================
+
+Timestamp (UTC): 2025-12-29T09:55:26Z
+
+Status
+------
+No known open bugs at freeze time.
+
+Resolved During Build
+---------------------
+- Patch-based indentation corruption risk (resolved by canonical overwrite approach)
+- Input selection ordering bug (outdir referenced before initialization) avoided via clean runner structure
+
+Guardrails
+----------
+- If any schema uncertainty is detected, Phase-5 HALTs with phase5_halt_report.json
+- Ambiguous inputs-dir selection HALTs; no guessing
+

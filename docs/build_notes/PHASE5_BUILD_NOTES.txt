@@ -1,0 +1,73 @@
+PHASE 5 — BUILD NOTES (v0)
+============================
+
+Timestamp (UTC): 2025-12-29T09:54:57Z
+
+Scope
+-----
+Phase-5 is the Execution Layer. It consumes Phase-4 control outputs as immutable inputs,
+and produces execution intents ONLY. It does not compute signals, indicators, scores,
+bands, or confidence. It does not trade.
+
+Key Artifacts
+-------------
+- scripts/phase5/run_phase5_execution_layer.py
+- outputs/phase5/<asof>/phase5_execution_intents.json
+- outputs/phase5/<asof>/phase5_audit.txt
+- config/phase5/intent_schema_v1.txt
+- tests/phase5/*
+
+Core Behaviors (Verified)
+-------------------------
+1) Temporal Integrity (asof)
+- Supports: --asof last, --asof i60
+- Rejects horizon mixing:
+  - requested asof != input.asof => HALT with phase5_halt_report.json
+
+2) Input Selection
+- Exactly one of:
+  - --input <file>
+  - --inputs-dir <dir>
+- --inputs-dir deterministic discovery:
+  - matches phase4_control_*.json ending with _{asof}.json
+  - 0 matches => HALT (E_NO_PHASE4_FILES)
+  - >1 matches => HALT (E_AMBIGUOUS_PHASE4_INPUTS)
+
+3) Intent Normalization
+- Per asset:
+  - status: ALLOWED if any permission true, else SUPPRESSED
+  - allowed_modes order: arbitrage, directional, flashloan
+  - reasons include deterministic codes (primary allow/suppress first)
+
+4) Evidence Carry-Forward (No Reinterpretation)
+- phase4_evidence copied verbatim into each intent:
+  - activation_band, activation_band_flip, activation_band_prev, overrides_applied
+  - inputs.global_confidence
+
+5) Human Audit
+- phase5_audit.txt is deterministic, derived from intents, and includes:
+  - asof, grid, global_confidence
+  - per-asset status/modes/permissions/band/flip/reason_codes
+
+Determinism Rules
+-----------------
+- Assets processed in sorted(asset) order
+- Modes and reason ordering are stable and test-covered
+- Ambiguity halts instead of guessing
+
+Operator Discipline
+-------------------
+- Wayland-safe execution via wpb is required
+- No long inline scripts without python writer safeguards
+
+Validation
+----------
+- Unit tests: 19 passing (pytest -q)
+
+Notes
+-----
+This Phase-5 v0 is a “truth spine” component:
+- If uncertain => HALT
+- If suppressed => defer
+- If allowed => describe intent, do not execute trade
+
