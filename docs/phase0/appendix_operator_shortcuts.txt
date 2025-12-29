@@ -1,0 +1,33 @@
+APPENDIX: OPERATOR SHORTCUT INSTALLATION
+
+Operators MUST install the following helpers.
+
+INSTALLATION:
+
+Create ~/bin/wpb
+----------------
+#!/usr/bin/env bash
+set -euo pipefail
+wl-paste --type text/plain --no-newline | bash -euo pipefail
+
+Create ~/bin/wps
+----------------
+#!/usr/bin/env bash
+set -euo pipefail
+tmp="/tmp/wl_run.sh"
+wl-paste --type text/plain --no-newline > "$tmp"
+bash -x "$tmp"
+
+Permissions:
+    chmod +x ~/bin/wpb ~/bin/wps
+
+PATH:
+    export PATH="$HOME/bin:$PATH"
+
+VERIFICATION:
+    command -v wpb
+    command -v wps
+
+RULE:
+Aliases are NOT sufficient.
+wpb/wps MUST be executable files to guarantee availability inside scripts.
