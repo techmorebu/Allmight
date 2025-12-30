@@ -6,6 +6,7 @@ from pathlib import Path
 import sys
 
 from scripts.phase7.run_phase7 import run_phase7
+from scripts.phase7.tools.compact_receipts import compact_receipts
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -22,6 +23,8 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--limit", type=int, default=None, help="Limit number of plans processed in batch mode")
     p.add_argument("--halt-after", type=int, default=None, help="Stop batch after N DENY/HALT decisions")
     p.add_argument("--status-filter", default="all", choices=["all", "allowed", "suppressed"], help="Batch filter by plan status")
+    p.add_argument("--compact-receipts", action="store_true", help="After batch, compact receipts file (explicit)")
+    p.add_argument("--keep-last", type=int, default=5, help="When compacting receipts, keep last N per plan_id (default: 5)")
     return p
 
 
@@ -101,6 +104,11 @@ def main(argv=None) -> int:
         }
         (outp / 'phase7_batch_summary.json').write_text(json.dumps(summ, indent=2) + "\n", encoding='utf-8')
         print(f"outputs={outp}")
+        if args.compact_receipts:
+            receipts_path = outp / "phase7_execution_receipts.json"
+            compact_receipts(receipts_path, keep_last_n=int(args.keep_last))
+            print(f"compacted_receipts_keep_last={int(args.keep_last)}")
+
         return 0
 
     # Single plan mode
