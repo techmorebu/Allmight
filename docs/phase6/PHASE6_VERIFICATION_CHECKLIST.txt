@@ -1,0 +1,25 @@
+PROJECT: ALLMIGHT
+PHASE: 6 — VERIFICATION CHECKLIST
+
+[✓] Phase-5 inputs consumed verbatim
+[✓] No Phase-4 or Phase-5 re-scoring
+[✓] Deterministic outputs for last/i60
+[✓] execution_policy cannot enable modes
+[✓] allowed_modes enforced as hard cap
+[✓] No network imports (test-enforced)
+[✓] No RPC / wallet / signing code
+[✓] Adapter registry deterministic
+[✓] Adapter selection ≠ mode enablement
+[✓] plan_id deterministic and versioned
+[✓] schema v0 frozen and validated
+[✓] gating_chain present and ordered
+[✓] CLI runner works via python script
+[✓] Human-readable audit emitted
+[✓] All tests passing (38/38)
+
+VERIFIED BY:
+- Automated tests
+- Deterministic replay checks
+- Manual review of artifacts
+
+STATUS: VERIFIED
