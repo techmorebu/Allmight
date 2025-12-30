@@ -21,6 +21,7 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--batch", action="store_true", help="Process all plans in the file (guarded, receipts-only)")
     p.add_argument("--limit", type=int, default=None, help="Limit number of plans processed in batch mode")
     p.add_argument("--halt-after", type=int, default=None, help="Stop batch after N DENY/HALT decisions")
+    p.add_argument("--status-filter", default="all", choices=["all", "allowed", "suppressed"], help="Batch filter by plan status")
     return p
 
 
@@ -31,6 +32,9 @@ def main(argv=None) -> int:
     if args.batch:
         plans_data = json.loads(Path(args.plans).read_text(encoding="utf-8"))
         plans = plans_data.get("plans", [])
+        sf = str(args.status_filter).lower()
+        if sf != "all":
+            plans = [pp for pp in plans if str(pp.get("status","")).lower() == sf]
         plan_ids = [str(p.get("plan_id")) for p in plans if p.get("plan_id") is not None]
 
         if args.limit is not None:
