@@ -33,7 +33,7 @@ def _build_parser() -> argparse.ArgumentParser:
 def main(argv=None) -> int:
     args = _build_parser().parse_args(argv)
     # --- LIVE ARMING ENFORCEMENT (policy-driven, default DENY)
-    live_attempt = (str(args.mode).lower() == "live") or str(args.adapter).lower().startswith("live_")
+    live_attempt = (str(args.mode).lower() == "live")
     if live_attempt:
         policy_path = Path("config/phase7/live_arming_policy_v0.json")
         if not policy_path.exists():
@@ -72,12 +72,12 @@ def main(argv=None) -> int:
             print("ERROR: live attempt denied: mode not allowlisted by policy", file=sys.stderr)
             return 2
 
-        # Only enforce adapter allowlist for adapters in the live namespace
-        if str(args.adapter).lower().startswith("live_"):
-            allowed_adapters = [str(x).lower() for x in policy.get("allowed_live_adapters", [])]
-            if str(args.adapter).lower() not in allowed_adapters:
-                print("ERROR: live attempt denied: adapter not allowlisted by policy", file=sys.stderr)
-                return 2
+
+        # Enforce adapter allowlist for ANY adapter when mode is live
+        allowed_adapters = [str(x).lower() for x in policy.get("allowed_live_adapters", [])]
+        if str(args.adapter).lower() not in allowed_adapters:
+            print("ERROR: live attempt denied: adapter not allowlisted by policy", file=sys.stderr)
+            return 2
 
         # Marker for tests / grepping
         LIVE_ARMING_POLICY = True

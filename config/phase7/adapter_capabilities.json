@@ -8,5 +8,10 @@
     "side_effects": false,
     "network_required": false,
     "description": "Exchange-like stub with no network"
+  },
+  "live_cex_stub": {
+    "network_required": false,
+    "side_effects": false,
+    "notes": "prepare-only stub; live arming applies only when --mode live"
   }
 }
