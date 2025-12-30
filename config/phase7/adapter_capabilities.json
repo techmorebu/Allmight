@@ -1,0 +1,12 @@
+{
+  "paper": {
+    "side_effects": false,
+    "network_required": false,
+    "description": "Pure paper execution, no external effects"
+  },
+  "cex_stub": {
+    "side_effects": false,
+    "network_required": false,
+    "description": "Exchange-like stub with no network"
+  }
+}

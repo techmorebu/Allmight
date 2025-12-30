@@ -1,0 +1,41 @@
+{
+  "asof": "last",
+  "plans": [
+    {
+      "asof": "last",
+      "plan_id": "plan_SUPP_001",
+      "status": "SUPPRESSED",
+      "effective_allowed_modes": [
+        "paper"
+      ],
+      "execution_policy": {},
+      "gating_chain": [
+        {
+          "phase": 6,
+          "hash": "dummy"
+        }
+      ],
+      "action": {
+        "symbol": "BTC-USD"
+      }
+    },
+    {
+      "asof": "last",
+      "plan_id": "plan_OK_001",
+      "status": "ALLOWED",
+      "effective_allowed_modes": [
+        "paper"
+      ],
+      "execution_policy": {},
+      "gating_chain": [
+        {
+          "phase": 6,
+          "hash": "dummy"
+        }
+      ],
+      "action": {
+        "symbol": "BTC-USD"
+      }
+    }
+  ]
+}
