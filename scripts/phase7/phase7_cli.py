@@ -20,6 +20,7 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--armed", action="store_true", help="Explicit arming flag (required for unsafe/unknown adapters)")
     p.add_argument("--arming-token", default=None, help="Arming token for live actions (must match env var per policy)")
     p.add_argument("--plan-id", default=None, help="Execute a single plan_id (default: first plan in file)")
+    p.add_argument("--preflight", action="store_true", help="Run eligibility preflight only (no receipts/traces)")
     p.add_argument("--outdir", required=True, help="Output directory root (e.g., outputs)")
     p.add_argument("--explain", action="store_true", help="Print prepared action payload (if available)")
     p.add_argument("--batch", action="store_true", help="Process all plans in the file (guarded, receipts-only)")
@@ -33,6 +34,19 @@ def _build_parser() -> argparse.ArgumentParser:
 
 def main(argv=None) -> int:
     args = _build_parser().parse_args(argv)
+    if getattr(args, 'preflight', False):
+        res = preflight(
+            plans_path=Path(args.plans),
+            asof=args.asof,
+            adapter=args.adapter,
+            mode=args.mode,
+            armed=bool(args.armed),
+            arming_token=args.arming_token,
+            plan_id=args.plan_id,
+        )
+        print(json.dumps(res, indent=2))
+        return 0 if res.get("eligible") else 2
+
         # --- LIVE ARMING ENFORCEMENT (delegated to preflight; no drift)
     if str(args.mode).lower() == "live":
         res = preflight(
