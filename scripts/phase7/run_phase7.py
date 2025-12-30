@@ -6,6 +6,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
+from scripts.phase7.adapters import ADAPTERS
+
 
 Reason = str
 
@@ -76,13 +78,14 @@ def run_phase7(
     outdir: Union[str, Path],
 ) -> Dict[str, Any]:
     """
-    Phase-7 (minimal): consumes Phase-6 plans and emits receipts + traces.
+    Phase-7 (guarded, minimal): consumes Phase-6 plans and emits receipts + traces.
     Executes nothing.
 
-    Guardrails:
+    Properties:
     - idempotency blocks reruns (checked BEFORE other gates)
     - suppressed plans denied
     - unknown/unsafe adapters require armed
+    - adapter.prepare() enriches receipt with deterministic prepared action (no execution)
     - always writes per-plan trace
     """
     plans_path = Path(plans_path)
@@ -179,6 +182,16 @@ def run_phase7(
         "idempotency_key": idem_key,
         "final": True,
     }
+
+    # Adapter prepare (no execution): attach deterministic prepared action when available
+    adapter_obj = ADAPTERS.get(str(adapter))
+    if adapter_obj is not None and receipt["decision"] != "HALT":
+        prepared = adapter_obj.prepare(selected)
+        receipt["result"]["details"]["prepared"] = {
+            "adapter": prepared.adapter,
+            "plan_id": prepared.plan_id,
+            "payload": prepared.payload,
+        }
 
     # Persist + trace
     _append_receipt(receipts_path, receipt)
