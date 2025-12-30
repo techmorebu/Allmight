@@ -75,13 +75,17 @@ def resolve_effective_allowed_modes(intent: Dict[str, Any]) -> Tuple[List[str], 
 
 
 def build_plans(doc: Dict[str, Any], asof: str, adapter: str) -> Dict[str, Any]:
+    schema_name = "phase6_execution_plans_v0"
     intents = doc.get("intents")
+    meta = doc.get("meta") or {}
+    policy_version = meta.get("execution_policy_version") or meta.get("policy_version") or "unknown"
     _ensure(isinstance(intents, list), "intents must be list")
 
     plans = []
     trace = []
 
     adapter_impl = get_adapter(adapter)
+    adapter_version = getattr(adapter_impl, 'adapter_version', 'v0')
     ctx = AdapterContext(adapter=adapter, asof=asof)
 
     for idx, intent in enumerate(intents):
@@ -90,6 +94,9 @@ def build_plans(doc: Dict[str, Any], asof: str, adapter: str) -> Dict[str, Any]:
         plan_id = _sha256_json({
             "asof": asof,
             "adapter": adapter,
+            "schema_name": schema_name,
+            "policy_version": policy_version,
+            "adapter_version": adapter_version,
             "intent": intent,
         })
 

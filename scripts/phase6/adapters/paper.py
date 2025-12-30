@@ -7,6 +7,7 @@ from .base import AdapterContext
 
 class PaperAdapter:
     name = "paper"
+    adapter_version = "v0"
 
     def build_steps(self, intent: Dict[str, Any], mode: str, ctx: AdapterContext) -> List[Dict[str, Any]]:
         # Dry-run only: no network, no signing, no RPC.
