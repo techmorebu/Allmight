@@ -138,6 +138,21 @@ def main() -> int:
         encoding="utf-8",
     )
 
+    # Human-readable audit (deterministic, no timestamps)
+    audit_lines = [
+        "PHASE 6 AUDIT (DRY-RUN)",
+        f"asof={args.asof}",
+        f"adapter={args.adapter}",
+        f"phase5_input={phase5_path}",
+        f"plans={len(out.get('plans', []))}",
+        f"trace_events={len(out.get('trace', []))}",
+        "invariant: never enable modes outside Phase-5 allowed_modes",
+        "invariant: execution_policy may restrict, never enable",
+        "invariant: no network side effects",
+        "",
+    ]
+    (out_dir / "phase6_audit.txt").write_text("\n".join(audit_lines), encoding="utf-8")
+
     return 0
 
 
