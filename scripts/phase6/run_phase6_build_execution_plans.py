@@ -1,11 +1,24 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import sys
+from pathlib import Path as _Path
+
+# Ensure repo root is importable when running as a script:
+# python scripts/phase6/run_phase6_build_execution_plans.py ...
+REPO_ROOT = _Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+
 import argparse
 import hashlib
 import json
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
+
+from scripts.phase6.adapters.base import AdapterContext
+from scripts.phase6.adapters.registry import get_adapter
 
 
 class Phase6Error(RuntimeError):
@@ -68,6 +81,9 @@ def build_plans(doc: Dict[str, Any], asof: str, adapter: str) -> Dict[str, Any]:
     plans = []
     trace = []
 
+    adapter_impl = get_adapter(adapter)
+    ctx = AdapterContext(adapter=adapter, asof=asof)
+
     for idx, intent in enumerate(intents):
         eff_modes, reasons = resolve_effective_allowed_modes(intent)
 
@@ -98,7 +114,7 @@ def build_plans(doc: Dict[str, Any], asof: str, adapter: str) -> Dict[str, Any]:
                 "intent_ref": intent_ref,
                 "status": "PLANNED",
                 "mode": mode,
-                "steps": [{"type": "DRY_RUN"}],
+                "steps": adapter_impl.build_steps(intent, mode, ctx),
                 "requires_network": False,
                 "reasons": reasons,
             })
