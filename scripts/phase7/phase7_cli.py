@@ -7,6 +7,7 @@ from pathlib import Path
 import sys
 
 from scripts.phase7.run_phase7 import run_phase7
+from scripts.phase7.phase7_preflight import preflight
 from scripts.phase7.tools.compact_receipts import compact_receipts
 
 
@@ -32,55 +33,43 @@ def _build_parser() -> argparse.ArgumentParser:
 
 def main(argv=None) -> int:
     args = _build_parser().parse_args(argv)
-    # --- LIVE ARMING ENFORCEMENT (policy-driven, default DENY)
-    live_attempt = (str(args.mode).lower() == "live")
-    if live_attempt:
-        policy_path = Path("config/phase7/live_arming_policy_v0.json")
-        if not policy_path.exists():
-            print("ERROR: live attempt denied: missing config/phase7/live_arming_policy_v0.json", file=sys.stderr)
+        # --- LIVE ARMING ENFORCEMENT (delegated to preflight; no drift)
+    if str(args.mode).lower() == "live":
+        res = preflight(
+            plans_path=Path(args.plans),
+            asof=args.asof,
+            adapter=args.adapter,
+            mode=args.mode,
+            armed=bool(args.armed),
+            arming_token=args.arming_token,
+            plan_id=args.plan_id,
+        )
+        if not res.get("eligible"):
+            # Keep message human-readable and stable for operators
+            reasons_list = [str(x) for x in (res.get("reasons", []) or [])]
+            # Human-friendly phrasing for operator stability (keep legacy expectations)
+            phrases = []
+            if "missing_armed_flag" in reasons_list:
+                phrases.append("requires --armed")
+            if "missing_arming_token" in reasons_list:
+                phrases.append("requires --arming-token")
+            if "missing_env_token" in reasons_list:
+                phrases.append("missing env token")
+            if "token_mismatch" in reasons_list:
+                phrases.append("token mismatch")
+            if "adapter_not_allowlisted" in reasons_list:
+                phrases.append("adapter not allowlisted")
+            if "mode_not_allowlisted" in reasons_list:
+                phrases.append("mode not allowlisted")
+            if "missing_live_policy" in reasons_list:
+                phrases.append("missing live policy")
+            if "plan_id_not_found" in reasons_list:
+                phrases.append("plan id not found")
+
+            human = ", ".join(phrases) if phrases else "denied"
+            codes = ", ".join(reasons_list) if reasons_list else "unknown"
+            print(f"ERROR: live attempt denied: {human} (codes=[{codes}])", file=sys.stderr)
             return 2
-
-        policy = json.loads(policy_path.read_text(encoding="utf-8"))
-        if policy.get("default_deny", True) is not False:
-            # default_deny True means live requires explicit allowlist + token gates
-            pass
-
-        arming = policy.get("arming", {})
-        require_armed = bool(arming.get("require_armed_flag", True))
-        require_token = bool(arming.get("require_token", True))
-        token_env_var = str(arming.get("token_env_var", "ALLMIGHT_ARMING_TOKEN"))
-
-        if require_armed and not bool(args.armed):
-            print("ERROR: live attempt denied: requires --armed", file=sys.stderr)
-            return 2
-
-        if require_token and not args.arming_token:
-            print("ERROR: live attempt denied: requires --arming-token", file=sys.stderr)
-            return 2
-
-        if require_token:
-            env_token = os.environ.get(token_env_var)
-            if not env_token:
-                print(f"ERROR: live attempt denied: missing env var {token_env_var}", file=sys.stderr)
-                return 2
-            if str(args.arming_token) != str(env_token):
-                print("ERROR: live attempt denied: token mismatch", file=sys.stderr)
-                return 2
-
-        allowed_modes = [str(x).lower() for x in policy.get("allowed_live_modes", [])]
-        if str(args.mode).lower() not in allowed_modes:
-            print("ERROR: live attempt denied: mode not allowlisted by policy", file=sys.stderr)
-            return 2
-
-
-        # Enforce adapter allowlist for ANY adapter when mode is live
-        allowed_adapters = [str(x).lower() for x in policy.get("allowed_live_adapters", [])]
-        if str(args.adapter).lower() not in allowed_adapters:
-            print("ERROR: live attempt denied: adapter not allowlisted by policy", file=sys.stderr)
-            return 2
-
-        # Marker for tests / grepping
-        LIVE_ARMING_POLICY = True
 
     # Batch mode: iterate plan_ids from the plans file
     if args.batch:
