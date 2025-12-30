@@ -5,36 +5,43 @@
   "main": "hardhat.config.js",
   "author": "techmorebu",
   "license": "MIT",
-
   "scripts": {
     "test": "npx hardhat test",
     "compile": "npx hardhat compile",
     "clean": "npx hardhat clean",
-
     "mapper:once": "LOG_LEVEL=debug node scripts/universal-field-mapper.js",
     "mapper:cron": "LOG_LEVEL=info node scripts/universal-field-mapper.js cron",
-
     "xref": "LOG_LEVEL=debug node scripts/cross-reference-fields.js",
-
     "fetcher:once": "LOG_LEVEL=debug node scripts/master-fetcher.js once",
     "fetcher:cron": "LOG_LEVEL=info node scripts/master-fetcher.js cron",
-
     "phase0:smoke": "LOG_LEVEL=debug node scripts/phase0_smoke_test.js"
   },
-
   "dependencies": {
     "@ethersproject/providers": "^5.7.2",
     "@nomicfoundation/hardhat-verify": "^2.0.12",
     "@nomicfoundation/hardhat-ethers": "^3.0.6",
     "@uniswap/sdk-core": "^4.1.4",
     "@uniswap/v3-sdk": "^3.12.0",
-
     "ethers": "^6.13.3",
     "hardhat": "^2.22.11",
-
     "dotenv": "^16.4.0",
     "redis": "^4.6.13",
     "node-cron": "^3.0.3",
     "node-fetch": "^2.7.0"
+  },
+  "overrides": {
+    "cookie": ">=0.7.0",
+    "tmp": ">=0.2.4",
+    "@openzeppelin/contracts": ">=4.8.3",
+    "axios": ">=1.12.0",
+    "base-x": ">=3.0.11",
+    "brace-expansion": ">=2.0.2",
+    "elliptic": ">=6.6.1",
+    "form-data": ">=4.0.4",
+    "js-yaml": ">=4.1.1",
+    "pbkdf2": ">=3.1.3",
+    "sha.js": ">=2.4.12",
+    "undici": ">=5.29.0",
+    "ws": ">=8.17.1"
   }
 }

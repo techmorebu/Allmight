@@ -1,0 +1,147 @@
+PHASE 4 — OPERATOR CHECKLIST
+Intelligence & Control Layer
+
+This checklist MUST be executed in order.
+Failure at any step invalidates Phase-4 output.
+
+────────────────────────────────────────
+SECTION A — ENVIRONMENT INTEGRITY
+────────────────────────────────────────
+
+[ ] Running inside project virtualenv (.venv active)
+[ ] Python version matches project standard
+[ ] Working directory = repo root
+[ ] Git working tree clean or changes intentional
+[ ] Wayland-safe execution tools installed:
+    - wpb present and executable
+    - wps present and executable
+[ ] No manual multi-line paste used
+
+────────────────────────────────────────
+SECTION B — INPUT COMPLETENESS (ASOF)
+────────────────────────────────────────
+
+For each ASOF to be evaluated (e.g. last, i60):
+
+[ ] shared_inputs_<GRID>_<TF>_<ASOF>.csv exists
+[ ] structure_l0_<GRID>_<TF>_<ASOF>.csv exists
+[ ] pressure_l1_<GRID>_<TF>_<ASOF>.csv exists
+[ ] regime_state_<GRID>_<TF>_<ASOF>.json exists
+
+[ ] sweep_l2_<GRID>_<TF>_<ASOF>.csv exists
+[ ] liquidity_arch_l3_<GRID>_<TF>_<ASOF>.csv exists
+[ ] macro_score_<GRID>_<TF>_<ASOF>.csv exists
+[ ] risk_penalty_<GRID>_<TF>_<ASOF>.csv exists
+
+[ ] No component is borrowed from a different ASOF
+[ ] No implicit component generation allowed
+
+────────────────────────────────────────
+SECTION C — COMPONENT VALIDATION
+────────────────────────────────────────
+
+[ ] All component CSVs share identical grid order
+[ ] Each CSV row count == grid size
+[ ] audit_json present for every row
+[ ] No NaN or empty numeric values
+[ ] Component magnitudes within expected ranges
+
+[ ] Degenerate components explicitly detected OR absent
+[ ] Any fallback (e.g. dominant_driver) recorded in audit_json
+
+────────────────────────────────────────
+SECTION D — CONFIG VALIDATION
+────────────────────────────────────────
+
+[ ] config/phase4/weights.yaml
+    - schema_version correct
+    - weights sum to 1.0
+    - no unintended negatives
+
+[ ] config/phase4/normalization.yaml
+    - ranges match observed data
+    - constants justified
+    - no silent clipping
+
+[ ] config/phase4/execution_matrix.yaml
+    - all activation_band labels covered
+    - band_rank defined
+    - promotion thresholds explicit
+    - confidence thresholds explicit
+
+────────────────────────────────────────
+SECTION E — PHASE-4 EXECUTION
+────────────────────────────────────────
+
+Run (per ASOF):
+    wpb
+    python scripts/phase4/build_components_asof.py --asof <ASOF>
+    wpb
+    python scripts/phase4/run_phase4_control_layer.py --asof <ASOF>
+
+[ ] Execution completed with zero errors
+[ ] No missing component warnings
+[ ] Output JSON written successfully
+
+────────────────────────────────────────
+SECTION F — OUTPUT VALIDATION
+────────────────────────────────────────
+
+For outputs/phase4/phase4_control_<GRID>_<TF>_<ASOF>.json:
+
+[ ] inputs.global_confidence present
+[ ] assets section populated for all grid assets
+[ ] activation_band present per asset
+[ ] permissions explicitly set (no defaults)
+[ ] suppression reasons recorded when applicable
+[ ] promotion_gate recorded when applicable
+[ ] confidence_floor recorded when applicable
+
+[ ] bands_present list correct
+[ ] assets_by_band mapping correct
+[ ] score breakdown sums correctly
+[ ] audit trail references real sources only
+
+────────────────────────────────────────
+SECTION G — STABILITY CHECKS
+────────────────────────────────────────
+
+If comparing ASOFs (e.g. i60 → last):
+
+[ ] Band flips detected and logged
+[ ] Flip rate computed
+[ ] Promotion requires higher confidence threshold
+[ ] Confidence delta inspected
+[ ] No silent band escalation
+
+────────────────────────────────────────
+SECTION H — TEST ENFORCEMENT
+────────────────────────────────────────
+
+[ ] pytest passes fully
+[ ] Phase-4 confidence gate tests pass
+[ ] Flip-aware threshold tests pass
+[ ] build_components_asof tests pass
+[ ] No skipped or xfailed tests
+
+────────────────────────────────────────
+SECTION I — GOVERNANCE
+────────────────────────────────────────
+
+[ ] Phase-4 changes documented
+[ ] No Phase-3 code modified unintentionally
+[ ] Appendices updated if new rules introduced
+[ ] Commit message references Phase-4 explicitly
+
+────────────────────────────────────────
+FINAL ASSERTION
+────────────────────────────────────────
+
+By checking all items above, the operator asserts:
+
+• Data is temporally consistent
+• Control logic is auditable
+• Execution permissions are justified
+• Phase-4 output reflects reality, not convenience
+
+Unchecked boxes mean Phase-4 is NOT VALID.

@@ -1,0 +1,34 @@
+PHASE 4 — HANDOFF TO NEXT PHASE
+
+Phase 4 is frozen.
+
+What exists now:
+- Control-layer output JSON per ASOF:
+  - outputs/phase4/phase4_control_<GRID>_<TF>_last.json
+  - outputs/phase4/phase4_control_<GRID>_<TF>_i60.json
+- Explicit i60 component builder:
+  - scripts/phase4/build_components_asof.py
+- Configs:
+  - config/phase4/weights.yaml
+  - config/phase4/normalization.yaml
+  - config/phase4/execution_matrix.yaml
+- Tests:
+  - Phase-4 config validation
+  - activation_band coverage
+  - confidence gate + flip-aware threshold
+  - i60 build-components test
+
+Operational contract:
+- Execution engines MUST consume Phase-4 control JSON
+- No execution is permitted unless Phase-4 permissions allow it
+- All gating reasons are auditable in output JSON
+
+Next phase recommendation:
+- Phase 5: Execution Engines
+  - Arbitrage engine(s) behind allow_arbitrage/allow_flashloan
+  - Directional engine behind allow_directional
+  - Strictly read-only consumption of Phase-4 output
+
+Safety:
+- Promotion gate + confidence floors are the primary safety rails.
+- If confidence is low or band promotion occurs, permissions are suppressed.

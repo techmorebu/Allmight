@@ -1,0 +1,27 @@
+{
+  "allowed_status": [
+    "PLANNED",
+    "SUPPRESSED"
+  ],
+  "plan_required_keys": [
+    "plan_id",
+    "intent_ref",
+    "status",
+    "mode",
+    "steps",
+    "requires_network",
+    "reasons"
+  ],
+  "required_meta_keys": [
+    "phase",
+    "asof",
+    "adapter",
+    "dry_run",
+    "deterministic"
+  ],
+  "schema_name": "phase6_execution_plans_v0",
+  "trace_required_keys": [
+    "plan_id",
+    "event"
+  ]
+}

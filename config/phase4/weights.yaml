@@ -1,0 +1,9 @@
+schema_version: 1
+policy:
+  sum_to_one: true
+  allow_negative: false
+weights:
+  liquidity_arch_l3: 0.4157
+  sweep_l2: 0.3194
+  macro_score: 0.1343
+  risk_penalty: 0.1306
