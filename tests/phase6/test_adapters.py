@@ -8,7 +8,7 @@ from scripts.phase6.adapters.base import AdapterContext
 
 def test_registry_is_deterministic_and_includes_paper():
     reg = get_registry()
-    assert list(reg.keys()) == ["paper"]
+    assert list(reg.keys()) == ["paper", "cex_stub"]
 
 
 def test_unknown_adapter_halts():

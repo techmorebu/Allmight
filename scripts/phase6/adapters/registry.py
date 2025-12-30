@@ -3,14 +3,17 @@ from __future__ import annotations
 from typing import Dict
 
 from .paper import PaperAdapter
+from .cex_stub import CexStubAdapter
 from .base import Phase6Adapter
 
 
 def get_registry() -> Dict[str, Phase6Adapter]:
     # Deterministic registry: explicit map, stable order by construction.
     paper = PaperAdapter()
+    cex = CexStubAdapter()
     return {
         paper.name: paper,
+        cex.name: cex,
     }
 
 
