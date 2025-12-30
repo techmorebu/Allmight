@@ -1,0 +1,153 @@
+PROJECT ALLMIGHT — PHASE 7 OPERATOR QUICKSTART
+Generated: 2025-12-30T10:18:12.166232Z
+
+Scope
+- Phase 7 executes ONLY Phase-6 plans.
+- Phase 7 never re-derives intents or bypasses Phase-5/6 gating.
+- Live mode is gated via preflight + arming token ceremony.
+- Adapters may be prepare-only; “live” does not imply network access unless adapter supports it.
+
+Primary entrypoint
+- CLI: python -m scripts.phase7.phase7_cli
+
+Inputs
+- Phase-6 plans JSON (authoritative):
+  outputs/phase6/{asof}/phase6_execution_plans.json
+- asof must be exactly one of:
+  last | i60
+
+Outputs (written by normal run/batch; NOT by preflight)
+- outputs/phase7/{asof}/phase7_execution_receipts.json
+- outputs/phase7/{asof}/traces/{plan_id}.json
+- outputs/phase7/{asof}/batch_summary.json (batch mode only)
+
+------------------------------------------------------------
+0) SAFETY DEFAULTS
+------------------------------------------------------------
+Use these defaults unless you explicitly know why you’re deviating:
+- mode=paper
+- adapter=paper
+- start with --preflight then --explain
+- only then run batch (with limits)
+
+Example path variables:
+PLANS=outputs/phase6/last/phase6_execution_plans.json
+OUT=outputs
+
+------------------------------------------------------------
+1) PREFLIGHT (NO WRITES)
+------------------------------------------------------------
+Purpose: check eligibility and print JSON; exits 0 if eligible else 2.
+This writes NOTHING (no receipts/traces/summary).
+
+python -m scripts.phase7.phase7_cli \
+  --plans "$PLANS" \
+  --asof last \
+  --adapter paper \
+  --mode paper \
+  --plan-id plan_OK_001 \
+  --outdir "$OUT" \
+  --preflight
+
+Notes:
+- For live mode, preflight enforces policy + token ceremony.
+- Preflight is the source of truth for live eligibility checks.
+
+------------------------------------------------------------
+2) EXPLAIN (PREPARE PAYLOAD, THEN PRINT)
+------------------------------------------------------------
+Purpose: produce a receipt + trace, and print the prepared action payload.
+This is still NOT RUN (paper adapters prepare only).
+
+python -m scripts.phase7.phase7_cli \
+  --plans "$PLANS" \
+  --asof last \
+  --adapter paper \
+  --mode paper \
+  --plan-id plan_OK_001 \
+  --outdir "$OUT" \
+  --explain
+
+------------------------------------------------------------
+3) BATCH (GUARDED)
+------------------------------------------------------------
+Purpose: iterate plans and write receipts + traces + summary.
+
+Recommended “first batch” (small + halt-fast):
+python -m scripts.phase7.phase7_cli \
+  --plans "$PLANS" \
+  --asof last \
+  --adapter paper \
+  --mode paper \
+  --outdir "$OUT" \
+  --batch \
+  --status-filter allowed \
+  --limit 3 \
+  --halt-after 1
+
+Notes:
+- --status-filter:
+  allowed | suppressed | all
+- --halt-after N:
+  stops after N DENY decisions (safety).
+- --limit N:
+  caps how many plans are processed this run.
+
+------------------------------------------------------------
+4) COMPACT RECEIPTS (EXPLICIT HOUSEKEEPING)
+------------------------------------------------------------
+Purpose: keep last N receipts per plan_id (idempotency-safe).
+
+python -m scripts.phase7.phase7_cli \
+  --plans "$PLANS" \
+  --asof last \
+  --adapter paper \
+  --mode paper \
+  --outdir "$OUT" \
+  --batch \
+  --status-filter all \
+  --compact-receipts \
+  --keep-last 3
+
+------------------------------------------------------------
+5) LIVE MODE CEREMONY (ONLY WHEN READY)
+------------------------------------------------------------
+Live mode requires ALL:
+- adapter allowlisted in config/phase7/live_arming_policy_v0.json
+- --armed flag
+- --arming-token matches env var ALLMIGHT_ARMING_TOKEN
+
+Set token in your environment (example):
+export ALLMIGHT_ARMING_TOKEN="CHOOSE_A_SECRET_TOKEN"
+
+Then preflight (recommended):
+python -m scripts.phase7.phase7_cli \
+  --plans "$PLANS" \
+  --asof last \
+  --adapter live_cex_stub \
+  --mode live \
+  --plan-id plan_OK_001 \
+  --armed \
+  --arming-token "$ALLMIGHT_ARMING_TOKEN" \
+  --outdir "$OUT" \
+  --preflight
+
+If denied, CLI prints both human phrases and machine codes:
+ERROR: live attempt denied: ... (codes=[...])
+
+Common codes:
+- adapter_not_allowlisted
+- missing_armed_flag
+- missing_arming_token
+- missing_env_token
+- token_mismatch
+
+------------------------------------------------------------
+6) WHAT TO CHECK IF SOMETHING FEELS OFF
+------------------------------------------------------------
+- Confirm you’re using one asof horizon (last OR i60), not mixing.
+- Confirm Phase-6 plans exist and are from the same asof you’re running.
+- Use --preflight first in any “live” attempt.
+- Use --explain on one plan before batch.
+
+End.
