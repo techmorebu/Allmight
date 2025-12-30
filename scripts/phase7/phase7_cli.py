@@ -16,6 +16,7 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--armed", action="store_true", help="Explicit arming flag (required for unsafe/unknown adapters)")
     p.add_argument("--plan-id", default=None, help="Execute a single plan_id (default: first plan in file)")
     p.add_argument("--outdir", required=True, help="Output directory root (e.g., outputs)")
+    p.add_argument("--explain", action="store_true", help="Print prepared action payload (if available)")
     return p
 
 
@@ -33,6 +34,15 @@ def main(argv=None) -> int:
     )
 
     r = res["receipts"][0]
+    if args.explain:
+        prepared = r.get("result", {}).get("details", {}).get("prepared")
+        print("prepared:")
+        if prepared is None:
+            print("  (none)")
+        else:
+            print(f"  adapter={prepared.get('adapter')}")
+            print(f"  plan_id={prepared.get('plan_id')}")
+            print(f"  payload={prepared.get('payload')}")
     print(f"plan_id={r['plan_id']} decision={r['decision']} reasons={','.join(r['reason_codes']) if r['reason_codes'] else 'NONE'}")
     print(f"receipt_idem_key={r['idempotency_key']}")
     print(f"outputs={Path(args.outdir) / 'phase7' / args.asof}")
