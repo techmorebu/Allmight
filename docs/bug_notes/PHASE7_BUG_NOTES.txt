@@ -1,0 +1,104 @@
+PROJECT ALLMIGHT — PHASE 7 BUG NOTES
+As-of: 2025-12-30 10:29:37Z
+Phase: 7 — LIVE EXECUTION (GUARDED)
+Status: COMPLETE (bugs recorded + fixed)
+
+BUG-001 — Missing package init caused import failures
+Symptom:
+- tests importing scripts.phase7.* failed with ModuleNotFoundError
+Cause:
+- scripts/phase7 lacked __init__.py (package not discoverable)
+Fix:
+- Added scripts/__init__.py and scripts/phase7/__init__.py
+Prevention:
+- Always add package init files when introducing a new scripts/* module tree.
+
+BUG-002 — Trace not written; idempotency ordering incorrect
+Symptom:
+- Trace file expected but not created
+- Second run did not emit IDEMPOTENT_ALREADY_FINAL when prior receipt final existed
+Cause:
+- Runner wrote receipts without trace emission
+- Guard checks were applied in the wrong order
+Fix:
+- Implemented per-plan trace write as part of receipt emission
+- Reordered logic: idempotency-first, then suppression/arming gates (while preserving safety semantics)
+Notes:
+- Idempotency-first must not “permit” unsafe actions, but must still surface “already final” deterministically.
+
+BUG-003 — Syntax errors from unsafe patching
+Symptom:
+- SyntaxError in run_phase7.py (unterminated string / dict syntax)
+Cause:
+- Patch corruption during manual edits / paste
+Fix:
+- Replaced file with a clean, paste-safe rewrite and restored passing tests
+Prevention:
+- Prefer python-writer full-file replacement for sensitive core modules.
+- Keep patches small, re-run pytest immediately after.
+
+BUG-004 — CLI missing module entrypoint for tests
+Symptom:
+- CLI smoke test: “No module named …”
+Cause:
+- CLI wrapper module not created
+Fix:
+- Added scripts/phase7/phase7_cli.py minimal wrapper
+Prevention:
+- When tests reference “python -m …”, ensure module is present and importable early.
+
+BUG-005 — Paper adapter prepare payload missing
+Symptom:
+- Prepared action expected in receipt details but was None
+Cause:
+- Adapter prepare hook not wired into runner result structure
+Fix:
+- Introduced adapter base + paper adapter prepare() implementation
+- Runner now calls adapter.prepare() and records prepared payload
+Prevention:
+- Define adapter contract: prepare() required; result schema includes prepared payload.
+
+BUG-006 — Live arming policy not enforced in CLI
+Symptom:
+- live mode returned 0 without requiring armed/token
+- CLI didn’t accept --arming-token initially
+Cause:
+- Missing CLI args and missing enforcement path
+Fix:
+- Added --arming-token arg and strict live gate enforcement
+- Added policy files + tests for deny + allowlisted success
+Prevention:
+- “Live” must always be gated through the same policy logic; tests must cover deny paths.
+
+BUG-007 — Live denial messaging drifted vs tests
+Symptom:
+- Tests expected stable human phrases (“requires --armed”, “token mismatch”, “adapter not allowlisted”)
+Cause:
+- CLI printed only reason codes; wording mismatch
+Fix:
+- Standardized error messaging to include BOTH:
+  - human phrases
+  - machine reason codes (codes=[...])
+Prevention:
+- Treat denial messages as part of operator contract; keep them stable.
+
+BUG-008 — CLI --preflight crash (Namespace missing attribute)
+Symptom:
+- Many CLI tests failed with AttributeError: Namespace has no attribute 'preflight'
+- Also “unrecognized arguments: --preflight”
+Cause:
+- Runtime check inserted before argparse flag was registered (anchor mismatch in patch script)
+Fix:
+- Properly registered argparse flag
+- Hardened with getattr(args, 'preflight', False)
+Prevention:
+- When adding new CLI flags, ensure parser registration first, then runtime logic.
+- Prefer regex-anchored insertion for patch scripts.
+
+Note on “wpb <<'BASH'” issue
+Observed:
+- `wpb <<'BASH'` caused operator friction / issues on this system; removing it fixed execution.
+Policy:
+- Do not include `wpb <<'BASH'` in scripts or instructions. Use direct python-writer and direct shell commands.
+
+End.

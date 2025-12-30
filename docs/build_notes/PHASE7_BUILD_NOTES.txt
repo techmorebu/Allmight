@@ -1,0 +1,83 @@
+PROJECT ALLMIGHT — PHASE 7 BUILD NOTES
+As-of: 2025-12-30 10:29:37Z
+Phase: 7 — LIVE EXECUTION (GUARDED)
+Status: COMPLETE, TESTED, COMMITTED, READY TO FREEZE
+
+Overview
+Phase 7 establishes the guarded execution boundary. It consumes Phase-6 execution plans as the ONLY authority for “what to execute” and produces deterministic receipts + per-plan traces, while enforcing arming, allowlists, and idempotency.
+
+Scope (what Phase-7 does)
+- Consumes Phase-6 plans and executes ONLY what Phase-6 planned.
+- Enforces plan status (e.g., SUPPRESSED must never execute).
+- Enforces explicit arming ceremony for any “live” attempt.
+- Produces:
+  - outputs/phase7/{asof}/phase7_execution_receipts.json
+  - outputs/phase7/{asof}/traces/{plan_id}.json
+  - outputs/phase7/{asof}/batch_summary.json (batch mode)
+- Implements idempotency-first logic and clear failure reasons (no silent retries).
+
+Non-goals (what Phase-7 must NOT do)
+- Must NOT re-derive scores, bands, confidence, suppression, or intents.
+- Must NOT rebuild plans or bypass Phase-5/6 gating_chain.
+- Must NOT connect to networks by default.
+- Must NOT execute without explicit adapter selection and explicit arming in live mode.
+
+Key artifacts created/updated
+- docs/phase7/PHASE7_EXECUTION_CONTRACT.txt
+  - The contract Phase-7 must obey (guarded execution + deterministic receipts).
+- config/phase7/receipt_schema_v0.json
+  - Receipt/trace schema for machine audit.
+- config/phase7/adapter_capabilities.json
+  - Declares adapter characteristics and safe operation boundaries.
+- scripts/phase7/run_phase7.py
+  - Minimal runner enforcing:
+    - SUPPRESSED plan denial
+    - explicit arming gates
+    - idempotency-first receipts
+    - per-plan trace writing
+- scripts/phase7/phase7_cli.py
+  - Operator-facing wrapper supporting:
+    - single plan execution (receipts/traces)
+    - --explain (prints prepared payload)
+    - --batch with limit + halt-after + status-filter
+    - batch_summary.json emission
+    - --compact-receipts/--keep-last
+    - --preflight (eligibility only, prints JSON, writes nothing)
+- scripts/phase7/phase7_preflight.py
+  - Canonical eligibility checker (CLI must mirror preflight outcomes)
+- scripts/phase7/adapters/
+  - paper adapter (prepare-only)
+  - live_cex_stub adapter (prepare-only; safe rehearsal for live ceremony)
+- config/phase7/live_arming_policy_v0.json
+- docs/phase7/PHASE7_LIVE_ARMING_RULES.txt
+- docs/phase7/OPERATOR_QUICKSTART.txt
+  - Canonical safe flows: preflight → explain → batch → compact → live ceremony
+
+Guardrails implemented (high value)
+- SUPPRESSED plans:
+  - Must always DENY (tests enforce).
+- Live mode:
+  - Requires --armed AND arming-token AND token match with ALLMIGHT_ARMING_TOKEN env var.
+  - Requires adapter allowlisted in live arming policy.
+- Deterministic receipts/traces:
+  - Always emit structured output (even on denial).
+- Idempotency-first:
+  - If already FINAL for an idempotency key, block with explicit reason.
+- Operator-safe defaults:
+  - paper mode, prepare-only behavior unless explicitly live-armed and allowlisted.
+
+Testing
+Phase-7 is test-driven and includes coverage for:
+- suppression guardrail
+- arming guardrail
+- trace writing
+- idempotency behavior
+- CLI smoke, explain, batch, status filtering, summary emission, receipts compaction
+- live arming policy gates + allowlisted success path
+- CLI denial messaging parity with preflight reasons
+- preflight flag in CLI (no writes)
+
+Freeze declaration (Phase-7)
+Phase-7 should now be treated as FROZEN and immutable except for critical safety hotfixes. New adapter development and real integrations belong in Phase-8.
+
+End.
