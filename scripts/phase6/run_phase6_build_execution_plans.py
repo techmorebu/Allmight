@@ -41,8 +41,9 @@ def _ensure(cond: bool, msg: str) -> None:
         raise Phase6Error(msg)
 
 
-def resolve_effective_allowed_modes(intent: Dict[str, Any]) -> Tuple[List[str], List[str]]:
+def resolve_effective_allowed_modes(intent: Dict[str, Any]) -> Tuple[List[str], List[str], List[Dict[str, Any]]]:
     reasons: List[str] = []
+    gating_chain: List[Dict[str, Any]] = []
 
     status = (intent.get("status") or "").upper()
     allowed_modes = intent.get("allowed_modes")
@@ -51,27 +52,33 @@ def resolve_effective_allowed_modes(intent: Dict[str, Any]) -> Tuple[List[str], 
         raise Phase6Error("Intent missing required field: allowed_modes")
 
     _ensure(isinstance(allowed_modes, list), "allowed_modes must be list[str]")
+    gating_chain.append({"gate": "phase5_allowed_modes", "value": list(allowed_modes)})
 
     if status in {"SUPPRESSED", "BLOCKED", "DENY"}:
-        return [], [f"intent_status={status}"]
+        gating_chain.insert(0, {"gate": "intent_status", "value": status})
+        return [], [f"intent_status={status}"], gating_chain
 
+    gating_chain.insert(0, {"gate": "intent_status", "value": status})
     policy = intent.get("execution_policy") or {}
     eff = list(allowed_modes)
 
     if "allowed_modes" in policy:
         eff = [m for m in eff if m in policy["allowed_modes"]]
+        gating_chain.append({"gate": "policy_allowed_modes", "value": list(policy["allowed_modes"])})
         reasons.append("policy_allowed_modes_restricted")
 
     if "blocked_modes" in policy:
         eff = [m for m in eff if m not in policy["blocked_modes"]]
+        gating_chain.append({"gate": "policy_blocked_modes", "value": list(policy["blocked_modes"])})
         reasons.append("policy_blocked_modes_restricted")
 
     _ensure(set(eff).issubset(set(allowed_modes)), "policy attempted to enable modes")
 
+    gating_chain.append({"gate": "effective_allowed_modes", "value": list(eff)})
     if not reasons:
         reasons.append("allowed_by_phase5_and_policy")
 
-    return eff, reasons
+    return eff, reasons, gating_chain
 
 
 def build_plans(doc: Dict[str, Any], asof: str, adapter: str) -> Dict[str, Any]:
@@ -89,7 +96,7 @@ def build_plans(doc: Dict[str, Any], asof: str, adapter: str) -> Dict[str, Any]:
     ctx = AdapterContext(adapter=adapter, asof=asof)
 
     for idx, intent in enumerate(intents):
-        eff_modes, reasons = resolve_effective_allowed_modes(intent)
+        eff_modes, reasons, gating_chain = resolve_effective_allowed_modes(intent)
 
         plan_id = _sha256_json({
             "asof": asof,
@@ -111,8 +118,9 @@ def build_plans(doc: Dict[str, Any], asof: str, adapter: str) -> Dict[str, Any]:
                 "steps": [],
                 "requires_network": False,
                 "reasons": reasons,
+                "gating_chain": gating_chain,
             })
-            trace.append({"plan_id": plan_id, "event": "suppressed"})
+            trace.append({"plan_id": plan_id, "event": "suppressed", "gating_chain": gating_chain})
             continue
 
         for mode in eff_modes:
@@ -124,8 +132,9 @@ def build_plans(doc: Dict[str, Any], asof: str, adapter: str) -> Dict[str, Any]:
                 "steps": adapter_impl.build_steps(intent, mode, ctx),
                 "requires_network": False,
                 "reasons": reasons,
+                "gating_chain": gating_chain,
             })
-            trace.append({"plan_id": plan_id, "event": "planned", "mode": mode})
+            trace.append({"plan_id": plan_id, "event": "planned", "mode": mode, "gating_chain": gating_chain})
 
     return {
         "meta": {
