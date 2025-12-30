@@ -11,17 +11,17 @@ Reason = str
 
 
 def _sha256_json(obj: Any) -> str:
-    """
-    Stable hash of a JSON-serializable object.
-    Must be deterministic: sorted keys, compact separators.
-    """
     blob = json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
     return hashlib.sha256(blob).hexdigest()
 
 
 def _utc_now_iso() -> str:
-    # For now we allow real timestamps; determinism tightening can come later.
     return datetime.now(timezone.utc).isoformat()
+
+
+def _idempotency_key(asof: str, plan_id: str, adapter: str, mode: str, plan_sha256: str) -> str:
+    raw = f"{asof}|{plan_id}|{adapter}|{mode}|{plan_sha256}"
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
 def _load_adapter_caps() -> Dict[str, Dict[str, Any]]:
@@ -34,13 +34,36 @@ def _load_adapter_caps() -> Dict[str, Dict[str, Any]]:
 def _adapter_is_safe(adapter: str, caps: Dict[str, Dict[str, Any]]) -> bool:
     info = caps.get(adapter)
     if info is None:
-        # Safe-by-default: unknown adapters are NOT safe.
+        # safe-by-default: unknown adapters are NOT safe
         return False
     return (info.get("side_effects") is False) and (info.get("network_required") is False)
 
 
 def _is_suppressed(plan: Dict[str, Any]) -> bool:
     return str(plan.get("status", "")).upper() == "SUPPRESSED"
+
+
+def _read_receipts(receipts_path: Path) -> Dict[str, Any]:
+    if receipts_path.exists():
+        return json.loads(receipts_path.read_text(encoding="utf-8"))
+    return {"receipts": []}
+
+
+def _append_receipt(receipts_path: Path, receipt: Dict[str, Any]) -> None:
+    payload = _read_receipts(receipts_path)
+    payload.setdefault("receipts", []).append(receipt)
+    receipts_path.parent.mkdir(parents=True, exist_ok=True)
+    receipts_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+
+def _write_trace(trace_path: Path, plan_id: str, event: Dict[str, Any]) -> None:
+    trace_path.parent.mkdir(parents=True, exist_ok=True)
+    if trace_path.exists():
+        data = json.loads(trace_path.read_text(encoding="utf-8"))
+    else:
+        data = {"plan_id": plan_id, "events": []}
+    data["events"].append(event)
+    trace_path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
 
 
 def run_phase7(
@@ -53,14 +76,14 @@ def run_phase7(
     outdir: Union[str, Path],
 ) -> Dict[str, Any]:
     """
-    Minimal Phase-7 runner used by guardrail tests.
+    Phase-7 (minimal): consumes Phase-6 plans and emits receipts + traces.
+    Executes nothing.
 
-    Contract:
-    - consumes Phase-6 plans JSON
-    - enforces SUPPRESSED denial
-    - enforces NOT_ARMED denial for unknown/unsafe adapters
-    - emits receipts structure (v0)
-    - does NOT execute anything
+    Guardrails:
+    - idempotency blocks reruns (checked BEFORE other gates)
+    - suppressed plans denied
+    - unknown/unsafe adapters require armed
+    - always writes per-plan trace
     """
     plans_path = Path(plans_path)
     outdir = Path(outdir)
@@ -81,52 +104,89 @@ def run_phase7(
     if selected is None:
         raise ValueError(f"plan_id not found: {plan_id}")
 
-    # temporal integrity (minimal): plan must match requested asof
+    pid = str(selected.get("plan_id"))
+    plan_sha = _sha256_json(selected)
+
+    phase7_dir = outdir / "phase7" / str(asof)
+    receipts_path = phase7_dir / "phase7_execution_receipts.json"
+    trace_path = phase7_dir / "traces" / f"{pid}.json"
+
+    idem_key = _idempotency_key(str(asof), pid, str(adapter), str(mode), plan_sha)
+
+    # --- Idempotency FIRST: block reruns if FINAL receipt already exists for idem_key
+    existing = _read_receipts(receipts_path)
+    for r in existing.get("receipts", []):
+        if r.get("idempotency_key") == idem_key and r.get("final") is True:
+            now = _utc_now_iso()
+            receipt = {
+                "asof": str(asof),
+                "plan_id": pid,
+                "plan_sha256": plan_sha,
+                "adapter": str(adapter),
+                "mode": str(mode),
+                "armed": bool(armed),
+                "decision": "DENY",
+                "reason_codes": ["IDEMPOTENT_ALREADY_FINAL"],
+                "gating_chain": selected.get("gating_chain", []),
+                "started_at": now,
+                "finished_at": now,
+                "result": {"status": "NOT_RUN", "details": {}},
+                "idempotency_key": idem_key,
+                "final": True,
+            }
+            _write_trace(trace_path, pid, {
+                "ts": now,
+                "event": "DENY",
+                "reason_codes": receipt["reason_codes"],
+                "idempotency_key": idem_key,
+            })
+            return {"receipts": [receipt]}
+
+    # --- Gates
+    decision = "ALLOW"
+    reasons: List[Reason] = []
+
     plan_asof = str(selected.get("asof"))
     if plan_asof != str(asof):
         decision = "HALT"
-        reasons: List[Reason] = ["ASOF_MISMATCH"]
-    else:
-        decision = "ALLOW"
-        reasons = []
+        reasons = ["ASOF_MISMATCH"]
 
-    # Gate 1: suppressed => deny
     if decision != "HALT" and _is_suppressed(selected):
         decision = "DENY"
         reasons = ["SUPPRESSED_PLAN"]
 
-    # Gate 2: arming enforcement (safe-by-default)
     caps = _load_adapter_caps()
-    safe = _adapter_is_safe(adapter, caps)
+    safe = _adapter_is_safe(str(adapter), caps)
 
     if decision == "ALLOW" and (not safe) and (not armed):
         decision = "DENY"
         reasons = ["NOT_ARMED"]
 
+    now = _utc_now_iso()
     receipt = {
         "asof": str(asof),
-        "plan_id": str(selected.get("plan_id")),
-        "plan_sha256": _sha256_json(selected),
+        "plan_id": pid,
+        "plan_sha256": plan_sha,
         "adapter": str(adapter),
         "mode": str(mode),
         "armed": bool(armed),
         "decision": decision,
         "reason_codes": list(reasons),
         "gating_chain": selected.get("gating_chain", []),
-        "started_at": _utc_now_iso(),
-        "finished_at": _utc_now_iso(),
-        "result": {
-            "status": "NOT_RUN",
-            "details": {},
-        },
+        "started_at": now,
+        "finished_at": now,
+        "result": {"status": "NOT_RUN", "details": {}},
+        "idempotency_key": idem_key,
+        "final": True,
     }
 
-    # Minimal output folder creation (not required by tests, but useful)
-    phase7_dir = outdir / "phase7" / str(asof)
-    phase7_dir.mkdir(parents=True, exist_ok=True)
-    (phase7_dir / "phase7_execution_receipts.json").write_text(
-        json.dumps({"receipts": [receipt]}, indent=2) + "\n",
-        encoding="utf-8",
-    )
+    # Persist + trace
+    _append_receipt(receipts_path, receipt)
+    _write_trace(trace_path, pid, {
+        "ts": now,
+        "event": decision,
+        "reason_codes": receipt["reason_codes"],
+        "idempotency_key": idem_key,
+    })
 
     return {"receipts": [receipt]}
