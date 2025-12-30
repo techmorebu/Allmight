@@ -42,6 +42,7 @@ def main(argv=None) -> int:
 
         deny_or_halt = 0
         processed = 0
+        summary_items = []
 
         for pid in plan_ids:
             res = run_phase7(
@@ -57,6 +58,13 @@ def main(argv=None) -> int:
             processed += 1
             if r["decision"] in ("DENY", "HALT"):
                 deny_or_halt += 1
+
+            summary_items.append({
+                "plan_id": r.get("plan_id"),
+                "decision": r.get("decision"),
+                "reason_codes": r.get("reason_codes", []),
+                "idempotency_key": r.get("idempotency_key"),
+            })
 
             if args.explain:
                 prepared = r.get("result", {}).get("details", {}).get("prepared")
@@ -78,7 +86,21 @@ def main(argv=None) -> int:
                 break
 
         print(f"batch_processed={processed}")
-        print(f"outputs={Path(args.outdir) / 'phase7' / args.asof}")
+        outp = Path(args.outdir) / 'phase7' / args.asof
+        summ = {
+            "asof": args.asof,
+            "adapter": args.adapter,
+            "mode": args.mode,
+            "armed": bool(args.armed),
+            "status_filter": args.status_filter,
+            "limit": args.limit,
+            "halt_after": args.halt_after,
+            "processed": processed,
+            "deny_or_halt": deny_or_halt,
+            "items": summary_items,
+        }
+        (outp / 'phase7_batch_summary.json').write_text(json.dumps(summ, indent=2) + "\n", encoding='utf-8')
+        print(f"outputs={outp}")
         return 0
 
     # Single plan mode
