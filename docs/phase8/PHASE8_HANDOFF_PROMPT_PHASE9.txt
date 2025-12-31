@@ -1,47 +1,87 @@
-PHASE 8 → PHASE 9 HANDOFF PROMPT
-================================
+PHASE 8 → PHASE 9 HANDOFF PROMPT (UPDATED)
+=========================================
 
-Context
-- Phase 7 is frozen and authoritative: hardened execution boundary, idempotency-first receipts/traces,
-  guarded CLI (batch/explain/compact/preflight), live-arming ceremony enforced by policy + allowlists + env tokens,
-  parity between CLI and preflight, zero accidental execution paths.
+Context (authoritative)
+- Phase 7 is frozen and remains the single execution authority:
+  - hardened execution boundary
+  - idempotency-first receipts + traces
+  - guarded CLI (batch / explain / compact / preflight)
+  - live-arming ceremony enforced by policy + allowlists + environment tokens
+  - parity between CLI and preflight logic
+  - zero accidental execution paths
 - Phase 8 is complete, test-green, and committed (c563210):
   - Introduced `allmight/` package boundary surfaces:
     AdapterBroker, Capability declarations, NetworkGate default-deny, SecretsBoundary refusal, strict redaction.
   - Added Phase 8 contract tests enforcing negative-case guarantees (68 passed).
+  - Key Phase 8 guarantees: no execution, network default-deny, fail-closed gating, no secret leakage.
 
-Phase 9 Responsibility (strict)
+Recent procedural change (non-negotiable)
+- ALL phase wrap artifacts MUST be created via python writer-pattern commands that write files into the repo,
+  then staged + committed + pushed.
+- Wrap artifacts must be version-controlled, reproducible, and audit-ready.
+
+Repository hygiene (freeze integrity)
+- No phase may be considered “frozen” if its defining artifacts remain untracked.
+- Phase 7 previously had untracked artifacts; reconcile by committing them as-is (no edits) under a dedicated commit:
+  - config/phase7/live_arming_policy_v0.json
+  - docs/phase7/PHASE7_LIVE_ARMING_RULES.txt
+  - scripts/phase7/adapters/base.py
+  - scripts/phase7/adapters/paper.py
+  - tests/phase7/test_phase7_cli_preflight_flag.py
+  - tests/phase7/test_phase7_idempotency_and_trace.py
+  - tests/phase7/test_phase7_live_arming_policy.py
+  - tests/phase7/test_phase7_paper_adapter_prepare.py
+  Commit message: "phase7: track frozen artifacts (no behavior changes)"
+
+PHASE 9 RESPONSIBILITY (STRICT)
 - Introduce read-only live connectivity scaffolding ONLY (HTTP snapshot reads).
-- Still NO trading:
+- Still NO trading or execution:
   - no order placement
   - no account endpoints requiring signing
-  - no fund movement
+  - no fund movement (withdrawals/transfers)
   - no websockets
   - no background daemons
   - no hidden retries
   - no secret leakage
-  - no bypass or reinterpretation of Phase 7 arming/receipts
+  - no bypass or reinterpretation of Phase 7 arming/receipt logic
 
-Required build order (Phase 9)
-1) Architecture-only (no code)
-   - Define how Phase 7 calls AdapterBroker for read-only live data
-   - Define capability for live read-only market data (e.g., MARKET_DATA_HTTP_READ_LIVE)
-   - Define network allowlist model (adapter+capability+domain; no wildcards; default deny)
-   - Define failure classifications and observability (no secrets)
-2) Invariants & threat model update
-   - Enumerate read-only network threats (exfil, SSRF, domain drift, timeouts) and mitigations
+PHASE 9 REQUIRED BUILD ORDER (STRICT)
+1) Architecture-only (NO CODE)
+   - Define how Phase 7 calls AdapterBroker for read-only live data.
+   - Define a capability for live read-only market data (e.g., MARKET_DATA_HTTP_READ_LIVE).
+   - Define network allowlist model: adapter + capability + domain (no wildcards), default deny.
+   - Define secrets discipline: Phase 9 read-only market data must not require credentials.
+   - Define failure classifications + observability: timeouts, deny reasons, schema validation; no secrets.
+
+2) Invariants & threat model (explicit)
+   - Enumerate read-only network threats and mitigations:
+     exfiltration, SSRF-style misuse, domain drift, response poisoning, timeouts.
+   - Confirm failure is fail-closed and denial is explicit.
+
 3) Tests first (negative cases)
-   - prove network remains default deny without Phase 7 arming
-   - prove non-allowlisted domains refused
-   - prove no retries / no daemons / no websockets
-   - prove schema validation and redaction on all error paths
+   - Prove network remains default deny without Phase 7 arming.
+   - Prove non-allowlisted domains are refused.
+   - Prove no retries / no daemons / no websockets.
+   - Prove schema validation rejects malformed responses.
+   - Prove redaction on all exception paths (including adapter errors).
+
 4) Minimal implementation
-   - implement exactly one HTTP market snapshot adapter using explicit allowlisted domains
-   - no SDKs that spawn threads; no persistence; no background work
-5) Wrap
-   - Create Phase 9 build notes, bug notes, operator notes, Phase 10 handoff prompt via python writer-pattern files and commit
+   - Implement exactly one HTTP market snapshot adapter using explicit allowlisted domains.
+   - No SDKs that spawn threads. No persistence. No background work.
+   - No credentials. Public endpoints only.
+   - All network egress mediated by NetworkGate and Phase 7 gating.
+
+5) Phase 9 wrap (MANDATORY PROCEDURE)
+   - Create wrap artifacts via python writer-pattern files and commit/push:
+     - docs/build_notes/PHASE9_BUILD_NOTES.txt
+     - docs/bug_notes/PHASE9_BUG_NOTES.txt
+     - docs/phase9/PHASE9_OPERATOR_NOTES.txt
+     - docs/phase9/PHASE9_HANDOFF_PROMPT_PHASE10.txt
+   - Wrap commit message format:
+     "phase9: wrap (build notes, bug notes, operator notes, phase10 handoff)"
 
 Non-negotiables to carry forward
 - Phase 7 remains the sole execution authority.
 - All network egress must be Phase 7 gated and allowlist-driven.
 - All outputs/errors must be redacted before trace/receipt emission.
+- No “temporary” shortcuts, no hidden side effects, no silent retries.
