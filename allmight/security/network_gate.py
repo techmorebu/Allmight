@@ -1,108 +1,138 @@
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
-from typing import Optional
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Set, Tuple
+
+from allmight.security.redaction import redact_sensitive
 
 
 @dataclass(frozen=True)
-class NetworkDecision:
-    allowed: bool
-    reason: str
+class AllowlistRule:
+    adapter_id: str
+    capability: str
+    domain: str
 
 
 class NetworkGate:
-    """Default-deny network gate.
-
-    Phase 8: network is effectively disabled; this gate makes denials explicit.
+    """
+    Phase 8/9 NetworkGate:
+      - Default deny when disabled.
+      - Exact allowlist enforcement: (adapter_id, capability, domain) no wildcards.
+      - No secrets in errors (redacted).
+      - Phase 9 adds minimal, safe HTTP GET-bytes helper (still deny-first, no retries).
     """
 
-    def __init__(self, enabled: bool = False):
-        self._enabled = bool(enabled)
+    def __init__(
+        self,
+        *,
+        enabled: bool,
+        allowlist_path: Optional[str] = None,
+    ) -> None:
+        self.enabled = bool(enabled)
+        self._allowlist_path = allowlist_path or "config/phase9/network_allowlist_v0.json"
+        self._cache: Optional[Set[Tuple[str, str, str]]] = None
 
-    @property
-    def enabled(self) -> bool:
-        return self._enabled
+    def _load_allowlist(self) -> Set[Tuple[str, str, str]]:
+        if self._cache is not None:
+            return self._cache
 
-    def require_allowed(self, *, adapter_id: str, operation: str, destination: Optional[str] = None) -> None:
-        if not self._enabled:
-            raise RuntimeError(f"REFUSE: network disabled (phase 8). adapter={adapter_id} op={operation}")
-        # Even if enabled flag is True, Phase 8 still expects explicit allowlists later.
-        # For now, refuse unless explicitly expanded in a later phase.
-        raise RuntimeError(f"REFUSE: network denied (phase 8). adapter={adapter_id} op={operation} dest={destination}")
+        path = Path(self._allowlist_path)
+        if not path.exists():
+            # If allowlist file is missing, deny everything.
+            self._cache = set()
+            return self._cache
 
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except Exception:
+            # Malformed config => deny everything.
+            self._cache = set()
+            return self._cache
 
-# ---------------------------
-# Phase 9 allowlist scaffolding (read-only, fail-closed)
-# ---------------------------
-from pathlib import Path
-import json
+        rules = set()
+        for item in (data.get("allowlist") or []):
+            if not isinstance(item, dict):
+                continue
+            a = str(item.get("adapter_id") or "").strip()
+            c = str(item.get("capability") or "").strip()
+            d = str(item.get("domain") or "").strip()
+            if a and c and d:
+                rules.add((a, c, d))
 
-def _load_phase9_allowlist_v0() -> dict:
-    """
-    Load Phase 9 network allowlist config.
-    Default deny if missing or invalid.
-    """
-    path = Path("config/phase9/network_allowlist_v0.json")
-    try:
-        raw = path.read_text(encoding="utf-8")
-        return json.loads(raw)
-    except Exception:
-        return {"version": "v0", "entries": []}
-
-def _is_allowlisted(adapter_id: str, capability: str, domain: str) -> bool:
-    cfg = _load_phase9_allowlist_v0()
-    entries = cfg.get("entries", []) or []
-    for e in entries:
-        if (
-            e.get("adapter_id") == adapter_id
-            and e.get("capability") == capability
-            and e.get("domain") == domain
-        ):
-            return True
-    return False
-
-def _deny_not_allowlisted(adapter_id: str, capability: str, domain: str) -> RuntimeError:
-    # Do not include secrets; keep message minimal + redaction-friendly.
-    return RuntimeError(f"DENY_NOT_ALLOWLISTED_DOMAIN adapter={adapter_id} cap={capability} domain={domain}")
-
-# If the class exists in this module, we attach a method without changing its constructor.
-try:
-    NetworkGate
-except NameError:
-    NetworkGate = None
-
-if NetworkGate is not None and not hasattr(NetworkGate, "assert_domain_allowed"):
+        self._cache = rules
+        return self._cache
 
     def assert_domain_allowed(self, *, adapter_id: str, capability: str, domain: str) -> None:
         """
-        Phase 9: allowlist enforcement (deny-first).
-        This check MUST NOT depend on network enabled/disabled; it is a policy gate, not an egress gate.
+        Phase 9: deny-first allowlist enforcement.
+        NOTE: This does NOT imply network is enabled. It only enforces allowlist.
         """
-        from pathlib import Path
-        import json
-        from allmight.security.redaction import redact_sensitive
-
-        allowlist_path = Path("config/phase9/network_allowlist_v0.json")
-        if not allowlist_path.exists():
-            raise RuntimeError(redact_sensitive("DENY_ALLOWLIST_MISSING (phase 9)."))
-
-        data = json.loads(allowlist_path.read_text(encoding="utf-8"))
-        entries = data.get("allowlist", [])
-
-        # Exact match only: (adapter_id, capability, domain). No wildcards.
-        for ent in entries:
-            if (
-                ent.get("adapter_id") == adapter_id
-                and ent.get("capability") == capability
-                and ent.get("domain") == domain
-            ):
-                return
-
-        raise RuntimeError(
-            redact_sensitive(
-                f"DENY_NOT_ALLOWLISTED_DOMAIN (phase 9). adapter={adapter_id} capability={capability} domain={domain}"
+        rules = self._load_allowlist()
+        key = (str(adapter_id), str(capability), str(domain))
+        if key not in rules:
+            raise RuntimeError(
+                redact_sensitive(
+                    f"DENY_NOT_ALLOWLISTED_DOMAIN (phase 9). adapter={adapter_id} capability={capability} domain={domain}"
+                )
             )
-        )
 
+    def require_allowed(self, *, adapter_id: str, operation: str, destination: Optional[str] = None) -> None:
+        """
+        Phase 8/9: generic operation gate.
+        - If network disabled => deny.
+        - If destination provided, it should be a domain and must be allowlisted for this adapter+operation.
+          For Phase 9, callers should prefer assert_domain_allowed with explicit capability tokens.
+        """
+        if not self.enabled:
+            raise RuntimeError(redact_sensitive("DENY_NETWORK_DISABLED (phase 9)."))
 
-    setattr(NetworkGate, "assert_domain_allowed", assert_domain_allowed)
+        # If a destination is given, treat operation as a capability-like string for allowlist purposes.
+        if destination:
+            self.assert_domain_allowed(adapter_id=adapter_id, capability=operation, domain=destination)
+
+    def http_get_bytes(
+        self,
+        *,
+        url: str,
+        adapter_id: str,
+        capability: str,
+        timeout_s: float = 5.0,
+        max_bytes: int = 262144,
+    ) -> bytes:
+        """
+        Phase 9: minimal, safe HTTP GET (bytes) egress.
+        - Fail-closed if network disabled.
+        - Enforces exact allowlist (adapter_id, capability, domain).
+        - No retries, no background work.
+        - Caps response size to max_bytes.
+        """
+        from urllib.parse import urlparse
+        import urllib.request
+
+        if not self.enabled:
+            raise RuntimeError(redact_sensitive("DENY_NETWORK_DISABLED (phase 9)."))
+
+        u = urlparse(url)
+        if u.scheme not in ("http", "https"):
+            raise RuntimeError(redact_sensitive(f"DENY_UNSAFE_URL_SCHEME (phase 9). scheme={u.scheme}"))
+
+        domain = (u.netloc or "").split(":")[0].strip()
+        if not domain:
+            raise RuntimeError(redact_sensitive("DENY_MISSING_DOMAIN (phase 9)."))
+
+        # Allowlist deny-first (no wildcards)
+        self.assert_domain_allowed(adapter_id=adapter_id, capability=capability, domain=domain)
+
+        req = urllib.request.Request(url, method="GET", headers={"User-Agent": "AllmightPhase9/0"})
+        try:
+            with urllib.request.urlopen(req, timeout=timeout_s) as resp:
+                data = resp.read(max_bytes + 1)
+        except Exception as e:
+            raise RuntimeError(redact_sensitive(f"DENY_HTTP_ERROR (phase 9). err={e}"))
+
+        if len(data) > max_bytes:
+            raise RuntimeError(redact_sensitive("DENY_RESPONSE_TOO_LARGE (phase 9)."))
+
+        return data
