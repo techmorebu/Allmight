@@ -1,0 +1,11 @@
+{
+  "version": "v0",
+  "notes": "Phase 9 read-only live allowlist. Exact domain matches only. Default deny. No wildcards.",
+  "entries": [
+    {
+      "adapter_id": "phase9_http_snapshot",
+      "capability": "MARKET_DATA_HTTP_READ_LIVE",
+      "domain": "api.allowlisted.example"
+    }
+  ]
+}
