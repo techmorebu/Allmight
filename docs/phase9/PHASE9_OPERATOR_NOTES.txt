@@ -1,0 +1,24 @@
+PHASE 9 OPERATOR NOTES
+======================
+As-of: 2025-12-31 08:37 UTC
+
+What this phase enables
+- Read-only HTTP snapshot market data (public endpoints), allowlist-gated.
+
+What this phase does NOT enable
+- No trading, no order placement, no authenticated account endpoints.
+- No websockets, no background daemons, no retries.
+- No fund movement.
+
+Operational safety rules
+- Network must remain default-deny unless explicitly enabled for the run context.
+- Domain access must be allowlisted in config/phase9/network_allowlist_v0.json:
+  - scope is (adapter_id, capability, domain)
+  - no wildcards
+- All exceptions must remain redacted (secrets, auth strings, etc.).
+
+How to extend safely
+- Add new domains only via allowlist file and tests.
+- Add additional snapshot sources as separate adapters (one per domain/provider).
+- Keep all network I/O inside NetworkGate helpers.
+- Validate responses strictly (schema, size limits).
