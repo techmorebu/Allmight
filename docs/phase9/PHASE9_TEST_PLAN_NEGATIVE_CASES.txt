@@ -1,0 +1,162 @@
+PHASE 9 — TEST PLAN (NEGATIVE CASES FIRST)
+========================================
+
+Status
+- This file is Phase 9 Step 3a: Tests-first plan (NO live adapter implementation yet).
+- It operationalizes PHASE9_ARCHITECTURE_READONLY_LIVE invariants into executable proofs.
+- Scope: prove read-only live connectivity remains fail-closed, default-deny, redacted.
+
+Non-negotiable constraints (binding)
+- Phase 7 remains sole execution authority.
+- NetworkGate remains default-deny.
+- No live network egress without Phase 7 gating.
+- No retries, no daemons, no websockets, no hidden side effects.
+- No secrets used or emitted.
+- All errors and outputs are redacted before receipts/traces.
+
+Test suite structure (proposed)
+- tests/phase9/
+  - test_phase9_default_deny_without_arming.py
+  - test_phase9_refuse_non_allowlisted_domain.py
+  - test_phase9_refuse_redirects.py
+  - test_phase9_single_attempt_no_retry.py
+  - test_phase9_no_websockets_no_daemons.py
+  - test_phase9_schema_validation_rejects_malformed.py
+  - test_phase9_redaction_on_all_exception_paths.py
+  - test_phase9_receipt_trace_observability_fields.py
+
+Test categories and required proofs
+
+A) Default-deny and gating
+A1. Default deny without Phase 7 arming
+- Given: Phase 7 not armed / preflight-only path / missing required env token
+- When: a MARKET_DATA_HTTP_READ_LIVE request is attempted
+- Then:
+  - NetworkGate refuses BEFORE any network activity
+  - Classification: DENY_NOT_ARMED
+  - Trace/receipt contain adapter_id + capability + deny classification (redacted)
+  - No secret leakage (verify)
+
+A2. Deny when capability not granted by policy
+- Given: Phase 7 armed but policy disallows MARKET_DATA_HTTP_READ_LIVE
+- Then:
+  - Refuse with explicit deny classification (e.g., DENY_POLICY_CAPABILITY)
+  - No network activity
+
+B) Allowlist enforcement (no wildcards)
+B1. Refuse non-allowlisted domain
+- Given: Phase 7 armed and capability granted
+- When: request targets a domain not in allowlist (adapter_id, capability, domain)
+- Then:
+  - Refuse with DENY_NOT_ALLOWLISTED_DOMAIN
+  - No DNS, no connect attempt (verify via injected NetworkGate spy)
+
+B2. Refuse wildcard-like / partial / suffix matches
+- Given: allowlist has "api.example.com"
+- When: attempt "evilapi.example.com" or "api.example.com.evil.com" or "example.com"
+- Then: refused with DENY_NOT_ALLOWLISTED_DOMAIN
+
+B3. Refuse IP literals by default
+- When: attempt direct IP address (e.g., 1.2.3.4)
+- Then: refused (classification: DENY_IP_LITERAL_REFUSED or DENY_NOT_ALLOWLISTED_DOMAIN)
+
+C) Redirect refusal
+C1. Refuse redirects by default
+- Given: HTTP 301/302/307 response with Location header
+- Then:
+  - Adapter/NetworkGate refuses following redirect
+  - Classification: DENY_REDIRECT_REFUSED
+  - No second request is attempted
+
+D) No retries / no background behavior
+D1. Single attempt only (no retry)
+- Given: timeout or transient failure
+- Then:
+  - exactly one outbound attempt occurs
+  - no retry loops, no backoff
+  - classification: TIMEOUT_CONNECT or TIMEOUT_READ (as applicable)
+
+D2. No daemons / no background threads spawned by dependencies
+- Validate:
+  - no long-lived background tasks created by the HTTP client
+  - no scheduling
+  - no hidden worker threads (best-effort: dependency choice + test instrumentation)
+- Policy: reject SDKs that spawn threads by default.
+
+D3. No websockets
+- Validate:
+  - no websocket upgrade headers
+  - no websocket client libs in the adapter path
+
+E) Schema + payload hardening
+E1. Reject malformed schema
+- Given: response body missing required fields / wrong types
+- Then:
+  - SCHEMA_INVALID
+  - redacted output (no raw body in traces)
+
+E2. Reject oversized responses
+- Given: response exceeds limit
+- Then:
+  - RESPONSE_TOO_LARGE
+  - no parse attempt past limit
+  - redaction maintained
+
+E3. Reject invalid content-type
+- Given: content-type not acceptable
+- Then:
+  - CONTENT_TYPE_INVALID
+  - redaction maintained
+
+F) Redaction on all exception paths (most important)
+F1. Adapter throws exception with sensitive-looking material
+- Then:
+  - ADAPTER_INTERNAL_ERROR (or equivalent)
+  - trace/receipt do NOT contain:
+    - tokens
+    - full URLs with query params (queries redacted)
+    - headers
+    - raw body
+    - stack fragments that include secrets
+
+F2. NetworkGate throws exception
+- Then:
+  - NETWORK_GATE_ERROR (redacted)
+  - same redaction guarantees
+
+G) Observability correctness (minimal safe fields)
+G1. Receipt/trace must include safe metadata
+- Must include:
+  - capability
+  - adapter_id
+  - allow/deny decision
+  - classification
+  - timings (coarse)
+- Must not include:
+  - raw body
+  - headers
+  - query params (default redacted)
+  - credentials (none should exist)
+
+Implementation guidance for tests (how to test without real network)
+- Use dependency injection:
+  - NetworkGate should be replaceable with a spy/fake that records:
+    - attempted domain
+    - whether connect was attempted
+    - how many attempts (enforces “no retries”)
+  - HTTP client should be stubbed to produce controlled responses (redirects, malformed payloads).
+- Tests must prove “no network activity” on denies via spy counters (not by assuming behavior).
+
+Exit criteria to unlock minimal implementation
+- All tests above are implemented and passing.
+- Only then may we implement ONE adapter:
+  - public endpoint only
+  - explicit allowlisted domain(s)
+  - strict schema validation
+  - single-shot request
+  - no retries
+  - no background work
+  - no secrets
+
+Notes
+- If any test requires loosening default-deny, Phase 9 must stop and redesign.
