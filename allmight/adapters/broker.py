@@ -94,31 +94,29 @@ class AdapterBroker:
         if operation in {"market_snapshot", "account_read", "funding_read"}:
             self._net.require_allowed(adapter_id=adapter_id, operation=operation, destination=None)
 
+        # Phase 9: read-only live market snapshot (deny-first, allowlist-gated)
+        if operation == "market_snapshot_live":
+            decl = self._get_decl(adapter_id)
+            self._require_capabilities(decl, ["MARKET_DATA_HTTP_READ_LIVE"])
+            domain = (params or {}).get("domain")
+            if not domain:
+                raise RuntimeError(redact_sensitive("REFUSE: missing domain (phase 9)."))
+            # Policy gate (no egress on deny)
+            self._net.assert_domain_allowed(
+                adapter_id=adapter_id,
+                capability="MARKET_DATA_HTTP_READ_LIVE",
+                domain=str(domain),
+            )
+            # Still no real HTTP in Phase 9 until the single snapshot adapter is implemented.
+            return {"operation": operation, "params": redact_any(params), "adapter": adapter_id}
+
         # Phase 8: no live operations; stubs only
         return {"operation": operation, "params": redact_any(params), "adapter": adapter_id}
 
     def get_market_snapshot(self, *, adapter_id: str, symbols: List[str]) -> Any:
-        decl = self._get_decl(adapter_id)
-        self._require_capabilities(decl, ["MARKET_DATA_HTTP_READ"])
-
-        # Phase 8:
-        # - 'dummy_toxic' must be callable with network disabled to validate redaction.
-        # - 'dummy' remains network-gated to prove default-deny behavior.
-        if adapter_id == "dummy_toxic":
-            toxic = {
-                "symbols": symbols,
-                "note": "Authorization: Bearer sk_live_SUPERSECRET",
-                "api_key": "sk_live_SUPERSECRET",
-            }
-            return redact_any(toxic)
-
-        # All other adapters (including 'dummy') are network-gated (default deny in Phase 8).
-        try:
-            self._net.require_allowed(adapter_id=adapter_id, operation="market_snapshot", destination=None)
-        except Exception as e:
-            raise RuntimeError(redact_sensitive(str(e)))
-
-        # Even if network were enabled, Phase 8 does not implement real market reads.
-        raise RuntimeError(redact_sensitive(
-            f"REFUSE: market snapshot not implemented (phase 8). adapter={adapter_id}"
-        ))
+        """
+        Phase 9: legacy helper is intentionally a safe stub.
+        All live reads must route through AdapterBroker.call(operation="market_snapshot_live")
+        so Phase 7 gating + receipts remain the single execution authority.
+        """
+        raise RuntimeError(redact_sensitive("REFUSE: get_market_snapshot is disabled (phase 9). Use call()."))
