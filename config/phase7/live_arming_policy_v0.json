@@ -1,0 +1,14 @@
+{
+  "version": "v0",
+  "default_deny": true,
+  "allowed_live_adapters": [],
+  "allowed_live_modes": [
+    "live"
+  ],
+  "arming": {
+    "require_armed_flag": true,
+    "require_token": true,
+    "token_env_var": "ALLMIGHT_ARMING_TOKEN",
+    "token_arg_name": "--arming-token"
+  }
+}

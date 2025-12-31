@@ -1,0 +1,16 @@
+PHASE 7 — LIVE ARMING RULES (V0)
+
+This file defines the safety contract for any future 'live' actions.
+
+NON-NEGOTIABLE:
+- Default is DENY for any live adapter or live mode.
+- Live is never enabled by default.
+- Live requires:
+  1) explicit --armed flag
+  2) explicit --arming-token argument
+  3) token must match the environment variable ALLMIGHT_ARMING_TOKEN
+  4) adapter must be explicitly allowlisted in config/phase7/live_arming_policy_v0.json
+  5) mode must be explicitly allowlisted in config/phase7/live_arming_policy_v0.json
+
+NOTE:
+- Phase-7 currently executes nothing. These rules only gate eligibility and future extension.
