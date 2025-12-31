@@ -1,0 +1,47 @@
+PHASE 8 → PHASE 9 HANDOFF PROMPT
+================================
+
+Context
+- Phase 7 is frozen and authoritative: hardened execution boundary, idempotency-first receipts/traces,
+  guarded CLI (batch/explain/compact/preflight), live-arming ceremony enforced by policy + allowlists + env tokens,
+  parity between CLI and preflight, zero accidental execution paths.
+- Phase 8 is complete, test-green, and committed (c563210):
+  - Introduced `allmight/` package boundary surfaces:
+    AdapterBroker, Capability declarations, NetworkGate default-deny, SecretsBoundary refusal, strict redaction.
+  - Added Phase 8 contract tests enforcing negative-case guarantees (68 passed).
+
+Phase 9 Responsibility (strict)
+- Introduce read-only live connectivity scaffolding ONLY (HTTP snapshot reads).
+- Still NO trading:
+  - no order placement
+  - no account endpoints requiring signing
+  - no fund movement
+  - no websockets
+  - no background daemons
+  - no hidden retries
+  - no secret leakage
+  - no bypass or reinterpretation of Phase 7 arming/receipts
+
+Required build order (Phase 9)
+1) Architecture-only (no code)
+   - Define how Phase 7 calls AdapterBroker for read-only live data
+   - Define capability for live read-only market data (e.g., MARKET_DATA_HTTP_READ_LIVE)
+   - Define network allowlist model (adapter+capability+domain; no wildcards; default deny)
+   - Define failure classifications and observability (no secrets)
+2) Invariants & threat model update
+   - Enumerate read-only network threats (exfil, SSRF, domain drift, timeouts) and mitigations
+3) Tests first (negative cases)
+   - prove network remains default deny without Phase 7 arming
+   - prove non-allowlisted domains refused
+   - prove no retries / no daemons / no websockets
+   - prove schema validation and redaction on all error paths
+4) Minimal implementation
+   - implement exactly one HTTP market snapshot adapter using explicit allowlisted domains
+   - no SDKs that spawn threads; no persistence; no background work
+5) Wrap
+   - Create Phase 9 build notes, bug notes, operator notes, Phase 10 handoff prompt via python writer-pattern files and commit
+
+Non-negotiables to carry forward
+- Phase 7 remains the sole execution authority.
+- All network egress must be Phase 7 gated and allowlist-driven.
+- All outputs/errors must be redacted before trace/receipt emission.

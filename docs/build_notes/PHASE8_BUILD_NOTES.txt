@@ -1,0 +1,40 @@
+PHASE 8 — BUILD NOTES
+=====================
+
+Scope (non-negotiable)
+- Phase 8 introduces adapter architecture plumbing only:
+  - adapter boundary surfaces
+  - capability declarations
+  - credential handling discipline
+  - network permission gating
+  - deterministic stubs / test doubles
+- Phase 8 explicitly does NOT enable live trading, orders, or real exchange connectivity.
+
+What shipped (commit: c563210)
+- Added importable Python package `allmight/` with Phase 8 boundary surfaces:
+  - allmight.adapters.broker.AdapterBroker (single chokepoint)
+  - allmight.adapters.capabilities.Capability (static capability declarations)
+  - allmight.security.network_gate.NetworkGate (default deny; explicit refusal)
+  - allmight.security.secrets.SecretsBoundary + SecretHandle (resolution refused in Phase 8)
+  - allmight.security.redaction (strict deterministic redaction; no credential material survives)
+- Added Phase 8 contract tests:
+  - tests/phase8/test_adapter_boundary_contracts.py
+
+Test status
+- pytest: 68 passed
+
+Enforced guarantees (backed by tests)
+- No execution path exists: execute-like operations are refused (prepare-only).
+- Network is default-deny and denial is explicit (no silent fallback).
+- Capability mismatches fail closed before adapter invocation.
+- Secrets do not leak via returned objects or exception messages.
+- Toxic downstream content is sanitized at the boundary, including removing the 'authorization' token.
+
+Design notes (Phase 7 invariants preserved)
+- Phase 7 remains the single execution authority.
+- Phase 8 introduces no new execution authority, no background processes, no hidden side effects.
+
+Repository hygiene note (not executed in this wrap)
+- `git status` showed several Phase 7 artifacts as untracked at time of Phase 8 commit.
+- Recommendation: add/commit those Phase 7 artifacts as-is under a separate “phase7: track frozen artifacts” commit
+  without modifying content to preserve freeze semantics.
