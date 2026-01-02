@@ -1,138 +1,147 @@
 #!/usr/bin/env python3
-"""
-AllMight Rapid Scan
-
-Goals:
-- Single-command operator sanity check
-- Deterministic output
-- No network, no writes beyond stdout
-- Phase-aware "latest handoff" discovery (semantic, not mtime)
-
-This script is intentionally boring.
-Boring is safe.
-"""
-
 from __future__ import annotations
 
+import os
 import re
 import subprocess
+from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Optional, Tuple
 
 
-# -----------------------------
-# Utils
-# -----------------------------
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def _utc_now_str() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+
 
 def _run(cmd: List[str]) -> Tuple[int, str]:
-    """Run a command, returning (returncode, combined_output)."""
     p = subprocess.run(
         cmd,
+        cwd=str(ROOT),
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
     )
-    return p.returncode, (p.stdout or "").rstrip()
+    return p.returncode, (p.stdout or "").rstrip("\n")
 
 
-def _utc_now_str() -> str:
-    # Avoid datetime import churn; date is enough for ops display.
-    # We keep it simple and rely on `date -u` for authoritative timestamp.
-    rc, out = _run(["date", "-u", "+%Y-%m-%d %H:%M UTC"])
-    return out if rc == 0 and out else "(utc time unavailable)"
+def _safe_rel(p: Path) -> str:
+    try:
+        return str(p.relative_to(ROOT))
+    except Exception:
+        return str(p)
 
 
-def _iter_handoff_files() -> List[Path]:
-    """
-    Find handoff prompts anywhere in docs/phase*/ matching:
-      docs/phaseX/PHASEX_HANDOFF_PROMPT_PHASEY.txt
-    """
-    root = Path("docs")
-    if not root.exists():
-        return []
-    return sorted(root.glob("phase*/PHASE*_HANDOFF_PROMPT_PHASE*.txt"))
+def _glob_latest(pattern: str) -> Optional[Path]:
+    hits = sorted(ROOT.glob(pattern), key=lambda p: p.stat().st_mtime, reverse=True)
+    return hits[0] if hits else None
 
 
-def _parse_phase_from_name(name: str) -> Optional[int]:
-    """
-    Extract PHASE<number> from a filename like:
-      PHASE11_HANDOFF_PROMPT_PHASE12.txt
-    Returns 11, or None.
-    """
-    m = re.match(r"^PHASE(\d+)_HANDOFF_PROMPT_PHASE(\d+)\.txt$", name)
-    if not m:
-        return None
-    return int(m.group(1))
+def _latest_handoff() -> str:
+    # Prefer phase handoffs; newest mtime wins.
+    p = _glob_latest("docs/phase*/PHASE*_HANDOFF_PROMPT_PHASE*.txt")
+    if not p:
+        return "NONE FOUND"
+    return _safe_rel(p)
 
 
-def _latest_handoff_by_phase() -> str:
-    """
-    Determine "latest" handoff by PHASE number, not mtime.
-    """
-    best: Optional[Path] = None
-    best_phase = -1
-    for p in _iter_handoff_files():
-        ph = _parse_phase_from_name(p.name)
-        if ph is None:
-            continue
-        if ph > best_phase:
-            best_phase = ph
-            best = p
-    return str(best) if best else "NONE FOUND"
-
-
-def _authoritative_files_for_handoff(handoff_path: str) -> List[str]:
-    """
-    Return authoritative files to read, based on the discovered handoff.
-    Convention:
-      - Always include the latest handoff
-      - Include operator notes for that phase if present
-
-    We keep this deterministic and minimal; phases can add more via appendices.
-    """
-    if handoff_path == "NONE FOUND":
-        return []
-
-    hp = Path(handoff_path)
-    phase_dir = hp.parent  # docs/phaseNN
-    out: List[str] = [handoff_path]
-
-    # Operator notes typically live beside the handoff.
-    # We prefer exact match: PHASE{N}_OPERATOR_NOTES.txt
-    ph = _parse_phase_from_name(hp.name)
-    if ph is not None:
-        op = phase_dir / f"PHASE{ph}_OPERATOR_NOTES.txt"
-        if op.exists():
-            out.append(str(op))
-
-    return out
+def _infer_phase_from_handoff(rel_path: str) -> Optional[int]:
+    # docs/phase11/PHASE11_HANDOFF_PROMPT_PHASE12.txt -> 11
+    m = re.search(r"docs/phase(\d+)/", rel_path)
+    if m:
+        try:
+            return int(m.group(1))
+        except Exception:
+            return None
+    return None
 
 
 def _appendices_list() -> List[str]:
-    root = Path("docs/appendices")
-    if not root.exists():
+    appx_dir = ROOT / "docs" / "appendices"
+    if not appx_dir.exists():
         return []
-    # Print relative paths for consistency in operator notes.
-    files = sorted(root.glob("*.txt"))
-    return [str(p) for p in files]
+    out = []
+    for p in sorted(appx_dir.glob("*.txt")):
+        out.append(_safe_rel(p))
+    return out
 
 
-def _phase11_authoritative_overlay() -> List[str]:
-    """
-    Phase 11 requested an explicit overlay section in rapid_scan output.
-    These files may not exist early in Phase 11, but listing them helps operators.
-    """
-    return [
-        "docs/phase11/PHASE11_HANDOFF_PROMPT_PHASE12.txt",
-        "docs/phase11/PHASE11_OPERATOR_NOTES.txt",
-        "docs/build_notes/PHASE11_BUILD_NOTES.txt",
-        "docs/bug_notes/PHASE11_BUG_NOTES.txt",
-    ]
+def _phase_dir(phase: int) -> Path:
+    return ROOT / "docs" / f"phase{phase}"
 
 
-# -----------------------------
-# Main
-# -----------------------------
+def _phase_authoritative_files(phase: int) -> List[str]:
+    out: List[str] = []
+
+    # Primary: phase handoff + operator notes in phase dir
+    pd = _phase_dir(phase)
+    if pd.exists():
+        handoff = _glob_latest(f"docs/phase{phase}/PHASE{phase:02d}_HANDOFF_PROMPT_PHASE*.txt") or \
+                 _glob_latest(f"docs/phase{phase}/PHASE{phase}_HANDOFF_PROMPT_PHASE*.txt")
+        if handoff:
+            out.append(_safe_rel(handoff))
+
+        # operator notes (exact) else any operator notes
+        op_exact = pd / f"PHASE{phase:02d}_OPERATOR_NOTES.txt"
+        if op_exact.exists():
+            out.append(_safe_rel(op_exact))
+        else:
+            ops = sorted(pd.glob("*OPERATOR_NOTES*.txt"))
+            out.extend(_safe_rel(x) for x in ops)
+
+    # Build/bug notes (standard locations)
+    bn = ROOT / "docs" / "build_notes" / f"PHASE{phase:02d}_BUILD_NOTES.txt"
+    if bn.exists():
+        out.append(_safe_rel(bn))
+    bn2 = ROOT / "docs" / "build_notes" / f"PHASE{phase}_BUILD_NOTES.txt"
+    if bn2.exists() and _safe_rel(bn2) not in out:
+        out.append(_safe_rel(bn2))
+
+    bug = ROOT / "docs" / "bug_notes" / f"PHASE{phase:02d}_BUG_NOTES.txt"
+    if bug.exists():
+        out.append(_safe_rel(bug))
+    bug2 = ROOT / "docs" / "bug_notes" / f"PHASE{phase}_BUG_NOTES.txt"
+    if bug2.exists() and _safe_rel(bug2) not in out:
+        out.append(_safe_rel(bug2))
+
+    # De-dup preserving order
+    seen = set()
+    uniq = []
+    for x in out:
+        if x not in seen:
+            seen.add(x)
+            uniq.append(x)
+    return uniq
+
+
+def _authoritative_files() -> List[str]:
+    handoff = _latest_handoff()
+    if handoff == "NONE FOUND":
+        return []
+
+    phase = _infer_phase_from_handoff(handoff)
+    if phase is None:
+        # fallback: just show handoff
+        return [handoff]
+
+    return _phase_authoritative_files(phase)
+
+
+def _latest_phase_packet() -> Optional[str]:
+    # Accept either:
+    # - docs/phase*/PHASE*_PHASE_PACKET.* (new standard)
+    # - docs/phase*/PHASE*_PACKET.*
+    p = _glob_latest("docs/phase*/PHASE*_PHASE_PACKET.*") or _glob_latest("docs/phase*/PHASE*_PACKET.*")
+    return _safe_rel(p) if p else None
+
+
+def _latest_arch_delta() -> Optional[str]:
+    p = _glob_latest("docs/architecture/deltas/*.md") or _glob_latest("docs/architecture/deltas/*.txt")
+    return _safe_rel(p) if p else None
+
 
 def main() -> int:
     print("ALLMIGHT RAPID SCAN")
@@ -145,40 +154,51 @@ def main() -> int:
     print("-" * 20)
     rc, out = _run(["git", "status", "--porcelain"])
     if rc != 0:
-        print("(git error)")
+        print("(git status failed)")
         print(out)
     else:
-        print("(clean)" if out.strip() == "" else out)
+        print("(clean)" if not out.strip() else out)
     print("")
 
-    # 2) Test status
+    # 2) Tests
     print("2) TEST STATUS (pytest -q)")
     print("-" * 20)
     rc, out = _run(["pytest", "-q"])
-    if rc == 0:
-        print(out)
-    else:
-        print(out)
+    if rc != 0:
+        # Print whatever we got (might be empty if pytest crashed early)
+        if out.strip():
+            print(out)
         print("")
         print("NOTE: tests failed; rapid scan is non-authoritative until green.")
+    else:
+        print(out)
     print("")
 
     # 3) Current phase
     print("3) CURRENT PHASE")
     print("-" * 20)
-    handoff = _latest_handoff_by_phase()
+    handoff = _latest_handoff()
     print(f"Latest handoff: {handoff}")
     print("")
 
-    # 4) Authoritative files (phase-aware)
+    # 4) Authoritative files
     print("4) AUTHORITATIVE FILES TO READ")
     print("-" * 20)
-    auth = _authoritative_files_for_handoff(handoff)
+    auth = _authoritative_files()
     if auth:
-        for p in auth:
-            print(p)
+        for f in auth:
+            print(f)
     else:
         print("(none discovered)")
+    print("")
+
+    # 4.5) Phase packet + arch delta
+    print("4.5) PHASE PACKET + ARCHITECTURE DELTA (IF PRESENT)")
+    print("-" * 20)
+    pkt = _latest_phase_packet()
+    print(pkt if pkt else "(no phase packet found)")
+    delta = _latest_arch_delta()
+    print(delta if delta else "(no architecture delta found)")
     print("")
 
     # 5) Appendices
@@ -190,13 +210,6 @@ def main() -> int:
             print(a)
     else:
         print("(none found)")
-    print("")
-
-    # 5.5) Phase 11 overlay
-    print("5.5) PHASE 11 — AUTHORITATIVE FILES TO READ")
-    print("-" * 42)
-    for p in _phase11_authoritative_overlay():
-        print(p)
     print("")
 
     # 6) Meta

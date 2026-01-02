@@ -1,0 +1,60 @@
+PHASE 12 — WIP INDEX (QUARANTINED ARTIFACTS)
+============================================================
+
+Status
+------
+Phase 12 was briefly started and intentionally paused.
+Initial tests depend on a missing fixture (`broker`) and are therefore quarantined
+to preserve a green and trustworthy mainline.
+
+This file is AUTHORITATIVE for understanding:
+- what Phase 12 work exists today
+- where it lives
+- why it is not yet active
+- what must be done before Phase 12 resumes
+
+Quarantined Artifacts
+---------------------
+docs/_quarantine/phase12_tests/tests_phase12/test_market_snapshot_multi.py
+
+Reason for Quarantine
+---------------------
+- Missing fixture: `broker`
+- Phase 12 execution contract not yet finalized
+- pytest is intentionally locked to /tests via pytest.ini
+
+This prevents:
+- accidental execution of incomplete logic
+- silent architectural drift
+- broken handoffs
+
+Immediate Next Steps (Phase 12 Resume Checklist)
+------------------------------------------------
+1) Define the Phase 12 execution surface:
+   - expected module location for multi-snapshot logic
+   - expected adapter orchestration model
+
+2) Implement a minimal Broker abstraction OR test double:
+   - suitable for deterministic unit tests
+   - fixture to live in tests/conftest.py once Phase 12 goes live
+
+3) Reactivate Phase 12 tests:
+   - move test_market_snapshot_multi.py from quarantine to:
+     tests/phase12/test_market_snapshot_multi.py
+   - ensure all tests pass (green)
+
+4) Remove or archive quarantine directory once Phase 12 is active.
+
+Discovery & Tooling
+-------------------
+- Locate all Phase 12 WIP artifacts:
+  python tools/phase_wip_scan.py --phase 12
+
+- Project-wide situational awareness:
+  python tools/rapid_scan.py
+
+Notes
+-----
+This index is intentionally lightweight and must be kept current.
+If Phase 12 advances, update or replace this file as part of the phase wrap.
+
