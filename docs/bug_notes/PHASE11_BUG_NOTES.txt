@@ -1,0 +1,53 @@
+PHASE 11 BUG NOTES
+==================
+
+As-of: 2026-01-02 06:12 UTC
+Phase: 11
+
+BUG-011-001: wpb patch corruption injected editor escape tokens into a test file
+---------------------------------------------------------------------------
+Symptom:
+- tests/phase11/test_phase11_snapshot_merge.py contained stray tokens like:
+  ESCOC / ESCOD / (END)
+- File still imported, but was visibly corrupted in diff output.
+
+Fix:
+- Verified syntax via:
+  python -m py_compile tests/phase11/test_phase11_snapshot_merge.py
+- Searched for corruption tokens via grep and removed/avoided reinserting.
+- Kept tests clean + deterministic.
+
+Prevention:
+- Prefer python-writer edits for larger chunks.
+- When patching tests, always:
+  python -m py_compile <testfile>
+  grep -n "ESCOC|ESCOD|(END)" <testfile> || true
+
+BUG-011-002: tools/rapid_scan.py broken by unterminated print string
+--------------------------------------------------------------------
+Symptom:
+- SyntaxError: unterminated string literal around a print("... block.
+
+Fix:
+- Rewrote tools/rapid_scan.py cleanly (python-writer) to restore correctness and
+  add Phase 11 “authoritative files” overlay section.
+
+Prevention:
+- Avoid multi-line string patching inside print(...) via brittle anchors.
+- If patching fails repeatedly, rewrite the file cleanly (preferred recovery path).
+
+BUG-011-003: (transient) median_strict integration introduced signature/variable mistakes
+---------------------------------------------------------------------------------------
+Symptom:
+- merge_snapshots signature mismatch (unexpected kwargs) and NameError due to bad variable name.
+- Multiple tests failed until corrected.
+
+Fix:
+- Standardized merge_snapshots signature to accept strict-mode kwargs (keyword-only).
+- Restored correct local variable usage.
+- Added explicit refusal codes for strict-mode test assertions.
+
+Status:
+- Resolved; test suite green.
+
+END PHASE 11 BUG NOTES

@@ -1,0 +1,90 @@
+PHASE 12 HANDOFF PROMPT
+=======================
+
+As-of: 2026-01-02 06:12 UTC
+Status: ACTIVE (Phase 12 begins when Phase 11 is frozen)
+Predecessor: Phase 11 (pure snapshot reconciliation primitives + rapid_scan overlay)
+
+0. NON-NEGOTIABLE ENTRY PROCEDURE
+--------------------------------
+Before any Phase 12 work begins, the following MUST be completed:
+
+1) Read:
+   - docs/appendices/APPX_CHAT_RESPONSE_PROTOCOL.txt
+   - docs/appendices/APPX_PROJECT_RAPID_SCAN_PROTOCOL.txt
+
+2) Run:
+   python tools/rapid_scan.py
+
+If this step is skipped, all subsequent work is invalid.
+
+1. RAPID ORIENTATION (REQUIRED)
+-------------------------------
+Phase 11 delivered (authoritative):
+- Pure snapshot merge policies:
+  - pick_first, pick_first_valid, median, reject_outliers, median_strict
+- Pure helpers for normalization + aggregation + band/spread:
+  - normalize_and_merge (pair enforcement + invalid filtering)
+  - SnapshotAggregate (merged + audit)
+  - snapshot_band helper (reused by strict logic)
+- rapid_scan rewritten cleanly + Phase 11 authoritative overlay section
+- Test suite green.
+
+Entry points (read in order):
+- docs/build_notes/PHASE11_BUILD_NOTES.txt
+- docs/bug_notes/PHASE11_BUG_NOTES.txt
+- docs/phase11/PHASE11_OPERATOR_NOTES.txt
+- docs/phase10/PHASE10_HANDOFF_PROMPT_PHASE11.txt (invariant inheritance)
+
+2. PHASE 12 SCOPE (INITIAL)
+---------------------------
+Phase 12 should *wire* multi-source read-only snapshot aggregation without expanding trust.
+
+Recommended scope:
+A) Add an AdapterBroker-level helper to fetch multiple snapshot sources and reconcile:
+   - Example: market_snapshot_multi(pair, adapter_ids, merge_policy, ...)
+   - Must route through AdapterBroker.call for each live adapter call.
+   - Must remain read-only and default-deny (no new allowlists without explicit approval).
+
+B) Use Phase 11 primitives for deterministic reconciliation:
+   - normalize_and_merge and/or SnapshotAggregate
+   - Provide “audit” output option for operator debugging.
+
+C) Tests:
+   - Unit tests for multi-source orchestration using fake/paper adapters.
+   - No external network calls in tests.
+   - Tests define behavior (including refusal propagation and audit contents).
+
+Out-of-scope unless explicitly re-scoped:
+- Trading/execution/signing
+- Account endpoints / credentials
+- Websockets/daemons/schedulers
+- Retries/backoff
+- Expanding allowlists/domains
+
+3. HARD INVARIANTS (CANNOT BE BROKEN)
+------------------------------------
+- Network is default-deny.
+- All live operations route through AdapterBroker.call.
+- Allowlists are explicit and capability-scoped (no wildcards).
+- Tests define behavior, not comments.
+- Redaction is never bypassed for real adapters.
+- No retries, no credentials, no write operations.
+
+4. REQUIRED OUTPUTS FOR PHASE 12
+--------------------------------
+Phase 12 MUST conclude with:
+- Build notes
+- Bug notes
+- Operator notes
+- Phase 13 handoff
+- Appendices updated only if behavior changes
+
+5. META
+-------
+If a future operator asks:
+"What am I allowed to do?"
+
+Then this handoff or the appendices have failed.
+
+END OF PHASE 12 HANDOFF

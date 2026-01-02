@@ -1,0 +1,62 @@
+PHASE 11 OPERATOR NOTES
+=======================
+
+As-of: 2026-01-02 06:12 UTC
+Phase: 11
+Status: READY TO FREEZE AFTER WRAP COMMIT
+
+1) WHAT PHASE 11 ADDS (OPERATOR VIEW)
+------------------------------------
+Phase 11 adds *read-only* snapshot reconciliation building blocks:
+
+A) Merge policies (allmight/adapters/snapshot_merge.py)
+- pick_first:
+  deterministic, first snapshot wins.
+- pick_first_valid:
+  deterministic, skips invalid (<=0, NaN/inf), first valid wins;
+  refuses with REFUSE_FIRST_VALID_NOT_FOUND if none valid.
+- median:
+  median price of valid snapshots; even counts average two center values.
+- reject_outliers:
+  rejects far-out prices and merges remaining “center mass”;
+  refuses with REFUSE_ALL_REJECTED when nothing remains.
+- median_strict:
+  requires min_sources (after invalid filtering) AND spread <= max_spread_pct.
+  refusals:
+    - REFUSE_MEDIAN_STRICT_TOO_FEW_SOURCES
+    - REFUSE_MEDIAN_STRICT_SPREAD
+
+B) Normalization helper (allmight/adapters/snapshot_normalize_merge.py)
+- normalize_and_merge:
+  - enforces pair consistency (refuses mismatched pair sets)
+  - filters invalid prices
+  - delegates to merge policy
+
+C) Aggregate result (allmight/adapters/snapshot_aggregate.py)
+- SnapshotAggregate:
+  - merged snapshot
+  - audit fields to explain what got kept/rejected and why
+
+D) Band helper (allmight/adapters/snapshot_band.py)
+- small pure utility to compute spread/band decisions for strict reconciliation
+
+2) HOW TO USE (SAFE PATTERN)
+----------------------------
+- Use these functions on *already-fetched* snapshots.
+- Do not add network behavior here.
+- Do not introduce retries/backoff.
+- Keep refusal strings stable (tests depend on them).
+
+3) QUICK COMMANDS
+-----------------
+pytest -q
+python tools/rapid_scan.py
+
+4) INVARIANTS (DO NOT VIOLATE)
+------------------------------
+- Default-deny network remains unchanged.
+- No credential handling.
+- No write/execution endpoints.
+- No schedulers/websockets/daemons in this layer.
+
+END PHASE 11 OPERATOR NOTES
