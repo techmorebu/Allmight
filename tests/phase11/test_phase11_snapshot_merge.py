@@ -76,3 +76,32 @@ def test_merge_refuses_unknown_policy():
     with pytest.raises(Exception) as e:
         merge_snapshots([_snap(100,"a")], policy="nope")
     assert "REFUSE_UNKNOWN_POLICY" in str(e.value)
+
+def test_merge_median_strict_accepts_tight_cluster():
+    snaps = [_snap(100, "a"), _snap(101, "b"), _snap(99, "c")]
+    out = merge_snapshots(snaps, policy="median_strict", min_sources=3, max_spread_pct=0.05)
+    assert 99.0 <= out.price <= 101.0
+    assert out.source in {"a", "b", "c"}
+
+
+def test_merge_median_strict_refuses_too_few_sources():
+    snaps = [_snap(100, "a"), _snap(101, "b")]
+    with pytest.raises(Exception) as e:
+        merge_snapshots(snaps, policy="median_strict", min_sources=3, max_spread_pct=0.10)
+    assert "REFUSE_MEDIAN_STRICT_TOO_FEW_SOURCES" in str(e.value)
+
+
+def test_merge_median_strict_refuses_when_spread_too_wide():
+    snaps = [_snap(100, "a"), _snap(130, "b"), _snap(160, "c")]
+    with pytest.raises(Exception) as e:
+        merge_snapshots(snaps, policy="median_strict", min_sources=3, max_spread_pct=0.10)
+    assert "REFUSE_MEDIAN_STRICT_SPREAD" in str(e.value)
+
+
+def test_merge_median_strict_ignores_invalid_but_still_requires_min_sources():
+    nan = float("nan")
+    snaps = [_snap(100, "a"), _snap(nan, "badnan"), _snap(101, "b"), _snap(99, "c")]
+    out = merge_snapshots(snaps, policy="median_strict", min_sources=3, max_spread_pct=0.05)
+    assert 99.0 <= out.price <= 101.0
+    assert out.source in {"a", "b", "c"}
+
