@@ -4,6 +4,7 @@ import math
 from typing import List
 
 from allmight.adapters.market_snapshot import MarketSnapshot
+from allmight.adapters.snapshot_band import within_spread
 from allmight.security.redaction import redact_sensitive
 
 
