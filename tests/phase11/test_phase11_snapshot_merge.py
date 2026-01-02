@@ -20,6 +20,34 @@ def test_merge_pick_first_is_deterministic():
     assert out.source == "a"
 
 
+def test_merge_pick_first_valid_skips_invalid_and_picks_first_valid():
+    # invalid: price <= 0
+    # invalid: NaN
+    # valid: price finite > 0
+    nan = float("nan")
+    snaps = [
+        _snap(0.0, "bad0"),
+        _snap(nan, "badnan"),
+        _snap(123.0, "good"),
+        _snap(999.0, "later"),
+    ]
+    out = merge_snapshots(snaps, policy="pick_first_valid")
+    assert out.price == 123.0
+    assert out.source == "good"
+
+
+def test_merge_pick_first_valid_refuses_if_none_valid():
+    nan = float("nan")
+    snaps = [
+        _snap(0.0, "bad0"),
+        _snap(-1.0, "badneg"),
+        _snap(nan, "badnan"),
+    ]
+    with pytest.raises(Exception) as e:
+        merge_snapshots(snaps, policy="pick_first_valid")
+    assert "REFUSE_FIRST_VALID_NOT_FOUND" in str(e.value)
+
+
 def test_merge_median_odd():
     out = merge_snapshots([_snap(100,"a"), _snap(300,"b"), _snap(200,"c")], policy="median")
     assert out.price == 200.0

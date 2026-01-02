@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+
 from dataclasses import replace
 from typing import Iterable, List, Optional
 
@@ -28,6 +30,20 @@ def merge_snapshots(
 
     if policy == "pick_first":
         return snaps[0]
+
+    if policy == "pick_first_valid":
+        for ss in snaps:
+            try:
+                pair_ok = isinstance(ss.pair, str) and ss.pair.strip() != ""
+                price_ok = isinstance(ss.price, (int, float)) and math.isfinite(float(ss.price)) and float(ss.price) > 0.0
+                ts_ok = isinstance(ss.ts_unix, int)
+            except Exception:
+                pair_ok = price_ok = ts_ok = False
+
+            if pair_ok and price_ok and ts_ok:
+                return ss
+
+        raise RuntimeError(redact_sensitive("REFUSE_FIRST_VALID_NOT_FOUND (phase 11)."))
 
     if policy == "median":
         m = _median([s.price for s in snaps])
