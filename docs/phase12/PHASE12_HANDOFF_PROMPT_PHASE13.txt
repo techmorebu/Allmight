@@ -1,0 +1,55 @@
+PHASE 12 HANDOFF PROMPT → PHASE 13
+============================================================
+As-of: 2026-01-02 10:18 UTC
+
+Current status
+--------------
+✅ Test suite green: 112 passed.
+✅ Phase 12 multi-source snapshot orchestration implemented in AdapterBroker.market_snapshot_multi().
+
+What Phase 12 delivered
+-----------------------
+- Multi-adapter market snapshot read path:
+  - Calls AdapterBroker.call(operation="market_snapshot_live")
+  - Normalizes heterogeneous adapter payloads:
+    - wrapper dicts: result/data/snapshot/snap/market_snapshot/snapshots
+    - symbol-keyed dicts: { "BTC-USD": ... }
+    - quote shapes: bid/ask/last -> price
+  - Coerces into canonical MarketSnapshot dataclass:
+    - pair, price, ts_unix, source
+  - Filters invalid results, preserves deterministic adapter order.
+  - Produces audit output (stable outward contract):
+    - pair, merge_policy, inputs_used_count, results, merge_audit
+
+Operator quick scan
+-------------------
+1) Tests:
+   pytest -q
+
+2) Phase 12 focused test:
+   pytest -q tests/phase12/test_market_snapshot_multi.py
+
+3) Git cleanliness:
+   git status
+   git diff
+
+Key files
+---------
+- allmight/adapters/broker.py
+- allmight/adapters/market_snapshot.py
+- allmight/adapters/snapshot_normalize_merge.py
+- allmight/adapters/snapshot_schema.py
+
+Phase 13 suggested next step
+----------------------------
+- Extend snapshot orchestration into a higher-level “read-only market context” primitive:
+  - multi-pair batch support
+  - adapter health scoring (still read-only; no retries)
+  - rate-limit aware scheduling hooks
+  - standardized audit schema across operations
+
+Hard rules to keep
+------------------
+- No writes, no retries, no trust expansion.
+- Deterministic ordering.
+- Use python-writer pattern for all file creation/patch artifacts.
