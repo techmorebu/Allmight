@@ -107,13 +107,26 @@ class AdapterBroker:
                 adapter_id=adapter_id,
                 capability="MARKET_DATA_HTTP_READ_LIVE",
                 domain=str(domain),
-            )
-            # Phase 9: minimal live snapshot implementation (single adapter only)
-            if adapter_id != "phase9_http_snapshot":
-                # Other adapters remain stubbed in phase9
-                return {"operation": operation, "params": redact_any(params), "adapter": adapter_id}
-            from allmight.adapters.http_snapshot import fetch_coinbase_spot_snapshot
-            return fetch_coinbase_spot_snapshot(pair=str((params or {}).get("pair", "")), net=self._net, adapter_id=adapter_id)
+            )            # Phase 9/10: live read-only market snapshots (deny-first, allowlist-gated)
+            # NOTE: Only explicitly implemented adapters may execute network reads.
+            if adapter_id == "phase9_http_snapshot":
+                from allmight.adapters.http_snapshot import fetch_coinbase_spot_snapshot
+                return fetch_coinbase_spot_snapshot(
+                    pair=str((params or {}).get("pair", "")),
+                    net=self._net,
+                    adapter_id=adapter_id,
+                )
+
+            if adapter_id == "phase10_http_snapshot_kraken":
+                from allmight.adapters.http_snapshot_kraken import fetch_kraken_spot_snapshot
+                return fetch_kraken_spot_snapshot(
+                    pair=str((params or {}).get("pair", "")),
+                    net=self._net,
+                    adapter_id=adapter_id,
+                )
+
+            # All other adapters remain stubbed (no network activity)
+            return {"operation": operation, "params": redact_any(params), "adapter": adapter_id}
 
         # Phase 8: no live operations; stubs only
         return {"operation": operation, "params": redact_any(params), "adapter": adapter_id}

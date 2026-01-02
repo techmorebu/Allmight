@@ -4,6 +4,11 @@
       "adapter_id": "phase9_http_snapshot",
       "capability": "MARKET_DATA_HTTP_READ_LIVE",
       "domain": "api.exchange.coinbase.com"
+    },
+    {
+      "adapter_id": "phase10_http_snapshot_kraken",
+      "capability": "MARKET_DATA_HTTP_READ_LIVE",
+      "domain": "api.kraken.com"
     }
   ],
   "entries": [
