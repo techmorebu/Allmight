@@ -1,0 +1,81 @@
+PHASE 10 BUILD NOTES
+===================
+
+As-of: 2026-01-02 01:19 UTC
+Status: STABILIZED (ready to freeze)
+
+Objective
+---------
+Extend read-only live-read adapters WITHOUT expanding trust.
+Preserve Phase 7/8/9 invariants: deny-first network, allowlist gating, no secrets, no retries, no writes.
+
+What changed (high level)
+-------------------------
+1) Added a second read-only HTTP snapshot source (Kraken) under the same strict Phase 9/10 trust posture.
+2) Kept AdapterBroker.call(operation="market_snapshot_live") as the single canonical live-read route.
+3) Normalized snapshot struct into a shared internal dataclass to prevent drift.
+
+Key outputs delivered
+---------------------
+A) Kraken snapshot adapter (read-only, public REST, no credentials)
+- New adapter module:
+  - allmight/adapters/http_snapshot_kraken.py
+- Uses NetworkGate.http_get_bytes (deny-first, allowlist-gated, size-capped, no retries)
+- Strict JSON + strict schema validation
+- Output normalized keys: pair, price, ts_unix, source
+
+B) AdapterBroker routing extended (explicit, no trust expansion)
+- allmight/adapters/broker.py
+- market_snapshot_live routing now explicitly supports:
+  - phase9_http_snapshot (Coinbase)
+  - phase10_http_snapshot_kraken (Kraken)
+- All other adapters remain stubbed for live ops (no network activity)
+
+C) Allowlist updated (explicit, no wildcards)
+- config/phase9/network_allowlist_v0.json
+- Added:
+  - (adapter_id="phase10_http_snapshot_kraken",
+     capability="MARKET_DATA_HTTP_READ_LIVE",
+     domain="api.kraken.com")
+
+D) Snapshot struct normalization
+- New shared struct:
+  - allmight/adapters/market_snapshot.py
+- Both adapters import MarketSnapshot from this module (pure refactor, no behavioral changes)
+
+Tests added/updated
+-------------------
+- New Phase 10 contract tests:
+  - tests/phase10/test_phase10_http_snapshot_kraken_adapter.py
+- Existing Phase 9 tests remained authoritative and stayed green.
+
+Safety posture (non-negotiables preserved)
+------------------------------------------
+- Network default-deny is preserved (NetworkGate.enabled=False blocks egress).
+- Exact-domain allowlisting only (no wildcards).
+- All live reads go through AdapterBroker.call + NetworkGate.
+- No secrets access; SecretsBoundary remains refusal-oriented for live reads.
+- No retries / no background daemons / no websockets.
+
+How to verify (canonical)
+-------------------------
+1) Repo status:
+   git status
+
+2) Tests:
+   pytest -q
+
+Expected:
+- Clean working tree
+- 83 passed
+
+Implementation inventory (files)
+--------------------------------
+- allmight/adapters/broker.py
+- allmight/adapters/http_snapshot.py
+- allmight/adapters/http_snapshot_kraken.py
+- allmight/adapters/market_snapshot.py
+- config/phase9/network_allowlist_v0.json
+- tests/phase10/test_phase10_http_snapshot_kraken_adapter.py
+
+End of Phase 10 build notes.

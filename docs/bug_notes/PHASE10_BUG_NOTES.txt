@@ -1,0 +1,27 @@
+PHASE 10 BUG NOTES
+==================
+
+As-of: 2026-01-02 01:19 UTC
+Status: NONE KNOWN (green suite)
+
+Resolved during Phase 10
+------------------------
+1) Allowlist gating precedence vs network-disabled expectation (test-driven)
+- Initial failures occurred because broker allowlist checks happen before adapter logic.
+- Correct resolution was policy-first: add explicit allowlist rule for Kraken domain.
+
+2) MarketSnapshot refactor import-time NameError
+- A refactor attempt removed `dataclass` imports but left a decorator reference.
+- Fixed by removing leftover local dataclass blocks and importing shared MarketSnapshot.
+
+Known issues / landmines
+------------------------
+None identified with the current test suite.
+
+Constraints reaffirmed (do not violate)
+---------------------------------------
+- No wildcard allowlists.
+- No credentials or SecretsBoundary usage for snapshot reads.
+- No retries, no background behavior.
+
+End of Phase 10 bug notes.
