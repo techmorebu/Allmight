@@ -166,7 +166,25 @@ def main() -> int:
         print("(none found)")
     print("")
 
+    # 5.5) Phase 11 authoritative files
+
+    print("5.5) PHASE 11 — AUTHORITATIVE FILES TO READ")
+
+    print('-' * 42)
+
+    print("docs/phase11/PHASE11_HANDOFF_PROMPT_PHASE12.txt")
+
+    print("docs/phase11/PHASE11_OPERATOR_NOTES.txt")
+
+    print("docs/build_notes/PHASE11_BUILD_NOTES.txt")
+
+    print("docs/bug_notes/PHASE11_BUG_NOTES.txt")
+
+    print("")
+
+
     # 6) Meta
+
     print("6) META")
     print("-" * 20)
     print("If anything above is unclear, the handoff or appendices are incomplete.")
