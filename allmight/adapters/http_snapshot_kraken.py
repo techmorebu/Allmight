@@ -1,19 +1,10 @@
 import json
 import time
-from dataclasses import dataclass
 from typing import Any, Dict
 
 from allmight.security.redaction import redact_sensitive
 from allmight.security.network_gate import NetworkGate
-
-
-@dataclass(frozen=True)
-class MarketSnapshot:
-    pair: str
-    price: float
-    ts_unix: int
-    source: str
-
+from allmight.adapters.market_snapshot import MarketSnapshot
 
 def _validate_kraken_ticker(pair: str, obj: Dict[str, Any]) -> MarketSnapshot:
     # Expected Kraken shape:
