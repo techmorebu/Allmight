@@ -33,7 +33,7 @@ def scan_files() -> list[Path]:
     for root in ROOTS:
         if not root.exists():
             continue
-        for p in root.rglob("*.py"):
+        for p in (p for p in iter_repo_files(root) if p.suffix == ".py"):
             out.append(p)
     return out
 
