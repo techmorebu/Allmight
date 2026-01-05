@@ -1,0 +1,128 @@
+PROJECT ALLMIGHT — UNIFIED MASTER (CONSOLIDATED)
+Version: v2.2 (Consolidation Edition)
+Date: 2026-01-05
+Status: ACTIVE (append-only; frozen sections must not be edited)
+
+============================================================
+0) WHAT THIS FILE IS
+============================================================
+This file is the single “front door” to the AllMight system.
+
+It does three jobs:
+1) Declares what is authoritative (and where it lives).
+2) Defines the system at a high level (what it is, how it works, why it exists).
+3) Provides an index + rules so future work lands in the right place without rewrites.
+
+It deliberately does NOT inline giant appendices. Those live as dedicated docs.
+This master stays readable, navigable, and hard to corrupt.
+
+============================================================
+1) NON-NEGOTIABLES (GOVERNANCE IN 60 SECONDS)
+============================================================
+A) Determinism > cleverness
+- Prefer replayable, hashable inputs.
+- Every “decision” must be reproducible from recorded inputs + versioned code.
+
+B) Safety > opportunity
+- Trades and automations are gated.
+- Shadow-mode first for anything “intelligent”.
+- Kill-switches are mandatory.
+
+C) Append-only doctrine
+- “Frozen” means frozen.
+- Changes happen via PATCH docs and phase deltas, never silent edits.
+
+D) Build hygiene
+- Do not commit secrets (.env is never tracked).
+- Do not commit generated artifacts unless explicitly declared “canonical”.
+- Prefer python-writer file creation to avoid terminal paste corruption.
+
+============================================================
+2) CANONICAL DOC LANES (REPO MAP)
+============================================================
+docs/
+  INDEX.md
+  ops/
+  specs/
+  phase0/ phase1/ phase2/ ...
+  bugs/
+  build_notes/
+  _archive/
+  _incoming_docs/
+
+Rule: if it isn’t in docs/INDEX.md (or linked from it), it’s not authoritative.
+
+============================================================
+3) SYSTEM PURPOSE (THE “WHY”)
+============================================================
+AllMight is a modular, security-first, replayable trading + capital allocation engine.
+
+It is designed to:
+- harvest asymmetric opportunities (CEX/DEX, cross-chain, structural edges)
+- compound safely with explicit capital routing (vault model)
+- avoid MEV-style direct competition where possible
+- self-fund hardware upgrades over time
+- preserve survivability (operable under degraded conditions)
+
+============================================================
+4) CORE ARCHITECTURE (THE “WHAT”)
+============================================================
+LAYER 1 — Inputs (deterministic, versioned)
+LAYER 2 — Engines (scoring + state)
+LAYER 3 — Execution (gated, audited)
+
+============================================================
+5) PHASE MODEL (THE “HOW”)
+============================================================
+Phase 0 — Paper Brain (FROZEN)
+Phase 1 — Data & Structure (COMPLETE / ACTIVE)
+Phase 2 — AI & Confluence Engine (COMPLETE / ACTIVE)
+Phase 3 — Supercycle ATM Engine (COMPLETE / GOVERNED)
+Phase 4 — Instability Index + MetalAllocator (FROZEN / GOVERNED)
+Phase 5+ — Execution automation, scaling, GUI, autonomy (GOVERNED)
+
+============================================================
+6) CAPITAL & VAULT MODEL (THE “MONEY FLOW”)
+============================================================
+Capital is routed, not “spent”.
+Any new strategy must declare:
+- where it pulls capital from
+- where profits go
+- what triggers reductions / shutdown
+- worst-case loss cap
+
+============================================================
+7) INTELLIGENCE POLICY (NO MAGIC, NO AUTOPILOT)
+============================================================
+- Deterministic scoring engines: preferred
+- ML/latent engines: shadow-mode only until activated by gates
+Language models are assistants, not traders.
+
+============================================================
+8) PATCH REGISTER (WHAT CHANGED, WHERE IT LIVES)
+============================================================
+- v2.0 → v2.0.1: Turning Point Projection micro-module
+- v2.0.2 → v2.0.3: Psycho-History read-only doctrine integration
+- v2.0.4: Final philosophy capstone; philosophy frozen read-only
+- AM-PATCH-2.2.1-CUDA-TILE-BATCH-PROMPT: CUDA tile batch prompt artifact
+- APPX-LATENT-SHADOW-UNIFIED-01: latent intelligence / JEPA; shadow testing charter
+
+Rule: patches live in docs/patches or docs/appendices and must be linked from docs/INDEX.md.
+
+============================================================
+9) QUICK LINKS (MATCHING CURRENT docs/ LAYOUT)
+============================================================
+- docs/INDEX.md
+- docs/phase0/PHASE0-BUILD-LOG.txt
+- docs/phase0/PHASE0-CHECKLIST.txt
+- docs/phase1/PHASE_1_BUILD_LOG.txt
+- docs/phase2/PHASE2B_PRESSURE_L1.md
+- docs/specs/CONFLUENCE_MODEL_PAPER_V0.md
+- docs/specs/PHASE0_INTEGRATION_POINTS_V0.txt
+- docs/ops/CAPITAL_INTAKE_PRESETS_V0.txt
+- docs/ops/VAULT_AND_INCOME_FLOW_V0.csv
+- docs/bugs/KNOWN_ISSUES_PHASE2B.md
+
+============================================================
+END
+============================================================
