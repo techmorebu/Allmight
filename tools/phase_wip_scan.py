@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
+from scripts.tools.repo_files import iter_repo_files
 
 import argparse
 from pathlib import Path
@@ -27,7 +28,7 @@ DEFAULT_GLOBS = [
 EXCLUDE_DIRS = {".git", ".venv", "__pycache__", ".pytest_cache", "node_modules", "dist", "build"}
 
 def iter_files(root: Path):
-    for p in root.rglob("*"):
+    for p in iter_repo_files(root):
         parts = set(p.parts)
         if parts & EXCLUDE_DIRS:
             continue
