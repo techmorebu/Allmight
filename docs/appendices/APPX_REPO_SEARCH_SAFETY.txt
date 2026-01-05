@@ -1,0 +1,79 @@
+APPX: Repo Search Safety (Prevent node_modules / OS crawl snags)
+==============================================================
+
+Problem
+-------
+Certain filesystem trees (especially node_modules) can trigger OS-level errors during
+recursive scans (e.g., pathlib.Path.rglob / Path.walk). This can break tooling, tests,
+and phase wrap workflows.
+
+Non-negotiable rule
+-------------------
+Do NOT use repo-root recursive scans (Path.rglob, Path.walk, os.walk) unless you:
+- hard-exclude node_modules, .git, .venv, dist/build, and
+- handle OSError gracefully.
+
+Preferred patterns (deterministic + fast)
+-----------------------------------------
+
+A) Tracked-only file listing (best default)
+   - Deterministic, portable, avoids vendor trees entirely.
+
+   Command:
+     git ls-files
+
+   Python (recommended helper):
+     import subprocess
+     from pathlib import Path
+
+     def tracked_files(repo_root: Path) -> list[Path]:
+         out = subprocess.check_output(["git","ls-files"], cwd=repo_root, text=True)
+         return [repo_root / line for line in out.splitlines() if line.strip()]
+
+B) Ripgrep as the search engine (best for content search)
+   - Fast, respects ignore rules, can hard-exclude globs.
+
+   Commands:
+     rg -n "pattern" -S
+     rg -n "pattern" -S --glob '!node_modules/**' --glob '!.venv/**'
+
+   File listing:
+     rg --files --hidden --glob '!node_modules/**' --glob '!.git/**' --glob '!.venv/**'
+
+C) If you MUST walk the filesystem (last resort)
+   - Use explicit excludes + error handling.
+
+   Python pattern:
+     EXCLUDE_DIRS = {".git","node_modules",".venv","dist","build","__pycache__"}
+     for root, dirs, files in os.walk(repo_root, topdown=True):
+         dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
+         try:
+             ...
+         except OSError:
+             continue
+
+Mandatory excludes
+-----------------
+Always exclude at minimum:
+- node_modules/
+- .git/
+- .venv/
+- dist/, build/
+- __pycache__/
+- (optional) .pytest_cache/, .mypy_cache/
+
+Operator guidance (when a tool crashes during scan)
+---------------------------------------------------
+1) Prefer replacing the scan with:
+     git ls-files
+   or:
+     rg --files (with exclude globs)
+
+2) If the failure is inside a script:
+   - patch it to use tracked-only enumeration (Pattern A),
+   - OR add explicit excludes + OSError handling (Pattern C).
+
+Why this matters
+----------------
+AllMight phases depend on deterministic, reproducible tooling.
+Vendor trees are hostile, huge, and not part of the audited surface area.
