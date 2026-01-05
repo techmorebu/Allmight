@@ -9,7 +9,17 @@ and phase wrap workflows.
 
 Non-negotiable rule
 -------------------
-Do NOT use repo-root recursive scans (Path.rglob, Path.walk, os.walk) unless you:
+Do NOT use repo-root recursive scans (Path.rglob, Path.walk, 
+[PATCH NOTE — 2026-01-05]
+Prefer tracked-first repo enumeration to avoid node_modules / vendor filesystem errors.
+Use:
+    from scripts.tools.repo_files import iter_repo_files
+    for p in iter_repo_files(repo_root):
+        ...
+This uses `git ls-files` by default (deterministic) and falls back to a pruned, OSError-tolerant walk.
+[/PATCH NOTE]
+
+os.walk) unless you:
 - hard-exclude node_modules, .git, .venv, dist/build, and
 - handle OSError gracefully.
 

@@ -5,7 +5,17 @@ Tag: Phase12 (applies globally)
 PURPOSE
 This appendix hardens Allmight repo searching/scanning so it never breaks on
 vendor trees (node_modules), virtualenvs, or OS-level weirdness. It replaces
-naive recursive filesystem walks (Path.rglob / Path.walk / os.walk from repo root)
+naive recursive filesystem walks (Path.rglob / Path.walk / 
+[PATCH NOTE — 2026-01-05]
+Prefer tracked-first repo enumeration to avoid node_modules / vendor filesystem errors.
+Use:
+    from scripts.tools.repo_files import iter_repo_files
+    for p in iter_repo_files(repo_root):
+        ...
+This uses `git ls-files` by default (deterministic) and falls back to a pruned, OSError-tolerant walk.
+[/PATCH NOTE]
+
+os.walk from repo root)
 with safer, deterministic methods.
 
 PROBLEM (Observed Failure)
