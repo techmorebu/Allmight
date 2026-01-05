@@ -1,0 +1,263 @@
+============================================================
+APPENDIX ID: APPX-LATENT-SHADOW-UNIFIED-01
+TITLE: Latent Intelligence + JEPA-Market — Shadow Testing, Metrics, and Activation Charter
+STATUS: CANONICAL / DORMANT UNTIL ACTIVATED
+APPLIES TO: Unified Master v2.1+, Trading Strategies Shadow Testing
+AUTHOR: SYSTEM
+DATE: 2026-01-03
+============================================================
+
+PURPOSE
+-------
+This appendix defines the complete lifecycle for introducing non-generative,
+latent intelligence models into AllMight.
+
+It unifies:
+- Latent (non-generative) reasoning architecture
+- JEPA-style market world modeling
+- Shadow-mode A/B testing
+- Evaluation metrics
+- Activation and rollback criteria
+
+No component described here may be activated without passing the gates
+defined in this document.
+
+============================================================
+SECTION 1 — CORE PHILOSOPHY
+============================================================
+
+AllMight separates intelligence into layers:
+
+- Cognition: silent, latent, non-generative
+- Language: optional translation layer
+- Execution: guarded, deterministic, auditable
+
+Language is not intelligence.
+Tokens are not reasoning.
+Markets are dynamic systems, not text streams.
+
+Latent models operate in semantic space, maintaining continuous internal state.
+Language models serialize meaning only when required.
+
+============================================================
+SECTION 2 — LATENT INTELLIGENCE MODULE
+============================================================
+
+MODULE NAME:
+LatentEngineCore
+
+ROLE:
+- Maintain continuous internal market understanding
+- Track temporal dynamics and causality
+- Output embeddings, confidence, regime, and action readiness
+- Never generate text by default
+
+INPUTS:
+- Market data (price, volume, volatility)
+- Cross-asset relationships
+- Macro indicators
+- Execution feedback
+- Time context
+
+OUTPUTS (NON-LINGUISTIC):
+- Regime embedding
+- Confidence score
+- Risk gradient
+- Action readiness flag
+- Stability indicator
+
+CONSTRAINTS:
+- Python-first
+- GPU-accelerated where available
+- Deterministic updates
+- Tile-compatible operations preferred
+- Fully auditable state transitions
+
+============================================================
+SECTION 3 — JEPA-STYLE MARKET WORLD MODEL
+============================================================
+
+Markets are treated as a physical system with hidden state.
+
+ARCHITECTURE:
+
+X-Encoder (Observations):
+- Market microstructure
+- Time-series features
+- Volatility and flow
+- Macro context
+
+Latent Predictor:
+- Predicts next latent state
+- No price targets
+- No token prediction
+
+Y-Encoder (Optional Queries):
+- Risk
+- Trend
+- Instability
+- Exposure
+
+LOSS:
+- Alignment between predicted and observed latent states
+- Penalizes incoherent temporal jumps
+
+KEY PROPERTY:
+Meaning stabilizes over time.
+Instant guesses may be wrong.
+Locked meaning is prioritized.
+
+============================================================
+SECTION 4 — SHADOW MODE A/B HARNESS
+============================================================
+
+GOAL:
+Compare Baseline vs Candidate pipelines under identical conditions
+without granting execution authority.
+
+Baseline (A):
+- Current AllMight trading strategy stack
+
+Candidate (B):
+- LatentEngineCore / JEPA-Market
+- SHADOW MODE ONLY
+
+------------------------------------------------------------
+INPUT CONTRACT
+------------------------------------------------------------
+
+- Deterministic replay datasets preferred
+- Or live read-only shadow feeds
+- All inputs versioned and hashable
+
+------------------------------------------------------------
+OUTPUT CONTRACT (DecisionRecord v1)
+------------------------------------------------------------
+
+{
+  "ts": "...",
+  "symbol": "...",
+  "pipeline": "baseline|candidate",
+  "regime": "...",
+  "confidence": 0.0-1.0,
+  "action": "BUY|SELL|HOLD|NO_TRADE|VETO|PROPOSE_BUY|PROPOSE_SELL",
+  "risk_flags": ["..."],
+  "model_version": "...",
+  "config_hash": "...",
+  "features_hash": "..."
+}
+
+------------------------------------------------------------
+STORAGE
+------------------------------------------------------------
+
+artifacts/shadow_ab/<run_id>/
+- inputs_manifest.json
+- baseline_decisions.jsonl
+- candidate_decisions.jsonl
+- merged_decisions.jsonl
+- metrics_onepage.txt
+- metrics_detail.json
+- anomalies.log
+
+NO execution endpoints may be called.
+Any attempt triggers immediate hard fail.
+
+============================================================
+SECTION 5 — EVALUATION METRICS (MINIMAL SET)
+============================================================
+
+PRIMARY:
+- Max Drawdown (absolute + relative)
+- Tail loss (worst 1% days)
+- Profit Factor
+- Sharpe or Sortino
+
+DECISION QUALITY:
+- Trade precision
+- False-positive rate (bad trades)
+- Regime churn index
+- Missed major regime shifts (secondary)
+
+TEMPORAL COHERENCE:
+- Time to lock stable regime
+- Revision rate after lock
+- Output variance during noise
+
+OPERATIONAL:
+- Latency delta
+- GPU/CPU/RAM usage
+- Failure rate
+
+============================================================
+SECTION 6 — ACTIVATION GATES
+============================================================
+
+ALL must be true before activation:
+
+DATA & HARNESS:
+- Data pipelines stable ≥ 14 days
+- Deterministic replay confirmed
+- Shadow harness runs ≥ 7 days without error
+
+PERFORMANCE (must hit ≥ 2):
+- Drawdown reduced ≥ 10% relative
+- Tail loss improved ≥ 15%
+- Regime churn reduced ≥ 20%
+- Profit quality improved without higher risk
+
+OPERATIONS:
+- Latency impact < 5% (hard cap 10%)
+- No crash loops
+- Outputs interpretable by humans
+
+============================================================
+SECTION 7 — ACTIVATION PHASES
+============================================================
+
+Phase 1: Shadow Mode
+- Log-only
+- No execution authority
+
+Phase 2: Advisory Mode
+- Recommendations visible
+- Still no execution
+
+Phase 3: Limited Authority
+- Candidate may veto trades
+- Cannot initiate trades
+
+Phase 4: Full Authority
+- Candidate may propose actions
+- Guardrails always enforced
+
+============================================================
+SECTION 8 — ROLLBACK RULES
+============================================================
+
+Immediate rollback if:
+- Drawdown worsens > 10% vs baseline
+- Tail loss worsens > 15%
+- Latency increases > 10% sustained
+- Nondeterminism detected
+- Unexplained divergence persists > 48h
+
+Rollback action:
+- Disable candidate authority
+- Revert to baseline
+- Preserve logs for forensics
+
+============================================================
+SECTION 9 — IMPLEMENTATION TIMING
+============================================================
+
+This appendix is DESIGN-ONLY until:
+- CUDA Tile is active or GPU headroom exists
+- Shadow harness exists and is tested
+- Metrics show sustained improvement
+
+Until then, all content remains dormant.
+
+============================================================
+END APPX-LATENT-SHADOW-UNIFIED-01
+============================================================
