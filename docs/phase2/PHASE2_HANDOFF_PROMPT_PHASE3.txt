@@ -1,0 +1,50 @@
+This chat begins Phase 3.
+
+Assume ZERO memory of prior chats.
+The GitHub repo is the ONLY source of truth.
+
+------------------------------------------------------------
+PHASE 2 STATUS (LOCKED, DO NOT MODIFY)
+------------------------------------------------------------
+Phase 2 is COMPLETE and STABLE.
+
+Verified outcomes:
+- Deterministic institutional regime replay
+- Canonical JSON output schema
+- Activation band + regime classification separated
+- Excel-faithful Phase-0 MCS aggregation
+- Replay CLI validated (last / i60)
+- All tests passing
+- Clean commits on main
+
+Phase 2 functionality is FROZEN.
+Do not refactor unless explicitly required by Phase 3 goals.
+
+------------------------------------------------------------
+NON-NEGOTIABLE POLICIES (STILL ACTIVE)
+------------------------------------------------------------
+MANDATED INPUT GOVERNANCE:
+- NO terminal paste of structured content
+- NO heredocs
+- ALL file writes via Python writer method only
+
+PHASE WRAP REQUIREMENTS:
+- Build notes
+- Bug notes
+- Validation evidence
+- Phase handoff
+- Clean git commit
+
+------------------------------------------------------------
+PHASE 3 OBJECTIVES
+------------------------------------------------------------
+Phase 3 will build ON TOP of Phase 2 outputs without modifying them.
+
+Expected scope:
+- Consumption of regime_state JSON
+- Execution gating / intent routing
+- Strategy eligibility matrices
+- Kill-switch and suppression logic
+- No live trading yet (still paper / simulated)
+
+Phase 3 must treat Phase 2 outputs as immutable facts.

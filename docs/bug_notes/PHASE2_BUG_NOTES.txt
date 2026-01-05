@@ -1,0 +1,29 @@
+PHASE 2 — BUG NOTES
+As-of: 2026-01-05 18:21 UTC
+Status: RESOLVED
+
+1) Import / NameError issues
+- NameError: Path not defined in calc_regime_replay.py
+  Fix: ensure pathlib.Path imported before use.
+
+2) Variable name drift during patching
+- structure_score / pressure_score referenced out of scope
+  Fix: compute MCS_total from per-asset contributions (ctb.structure_score / ctb.pressure_score) with deterministic aggregate.
+
+3) Indentation / glued-line syntax errors
+- IndentationError / SyntaxError from patch collisions
+  Fix: split glued lines; restore proper indentation.
+
+4) activation band key mismatch
+- KeyError: thresholds dict uses "band" not "activation_band"
+  Fix: _activation_band reads t["band"].
+
+5) Replay runner schema / variable issues
+- NameError: s not defined in _state_to_jsonable
+  Fix: use state consistently.
+- UnboundLocalError: grid parsing shadowed state var
+  Fix: correct list comprehension variable.
+- Schema duplication: activation_band fields duplicated in audit
+  Fix: filter audit keys ("activation_band","activation_band_str") in replay JSON output.
+
+All above resolved; pytest passing.
