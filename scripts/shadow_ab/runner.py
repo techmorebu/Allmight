@@ -41,6 +41,9 @@ def run_shadow_ab(
     rid = run_id or make_run_id()
     run_dir = ensure_run_dir(rid, root=cfg.artifacts_root)
 
+    # Always emit anomalies.log (even if empty) to satisfy smoke-test invariants.
+    (run_dir / "anomalies.log").touch(exist_ok=True)
+
     baseline = BaselinePipeline(PipelineMeta(cfg.baseline_version, cfg.baseline_config_hash))
     candidate = CandidatePipeline(PipelineMeta(cfg.candidate_version, cfg.candidate_config_hash))
 
