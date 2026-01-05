@@ -7,6 +7,8 @@ from typing import List, Optional
 
 from .contracts import DecisionRecord, Snapshot
 from .io import (
+    list_written_artifacts,
+    required_artifacts,
     append_anomaly,
     ensure_run_dir,
     make_run_id,
@@ -64,22 +66,29 @@ def run_shadow_ab(
         baseline_out.append(a)
         candidate_out.append(b)
 
-    write_manifest(
-        run_dir,
-        {
-            "run_id": rid,
-            "n_snapshots": len(snaps),
-            "baseline": {"model_version": cfg.baseline_version, "config_hash": cfg.baseline_config_hash},
-            "candidate": {"model_version": cfg.candidate_version, "config_hash": cfg.candidate_config_hash},
-            "latency": {
-                "avg_ms": sum(timings_ms) / max(1, len(timings_ms)),
-                "max_ms": max(timings_ms) if timings_ms else 0.0,
-                "budget_ms": cfg.latency_budget_ms,
-            },
-            "mode": "REPLAY_SHADOW",
-            "notes": "shadow harness; no execution authority",
+    manifest_payload = {
+        "run_id": rid,
+        "n_snapshots": len(snaps),
+        "baseline": {"model_version": cfg.baseline_version, "config_hash": cfg.baseline_config_hash},
+        "candidate": {"model_version": cfg.candidate_version, "config_hash": cfg.candidate_config_hash},
+        "latency": {
+            "avg_ms": sum(timings_ms) / max(1, len(timings_ms)),
+            "max_ms": max(timings_ms) if timings_ms else 0.0,
+            "budget_ms": cfg.latency_budget_ms,
         },
-    )
+        "mode": "REPLAY_SHADOW",
+        "notes": "shadow harness; no execution authority",
+        # Phase 14: make artifact expectations explicit in the manifest.
+        # "written" is populated after all artifacts are emitted (see FINAL rewrite).
+        "artifacts": {
+            "required": required_artifacts(),
+            "written": [],
+            "anomalies_log_present": (run_dir / "anomalies.log").exists(),
+        },
+    }
+    # Pass 1: write initial manifest early (operator can see run metadata even if later steps fail).
+    write_manifest(run_dir, manifest_payload)
+
 
     write_decisions(run_dir, "baseline", baseline_out)
     write_decisions(run_dir, "candidate", candidate_out)
@@ -100,5 +109,10 @@ def run_shadow_ab(
 
     write_metrics_detail(run_dir, detail)
     write_onepage_metrics(run_dir, format_onepage(detail))
+
+    # FINAL manifest rewrite: populate artifacts.written after all known artifacts exist.
+    manifest_payload["artifacts"]["written"] = list_written_artifacts(run_dir)
+    manifest_payload["artifacts"]["anomalies_log_present"] = (run_dir / "anomalies.log").exists()
+    write_manifest(run_dir, manifest_payload)
 
     return run_dir
