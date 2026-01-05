@@ -1,0 +1,81 @@
+PROJECT: AllMight
+REPO: https://github.com/techmorebu/Allmight
+BRANCH: main
+
+============================================================
+PHASE 14 — POST-HARDENING ALIGNMENT & OPERATOR POLISH
+AUTHORITATIVE HANDOFF PROMPT
+============================================================
+
+This chat begins Phase 14.
+
+Assume ZERO memory of prior chats.
+This document + referenced files are the ONLY source of truth.
+
+------------------------------------------------------------
+PHASE 13 STATUS (LOCKED, DO NOT MODIFY)
+------------------------------------------------------------
+Phase 13 is COMPLETE and STABLE.
+
+Verified outcomes:
+- Repo scan-safety guardrail enforced without self-triggering
+- Shadow A/B anomalies.log guaranteed on:
+  - normal runs (smoke)
+  - exception-path runs (regression test)
+- Shadow A/B determinism enforced for key artifacts
+  - metrics_detail.json timing fields normalized for determinism testing
+- All tests are green
+
+Phase 13 functionality is FROZEN.
+Do not refactor unless explicitly required by Phase 14 goals.
+
+------------------------------------------------------------
+NON-NEGOTIABLE POLICIES (STILL ACTIVE)
+------------------------------------------------------------
+MANDATED REPO SCAN POLICY:
+- DO NOT use Path.rglob(...)
+- DO NOT use os.walk(...) directly
+- ALWAYS use scripts.tools.repo_files.iter_repo_files (tracked-first; hardened fallback only inside repo_files.py)
+
+WORKFLOW RULES:
+- ALL file creation/modification must use Python-writer pattern
+- NO heredocs
+- NO inline shell edits
+- NO terminal paste for structured content
+
+------------------------------------------------------------
+PHASE 14 INTENT (STRICT)
+------------------------------------------------------------
+Phase 14 is alignment and operator polish only:
+- Documentation alignment: ensure appendices reflect enforced reality (tests/policies)
+- Operator ergonomics: keep defaults safe, outputs predictable
+- Guardrail improvements only (tests/docs), not feature expansion
+
+NO FEATURE EXPANSION:
+- No new data sources
+- No new models
+- No execution enablement
+- No trading logic changes unless required to preserve invariants
+
+------------------------------------------------------------
+START HERE (PHASE 14 CHECKLIST)
+------------------------------------------------------------
+1) Verify green:
+   - pytest -q
+   - git status (clean)
+
+2) Read Phase 13 wrap artifacts:
+   - docs/build_notes/PHASE13_BUILD_NOTES.txt
+   - docs/bug_notes/PHASE13_BUG_NOTES.txt
+
+3) Confirm guardrails remain enforced:
+   - tests/phase13/test_repo_scan_safety.py
+   - tests/shadow_ab/test_shadow_ab_anomalies_log_guarantee.py
+   - tests/shadow_ab/test_shadow_ab_deterministic_outputs.py
+
+4) If any docs mention forbidden traversal primitives literally,
+   patch them to avoid copy/paste hazards (do not weaken the policy).
+
+============================================================
+END PHASE 14 HANDOFF PROMPT
+============================================================

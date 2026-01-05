@@ -1,0 +1,29 @@
+PHASE 13 — BUG NOTES
+============================================================
+As-of: 2026-01-05 08:08:33 UTC
+
+SUMMARY
+------------------------------------------------------------
+No open functional regressions detected in Phase 13 scope.
+
+CLOSED ISSUES (PHASE 13)
+------------------------------------------------------------
+1) Repo scan safety guardrail failed by self-triggering
+- Cause: forbidden traversal tokens appeared literally inside the guardrail test strings.
+- Fix: build tokens dynamically (no literal substrings), preserving strict enforcement.
+
+2) Shadow A/B anomalies.log missing on zero-anomaly runs
+- Cause: anomalies.log only created when an anomaly line was appended.
+- Fix: anomalies.log is created unconditionally at run start; regression tests added.
+
+3) Shadow A/B determinism test initially failed due to latency variance
+- Cause: metrics_detail.json includes runtime latency fields that vary across runs.
+- Fix: determinism test normalizes timing fields while keeping all other content strict.
+
+KNOWN LIMITATIONS (ACCEPTED)
+------------------------------------------------------------
+- Operational timing metrics (avg_ms/max_ms) are inherently nondeterministic and are treated as telemetry,
+  not determinism-critical content.
+
+END PHASE 13 BUG NOTES
+============================================================
