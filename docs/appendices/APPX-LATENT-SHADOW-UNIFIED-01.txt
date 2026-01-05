@@ -152,13 +152,13 @@ STORAGE
 ------------------------------------------------------------
 
 artifacts/shadow_ab/<run_id>/
-- inputs_manifest.json
-- baseline_decisions.jsonl
-- candidate_decisions.jsonl
-- merged_decisions.jsonl
-- metrics_onepage.txt
-- metrics_detail.json
-- anomalies.log
+
+CANONICAL ARTIFACT LIST:
+- See inputs_manifest.json -> artifacts.required (source of truth).
+- inputs_manifest.json also records artifacts.written (what was actually emitted).
+
+Operator note:
+- anomalies.log MUST exist on every run (may be empty). This is enforced by tests.
 
 NO execution endpoints may be called.
 Any attempt triggers immediate hard fail.
