@@ -340,6 +340,15 @@ class AdapterBroker:
             picked: MarketSnapshot | None = None
 
             for cand in candidates:
+                # Accept snapshot-shaped objects (dataclass/SimpleNamespace/etc) by converting to dict.
+                if not isinstance(cand, dict):
+                    try:
+                        keys = ('pair','symbol','price','last','bid','ask','ts_unix','ts','source')
+                        d = {key: getattr(cand, key) for key in keys if hasattr(cand, key)}
+                        if d:
+                            cand = d
+                    except Exception:
+                        pass
                 # Normalize quote-style payloads to canonical dict
                 if _has_quote_shape(cand):
                     if not _quote_is_valid(cand):
