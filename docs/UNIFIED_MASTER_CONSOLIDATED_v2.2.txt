@@ -772,3 +772,185 @@ the feature is rejected — permanently.
 
 END OF APPENDICES E–G
 ============================================================
+
+
+============================================================
+APPENDIX H — REGIME CLASSIFICATION TRUTH TABLE
+============================================================
+
+This appendix defines how market regimes are classified.
+Regimes are descriptive states — NOT trade commands.
+
+No execution logic may bypass this layer.
+
+------------------------------------------------------------
+PRIMARY REGIME AXES
+------------------------------------------------------------
+Axis 1: Structure
+- Trending
+- Ranging
+- Broken / Dislocated
+
+Axis 2: Volatility
+- Low
+- Normal
+- Elevated
+- Extreme
+
+Axis 3: Liquidity / Participation
+- Healthy
+- Thinning
+- Fragmented
+
+------------------------------------------------------------
+REGIME TRUTH TABLE (SIMPLIFIED)
+------------------------------------------------------------
+
+STRUCTURE   | VOLATILITY | LIQUIDITY   | REGIME LABEL
+------------|------------|-------------|-------------------------
+Trending   | Low/Normal  | Healthy     | RISK-ON
+Trending   | Elevated    | Thinning    | RISK-ON (CAUTION)
+Ranging    | Low         | Healthy     | NEUTRAL
+Ranging    | Elevated    | Thinning    | RISK-OFF (SOFT)
+Broken     | Elevated    | Fragmented  | RISK-OFF (HARD)
+Any        | Extreme     | Fragmented  | PANIC
+
+------------------------------------------------------------
+HARD RULES
+------------------------------------------------------------
+- Regime changes do NOT trigger trades directly
+- Regime disagreement defaults to the more conservative state
+- PANIC overrides all other regime interpretations
+
+------------------------------------------------------------
+OUTPUT CONTRACT
+------------------------------------------------------------
+Each regime output must include:
+- Regime label
+- Confidence score
+- Supporting metrics snapshot
+- Replay window ID
+
+------------------------------------------------------------
+
+============================================================
+APPENDIX I — DRAWDOWN MATHEMATICS & KILL THRESHOLDS
+============================================================
+
+Loss is inevitable. Ruin is optional.
+
+------------------------------------------------------------
+CORE DEFINITIONS
+------------------------------------------------------------
+Peak Equity (PE): Highest recorded equity value  
+Current Equity (CE): Present equity value  
+
+Drawdown (%) = (PE - CE) / PE * 100
+
+------------------------------------------------------------
+STANDARD THRESHOLDS (DEFAULTS)
+------------------------------------------------------------
+
+Per-Trade Loss:
+- Hard cap: ≤ 1–2% of allocated lane capital
+
+Daily Loss:
+- Soft cap: 3%
+- Hard cap: 5% → automatic lane shutdown
+
+Cumulative Drawdown:
+- Warning: 7–10%
+- Hard Kill: 15–20% (lane disabled)
+
+------------------------------------------------------------
+KILL-SWITCH ESCALATION
+------------------------------------------------------------
+
+LEVEL 1 — WARN
+- Capital reduced
+- Execution frequency throttled
+
+LEVEL 2 — FREEZE
+- No new positions
+- Existing positions closed safely
+
+LEVEL 3 — KILL
+- Lane disabled
+- Manual review required
+- No auto-restart allowed
+
+------------------------------------------------------------
+NON-NEGOTIABLE RULES
+------------------------------------------------------------
+- Loss limits are evaluated on realized + unrealized PnL
+- Drawdown resets only after manual approval
+- Recovery trading is forbidden
+
+------------------------------------------------------------
+
+============================================================
+APPENDIX J — LEGAL / COMPLIANCE GUARDRAILS (US-FIRST)
+============================================================
+
+This appendix defines what AllMight is allowed to do
+under a conservative U.S. regulatory interpretation.
+
+This is a *risk-minimization* stance, not legal advice.
+
+------------------------------------------------------------
+CORE POSITIONING
+------------------------------------------------------------
+- AllMight is a personal / internal trading system
+- No third-party funds are accepted
+- No investment advice is provided
+- No profit guarantees are implied
+
+------------------------------------------------------------
+TRADING & MARKET ACCESS
+------------------------------------------------------------
+Allowed:
+- Trading own capital
+- Using regulated exchanges where possible
+- DeFi protocols accessed permissionlessly
+
+Forbidden:
+- Acting as a broker or custodian for others
+- Pooling third-party capital
+- Marketing strategies as “managed funds”
+
+------------------------------------------------------------
+AUTOMATION & AI
+------------------------------------------------------------
+Allowed:
+- Automated execution of predefined strategies
+- AI-assisted analysis (shadow / advisory)
+
+Forbidden:
+- Fully autonomous, self-modifying trading agents
+- Black-box decision systems without auditability
+
+------------------------------------------------------------
+DATA & RECORDKEEPING
+------------------------------------------------------------
+Required:
+- Retain logs of trades and decisions
+- Preserve configuration history
+- Ability to reconstruct actions post hoc
+
+------------------------------------------------------------
+TAX & REPORTING AWARENESS
+------------------------------------------------------------
+- Trades are taxable events
+- Records must support cost basis reconstruction
+- No attempt to conceal activity
+
+------------------------------------------------------------
+FINAL PRINCIPLE
+------------------------------------------------------------
+When uncertain, default to the more conservative,
+transparent, and auditable interpretation.
+
+------------------------------------------------------------
+
+END OF APPENDICES H–J
+============================================================
