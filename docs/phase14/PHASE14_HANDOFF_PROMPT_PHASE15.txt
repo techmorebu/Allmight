@@ -1,0 +1,80 @@
+============================================================
+PHASE 15 — (NEXT) OPERATOR BORINGNESS / FINAL ALIGNMENT
+AUTHORITATIVE HANDOFF PROMPT
+============================================================
+
+This chat begins Phase 15.
+
+Assume ZERO memory of prior chats.
+This document + referenced files are the ONLY source of truth.
+
+------------------------------------------------------------
+PHASE 14 STATUS (LOCKED, DO NOT MODIFY)
+------------------------------------------------------------
+Phase 14 is COMPLETE and STABLE.
+
+Verified outcomes:
+- Shadow A/B operator polish completed:
+  - Canonical artifact list centralized (see scripts/shadow_ab/io.py)
+  - inputs_manifest.json now records artifacts.required + artifacts.written
+  - Manifest uses a two-pass write so "written" is truthful
+  - CLI prints an operator summary line
+- Latent shadow appendix aligned to manifest canonical artifacts
+- All tests are green
+
+Phase 14 functionality is FROZEN.
+Do not refactor unless explicitly required by Phase 15 goals.
+
+------------------------------------------------------------
+NON-NEGOTIABLE POLICIES (STILL ACTIVE)
+------------------------------------------------------------
+MANDATED REPO SCAN POLICY:
+- Do not use raw recursive-globbing or raw directory-walking for repo scans.
+- Always enumerate repo files via scripts.tools.repo_files.iter_repo_files
+  (tracked-first; hardened fallback only inside repo_files.py)
+
+WORKFLOW RULES:
+- ALL file creation/modification must use Python-writer pattern
+- NO heredocs
+- NO inline shell edits
+- NO terminal paste for structured content
+
+Execution remains DISABLED (shadow evaluation only).
+
+------------------------------------------------------------
+PHASE 15 INTENT (STRICT)
+------------------------------------------------------------
+Phase 15 is final alignment + operator boringness only:
+- Docs must reflect enforced reality (tests + invariants)
+- Operator outputs must be predictable and audit-friendly
+- Guardrail tests and docs may be strengthened
+- NO feature expansion:
+  - No new data sources
+  - No new models
+  - No execution enablement
+  - No trading logic changes unless required to preserve invariants
+
+------------------------------------------------------------
+START HERE (PHASE 15 CHECKLIST)
+------------------------------------------------------------
+1) Verify green and clean:
+   - pytest -q
+   - git status
+
+2) Read Phase 14 wrap artifacts:
+   - docs/build_notes/PHASE14_BUILD_NOTES.txt
+   - docs/bug_notes/PHASE14_BUG_NOTES.txt
+
+3) Confirm key guardrails/tests remain enforced:
+   - tests/phase13/test_repo_scan_safety.py
+   - tests/shadow_ab/test_shadow_ab_anomalies_log_guarantee.py
+   - tests/shadow_ab/test_shadow_ab_deterministic_outputs.py
+   - tests/shadow_ab/test_shadow_ab_manifest_artifacts.py
+
+4) Confirm docs reference canonical artifact list correctly:
+   - docs/appendices/APPX-LATENT-SHADOW-UNIFIED-01.txt
+     (STORAGE section points to inputs_manifest.json -> artifacts.required)
+
+============================================================
+END PHASE 15 HANDOFF PROMPT
+============================================================

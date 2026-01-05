@@ -1,0 +1,45 @@
+PHASE 14 BUILD NOTES
+===================
+As-of: 2026-01-05 09:00:30 UTC
+Branch: main
+Head: d70bd4e8c84f152e47fe1b25434e1e8225c042c4
+
+Scope (strict)
+--------------
+Phase 14 was alignment + operator polish only:
+- Documentation alignment to enforced guardrails
+- Operator ergonomics for shadow evaluation outputs
+- Guardrail improvements (tests/docs), no feature expansion
+
+Changes Delivered
+-----------------
+1) Shadow A/B operator polish (non-feature)
+   - Canonical artifact list centralized in scripts/shadow_ab/io.py
+   - inputs_manifest.json now includes:
+     - artifacts.required (canonical list)
+     - artifacts.written (what was actually emitted)
+   - Manifest write is two-pass so "written" is computed after emission
+   - CLI prints a one-line operator summary (run_id, snapshot count, anomaly lines, out_dir)
+
+2) Documentation alignment (anti-drift)
+   - APPX-LATENT-SHADOW-UNIFIED-01 updated:
+     - STORAGE section now points to inputs_manifest.json -> artifacts.required as source of truth
+     - Explicitly notes anomalies.log always exists (may be empty)
+
+3) Guardrails strengthened (tests)
+   - Manifest artifact invariant test added for shadow_ab
+
+Files Touched
+-------------
+- scripts/shadow_ab/io.py
+- scripts/shadow_ab/runner.py
+- scripts/shadow_ab/cli.py
+- tests/shadow_ab/test_shadow_ab_manifest_artifacts.py
+- docs/appendices/APPX-LATENT-SHADOW-UNIFIED-01.txt
+
+Validation Evidence
+-------------------
+pytest -q
+........................................................................ [ 61%]
+.............................................                            [100%]
+117 passed in 8.31s

@@ -1,0 +1,21 @@
+PHASE 14 BUG NOTES
+==================
+As-of: 2026-01-05 09:00:30 UTC
+Branch: main
+Head: d70bd4e8c84f152e47fe1b25434e1e8225c042c4
+
+Summary
+-------
+No open bugs introduced in Phase 14.
+
+Notable Fix (within Phase 14 scope)
+-----------------------------------
+- Manifest "artifacts.written" was initially computed too early (before artifact emission).
+  Resolution: two-pass manifest write in shadow_ab runner.
+
+Validation
+----------
+pytest -q
+........................................................................ [ 61%]
+.............................................                            [100%]
+117 passed in 8.31s
