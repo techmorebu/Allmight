@@ -1,0 +1,142 @@
+APPENDIX: PHASE WRAP & GOVERNANCE PROTOCOL + CHAT WRAP (PHASE 0 → PHASE 2A)
+
+STATUS
+------
+ACTIVE / BINDING (global protocol) + COMPLETE (phase wrap)
+
+EFFECTIVE
+---------
+Phase 0 onward (retroactive).
+
+============================================================
+PART A — PHASE WRAP & GOVERNANCE PROTOCOL (GLOBAL)
+============================================================
+
+Purpose
+-------
+This appendix defines the mandatory wrap-up procedure for ALL phases
+in the AllMight project. It applies retroactively to Phase 0 and
+forward to all future phases.
+
+This protocol exists to preserve determinism, auditability, and
+institutional-grade traceability across development.
+
+Binding Rule
+------------
+No phase is considered COMPLETE unless all required wrap artifacts
+exist as appendices.
+
+Required Wrap Artifacts (ALL PHASES)
+------------------------------------
+1. Build Notes
+2. Bug Notes
+3. Validation Evidence
+4. Chat / Presentation Protocol
+5. Phase-to-Phase Handoff Instructions
+6. Appendix Registration
+7. Git Commit (with clean status)
+
+Blueprint Rule
+--------------
+Phase-0 Blueprint is immutable (PDF).
+ALL updates, changes, clarifications, and rules are added ONLY via
+appendices to preserve historical truth.
+
+============================================================
+PART B — PHASE WRAP (THIS CHAT): PHASE 0 → PHASE 2A
+============================================================
+
+Scope
+-----
+This wrap covers the work completed in the chat that finalized the
+Phase 0 → Phase 1 data pipeline, then established replay-relative
+Shared_Inputs parity and locked the semantics for future phases.
+
+Phases Closed
+-------------
+- Phase 1: Data & Structure (Coinbase-only OHLCV pipeline)
+- Phase 2A: Shared_Inputs (Replay-Relative semantics)
+
+PHASE 1 — DATA & STRUCTURE (COMPLETE / FROZEN)
+----------------------------------------------
+Objective:
+- Replace manual Data_Staging with automated OHLCV ingestion.
+
+Key Outcomes:
+- Coinbase-only CCXT fetch implemented and committed:
+  - scripts/data/fetch_ohlcv.py
+- Canonical staging schema enforced:
+  AssetID, Timeframe, Timestamp, Open, High, Low, Close, Volume
+- Timeframes expanded to all Coinbase-supported values (per ccxt):
+  1m, 5m, 15m, 30m, 1h, 2h, 6h, 1d
+- Deterministic replay window harness implemented:
+  - scripts/data/replay_ohlcv_window.py
+  - Produces fixed N-row windows per (AssetID, Timeframe)
+- Repo hygiene:
+  - .gitignore updated to exclude local/generated artifacts:
+    .venv/, data/staging/, data/processed/, logs/, outputs/
+
+Validation Evidence:
+- Staging CSV generated successfully with expected group counts.
+- Replay windows generated and verified monotonic by Timestamp.
+
+Phase 1 Status:
+- COMPLETE
+- FROZEN (no further changes unless data source contracts change)
+
+PHASE 2A — SHARED_INPUTS (REPLAY-RELATIVE) (COMPLETE / FROZEN)
+--------------------------------------------------------------
+Objective:
+- Rebuild Shared_Inputs in Python with semantics aligned to the Phase 0 sheet.
+
+Critical Discovery (Load-bearing):
+- Phase 0 spreadsheet calculations are REPLAY-RELATIVE (row-indexed),
+  not “latest-only” based on sorted timestamps.
+- FILTER() preserves source order; windowing is anchored to the
+  evaluation row context (implicit in the sheet).
+
+Decision (Canonical):
+- Path A (Recommended): Lock Shared_Inputs as “replay-relative”.
+
+Validation Evidence:
+- Computing Shared_Inputs at different asof_index values produces
+  expected changes in:
+  Last/Prev Close, SwingHigh_20, SwingLow_20, ATR_14, TrendSimple,
+  Last_Volume, AvgVol_20.
+
+Bug Notes:
+- BUG-004: Sheet window mismatch vs “latest-only” calculations
+  Root cause:
+  - Python tail()-based windowing diverges from FILTER+SEQUENCE
+    replay-relative semantics.
+  Resolution:
+  - Replay-relative evaluation introduced and treated as canonical.
+
+Chat / Presentation Protocol (Observed Standard)
+------------------------------------------------
+- Extremely detailed, step-by-step mode.
+- One command at a time.
+- Each step includes:
+  - what to type
+  - why it’s being done
+  - what success looks like
+  - what to do if it fails
+- No refactors to frozen phases unless explicitly required by the
+  next phase goals.
+
+Phase-to-Phase Handoff Instructions
+-----------------------------------
+Next phase: Phase 2B — Institutional Pressure (L1)
+
+Start point:
+- Extract L1 formulas from Phase0_PaperBrain.xlsx (formula exports already exist).
+- Implement a replay-relative Pressure engine:
+  input = (replay_file, asof_index) [and/or Shared_Inputs at same asof]
+  output = Pressure fields matching sheet semantics.
+
+Hard rule:
+- All downstream indicator/score engines must remain replay-relative.
+
+Completion Gate (per GLOBAL protocol):
+- Build notes, bug notes, validation evidence, chat protocol, handoff,
+  appendix registration, and a clean git commit/push.
