@@ -41,6 +41,9 @@ def run_shadow_ab(
     rid = run_id or make_run_id()
     run_dir = ensure_run_dir(rid, root=cfg.artifacts_root)
 
+    # Phase-13 invariant: anomalies.log MUST exist even on zero-anomaly runs.
+    (run_dir / "anomalies.log").touch(exist_ok=True)
+
     baseline = BaselinePipeline(PipelineMeta(cfg.baseline_version, cfg.baseline_config_hash))
     candidate = CandidatePipeline(PipelineMeta(cfg.candidate_version, cfg.candidate_config_hash))
 
