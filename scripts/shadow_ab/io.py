@@ -3,9 +3,11 @@ from __future__ import annotations
 import json
 import time
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
 
 from .contracts import DecisionRecord, Snapshot
+
+LogFn = Callable[[str], None]
 
 def _now_ts() -> str:
     # ISO-ish, stable enough for filenames (no spaces)
@@ -29,25 +31,6 @@ def write_jsonl(path: Path, rows: Iterable[Dict[str, Any]]) -> None:
 
 def write_decisions(run_dir: Path, name: str, decisions: List[DecisionRecord]) -> None:
     write_jsonl(run_dir / f"{name}_decisions.jsonl", [d.to_dict() for d in decisions])
-
-def merge_decisions(
-    baseline: List[DecisionRecord],
-    candidate: List[DecisionRecord],
-) -> List[Dict[str, Any]]:
-    # Simple merge by index; later you can align by (ts, symbol)
-    merged: List[Dict[str, Any]] = []
-    n = min(len(baseline), len(candidate))
-    for i in range(n):
-        merged.append(
-            {
-                "baseline": baseline[i].to_dict(),
-                "candidate": candidate[i].to_dict(),
-            }
-        )
-    return merged
-
-def write_merged(run_dir: Path, merged: List[Dict[str, Any]]) -> None:
-    write_jsonl(run_dir / "merged_decisions.jsonl", merged)
 
 def append_anomaly(run_dir: Path, line: str) -> None:
     p = run_dir / "anomalies.log"
@@ -78,3 +61,55 @@ def load_snapshots_jsonl(path: Path, limit: Optional[int] = None) -> List[Snapsh
                 )
             )
     return out
+
+def _key(d: DecisionRecord) -> Tuple[str, str]:
+    return (d.ts, d.symbol)
+
+def merge_decisions_keyed(
+    baseline: List[DecisionRecord],
+    candidate: List[DecisionRecord],
+    log_fn: Optional[LogFn] = None,
+) -> List[Dict[str, Any]]:
+    """Merge by (ts, symbol). Logs mismatches and duplicates.
+
+    Why: index-based merges silently lie when streams differ.
+    This makes A/B comparisons robust immediately.
+    """
+    b_map: Dict[Tuple[str, str], DecisionRecord] = {}
+    c_map: Dict[Tuple[str, str], DecisionRecord] = {}
+
+    # Build baseline map with duplicate detection
+    for d in baseline:
+        k = _key(d)
+        if k in b_map and log_fn:
+            log_fn(f"DUPLICATE_BASELINE key={k}")
+        b_map[k] = d
+
+    # Build candidate map with duplicate detection
+    for d in candidate:
+        k = _key(d)
+        if k in c_map and log_fn:
+            log_fn(f"DUPLICATE_CANDIDATE key={k}")
+        c_map[k] = d
+
+    keys = sorted(set(b_map.keys()) | set(c_map.keys()))
+    merged: List[Dict[str, Any]] = []
+
+    for k in keys:
+        b = b_map.get(k)
+        c = c_map.get(k)
+
+        if b is None and log_fn:
+            log_fn(f"MISSING_BASELINE key={k}")
+        if c is None and log_fn:
+            log_fn(f"MISSING_CANDIDATE key={k}")
+
+        merged.append(
+            {
+                "key": {"ts": k[0], "symbol": k[1]},
+                "baseline": b.to_dict() if b else None,
+                "candidate": c.to_dict() if c else None,
+            }
+        )
+
+    return merged
