@@ -2,6 +2,21 @@ APPX_REPO_SEARCH_HARDENING.txt
 As-of: 2026-01-05
 Tag: Phase12 (applies globally)
 
+------------------------------------------------------------
+SCAN-SAFETY RULE (ENFORCED)
+------------------------------------------------------------
+FORBIDDEN (do not copy/paste into code):
+- Path.[FORBIDDEN]rglob(...)
+- os.[FORBIDDEN]walk(...)
+
+ALLOWED:
+- scripts.tools.repo_files.iter_repo_files (tracked-first via git ls-files; hardened fallback inside helper)
+- git ls-files enumeration for tracked-only scans
+
+Rationale:
+Raw traversal can enter vendor/unreadable dirs (e.g., node_modules) and hard-fail (Errno 74).
+------------------------------------------------------------
+
 PURPOSE
 This appendix hardens Allmight repo searching/scanning so it never breaks on
 vendor trees (node_modules), virtualenvs, or OS-level weirdness. It replaces
@@ -92,11 +107,27 @@ PRUNE_DIRS = {
 }
 
 def safe_walk(repo_root: Path) -> Iterator[Path]:
-    for dirpath, dirnames, filenames in os.walk(repo_root, topdown=True):
-        # prune in-place
-        dirnames[:] = [d for d in dirnames if d not in PRUNE_DIRS]
-        for fn in filenames:
-            yield Path(dirpath) / fn
+SAFE PATTERN (tracked-first, deterministic)
+------------------------------------------
+Use tracked file enumeration to avoid filesystem traversal hazards:
+
+    import subprocess
+    from pathlib import Path
+
+    root = Path(subprocess.check_output(["git","rev-parse","--show-toplevel"], text=True).strip())
+    tracked = subprocess.check_output(["git","ls-files"], text=True).splitlines()
+
+    for rel in tracked:
+        p = root / rel
+        # filter by suffix/pattern as needed (no rglob/os.walk)
+
+Preferred in-repo helper:
+    from scripts.tools.repo_files import iter_repo_files
+
+    for p in iter_repo_files(root):
+        # p is a Path to a repo file (safe enumeration policy enforced inside helper)
+
+
 
 NOTE: If the platform throws OSError during walk, wrap the walk in try/except
 and continue; never let scans crash workflows.

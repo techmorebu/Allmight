@@ -2,6 +2,21 @@ PHASE 12 → PHASE 13 HANDOFF PROMPT
 ============================================================
 As-of: 2026-01-05 06:41 UTC
 
+------------------------------------------------------------
+SCAN-SAFETY RULE (ENFORCED)
+------------------------------------------------------------
+FORBIDDEN (do not copy/paste into code):
+- Path.[FORBIDDEN]rglob(...)
+- os.[FORBIDDEN]walk(...)
+
+ALLOWED:
+- scripts.tools.repo_files.iter_repo_files (tracked-first via git ls-files; hardened fallback inside helper)
+- git ls-files enumeration for tracked-only scans
+
+Rationale:
+Raw traversal can enter vendor/unreadable dirs (e.g., node_modules) and hard-fail (Errno 74).
+------------------------------------------------------------
+
 PROJECT: AllMight
 REPO: https://github.com/techmorebu/Allmight
 BRANCH: main
@@ -34,7 +49,7 @@ A filesystem traversal failure occurred during Phase 12 work:
     OSError: [Errno 74] Bad message: 'node_modules/yocto-queue'
 
 Root cause:
-- Use of raw filesystem traversal (Path.rglob / os.walk)
+- Use of raw filesystem traversal (Path.[FORBIDDEN]rglob / os.[FORBIDDEN]walk)
 - Traversal entered vendor directories (node_modules)
 - Filesystem returned unreadable entries
 
@@ -45,8 +60,8 @@ MANDATED REPO SCAN POLICY (EFFECTIVE IMMEDIATELY)
 ------------------------------------------------------------
 
 DO NOT:
-- Use Path.rglob(...)
-- Use os.walk(...) directly
+- Use Path.[FORBIDDEN]rglob(...)
+- Use os.[FORBIDDEN]walk(...) directly
 - Traverse the repo filesystem naively
 
 ALWAYS:
@@ -94,7 +109,7 @@ Primary goals:
 
 2. Repo hygiene enforcement
    - Scan safety linting
-   - Optional test to forbid rglob/os.walk misuse
+   - Optional test to forbid rglob/os.[FORBIDDEN]walk misuse
 
 3. Documentation alignment
    - Ensure appendices reflect enforced reality

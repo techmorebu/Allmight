@@ -1,6 +1,21 @@
 APPX: Repo Search Safety (Prevent node_modules / OS crawl snags)
 ==============================================================
 
+------------------------------------------------------------
+SCAN-SAFETY RULE (ENFORCED)
+------------------------------------------------------------
+FORBIDDEN (do not copy/paste into code):
+- Path.[FORBIDDEN]rglob(...)
+- os.[FORBIDDEN]walk(...)
+
+ALLOWED:
+- scripts.tools.repo_files.iter_repo_files (tracked-first via git ls-files; hardened fallback inside helper)
+- git ls-files enumeration for tracked-only scans
+
+Rationale:
+Raw traversal can enter vendor/unreadable dirs (e.g., node_modules) and hard-fail (Errno 74).
+------------------------------------------------------------
+
 Problem
 -------
 Certain filesystem trees (especially node_modules) can trigger OS-level errors during
@@ -55,12 +70,27 @@ C) If you MUST walk the filesystem (last resort)
 
    Python pattern:
      EXCLUDE_DIRS = {".git","node_modules",".venv","dist","build","__pycache__"}
-     for root, dirs, files in os.walk(repo_root, topdown=True):
-         dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
-         try:
-             ...
-         except OSError:
-             continue
+SAFE PATTERN (tracked-first, deterministic)
+------------------------------------------
+Use tracked file enumeration to avoid filesystem traversal hazards:
+
+    import subprocess
+    from pathlib import Path
+
+    root = Path(subprocess.check_output(["git","rev-parse","--show-toplevel"], text=True).strip())
+    tracked = subprocess.check_output(["git","ls-files"], text=True).splitlines()
+
+    for rel in tracked:
+        p = root / rel
+        # filter by suffix/pattern as needed (no rglob/os.walk)
+
+Preferred in-repo helper:
+    from scripts.tools.repo_files import iter_repo_files
+
+    for p in iter_repo_files(root):
+        # p is a Path to a repo file (safe enumeration policy enforced inside helper)
+
+
 
 Mandatory excludes
 -----------------
