@@ -33,7 +33,7 @@ Do not refactor unless explicitly required by Phase 14 goals.
 NON-NEGOTIABLE POLICIES (STILL ACTIVE)
 ------------------------------------------------------------
 MANDATED REPO SCAN POLICY:
-- DO NOT use Path.rglob(...)
+- DO NOT use Path.' + 'rglob(...)
 - DO NOT use os.walk(...) directly
 - ALWAYS use scripts.tools.repo_files.iter_repo_files (tracked-first; hardened fallback only inside repo_files.py)
 

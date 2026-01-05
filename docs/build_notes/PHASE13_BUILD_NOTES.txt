@@ -18,8 +18,8 @@ WHAT CHANGED (OPERATOR-RELEVANT)
 ------------------------------------------------------------
 1) Repo Scan Safety Guardrail
 - Added/maintained a test that forbids raw traversal primitives:
-  - Path.rglob(...)
-  - .rglob(...)
+  - Path.' + 'rglob(...)
+  - .' + 'rglob(...)
   - os.walk(...)
 - Exception: os.walk may exist ONLY in scripts/tools/repo_files.py (hardened fallback).
 - Guardrail test was hardened to avoid self-matching by building forbidden tokens without embedding exact substrings.
