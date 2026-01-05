@@ -1,5 +1,12 @@
 # AllMight Docs Index (Canonical)
 
+## Core Specs (Authoritative)
+
+- `docs/specs/UNIFIED_MASTER_CANONICAL.md` — Canonical spine (front door)
+- `docs/specs/PHASE_MODEL_AND_EXIT_CRITERIA.md` — Phase definitions + exit checklists
+- `docs/specs/SAFETY_RISK_AND_KILL_DOCTRINE.md` — Kill-switch, drawdown math, recovery, US-first guardrails
+- `docs/specs/EXECUTION_AND_CAPITAL_PLAYBOOK.md` — Capital flows, execution lane template, regime truth table
+
 ## Core
 - Unified Master: `docs/specs/UNIFIED_MASTER.md`
 - Architecture: `docs/specs/ARCHITECTURE.md`
