@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
+from scripts.tools.repo_files import iter_repo_files
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -17,7 +18,10 @@ def utc_now_str() -> str:
 def latest_handoff() -> str | None:
     # Find the newest PHASE*_HANDOFF_PROMPT_PHASE*.txt anywhere under docs/
     docs = ROOT / "docs"
-    candidates = list(docs.rglob("PHASE*_HANDOFF_PROMPT_PHASE*.txt"))
+    candidates = sorted(
+        (p for p in iter_repo_files(docs) if p.name.startswith('PHASE') and p.name.endswith('.txt') and 'HANDOFF_PROMPT_PHASE' in p.name),
+        key=lambda x: str(x),
+    )
     if not candidates:
         return None
     candidates.sort(key=lambda p: p.stat().st_mtime, reverse=True)
