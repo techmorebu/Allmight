@@ -392,3 +392,187 @@ Status: OPTIONAL (HIGHLY UNDERRATED)
 
 END OF APPENDIX A
 ============================================================
+
+
+============================================================
+APPENDIX B — PHASE EXIT CHECKLISTS
+============================================================
+
+A phase may only be marked COMPLETE when **all** checklist items are satisfied.
+Failure to meet any item blocks progression.
+
+------------------------------------------------------------
+PHASE 0 — PAPER BRAIN
+------------------------------------------------------------
+[ ] All concepts translated into formal specs or code stubs  
+[ ] No undocumented logic remains in spreadsheets  
+[ ] Phase marked READ-ONLY  
+
+------------------------------------------------------------
+PHASE 1 — DATA & REPLAY ENGINES
+------------------------------------------------------------
+[ ] Deterministic replay verified across multiple runs  
+[ ] Outputs are hash-stable for identical inputs  
+[ ] No dependency on live or mutable data  
+[ ] Documentation finalized  
+[ ] Phase marked LOCKED  
+
+------------------------------------------------------------
+PHASE 2 — REGIME & CONFLUENCE
+------------------------------------------------------------
+[ ] Regime outputs consistent across replay windows  
+[ ] Shadow-mode evaluation only  
+[ ] No execution hooks exist  
+[ ] False positives documented  
+[ ] Phase explicitly labeled SHADOW  
+
+------------------------------------------------------------
+PHASE 3 — SUPERCYCLE ATM ENGINE
+------------------------------------------------------------
+[ ] Capital routing fully specified  
+[ ] Profit allocation rules documented  
+[ ] Drawdown and shutdown rules defined  
+[ ] No automation required  
+[ ] Design frozen  
+
+------------------------------------------------------------
+PHASE 4 — INSTABILITY INDEX & METAL ALLOCATOR
+------------------------------------------------------------
+[ ] Macro triggers clearly defined  
+[ ] Allocation logic deterministic  
+[ ] Physical asset routing documented  
+[ ] No execution required  
+[ ] Design frozen  
+
+------------------------------------------------------------
+PHASE 5 — EXECUTION HARDENING
+------------------------------------------------------------
+[ ] Kill-switch tested  
+[ ] Circuit breakers functional  
+[ ] Audit logs immutable  
+[ ] Rate limits enforced  
+
+------------------------------------------------------------
+PHASE 6–8 — EXECUTION & SCALING
+------------------------------------------------------------
+[ ] Capital caps enforced  
+[ ] Lane isolation verified  
+[ ] Automated shutdowns tested  
+[ ] No uncontrolled capital expansion  
+
+------------------------------------------------------------
+PHASE 9+ — INTELLIGENCE / INTERFACE / RESILIENCE
+------------------------------------------------------------
+[ ] No AI granted execution authority  
+[ ] Operator override always available  
+[ ] System survives partial failures  
+
+------------------------------------------------------------
+PHASE 14 — CANONICALIZATION
+------------------------------------------------------------
+[ ] Single Unified Master  
+[ ] Docs/INDEX.md authoritative  
+[ ] Phase definitions frozen  
+
+------------------------------------------------------------
+
+============================================================
+APPENDIX C — KILL-SWITCH & SAFETY DOCTRINE
+============================================================
+
+This system must always be easier to STOP than to START.
+
+------------------------------------------------------------
+PRIMARY KILL-SWITCHES (MANDATORY)
+------------------------------------------------------------
+- Global execution disable flag
+- Per-lane execution disable
+- Capital withdrawal freeze
+- Network/API disconnect
+
+------------------------------------------------------------
+AUTOMATIC TRIGGERS
+------------------------------------------------------------
+- Max drawdown exceeded
+- Replay divergence detected
+- Unexpected regime transition
+- API response anomalies
+- Latency or data gaps
+
+------------------------------------------------------------
+DESIGN RULES
+------------------------------------------------------------
+- Kill-switch logic must be simple
+- Kill-switch must not depend on AI
+- Kill-switch must be testable offline
+- Kill-switch overrides all automation
+
+------------------------------------------------------------
+PHILOSOPHY
+------------------------------------------------------------
+If a system cannot be stopped cleanly,
+it is not intelligent — it is reckless.
+
+------------------------------------------------------------
+
+============================================================
+APPENDIX D — CAPITAL FLOW DIAGRAMS (TEXT-FIRST)
+============================================================
+
+These diagrams describe capital movement using text primitives.
+No flow may be implicit.
+
+------------------------------------------------------------
+BASE CAPITAL FLOW
+------------------------------------------------------------
+[ Capital Pool ]
+      |
+      v
+[ Strategy Allocation ]
+      |
+      v
+[ Execution Lane ]
+      |
+      v
+[ Profit / Loss ]
+      |
+      +--> [ Loss → Shutdown / Reduce ]
+      |
+      +--> [ Profit → Vault Routing ]
+
+------------------------------------------------------------
+VAULT ROUTING MODEL
+------------------------------------------------------------
+[ Profit ]
+   |
+   +--> [ Operating Vault ]
+   |
+   +--> [ Compounding Vault ]
+   |
+   +--> [ Reserve / Safety Vault ]
+   |
+   +--> [ Hardware / R&D Vault ]
+
+------------------------------------------------------------
+DRAWNDOWN RESPONSE
+------------------------------------------------------------
+[ Drawdown Trigger ]
+        |
+        v
+[ Capital Reduction ]
+        |
+        v
+[ Lane Shutdown ]
+        |
+        v
+[ Manual Review Required ]
+
+------------------------------------------------------------
+HARD RULE
+------------------------------------------------------------
+Capital never loops without passing through a vault decision.
+
+------------------------------------------------------------
+
+END OF APPENDICES B–D
+============================================================
