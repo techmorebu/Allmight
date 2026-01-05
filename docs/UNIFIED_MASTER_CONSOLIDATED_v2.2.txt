@@ -576,3 +576,199 @@ Capital never loops without passing through a vault decision.
 
 END OF APPENDICES B–D
 ============================================================
+
+
+============================================================
+APPENDIX E — EXECUTION LANE SPECIFICATION TEMPLATE
+============================================================
+
+Every execution lane MUST be defined using this template
+before it is allowed to touch capital.
+
+No deviations. No shortcuts.
+
+------------------------------------------------------------
+EXECUTION LANE METADATA
+------------------------------------------------------------
+Lane ID:
+Lane Type: (Single-Asset / Grid / Arbitrage / Yield / Other)
+Associated Phase:
+Creation Date:
+Owner / Operator:
+Status: (Proposed / Shadow / Active / Disabled)
+
+------------------------------------------------------------
+CAPITAL PARAMETERS
+------------------------------------------------------------
+Initial Capital Allocation:
+Maximum Capital Allocation:
+Capital Source Vault:
+Profit Destination Vault(s):
+Loss Absorption Vault:
+
+------------------------------------------------------------
+RISK CONSTRAINTS
+------------------------------------------------------------
+Max Loss per Trade:
+Max Loss per Day:
+Max Drawdown (%):
+Position Size Rules:
+Leverage Allowed: (Yes / No — specify)
+
+------------------------------------------------------------
+EXECUTION RULES
+------------------------------------------------------------
+Execution Frequency:
+Order Types Allowed:
+Slippage Limits:
+Latency Tolerance:
+Markets / Venues Allowed:
+
+------------------------------------------------------------
+AUTOMATIC SHUTDOWN TRIGGERS
+------------------------------------------------------------
+[ ] Max drawdown breached
+[ ] Unexpected regime transition
+[ ] Data integrity failure
+[ ] Latency anomaly
+[ ] Manual operator trigger
+
+------------------------------------------------------------
+OBSERVABILITY & AUDIT
+------------------------------------------------------------
+Logging Enabled: (Yes / No)
+Metrics Recorded:
+Replay Compatibility Verified: (Yes / No)
+
+------------------------------------------------------------
+FINAL AUTHORIZATION
+------------------------------------------------------------
+Reviewed By:
+Approval Date:
+Kill-Switch Test Verified: (Yes / No)
+
+------------------------------------------------------------
+
+============================================================
+APPENDIX F — FAILURE MODES & RECOVERY PLAYBOOK
+============================================================
+
+Failure is assumed. Survival is designed.
+
+------------------------------------------------------------
+COMMON FAILURE MODES
+------------------------------------------------------------
+
+1) DATA FAILURE
+- Missing candles
+- Corrupt feeds
+- Replay divergence
+
+Response:
+→ Freeze execution
+→ Switch to last known good snapshot
+→ Require manual review
+
+------------------------------------------------------------
+
+2) STRATEGY FAILURE
+- Unexpected drawdown
+- False regime classification
+- Overfitting detected
+
+Response:
+→ Reduce capital allocation
+→ Disable lane
+→ Log incident + tag strategy
+
+------------------------------------------------------------
+
+3) EXECUTION FAILURE
+- Order rejection loops
+- Slippage beyond tolerance
+- API instability
+
+Response:
+→ Immediate lane shutdown
+→ Cancel all open orders
+→ Disconnect from venue
+
+------------------------------------------------------------
+
+4) SYSTEM FAILURE
+- Process crash
+- Node failure
+- Resource exhaustion
+
+Response:
+→ Failover if available
+→ Enter degraded mode
+→ Preserve logs + state
+
+------------------------------------------------------------
+
+5) OPERATOR FAILURE
+- Misconfiguration
+- Manual override error
+- Unauthorized change
+
+Response:
+→ Revoke permissions
+→ Roll back config
+→ Audit and lock system
+
+------------------------------------------------------------
+RECOVERY PRINCIPLES
+------------------------------------------------------------
+- Stop first, diagnose second
+- Recovery must never require live trading
+- Every failure improves the checklist
+
+------------------------------------------------------------
+
+============================================================
+APPENDIX G — WHAT THIS SYSTEM WILL NEVER DO
+============================================================
+
+These are absolute constraints. They are not features waiting to be added.
+
+------------------------------------------------------------
+EXECUTION BOUNDARIES
+------------------------------------------------------------
+- Trade without explicit capital allocation
+- Trade without a kill-switch
+- Trade based solely on AI/LLM output
+- Trade without replay verification
+
+------------------------------------------------------------
+INTELLIGENCE BOUNDARIES
+------------------------------------------------------------
+- Grant LLMs direct execution authority
+- Allow self-modifying execution code
+- Permit opaque decision paths
+
+------------------------------------------------------------
+RISK & ETHICS BOUNDARIES
+------------------------------------------------------------
+- Chase losses
+- Override safety for performance
+- Hide drawdowns or failures
+- Depend on secrecy over robustness
+
+------------------------------------------------------------
+OPERATIONAL BOUNDARIES
+------------------------------------------------------------
+- Require constant human babysitting
+- Depend on fragile infrastructure
+- Scale before proving survivability
+
+------------------------------------------------------------
+FINAL RULE
+------------------------------------------------------------
+If a feature violates this appendix,
+the feature is rejected — permanently.
+
+------------------------------------------------------------
+
+END OF APPENDICES E–G
+============================================================
