@@ -24,6 +24,30 @@ def ensure_run_dir(run_id: str, root: Path = Path("artifacts/shadow_ab")) -> Pat
 def write_manifest(run_dir: Path, manifest: Dict[str, Any]) -> None:
     (run_dir / "inputs_manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
 
+def required_artifacts() -> List[str]:
+    """Canonical artifact list for a shadow_ab run.
+
+    Phase 14 intent: operator-safe, predictable outputs.
+    Keep this list stable; update only with corresponding test updates.
+    """
+    return [
+        "inputs_manifest.json",
+        "baseline_decisions.jsonl",
+        "candidate_decisions.jsonl",
+        "merged_decisions.jsonl",
+        "metrics_onepage.txt",
+        "metrics_detail.json",
+        "anomalies.log",
+    ]
+
+def list_written_artifacts(run_dir: Path) -> List[str]:
+    """List known artifacts that exist in run_dir, stable-sorted."""
+    out: List[str] = []
+    for name in required_artifacts():
+        if (run_dir / name).exists():
+            out.append(name)
+    return out
+
 def write_jsonl(path: Path, rows: Iterable[Dict[str, Any]]) -> None:
     with path.open("w", encoding="utf-8") as f:
         for r in rows:
