@@ -1,55 +1,123 @@
-PHASE 12 HANDOFF PROMPT → PHASE 13
+PHASE 12 → PHASE 13 HANDOFF PROMPT
 ============================================================
-As-of: 2026-01-02 10:18 UTC
+As-of: 2026-01-05 06:41 UTC
 
-Current status
---------------
-✅ Test suite green: 112 passed.
-✅ Phase 12 multi-source snapshot orchestration implemented in AdapterBroker.market_snapshot_multi().
+PROJECT: AllMight
+REPO: https://github.com/techmorebu/Allmight
+BRANCH: main
+LAST VERIFIED STATE: pytest -q (ALL PASSING)
 
-What Phase 12 delivered
------------------------
-- Multi-adapter market snapshot read path:
-  - Calls AdapterBroker.call(operation="market_snapshot_live")
-  - Normalizes heterogeneous adapter payloads:
-    - wrapper dicts: result/data/snapshot/snap/market_snapshot/snapshots
-    - symbol-keyed dicts: { "BTC-USD": ... }
-    - quote shapes: bid/ask/last -> price
-  - Coerces into canonical MarketSnapshot dataclass:
-    - pair, price, ts_unix, source
-  - Filters invalid results, preserves deterministic adapter order.
-  - Produces audit output (stable outward contract):
-    - pair, merge_policy, inputs_used_count, results, merge_audit
+------------------------------------------------------------
+PHASE 12 STATUS (AUTHORITATIVE)
+------------------------------------------------------------
 
-Operator quick scan
--------------------
-1) Tests:
-   pytest -q
+Phase 12 is COMPLETE and STABLE.
 
-2) Phase 12 focused test:
-   pytest -q tests/phase12/test_market_snapshot_multi.py
+Key outcomes:
+- Multi-source market snapshot orchestration implemented
+- Tolerant MarketSnapshot schema introduced
+- Snapshot coercion hardened against adapter variance
+- Deterministic merge behavior preserved
+- Phase 12 test suite added and passing
+- Snapshot schema inventory tooling added
+- Architecture delta and WIP decisions documented
 
-3) Git cleanliness:
-   git status
-   git diff
+All Phase 12 tests are green.
+All prior phases remain green.
 
-Key files
----------
-- allmight/adapters/broker.py
-- allmight/adapters/market_snapshot.py
-- allmight/adapters/snapshot_normalize_merge.py
-- allmight/adapters/snapshot_schema.py
+------------------------------------------------------------
+CRITICAL LESSON LEARNED (DO NOT IGNORE)
+------------------------------------------------------------
 
-Phase 13 suggested next step
-----------------------------
-- Extend snapshot orchestration into a higher-level “read-only market context” primitive:
-  - multi-pair batch support
-  - adapter health scoring (still read-only; no retries)
-  - rate-limit aware scheduling hooks
-  - standardized audit schema across operations
+A filesystem traversal failure occurred during Phase 12 work:
 
-Hard rules to keep
-------------------
-- No writes, no retries, no trust expansion.
-- Deterministic ordering.
-- Use python-writer pattern for all file creation/patch artifacts.
+    OSError: [Errno 74] Bad message: 'node_modules/yocto-queue'
+
+Root cause:
+- Use of raw filesystem traversal (Path.rglob / os.walk)
+- Traversal entered vendor directories (node_modules)
+- Filesystem returned unreadable entries
+
+This is now considered a HARD FAILURE CLASS.
+
+------------------------------------------------------------
+MANDATED REPO SCAN POLICY (EFFECTIVE IMMEDIATELY)
+------------------------------------------------------------
+
+DO NOT:
+- Use Path.rglob(...)
+- Use os.walk(...) directly
+- Traverse the repo filesystem naively
+
+ALWAYS:
+- Use scripts.tools.repo_files.iter_repo_files
+- Prefer tracked-first enumeration (git ls-files)
+- Allow fallback traversal ONLY via hardened helper
+
+This rule applies to:
+- Tools
+- Phase scanners
+- Schema inventory
+- Appendix generators
+- Any new diagnostics
+
+Violations MUST be patched immediately.
+
+------------------------------------------------------------
+SHADOW AB SYSTEM STATUS
+------------------------------------------------------------
+
+Shadow AB runner exists and is active.
+
+Invariant:
+- Every run MUST emit all artifacts, even if empty.
+- anomalies.log MUST always be created.
+
+Known prior failure:
+- anomalies.log missing when no anomalies occurred
+
+This has been fixed, but Phase 13 should:
+- Re-audit artifact guarantees
+- Consider explicit zero-anomaly writes
+
+------------------------------------------------------------
+PHASE 13 INTENT (START HERE)
+------------------------------------------------------------
+
+Phase 13 is a HARDENING + OPERATIONALIZATION phase.
+
+Primary goals:
+1. Shadow AB robustness
+   - Artifact guarantees
+   - Deterministic output
+   - Operator-safe defaults
+
+2. Repo hygiene enforcement
+   - Scan safety linting
+   - Optional test to forbid rglob/os.walk misuse
+
+3. Documentation alignment
+   - Ensure appendices reflect enforced reality
+   - Keep future contributors from reintroducing hazards
+
+4. NO FEATURE EXPANSION unless strictly required
+   - This is a stability phase
+
+------------------------------------------------------------
+CHAT / WORKFLOW PROTOCOL (MANDATORY)
+------------------------------------------------------------
+
+- ALL file creation or modification must use PYTHON WRITER
+- NO heredocs
+- NO inline shell file edits
+- Every phase wrap must include:
+  - Build notes
+  - Bug notes
+  - Handoff prompt
+- Tests must be run and confirmed green before wrap
+
+Assume the next chat has NO MEMORY of prior context.
+This document is the single source of truth.
+
+============================================================
+END HANDOFF
