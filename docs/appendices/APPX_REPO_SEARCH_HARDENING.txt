@@ -1,0 +1,99 @@
+APPX_REPO_SEARCH_HARDENING.txt
+As-of: 2026-01-05
+Tag: Phase12 (applies globally)
+
+PURPOSE
+This appendix hardens Allmight repo searching/scanning so it never breaks on
+vendor trees (node_modules), virtualenvs, or OS-level weirdness. It replaces
+naive recursive filesystem walks (Path.rglob / Path.walk / os.walk from repo root)
+with safer, deterministic methods.
+
+PROBLEM (Observed Failure)
+- Some filesystems / packages can trigger:
+  OSError: [Errno 74] Bad message: 'node_modules/yocto-queue'
+- Root cause: naive recursion into node_modules (and similar) can hit:
+  - broken symlinks
+  - special files
+  - permission oddities
+  - platform-specific directory entry bugs
+  - huge trees that degrade performance
+
+HARD RULES (Operator + Tooling)
+1) Prefer tracked-file enumeration:
+   - Use `git ls-files` to get a stable file list.
+   - This automatically avoids node_modules unless it’s tracked (it shouldn’t be).
+
+2) If you MUST walk the filesystem (rare):
+   - Prune directories aggressively:
+     .git, node_modules, .venv, venv, dist, build, .pytest_cache, __pycache__,
+     .mypy_cache, .ruff_cache, .cache, .tox, coverage artifacts, etc.
+   - Catch OSError and continue (never fail the whole scan).
+   - Never start a walk from repo root without pruning.
+
+3) Ripgrep defaults must exclude junk:
+   - Always include `-g '!node_modules/**'` and friends for repo-wide searches.
+
+OPERATOR SHORTCUTS (Safe Search Recipes)
+
+A) Safe ripgrep search (recommended default)
+- Example:
+  rg -n "pattern" -S \
+    -g '!node_modules/**' -g '!.venv/**' -g '!venv/**' \
+    -g '!dist/**' -g '!build/**' -g '!.pytest_cache/**' \
+    -g '!__pycache__/**' -g '!.git/**'
+
+B) Safe “list Python files” (tracked)
+- Example:
+  git ls-files '*.py'
+
+C) Safe “search for symbol/function across tracked files”
+- Example (portable):
+  git ls-files -z | xargs -0 rg -n "def run_shadow_ab\b" -S
+
+REFERENCE: PYTHON SAFE SCAN SNIPPETS
+
+1) Preferred: scan tracked files only (deterministic)
+-----------------------------------------------------
+import subprocess
+from pathlib import Path
+
+def iter_tracked(repo_root: Path):
+    r = subprocess.run(
+        ["git", "ls-files", "-z"],
+        cwd=repo_root,
+        check=True,
+        capture_output=True,
+    )
+    for raw in r.stdout.split(b"\x00"):
+        if not raw:
+            continue
+        yield repo_root / raw.decode("utf-8", errors="replace")
+
+2) If you must walk: prune + tolerate OS errors
+-----------------------------------------------
+import os
+from pathlib import Path
+from typing import Iterator
+
+PRUNE_DIRS = {
+    ".git", "node_modules", ".venv", "venv", "dist", "build",
+    ".pytest_cache", "__pycache__", ".mypy_cache", ".ruff_cache",
+    ".tox", ".cache",
+}
+
+def safe_walk(repo_root: Path) -> Iterator[Path]:
+    for dirpath, dirnames, filenames in os.walk(repo_root, topdown=True):
+        # prune in-place
+        dirnames[:] = [d for d in dirnames if d not in PRUNE_DIRS]
+        for fn in filenames:
+            yield Path(dirpath) / fn
+
+NOTE: If the platform throws OSError during walk, wrap the walk in try/except
+and continue; never let scans crash workflows.
+
+IMPLEMENTATION GUIDANCE (For Allmight Tools)
+- Any tool that currently does Path.rglob / Path.walk from repo root MUST be updated to:
+  a) Use git ls-files (best), or
+  b) Use safe_walk() with PRUNE_DIRS + try/except.
+
+END.
