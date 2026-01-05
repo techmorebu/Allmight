@@ -1,0 +1,142 @@
+APPX_PRECIOUS_METALS_DRIP_POLICY_v1.0.txt
+STATUS: ACTIVE / INCOME-ORIENTED / CONSERVATIVE
+TAGGED PHASE: PHASE 4 → PHASE 5 (Capital Preservation → Income Scaling)
+AUTHORITATIVE
+
+============================================================
+PRECIOUS METALS DRIP ALLOCATION POLICY
+Version: v1.0
+Scope: Income, Stability, Compounding
+============================================================
+
+1. POLICY OBJECTIVE
+------------------------------------------------------------
+This policy defines how precious metals exposure is used to:
+- Generate repeatable income
+- Support DRIP compounding mechanics
+- Preserve capital during macro stress
+- Avoid leverage, margin, and derivative fragility
+
+Precious metals are treated as:
+- Income-supporting assets (via businesses)
+- Volatility dampeners
+- Inflation and regime hedges
+
+Raw metal price speculation is explicitly excluded.
+
+------------------------------------------------------------
+2. APPROVED ALLOCATION TIERS
+------------------------------------------------------------
+
+TOTAL PRECIOUS METALS ALLOCATION: 100%
+(Capped at a system-defined percentage of total portfolio)
+
+TIER A — ROYALTY & STREAMING COMPANIES (50–65%)
+------------------------------------------------
+ROLE:
+- Core DRIP income engine
+- Lowest operational risk metal exposure
+- Dividend-first mandate
+
+CHARACTERISTICS:
+- Fixed-cost access to metal production
+- No direct mining operations
+- High margins across price regimes
+- Strong free cash flow visibility
+
+DRIP RULES:
+- Dividends auto-reinvested while weekly income < milestone
+- Eligible for partial payout only after DRIP thresholds are met
+
+------------------------------------------------------------
+TIER B — PHYSICAL METALS (30–40%)
+------------------------------------------------
+ROLE:
+- Capital preservation
+- System insurance
+- Non-correlated reserve
+
+ALLOCATION GUIDANCE:
+- Gold: 60–70% of Tier B
+- Silver: 30–40% of Tier B
+
+ACQUISITION:
+- Physical bullion only
+- Government-issued coins or high-liquidity bars
+- Non-bank storage preferred
+
+YIELD EXPECTATION:
+- None required
+- Leasing or yield overlays optional but capped
+
+DRIP RULES:
+- No forced selling for income
+- Can be pledged only to fund upgrades or emergency stabilization
+
+------------------------------------------------------------
+TIER C — DIVIDEND-PAYING TIER-1 MINERS (5–15%)
+------------------------------------------------
+ROLE:
+- Supplemental income
+- Controlled growth exposure
+
+QUALIFICATION REQUIREMENTS:
+- Low AISC (All-In Sustaining Cost)
+- Strong balance sheet
+- Established dividend policy
+- Multi-jurisdiction operations
+
+RESTRICTIONS:
+- No junior miners
+- No single-asset producers
+- No exploration-only exposure
+
+------------------------------------------------------------
+3. DRIP INTEGRATION RULES
+------------------------------------------------------------
+
+- All dividends flow into DRIP Vault
+- Weekly payout eligibility follows global DRIP ladder:
+  $300 → $500 → $800 → $1300 → … → $10,000 cap
+- If weekly income falls below a threshold:
+  → Revert to prior level
+  → Full reinvestment resumes automatically
+
+Precious metals income is prioritized for:
+1) Capital stability
+2) Baseline income reliability
+3) Long-term compounding
+
+------------------------------------------------------------
+4. RISK CONTROLS & EXCLUSIONS
+------------------------------------------------------------
+
+EXPLICITLY EXCLUDED:
+- Futures
+- Margin trading
+- Leveraged ETFs
+- Paper-only metal derivatives
+- “Squeeze” narratives
+
+KILL CONDITIONS:
+- Dividend suspension across Tier A majority
+- Jurisdictional confiscation risk escalation
+- Counterparty failure in custody chain
+
+------------------------------------------------------------
+5. SYSTEM VERDICT
+------------------------------------------------------------
+
+Precious metals support DRIP ONLY when wrapped in:
+- Cash-flowing business models
+- Contractual royalty structures
+- Conservative dividend policies
+
+This policy is designed to survive:
+- High inflation
+- Monetary regime transitions
+- Equity volatility
+- Liquidity contractions
+
+END OF DOCUMENT
+============================================================

@@ -1,0 +1,129 @@
+APPX_BAYESIAN_FILTERS_OPTIONAL_v1.0.txt
+STATUS: OPTIONAL / ADVISORY ONLY / NO EXECUTION AUTHORITY
+TAGGED PHASE: PHASE 6+ (Advisory AI Layer)
+AUTHORITATIVE
+
+============================================================
+BAYESIAN FILTERS (OPTIONAL) — SCOPE, DECISION, AND SAFETY
+Version: v1.0
+Scope: Confidence Calibration · Uncertainty Handling · Explanation
+============================================================
+
+0. DECISION (LOCKED)
+------------------------------------------------------------
+Bayesian filters are OPTIONAL. They are permitted ONLY as an advisory
+layer to improve uncertainty calibration, reduce overconfidence, and
+support regime confirmation — never to generate entries, exits, or
+override execution discipline.
+
+Markov chains are also OPTIONAL. If used, they are constrained to the
+same non-executing role. Default recommendation: prefer Bayes over
+Markov for most AllMight uses because Bayes supports explicit
+uncertainty and evidence updates.
+
+No philosophical/narrative interpretation is allowed in this module.
+
+------------------------------------------------------------
+1. PURPOSE (BOUNDARY LOCK)
+------------------------------------------------------------
+This module exists only to:
+- Maintain calibrated confidence scores on existing signals
+- Combine multiple weak evidences into a single posterior probability
+- Provide transparent uncertainty and “I don't know” states
+- Reduce false conviction under stress
+
+This module explicitly does NOT:
+- Predict prices
+- Create directional signals
+- Trigger trades
+- Adjust allocations directly
+- Override regime layer or risk controls
+- Bypass liquidity gates
+
+------------------------------------------------------------
+2. WHAT “BAYES” MEANS HERE (MINIMAL)
+------------------------------------------------------------
+Bayes updates beliefs as evidence arrives:
+
+Posterior ∝ Prior × Likelihood
+
+In practice:
+- Prior: baseline expectation from regime layer / long-run stats
+- Likelihood: evidence from observed proxy signals (flows, volatility,
+  liquidity, spreads, execution quality)
+
+Output is a bounded confidence estimate (0–1) with uncertainty.
+
+------------------------------------------------------------
+3. APPROVED USE CASES (NON-EXECUTING)
+------------------------------------------------------------
+
+A) Regime Confirmation Support (Advisory)
+- Combine regime features to produce a “confidence in regime” score
+- Output may only annotate / log / explain
+
+B) Liquidity & Execution Risk Calibration
+- Update probability of “unsafe execution” based on microstructure proxies
+- Output may only tighten safety recommendations (advisory), not execute
+
+C) DRIP Stability Annotations
+- Estimate probability that cashflow is stable enough for a tier
+- Output may only recommend “hold tier” vs “reinvest” for operator review
+  (final authority remains deterministic DRIP rules)
+
+------------------------------------------------------------
+4. MARKOV CHAINS (OPTIONAL) — LIMITED ROLE
+------------------------------------------------------------
+Markov chains model transitions between discrete states (e.g., regimes).
+
+Permitted ONLY if:
+- States are defined by the existing deterministic regime layer
+- Transitions are learned from historical sequences
+- Output is advisory “transition likelihood” only
+
+Disallowed:
+- Using Markov transitions as a timing engine
+- Using Markov to bypass liquidity or execution constraints
+
+------------------------------------------------------------
+5. KILL-SWITCH POLICY (MANDATORY)
+------------------------------------------------------------
+
+Disable Bayesian/Markov advisory outputs if ANY occur:
+- Overconfidence: sustained high confidence while outcomes degrade
+- Instability: confidence flips excessively within rolling window
+- Proxy divergence: upstream inputs disagree beyond allowed threshold
+- Data quality: missingness, outliers, stale feeds exceed limits
+
+When disabled:
+- Outputs are ignored
+- Logs continue for audit only
+- Re-enable requires cooldown and stable input quality window
+
+------------------------------------------------------------
+6. ARCHITECTURE INSERTION (PHASE 6+)
+------------------------------------------------------------
+
+[ Macro Inputs ] → [ Regime Layer ] → [ Flow Signals ] → [ Advisory Bayes/Markov ]
+                                              ↓
+                                   (Annotations / Confidence Only)
+                                              ↓
+                                    [ Execution + Risk Gates ]
+                                              ↓
+                                        [ Deterministic DRIP ]
+
+No authority path exists from Bayes/Markov → Execution.
+
+------------------------------------------------------------
+7. FINAL VERDICT (LOCKED)
+------------------------------------------------------------
+Bayes is worth implementing only if it improves:
+- calibration (fewer confident mistakes)
+- uncertainty visibility
+- discipline under stress
+
+If it increases complexity without measurable calibration gains,
+remove it.
+
+END OF APPENDIX
+============================================================
