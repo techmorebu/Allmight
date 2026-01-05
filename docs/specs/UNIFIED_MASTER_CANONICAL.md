@@ -1,45 +1,44 @@
-# ALLMIGHT — UNIFIED MASTER (CANONICAL)
+# PROJECT ALLMIGHT — UNIFIED MASTER (CANONICAL SPINE)
+Version: v2.2+ (Spine)
+Date: 2026-01-05
+Status: ACTIVE (append-only)
 
-Status:
-- Phase 1: **LOCKED**
-- Phase 2: **ACTIVE**
-- Execution: **DISABLED** (shadow evaluation only)
+## 0) What this is
+This is the canonical front door to Project AllMight.
+It defines authority, scope, phase governance, and non-negotiables.
+Large details live in companion docs.
 
-This canonical file is an assembled master derived from the authoritative overview sources and approved patches.
-It is designed to be the single “front door” for the project.
+## 1) Non-negotiables (governance in 60 seconds)
+- Determinism > cleverness (replayable, hashable, reproducible decisions)
+- Safety > opportunity (shadow-mode first; kill-switches mandatory)
+- Append-only doctrine (patches + deltas; no silent rewrites)
+- Build hygiene (no secrets committed; no generated artifacts unless declared canonical)
 
----
+## 2) System purpose
+AllMight is a modular, security-first, replayable trading + capital allocation engine designed to:
+- harvest asymmetric opportunities (CEX/DEX, cross-chain, structural edges)
+- compound via explicit vault routing (no “magic money”)
+- avoid direct MEV competition where possible
+- self-fund hardware upgrades over time
+- remain survivable under degraded conditions
 
-## 0) Purpose
+## 3) Architecture (high level)
+- Layer 1: Inputs (deterministic, versioned)
+- Layer 2: Engines (signals → state → scores)
+- Layer 3: Execution (gated, audited, kill-switch controlled)
 
-AllMight is a local-only, self-upgrading, AI-driven arbitrage and compounding system:
-- scans CEX + DEX + cross-chain inefficiencies
-- runs signal fusion and local AI inference
-- executes optimized routes (future phases only)
-- reinvests profits into hardware upgrades
-- supports multi-node scaling over time
+## 4) Phase model (authoritative pointer)
+Full phase definitions and completion gates live in:
+- `docs/specs/PHASE_MODEL_AND_EXIT_CRITERIA.md`
 
----
+## 5) Capital & execution playbook (authoritative pointer)
+Text-first capital routing and execution lane rules live in:
+- `docs/specs/EXECUTION_AND_CAPITAL_PLAYBOOK.md`
 
-## 1) Phase Structure
+## 6) Safety, risk & compliance (authoritative pointer)
+Kill-switch doctrine, drawdown math, recovery, and US-first guardrails live in:
+- `docs/specs/SAFETY_RISK_AND_KILL_DOCTRINE.md`
 
-- Phase 0 — Paper Brain
-- Phase 1 — Data & Replay Engines (LOCKED)
-- Phase 2 — Regime & Confluence (ACTIVE, SHADOW MODE)
-- Phase 3 — Supercycle ATM Engine (future)
-- Phase 4 — Instability Index + MetalAllocator (future)
-
----
-
-## 2) System Architecture
-
----
-
-## 3) Hardware Upgrade Roadmap (Summary)
-
----
-
-## 4) Philosophy (READ-ONLY, NON-EXECUTABLE)
-
-This section is context only. It must never override execution logic.
-
+## 7) Rules of truth
+- If it’s not linked in `docs/INDEX.md`, it’s not authoritative.
+- Frozen/locked content changes only via patches + phase deltas.
