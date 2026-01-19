@@ -1,0 +1,119 @@
+APPENDIX ID: APPX-PHASE3-PHASE4-HANDOFF-01
+TITLE: Phase 3 → Phase 4 Handoff Prompt
+STATUS: CANONICAL
+APPLIES TO: Transition from Phase 3 to Phase 4
+
+------------------------------------------------------------
+PURPOSE
+------------------------------------------------------------
+
+This appendix defines the formal handoff contract between
+Phase 3 (Execution Preparation) and Phase 4 (Execution Enablement).
+
+Its purpose is to ensure that Phase 4:
+- Inherits a safe, audited, deterministic execution foundation
+- Does not reinterpret or weaken Phase 3 safety guarantees
+- Introduces capital exposure only in explicitly authorized ways
+
+------------------------------------------------------------
+PHASE 3 FINAL STATE (AUTHORITATIVE)
+------------------------------------------------------------
+
+Phase 3 is COMPLETE with the following guarantees:
+
+- Execution permission is explicit, regime-gated, and denial-first
+- Execution adapters are inert (paper / shadow only)
+- No capital, wallets, or signing keys were accessible
+- Halt and kill-switch semantics are defined and enforced
+- Invariant violations trigger immediate stop-the-world behavior
+- Execution evaluation is replay-consistent and auditable
+- Validation evidence confirms refusal and halt paths function
+
+No execution action occurred in Phase 3.
+
+------------------------------------------------------------
+GUARANTEES PROVIDED TO PHASE 4
+------------------------------------------------------------
+
+Phase 4 may assume the following are TRUE and STABLE:
+
+1. Permission Infrastructure Exists
+   - Explicit execution permission gates are implemented
+   - Denial is the default state
+   - Permission logic precedes execution logic
+
+2. Safety Enforcement Exists
+   - Halt triggers are defined and reachable
+   - Kill switches are unconditional and override all logic
+   - Invariant enforcement is non-negotiable
+
+3. Audit & Replay Integrity Exists
+   - Decisions are logged and reproducible
+   - Behavior is explainable without chat context
+   - Replay faithfulness is preserved
+
+4. Phase Boundaries Are Enforced
+   - Phase 3 did not self-escalate
+   - Execution scaffolding is inert by construction
+
+------------------------------------------------------------
+PHASE 4 AUTHORIZED EXPANSIONS
+------------------------------------------------------------
+
+Phase 4 is authorized to introduce the following, and ONLY the following:
+
+- Explicit live execution modes
+- Capital-backed execution adapters
+- Wallet and key management (with strict isolation)
+- Real order routing and settlement
+- Execution performance monitoring
+
+All such introductions MUST:
+- Pass through existing permission gates
+- Be subject to halt and kill semantics
+- Be auditable and replay-consistent
+
+------------------------------------------------------------
+PHASE 4 FORBIDDEN ACTIONS
+------------------------------------------------------------
+
+Phase 4 MUST NOT:
+
+- Bypass or weaken execution permission gates
+- Change denial-first semantics
+- Disable or soften halt or kill-switch behavior
+- Reinterpret Phase 3 validation evidence
+- Modify Phase 2 regime logic or outputs
+- Introduce implicit execution paths
+- Assume safety without explicit proof
+
+Any such action INVALIDATES Phase 4.
+
+------------------------------------------------------------
+MANDATORY PHASE 4 PRECONDITIONS
+------------------------------------------------------------
+
+Before any capital-backed execution occurs in Phase 4:
+
+- All Phase 3 appendices MUST be present and registered
+- Phase 3 must be declared COMPLETE via wrap artifacts
+- New execution code MUST be re-scanned using Phase Scan Protocol
+- New risk introduced MUST be documented explicitly
+
+------------------------------------------------------------
+HANDOFF ACKNOWLEDGEMENT
+------------------------------------------------------------
+
+By entering Phase 4, the system acknowledges:
+
+- Phase 3 safety guarantees are binding
+- Execution is now permitted only through explicit expansion
+- Any regression in safety is unacceptable
+- Capital exposure is a privilege, not a default
+
+------------------------------------------------------------
+STATUS
+------------------------------------------------------------
+
+This handoff prompt is authoritative.
+Phase 4 may proceed ONLY under these constraints.
