@@ -113,6 +113,20 @@ Status: CANONICAL
 Supersedes: Implicit assumptions about Phase 4 readiness
 Notes: Defines the exact guarantees Phase 3 provides to Phase 4 and the non-negotiable constraints Phase 4 must honor.
 
+ID: APPX-PHASE3-PHASE4-HANDOFF-01
+Title: Phase 3 → Phase 4 Handoff Prompt
+Applies To: Transition from execution preparation to execution enablement
+Status: CANONICAL
+Supersedes: Implicit assumptions about Phase 4 readiness
+Notes: Defines the exact guarantees Phase 3 provides to Phase 4 and the non-negotiable constraints Phase 4 must honor.
+
+ID: APPX-PHASE3-WRAP-01
+Title: Phase 3 Wrap & Completion Declaration
+Applies To: Phase 3 (Execution Preparation)
+Status: CANONICAL
+Supersedes: Implicit or informal phase completion
+Notes: Formally declares Phase 3 complete, enumerates produced artifacts, and freezes Phase 3 scope and guarantees.
+
 ----------------------------------------------------------------
 DEPRECATED / HISTORICAL
 ----------------------------------------------------------------
