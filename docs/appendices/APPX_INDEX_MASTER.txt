@@ -92,6 +92,12 @@ Status: CANONICAL
 Supersedes: Implicit or informal execution assumptions
 Notes: Defines the mandatory permission, denial, and halt rules that govern whether execution logic may be evaluated, ensuring regime-gated, non-capital, replay-consistent behavior.
 
+ID: APPX-PHASE3-RISK-HALT-01
+Title: Phase 3 Risk, Halt, and Kill-Switch Specification
+Applies To: Phase 3 execution scaffolding and safety enforcement
+Status: CANONICAL
+Supersedes: Implicit safety assumptions and informal stop conditions
+Notes: Defines mandatory halt triggers, kill-switch authority, invariant enforcement, and stop-the-world behavior for Phase 3 execution preparation.
 
 ----------------------------------------------------------------
 DEPRECATED / HISTORICAL
