@@ -1,0 +1,239 @@
+APPENDIX ID: APPX-PHASE4-RISK-MITIGATION-01
+TITLE: Phase 4 Risk Extension & Mitigation Specification
+STATUS: CANONICAL
+APPLIES TO: Phase 4 (Execution Enablement — Capital Aware)
+
+------------------------------------------------------------
+PURPOSE
+------------------------------------------------------------
+
+This appendix defines the additional risk classes introduced
+by capital-backed execution in Phase 4 and the mandatory
+mitigation, halt, and kill responses for each.
+
+Its purpose is to ensure that:
+- Capital-specific risks are explicitly acknowledged
+- Unsafe market or system behavior halts execution immediately
+- Loss modes are bounded, observable, and reversible
+- Phase 3 safety guarantees remain intact under live conditions
+
+------------------------------------------------------------
+CORE PRINCIPLE
+------------------------------------------------------------
+
+KNOWN RISK IS MANAGEABLE.
+UNENUMERATED RISK IS UNACCEPTABLE.
+
+Any risk not explicitly addressed here MUST be treated
+as a kill condition until formally documented.
+
+------------------------------------------------------------
+RISK TAXONOMY (PHASE 4)
+------------------------------------------------------------
+
+Phase 4 introduces the following new risk classes:
+
+1. Market Execution Risk
+2. Liquidity & Slippage Risk
+3. Partial Fill & Order State Risk
+4. Exchange / Venue Availability Risk
+5. Network & Connectivity Risk
+6. Capital Accounting Risk
+7. Key & Credential Exposure Risk
+8. State Desynchronization Risk
+
+Each class is addressed below.
+
+------------------------------------------------------------
+1. MARKET EXECUTION RISK
+------------------------------------------------------------
+
+Description:
+- Orders may execute at prices different from intent
+- Market conditions may change mid-execution
+
+Mitigations:
+- All orders MUST be price-bounded
+- Market orders are FORBIDDEN unless explicitly approved
+- Execution intent MUST include acceptable price ranges
+
+Halt Conditions:
+- Detected execution outside declared bounds
+
+Kill Conditions:
+- Repeated price violations
+- Adapter bypasses price constraints
+
+------------------------------------------------------------
+2. LIQUIDITY & SLIPPAGE RISK
+------------------------------------------------------------
+
+Description:
+- Insufficient liquidity may cause excessive slippage
+
+Mitigations:
+- Slippage limits MUST be declared per adapter
+- Orders exceeding slippage bounds MUST be rejected
+
+Halt Conditions:
+- Slippage exceeds declared threshold
+
+Kill Conditions:
+- Adapter ignores slippage constraints
+- Slippage cannot be reliably measured
+
+------------------------------------------------------------
+3. PARTIAL FILL & ORDER STATE RISK
+------------------------------------------------------------
+
+Description:
+- Orders may partially fill or remain open
+
+Mitigations:
+- Partial fills MUST be explicitly handled
+- Open orders MUST be tracked deterministically
+- Orphaned orders MUST NOT persist silently
+
+Halt Conditions:
+- Unknown or ambiguous order state
+
+Kill Conditions:
+- Loss of order state reconciliation
+- Duplicate or phantom orders detected
+
+------------------------------------------------------------
+4. EXCHANGE / VENUE AVAILABILITY RISK
+------------------------------------------------------------
+
+Description:
+- Exchanges may go offline, throttle, or reject requests
+
+Mitigations:
+- Execution adapters MUST handle explicit rejection
+- Retry logic MUST be bounded and conservative
+
+Halt Conditions:
+- Temporary venue unavailability
+- Rate limit or throttle events
+
+Kill Conditions:
+- Venue behavior becomes undefined
+- Inconsistent or corrupt responses detected
+
+------------------------------------------------------------
+5. NETWORK & CONNECTIVITY RISK
+------------------------------------------------------------
+
+Description:
+- Network partitions or latency may disrupt execution
+
+Mitigations:
+- Timeouts MUST be explicit and short
+- Execution MUST fail closed on connectivity loss
+
+Halt Conditions:
+- Transient connectivity loss
+
+Kill Conditions:
+- Prolonged or unstable connectivity
+- Split-brain execution risk detected
+
+------------------------------------------------------------
+6. CAPITAL ACCOUNTING RISK
+------------------------------------------------------------
+
+Description:
+- Reported balances may be stale or inconsistent
+
+Mitigations:
+- Balance checks MUST be read-only
+- Capital limits MUST be enforced locally
+
+Halt Conditions:
+- Balance data unavailable or stale
+
+Kill Conditions:
+- Inconsistent capital accounting
+- Capital usage exceeds declared bounds
+
+------------------------------------------------------------
+7. KEY & CREDENTIAL EXPOSURE RISK
+------------------------------------------------------------
+
+Description:
+- Keys or credentials may be leaked or misused
+
+Mitigations:
+- Keys MUST be isolated per adapter
+- No key reuse across environments
+- No keys accessible outside execution context
+
+Halt Conditions:
+- Suspected credential misuse
+
+Kill Conditions:
+- Confirmed credential exposure
+- Unauthorized signing attempt
+
+------------------------------------------------------------
+8. STATE DESYNCHRONIZATION RISK
+------------------------------------------------------------
+
+Description:
+- Internal state may diverge from external reality
+
+Mitigations:
+- Execution state MUST be reconciled explicitly
+- No assumptions of atomicity across systems
+
+Halt Conditions:
+- State reconciliation uncertainty
+
+Kill Conditions:
+- Irrecoverable state divergence
+- Execution behavior becomes non-auditable
+
+------------------------------------------------------------
+GLOBAL MITIGATION RULES
+------------------------------------------------------------
+
+Across ALL risk classes:
+
+- Halt is preferred over continuation
+- Kill is preferred over ambiguity
+- No automatic recovery from kill
+- Operator intervention is required for reset
+
+------------------------------------------------------------
+AUDIT & LOGGING REQUIREMENTS
+------------------------------------------------------------
+
+All risk events MUST log:
+
+- Risk class
+- Trigger condition
+- Adapter identity
+- Capital scope
+- Action taken (halt or kill)
+- Timestamp
+
+Logs MUST support forensic reconstruction.
+
+------------------------------------------------------------
+PHASE BOUNDARY GUARANTEE
+------------------------------------------------------------
+
+This appendix:
+
+- Extends Phase 3 safety into capital-aware execution
+- Does NOT authorize new execution capability
+- Does NOT permit risk-taking beyond declared bounds
+- Does NOT imply production readiness
+
+------------------------------------------------------------
+STATUS
+------------------------------------------------------------
+
+This specification is binding for Phase 4.
+Any capital-aware execution that violates this appendix
+is INVALID.
