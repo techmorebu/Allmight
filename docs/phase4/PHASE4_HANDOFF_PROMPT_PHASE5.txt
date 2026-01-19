@@ -1,0 +1,129 @@
+PROJECT ALLMIGHT — PHASE 5 BUILD CHAT
+====================================
+
+This chat initiates Phase 5 of PROJECT ALLMIGHT.
+
+------------------------------------------------------------
+AUTHORITATIVE INPUTS (NON-NEGOTIABLE)
+------------------------------------------------------------
+
+The following artifacts are the ONLY sources of truth:
+
+1. Unified Master v2.1 (Strategic Spine)
+2. Phase-0 Blueprint (Immutable PDF)
+3. APPX_INDEX_MASTER.txt
+4. APPX_CURRENT_STATE_AND_NEXT_PHASE.txt
+5. Phase-0 Governance — Deterministic Input & Execution Safety
+6. Phase Wrap & Governance Protocol (Global)
+7. Phase 4 Canonical Appendices:
+   - APPX-PHASE4-EXEC-ADAPTER-01
+   - APPX-PHASE4-CAPITAL-DECL-01
+   - APPX-PHASE4-RISK-MITIGATION-01
+   - APPX-PHASE4-VALIDATION-01
+   - APPX-PHASE4-SCAN-01
+8. Repo snapshot anchored to the Phase 4 wrap commit
+
+Chats, memory, READMEs, comments, and prior explanations
+are NON-AUTHORITATIVE unless explicitly promoted via appendix.
+
+------------------------------------------------------------
+VERIFIED STATE AT HANDOFF
+------------------------------------------------------------
+
+- Phase 0: COMPLETE / FROZEN
+- Phase 1: LOCKED
+- Phase 2: ACTIVE (Regime & Confluence, replay-faithful)
+- Phase 3: COMPLETE (Execution Preparation)
+- Phase 4: COMPLETE (Execution Enablement — Controlled / Capital-Aware)
+
+Execution capability exists structurally.
+Capital existence is declared, bounded, and isolated.
+No live execution is enabled by default.
+
+------------------------------------------------------------
+PHASE 5 DESIGNATION
+------------------------------------------------------------
+
+Phase 5 — Live Execution Hardening (Single-Adapter, Minimal Scope)
+
+Phase 5 exists to safely activate live execution under
+strictly limited, observable, and reversible conditions.
+
+------------------------------------------------------------
+PHASE 5 OBJECTIVES
+------------------------------------------------------------
+
+Phase 5 is successful ONLY if all of the following are achieved:
+
+1. A single LIVE execution adapter is instantiated
+2. Adapter operates under explicit permission gating
+3. Capital exposure remains within Phase 4 declared bounds
+4. Halt and kill switches are proven under real conditions
+5. Execution behavior is fully auditable and replay-compatible
+6. No autonomous scaling or optimization occurs
+
+------------------------------------------------------------
+ALLOWED SCOPE
+------------------------------------------------------------
+
+The following are explicitly permitted in Phase 5:
+
+- Activation of ONE LIVE execution adapter
+- Minimal real-market order placement
+- Manual operator-controlled execution
+- Validation of halt / kill behavior with live capital
+- Execution logging and audit tooling
+- Phase wrap artifacts
+
+------------------------------------------------------------
+FORBIDDEN ACTIONS
+------------------------------------------------------------
+
+The following are explicitly forbidden in Phase 5:
+
+- Multiple live adapters
+- Capital scaling or reinvestment
+- Strategy or regime changes
+- Weight or scoring adjustments
+- Automated retry or recovery logic
+- Multi-venue routing
+- Performance optimization
+
+Violation of these rules INVALIDATES the phase.
+
+------------------------------------------------------------
+GOVERNANCE & WORKFLOW RULES
+------------------------------------------------------------
+
+- All file creation MUST use the Python-writer pattern
+- No terminal paste of structured content
+- No shell heredocs
+- All changes must be deterministic and auditable
+- Tests must pass before any phase wrap
+- Every decision must be justifiable without chat context
+
+------------------------------------------------------------
+REQUIRED OUTPUTS TO EXIT PHASE 5
+------------------------------------------------------------
+
+Phase 5 is NOT complete until ALL of the following exist:
+
+1. Phase 5 Build Notes
+2. Phase 5 Bug Notes
+3. Phase 5 Validation Evidence (Live Execution)
+4. Phase 5 Risk Reassessment
+5. Phase 5 Updated Phase Scan
+6. Phase 5 → Phase 6 Handoff Prompt
+7. Clean git commit with passing tests
+8. Appendix registration in APPX_INDEX_MASTER.txt
+
+------------------------------------------------------------
+FINAL RULE
+------------------------------------------------------------
+
+If a result cannot be copied verbatim into an appendix
+without modification, it is NOT complete.
+
+------------------------------------------------------------
+BEGIN PHASE 5
+------------------------------------------------------------
