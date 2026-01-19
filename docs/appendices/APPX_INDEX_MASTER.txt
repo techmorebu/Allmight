@@ -71,6 +71,28 @@ Status: CANONICAL
 Supersedes: Implicit phase assumptions
 Notes: Defines where the project actually is
 
+ID: APPX-PHASE-SCAN-01
+Title: Phase Scan & Commit Integrity Protocol
+Applies To: All phases (retroactive to Phase 0)
+Status: CANONICAL
+Supersedes: Informal commit trust and implicit repo assumptions
+Notes: Defines the mandatory procedure for auditing repository state anchored to a specific commit, including phase boundary enforcement, governance compliance, and execution-safety validation.
+
+ID: APPX-PHASE-SCAN-REPORT-20260119
+Title: Phase Scan Report — Allmight-main.zip Snapshot
+Applies To: Repo state as of 2026-01-19 snapshot
+Status: AUDIT ARTIFACT
+Supersedes: Assumed phase safety for unscanned snapshots
+Notes: Documents the results of a full phase-scan against the provided repository snapshot, confirming no execution-capable or capital-risk logic is present and that governance constraints remain intact.
+
+ID: APPX-PHASE3-EXEC-PERM-01
+Title: Phase 3 Execution Permission Contract
+Applies To: Phase 3 execution scaffolding (paper / shadow only)
+Status: CANONICAL
+Supersedes: Implicit or informal execution assumptions
+Notes: Defines the mandatory permission, denial, and halt rules that govern whether execution logic may be evaluated, ensuring regime-gated, non-capital, replay-consistent behavior.
+
+
 ----------------------------------------------------------------
 DEPRECATED / HISTORICAL
 ----------------------------------------------------------------
