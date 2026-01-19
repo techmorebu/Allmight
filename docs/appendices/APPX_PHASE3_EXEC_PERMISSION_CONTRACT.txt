@@ -1,0 +1,172 @@
+APPENDIX ID: APPX-PHASE3-EXEC-PERM-01
+TITLE: Phase 3 Execution Permission Contract
+STATUS: CANONICAL
+APPLIES TO: Phase 3 (Execution Preparation — Paper / Shadow Only)
+
+------------------------------------------------------------
+PURPOSE
+------------------------------------------------------------
+
+This appendix defines the mandatory contract governing whether
+execution logic may be evaluated during Phase 3.
+
+Phase 3 exists to prepare execution safely.
+It does NOT permit capital deployment, live trading,
+or strategy mutation.
+
+This contract exists to ensure that:
+- Execution logic is strictly regime-gated
+- Denial is the default state
+- No implicit permission paths exist
+- All execution behavior is auditable and replay-consistent
+
+------------------------------------------------------------
+CORE PRINCIPLE
+------------------------------------------------------------
+
+EXECUTION IS A PRIVILEGE, NOT A CONSEQUENCE.
+
+No execution logic may be evaluated unless explicit permission
+is granted by upstream regime and safety gates.
+
+Absence of denial does NOT imply permission.
+
+------------------------------------------------------------
+DEFINITIONS
+------------------------------------------------------------
+
+Regime Output:
+  The finalized, replay-derived regime state produced by Phase 2.
+  Regime outputs are READ-ONLY inputs in Phase 3.
+
+Execution Evaluation:
+  The process of constructing, simulating, or emitting
+  execution intents (paper or shadow only).
+
+Execution Action:
+  Any operation that would place, route, submit, or settle
+  an order or transaction.
+  ALL execution actions are FORBIDDEN in Phase 3.
+
+Permission Gate:
+  A deterministic decision layer that explicitly ALLOWS or DENIES
+  execution evaluation.
+
+------------------------------------------------------------
+DEFAULT STATE
+------------------------------------------------------------
+
+The default execution state is:
+
+  DENIED
+
+Execution evaluation may only proceed if ALL permission
+conditions are explicitly satisfied.
+
+------------------------------------------------------------
+MANDATORY PERMISSION CONDITIONS
+------------------------------------------------------------
+
+Execution evaluation is ALLOWED only if ALL of the following
+conditions are true:
+
+1. Regime Authorization
+   - Regime output explicitly declares execution-eligible state
+   - Regime output is complete, non-null, and schema-valid
+   - Regime output is derived from replay-faithful inputs
+
+2. Phase Authorization
+   - System is explicitly operating in Phase 3
+   - Execution mode is declared as PAPER or SHADOW
+   - Live or capital-backed modes are not available
+
+3. Safety Authorization
+   - No global kill switch is active
+   - No halt condition is active
+   - No invariant violations are present
+
+4. Interface Authorization
+   - Execution adapter is explicitly marked NON-CAPITAL
+   - Adapter emits intents or logs only
+   - Adapter has no access to signing keys, wallets, or order APIs
+
+------------------------------------------------------------
+MANDATORY DENIAL CONDITIONS
+------------------------------------------------------------
+
+Execution evaluation MUST be DENIED if ANY of the following
+conditions are true:
+
+- Regime output is missing, stale, or schema-invalid
+- Regime state is non-executable or undefined
+- Phase is not Phase 3
+- Execution mode is unspecified or ambiguous
+- Any kill switch is active
+- Any halt condition is active
+- Any invariant violation is detected
+- Adapter attempts to access capital, keys, or live endpoints
+- Execution evaluation would introduce non-replayable behavior
+
+Denial is FINAL for the evaluation cycle.
+
+------------------------------------------------------------
+HALT & KILL SWITCH AUTHORITY
+------------------------------------------------------------
+
+The following have unconditional authority to halt execution
+evaluation:
+
+- Manual operator kill switch
+- Automatic invariant enforcement
+- Regime safety downgrade
+- Detection of forbidden capability exposure
+
+Once triggered:
+- Execution evaluation stops immediately
+- No partial intents are emitted
+- State is logged for audit
+
+------------------------------------------------------------
+FORBIDDEN BEHAVIOR (ABSOLUTE)
+------------------------------------------------------------
+
+The following are FORBIDDEN in Phase 3:
+
+- Live order placement
+- Capital deployment
+- Wallet or key access
+- Network calls to execution endpoints
+- Strategy or weight modification
+- Regime reinterpretation or override
+- Silent fallback to permissive behavior
+
+Any violation INVALIDATES the phase.
+
+------------------------------------------------------------
+AUDIT & REPLAY REQUIREMENTS
+------------------------------------------------------------
+
+Every execution evaluation MUST be:
+
+- Deterministically reproducible
+- Fully explainable without chat context
+- Traceable to specific regime output and config
+- Logged with allow/deny decision and rationale
+
+------------------------------------------------------------
+HANDOFF GUARANTEE
+------------------------------------------------------------
+
+Phase 4 may assume:
+
+- Execution permission logic exists
+- Denial-first discipline is enforced
+- No capital exposure occurred in Phase 3
+- Execution adapters are inert by construction
+
+------------------------------------------------------------
+STATUS
+------------------------------------------------------------
+
+This contract is binding for all Phase 3 execution scaffolding.
+Any execution logic that bypasses this contract is INVALID.
