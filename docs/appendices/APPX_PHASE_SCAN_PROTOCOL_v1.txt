@@ -1,0 +1,107 @@
+APPENDIX ID: APPX_PHASE_SCAN_PROTOCOL_v1
+TITLE: Phase Scan & Commit Integrity Protocol
+STATUS: CANONICAL
+APPLIES TO: ALL PHASES (Retroactive to Phase 0)
+
+------------------------------------------------------------
+PURPOSE
+------------------------------------------------------------
+
+This appendix defines the mandatory procedure for scanning,
+auditing, and validating repository state anchored to a
+specific Git commit.
+
+The Phase Scan exists to ensure:
+- Phase boundaries are not violated
+- Forbidden capabilities are not introduced early
+- Governance rules are continuously enforced
+- Future phases inherit a provable, inspectable baseline
+
+------------------------------------------------------------
+BINDING RULE
+------------------------------------------------------------
+
+A Git commit is NOT considered auditable unless its full
+file state is inspectable.
+
+Commit hashes, chat references, or assumptions about repo
+contents are insufficient.
+
+------------------------------------------------------------
+ACCEPTABLE SCAN INPUTS
+------------------------------------------------------------
+
+At least ONE of the following MUST be provided:
+
+1. Full repository snapshot (ZIP or archive) anchored to the commit
+2. `git archive` export of the commit
+3. Explicit file set + `git diff` against prior commit
+
+Providing a commit hash alone is NON-AUTHORITATIVE.
+
+------------------------------------------------------------
+MANDATORY PHASE SCAN CHECKS
+------------------------------------------------------------
+
+Every Phase Scan MUST evaluate:
+
+1. Phase Boundary Compliance
+   - No execution-capable code introduced before allowed phase
+   - No capital-handling logic outside permitted scope
+
+2. Governance Compliance
+   - Python-writer pattern respected
+   - No shell heredocs for structured content
+   - No unsafe filesystem traversal
+   - No clipboard-rule violations embedded in tooling
+
+3. Determinism Integrity
+   - Replay-faithful logic preserved
+   - No time-, environment-, or randomness-dependent behavior
+   - Explicit ordering and schema adherence
+
+4. Interface Discipline
+   - Clear separation between:
+     - Regime outputs
+     - Permission gates
+     - Execution interfaces
+   - No implicit coupling
+
+------------------------------------------------------------
+PHASE SCAN OUTPUTS
+------------------------------------------------------------
+
+A completed Phase Scan produces:
+
+- Commit identifier
+- Scan date
+- File inventory summary
+- Detected violations (if any)
+- Explicit statement of phase safety
+- Promotion recommendation:
+  - SAFE
+  - SAFE WITH NOTES
+  - INVALID (requires rollback)
+
+These results are eligible for promotion as:
+- Validation Evidence
+- Bug Notes
+- Phase Integrity Appendices
+
+------------------------------------------------------------
+ENFORCEMENT
+------------------------------------------------------------
+
+If a Phase Scan detects a violation:
+
+- The affected phase is considered INVALID
+- Downstream phases may not proceed
+- Remediation must occur before re-scan
+
+Convenience does not override integrity.
+
+------------------------------------------------------------
+STATUS
+------------------------------------------------------------
+
+This protocol is binding for all future phases.
