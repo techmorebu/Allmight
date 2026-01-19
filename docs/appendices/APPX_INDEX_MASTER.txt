@@ -134,6 +134,12 @@ Status: CANONICAL
 Supersedes: Implicit or informal execution adapter assumptions
 Notes: Defines the mandatory structure, isolation rules, permission requirements, and safety guarantees for capital-aware execution adapters.
 
+ID: APPX-PHASE4-CAPITAL-DECL-01
+Title: Phase 4 Capital Exposure Declaration
+Applies To: All capital introduced in Phase 4 execution enablement
+Status: CANONICAL
+Supersedes: Implicit or assumed capital availability
+Notes: Explicitly declares the existence, scope, isolation, and kill conditions of capital exposure permitted during Phase 4.
 
 ----------------------------------------------------------------
 DEPRECATED / HISTORICAL
