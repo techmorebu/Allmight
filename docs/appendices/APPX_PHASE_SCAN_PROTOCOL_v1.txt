@@ -99,9 +99,3 @@ If a Phase Scan detects a violation:
 - Remediation must occur before re-scan
 
 Convenience does not override integrity.
-
-------------------------------------------------------------
-STATUS
-------------------------------------------------------------
-
-This protocol is binding for all future phases.
