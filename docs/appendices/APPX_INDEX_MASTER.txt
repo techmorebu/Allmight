@@ -155,6 +155,12 @@ Status: CANONICAL
 Supersedes: Implicit trust in live execution safety
 Notes: Documents validation activities and safety evidence proving that capital-aware execution remains permissioned, bounded, halt-enforced, and auditable.
 
+ID: APPX-PHASE4-SCAN-01
+Title: Phase 4 Updated Phase Scan Report (Capital-Aware)
+Applies To: Repository state following Phase 4 execution enablement declarations
+Status: CANONICAL
+Supersedes: Prior phase scan reports that predate capital-aware execution assumptions
+Notes: Documents a full repository phase scan performed under Phase 4 capital-awareness rules, confirming continued governance, determinism, and execution safety compliance.
 
 ----------------------------------------------------------------
 DEPRECATED / HISTORICAL
