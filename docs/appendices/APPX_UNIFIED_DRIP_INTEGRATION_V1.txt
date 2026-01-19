@@ -1,0 +1,201 @@
+ALLMIGHT PROJECT
+UNIFIED APPENDIX
+DRIP VAULT — GUI + POLICY SCHEMA INTEGRATION
+VERSION: v1.0
+STATUS: CLARIFICATION & EXTENSION ONLY
+============================================================
+
+
+PURPOSE
+-------
+This appendix unifies the DRIP VAULT concept with:
+
+- the finalized GUI specification
+- the reference policy schema
+
+This document preserves original DRIP VAULT intent while ensuring:
+- no double-counting of profits
+- no competition with Ops/Gas
+- no execution authority leakage
+- no ambiguity in UI or config interpretation
+
+This appendix does NOT replace any prior appendix.
+It extends them in a controlled, versioned manner.
+
+
+============================================================
+SECTION 1
+DRIP VAULT — GUI PANEL SPECIFICATION
+============================================================
+
+This section augments APPENDIX A (GUI & CONTROL PANEL).
+
+
+------------------------------------------------------------
+1.1 DRIP VAULT PANEL (READ-ONLY)
+------------------------------------------------------------
+
+FUNCTION
+--------
+Provide visibility into lifestyle cashflow mechanics without allowing
+any discretionary or emotional control.
+
+The DRIP Vault panel is strictly non-executable.
+
+
+DISPLAYS
+--------
+- DRIP Vault Status: ENABLED / PAUSED
+- Current Weekly Gross Income (WGI)
+- Active Tier Name
+- Tier Payout Amount (weekly)
+- Consecutive Weeks at Current Tier
+- Weeks Required for Tier Upgrade
+- Cash Protection Layer (CPL) Balance
+- Cash Minimum Requirement (CMR = 12× Tier)
+- CPL Coverage Ratio (CPL / CMR)
+- Profit Lock Mechanism (PLM): ELIGIBLE / LOCKED (reason)
+- Ops/Gas Safety Check: PASS / BLOCKING
+- Next Scheduled Payout Amount
+- Last Payout Timestamp
+
+
+EXPLICITLY NOT SHOWN
+-------------------
+- No buttons to force payout
+- No manual tier selection
+- No override of CPL / CMR logic
+- No linkage to execution controls
+
+
+ALLOWED CONTROLS
+----------------
+- NONE during LIVE mode
+
+(If configuration toggles exist, they are file-based and require
+version bump + re-arming.)
+
+
+------------------------------------------------------------
+1.2 GUI INTEGRATION RULES
+------------------------------------------------------------
+
+- DRIP Vault panel is informational only
+- DRIP status cannot affect execution lanes
+- DRIP panel must clearly state when payouts are blocked and why
+- DRIP inactivity must be framed as “system protecting itself”
+- DRIP Vault must visually appear downstream of all execution lanes
+
+
+============================================================
+SECTION 2
+DRIP VAULT — POLICY SCHEMA EXTENSION
+============================================================
+
+This section augments APPENDIX D (General Policy Schema).
+
+The following fields are additive and reference-only until implemented.
+
+
+------------------------------------------------------------
+2.1 DRIP VAULT POLICY SCHEMA (REFERENCE)
+------------------------------------------------------------
+
+drip_vault:
+  enabled: true
+
+  role:
+    execution_authority: false
+    predictive: false
+    discretionary: false
+    description: >
+      Converts realized system profits into rule-based lifestyle
+      cashflow without impacting execution, safety, or compounding.
+
+  funding:
+    source: working_capital_post_allocation
+    allow_pre_collapse_funding: false
+    allow_unrealized_funding: false
+    pause_if_ops_gas_below_minimum: true
+
+  payout:
+    frequency: weekly
+    payout_wallet_isolated: true
+    max_override_allowed: false
+
+  tier_system:
+    upgrade_requires_consecutive_weeks: 2
+    downgrade_on_miss: immediate
+    tiers_locked_during_live: true
+
+  cash_protection_layer:
+    enabled: true
+    cmr_multiplier: 12
+    require_full_cmr_for_plm: true
+    allow_cpl_lag_during_early_scaling: true
+
+  profit_lock_mechanism:
+    enabled: true
+    min_sustained_weeks: 12
+    max_monthly_plm_cap_usd: 1300
+    requires_ops_safety_pass: true
+
+  safety_guards:
+    cannot_pull_from_execution: true
+    cannot_pull_from_ops_gas: true
+    auto_pause_on_system_kill: true
+    auto_pause_on_data_integrity_kill: true
+
+  accounting:
+    payouts_count_as_personal_draws: true
+    payouts_not_operating_expense: true
+    ledger_separation_required: true
+
+
+------------------------------------------------------------
+2.2 SCHEMA INTERPRETATION RULE
+------------------------------------------------------------
+
+If a future implementation or interpretation allows the DRIP Vault to:
+
+- pull capital from execution
+- reduce Ops/Gas below minimums
+- accelerate tier upgrades during instability
+- bypass CPL/CMR logic
+
+then that implementation is INVALID relative to this appendix.
+
+
+============================================================
+SECTION 3
+CANONICAL INTEGRATION STATEMENT
+============================================================
+
+The DRIP VAULT is:
+
+- downstream of execution
+- subordinate to safety
+- isolated from compounding logic
+- deterministic and non-emotional
+
+It exists to reward success without ever endangering it.
+
+
+============================================================
+FINALIZATION NOTICE
+============================================================
+
+This unified appendix:
+
+- preserves original DRIP VAULT intent
+- adds GUI visibility without control leakage
+- extends the policy schema without forcing implementation
+- prevents future architectural drift
+
+Future changes require:
+- a versioned amendment
+- explicit linkage to this appendix
+- re-arming of LIVE systems if applicable
+
+END OF FILE
+============================================================
