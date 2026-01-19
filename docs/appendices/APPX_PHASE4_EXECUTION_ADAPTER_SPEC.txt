@@ -1,0 +1,206 @@
+APPENDIX ID: APPX-PHASE4-EXEC-ADAPTER-01
+TITLE: Phase 4 Execution Adapter Specification
+STATUS: CANONICAL
+APPLIES TO: Phase 4 and all future execution-capable phases
+
+------------------------------------------------------------
+PURPOSE
+------------------------------------------------------------
+
+This appendix defines the mandatory specification for execution
+adapters introduced in Phase 4.
+
+Its purpose is to ensure that:
+- Capital-backed execution is explicit and isolated
+- Permission gates remain authoritative
+- Safety, halt, and kill semantics cannot be bypassed
+- Execution behavior remains auditable and replay-consistent
+
+No execution adapter may exist outside this specification.
+
+------------------------------------------------------------
+CORE PRINCIPLE
+------------------------------------------------------------
+
+EXECUTION ADAPTERS ARE CONTAINERS, NOT STRATEGIES.
+
+Adapters may execute only what they are explicitly permitted
+to execute, under conditions they do not control.
+
+------------------------------------------------------------
+DEFINITION
+------------------------------------------------------------
+
+Execution Adapter:
+  A bounded interface responsible for translating
+  execution intents into concrete actions.
+
+Adapters do NOT:
+- Decide when to execute
+- Interpret regime logic
+- Modify strategy outputs
+- Bypass permission or safety layers
+
+------------------------------------------------------------
+MANDATORY ADAPTER TYPES
+------------------------------------------------------------
+
+All execution adapters MUST declare exactly one of the following
+types at initialization:
+
+1. PAPER
+   - Emits simulated fills only
+   - No network access
+   - No capital exposure
+
+2. SHADOW
+   - Observes live markets
+   - Emits simulated or logged actions only
+   - No capital exposure
+
+3. LIVE
+   - Executes real orders
+   - Has access to capital
+   - Subject to strict isolation and controls
+
+Adapters without an explicit type declaration are INVALID.
+
+------------------------------------------------------------
+ADAPTER ISOLATION REQUIREMENTS
+------------------------------------------------------------
+
+All LIVE adapters MUST:
+
+- Operate in a dedicated execution context
+- Have no access to:
+  - Regime logic
+  - Strategy logic
+  - Permission logic
+- Receive only pre-authorized execution intents
+- Be unable to self-initiate execution
+
+Isolation boundaries are mandatory, not advisory.
+
+------------------------------------------------------------
+PERMISSION GATE INTEGRATION
+------------------------------------------------------------
+
+Execution adapters MUST NOT be callable unless:
+
+- Execution permission is explicitly GRANTED
+- Phase is Phase 4 or higher
+- Adapter type is explicitly LIVE
+- All halt and kill checks pass
+
+Adapters MUST NOT:
+- Cache permission state
+- Assume continued authorization
+- Retry execution after denial
+
+Permission is evaluated per execution cycle.
+
+------------------------------------------------------------
+CAPITAL ACCESS RULES
+------------------------------------------------------------
+
+LIVE adapters may access capital ONLY if:
+
+- Capital exposure is explicitly declared
+- Capital scope is bounded and documented
+- Keys or wallets are isolated per adapter
+- No other subsystem can access those keys
+
+Capital access MUST be:
+- Minimal
+- Revocable
+- Observable
+
+------------------------------------------------------------
+HALT & KILL SWITCH INTEGRATION
+------------------------------------------------------------
+
+All adapters MUST:
+
+- Check halt and kill state before EVERY action
+- Abort immediately on halt
+- Freeze and exit on kill switch
+
+Kill switches override ALL adapter logic.
+
+Adapters MUST NOT:
+- Suppress halt or kill signals
+- Attempt graceful degradation after kill
+- Resume without explicit reset
+
+------------------------------------------------------------
+FORBIDDEN ADAPTER BEHAVIOR
+------------------------------------------------------------
+
+Execution adapters MUST NOT:
+
+- Contain strategy logic
+- Contain regime logic
+- Modify intents
+- Retry execution autonomously
+- Escalate permissions
+- Access capital outside declared scope
+- Emit orders without explicit intent input
+
+Any violation INVALIDATES the phase.
+
+------------------------------------------------------------
+AUDIT & LOGGING REQUIREMENTS
+------------------------------------------------------------
+
+All adapters MUST log:
+
+- Adapter type
+- Permission state
+- Halt / kill state
+- Intent received
+- Action taken (or refused)
+- Timestamp
+
+Logs MUST be sufficient to reconstruct execution behavior
+without chat context.
+
+------------------------------------------------------------
+REPLAY & DETERMINISM REQUIREMENTS
+------------------------------------------------------------
+
+Execution adapters MUST support:
+
+- Dry-run replay using recorded intents
+- Deterministic refusal paths
+- Clear separation between simulation and live execution
+
+Adapters MUST NOT introduce non-deterministic behavior
+outside explicitly documented live-market uncertainty.
+
+------------------------------------------------------------
+EXTENSIBILITY RULES
+------------------------------------------------------------
+
+New adapter types or capabilities:
+
+- MUST be introduced via new appendices
+- MUST NOT weaken existing guarantees
+- MUST be phase-scanned before use
+
+------------------------------------------------------------
+HANDOFF GUARANTEE
+------------------------------------------------------------
+
+Future phases may assume:
+
+- Execution adapters are explicitly typed
+- Capital exposure is isolated and declared
+- Permission and safety systems remain authoritative
+- Adapter behavior is auditable and bounded
+
+------------------------------------------------------------
+STATUS
+------------------------------------------------------------
+
+This specification is binding for all execution adapters.
+Any adapter that violates this specification is INVALID.
