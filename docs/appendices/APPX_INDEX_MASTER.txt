@@ -99,6 +99,20 @@ Status: CANONICAL
 Supersedes: Implicit safety assumptions and informal stop conditions
 Notes: Defines mandatory halt triggers, kill-switch authority, invariant enforcement, and stop-the-world behavior for Phase 3 execution preparation.
 
+ID: APPX-PHASE3-VALIDATION-01
+Title: Phase 3 Validation & Safety Evidence
+Applies To: Phase 3 execution preparation and safety enforcement
+Status: CANONICAL
+Supersedes: Implicit trust in untested safety paths
+Notes: Documents the validation procedures, denial-path verification, and safety proofs demonstrating that Phase 3 execution scaffolding is non-capital, regime-gated, and halt-enforced.
+
+ID: APPX-PHASE3-PHASE4-HANDOFF-01
+Title: Phase 3 → Phase 4 Handoff Prompt
+Applies To: Transition from execution preparation to execution enablement
+Status: CANONICAL
+Supersedes: Implicit assumptions about Phase 4 readiness
+Notes: Defines the exact guarantees Phase 3 provides to Phase 4 and the non-negotiable constraints Phase 4 must honor.
+
 ----------------------------------------------------------------
 DEPRECATED / HISTORICAL
 ----------------------------------------------------------------
