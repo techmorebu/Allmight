@@ -1,0 +1,180 @@
+APPENDIX ID: APPX-PHASE3-RISK-HALT-01
+TITLE: Phase 3 Risk, Halt, and Kill-Switch Specification
+STATUS: CANONICAL
+APPLIES TO: Phase 3 (Execution Preparation — Paper / Shadow Only)
+
+------------------------------------------------------------
+PURPOSE
+------------------------------------------------------------
+
+This appendix defines the mandatory safety enforcement mechanisms
+for Phase 3 execution preparation.
+
+Its purpose is to ensure that:
+- Unsafe conditions halt execution evaluation immediately
+- No ambiguous or degraded state is tolerated
+- Denial and halt are deterministic and auditable
+- Phase 3 remains strictly non-capital and replay-safe
+
+------------------------------------------------------------
+CORE SAFETY PRINCIPLE
+------------------------------------------------------------
+
+WHEN IN DOUBT, STOP.
+
+Execution preparation is allowed only in clearly safe,
+explicitly authorized conditions.
+
+Any ambiguity, inconsistency, or invariant violation
+MUST result in an immediate halt.
+
+------------------------------------------------------------
+DEFINITIONS
+------------------------------------------------------------
+
+Halt:
+  A reversible stop that prevents execution evaluation
+  for the current cycle or until conditions clear.
+
+Kill Switch:
+  An unconditional, immediate stop that prevents all
+  execution evaluation until explicitly reset.
+
+Invariant:
+  A condition that MUST always hold true.
+  Violation of any invariant is considered unsafe.
+
+------------------------------------------------------------
+GLOBAL INVARIANTS (NON-NEGOTIABLE)
+------------------------------------------------------------
+
+The following invariants MUST always be true in Phase 3:
+
+- No capital, keys, or wallets are accessible
+- Execution adapters are non-capital by construction
+- Regime outputs are replay-derived and read-only
+- Permission gates are evaluated before execution logic
+- Denial is the default execution state
+- All decisions are logged and auditable
+
+Violation of ANY invariant triggers a kill switch.
+
+------------------------------------------------------------
+HALT TRIGGERS (AUTOMATIC)
+------------------------------------------------------------
+
+A HALT MUST be triggered if ANY of the following occur:
+
+- Regime output is missing, stale, or schema-invalid
+- Regime state transitions unexpectedly mid-cycle
+- Execution permission state is ambiguous
+- Execution adapter returns unexpected capability flags
+- Required configuration is missing or malformed
+- Replay determinism cannot be guaranteed
+- Time-based or environment-dependent behavior is detected
+
+A halt stops execution evaluation for the current cycle.
+
+------------------------------------------------------------
+KILL SWITCH TRIGGERS (AUTOMATIC)
+------------------------------------------------------------
+
+A KILL SWITCH MUST be triggered immediately if ANY of the following occur:
+
+- Detection of live order execution primitives
+- Attempted access to capital, keys, or signing material
+- Network calls to execution endpoints
+- Execution logic bypasses permission gates
+- Invariant violation is detected
+- Phase boundary is violated
+- Manual operator kill switch is engaged
+
+Kill switches override all other logic.
+
+------------------------------------------------------------
+MANUAL KILL SWITCH AUTHORITY
+------------------------------------------------------------
+
+Manual kill switches may be engaged by:
+
+- Operator command
+- Config-based hard disable
+- External supervisory process (if present)
+
+Manual kill switches:
+- Take effect immediately
+- Require explicit operator action to reset
+- Are logged with timestamp and reason
+
+------------------------------------------------------------
+HALT VS KILL SEMANTICS
+------------------------------------------------------------
+
+HALT:
+- Scope: Current evaluation cycle
+- Reset: Automatic if conditions clear
+- Use case: Transient ambiguity or missing input
+
+KILL:
+- Scope: Entire execution subsystem
+- Reset: Manual only
+- Use case: Safety breach or invariant violation
+
+------------------------------------------------------------
+STOP-THE-WORLD BEHAVIOR
+------------------------------------------------------------
+
+When a kill switch is triggered:
+
+- All execution evaluation stops immediately
+- No further intents are emitted
+- No partial results are retained
+- State is frozen for audit
+- System enters SAFE mode
+
+No recovery actions may proceed until reset.
+
+------------------------------------------------------------
+AUDIT & LOGGING REQUIREMENTS
+------------------------------------------------------------
+
+Every halt or kill event MUST be logged with:
+
+- Triggering condition
+- Timestamp
+- Relevant regime state
+- Permission state
+- Adapter identity (if applicable)
+
+Logs MUST be sufficient to reconstruct the event
+without chat context.
+
+------------------------------------------------------------
+FORBIDDEN SAFETY ANTIPATTERNS
+------------------------------------------------------------
+
+The following are FORBIDDEN:
+
+- Silent recovery from unsafe states
+- Automatic downgrade to permissive behavior
+- Ignoring invariant violations
+- Continuing execution evaluation after a halt
+- Overriding kill switches programmatically
+
+------------------------------------------------------------
+HANDOFF GUARANTEE
+------------------------------------------------------------
+
+Phase 4 may assume:
+
+- Halt and kill semantics are explicit and enforced
+- Unsafe execution paths cannot proceed silently
+- Phase 3 incurred zero capital risk
+- Safety enforcement is deterministic and auditable
+
+------------------------------------------------------------
+STATUS
+------------------------------------------------------------
+
+This specification is binding for all Phase 3 execution preparation.
+Any execution logic that violates this specification is INVALID.
