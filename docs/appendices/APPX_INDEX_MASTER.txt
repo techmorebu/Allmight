@@ -127,6 +127,14 @@ Status: CANONICAL
 Supersedes: Implicit or informal phase completion
 Notes: Formally declares Phase 3 complete, enumerates produced artifacts, and freezes Phase 3 scope and guarantees.
 
+ID: APPX-PHASE4-EXEC-ADAPTER-01
+Title: Phase 4 Execution Adapter Specification
+Applies To: All execution adapters introduced in Phase 4 and beyond
+Status: CANONICAL
+Supersedes: Implicit or informal execution adapter assumptions
+Notes: Defines the mandatory structure, isolation rules, permission requirements, and safety guarantees for capital-aware execution adapters.
+
+
 ----------------------------------------------------------------
 DEPRECATED / HISTORICAL
 ----------------------------------------------------------------
