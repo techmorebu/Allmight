@@ -1,0 +1,83 @@
+APPENDIX INDEX — MASTER REGISTRY
+===============================
+
+Project: PROJECT ALLMIGHT
+Authority: Phase-0 Governance
+Status: CANONICAL
+Last Anchored Commit: aed18b5d468a32dcc0d0223d0f08e0b97ccae1ae
+
+Rule:
+-----
+If an appendix is NOT listed in this index, it is NOT authoritative.
+Chats, READMEs, comments, and memory are non-binding unless promoted here.
+
+----------------------------------------------------------------
+APPENDIX REGISTRY
+----------------------------------------------------------------
+
+ID: APPX-P0-GOV-01
+Title: Phase-0 Governance — Deterministic Input & Execution Safety
+Applies To: All phases
+Status: CANONICAL
+Supersedes: None
+Notes: Highest-precedence governance artifact
+
+ID: APPX-P0-CLIP-01
+Title: Contributor Input & Clipboard Rules
+Applies To: All phases
+Status: CANONICAL
+Supersedes: None
+Notes: Enforces Python-writer / wl-paste safety
+
+ID: APPX-P0-PRECOMMIT-01
+Title: Pre-Commit Governance Checklist
+Applies To: All phases
+Status: CANONICAL
+Supersedes: None
+Notes: Mandatory for any valid commit
+
+ID: APPX-P0-PRESENT-01
+Title: Phase-0 Presentation & Communication Protocol
+Applies To: All phases, all chats
+Status: CANONICAL
+Supersedes: None
+Notes: Defines how information must be structured
+
+ID: APPX-PHASE-WRAP-GLOBAL-01
+Title: Phase Wrap & Governance Protocol (Global)
+Applies To: All phases
+Status: CANONICAL
+Supersedes: None
+Notes: Defines what “phase complete” means
+
+ID: APPX-PHIL-INDEX-01
+Title: Final Philosophy Index & Data Proxy Matrix
+Applies To: Context layer only
+Status: CANONICAL
+Supersedes: None
+Notes: Philosophy informs context only, never execution
+
+ID: APPX-CHAT-CONSOL-01
+Title: Chat Consolidation Summary
+Applies To: Historical audit
+Status: CANONICAL
+Supersedes: All prior chat narratives
+Notes: Single compression of all prior chats
+
+ID: APPX-STATE-NEXT-01
+Title: Current State & Next Phase Declaration
+Applies To: Forward execution
+Status: CANONICAL
+Supersedes: Implicit phase assumptions
+Notes: Defines where the project actually is
+
+----------------------------------------------------------------
+DEPRECATED / HISTORICAL
+----------------------------------------------------------------
+
+Any appendix, note, or rule not listed above is non-authoritative
+until explicitly registered here.
+
+----------------------------------------------------------------
+END OF INDEX
+----------------------------------------------------------------
