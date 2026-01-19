@@ -141,6 +141,21 @@ Status: CANONICAL
 Supersedes: Implicit or assumed capital availability
 Notes: Explicitly declares the existence, scope, isolation, and kill conditions of capital exposure permitted during Phase 4.
 
+ID: APPX-PHASE4-RISK-MITIGATION-01
+Title: Phase 4 Risk Extension & Mitigation Specification
+Applies To: Capital-aware execution introduced in Phase 4
+Status: CANONICAL
+Supersedes: Implicit assumptions about live-market safety
+Notes: Enumerates capital-specific risk classes introduced in Phase 4 and defines mandatory mitigation, halt, and kill responses.
+
+ID: APPX-PHASE4-VALIDATION-01
+Title: Phase 4 Validation Evidence (Capital-Aware)
+Applies To: Capital-backed execution enablement in Phase 4
+Status: CANONICAL
+Supersedes: Implicit trust in live execution safety
+Notes: Documents validation activities and safety evidence proving that capital-aware execution remains permissioned, bounded, halt-enforced, and auditable.
+
+
 ----------------------------------------------------------------
 DEPRECATED / HISTORICAL
 ----------------------------------------------------------------
