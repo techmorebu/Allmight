@@ -1,0 +1,168 @@
+APPENDIX ID: APPX-PHASE4-SCAN-01
+TITLE: Phase 4 Updated Phase Scan Report (Capital-Aware)
+STATUS: CANONICAL
+APPLIES TO: Repository state under Phase 4 execution enablement
+
+------------------------------------------------------------
+PURPOSE
+------------------------------------------------------------
+
+This appendix documents an updated Phase Scan performed after
+the introduction of Phase 4 execution enablement declarations,
+capital exposure acknowledgement, and capital-aware risk controls.
+
+The scan verifies that:
+- No forbidden execution capability was introduced implicitly
+- Capital exposure remains explicit, isolated, and bounded
+- Governance, determinism, and safety guarantees remain intact
+
+------------------------------------------------------------
+SCAN INPUT
+------------------------------------------------------------
+
+Scan Basis:
+- Repository state inclusive of Phase 4 appendices
+- Capital-aware execution assumptions applied
+- No live execution code assumed unless explicitly declared
+
+Scan Type:
+- Static repository scan
+- Structural and governance compliance scan
+- Capital-risk posture evaluation
+
+------------------------------------------------------------
+INVENTORY SUMMARY
+------------------------------------------------------------
+
+Repository structure observed includes:
+
+- docs/
+  - appendices/
+  - build_notes/
+  - bug_notes/
+  - phase3/
+  - phase4/
+- scripts/
+- config/
+- tests/
+- tools/
+- utils/
+
+No unexpected top-level directories detected.
+
+------------------------------------------------------------
+PHASE BOUNDARY COMPLIANCE
+------------------------------------------------------------
+
+Verification results:
+
+- Phase 2 regime logic remains unchanged
+- Phase 3 execution preparation artifacts remain frozen
+- Phase 4 introduces declarations and specifications only
+- No implicit promotion from paper/shadow to live execution observed
+- No self-escalation across phase boundaries detected
+
+Result: PASS
+
+------------------------------------------------------------
+EXECUTION CAPABILITY SCAN
+------------------------------------------------------------
+
+Scan evaluated for presence of:
+
+- Live order placement primitives
+- Capital transfer or withdrawal logic
+- Wallet or key management code
+- Exchange execution endpoints
+
+Findings:
+
+- No execution-capable code paths reachable without explicit adapter instantiation
+- No capital-handling logic detected outside declared adapter scope
+- Execution capability exists only as specification and contract
+
+Result: PASS
+
+------------------------------------------------------------
+CAPITAL EXPOSURE COMPLIANCE
+------------------------------------------------------------
+
+Verification results:
+
+- Capital is declared only via APPX-PHASE4-CAPITAL-DECL-01
+- No code assumes implicit capital availability
+- No configuration leaks capital scope or credentials
+- No non-adapter component references capital resources
+
+Result: PASS
+
+------------------------------------------------------------
+GOVERNANCE & SAFETY COMPLIANCE
+------------------------------------------------------------
+
+Verified compliance with:
+
+- Phase-0 Governance — Deterministic Input & Execution Safety
+- Phase Scan & Commit Integrity Protocol
+- Execution Permission Contract
+- Risk, Halt, and Kill-Switch Specifications
+
+Specific checks:
+
+- No Path.rglob or unsafe filesystem traversal
+- os.walk usage limited to approved hardened tooling
+- No shell heredocs for structured content
+- No implicit defaults or environment-dependent behavior introduced
+
+Result: PASS
+
+------------------------------------------------------------
+DETERMINISM & AUDITABILITY
+------------------------------------------------------------
+
+Verification results:
+
+- No non-deterministic execution paths introduced
+- All execution-related behavior remains intent-driven
+- Logs and specifications support replay and forensic audit
+- No reliance on chat context for interpretation
+
+Result: PASS
+
+------------------------------------------------------------
+FINDINGS & NOTES
+------------------------------------------------------------
+
+- Phase 4 introduces *declarative* execution enablement only
+- No live execution logic is activated by default
+- Capital-aware risk classes are documented and bounded
+- The system remains in a controlled, non-production posture
+
+No violations detected.
+
+------------------------------------------------------------
+CONCLUSION
+------------------------------------------------------------
+
+Based on this Phase 4 Updated Phase Scan:
+
+- Repository state is COMPLIANT with Phase 4 rules
+- Capital exposure remains explicit and isolated
+- No forbidden execution capability was introduced
+- Governance and determinism remain intact
+
+------------------------------------------------------------
+RECOMMENDATION
+------------------------------------------------------------
+
+SAFE
+
+The system may proceed with remaining Phase 4 procedural artifacts
+(build notes, bug notes, handoff, wrap) without remediation.
+
+------------------------------------------------------------
+STATUS
+------------------------------------------------------------
+
+This scan is authoritative for Phase 4.
+Any future capital-capable code changes require re-scan.
