@@ -5,7 +5,7 @@ APPLIES TO: ALL PHASES (Retroactive to Phase 0)
 
 ------------------------------------------------------------
 PURPOSE
-------------------------------------------------------------
+-----------------------------------------------------------
 
 This appendix defines the mandatory procedure for scanning,
 auditing, and validating repository state anchored to a
