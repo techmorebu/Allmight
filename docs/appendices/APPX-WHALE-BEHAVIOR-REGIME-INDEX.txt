@@ -1,0 +1,218 @@
+APPENDIX ID: APPX-WHALE-BEHAVIOR-REGIME-INDEX
+TITLE: Whale Behavior Regime Index (WBRI) — Observational Liquidity Context Layer
+STATUS: OPTIONAL / NON-DIRECTIONAL / FROZEN
+APPLIES TO: ALLMIGHT — PHASE 4+
+RISK CLASS: LOW (CONTEXT ONLY)
+LAST UPDATED: 2026-01-XX
+
+------------------------------------------------------------
+1. PURPOSE
+------------------------------------------------------------
+
+The Whale Behavior Regime Index (WBRI) exists to provide
+NON-PREDICTIVE, NON-ATTRIBUTIONAL context regarding the market’s
+ability to absorb large flows.
+
+WBRI does NOT attempt to:
+- identify specific wallets
+- predict price direction
+- front-run exits
+- justify leverage
+- infer intent
+
+It answers ONE question only:
+
+"Is the market currently digesting large size calmly, or under stress?"
+
+------------------------------------------------------------
+2. DESIGN PHILOSOPHY
+------------------------------------------------------------
+
+WBRI is:
+- Observational, not predictive
+- Aggregated, not wallet-specific
+- Lag-tolerant, not real-time reactive
+- Regime-based, not signal-based
+- Kill-switch governed
+
+WBRI may only:
+- reduce aggressiveness
+- increase caution
+- confirm digestion vs stress
+
+It may NEVER increase exposure.
+
+------------------------------------------------------------
+3. OUTPUT STATES (STRICTLY LIMITED)
+------------------------------------------------------------
+
+WBRI may output ONLY ONE of the following states:
+
+- CONTROLLED_DISTRIBUTION
+- CONTROLLED_ACCUMULATION
+- NEUTRAL (DEFAULT / SAFE STATE)
+
+NEUTRAL is the fallback state and must be assumed whenever
+conditions are unclear.
+
+------------------------------------------------------------
+4. PRIMARY PROXY MATRIX (OBSERVATIONAL ONLY)
+------------------------------------------------------------
+
+All regime determinations require MULTI-PROXY confirmation.
+No single proxy is sufficient.
+
+------------------------------------------------------------
+4.1 FLOW STRUCTURE PROXIES
+------------------------------------------------------------
+
+Proxy: Exchange Inflow Clustering
+Description: Count and size distribution of exchange-bound transfers
+Use: Detect blending vs urgency
+Restriction: No wallet labeling allowed
+
+Proxy: Size Dispersion
+Description: Distribution across multiple transactions
+Use: Controlled vs panic behavior
+
+Proxy: Temporal Spread
+Description: Activity spread across days or weeks
+Use: Strategic execution vs forced liquidation
+
+------------------------------------------------------------
+4.2 LIQUIDITY ABSORPTION PROXIES
+------------------------------------------------------------
+
+Proxy: Post-Inflow VWAP Stability
+Description: Price stability after large inflows
+Use: Absorption capacity check
+
+Proxy: Volume Normalization
+Description: Volume relative to rolling baseline
+Use: Market capacity evaluation
+
+Proxy: Spread Compression / Expansion
+Description: Bid-ask response to size
+Use: Liquidity health signal
+
+------------------------------------------------------------
+4.3 MARKET IMPACT PROXIES
+------------------------------------------------------------
+
+Proxy: Slippage Relative to Size
+Description: Expected vs realized impact
+Use: Execution quality context
+
+Proxy: Volatility Persistence
+Description: Duration of elevated volatility
+Use: Panic vs digestion classification
+
+Proxy: Recovery Half-Life
+Description: Time to price normalization
+Use: Structural strength confirmation
+
+------------------------------------------------------------
+4.4 CROSS-VENUE CONFIRMATION (OPTIONAL)
+------------------------------------------------------------
+
+Proxy: Spot vs Perp Basis
+Use: Stress divergence check
+
+Proxy: ETF Flow Alignment
+Use: Institutional digestion confirmation
+
+Proxy: Stablecoin Supply Drift
+Use: Background liquidity context
+
+------------------------------------------------------------
+5. REGIME CLASSIFICATION LOGIC
+------------------------------------------------------------
+
+CONTROLLED_DISTRIBUTION requires ALL of the following:
+- High size dispersion
+- Extended temporal spread
+- Minimal slippage
+- Rapid post-flow absorption
+- No sustained volatility expansion
+
+CONTROLLED_ACCUMULATION requires:
+- Inverse flow clustering
+- Stable volatility
+- Improving order-book depth
+- No chase behavior
+
+NEUTRAL applies when:
+- Proxies conflict
+- Data is missing or delayed
+- Noise exceeds threshold
+- Any kill-switch condition is met
+
+------------------------------------------------------------
+6. WEIGHTING & CONFIDENCE RULES
+------------------------------------------------------------
+
+- No numeric weights allowed
+- Proxies are boolean-confirmatory only
+- Missing data defaults to NEUTRAL
+- Confidence may only REDUCE risk, never increase it
+
+------------------------------------------------------------
+7. KILL-SWITCH POLICY (MANDATORY)
+------------------------------------------------------------
+
+WBRI MUST auto-disable to NEUTRAL if ANY of the following occur:
+
+- Proxy disagreement persists beyond N windows
+- Volatility spikes without flow confirmation
+- Flow signals contradict price + liquidity
+- Any proxy source degrades, lags, or desyncs
+- Market enters extreme news-driven conditions
+
+No human override is permitted.
+
+------------------------------------------------------------
+8. INTEGRATION CONSTRAINTS
+------------------------------------------------------------
+
+WBRI may:
+- Gate position sizing
+- Gate execution speed
+- Gate DRIP reinvestment aggressiveness
+
+WBRI may NOT:
+- Trigger entries
+- Trigger exits
+- Override price action
+- Override primary regime logic
+- Operate standalone
+
+------------------------------------------------------------
+9. EXPLICIT NON-GOALS
+------------------------------------------------------------
+
+This module does NOT:
+- Track specific whales
+- Identify “OG wallets”
+- Predict dumps or pumps
+- Replace Smart Money Concepts
+- Replace price, volume, or regime layers
+
+------------------------------------------------------------
+10. PHASE TAGGING
+------------------------------------------------------------
+
+Recommended Phase: PHASE 4 (Context & Risk Filters)
+Optional Carry-Forward: PHASE 5+
+
+------------------------------------------------------------
+11. FINAL LOCK
+------------------------------------------------------------
+
+This appendix is COMPLETE and FROZEN.
+
+Any future changes require:
+- New appendix ID
+- Explicit scope justification
+- Separate audit
+
+END OF APPENDIX
