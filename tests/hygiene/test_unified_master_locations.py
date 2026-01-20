@@ -1,4 +1,5 @@
 from __future__ import annotations
+from scripts.tools.repo_files import iter_repo_files
 
 from pathlib import Path
 
@@ -21,7 +22,7 @@ def test_unified_master_markdown_locations_are_restricted() -> None:
     root = _git_root()
 
     # Find any markdown files matching UNIFIED_MASTER*.md anywhere in repo.
-    matches = sorted(root.rglob("UNIFIED_MASTER*.md"))
+    matches = sorted([root / rel for rel in iter_repo_files(root) if rel.suffix == ".md" and rel.name.startswith("UNIFIED_MASTER")])
 
     allowed_exact = {
         (root / "docs/specs/UNIFIED_MASTER_CANONICAL.md").resolve(),
