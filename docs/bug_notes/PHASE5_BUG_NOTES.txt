@@ -1,19 +1,18 @@
-PHASE 5 — BUG NOTES (v0)
-===========================
+PHASE 5 BUG NOTES
+=================
+UTC: 2026-01-20T10:17:24Z
+GIT_HEAD_AT_WRAP: f3bfcc3107319645d7018aefd93c111fac01b2f4
 
-Timestamp (UTC): 2025-12-29T09:55:26Z
+Resolved Issues
+---------------
+- Operator-facing live order CLI initially produced traceback on deny; normalized to clean deny outputs (DENY: <code> :: <message>) via CLI hardening workflow.
 
-Status
-------
-No known open bugs at freeze time.
+Open Issues
+-----------
+- None blocking Phase 5 exit.
 
-Resolved During Build
----------------------
-- Patch-based indentation corruption risk (resolved by canonical overwrite approach)
-- Input selection ordering bug (outdir referenced before initialization) avoided via clean runner structure
+Observations
+------------
+- GitHub/Dependabot reports 3 low vulnerabilities on default branch (non-blocking for Phase 5 scope). Track in Phase Scan and address under dedicated hygiene scope.
 
-Guardrails
-----------
-- If any schema uncertainty is detected, Phase-5 HALTs with phase5_halt_report.json
-- Ambiguous inputs-dir selection HALTs; no guessing
-
+END

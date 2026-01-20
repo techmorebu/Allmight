@@ -1,0 +1,27 @@
+PHASE 5 VALIDATION EVIDENCE
+===========================
+UTC: 2026-01-20T10:17:24Z
+GIT_HEAD_AT_WRAP: f3bfcc3107319645d7018aefd93c111fac01b2f4
+
+Test Gate
+---------
+- pytest -q (operator-confirmed green during Phase 5 progression).
+
+Envelope Deny Proofs (Canonical)
+--------------------------------
+- Default deny: E_LIVE_DISABLED
+- Operator flag required: E_FLAG_REQUIRED
+- Kill switch active: E_KILL_SWITCH_ACTIVE
+
+Operator CLI Proofs (Recorded)
+------------------------------
+- run_phase5_live_smoke.py => DENY: E_FLAG_REQUIRED
+- run_phase5_live_smoke.py with flag+ack => DENY: E_LIVE_DISABLED
+- run_phase5_live_order.py (dry-run) => returns DRY_RUN payload (no network)
+- KILL_SWITCH present => DENY: E_KILL_SWITCH_ACTIVE
+
+Audit Evidence
+--------------
+- outputs/phase5/live_audit/phase5_live_audit.jsonl contains attempts + dry-run event(s).
+
+END

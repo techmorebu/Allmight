@@ -202,6 +202,14 @@ Status: CANONICAL
 Supersedes: None
 Notes: Defines the only allowed live-order procedure for Phase 5 using ccxt coinbase private endpoints (single adapter + caps + kill switch).
 
+
+ID: APPX-PHASE5-WRAP-SUMMARY-01
+Title: Phase 5 Wrap Summary (Artifacts, Validation, and Handoff Anchor)
+Applies To: Phase 5
+Status: CANONICAL
+Supersedes: None
+Notes: Registers Phase 5 wrap summary appendix and anchors wrap artifacts.
+
 ----------------------------------------------------------------
 DEPRECATED / HISTORICAL
 ----------------------------------------------------------------

@@ -1,122 +1,34 @@
-PHASE 5 — BUILD NOTES (v0)
-============================
-
-Timestamp (UTC): 2025-12-29T09:54:57Z
+PHASE 5 BUILD NOTES
+===================
+UTC: 2026-01-20T10:17:24Z
+GIT_HEAD_AT_WRAP: f3bfcc3107319645d7018aefd93c111fac01b2f4
 
 Scope
 -----
-Phase-5 is the Execution Layer. It consumes Phase-4 control outputs as immutable inputs,
-and produces execution intents ONLY. It does not compute signals, indicators, scores,
-bands, or confidence. It does not trade.
+Phase 5 — Live Execution Hardening (Single-Adapter, Minimal Scope).
 
-Key Artifacts
--------------
-- scripts/phase5/run_phase5_execution_layer.py
-- outputs/phase5/<asof>/phase5_execution_intents.json
-- outputs/phase5/<asof>/phase5_audit.txt
-- config/phase5/intent_schema_v1.txt
-- tests/phase5/*
+Key Outcomes (Completed)
+------------------------
+- Default-deny live execution envelope implemented and enforced.
+- Operator entry + clipboard staging procedure formalized for Wayland.
+- Single live adapter scaffold instantiated (Coinbase spot adapter v0).
+- Operator CLI smoke runner validates flag-gating and envelope deny path.
+- Capped live order harness added (dry-run capable) with strict notional cap.
+- Kill switch behavior proven under real operator execution (dry-run path).
+- Audit trail produced in outputs/phase5/live_audit/phase5_live_audit.jsonl.
 
-Core Behaviors (Verified)
+Canonical Phase 5 Commits
 -------------------------
-1) Temporal Integrity (asof)
-- Supports: --asof last, --asof i60
-- Rejects horizon mixing:
-  - requested asof != input.asof => HALT with phase5_halt_report.json
+- 65a4fdf
+- be2bf17
+- 61b73d0
+- 2b9043c
+- f3bfcc3
 
-2) Input Selection
-- Exactly one of:
-  - --input <file>
-  - --inputs-dir <dir>
-- --inputs-dir deterministic discovery:
-  - matches phase4_control_*.json ending with _{asof}.json
-  - 0 matches => HALT (E_NO_PHASE4_FILES)
-  - >1 matches => HALT (E_AMBIGUOUS_PHASE4_INPUTS)
+Determinism / Governance
+------------------------
+- All file creation performed via Python-writer method.
+- Tests must remain green before any live arming attempt.
+- Live execution remains OFF by default; explicit operator intent required.
 
-3) Intent Normalization
-- Per asset:
-  - status: ALLOWED if any permission true, else SUPPRESSED
-  - allowed_modes order: arbitrage, directional, flashloan
-  - reasons include deterministic codes (primary allow/suppress first)
-
-4) Evidence Carry-Forward (No Reinterpretation)
-- phase4_evidence copied verbatim into each intent:
-  - activation_band, activation_band_flip, activation_band_prev, overrides_applied
-  - inputs.global_confidence
-
-5) Human Audit
-- phase5_audit.txt is deterministic, derived from intents, and includes:
-  - asof, grid, global_confidence
-  - per-asset status/modes/permissions/band/flip/reason_codes
-
-Determinism Rules
------------------
-- Assets processed in sorted(asset) order
-- Modes and reason ordering are stable and test-covered
-- Ambiguity halts instead of guessing
-
-Operator Discipline
--------------------
-- Wayland-safe execution via wpb is required
-- No long inline scripts without python writer safeguards
-
-Validation
-----------
-- Unit tests: 19 passing (pytest -q)
-
-Notes
------
-This Phase-5 v0 is a “truth spine” component:
-- If uncertain => HALT
-- If suppressed => defer
-- If allowed => describe intent, do not execute trade
-
-
-v1 — Intent Payload Placeholders
---------------------------------
-Timestamp (UTC): 2025-12-29T10:09:09Z
-
-Change Summary
-- Added deterministic intent_payload blocks for each mode:
-  - arbitrage, directional, flashloan
-- Each payload includes:
-  - enabled flag (must match allowed_modes)
-  - schema-only placeholders (no execution fields, no timestamps)
-
-Audit Update
-- phase5_audit.txt now includes payload_enabled flags per asset:
-  - arb=<bool> dir=<bool> fl=<bool>
-
-Tests Added
-- test_phase5_payload_flags_match_allowed_modes.py
-- test_phase5_payload_keys_exist.py
-
-Contract Update
-- config/phase5/intent_schema_v1.txt updated to include intent_payload specification.
-
-Notes
-- Payloads are placeholders only; downstream phases may populate them.
-- Phase-5 continues to enforce: if uncertain => HALT.
-
-v2 — execution_policy Hook (Deterministic Safety Defaults)
-----------------------------------------------------------
-Timestamp (UTC): 2025-12-29T10:18:12Z
-
-Change Summary
-- Added top-level execution_policy to phase5_execution_intents.json.
-- Policy is deterministic and constraint-only (never grants permission):
-  - mode_preference_order: ["arbitrage","directional","flashloan"]
-  - max_concurrent_intents: 1
-  - require_simulation: true
-  - dry_run_only: true
-
-Rationale
-- Provides a stable “policy hook” for downstream execution systems while preserving
-  Phase-4 authority and Phase-5 non-execution scope.
-
-Tests Added
-- test_phase5_execution_policy_present.py
-- test_phase5_policy_never_enables_modes.py
-
-Contract Update
-- config/phase5/intent_schema_v1.txt updated to specify execution_policy fields.
+END
