@@ -270,4 +270,4 @@ ID: APPX-PHASE7-ARMING-TTL-01
 Title: Phase 7 Arming TTL Enforcement (Policy + ts_unix)
 Applies To: Phase 7
 Status: CANONICAL
-Notes: Time-box arming; prefer ts_unix; fail-closed on invalid TTL policy.
+Notes: Time-box arming; prefer ts_unix; fail-closed on invalid TTL policy.\nID: APPX-PHASE7-VALIDATION-ARMING-TTL-DRILL-01\nTitle: Phase 7 Validation — Arming TTL Drill (Stale Record Denied)\nApplies To: Phase 7\nStatus: CANONICAL\nNotes: Confirms stale arming record is denied (E_ARMING_STALE).\n
