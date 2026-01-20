@@ -1,0 +1,23 @@
+PHASE 6 RISK REASSESSMENT
+==========================
+
+Timestamp (UTC): 2026-01-20T10:58:53+00:00
+
+Risk Changes Introduced
+-----------------------
+- Reduced operator error risk by requiring deliberate arming ceremony record.
+- Improved auditability via snapshot hashing and explicit deny codes.
+- Added operator drill to rapidly prove safety controls.
+
+Risk Not Changed (Still Present)
+--------------------------------
+- Any real-money execution remains high risk if allow_live is ever enabled.
+- Credential management remains out of scope; no secrets stored in repo.
+- Venue/API-specific failure modes remain a Phase 7+ concern.
+
+Controls (Active)
+-----------------
+- Default-deny live envelope (Phase 5)
+- Kill switch file (Phase 5)
+- Explicit operator flags + ack strings (Phase 5/6)
+- Phase 6 arming guard latch (fresh ceremony required)

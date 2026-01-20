@@ -1,0 +1,17 @@
+PHASE 6 BUG NOTES
+==================
+
+Timestamp (UTC): 2026-01-20T10:58:53+00:00
+
+Resolved
+--------
+- None recorded during Phase 6 steps A-D; tests remained green.
+
+Known / Deferred
+----------------
+- None mandatory for Phase 6 completion.
+
+Notes
+-----
+If any environment-specific behavior occurs (Wayland clipboard types, file permissions),
+capture it as new appendix evidence in future phases.

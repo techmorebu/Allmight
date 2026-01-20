@@ -1,0 +1,25 @@
+PHASE 6 UPDATED PHASE SCAN
+=========================
+
+Timestamp (UTC): 2026-01-20T10:58:53+00:00
+
+New Canonical Artifacts
+-----------------------
+- docs/phase6/PHASE6_OPERATOR_RUNBOOK.txt
+- scripts/phase6/summarize_phase5_audit.py
+- scripts/phase6/arming_ceremony.py
+- scripts/phase6/arming_guard.py
+- scripts/phase6/run_phase6_operator_drill.py
+- tests/phase6/test_phase6_audit_summarizer.py
+- tests/phase6/test_phase6_arming_ceremony.py
+- tests/phase6/test_phase6_arming_guard.py
+- tests/phase6/test_phase6_operator_drill_smoke.py
+- docs/validation/PHASE6_VALIDATION_EVIDENCE.txt
+- docs/risk/PHASE6_RISK_REASSESSMENT.txt
+
+Appendices Added (Phase 6)
+--------------------------
+- APPX-PHASE6-OPERATOR-RUNBOOK-01
+- APPX-PHASE6-ARMING-CEREMONY-01
+- APPX-PHASE6-ARMING-GUARD-01
+- APPX-PHASE6-VALIDATION-OPERATOR-DRILL-01

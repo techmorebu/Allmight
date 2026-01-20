@@ -226,6 +226,14 @@ Status: CANONICAL
 Supersedes: None
 Notes: Adds arming guard + integrates into Phase 5 live order CLI.
 
+
+ID: APPX-PHASE6-WRAP-SUMMARY-01
+Title: Phase 6 Wrap Summary (Operator Hardening + Observability)
+Applies To: Phase 6
+Status: CANONICAL
+Supersedes: None
+Notes: Wrap summary appendix for Phase 6 + Phase 7 handoff.
+
 ----------------------------------------------------------------
 DEPRECATED / HISTORICAL
 ----------------------------------------------------------------
@@ -235,4 +243,4 @@ until explicitly registered here.
 
 ----------------------------------------------------------------
 END OF INDEX
-----------------------------------------------------------------\nID: APPX-PHASE6-ARMING-CEREMONY-01\nTitle: Phase 6 Arming Ceremony (Fail-Closed Intent Snapshot + Audit Record)\nApplies To: Phase 6\nStatus: CANONICAL\nSupersedes: None\nNotes: Adds arming ceremony script + tests; records intent, does not enable live.\n\n
+----------------------------------------------------------------\nID: APPX-PHASE6-ARMING-CEREMONY-01\nTitle: Phase 6 Arming Ceremony (Fail-Closed Intent Snapshot + Audit Record)\nApplies To: Phase 6\nStatus: CANONICAL\nSupersedes: None\nNotes: Adds arming ceremony script + tests; records intent, does not enable live.\n\n\nID: APPX-PHASE6-VALIDATION-OPERATOR-DRILL-01\nTitle: Phase 6 Validation — Operator Drill (Arming Guard + Kill Switch Proof)\nApplies To: Phase 6\nStatus: CANONICAL\nSupersedes: None\nNotes: Adds operator drill script + smoke test.\n\n

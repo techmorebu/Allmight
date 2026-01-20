@@ -1,0 +1,30 @@
+PHASE 6 VALIDATION EVIDENCE
+=============================
+
+Timestamp (UTC): 2026-01-20T10:58:53+00:00
+
+Test Gate
+---------
+- pytest -q
+
+Operator Proof (Required)
+-------------------------
+1) Arming guard denies order attempt when no arming record exists:
+   Expected: DENY E_ARMING_REQUIRED
+
+2) Arming ceremony succeeds and records snapshot:
+   Expected: PHASE6_ARMING_CEREMONY result OK, includes:
+   - git_head
+   - envelope sha256
+   - kill switch state
+   - ALLMIGHT_LIVE env state
+
+3) Phase5 dry-run order succeeds after arming (still DRY_RUN):
+   Expected: status DRY_RUN
+
+4) Kill switch denies execution path:
+   Expected: DENY E_KILL_SWITCH_ACTIVE
+
+Reference Tooling
+-----------------
+- scripts/phase6/run_phase6_operator_drill.py (preferred proof automation)
