@@ -210,6 +210,14 @@ Status: CANONICAL
 Supersedes: None
 Notes: Registers Phase 5 wrap summary appendix and anchors wrap artifacts.
 
+
+ID: APPX-PHASE6-OPERATOR-RUNBOOK-01
+Title: Phase 6 Operator Runbook + Audit Summary Tool (Initial)
+Applies To: Phase 6
+Status: CANONICAL
+Supersedes: None
+Notes: Phase 6 operator runbook + audit summarizer + tests.
+
 ----------------------------------------------------------------
 DEPRECATED / HISTORICAL
 ----------------------------------------------------------------
