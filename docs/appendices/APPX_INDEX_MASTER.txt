@@ -162,6 +162,22 @@ Status: CANONICAL
 Supersedes: Prior phase scan reports that predate capital-aware execution assumptions
 Notes: Documents a full repository phase scan performed under Phase 4 capital-awareness rules, confirming continued governance, determinism, and execution safety compliance.
 
+
+ID: APPX-PHASE5-OPERATOR-ENTRY-LOGGING-01
+Title: Phase 5 Operator Entry Logging (Session + Clipboard Staging + Proof)
+Applies To: Phase 5
+Status: CANONICAL
+Supersedes: None
+Notes: Canonical method to identify and prove operator entries; clipboard staged + hashed + logged (never executed).
+
+
+ID: APPX-PHASE5-LIVE-ENVELOPE-01
+Title: Phase 5 Live Execution Envelope (Default-Deny Gating Contract)
+Applies To: Phase 5
+Status: CANONICAL
+Supersedes: None
+Notes: Default-deny gating contract required before any live adapter may execute.
+
 ----------------------------------------------------------------
 DEPRECATED / HISTORICAL
 ----------------------------------------------------------------

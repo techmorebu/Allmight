@@ -1,0 +1,23 @@
+{
+  "allow_live": false,
+  "allowed_adapters": [],
+  "audit": {
+    "dir": "outputs/phase5/live_audit",
+    "format": "jsonl"
+  },
+  "kill_switch": {
+    "halt_on_exists": true,
+    "path": "config/phase5/KILL_SWITCH"
+  },
+  "notes": "Phase 5 default-deny live execution envelope. All live activation must be explicit, single-adapter, and reversible.",
+  "operator_ack": {
+    "cli_flag": "--i-acknowledge-live-risk",
+    "phrase": "I ACKNOWLEDGE LIVE EXECUTION RISK",
+    "required": true
+  },
+  "phase": 5,
+  "required_env": {
+    "ALLMIGHT_LIVE": "1"
+  },
+  "schema": "live_execution_envelope_v0"
+}
