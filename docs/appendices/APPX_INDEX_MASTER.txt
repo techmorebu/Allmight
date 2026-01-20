@@ -194,6 +194,14 @@ Status: CANONICAL
 Supersedes: None
 Notes: Records operator CLI deny outputs (flag-required + envelope-disabled).
 
+
+ID: APPX-PHASE5-COINBASE-LIVE-ARMING-01
+Title: Phase 5 Live Arming Procedure — Coinbase Spot Live V0 (Single Order, Capped)
+Applies To: Phase 5
+Status: CANONICAL
+Supersedes: None
+Notes: Defines the only allowed live-order procedure for Phase 5 using ccxt coinbase private endpoints (single adapter + caps + kill switch).
+
 ----------------------------------------------------------------
 DEPRECATED / HISTORICAL
 ----------------------------------------------------------------

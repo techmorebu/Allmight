@@ -1,0 +1,65 @@
+APPENDIX ID: APPX-PHASE5-COINBASE-LIVE-ARMING-01
+TITLE: Phase 5 Live Arming Procedure — Coinbase Spot Live V0 (Single Order, Capped)
+STATUS: CANONICAL
+APPLIES TO: Phase 5
+
+------------------------------------------------------------
+PURPOSE
+------------------------------------------------------------
+Define the only permitted procedure to perform a minimal live order
+in Phase 5 using a single adapter (COINBASE_SPOT_LIVE_V0) under the
+default-deny live execution envelope.
+
+------------------------------------------------------------
+REQUIRED GATES (ALL MUST PASS)
+------------------------------------------------------------
+1) config/phase5/live_execution_envelope_v0.json:
+   - allow_live=true (temporary, operator-controlled)
+   - allowed_adapters includes COINBASE_SPOT_LIVE_V0 (single adapter)
+2) Environment:
+   - ALLMIGHT_LIVE=1
+3) Operator intent:
+   - --i-acknowledge-live-risk flag present
+   - --ack phrase exactly matches envelope operator_ack.phrase
+4) Kill switch:
+   - config/phase5/KILL_SWITCH must NOT exist
+
+------------------------------------------------------------
+COINBASE CREDENTIALS (ENV)
+------------------------------------------------------------
+Required environment variables:
+- COINBASE_API_KEY
+- COINBASE_API_SECRET
+- COINBASE_API_PASSPHRASE
+
+------------------------------------------------------------
+HARD CAPS (PHASE 5)
+------------------------------------------------------------
+- Default cap: max-usd-notional = 5.0
+- Max orders per run: 1
+- No retries / no recovery logic
+
+------------------------------------------------------------
+DRY RUN (NO NETWORK)
+------------------------------------------------------------
+Use --dry-run to validate caps, operator gates, and audit logging
+without placing any order.
+
+------------------------------------------------------------
+LIVE ORDER COMMAND (MINIMAL)
+------------------------------------------------------------
+Example (dry run):
+  python scripts/phase5/run_phase5_live_order.py --symbol "BTC/USD" --side buy --usd-notional 2 --dry-run --i-acknowledge-live-risk
+
+Example (LIVE — only after gates are explicitly satisfied):
+  ALLMIGHT_LIVE=1 python scripts/phase5/run_phase5_live_order.py --symbol "BTC/USD" --side buy --usd-notional 2 --max-usd-notional 5 \
+    --i-acknowledge-live-risk --ack "I ACKNOWLEDGE LIVE EXECUTION RISK"
+
+------------------------------------------------------------
+AUDIT OUTPUT
+------------------------------------------------------------
+outputs/phase5/live_audit/phase5_live_audit.jsonl
+
+------------------------------------------------------------
+END
+------------------------------------------------------------
