@@ -266,3 +266,8 @@ Title: Phase 7 Operator Deny Output Format
 Applies To: Phase 7
 Status: CANONICAL
 Notes: CLI output formatting only.
+ID: APPX-PHASE7-ARMING-TTL-01
+Title: Phase 7 Arming TTL Enforcement (Policy + ts_unix)
+Applies To: Phase 7
+Status: CANONICAL
+Notes: Time-box arming; prefer ts_unix; fail-closed on invalid TTL policy.
