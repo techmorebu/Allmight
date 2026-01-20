@@ -1,0 +1,30 @@
+APPENDIX ID: APPX-PHASE5-VALIDATION-ENVELOPE-DENY-01
+TITLE: Phase 5 Validation Evidence — Live Envelope DENY Proofs (Complete Gate Matrix)
+STATUS: CANONICAL
+APPLIES TO: Phase 5
+
+------------------------------------------------------------
+EVIDENCE SUMMARY
+------------------------------------------------------------
+- Git HEAD: 65a4fdf901ad78079e848e4825e858a1577de11c
+- Pytest: 118 passed in 2.03s
+- Proof: Live execution envelope DENY behavior verified across gate matrix.
+
+------------------------------------------------------------
+DENY MATRIX (VERBATIM CODES)
+------------------------------------------------------------
+default_disabled: E_LIVE_DISABLED
+env_missing: E_ENV_NOT_SET
+ack_wrong: E_OPERATOR_ACK
+adapter_not_allowed: E_ADAPTER_NOT_ALLOWED
+kill_switch_active: E_KILL_SWITCH_ACTIVE
+
+------------------------------------------------------------
+NOTES
+------------------------------------------------------------
+These proofs validate fail-closed behavior before any live adapter is activated.
+They do not authorize live trading; they prove gating correctness only.
+
+------------------------------------------------------------
+END
+------------------------------------------------------------

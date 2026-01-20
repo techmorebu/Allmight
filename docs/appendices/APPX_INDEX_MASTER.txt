@@ -178,6 +178,14 @@ Status: CANONICAL
 Supersedes: None
 Notes: Default-deny gating contract required before any live adapter may execute.
 
+
+ID: APPX-PHASE5-VALIDATION-ENVELOPE-DENY-01
+Title: Phase 5 Validation Evidence — Live Envelope DENY Proofs (Complete Gate Matrix)
+Applies To: Phase 5
+Status: CANONICAL
+Supersedes: None
+Notes: Records deny-code matrix for live envelope gates (disabled/env/ack/allowlist/kill-switch) + pytest evidence.
+
 ----------------------------------------------------------------
 DEPRECATED / HISTORICAL
 ----------------------------------------------------------------
