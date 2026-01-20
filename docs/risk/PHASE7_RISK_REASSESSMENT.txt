@@ -1,0 +1,21 @@
+
+PROJECT ALLMIGHT — PHASE 7 RISK REASSESSMENT
+===========================================
+
+As-Of (UTC): 2026-01-20T11:59:53Z
+
+Risk Changes Introduced
+-----------------------
+- Arming TTL enforcement reduces risk of stale/forgotten arming states.
+
+Residual Risks
+--------------
+- Operator workflows that modify policy/config must restore canonical values
+  before wrapping/committing, to preserve clean, auditable history.
+
+Mitigations
+-----------
+- Prefer policy enforcement driven by committed config.
+- Prefer operator drills that write temporary files, or ensure restore step.
+
+END
