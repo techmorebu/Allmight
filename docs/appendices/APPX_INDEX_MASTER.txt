@@ -260,3 +260,9 @@ until explicitly registered here.
 ----------------------------------------------------------------
 END OF INDEX
 ----------------------------------------------------------------\nID: APPX-PHASE6-ARMING-CEREMONY-01\nTitle: Phase 6 Arming Ceremony (Fail-Closed Intent Snapshot + Audit Record)\nApplies To: Phase 6\nStatus: CANONICAL\nSupersedes: None\nNotes: Adds arming ceremony script + tests; records intent, does not enable live.\n\n\nID: APPX-PHASE6-VALIDATION-OPERATOR-DRILL-01\nTitle: Phase 6 Validation — Operator Drill (Arming Guard + Kill Switch Proof)\nApplies To: Phase 6\nStatus: CANONICAL\nSupersedes: None\nNotes: Adds operator drill script + smoke test.\n\n
+
+ID: APPX-PHASE7-DENY-FORMAT-01
+Title: Phase 7 Operator Deny Output Format
+Applies To: Phase 7
+Status: CANONICAL
+Notes: CLI output formatting only.

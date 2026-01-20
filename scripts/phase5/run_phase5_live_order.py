@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+from scripts.phase7.deny_format import print_deny, deny_from_exc
+from scripts.phase7.deny_format import print_deny, deny_from_exc
 from scripts.phase7.audit_event import emit_phase5_audit
 from typing import Optional
 
@@ -34,7 +36,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     try:
         _ = require_recent_arming()
     except ArmingDeny as e:
-        print(f"DENY: {e.code} :: {e.message}")
+        print_deny(*deny_from_exc(e))
         return 2
 
     try:
@@ -55,7 +57,7 @@ def main(argv: Optional[list[str]] = None) -> int:
 print(out)
         return 0
     except LiveDeny as e:
-        print(f"DENY: {e.code} :: {e.message}")
+        print_deny(*deny_from_exc(e))
         return 2
 
 

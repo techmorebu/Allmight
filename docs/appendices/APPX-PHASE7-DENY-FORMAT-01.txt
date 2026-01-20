@@ -1,0 +1,13 @@
+
+APPENDIX ID: APPX-PHASE7-DENY-FORMAT-01
+TITLE: Phase 7 Operator Deny Output Format
+STATUS: CANONICAL
+APPLIES TO: Phase 7
+
+Canonical Format
+----------------
+DENY: <CODE> :: <MESSAGE>
+
+Notes
+-----
+Formatting-only change. No decision logic affected.
