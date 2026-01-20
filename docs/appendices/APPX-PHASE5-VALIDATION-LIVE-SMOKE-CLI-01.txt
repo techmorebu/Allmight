@@ -1,0 +1,28 @@
+APPENDIX ID: APPX-PHASE5-VALIDATION-LIVE-SMOKE-CLI-01
+TITLE: Phase 5 Validation Evidence — Live Smoke CLI DENY Proofs
+STATUS: CANONICAL
+APPLIES TO: Phase 5
+
+------------------------------------------------------------
+EVIDENCE SUMMARY
+------------------------------------------------------------
+- Git HEAD: 61b73d0a9f24389704566545df7361407039bda7
+- Proof: Operator CLI path denies without explicit flag and denies when envelope is disabled.
+
+------------------------------------------------------------
+PROOF OUTPUTS (VERBATIM)
+------------------------------------------------------------
+1) python scripts/phase5/run_phase5_live_smoke.py
+DENY: E_FLAG_REQUIRED :: Missing required operator flag.
+
+2) python scripts/phase5/run_phase5_live_smoke.py --i-acknowledge-live-risk --ack "I ACKNOWLEDGE LIVE EXECUTION RISK"
+DENY: E_LIVE_DISABLED :: Live execution is disabled by envelope.
+
+------------------------------------------------------------
+NOTES
+------------------------------------------------------------
+These are denial proofs only. They do not authorize live trading.
+
+------------------------------------------------------------
+END
+------------------------------------------------------------

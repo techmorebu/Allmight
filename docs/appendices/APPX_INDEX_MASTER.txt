@@ -186,6 +186,14 @@ Status: CANONICAL
 Supersedes: None
 Notes: Records deny-code matrix for live envelope gates (disabled/env/ack/allowlist/kill-switch) + pytest evidence.
 
+
+ID: APPX-PHASE5-VALIDATION-LIVE-SMOKE-CLI-01
+Title: Phase 5 Validation Evidence — Live Smoke CLI DENY Proofs
+Applies To: Phase 5
+Status: CANONICAL
+Supersedes: None
+Notes: Records operator CLI deny outputs (flag-required + envelope-disabled).
+
 ----------------------------------------------------------------
 DEPRECATED / HISTORICAL
 ----------------------------------------------------------------
