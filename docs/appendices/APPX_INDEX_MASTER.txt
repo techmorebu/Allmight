@@ -227,4 +227,4 @@ until explicitly registered here.
 
 ----------------------------------------------------------------
 END OF INDEX
-----------------------------------------------------------------
+----------------------------------------------------------------\nID: APPX-PHASE6-ARMING-CEREMONY-01\nTitle: Phase 6 Arming Ceremony (Fail-Closed Intent Snapshot + Audit Record)\nApplies To: Phase 6\nStatus: CANONICAL\nSupersedes: None\nNotes: Adds arming ceremony script + tests; records intent, does not enable live.\n\n
