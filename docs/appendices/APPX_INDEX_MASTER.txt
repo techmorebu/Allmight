@@ -276,3 +276,8 @@ Title: Phase 7 Wrap Summary (Build/Bug/Validation/Risk/Scan + Phase 8 Handoff)
 Applies To: Phase 7
 Status: CANONICAL
 Notes: Registers Phase 7 wrap artifacts and Phase 8 handoff prompt.
+ID: APPX-PHASE8-ENTRY-SCOPE-LOCK-01
+Title: Phase 8 Entry Scope Lock
+Applies To: Phase 8
+Status: CANONICAL
+Notes: Binds Phase 8 scope to Unified Master; requires clean tree + pytest gating.

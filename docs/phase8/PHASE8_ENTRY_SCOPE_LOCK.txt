@@ -1,0 +1,31 @@
+
+PROJECT ALLMIGHT — PHASE 8 ENTRY SCOPE LOCK
+==========================================
+
+As-Of (UTC): 2026-01-20T12:05:05Z
+
+Purpose
+-------
+Lock Phase 8 scope and entry constraints BEFORE any implementation.
+
+Non-Negotiables
+---------------
+- Python-writer pattern only for file creation.
+- Wayland-safe staging (wl-paste --type text/plain).
+- Fail-closed behavior only.
+- Tests must pass (pytest -q) before any commit.
+- Appendices registered in APPX_INDEX_MASTER.txt.
+
+Allowed Work (Phase 8)
+----------------------
+- Must match the Unified Master’s definition for Phase 8.
+- No silent scope creep.
+- Any policy changes must be explicit and committed.
+
+First Operator Checks
+---------------------
+1) git status must be clean
+2) pytest -q must pass
+3) Confirm envelope remains default-deny
+
+END
