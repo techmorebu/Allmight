@@ -218,6 +218,14 @@ Status: CANONICAL
 Supersedes: None
 Notes: Phase 6 operator runbook + audit summarizer + tests.
 
+
+ID: APPX-PHASE6-ARMING-GUARD-01
+Title: Phase 6 Arming Guard (Require Recent Ceremony Before Live Order CLI)
+Applies To: Phase 6
+Status: CANONICAL
+Supersedes: None
+Notes: Adds arming guard + integrates into Phase 5 live order CLI.
+
 ----------------------------------------------------------------
 DEPRECATED / HISTORICAL
 ----------------------------------------------------------------

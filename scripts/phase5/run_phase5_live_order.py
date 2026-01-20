@@ -5,6 +5,7 @@ from typing import Optional
 
 from scripts.phase5.adapters.coinbase_spot_live_v0 import CoinbaseSpotLiveV0
 from scripts.phase5.live_envelope import LiveDeny
+from scripts.phase6.arming_guard import require_recent_arming, ArmingDeny
 
 
 def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
@@ -27,6 +28,13 @@ def main(argv: Optional[list[str]] = None) -> int:
         action="PLACE_ORDER_MARKET",
         payload={"symbol": args.symbol, "side": args.side, "usd_notional": float(args.usd_notional)},
     )
+
+    # Phase 6 safety latch: require recent arming ceremony record (fail-closed)
+    try:
+        _ = require_recent_arming()
+    except ArmingDeny as e:
+        print(f"DENY: {e.code} :: {e.message}")
+        return 2
 
     try:
         out = adapter.execute(
