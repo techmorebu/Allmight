@@ -234,6 +234,22 @@ Status: CANONICAL
 Supersedes: None
 Notes: Wrap summary appendix for Phase 6 + Phase 7 handoff.
 
+
+ID: APPX-PHASE7-ENTRY-SCOPE-LOCK-01
+Title: Phase 7 Entry: Scope Lock + Inventory (Pre-Change Baseline)
+Applies To: Phase 7
+Status: CANONICAL
+Supersedes: None
+Notes: Phase 7 entry baseline and scope lock.
+
+
+ID: APPX-PHASE7-AUDIT-NORMALIZATION-01
+Title: Phase 7 Audit/Event Normalization (Schema Consistency; No Behavior Change)
+Applies To: Phase 7
+Status: CANONICAL
+Supersedes: None
+Notes: Adds normalized audit schema helper and tests; observability only.
+
 ----------------------------------------------------------------
 DEPRECATED / HISTORICAL
 ----------------------------------------------------------------

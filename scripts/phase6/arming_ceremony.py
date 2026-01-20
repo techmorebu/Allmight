@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+from scripts.phase7.audit_event import emit_phase5_audit
 import os
 import subprocess
 from pathlib import Path

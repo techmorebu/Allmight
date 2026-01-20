@@ -1,0 +1,14 @@
+APPENDIX ID: APPX-PHASE7-ENTRY-SCOPE-LOCK-01
+TITLE: Phase 7 Entry: Scope Lock + Inventory (Pre-Change Baseline)
+STATUS: CANONICAL
+APPLIES TO: Phase 7
+
+Purpose
+-------
+Establish Phase 7 entry baseline: constraints, repo cleanliness, and the live-critical file inventory.
+
+Links
+-----
+- docs/phase7/PHASE7_ENTRY_SCOPE_LOCK.txt
+
+END

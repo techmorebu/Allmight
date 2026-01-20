@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+from scripts.phase7.audit_event import emit_phase5_audit
 from typing import Optional
 
 from scripts.phase5.adapters.coinbase_spot_live_v0 import CoinbaseSpotLiveV0
@@ -44,7 +45,14 @@ def main(argv: Optional[list[str]] = None) -> int:
             max_usd_notional=float(args.max_usd_notional),
             dry_run=bool(args.dry_run),
         )
-        print(out)
+        emit_phase5_audit(
+    event="PHASE5_ORDER_RESULT",
+    adapter_id=adapter.adapter_id,
+    action="PLACE_ORDER_MARKET",
+    result=str(out.get("status", "OK")) if isinstance(out, dict) else "OK",
+    payload={"order": out.get("order")} if isinstance(out, dict) and "order" in out else None,
+)
+print(out)
         return 0
     except LiveDeny as e:
         print(f"DENY: {e.code} :: {e.message}")
