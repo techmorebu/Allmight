@@ -281,3 +281,8 @@ Title: Phase 8 Entry Scope Lock
 Applies To: Phase 8
 Status: CANONICAL
 Notes: Binds Phase 8 scope to Unified Master; requires clean tree + pytest gating.
+ID: APPX-PHASE8-PHASE-SCAN-01
+Title: Phase 8 Updated Phase Scan Snapshot
+Applies To: Phase 8
+Status: CANONICAL
+Notes: Records entry snapshot (repo state + safety file presence) for Phase 8.
