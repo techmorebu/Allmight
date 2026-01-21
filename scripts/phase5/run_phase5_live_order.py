@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+
+from scripts.phase8.audit_sink import write_audit_event
 from scripts.phase7.deny_format import print_deny, deny_from_exc
 from scripts.phase7.deny_format import print_deny, deny_from_exc
 from scripts.phase7.audit_event import emit_phase5_audit
@@ -40,7 +42,8 @@ def main(argv: Optional[list[str]] = None) -> int:
         return 2
 
     try:
-        out = adapter.execute(
+        try:
+out = adapter.execute(
             action,
             ack=args.ack,
             i_acknowledge_flag=bool(args.i_acknowledge_live_risk),
@@ -55,6 +58,26 @@ def main(argv: Optional[list[str]] = None) -> int:
     payload={"order": out.get("order")} if isinstance(out, dict) and "order" in out else None,
 )
 print(out)
+
+    write_audit_event({
+        "event": "PHASE5_LIVE_ORDER",
+        "phase": "PHASE5",
+        "result": "OK",
+        "meta": {"order": out.get("order"), "status": out.get("status"), "adapter_id": out.get("adapter_id")},
+    })
+
+except Exception as e:
+    # Best-effort: if this is a LiveDeny/ArmingDeny, they carry .code
+    code = getattr(e, "code", e.__class__.__name__)
+    msg = str(e)
+    write_audit_event({
+        "event": "PHASE5_LIVE_ORDER_DENY",
+        "phase": "PHASE5",
+        "result": "DENY",
+        "deny_code": code,
+        "meta": {"message": msg},
+    })
+    raise
         return 0
     except LiveDeny as e:
         print_deny(*deny_from_exc(e))

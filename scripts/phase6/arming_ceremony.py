@@ -7,7 +7,12 @@ from scripts.phase7.audit_event import emit_phase5_audit
 import os
 import subprocess
 from pathlib import Path
+
+from scripts.phase8.audit_sink import write_audit_event
 from typing import Any
+
+SINK_MARKER = "PHASE6_ARMING_CEREMONY_SINK"  # Phase8 fan-in wiring marker (no behavior change)
+
 
 
 def _sh(cmd: list[str]) -> str:

@@ -292,4 +292,10 @@ Applies To: Phase 8
 Status: CANONICAL
 Supersedes: None
 Notes: Adds pytest validation + env override ALLMIGHT_AUDIT_SINK_PATH for hermetic sink testing.
+ID: APPX-PHASE8-AUDIT-FANIN-01
+Title: Phase 8 Audit Fan-in — Route Operator-Critical Events to Single Sink
+Applies To: Phase 8
+Status: CANONICAL
+Supersedes: None
+Notes: Routes Phase5 live order + Phase6 arming ceremony operator events into outputs/audit/allmight_audit.jsonl via audit_sink.
 

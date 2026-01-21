@@ -1,0 +1,19 @@
+ID: APPX-PHASE8-AUDIT-FANIN-01
+Title: Phase 8 Audit Fan-in — Route Operator-Critical Events to Single Sink
+Applies To: Phase 5/6 operator CLIs + Phase 8 canonical audit sink
+Status: CANONICAL
+Supersedes: None
+Notes:
+- Ensures operator-critical events are written to the canonical sink:
+  outputs/audit/allmight_audit.jsonl (schema_version=AUDIT_SINK_V0).
+- Phase 5: run_phase5_live_order.py mirrors OK/DENY outcomes:
+  - event=PHASE5_LIVE_ORDER (OK) with order/status/adapter metadata
+  - event=PHASE5_LIVE_ORDER_DENY (DENY) with deny_code + message metadata
+- Phase 6: arming_ceremony.py mirrors arming ceremony success:
+  - event=PHASE6_ARMING_CEREMONY (OK) with snapshot metadata
+- Behavior is unchanged:
+  - Default-deny envelope remains in effect.
+  - KILL_SWITCH still hard-denies.
+  - Arming ceremony is still required upstream.
+Validation:
+- tests/phase8/test_phase8_audit_fanin_markers.py asserts wiring exists.
