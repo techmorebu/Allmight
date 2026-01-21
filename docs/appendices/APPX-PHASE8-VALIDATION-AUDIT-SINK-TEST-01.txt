@@ -1,0 +1,11 @@
+ID: APPX-PHASE8-VALIDATION-AUDIT-SINK-TEST-01
+Title: Phase 8 Audit Sink — Hermetic Test + Env Override
+Applies To: Phase 8 (Audit Consolidation “Single Sink”)
+Status: CANONICAL
+Supersedes: None
+Notes:
+- Adds a deterministic pytest that validates the canonical JSONL record schema.
+- Introduces env override ALLMIGHT_AUDIT_SINK_PATH to keep tests hermetic (no writes into outputs/).
+- Default behavior remains policy-driven sink path via config/phase8/audit_sink_policy_v0.json.
+Validation:
+- tests/phase8/test_phase8_audit_sink.py passes under pytest.

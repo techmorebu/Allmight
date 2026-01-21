@@ -286,3 +286,10 @@ Title: Phase 8 Updated Phase Scan Snapshot
 Applies To: Phase 8
 Status: CANONICAL
 Notes: Records entry snapshot (repo state + safety file presence) for Phase 8.\n- APPX-PHASE8-AUDIT-SINGLE-SINK-01: Phase 8 Audit Single Sink\n
+ID: APPX-PHASE8-VALIDATION-AUDIT-SINK-TEST-01
+Title: Phase 8 Audit Sink — Hermetic Test + Env Override
+Applies To: Phase 8
+Status: CANONICAL
+Supersedes: None
+Notes: Adds pytest validation + env override ALLMIGHT_AUDIT_SINK_PATH for hermetic sink testing.
+
