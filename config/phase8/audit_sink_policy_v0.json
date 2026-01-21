@@ -1,0 +1,12 @@
+{
+  "schema_version": "AUDIT_SINK_V0",
+  "enabled": true,
+  "sink_path": "outputs/audit/allmight_audit.jsonl",
+  "also_write_phase_local": true,
+  "fail_closed": true,
+  "notes": [
+    "Single canonical append-only audit sink.",
+    "Logging must never enable live execution.",
+    "Failures must not bypass denies."
+  ]
+}

@@ -285,4 +285,4 @@ ID: APPX-PHASE8-PHASE-SCAN-01
 Title: Phase 8 Updated Phase Scan Snapshot
 Applies To: Phase 8
 Status: CANONICAL
-Notes: Records entry snapshot (repo state + safety file presence) for Phase 8.
+Notes: Records entry snapshot (repo state + safety file presence) for Phase 8.\n- APPX-PHASE8-AUDIT-SINGLE-SINK-01: Phase 8 Audit Single Sink\n
