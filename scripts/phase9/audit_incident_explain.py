@@ -25,9 +25,59 @@ def _get_effective_ts_unix(ev: dict) -> int:
 
 def _extract_deny_code(ev: dict) -> str:
     # DENY codes may appear in multiple places depending on schema evolution.
-    # Current backfill uses meta.raw.deny_code.
+    # Prefer the original/raw code for backfilled events:
+    #   meta.raw.deny_code
+    #
+    # If no code is found, return UNKNOWN_DENY_CODE (never None).
     meta = ev.get("meta") or {}
     raw = meta.get("raw") or {}
+
+    # Most likely (observed in outputs/audit/allmight_audit.jsonl):
+    v = raw.get("deny_code")
+    if isinstance(v, str) and v.strip():
+        return v.strip()
+
+    # Compatibility fallbacks (older patterns):
+    v = raw.get("code")
+    if isinstance(v, str) and v.strip():
+        return v.strip()
+
+    v = ev.get("code")
+    if isinstance(v, str) and v.strip():
+        return v.strip()
+
+    v = meta.get("code")
+    if isinstance(v, str) and v.strip():
+        return v.strip()
+
+    # As a last resort, if a deny "reason" exists and is string-like:
+    v = raw.get("deny_reason")
+    if isinstance(v, str) and v.strip():
+        return v.strip()
+
+    return "UNKNOWN_DENY_CODE"
+
+
+
+def _fmt_line(ev: dict) -> str:
+    # Unified, operator-readable line format.
+    # Includes effective timestamp (raw ts_unix preferred), result, phase, event, code (if DENY), git.
+    tsu = _get_effective_ts_unix(ev)
+    result = str(ev.get("result", ""))
+    phase = str(ev.get("phase", ""))
+    event = str(ev.get("event", ""))
+    git = str(ev.get("git_head", ""))
+
+    code = ""
+    if result == "DENY":
+        code = _extract_deny_code(ev)
+
+    parts = [str(tsu), result, phase, event]
+    if code:
+        parts.append(f"code={code}")
+    if git:
+        parts.append(f"git={git}")
+    return "\t".join(parts)
 
     # Most likely (per observed event):
     if isinstance(raw.get("deny_code"), str) and raw["deny_code"]:
@@ -220,7 +270,7 @@ def build_report(
     lines.append("TIMELINE (normalized)")
     lines.append("-" * 60)
     for ev in window:
-        lines.append(_norm_line(ev))
+        lines.append(_fmt_line(ev))
 
     out_dir = Path("outputs/phase9/incidents")
     out_dir.mkdir(parents=True, exist_ok=True)
