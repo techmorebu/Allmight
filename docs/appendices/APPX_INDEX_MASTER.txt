@@ -322,3 +322,9 @@ Notes: Routes Phase5 live order + Phase6 arming ceremony operator events into ou
   Path: docs/appendices/APPX-PHASE9-AUDIT-SHORTCUTS-01.txt
   Phase: 9
   Status: CANONICAL
+
+- ID: APPX-PHASE9-INCIDENT-REPORT-01
+  Title: Audit Incident Report Generator (windowed evidence artifact)
+  Path: docs/appendices/APPX-PHASE9-INCIDENT-REPORT-01.txt
+  Phase: 9
+  Status: CANONICAL

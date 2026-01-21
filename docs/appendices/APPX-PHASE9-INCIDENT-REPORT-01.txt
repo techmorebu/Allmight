@@ -1,0 +1,13 @@
+ID: APPX-PHASE9-INCIDENT-REPORT-01
+Title: Audit Incident Report Generator (windowed evidence artifact)
+Applies To: Phase 9 audit operations
+Status: CANONICAL
+Supersedes: None
+Notes:
+- Adds scripts/phase9/audit_incident.py to generate a deterministic incident report from the canonical audit sink.
+- Supports selectors: --center-unix, --last-deny, --last-arming, --last-live-attempt
+- Supports view-only --dedupe, configurable --window-sec, and output path control.
+- Output default: outputs/phase9/incidents/incident_<center>_<window>sec_<git>.txt
+
+As-Of: 2026-01-21T09:28:03Z
+Git Head: 40173ac
