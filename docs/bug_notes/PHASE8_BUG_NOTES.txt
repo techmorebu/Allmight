@@ -1,34 +1,18 @@
 PHASE 8 — BUG NOTES
-===================
+====================
 
-BUG-8-001: Stub routing conflicted with network default-deny proof
-- Symptom:
-  - Redaction test required a toxic stub result to exist even when network was disabled.
-  - Network denial test required the normal snapshot path to raise when network is disabled.
-- Root cause:
-  - Snapshot routing initially always checked the network gate before returning any stub content.
-  - Subsequent changes over-bypassed the gate (causing the network-deny test to stop raising).
-- Fix:
-  - Broker policy clarified:
-    - `dummy_toxic` returns deterministic stub content without consulting the network gate
-      (to validate redaction in a network-off environment).
-    - `dummy` remains network-gated to prove default-deny behavior.
+As-Of (UTC): 2026-01-21T09:00:17Z
+Git Head: a2f1d14
 
-BUG-8-002: Redaction removed secrets but left 'authorization' token
-- Symptom:
-  - Tests detected the substring 'authorization' present after redaction.
-- Root cause:
-  - Original redaction preserved header name while masking value.
-- Fix:
-  - Rewrote redaction deterministically to ensure 'authorization' never survives in any casing.
+Resolved in Phase 8
+-------------------
+- Missing fan-in marker causing test failure for Phase 6 wiring validation (fixed by adding deterministic marker token).
 
-BUG-8-003: Patch fragility due to pattern mismatches / escaping issues
-- Symptom:
-  - Some patch attempts failed because expected strings/regex patterns did not match file reality.
-- Fix:
-  - Used deterministic file rewrite / line-based rewrites for critical sections rather than brittle regex substitutions.
+Known Issues / Follow-ups
+-------------------------
+- Legacy audit streams may still exist; sink fan-in does not delete legacy files (intentional).
+- Backfill tool is best-effort normalization; future Phase 9+ can add schema-specific mapping if needed.
 
-Residual risk / watchouts
-- Redaction rules are intentionally conservative. Any future adapter surfaces must route all strings/errors
-  through redaction at the boundary (broker) before trace/receipt emission.
-- Do not relax NetworkGate default-deny semantics. Any Phase 9+ live read work must remain allowlist-driven and Phase 7 gated.
+No Open Failing Tests
+---------------------
+pytest -q passes at time of writing.

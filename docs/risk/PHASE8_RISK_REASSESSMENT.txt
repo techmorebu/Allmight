@@ -1,0 +1,20 @@
+PHASE 8 — RISK REASSESSMENT
+===========================
+
+As-Of (UTC): 2026-01-21T09:00:17Z
+Git Head: a2f1d14
+
+Change Risk
+-----------
+LOW. This phase adds logging infrastructure and does not relax live-trading safety gates.
+
+Security / Safety Notes
+-----------------------
+- Audit sink is append-only JSONL; it is not an execution permission mechanism.
+- Fan-in increases observability (good), but can increase disk usage over time (manageable).
+- Backfill tool defaults to DRY_RUN; --apply required to write, preserving operator intent.
+
+Recommended Operator Discipline
+-------------------------------
+- Treat outputs/audit/allmight_audit.jsonl as canonical for incident review.
+- Do not delete legacy logs during Phase 8; deprecation can occur in a future phase with explicit appendix.

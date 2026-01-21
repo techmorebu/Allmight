@@ -1,40 +1,45 @@
 PHASE 8 — BUILD NOTES
 =====================
 
-Scope (non-negotiable)
-- Phase 8 introduces adapter architecture plumbing only:
-  - adapter boundary surfaces
-  - capability declarations
-  - credential handling discipline
-  - network permission gating
-  - deterministic stubs / test doubles
-- Phase 8 explicitly does NOT enable live trading, orders, or real exchange connectivity.
+As-Of (UTC): 2026-01-21T09:00:17Z
+Git Head: a2f1d14
 
-What shipped (commit: c563210)
-- Added importable Python package `allmight/` with Phase 8 boundary surfaces:
-  - allmight.adapters.broker.AdapterBroker (single chokepoint)
-  - allmight.adapters.capabilities.Capability (static capability declarations)
-  - allmight.security.network_gate.NetworkGate (default deny; explicit refusal)
-  - allmight.security.secrets.SecretsBoundary + SecretHandle (resolution refused in Phase 8)
-  - allmight.security.redaction (strict deterministic redaction; no credential material survives)
-- Added Phase 8 contract tests:
-  - tests/phase8/test_adapter_boundary_contracts.py
+Goal
+----
+Phase 8 consolidates audit logging into a canonical, single-sink JSONL stream to reduce operator ambiguity,
+improve determinism, and provide a single file to scan during incident review and governance checks.
 
-Test status
-- pytest: 68 passed
+What Shipped (Key Artifacts)
+----------------------------
+- config/phase8/audit_sink_policy_v0.json
+- scripts/phase8/audit_sink.py
+- tests/phase8/test_phase8_audit_sink.py (hermetic sink test; supports ALLMIGHT_AUDIT_SINK_PATH override)
+- Phase 8 fan-in markers + wiring checks (Phase 5 live order CLI + Phase 6 arming ceremony)
+- docs/appendices:
+  - APPX-PHASE8-AUDIT-SINGLE-SINK-01.txt
+  - APPX-PHASE8-VALIDATION-AUDIT-SINK-TEST-01.txt
+  - APPX-PHASE8-AUDIT-FANIN-01.txt
+  - APPX-PHASE8-AUDIT-BACKFILL-01.txt (if Step E applied)
 
-Enforced guarantees (backed by tests)
-- No execution path exists: execute-like operations are refused (prepare-only).
-- Network is default-deny and denial is explicit (no silent fallback).
-- Capability mismatches fail closed before adapter invocation.
-- Secrets do not leak via returned objects or exception messages.
-- Toxic downstream content is sanitized at the boundary, including removing the 'authorization' token.
+Operational Behavior
+--------------------
+- Default behavior remains "no new privileges": sink is additive logging only.
+- Sink schema version: AUDIT_SINK_V0
+- Fan-in adds additional audit writes to the canonical sink while preserving prior outputs.
 
-Design notes (Phase 7 invariants preserved)
-- Phase 7 remains the single execution authority.
-- Phase 8 introduces no new execution authority, no background processes, no hidden side effects.
+Commands (Operator)
+-------------------
+- Write a manual sink event:
+  python - <<'PY'
+  from scripts.phase8.audit_sink import write_audit_event
+  write_audit_event({"event":"MANUAL_SINK_SMOKE","phase":"PHASE8","result":"OK","meta":{"note":"smoke"}})
+  print("ok")
+  PY
 
-Repository hygiene note (not executed in this wrap)
-- `git status` showed several Phase 7 artifacts as untracked at time of Phase 8 commit.
-- Recommendation: add/commit those Phase 7 artifacts as-is under a separate “phase7: track frozen artifacts” commit
-  without modifying content to preserve freeze semantics.
+- Optional backfill:
+  python scripts/phase8/audit_backfill.py --print
+  python scripts/phase8/audit_backfill.py --apply --print
+
+Test Gate
+---------
+pytest -q (must pass)

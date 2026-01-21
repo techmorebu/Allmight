@@ -304,3 +304,9 @@ Notes: Routes Phase5 live order + Phase6 arming ceremony operator events into ou
   Path: docs/appendices/APPX-PHASE8-AUDIT-BACKFILL-01.txt
   Phase: 8
   Status: CANONICAL
+
+- ID: APPX-PHASE8-WRAP-SUMMARY-01
+  Title: Phase 8 Wrap Summary (Audit Single Sink)
+  Path: docs/appendices/APPX-PHASE8-WRAP-SUMMARY-01.txt
+  Phase: 8
+  Status: CANONICAL
