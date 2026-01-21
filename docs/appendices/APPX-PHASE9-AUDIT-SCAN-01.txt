@@ -1,0 +1,13 @@
+ID: APPX-PHASE9-AUDIT-SCAN-01
+Title: Operator Audit Scan (Canonical Sink Reader)
+Applies To: Phase 9 audit operations
+Status: CANONICAL
+Supersedes: None
+Notes:
+- Adds scripts/phase9/audit_scan.py as the operator-facing scanner for outputs/audit/allmight_audit.jsonl.
+- Time semantics: prefers meta.raw.ts_unix when present, else uses sink ts_unix.
+- Supports hermetic tests via ALLMIGHT_AUDIT_SINK_PATH override.
+- Designed for greppable output (one line per event) with optional JSON mode.
+
+As-Of: 2026-01-21T09:12:13Z
+Git Head: 5b2b6b9

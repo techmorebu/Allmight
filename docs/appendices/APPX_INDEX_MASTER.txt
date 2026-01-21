@@ -310,3 +310,9 @@ Notes: Routes Phase5 live order + Phase6 arming ceremony operator events into ou
   Path: docs/appendices/APPX-PHASE8-WRAP-SUMMARY-01.txt
   Phase: 8
   Status: CANONICAL
+
+- ID: APPX-PHASE9-AUDIT-SCAN-01
+  Title: Operator Audit Scan (Canonical Sink Reader)
+  Path: docs/appendices/APPX-PHASE9-AUDIT-SCAN-01.txt
+  Phase: 9
+  Status: CANONICAL
