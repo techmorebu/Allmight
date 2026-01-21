@@ -1,0 +1,14 @@
+ID: APPX-PHASE9-AUDIT-SHORTCUTS-01
+Title: Audit Scan Shortcuts (last-arming, last-live-attempt, deny-summary, dedupe)
+Applies To: Phase 9 audit operations
+Status: CANONICAL
+Supersedes: None
+Notes:
+- Extends scripts/phase9/audit_scan.py with operator shortcuts:
+  --last-arming, --last-live-attempt, --deny-summary, --dedupe.
+- Deny formatting: extracts best-effort deny code (E_*) when available.
+- Phase inference: display-only inference for backfilled PHASE6 arming events (UNKNOWN -> PHASE6).
+- Dedupe is view-only and does not mutate sink history.
+
+As-Of: 2026-01-21T09:19:47Z
+Git Head: a12edb4

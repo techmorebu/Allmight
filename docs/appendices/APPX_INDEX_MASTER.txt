@@ -316,3 +316,9 @@ Notes: Routes Phase5 live order + Phase6 arming ceremony operator events into ou
   Path: docs/appendices/APPX-PHASE9-AUDIT-SCAN-01.txt
   Phase: 9
   Status: CANONICAL
+
+- ID: APPX-PHASE9-AUDIT-SHORTCUTS-01
+  Title: Audit Scan Shortcuts (last-arming, last-live-attempt, deny-summary, dedupe)
+  Path: docs/appendices/APPX-PHASE9-AUDIT-SHORTCUTS-01.txt
+  Phase: 9
+  Status: CANONICAL
