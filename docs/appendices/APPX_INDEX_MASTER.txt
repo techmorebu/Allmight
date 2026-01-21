@@ -299,3 +299,8 @@ Status: CANONICAL
 Supersedes: None
 Notes: Routes Phase5 live order + Phase6 arming ceremony operator events into outputs/audit/allmight_audit.jsonl via audit_sink.
 
+- ID: APPX-PHASE8-AUDIT-BACKFILL-01
+  Title: Legacy Audit Backfill Tool (Single Sink Migration)
+  Path: docs/appendices/APPX-PHASE8-AUDIT-BACKFILL-01.txt
+  Phase: 8
+  Status: CANONICAL

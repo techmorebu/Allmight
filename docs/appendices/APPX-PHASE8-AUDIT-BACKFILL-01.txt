@@ -1,0 +1,12 @@
+ID: APPX-PHASE8-AUDIT-BACKFILL-01
+Title: Legacy Audit Backfill Tool (Single Sink Migration)
+Applies To: Phase 8 audit consolidation
+Status: CANONICAL
+Supersedes: None (adds migration capability)
+Notes:
+- Adds scripts/phase8/audit_backfill.py to migrate legacy audit JSONL streams into outputs/audit/allmight_audit.jsonl.
+- Default mode is DRY_RUN; requires --apply to write.
+- Preserves provenance via meta.source_path + meta.raw for traceability.
+- Includes hermetic tests that override sink path via ALLMIGHT_AUDIT_SINK_PATH.
+
+As-Of: 2026-01-21T08:59:14Z
