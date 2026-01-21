@@ -329,3 +329,5 @@ Notes: Routes Phase5 live order + Phase6 arming ceremony operator events into ou
   Phase: 9
   Status: CANONICAL
 - APPX-PHASE9-INCIDENT-REMEDIES-01 :: Incident report explanations + remedies catalog (Phase 9)\n
+
+- APPX-PHASE9-INCIDENT-EFFECTIVE-TS-01 — Incident Explain — Effective Timestamp + deny_code Extraction

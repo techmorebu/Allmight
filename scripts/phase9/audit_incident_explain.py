@@ -9,6 +9,43 @@ from typing import Any, Dict, List, Tuple
 from scripts.phase9.remedy_catalog import explain_code
 
 
+def _get_effective_ts_unix(ev: dict) -> int:
+    # Prefer original/raw timestamp if present (backfill keeps raw ts_unix).
+    try:
+        meta = ev.get("meta") or {}
+        raw = meta.get("raw") or {}
+        if "ts_unix" in raw:
+            return int(raw["ts_unix"])
+        if "ts_unix" in ev:
+            return int(ev["ts_unix"])
+    except Exception:
+        return 0
+    return 0
+
+
+def _extract_deny_code(ev: dict) -> str:
+    # DENY codes may appear in multiple places depending on schema evolution.
+    # Current backfill uses meta.raw.deny_code.
+    meta = ev.get("meta") or {}
+    raw = meta.get("raw") or {}
+
+    # Most likely (per observed event):
+    if isinstance(raw.get("deny_code"), str) and raw["deny_code"]:
+        return raw["deny_code"]
+
+    # Compatibility fallbacks:
+    if isinstance(raw.get("code"), str) and raw["code"]:
+        return raw["code"]
+    if isinstance(ev.get("code"), str) and ev["code"]:
+        return ev["code"]
+    if isinstance(meta.get("code"), str) and meta["code"]:
+        return meta["code"]
+    if isinstance(raw.get("reason_code"), str) and raw["reason_code"]:
+        return raw["reason_code"]
+
+    return "UNKNOWN_DENY_CODE"
+
+
 def _read_jsonl(path: Path) -> List[Dict[str, Any]]:
     if not path.exists():
         return []
