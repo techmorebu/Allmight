@@ -1,0 +1,10 @@
+ID: APPX-PHASE9-INCIDENT-REMEDIES-01
+Title: Incident report explanations + remedies catalog (operator-friendly)
+Applies To: Phase 9 incident decoding and remediation
+Status: CANONICAL
+Supersedes: Implicit tribal knowledge
+Notes:
+  - Adds a remedy catalog keyed by DENY codes.
+  - Adds a new explained incident report CLI that prints: meaning, causes, immediate actions, verification commands.
+  - No execution behavior changes: guidance only, fail-closed safety stance.
+  - Intended audience: operators who are not comfortable interpreting raw deny/error output.\n

@@ -328,3 +328,4 @@ Notes: Routes Phase5 live order + Phase6 arming ceremony operator events into ou
   Path: docs/appendices/APPX-PHASE9-INCIDENT-REPORT-01.txt
   Phase: 9
   Status: CANONICAL
+- APPX-PHASE9-INCIDENT-REMEDIES-01 :: Incident report explanations + remedies catalog (Phase 9)\n
