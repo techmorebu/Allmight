@@ -176,7 +176,7 @@ class AllmightIntegration:
                 if data:
                     parsed = json.loads(data)
                     logger.debug(f"✅ Loaded {fetcher_name} from Redis ({len(data)} bytes)")
-                    return parsed
+                    return parsed.get('data', parsed)
                 else:
                     logger.debug(f"⚠️  No Redis data for {fetcher_name}")
             except json.JSONDecodeError as e:

@@ -1,4 +1,3 @@
-// src/arbitrage/opportunity_detector.py
 """
 Opportunity Detector - Phase 1
 Scans all DEX data and detects profitable arbitrage opportunities.

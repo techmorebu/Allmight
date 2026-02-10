@@ -22,7 +22,7 @@ try {
 }
 
 const LOG_LEVEL = (process.env.LOG_LEVEL || "info").toLowerCase();
-const MASTER_FETCHERS_DIR = path.resolve(__dirname, "../data-collection/masterFetcher");
+const MASTER_FETCHERS_DIR = path.resolve(__dirname, "./data_collection/masterFetcher");
 
 const LEVEL_RANK = { debug: 10, info: 20, warn: 30, error: 40 };
 

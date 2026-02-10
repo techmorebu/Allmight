@@ -1,4 +1,3 @@
-// src/arbitrage/spread_calculator.py
 """
 Spread Calculator - Phase 1
 Calculates price spreads between exchanges for arbitrage opportunities.
