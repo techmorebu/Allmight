@@ -101,18 +101,19 @@ const UNISWAP_V3_POOLS = [
 
 /**
  * Calculate price from Uniswap V3 sqrtPriceX96
- * MUST use BigInt arithmetic to avoid precision loss
  */
 function calculatePrice(sqrtPriceX96, decimals0, decimals1) {
     // Convert to BigInt
     const sqrtPriceBigInt = BigInt(sqrtPriceX96.toString());
     const Q96 = BigInt(2) ** BigInt(96);
     
-    // Do the division in BigInt space first!
-    const sqrtPriceAfterDivision = sqrtPriceBigInt * BigInt(1e6) / Q96; // Scale by 1e6 for precision
+    // Scale by 1e18 for much more precision before division
+    const sqrtPriceAfterDivision = sqrtPriceBigInt * BigInt(1e18) / Q96;
     
-    // Now safe to convert to Number and square
-    const sqrtPriceNum = Number(sqrtPriceAfterDivision) / 1e6;
+    // Convert to Number and unscale
+    const sqrtPriceNum = Number(sqrtPriceAfterDivision) / 1e18;
+    
+    // Square it
     const price = sqrtPriceNum ** 2;
     
     // Adjust for decimals
