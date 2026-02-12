@@ -105,9 +105,9 @@ const UNISWAP_V3_POOLS = [
 function calculatePriceFromTick(tick, decimals0, decimals1) {
     const price = Math.pow(1.0001, Number(tick));
     
-    // Adjust for decimals - REMOVE the negative sign!
-    const decimalDiff = Number(decimals0) - Number(decimals1);
-    const decimalAdj = Math.pow(10, decimalDiff); // No negative!
+    // Standard Uniswap V3 formula
+    const decimalDiff = Number(decimals1) - Number(decimals0);
+    const decimalAdj = Math.pow(10, decimalDiff);
     
     return price * decimalAdj;
 }
