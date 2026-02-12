@@ -86,9 +86,12 @@ async function fetchPoolData(poolConfig) {
             token1Contract.decimals()
         ]);
         
-        // Calculate price - convert reserves with proper decimals
-        const reserve0Num = Number(reserve0) / Math.pow(10, Number(decimals0));
-        const reserve1Num = Number(reserve1) / Math.pow(10, Number(decimals1));
+        // Convert reserves to numbers with proper decimals - EXPLICIT Number() conversions!
+        const dec0 = Number(decimals0.toString());
+        const dec1 = Number(decimals1.toString());
+        
+        const reserve0Num = Number(reserve0.toString()) / Math.pow(10, dec0);
+        const reserve1Num = Number(reserve1.toString()) / Math.pow(10, dec1);
         
         // Calculate raw price (token1 per token0)
         let price;
