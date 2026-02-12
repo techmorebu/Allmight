@@ -99,34 +99,20 @@ const UNISWAP_V3_POOLS = [
     }
 ];
 
-/**
- * Calculate price from Uniswap V3 tick
- */
-function calculatePriceFromTick(tick, decimals0, decimals1) {
-    const price = Math.pow(1.0001, Number(tick));
-    
-    // Standard Uniswap V3 formula
-    const decimalDiff = Number(decimals1) - Number(decimals0);
-    const decimalAdj = Math.pow(10, decimalDiff);
-    
-    return price * decimalAdj;
-}
-/**
  * Fetch data from a single Uniswap V3 pool
  */
 async function fetchPoolData(poolConfig) {
     try {
         const poolContract = new ethers.Contract(poolConfig.pool, POOL_ABI, PROVIDER);
         
-        // Get pool state
         const [slot0, liquidity] = await Promise.all([
             poolContract.slot0(),
             poolContract.liquidity()
         ]);
         
-        const sqrtPriceX96 = slot0[0];
+        const tick = Number(slot0[1]);
         
-        // Get token decimals
+        // Get decimals
         const token0Contract = new ethers.Contract(poolConfig.token0, ERC20_ABI, PROVIDER);
         const token1Contract = new ethers.Contract(poolConfig.token1, ERC20_ABI, PROVIDER);
         
@@ -135,27 +121,34 @@ async function fetchPoolData(poolConfig) {
             token1Contract.decimals()
         ]);
         
-        // Calculate price (token1 per token0)
-        let price = calculatePriceFromTick(slot0[1], Number(decimals0), Number(decimals1));
+        // Calculate price based on specific pool
+        let price;
         
-        // Invert if needed (based on config)
-        if (poolConfig.invertPrice) {
-            price = 1 / price;
+        if (poolConfig.name === 'ETH/USDC') {
+            // WETH/USDC: tick → price, adjust decimals, then INVERT
+            const rawPrice = Math.pow(1.0001, tick);
+            const adjusted = rawPrice * Math.pow(10, Number(decimals1) - Number(decimals0));
+            price = 1 / adjusted; // Invert to get USD per ETH
+        } else if (poolConfig.name === 'WBTC/ETH') {
+            // WBTC/WETH: tick → price, adjust decimals
+            const rawPrice = Math.pow(1.0001, tick);
+            price = rawPrice * Math.pow(10, Number(decimals0) - Number(decimals1));
+        } else {
+            // Default formula for other pairs
+            const rawPrice = Math.pow(1.0001, tick);
+            price = rawPrice * Math.pow(10, Number(decimals1) - Number(decimals0));
         }
         
-        // Simple TVL estimate
-        const liquidityNum = Number(liquidity);
-        const tvl = liquidityNum / 1e18 * Math.sqrt(price) * 1000; // Rough approximation
+        const tvl = Number(liquidity) / 1e18 * Math.sqrt(Math.abs(price)) * 1000;
         
         return {
             pair: poolConfig.name,
             pool: poolConfig.pool,
             price: price,
-            liquidity: liquidityNum,
+            liquidity: Number(liquidity),
             tvlUSD: tvl,
             fee: poolConfig.fee / 10000,
-            sqrtPriceX96: sqrtPriceX96.toString(),
-            tick: Number(slot0[1]),
+            tick: tick,
             source: 'uniswap_v3_onchain',
             timestamp: new Date().toISOString()
         };
