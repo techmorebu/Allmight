@@ -98,7 +98,7 @@ const UNISWAP_V3_POOLS = [
         invertPrice: false
     }
 ];
-
+/**
  * Fetch data from a single Uniswap V3 pool
  */
 async function fetchPoolData(poolConfig) {
