@@ -103,15 +103,16 @@ const UNISWAP_V3_POOLS = [
  * Calculate price from Uniswap V3 sqrtPriceX96
  */
 function calculatePrice(sqrtPriceX96, decimals0, decimals1) {
-    // Convert to BigInt
     const sqrtPriceBigInt = BigInt(sqrtPriceX96.toString());
     const Q96 = BigInt(2) ** BigInt(96);
     
-    // Scale by 1e18 for much more precision before division
-    const sqrtPriceAfterDivision = sqrtPriceBigInt * BigInt(1e18) / Q96;
+    // Use string literal for BigInt to avoid float conversion!
+    const scale = BigInt('1000000000000000000'); // 1e18 as BigInt
     
-    // Convert to Number and unscale
-    const sqrtPriceNum = Number(sqrtPriceAfterDivision) / 1e18;
+    const sqrtPriceScaled = sqrtPriceBigInt * scale / Q96;
+    
+    // Now convert to number
+    const sqrtPriceNum = Number(sqrtPriceScaled) / Number(scale);
     
     // Square it
     const price = sqrtPriceNum ** 2;
@@ -121,7 +122,6 @@ function calculatePrice(sqrtPriceX96, decimals0, decimals1) {
     
     return price * decimalAdj;
 }
-
 /**
  * Fetch data from a single Uniswap V3 pool
  */
