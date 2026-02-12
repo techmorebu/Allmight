@@ -20,11 +20,11 @@ const ERC20_ABI = [
 // Major Sushiswap pools
 const SUSHISWAP_POOLS = [
     {
-        name: 'ETH/USDC',
-        token0: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH
-        token1: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
-        pair: '0x397FF1542f962076d0BFE58eA045FfA2d347ACa0',
-        invertPrice: true
+    name: 'ETH/USDC',
+    token0: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC (correct!)
+    token1: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH (correct!)
+    pair: '0x397FF1542f962076d0BFE58eA045FfA2d347ACa0',
+    invertPrice: false  // Change to false since we'll use r0/r1
     },
     {
         name: 'WBTC/ETH',
