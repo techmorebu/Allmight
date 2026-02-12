@@ -158,3 +158,18 @@ async function fetchSushiswapData() {
 }
 
 module.exports = fetchSushiswapData;
+
+// For testing
+if (require.main === module) {
+    fetchSushiswapData().then(result => {
+        console.log('\n📊 SUSHISWAP ON-CHAIN DATA:');
+        console.log('═'.repeat(70));
+        
+        result.data.prices.forEach(price => {
+            console.log(`${price.pair.padEnd(15)} $${price.price.toFixed(6).padStart(12)} | TVL: $${(price.reserveUSD/1000000).toFixed(1)}M | Fee: ${price.fee}%`);
+        });
+        
+        console.log('═'.repeat(70));
+        console.log(`Total pools: ${result.data.prices.length}`);
+    }).catch(console.error);
+}
