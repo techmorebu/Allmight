@@ -101,26 +101,24 @@ const UNISWAP_V3_POOLS = [
 
 /**
  * Calculate price from Uniswap V3 sqrtPriceX96
+ * MUST use BigInt arithmetic to avoid precision loss
  */
 function calculatePrice(sqrtPriceX96, decimals0, decimals1) {
-    // Use ethers BigNumber for precision
-    const Q96 = ethers.getBigInt('79228162514264337593543950336'); // 2^96
+    // Convert to BigInt
+    const sqrtPriceBigInt = BigInt(sqrtPriceX96.toString());
+    const Q96 = BigInt(2) ** BigInt(96);
     
-    const sqrtPriceBigInt = ethers.getBigInt(sqrtPriceX96.toString());
+    // Do the division in BigInt space first!
+    const sqrtPriceAfterDivision = sqrtPriceBigInt * BigInt(1e6) / Q96; // Scale by 1e6 for precision
     
-    // price = (sqrtPrice / 2^96)^2 = sqrtPrice^2 / 2^192
-    const numerator = sqrtPriceBigInt * sqrtPriceBigInt;
-    const denominator = Q96 * Q96;
+    // Now safe to convert to Number and square
+    const sqrtPriceNum = Number(sqrtPriceAfterDivision) / 1e6;
+    const price = sqrtPriceNum ** 2;
     
-    // Get decimal adjustment
-    const dec0 = Number(decimals0);
-    const dec1 = Number(decimals1);
+    // Adjust for decimals
+    const decimalAdj = Math.pow(10, Number(decimals0) - Number(decimals1));
     
-    // Convert to float for final calculation
-    const priceFloat = Number(numerator) / Number(denominator);
-    const decimalAdj = Math.pow(10, dec0 - dec1);
-    
-    return priceFloat * decimalAdj;
+    return price * decimalAdj;
 }
 
 /**
