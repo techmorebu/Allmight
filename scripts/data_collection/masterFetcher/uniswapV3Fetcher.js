@@ -103,12 +103,14 @@ const UNISWAP_V3_POOLS = [
  * Calculate price from Uniswap V3 tick
  */
 function calculatePriceFromTick(tick, decimals0, decimals1) {
-    // price = 1.0001^tick (this gives token1 per token0 in their native units)
+    // price = 1.0001^tick
     const price = Math.pow(1.0001, Number(tick));
     
-    // The price needs to be adjusted: divide by 10^(dec0 - dec1)
-    // NOT multiply! This converts from native units to human-readable
-    const decimalAdj = Math.pow(10, Number(decimals1) - Number(decimals0));
+    // Adjust for decimals
+    // If token0 has MORE decimals than token1, we divide
+    // If token1 has MORE decimals than token0, we multiply
+    const decimalDiff = Number(decimals0) - Number(decimals1);
+    const decimalAdj = Math.pow(10, -decimalDiff); // Note the negative!
     
     return price * decimalAdj;
 }
