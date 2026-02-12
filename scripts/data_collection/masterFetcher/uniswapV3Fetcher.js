@@ -50,7 +50,7 @@ const UNISWAP_V3_POOLS = [
         token1: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH
         fee: 3000,
         pool: '0xCBCdF9626bC03E24f779434178A73a0B4bad62eD',
-        invertPrice: true // Shows ETH per WBTC
+        invertPrice: false // Shows ETH per WBTC
     },
     // USDC/USDT 0.01% fee
     {
