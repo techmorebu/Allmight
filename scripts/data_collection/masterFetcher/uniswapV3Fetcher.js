@@ -101,24 +101,26 @@ const UNISWAP_V3_POOLS = [
 
 /**
  * Calculate price from Uniswap V3 sqrtPriceX96
- * Returns: amount of token1 per 1 token0
  */
 function calculatePrice(sqrtPriceX96, decimals0, decimals1) {
-    // Convert BigInt to number carefully
-    // sqrtPriceX96 = sqrt(price) * 2^96
-    const Q96 = Math.pow(2, 96);
+    // Use ethers BigNumber for precision
+    const Q96 = ethers.getBigInt('79228162514264337593543950336'); // 2^96
     
-    // Get the sqrt price ratio
-    const sqrtPrice = Number(sqrtPriceX96.toString()) / Q96;
+    const sqrtPriceBigInt = ethers.getBigInt(sqrtPriceX96.toString());
     
-    // Square it to get the actual price ratio
-    const priceRatio = Math.pow(sqrtPrice, 2);
+    // price = (sqrtPrice / 2^96)^2 = sqrtPrice^2 / 2^192
+    const numerator = sqrtPriceBigInt * sqrtPriceBigInt;
+    const denominator = Q96 * Q96;
     
-    // Adjust for decimals: price represents token1 per token0
-    // We need to account for different decimal places
-    const decimalAdjustment = Math.pow(10, Number(decimals0) - Number(decimals1));
+    // Get decimal adjustment
+    const dec0 = Number(decimals0);
+    const dec1 = Number(decimals1);
     
-    return priceRatio * decimalAdjustment;
+    // Convert to float for final calculation
+    const priceFloat = Number(numerator) / Number(denominator);
+    const decimalAdj = Math.pow(10, dec0 - dec1);
+    
+    return priceFloat * decimalAdj;
 }
 
 /**
