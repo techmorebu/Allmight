@@ -97,9 +97,10 @@ async function fetchPoolData(poolConfig) {
         let price;
         
         if (poolConfig.name === 'ETH/USDC') {
-            // WETH is token0, USDC is token1
-            // reserve1/reserve0 = USDC per WETH = dollars per ETH ✅
-            price = reserve1Num / reserve0Num;
+            // USDC is token0, WETH is token1
+            // reserve0/reserve1 = USDC per WETH = dollars per ETH ✅
+            price = reserve0Num / reserve1Num;
+        }
         } else if (poolConfig.name === 'WBTC/ETH') {
             // WBTC is token0, WETH is token1
             // reserve1/reserve0 = WETH per WBTC ✅
