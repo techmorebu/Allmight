@@ -111,7 +111,54 @@ function calculatePriceFromTick(tick, decimals0, decimals1) {
     
     return price * decimalAdj;
 }
-let price = calculatePriceFromTick(slot0[1], Number(decimals0), Number(decimals1));
+/**
+ * Fetch data from a single Uniswap V3 pool
+ */
+async function fetchPoolData(poolConfig) {
+    try {
+        const poolContract = new ethers.Contract(poolConfig.pool, POOL_ABI, PROVIDER);
+        
+        // Get pool state
+        const [slot0, liquidity] = await Promise.all([
+            poolContract.slot0(),
+            poolContract.liquidity()
+        ]);
+        
+        const sqrtPriceX96 = slot0[0];
+        
+        // Get token decimals
+        const token0Contract = new ethers.Contract(poolConfig.token0, ERC20_ABI, PROVIDER);
+        const token1Contract = new ethers.Contract(poolConfig.token1, ERC20_ABI, PROVIDER);
+        
+        const [decimals0, decimals1] = await Promise.all([
+            token0Contract.decimals(),
+            token1Contract.decimals()
+        ]);
+        
+        // Calculate price (token1 per token0)
+        let price = calculatePriceFromTick(slot0[1], Number(decimals0), Number(decimals1));
+        
+        // Invert if needed (based on config)
+        if (poolConfig.invertPrice) {
+            price = 1 / price;
+        }
+        
+        // Simple TVL estimate
+        const liquidityNum = Number(liquidity);
+        const tvl = liquidityNum / 1e18 * Math.sqrt(price) * 1000; // Rough approximation
+        
+        return {
+            pair: poolConfig.name,
+            pool: poolConfig.pool,
+            price: price,
+            liquidity: liquidityNum,
+            tvlUSD: tvl,
+            fee: poolConfig.fee / 10000,
+            sqrtPriceX96: sqrtPriceX96.toString(),
+            tick: Number(slot0[1]),
+            source: 'uniswap_v3_onchain',
+            timestamp: new Date().toISOString()
+        };
         
     } catch (error) {
         console.error(`❌ Error fetching ${poolConfig.name}:`, error.message);
