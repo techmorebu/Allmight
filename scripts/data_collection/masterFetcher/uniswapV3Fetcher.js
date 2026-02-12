@@ -136,21 +136,37 @@ async function fetchPoolData(poolConfig) {
             token1Contract.decimals()
         ]);
         
-        // Calculate price (token1 per token0)
-        const price = calculatePrice(sqrtPriceX96, decimals0, decimals1);
+        // Calculate raw price (amount of token1 per 1 token0)
+        let rawPrice = calculatePrice(sqrtPriceX96, decimals0, decimals1);
         
-        // Calculate TVL
-        const tvl = calculateTVL(liquidity, price, decimals0, decimals1);
+        // For ETH/USDC pools where USDC is token0 and WETH is token1,
+        // we want price in USD per ETH, so we need to invert
+        let displayPrice = rawPrice;
+        
+        // Check if we need to invert based on pair name
+        if (poolConfig.name === 'ETH/USDC') {
+            // USDC is token0, WETH is token1
+            // sqrtPrice gives us WETH per USDC, but we want USDC per WETH
+            displayPrice = 1 / rawPrice;
+        } else if (poolConfig.name.includes('/ETH')) {
+            // TOKEN/ETH pairs - keep as is (shows how much ETH for 1 TOKEN)
+            displayPrice = rawPrice;
+        }
+        
+        // Calculate TVL (rough estimate)
+        const liquidityNum = Number(liquidity) / 1e18; // Rough approximation
+        const tvl = liquidityNum * Math.sqrt(displayPrice) * 2;
         
         return {
             pair: poolConfig.name,
             pool: poolConfig.pool,
-            price: price,
+            price: displayPrice,
             liquidity: Number(liquidity),
             tvlUSD: tvl,
-            fee: poolConfig.fee / 10000, // Convert to percentage
+            fee: poolConfig.fee / 10000,
             sqrtPriceX96: sqrtPriceX96.toString(),
             tick: slot0[1],
+            rawPrice: rawPrice, // Keep raw for debugging
             source: 'uniswap_v3_onchain',
             timestamp: new Date().toISOString()
         };
