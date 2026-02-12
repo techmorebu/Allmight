@@ -33,7 +33,7 @@ except Exception as e:
 
 # Load Discord formatter V2
 try:
-    with open(os.path.join(os.path.dirname(__file__), 'discord_formatter_v2.py'), 'r') as f:
+    with open(os.path.join(os.path.dirname(__file__), 'discord_formatter.py'), 'r') as f:
         formatter_code = f.read()
         exec(formatter_code, globals())
     print("✅ Loaded DiscordFormatterV2")
