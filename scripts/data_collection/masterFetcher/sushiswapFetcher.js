@@ -86,21 +86,34 @@ async function fetchPoolData(poolConfig) {
             token1Contract.decimals()
         ]);
         
-        // Calculate price - handle each pool specifically like Uniswap
-        let price;
-        
-        // Convert reserves to numbers with proper decimals
+        // Calculate price - convert reserves with proper decimals
         const reserve0Num = Number(reserve0) / Math.pow(10, Number(decimals0));
         const reserve1Num = Number(reserve1) / Math.pow(10, Number(decimals1));
         
+        // Calculate raw price (token1 per token0)
+        let price;
+        
         if (poolConfig.name === 'ETH/USDC') {
-            // WETH/USDC: reserve1/reserve0 gives USDC per WETH, invert for USD per ETH
+            // WETH is token0, USDC is token1
+            // reserve1/reserve0 = USDC per WETH = dollars per ETH ✅
             price = reserve1Num / reserve0Num;
         } else if (poolConfig.name === 'WBTC/ETH') {
-            // WBTC/WETH: reserve1/reserve0 gives WETH per WBTC
+            // WBTC is token0, WETH is token1
+            // reserve1/reserve0 = WETH per WBTC ✅
             price = reserve1Num / reserve0Num;
+        } else if (poolConfig.name === 'USDC/USDT') {
+            // USDC is token0, USDT is token1
+            // Both 6 decimals, should be ~1.0
+            price = reserve1Num / reserve0Num;
+        } else if (poolConfig.name === 'DAI/ETH') {
+            // DAI is token0, WETH is token1
+            // reserve1/reserve0 = WETH per DAI (tiny number)
+            // We want ETH price in DAI, so invert
+            price = reserve0Num / reserve1Num;
         } else {
-            // Default: reserve1/reserve0
+            // TOKEN/ETH pairs (LINK, UNI, AAVE)
+            // token0 is TOKEN, token1 is WETH
+            // reserve1/reserve0 = WETH per TOKEN ✅
             price = reserve1Num / reserve0Num;
         }
         
