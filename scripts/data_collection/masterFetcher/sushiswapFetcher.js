@@ -34,13 +34,6 @@ const SUSHISWAP_POOLS = [
         invertPrice: false
     },
     {
-        name: 'USDC/USDT',
-        token0: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
-        token1: '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
-        pair: '0x06da0fd433C1A5d7a4faa01111c044910A184553',
-        invertPrice: false
-    },
-    {
         name: 'LINK/ETH',
         token0: '0x514910771AF9Ca656af840dff83E8264EcF986CA', // LINK
         token1: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH
