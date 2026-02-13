@@ -306,23 +306,35 @@ class AdvancedArbDetector:
                             sell_dex = route1
                         
                         # Calculate profit after fees
-                        profit_bps = self._calculate_path_profit(
-                            [buy_dex['price'], sell_dex['price']],
-                            [buy_dex['fee'], sell_dex['fee']]
-                        )
+                        # For cross-DEX: we want to know if we can profit from buying on one, selling on other
                         
-                        if profit_bps >= self.min_profit_bps:
-                            opportunities.append(ArbPath(
-                                path_type=ArbType.CROSS_DEX,
-                                tokens=[token0, token1, token0],
-                                dexs=[buy_dex['dex'], sell_dex['dex']],
-                                pools=[buy_dex['pool'], sell_dex['pool']],
-                                prices=[buy_dex['price'], sell_dex['price']],
-                                fees=[buy_dex['fee'], sell_dex['fee']],
-                                expected_profit_bps=profit_bps,
-                                execution_complexity=2,
-                                description=f"Buy {token0}/{token1} on {buy_dex['dex']}, sell on {sell_dex['dex']}"
-                            ))
+                        # Buy on cheaper DEX, sell on more expensive DEX
+                        if price1 > price2:
+                            # Buy on route2, sell on route1
+                            buy_price = price2
+                            sell_price = price1
+                            buy_route = route2
+                            sell_route = route1
+                        else:
+                            # Buy on route1, sell on route2
+                            buy_price = price1
+                            sell_price = price2
+                            buy_route = route1
+                            sell_route = route2
+                        
+                        # For same token pair on different DEXs, the prices should be similar
+                        # Profit = (sell_price / buy_price - 1) * 10000 - fees
+                        price_ratio = sell_price / buy_price if buy_price > 0 else 0
+                        
+                        # Calculate gross profit
+                        gross_profit_bps = (price_ratio - 1) * 10000
+                        
+                        # Subtract fees
+                        total_fees_bps = buy_route['fee'] + sell_route['fee']
+                        net_profit_bps = gross_profit_bps - total_fees_bps
+                        
+                        # Only profitable if spread > fees
+                        if net_profit_bps >= self.min_profit_bps:
         
         return opportunities
     
