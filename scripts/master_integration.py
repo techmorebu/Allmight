@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """
-Master Integration V3 - Enhanced Pool Scanning + Price Validation + 3-Channel Discord
+Master Integration V4 - Advanced Multi-Strategy Arbitrage Detection
 
-Improvements:
-- Extracts ALL available pools from fetchers
-- Calculates real spreads between DEXs
-- PRICE VALIDATION before every scan (bulletproof safety)
-- Sends to 3 Discord channels
-- Shows top 5 opportunities
+NEW in V4:
+- Triangle arbitrage detection
+- Multi-hop routing optimization
+- Same-DEX fee tier arbitrage
+- Stablecoin depeg arbitrage
+- Cross-DEX arbitrage (enhanced)
+- Bulletproof price validation
 """
 
 import sys
@@ -31,14 +32,21 @@ except Exception as e:
     print(f"❌ Failed to load PriceValidator: {e}")
     sys.exit(1)
 
-# Load unified optimizer
+# Load advanced arbitrage detector
+try:
+    from advanced_arbitrage_detector import AdvancedArbDetector, ArbType, format_arb_opportunity
+    print("✅ Loaded AdvancedArbDetector")
+except Exception as e:
+    print(f"❌ Failed to load AdvancedArbDetector: {e}")
+    sys.exit(1)
+
+# Load unified optimizer (for backward compatibility)
 try:
     with open(os.path.join(os.path.dirname(__file__), 'unified_smart_optimizer.py'), 'r') as f:
         exec(f.read(), globals())
     print("✅ Loaded UnifiedSmartOptimizer")
 except Exception as e:
-    print(f"❌ Failed to load optimizer: {e}")
-    sys.exit(1)
+    print(f"⚠️  UnifiedSmartOptimizer not available: {e}")
 
 # Load Discord formatter V2
 try:
@@ -47,7 +55,7 @@ try:
         exec(formatter_code, globals())
     print("✅ Loaded DiscordFormatterV2")
 except Exception as e:
-    print(f"⚠️  Discord formatter V2 not available, using basic: {e}")
+    print(f"⚠️  Discord formatter V2 not available: {e}")
     DiscordFormatterV2 = None
     send_to_discord = None
 
@@ -67,31 +75,42 @@ logging.basicConfig(
 logger = logging.getLogger('Allmight')
 
 
-class AllmightScannerV3:
-    """Enhanced scanner with price validation and pool extraction"""
+class AllmightScannerV4:
+    """
+    Enhanced scanner with multi-strategy arbitrage detection
+    """
     
     def __init__(self, config: Optional[Dict] = None):
         self.config = config or {
             'min_profit_usd': 10.0,
             'max_slippage_pct': 0.5,
             'max_pool_utilization': 0.01,
-            'batch_size': 5
+            'batch_size': 5,
+            'enable_advanced_detection': True  # NEW: Enable all strategies
         }
         
-        self.optimizer = UnifiedSmartOptimizer(self.config)
         self.discord_formatter = DiscordFormatterV2() if DiscordFormatterV2 else None
         
-        # Initialize price validator with safety thresholds
+        # Initialize price validator
         validator_config = {
-            'eth_price_tolerance_bps': 200,  # 2% tolerance
-            'cross_dex_spread_max_bps': 500,  # 5% max cross-DEX spread
+            'eth_price_tolerance_bps': 200,
+            'cross_dex_spread_max_bps': 500,
             'wbtc_eth_ratio_min': 20,
             'wbtc_eth_ratio_max': 50,
-            'stablecoin_peg_tolerance_bps': 100,  # 1%
-            'min_major_pair_tvl': 1_000_000  # $1M minimum
+            'stablecoin_peg_tolerance_bps': 100,
+            'min_major_pair_tvl': 1_000_000
         }
         self.validator = PriceValidator(validator_config)
         logger.info("✅ Initialized PriceValidator")
+        
+        # Initialize advanced arbitrage detector
+        detector_config = {
+            'min_profit_bps': 10,  # 0.1% minimum
+            'max_hops': 4,
+            'min_liquidity': 10_000
+        }
+        self.advanced_detector = AdvancedArbDetector(detector_config)
+        logger.info("✅ Initialized AdvancedArbDetector (5 strategies)")
         
         # Discord settings
         self.discord_enabled = os.getenv('DISCORD_NOTIFICATIONS_ENABLED', 'false').lower() == 'true'
@@ -109,10 +128,17 @@ class AllmightScannerV3:
             'total_viable': 0,
             'best_profit': 0,
             'validation_failures': 0,
+            'strategies_used': {
+                'cross_dex': 0,
+                'triangle': 0,
+                'multi_hop': 0,
+                'same_dex': 0,
+                'stablecoin': 0
+            },
             'start_time': time.time()
         }
         
-        # Price cache for spread calculation
+        # Price cache
         self.price_cache = {}
     
     def load_fetcher_data(self) -> Dict:
@@ -144,12 +170,10 @@ class AllmightScannerV3:
     def extract_all_markets(self, data: Dict) -> Tuple[List[Dict], float]:
         """
         Extract ALL available markets from fetcher data
-        
-        Calculates actual spreads between DEXs when possible
         """
         
         markets = []
-        self.price_cache = {}  # Reset cache
+        self.price_cache = {}
         
         # Get gas cost
         gas_data = data.get('gasPriceOracle', {})
@@ -163,15 +187,14 @@ class AllmightScannerV3:
                 pair = price_data.get('pair', 'UNKNOWN')
                 price = price_data.get('price', 0)
                 
-                # Store in cache
                 self.price_cache[f'uniswap_{pair}'] = price
                 
-                # Add market
                 markets.append({
                     'name': f"Uniswap {pair}",
-                    'spread_bps': 22,  # Using on-chain data
+                    'spread_bps': price_data.get('fee', 30) * 100 if 'fee' in price_data else 30,
                     'pool_liquidity': price_data.get('tvlUSD', 100_000_000),
                     'price': price,
+                    'pool': price_data.get('pool', ''),
                     'source': 'uniswap'
                 })
         
@@ -183,15 +206,14 @@ class AllmightScannerV3:
                 pair = price_data.get('pair', 'UNKNOWN')
                 price = price_data.get('price', 0)
                 
-                # Store in cache
                 self.price_cache[f'sushiswap_{pair}'] = price
                 
-                # Add market
                 markets.append({
                     'name': f"Sushiswap {pair}",
-                    'spread_bps': 25,  # Using on-chain data
+                    'spread_bps': 30,
                     'pool_liquidity': price_data.get('reserveUSD', 50_000_000),
                     'price': price,
+                    'pool': price_data.get('pool', ''),
                     'source': 'sushiswap'
                 })
         
@@ -202,122 +224,29 @@ class AllmightScannerV3:
             for pool in curve_data['pools']:
                 pool_name = pool.get('name', 'Unknown')
                 
-                # Check for depegs
                 if 'exchangeRates' in pool:
                     for rate in pool['exchangeRates']:
                         spread_from_peg = abs(1.0 - rate.get('rate', 1.0)) * 10000
                         
-                        if spread_from_peg > 5:  # More than 5 bps
+                        if spread_from_peg > 5:
                             markets.append({
                                 'name': f"Curve {pool_name} {rate.get('from')}/{rate.get('to')}",
                                 'spread_bps': spread_from_peg,
                                 'pool_liquidity': pool.get('tvlUSD', 150_000_000),
-                                'source': 'curve'
+                                'source': 'curve',
+                                'price': rate.get('rate', 1.0)
                             })
         
-        # === CROSS-DEX ARBITRAGE ===
-        # Calculate real spreads between Uniswap and Sushiswap
-        cross_dex_markets = self._find_cross_dex_opportunities()
-        markets.extend(cross_dex_markets)
-        
-        logger.info(f"📊 Extracted {len(markets)} markets total:")
-        
-        # Count by source
-        sources = {}
-        for m in markets:
-            src = m.get('source', 'unknown')
-            sources[src] = sources.get(src, 0) + 1
-        
-        for src, count in sources.items():
-            logger.info(f"   {src.capitalize()}: {count} markets")
+        logger.info(f"📊 Extracted {len(markets)} markets total")
         
         return markets, gas_cost
     
-    def _find_cross_dex_opportunities(self) -> List[Dict]:
-        """
-        Find cross-DEX arbitrage opportunities
-        
-        Compares prices between Uniswap and Sushiswap
-        """
-        
-        opportunities = []
-        
-        # Find common pairs
-        uniswap_pairs = {k.replace('uniswap_', ''): v for k, v in self.price_cache.items() if k.startswith('uniswap_')}
-        sushiswap_pairs = {k.replace('sushiswap_', ''): v for k, v in self.price_cache.items() if k.startswith('sushiswap_')}
-        
-        common_pairs = set(uniswap_pairs.keys()) & set(sushiswap_pairs.keys())
-        
-        for pair in common_pairs:
-            uni_price = uniswap_pairs[pair]
-            sushi_price = sushiswap_pairs[pair]
-            
-            # Calculate spread
-            if uni_price > 0 and sushi_price > 0:
-                spread_pct = abs(uni_price - sushi_price) / min(uni_price, sushi_price)
-                spread_bps = spread_pct * 10000
-                
-                if spread_bps > 10:  # More than 10 bps
-                    # Determine direction
-                    if uni_price > sushi_price:
-                        direction = "Sushi→Uni"
-                    else:
-                        direction = "Uni→Sushi"
-                    
-                    opportunities.append({
-                        'name': f"Cross-DEX {pair} ({direction})",
-                        'spread_bps': spread_bps,
-                        'pool_liquidity': 75_000_000,  # Average of both
-                        'source': 'cross-dex'
-                    })
-        
-        return opportunities
-    
-    def send_discord_notifications(self, results: Dict, scan_number: int):
-        """Send to all 3 Discord channels"""
-        
-        if not self.discord_enabled or not self.discord_formatter:
-            return
-        
-        viable = results['viable_opportunities']
-        stats = results['summary_stats']
-        batches = results['execution_batches']
-        
-        # 1. Alert channel (if opportunities exist)
-        if viable:
-            alert_msg = self.discord_formatter.create_alert_message(viable, stats, batch_size=5)
-            send_to_discord(alert_msg)
-            logger.info(f"📱 Alert sent ({len(viable)} opportunities)")
-        
-        # 2. Detailed channel
-        detailed_msg = self.discord_formatter.create_detailed_message(
-            results['all_opportunities'],
-            viable,
-            stats,
-            batches
-        )
-        send_to_discord(detailed_msg)
-        
-        # 3. Terminal mirror
-        terminal_msg = self.discord_formatter.create_terminal_mirror(
-            scan_number=scan_number,
-            timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            markets_scanned=stats['total_scanned'],
-            viable_count=stats['total_viable'],
-            total_count=stats['total_scanned'],
-            viable_rate=stats['viable_rate'],
-            scan_time_ms=results['scan_time_ms'],
-            top_opportunities=viable[:5] if viable else None,
-            min_profit=self.config['min_profit_usd']
-        )
-        send_to_discord(terminal_msg)
-    
     def scan_once(self) -> Dict:
-        """Run single scan with price validation"""
+        """Run single scan with advanced detection"""
         
-        logger.info("=" * 60)
-        logger.info("🔍 ALLMIGHT ARBITRAGE SCAN")
-        logger.info("=" * 60)
+        logger.info("=" * 70)
+        logger.info("🔍 ALLMIGHT ADVANCED ARBITRAGE SCAN V4")
+        logger.info("=" * 70)
         logger.info(f"Timestamp: {datetime.now().isoformat()}")
         
         # Load data
@@ -327,94 +256,146 @@ class AllmightScannerV3:
             logger.error("❌ No fetcher data available")
             return None
         
-        # ===== CRITICAL: PRICE VALIDATION =====
+        # ===== VALIDATION =====
         logger.info("🔍 Validating price data...")
         validation_result = self.validator.run_validation(data)
         
         if not validation_result['valid']:
-            logger.error("=" * 60)
+            logger.error("=" * 70)
             logger.error("❌ VALIDATION FAILED - Aborting scan")
-            logger.error("=" * 60)
-            logger.error("Critical errors:")
+            logger.error("=" * 70)
             for error in validation_result['critical_errors']:
                 logger.error(f"   ❌ {error}")
             
-            if validation_result['warnings']:
-                logger.warning("Warnings:")
-                for warning in validation_result['warnings']:
-                    logger.warning(f"   ⚠️  {warning}")
-            
-            logger.error("=" * 60)
-            logger.error("🛑 TRADING BLOCKED - Price data validation failed")
-            logger.error("=" * 60)
-            
-            # Track validation failures
             self.stats['validation_failures'] += 1
-            
             return None
         
         logger.info("✅ Price validation PASSED - Safe to proceed")
-        # ===== END VALIDATION =====
         
-        # Extract ALL markets
+        # Extract markets
         markets, gas_cost = self.extract_all_markets(data)
         
         if not markets:
             logger.warning("⚠️  No markets extracted")
             return None
         
-        logger.info(f"🔎 Scanning {len(markets)} markets with UnifiedSmartOptimizer...")
+        # ===== ADVANCED DETECTION =====
+        logger.info(f"🔎 Scanning {len(markets)} markets with AdvancedArbDetector...")
+        logger.info(f"   Strategies: Cross-DEX, Triangle, Multi-hop, Same-DEX, Stablecoin")
         
-        # Scan
-        results = self.optimizer.scan_markets(markets, gas_cost)
+        start_time = time.time()
+        
+        # Run advanced detection
+        arb_paths = self.advanced_detector.find_all_arbitrage(markets, gas_cost)
+        
+        scan_time_ms = (time.time() - start_time) * 1000
+        
+        # Convert to results format
+        results = self._format_results(arb_paths, scan_time_ms, gas_cost)
         
         # Update stats
         self.stats['total_scans'] += 1
-        self.stats['total_opportunities'] += len(results['all_opportunities'])
-        self.stats['total_viable'] += len(results['viable_opportunities'])
+        self.stats['total_opportunities'] += len(arb_paths)
+        self.stats['total_viable'] += len([a for a in arb_paths if a.expected_profit_bps >= 50])
         
-        if results['viable_opportunities']:
-            best = max(o.expected_profit for o in results['viable_opportunities'])
-            self.stats['best_profit'] = max(self.stats['best_profit'], best)
+        # Track by strategy
+        for arb in arb_paths:
+            strategy_key = arb.path_type.value
+            if strategy_key in self.stats['strategies_used']:
+                self.stats['strategies_used'][strategy_key] += 1
+        
+        if arb_paths:
+            best_profit_bps = max(a.expected_profit_bps for a in arb_paths)
+            # Estimate USD (assuming $1000 trade)
+            best_profit_usd = (best_profit_bps / 10000) * 1000
+            self.stats['best_profit'] = max(self.stats['best_profit'], best_profit_usd)
         
         # Display results
-        logger.info("=" * 60)
-        logger.info("📊 SCAN RESULTS")
-        logger.info("=" * 60)
-        
-        stats = results['summary_stats']
-        
-        logger.info(f"⏱️  Scan completed in {results['scan_time_ms']:.2f}ms")
-        logger.info(f"   Total opportunities: {stats['total_scanned']}")
-        logger.info(f"   Viable opportunities: {stats['total_viable']}")
-        logger.info(f"   Viable rate: {stats['viable_rate']:.1f}%")
-        
-        if stats['total_viable'] > 0:
-            logger.info(f"   Total profit: ${stats['total_profit']:.2f}")
-            logger.info(f"   Avg profit: ${stats['avg_profit']:.2f}")
-            logger.info(f"   Best profit: ${stats['best_profit']:.2f}")
-            
-            logger.info("")
-            logger.info("🏆 TOP 5 OPPORTUNITIES:")
-            
-            for i, opp in enumerate(results['viable_opportunities'][:5], 1):
-                logger.info(f"   {i}. {opp.pool_name}: ${opp.expected_profit:.2f} ({opp.tier.value})")
-        else:
-            logger.info("⚠️  No viable opportunities found")
-            logger.info(f"   Min profit: ${self.config['min_profit_usd']}")
+        self._display_results(arb_paths, scan_time_ms)
         
         return results
     
-    def continuous_monitoring(self, interval_seconds: int = 30):
-        """Continuous monitoring with validation"""
+    def _format_results(self, arb_paths: List, scan_time_ms: float, gas_cost: float) -> Dict:
+        """Format arbitrage paths into results dict"""
         
-        logger.info("=" * 60)
-        logger.info("🔄 ALLMIGHT CONTINUOUS MONITORING V3")
-        logger.info("=" * 60)
+        viable_paths = [a for a in arb_paths if a.expected_profit_bps >= 50]  # 0.5% minimum
+        
+        return {
+            'arb_paths': arb_paths,
+            'viable_paths': viable_paths,
+            'scan_time_ms': scan_time_ms,
+            'gas_cost': gas_cost,
+            'summary_stats': {
+                'total_scanned': len(arb_paths),
+                'total_viable': len(viable_paths),
+                'viable_rate': (len(viable_paths) / len(arb_paths) * 100) if arb_paths else 0,
+                'best_profit_bps': max((a.expected_profit_bps for a in arb_paths), default=0),
+                'strategies_found': {
+                    'cross_dex': len([a for a in arb_paths if a.path_type == ArbType.CROSS_DEX]),
+                    'triangle': len([a for a in arb_paths if a.path_type == ArbType.TRIANGLE]),
+                    'multi_hop': len([a for a in arb_paths if a.path_type == ArbType.MULTI_HOP]),
+                    'same_dex': len([a for a in arb_paths if a.path_type == ArbType.SAME_DEX_FEE]),
+                    'stablecoin': len([a for a in arb_paths if a.path_type == ArbType.STABLECOIN_DEPEG])
+                }
+            }
+        }
+    
+    def _display_results(self, arb_paths: List, scan_time_ms: float):
+        """Display scan results"""
+        
+        logger.info("=" * 70)
+        logger.info("📊 SCAN RESULTS")
+        logger.info("=" * 70)
+        
+        logger.info(f"⏱️  Scan completed in {scan_time_ms:.2f}ms")
+        logger.info(f"   Total opportunities: {len(arb_paths)}")
+        
+        if not arb_paths:
+            logger.info("⚠️  No arbitrage opportunities found")
+            logger.info(f"   This is normal - markets are efficient most of the time")
+            return
+        
+        # Group by strategy
+        by_strategy = {}
+        for arb in arb_paths:
+            strategy = arb.path_type.value
+            if strategy not in by_strategy:
+                by_strategy[strategy] = []
+            by_strategy[strategy].append(arb)
+        
+        logger.info("")
+        logger.info("📈 By Strategy:")
+        for strategy, opps in by_strategy.items():
+            avg_profit = sum(a.expected_profit_bps for a in opps) / len(opps)
+            logger.info(f"   {strategy.upper()}: {len(opps)} opportunities (avg: {avg_profit:.1f} bps)")
+        
+        # Show top 10 opportunities
+        sorted_paths = sorted(arb_paths, key=lambda x: x.expected_profit_bps, reverse=True)
+        top_paths = sorted_paths[:10]
+        
+        logger.info("")
+        logger.info("🏆 TOP 10 OPPORTUNITIES:")
+        logger.info("")
+        
+        for i, arb in enumerate(top_paths, 1):
+            tokens_path = " → ".join(arb.tokens)
+            profit_pct = arb.expected_profit_bps / 100
+            
+            logger.info(f"   {i}. [{arb.path_type.value.upper()}] {tokens_path}")
+            logger.info(f"      Profit: {arb.expected_profit_bps:.1f} bps ({profit_pct:.2f}%)")
+            logger.info(f"      DEXs: {' → '.join(arb.dexs)}")
+            logger.info(f"      Complexity: {arb.execution_complexity} swaps")
+            logger.info("")
+    
+    def continuous_monitoring(self, interval_seconds: int = 30):
+        """Continuous monitoring with advanced detection"""
+        
+        logger.info("=" * 70)
+        logger.info("🔄 ALLMIGHT CONTINUOUS MONITORING V4")
+        logger.info("=" * 70)
         logger.info(f"Scan interval: {interval_seconds} seconds")
-        logger.info(f"Min profit: ${self.config['min_profit_usd']}")
+        logger.info(f"Advanced detection: ENABLED (5 strategies)")
         logger.info(f"Discord: {'Enabled' if self.discord_enabled else 'Disabled'}")
-        logger.info(f"✅ Price Validation: ENABLED")
         logger.info("Press Ctrl+C to stop")
         
         scan_count = 0
@@ -426,10 +407,8 @@ class AllmightScannerV3:
                 
                 results = self.scan_once()
                 
-                if results:
-                    self.send_discord_notifications(results, scan_count)
-                elif results is None:
-                    logger.warning("⚠️  Scan skipped due to validation failure or no data")
+                if results is None:
+                    logger.warning("⚠️  Scan skipped")
                 
                 logger.info(f"⏳ Next scan in {interval_seconds} seconds...")
                 time.sleep(interval_seconds)
@@ -443,23 +422,30 @@ class AllmightScannerV3:
         
         runtime = time.time() - self.stats['start_time']
         
-        logger.info("=" * 60)
+        logger.info("=" * 70)
         logger.info("📊 SESSION SUMMARY")
-        logger.info("=" * 60)
+        logger.info("=" * 70)
         logger.info(f"Runtime: {runtime/60:.1f} minutes")
         logger.info(f"Total scans: {self.stats['total_scans']}")
         logger.info(f"Validation failures: {self.stats['validation_failures']}")
         logger.info(f"Total opportunities: {self.stats['total_opportunities']}")
-        logger.info(f"Viable: {self.stats['total_viable']}")
+        logger.info(f"Viable opportunities: {self.stats['total_viable']}")
         logger.info(f"Best profit: ${self.stats['best_profit']:.2f}")
+        
+        logger.info("")
+        logger.info("📈 Opportunities by Strategy:")
+        for strategy, count in self.stats['strategies_used'].items():
+            if count > 0:
+                logger.info(f"   {strategy.upper()}: {count}")
         
         if self.stats['total_scans'] > 0:
             success_rate = ((self.stats['total_scans'] - self.stats['validation_failures']) / self.stats['total_scans']) * 100
-            logger.info(f"Validation success rate: {success_rate:.1f}%")
+            logger.info("")
+            logger.info(f"✅ Validation success rate: {success_rate:.1f}%")
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Allmight Scanner V3 with Price Validation')
+    parser = argparse.ArgumentParser(description='Allmight Scanner V4 - Advanced Multi-Strategy')
     parser.add_argument('--mode', choices=['scan-once', 'continuous'], default='scan-once')
     parser.add_argument('--interval', type=int, default=30)
     parser.add_argument('--min-profit', type=float, default=10.0)
@@ -470,10 +456,11 @@ def main():
         'min_profit_usd': args.min_profit,
         'max_slippage_pct': 0.5,
         'max_pool_utilization': 0.01,
-        'batch_size': 5
+        'batch_size': 5,
+        'enable_advanced_detection': True
     }
     
-    scanner = AllmightScannerV3(config)
+    scanner = AllmightScannerV4(config)
     
     if args.mode == 'scan-once':
         scanner.scan_once()
