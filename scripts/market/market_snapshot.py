@@ -19,7 +19,7 @@ from dataclasses import dataclass, asdict
 from typing import Dict, Optional
 import json
 
-from market_types import TokenRef, MarketType, STANDARD_NOTIONAL_TIERS
+from .market_types import TokenRef, MarketType, STANDARD_NOTIONAL_TIERS
 
 
 @dataclass
@@ -36,51 +36,49 @@ class MarketSnapshotV1:
     """
     
     # ===== IDENTIFIERS =====
-    ts_ms: int                    # Epoch milliseconds
-    chain_id: str                 # e.g., "eth", "base", "arb", "sol"
-    venue_id: str                 # e.g., "uniswap_v3", "raydium", "phoenix"
-    market_id: str                # Stable ID (pool address, pair id, orderbook address)
-    market_type: MarketType       # AMM | CLMM | ORDERBOOK | VAULT
+    ts_ms: int
+    chain_id: str
+    venue_id: str
+    market_id: str
+    market_type: MarketType
     
     # ===== TOKENS =====
-    base_token: TokenRef          # Token being quoted
-    quote_token: TokenRef         # Token used for pricing
+    base_token: TokenRef
+    quote_token: TokenRef
     
     # ===== PRICING (TIERED) =====
-    # Key: Effective prices at different notional sizes
-    # Includes fees + price impact
-    mid_px: float                           # Mid price (orderbook mid or AMM mid)
-    buy_px_1k: float                        # Effective price to buy $1k of base
-    sell_px_1k: float                       # Effective price to sell $1k of base
-    buy_px_5k: float                        # Effective price to buy $5k of base
-    sell_px_5k: float                       # Effective price to sell $5k of base
-    buy_px_10k: float                       # Effective price to buy $10k of base
-    sell_px_10k: float                      # Effective price to sell $10k of base
+    mid_px: float
+    buy_px_1k: float
+    sell_px_1k: float
+    buy_px_5k: float
+    sell_px_5k: float
+    buy_px_10k: float
+    sell_px_10k: float
     
     # ===== SPREADS & SLIPPAGE =====
-    spread_bps_1k: float                    # Spread at $1k tier (bps)
-    slippage_bps_1k: float                  # Slippage vs mid at $1k
-    slippage_bps_5k: float                  # Slippage vs mid at $5k
-    slippage_bps_10k: float                 # Slippage vs mid at $10k
+    spread_bps_1k: float
+    slippage_bps_1k: float
+    slippage_bps_5k: float
+    slippage_bps_10k: float
     
     # ===== LIQUIDITY & DEPTH =====
-    depth_usd_1pct: float                   # Liquidity within ±1% of mid
-    tvl_usd: Optional[float] = None         # Total value locked (if available)
-    volume_usd_24h: Optional[float] = None  # 24h volume (if available)
+    depth_usd_1pct: float
     
     # ===== COSTS & LATENCY =====
-    swap_fee_bps: float                     # Venue swap fee
-    gas_cost_usd: float                     # Estimated gas cost in USD
-    latency_ms_est: int                     # Estimated execution latency
+    swap_fee_bps: float
+    gas_cost_usd: float
+    latency_ms_est: int
     
-    # ===== QUALITY & COMPETITION =====
-    auth_score: Optional[float] = None             # Volume authenticity score (0-10)
-    recent_tx_count_60s: Optional[int] = None      # Recent transaction count
-    competition_density: Optional[float] = None    # Competition estimate (0-1)
+    # ===== OPTIONAL FIELDS (MUST BE LAST) =====
+    tvl_usd: Optional[float] = None
+    volume_usd_24h: Optional[float] = None
+    auth_score: Optional[float] = None
+    recent_tx_count_60s: Optional[int] = None
+    competition_density: Optional[float] = None
     
     def __post_init__(self):
         """Validate invariants on construction"""
-        from market_validate import validate_snapshot
+        from .market_validate import validate_snapshot
         validate_snapshot(self)
     
     def to_dict(self, stable_keys: bool = True) -> Dict:

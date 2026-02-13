@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import List, Optional, Iterator
 import logging
 
-from market_snapshot import MarketSnapshotV1
+from .market_snapshot import MarketSnapshotV1
 
 logger = logging.getLogger('Allmight.MarketStorage')
 
@@ -162,7 +162,7 @@ class MarketStorage:
                     continue
                 
                 try:
-                    from market_snapshot import create_snapshot_from_json
+                    from .market_snapshot import create_snapshot_from_json
                     snapshot = create_snapshot_from_json(line)
                     snapshots.append(snapshot)
                 except Exception as e:
@@ -235,7 +235,7 @@ class MarketStorage:
                     continue
                 
                 try:
-                    from market_snapshot import create_snapshot_from_json
+                    from .market_snapshot import create_snapshot_from_json
                     snapshot = create_snapshot_from_json(line)
                     yield snapshot
                 except Exception as e:

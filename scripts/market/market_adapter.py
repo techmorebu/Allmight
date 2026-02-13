@@ -13,8 +13,8 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 import logging
 
-from market_types import MarketRef, STANDARD_NOTIONAL_TIERS
-from market_snapshot import MarketSnapshotV1
+from .market_types import MarketRef, STANDARD_NOTIONAL_TIERS
+from .market_snapshot import MarketSnapshotV1
 
 logger = logging.getLogger('Allmight.MarketAdapter')
 
