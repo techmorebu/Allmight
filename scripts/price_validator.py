@@ -205,13 +205,13 @@ class PriceValidator:
         }
         
         # Extract price data
-        uniswap_data = data.get('uniswapV3Fetcher', {}).get('data', {}).get('data', {})
-        sushiswap_data = data.get('sushiswapFetcher', {}).get('data', {}).get('data', {})        
+        uniswap_data = fetcher_data.get('uniswapV3Fetcher', {}).get('data', {}).get('data', {})
+        sushiswap_data = fetcher_data.get('sushiswapFetcher', {}).get('data', {}).get('data', {})
         
         # Handle double-nested data structure
-        uniswap_prices = uniswap_data.get('data', {}).get('data', {}).get('prices', [])
-        sushiswap_prices = sushiswap_data.get('data', {}).get('data', {}).get('prices', [])
-        
+        uniswap_prices = uniswap_data.get('prices', [])
+        sushiswap_prices = sushiswap_data.get('prices', [])
+
         if not uniswap_prices and not sushiswap_prices:
             result['valid'] = False
             result['critical_errors'].append("No price data available")
