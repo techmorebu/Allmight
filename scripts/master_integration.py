@@ -156,7 +156,7 @@ class AllmightScannerV3:
         gas_cost = gas_data.get('data', {}).get('thresholds', {}).get('flashLoanTriangle', {}).get('fast', {}).get('gasCostUSD', 2.0)
         
         # === UNISWAP V3 ===
-        uniswap_data = data.get('uniswapV3Fetcher', {}).get('data', {})
+        uniswap_data = data.get('uniswapV3Fetcher', {}).get('data', {}).get('data', {})
         
         if 'prices' in uniswap_data:
             for price_data in uniswap_data['prices']:
@@ -176,7 +176,7 @@ class AllmightScannerV3:
                 })
         
         # === SUSHISWAP ===
-        sushiswap_data = data.get('sushiswapFetcher', {}).get('data', {})
+        sushiswap_data = data.get('sushiswapFetcher', {}).get('data', {}).get('data', {})
         
         if 'prices' in sushiswap_data:
             for price_data in sushiswap_data['prices']:
