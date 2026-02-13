@@ -22,6 +22,14 @@ from typing import Dict, List, Optional, Tuple
 # Add scripts directory
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+# Load price validator
+try:
+    from price_validator import PriceValidator
+    print("✅ Loaded PriceValidator")
+except Exception as e:
+    print(f"❌ Failed to load PriceValidator: {e}")
+    sys.exit(1)
+
 # Load unified optimizer
 try:
     with open(os.path.join(os.path.dirname(__file__), 'unified_smart_optimizer.py'), 'r') as f:
@@ -71,6 +79,17 @@ class AllmightScannerV3:
         
         self.optimizer = UnifiedSmartOptimizer(self.config)
         self.discord_formatter = DiscordFormatterV2() if DiscordFormatterV2 else None
+        
+        # Initialize price validator
+        validator_config = {
+            'eth_price_tolerance_bps': 200,  # 2% tolerance
+            'cross_dex_spread_max_bps': 500,  # 5% max cross-DEX spread
+            'wbtc_eth_ratio_min': 20,
+            'wbtc_eth_ratio_max': 50,
+            'stablecoin_peg_tolerance_bps': 100,  # 1%
+            'min_major_pair_tvl': 1_000_000  # $1M minimum
+        }
+        self.validator = PriceValidator(validator_config)
         
         # Discord settings
         self.discord_enabled = os.getenv('DISCORD_NOTIFICATIONS_ENABLED', 'false').lower() == 'true'
@@ -192,7 +211,45 @@ class AllmightScannerV3:
                                 'pool_liquidity': pool.get('tvlUSD', 150_000_000),
                                 'source': 'curve'
                             })
+        def scan_and_analyze(self) -> Dict:
+        """Scan for opportunities with full analysis"""
         
+        # Load fetcher data
+        fetcher_data = self.load_fetcher_data()
+        
+        # ===== ADD THIS VALIDATION BLOCK =====
+        # CRITICAL: Validate prices before analyzing
+        logger.info("🔍 Validating price data...")
+        validation_result = self.validator.run_validation(fetcher_data)
+        
+        if not validation_result['valid']:
+            logger.error("❌ VALIDATION FAILED - Aborting scan")
+            logger.error("Critical errors:")
+            for error in validation_result['critical_errors']:
+                logger.error(f"   ❌ {error}")
+            
+            return {
+                'status': 'validation_failed',
+                'validation_result': validation_result,
+                'all_opportunities': [],
+                'viable_opportunities': [],
+                'execution_batches': [],
+                'summary_stats': {
+                    'total_scanned': 0,
+                    'total_viable': 0,
+                    'total_profit': 0,
+                    'best_profit': 0,
+                    'viable_rate': 0
+                },
+                'scan_time_ms': 0
+            }
+        
+        logger.info("✅ Price validation PASSED")
+        # ===== END VALIDATION BLOCK =====
+        
+        # Extract markets (existing code continues...)
+        markets = self.extract_markets(fetcher_data)
+        ...
         # === CROSS-DEX ARBITRAGE ===
         # Calculate real spreads between Uniswap and Sushiswap
         cross_dex_markets = self._find_cross_dex_opportunities()
