@@ -48,7 +48,7 @@ class AdvancedArbDetector:
         self.config = config or {}
         
         # Detection thresholds
-        self.min_profit_bps = self.config.get('min_profit_bps', 1)  # 0.1% minimum
+        self.min_profit_bps = self.config.get('min_profit_bps', 10)  # 0.1% minimum
         self.max_hops = self.config.get('max_hops', 4)  # Max path length
         self.min_liquidity = self.config.get('min_liquidity', 10_000)  # $10k minimum
         
