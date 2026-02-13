@@ -205,8 +205,8 @@ class PriceValidator:
         }
         
         # Extract price data
-        uniswap_data = fetcher_data.get('uniswap_v3', {})
-        sushiswap_data = fetcher_data.get('sushiswap', {})
+        uniswap_data = fetcher_data.get('uniswapV3Fetcher', {})
+        sushiswap_data = fetcher_data.get('sushiswapFetcher', {})
         
         uniswap_prices = uniswap_data.get('data', {}).get('prices', [])
         sushiswap_prices = sushiswap_data.get('data', {}).get('prices', [])
