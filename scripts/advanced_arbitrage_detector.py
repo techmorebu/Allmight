@@ -335,7 +335,17 @@ class AdvancedArbDetector:
                         
                         # Only profitable if spread > fees
                         if net_profit_bps >= self.min_profit_bps:
-        
+                            opportunities.append(ArbPath(
+                                path_type=ArbType.CROSS_DEX,
+                                tokens=[token0, token1, token0],
+                                dexs=[buy_route['dex'], sell_route['dex']],
+                                pools=[buy_route['pool'], sell_route['pool']],
+                                prices=[buy_price, sell_price],
+                                fees=[buy_route['fee'], sell_route['fee']],
+                                expected_profit_bps=net_profit_bps,
+                                execution_complexity=2,
+                                description=f"Buy {token0}/{token1} on {buy_route['dex']}, sell on {sell_route['dex']}"
+                            ))
         return opportunities
     
     def _find_triangle_arbitrage(self) -> List[ArbPath]:
