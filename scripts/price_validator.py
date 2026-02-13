@@ -208,8 +208,9 @@ class PriceValidator:
         uniswap_data = fetcher_data.get('uniswapV3Fetcher', {})
         sushiswap_data = fetcher_data.get('sushiswapFetcher', {})
         
-        uniswap_prices = uniswap_data.get('data', {}).get('prices', [])
-        sushiswap_prices = sushiswap_data.get('data', {}).get('prices', [])
+        # Handle double-nested data structure
+        uniswap_prices = uniswap_data.get('data', {}).get('data', {}).get('prices', [])
+        sushiswap_prices = sushiswap_data.get('data', {}).get('data', {}).get('prices', [])
         
         if not uniswap_prices and not sushiswap_prices:
             result['valid'] = False
