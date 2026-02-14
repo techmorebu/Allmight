@@ -16,7 +16,7 @@ import hashlib
 from pathlib import Path
 from typing import Dict, List, Optional, Literal, Any
 from dataclasses import dataclass, asdict
-from datetime import datetime
+from datetime import datetime, timezone
 import logging
 
 logger = logging.getLogger('Allmight.Telemetry')
@@ -175,7 +175,7 @@ class TelemetryLogger:
         # Generate run_id if not provided
         if run_id is None:
             # Format: P24_YYYYMMDD_HHMMSS
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
             self.run_id = f"P24_{now.strftime('%Y%m%d_%H%M%S')}"
         else:
             self.run_id = run_id
@@ -184,7 +184,7 @@ class TelemetryLogger:
     
     def _get_file_path(self, namespace: str) -> Path:
         """Get JSONL file path for namespace"""
-        today = datetime.utcnow().strftime('%Y%m%d')
+        today = datetime.now(timezone.utc).strftime('%Y%m%d')
         file_path = self.base_dir / today / f"{namespace}.jsonl"
         
         # Create directory if needed
@@ -538,5 +538,5 @@ if __name__ == '__main__':
         max_gas_wei=0
     )
     
-    print(f"\n✅ Telemetry logged to: data/telemetry/{datetime.utcnow().strftime('%Y%m%d')}/")
+    print(f"\n✅ Telemetry logged to: data/telemetry/{datetime.now(timezone.utc).strftime('%Y%m%d')}/")
     print("Check pipeline_events.jsonl and preflight_results.jsonl")
