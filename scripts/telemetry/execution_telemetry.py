@@ -59,6 +59,9 @@ class TelemetryEvent:
     block_ref: int
     block_target: Optional[int] = None
     
+    # Schema version (required for governance - default at end)
+    schema_version: int = 1
+    
     def to_jsonl(self) -> str:
         """
         Convert to JSONL line (deterministic)
@@ -67,8 +70,16 @@ class TelemetryEvent:
         - Stable key ordering (sorted)
         - Consistent numeric precision
         - No trailing newline (caller adds)
+        - schema_version always injected (governance)
         """
         data = asdict(self)
+        
+        # Inject schema_version if absent (belt-and-suspenders)
+        data.setdefault("schema_version", 1)
+        
+        # Ensure event_type exists (should come from subclasses)
+        if "event_type" not in data:
+            data["event_type"] = "UNKNOWN_EVENT_TYPE"
         
         # Remove None values for cleaner output
         data = {k: v for k, v in data.items() if v is not None}
@@ -160,6 +171,32 @@ class InclusionResultEvent(TelemetryEvent):
     net_profit_wei_real: Optional[int] = None
 
 
+# ===== TELEMETRY WARNING EVENT =====
+
+@dataclass
+class TelemetryWarningEvent(TelemetryEvent):
+    """Telemetry warning/error event for validation and anomalies"""
+    event_type: str = "TELEMETRY_WARNING"
+    
+    severity: Literal["INFO", "WARN", "ERROR"] = "WARN"
+    subsystem: str = ""
+    code_namespace: str = ""
+    
+    warning_codes: List[str] = None
+    error_codes: List[str] = None
+    ok: bool = True
+    
+    # Optional small scalar context only
+    context: Optional[Dict[str, Any]] = None
+    
+    def __post_init__(self):
+        """Ensure codes are lists (not None)"""
+        if self.warning_codes is None:
+            self.warning_codes = []
+        if self.error_codes is None:
+            self.error_codes = []
+
+
 # ===== TELEMETRY LOGGER =====
 
 class TelemetryLogger:
@@ -200,8 +237,9 @@ class TelemetryLogger:
             event: TelemetryEvent to log
             namespace: File namespace (e.g., 'pipeline_events', 'preflight_results')
         """
-        # Ensure run_id is set
-        event.run_id = self.run_id
+        # Ensure run_id is set (if event has the field)
+        if hasattr(event, 'run_id'):
+            event.run_id = self.run_id
         
         # Get file path
         file_path = self._get_file_path(namespace)
@@ -480,6 +518,69 @@ class StageTimer:
         
         # Don't suppress exceptions
         return False
+
+    def emit_warning(
+        self,
+        *,
+        subsystem: str,
+        code_namespace: str,
+        warning_codes: Optional[List[str]] = None,
+        error_codes: Optional[List[str]] = None,
+        chain_id: Optional[str] = None,
+        venue_id: Optional[str] = None,
+        market_id: Optional[str] = None,
+        route_id: Optional[str] = None,
+        opportunity_id: Optional[str] = None,
+        block_ref: Optional[int] = None,
+        block_target: Optional[int] = None,
+        notional_usd: Optional[float] = None,
+        context: Optional[Dict[str, Any]] = None,
+    ):
+        """
+        Emit TELEMETRY_WARNING event
+        
+        Canonical schema with sorted codes and severity/ok rules
+        """
+        # Normalize + determinism (sorted unique)
+        warning_codes = sorted(set([c for c in (warning_codes or []) if c]))
+        error_codes = sorted(set([c for c in (error_codes or []) if c]))
+        
+        # Do not emit empty warnings
+        if not warning_codes and not error_codes:
+            return
+        
+        # Severity/ok rules (canonical)
+        if error_codes:
+            severity = "ERROR"
+            ok = False
+        else:
+            severity = "WARN"
+            ok = True
+        
+        evt = TelemetryWarningEvent(
+            ts_ms=int(time.time() * 1000),
+            run_id=self.run_id,
+            
+            # Identity (use empty strings if None)
+            opportunity_id=opportunity_id or "",
+            chain_id=chain_id or "",
+            venue_id=venue_id or "",
+            market_id=market_id or "",
+            route_id=route_id or "",
+            notional_usd=float(notional_usd) if notional_usd is not None else 0.0,
+            block_ref=int(block_ref) if block_ref is not None else 0,
+            block_target=block_target,
+            
+            severity=severity,
+            subsystem=subsystem,
+            code_namespace=code_namespace,
+            warning_codes=warning_codes,
+            error_codes=error_codes,
+            ok=ok,
+            context=context,
+        )
+        
+        self.log_event(evt, "telemetry_warnings")
 
 
 # ===== DEMO/TEST =====
