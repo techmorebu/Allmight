@@ -60,3 +60,4 @@ data/telemetry/
 *.sqlite3
 *.db
 .pgpass
+scripts/telemetry/*.backup*
