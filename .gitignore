@@ -51,3 +51,12 @@ data/snapshots/
 nohup.out
 data/snapshots/
 nohup.out
+
+# Phase 2.4.0 - Telemetry runtime data
+data/telemetry/
+.env
+*.env
+*.sqlite
+*.sqlite3
+*.db
+.pgpass
