@@ -2,60 +2,80 @@
 """
 MarketSnapshot Validation - Invariant enforcement
 
-Validates all MarketSnapshot invariants:
-- Non-empty IDs
-- Non-negative prices
-- Tiered price sanity
-- Numeric bounds
-- Token decimal limits
+Validates all MarketSnapshot invariants with structured results for telemetry.
 
 Author: Allmight System
-Phase: 2.3A - Market Inefficiency Profiler
+Phase: 2.4.0 - Telemetry Integration (Refactored)
 """
 
 from typing import List, Optional
+from dataclasses import dataclass
 import logging
 
 logger = logging.getLogger('Allmight.MarketValidation')
 
 
 class ValidationError(Exception):
-    """Raised when snapshot violates invariants"""
+    """Raised when snapshot violates invariants (backward compatibility)"""
     pass
 
 
-def validate_snapshot(snapshot) -> None:
+@dataclass
+class ValidationResult:
+    """
+    Structured validation result
+    
+    Fields:
+        ok: True if snapshot usable (no hard errors)
+        warnings: List of warning codes (sorted, unique)
+        errors: List of error codes (sorted, unique)
+    """
+    ok: bool
+    warnings: List[str]
+    errors: List[str]
+
+
+def validate_snapshot(snapshot) -> ValidationResult:
     """
     Validate all invariants for MarketSnapshotV1
     
-    Raises:
-        ValidationError: If any invariant is violated
+    Returns:
+        ValidationResult with ok, warnings, errors
+        
+    Note: Does NOT raise. Returns structured result for telemetry.
     """
     errors = []
+    warnings = []
+    
+    # Null check
+    if snapshot is None:
+        return ValidationResult(
+            ok=False,
+            warnings=[],
+            errors=["ERR_SNAPSHOT_NULL"]
+        )
     
     # === IDENTIFIER VALIDATION ===
     if not snapshot.chain_id:
-        errors.append("chain_id cannot be empty")
+        errors.append("ERR_CHAIN_ID_EMPTY")
     
     if not snapshot.venue_id:
-        errors.append("venue_id cannot be empty")
+        errors.append("ERR_VENUE_ID_EMPTY")
     
     if not snapshot.market_id:
-        errors.append("market_id cannot be empty")
+        errors.append("ERR_MARKET_ID_EMPTY")
     
     if snapshot.ts_ms <= 0:
-        errors.append(f"ts_ms must be positive, got {snapshot.ts_ms}")
+        errors.append("ERR_TS_NONPOSITIVE")
     
     # === TOKEN VALIDATION ===
-    # TokenRef validates itself in __post_init__, but double-check
     if not snapshot.base_token.symbol:
-        errors.append("base_token.symbol cannot be empty")
+        errors.append("ERR_BASE_SYMBOL_EMPTY")
     
     if not snapshot.quote_token.symbol:
-        errors.append("quote_token.symbol cannot be empty")
+        errors.append("ERR_QUOTE_SYMBOL_EMPTY")
     
     # === PRICE VALIDATION ===
-    # All prices must be non-negative
     price_fields = [
         ('mid_px', snapshot.mid_px),
         ('buy_px_1k', snapshot.buy_px_1k),
@@ -68,31 +88,24 @@ def validate_snapshot(snapshot) -> None:
     
     for field_name, price in price_fields:
         if price < 0:
-            errors.append(f"{field_name} cannot be negative, got {price}")
-        if price > 1e15:  # Sanity check for absurdly large prices
-            errors.append(f"{field_name} exceeds reasonable bounds: {price}")
+            errors.append(f"ERR_{field_name.upper()}_NEGATIVE")
+        if price > 1e15:
+            errors.append(f"ERR_{field_name.upper()}_OUT_OF_RANGE")
     
-    # Mid price should generally be positive (unless this is a dead market)
+    # Mid price zero is warning (dead market)
     if snapshot.mid_px == 0:
-        logger.warning(f"Market {snapshot.market_id} has mid_px = 0 (dead market?)")
+        warnings.append("WARN_MIDPX_ZERO")
     
     # === TIERED PRICE SANITY ===
     # Buy prices should increase with size (more slippage)
     if not (snapshot.buy_px_1k <= snapshot.buy_px_5k <= snapshot.buy_px_10k):
-        errors.append(
-            f"Buy prices should increase with size: "
-            f"1k={snapshot.buy_px_1k}, 5k={snapshot.buy_px_5k}, 10k={snapshot.buy_px_10k}"
-        )
+        errors.append("ERR_BUY_MONOTONICITY")
     
     # Sell prices should decrease with size (more slippage)
     if not (snapshot.sell_px_1k >= snapshot.sell_px_5k >= snapshot.sell_px_10k):
-        errors.append(
-            f"Sell prices should decrease with size: "
-            f"1k={snapshot.sell_px_1k}, 5k={snapshot.sell_px_5k}, 10k={snapshot.sell_px_10k}"
-        )
+        errors.append("ERR_SELL_MONOTONICITY")
     
-    # Buy price should be >= sell price (spread exists)
-    # If violated, this is an anomaly (potential arb or data error)
+    # Buy price < sell price is anomaly (potential arb or data error)
     tier_checks = [
         (1000, snapshot.buy_px_1k, snapshot.sell_px_1k),
         (5000, snapshot.buy_px_5k, snapshot.sell_px_5k),
@@ -101,93 +114,103 @@ def validate_snapshot(snapshot) -> None:
     
     for tier, buy, sell in tier_checks:
         if buy < sell:
-            # This is suspicious but not necessarily invalid
-            # Could be cross-DEX opportunity or stale data
-            logger.warning(
-                f"ANOMALY: {snapshot.market_id} tier {tier}: "
-                f"buy_px ({buy}) < sell_px ({sell}) - potential arbitrage or data error"
-            )
+            warnings.append(f"WARN_BUY_LT_SELL_{tier}")
     
     # === SPREAD & SLIPPAGE VALIDATION ===
     if snapshot.spread_bps_1k < 0:
-        errors.append(f"spread_bps_1k cannot be negative: {snapshot.spread_bps_1k}")
+        errors.append("ERR_SPREAD_NEGATIVE")
     
-    # Spread should be reasonable (<10000 bps = 100%)
     if snapshot.spread_bps_1k > 10000:
-        logger.warning(f"Very large spread: {snapshot.spread_bps_1k} bps")
+        warnings.append("WARN_SPREAD_EXTREME")
     
     # Slippage checks
-    slippage_fields = [
-        ('slippage_bps_1k', snapshot.slippage_bps_1k),
-        ('slippage_bps_5k', snapshot.slippage_bps_5k),
-        ('slippage_bps_10k', snapshot.slippage_bps_10k),
-    ]
+    if snapshot.slippage_bps_1k < 0:
+        errors.append("ERR_SLIPPAGE_1K_NEGATIVE")
+    if snapshot.slippage_bps_5k < 0:
+        errors.append("ERR_SLIPPAGE_5K_NEGATIVE")
+    if snapshot.slippage_bps_10k < 0:
+        errors.append("ERR_SLIPPAGE_10K_NEGATIVE")
     
-    for field_name, slippage in slippage_fields:
-        if slippage < 0:
-            errors.append(f"{field_name} cannot be negative: {slippage}")
-        if slippage > 10000:  # >100% slippage is very suspicious
-            logger.warning(f"Extreme slippage in {field_name}: {slippage} bps")
+    if snapshot.slippage_bps_1k > 10000:
+        warnings.append("WARN_SLIPPAGE_1K_EXTREME")
+    if snapshot.slippage_bps_5k > 10000:
+        warnings.append("WARN_SLIPPAGE_5K_EXTREME")
+    if snapshot.slippage_bps_10k > 10000:
+        warnings.append("WARN_SLIPPAGE_10K_EXTREME")
     
     # Slippage should increase with size
     if not (snapshot.slippage_bps_1k <= snapshot.slippage_bps_5k <= snapshot.slippage_bps_10k):
-        logger.warning(
-            f"Slippage should increase with size: "
-            f"1k={snapshot.slippage_bps_1k}, 5k={snapshot.slippage_bps_5k}, "
-            f"10k={snapshot.slippage_bps_10k}"
-        )
+        warnings.append("WARN_SLIPPAGE_NON_MONOTONIC")
     
     # === LIQUIDITY VALIDATION ===
     if snapshot.depth_usd_1pct < 0:
-        errors.append(f"depth_usd_1pct cannot be negative: {snapshot.depth_usd_1pct}")
+        errors.append("ERR_DEPTH_NEGATIVE")
     
     if snapshot.tvl_usd is not None and snapshot.tvl_usd < 0:
-        errors.append(f"tvl_usd cannot be negative: {snapshot.tvl_usd}")
+        errors.append("ERR_TVL_NEGATIVE")
     
     if snapshot.volume_usd_24h is not None and snapshot.volume_usd_24h < 0:
-        errors.append(f"volume_usd_24h cannot be negative: {snapshot.volume_usd_24h}")
+        errors.append("ERR_VOLUME_NEGATIVE")
     
     # === COST VALIDATION ===
     if snapshot.swap_fee_bps < 0:
-        errors.append(f"swap_fee_bps cannot be negative: {snapshot.swap_fee_bps}")
+        errors.append("ERR_SWAP_FEE_NEGATIVE")
     
-    if snapshot.swap_fee_bps > 10000:  # >100% fee is absurd
-        errors.append(f"swap_fee_bps exceeds 100%: {snapshot.swap_fee_bps}")
+    if snapshot.swap_fee_bps > 10000:
+        errors.append("ERR_SWAP_FEE_RANGE")
     
     if snapshot.gas_cost_usd < 0:
-        errors.append(f"gas_cost_usd cannot be negative: {snapshot.gas_cost_usd}")
+        errors.append("ERR_GAS_NEGATIVE")
     
     if snapshot.latency_ms_est < 0:
-        errors.append(f"latency_ms_est cannot be negative: {snapshot.latency_ms_est}")
+        errors.append("ERR_LATENCY_NEGATIVE")
     
     # === QUALITY SCORE VALIDATION ===
     if snapshot.auth_score is not None:
         if not (0 <= snapshot.auth_score <= 10):
-            errors.append(f"auth_score must be 0-10, got {snapshot.auth_score}")
+            errors.append("ERR_AUTH_SCORE_RANGE")
     
     if snapshot.competition_density is not None:
         if not (0 <= snapshot.competition_density <= 1):
-            errors.append(
-                f"competition_density must be 0-1, got {snapshot.competition_density}"
-            )
+            errors.append("ERR_COMPETITION_RANGE")
     
     if snapshot.recent_tx_count_60s is not None:
         if snapshot.recent_tx_count_60s < 0:
-            errors.append(
-                f"recent_tx_count_60s cannot be negative: {snapshot.recent_tx_count_60s}"
-            )
+            errors.append("ERR_TX_COUNT_NEGATIVE")
     
-    # === RAISE IF ERRORS ===
-    if errors:
-        error_msg = f"MarketSnapshot validation failed ({len(errors)} errors):\n" + "\n".join(
-            f"  - {err}" for err in errors
+    # Determine ok status
+    ok = len(errors) == 0
+    
+    return ValidationResult(
+        ok=ok,
+        warnings=sorted(set(warnings)),
+        errors=sorted(set(errors))
+    )
+
+
+def validate_snapshot_strict(snapshot) -> None:
+    """
+    Backward-compatible strict validation (raises on error)
+    
+    Use this for code that expects the old behavior.
+    New code should use validate_snapshot() for structured results.
+    
+    Raises:
+        ValidationError: If any invariant is violated
+    """
+    result = validate_snapshot(snapshot)
+    
+    if not result.ok:
+        error_msg = (
+            f"MarketSnapshot validation failed ({len(result.errors)} errors):\n" +
+            "\n".join(f"  - {err}" for err in result.errors)
         )
         raise ValidationError(error_msg)
 
 
 def validate_snapshots_batch(snapshots: List) -> List:
     """
-    Validate a batch of snapshots
+    Validate a batch of snapshots (backward compatible)
     
     Returns:
         List of valid snapshots (invalid ones are logged and skipped)
@@ -196,7 +219,7 @@ def validate_snapshots_batch(snapshots: List) -> List:
     
     for snapshot in snapshots:
         try:
-            validate_snapshot(snapshot)
+            validate_snapshot_strict(snapshot)
             valid.append(snapshot)
         except ValidationError as e:
             logger.error(f"Skipping invalid snapshot: {e}")
