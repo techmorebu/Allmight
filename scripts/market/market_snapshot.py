@@ -77,9 +77,8 @@ class MarketSnapshotV1:
     competition_density: Optional[float] = None
     
     def __post_init__(self):
-        """Validate invariants on construction"""
-        from .market_validate import validate_snapshot
-        validate_snapshot(self)
+        from .market_validate import validate_snapshot_strict
+        validate_snapshot_strict(self)
     
     def to_dict(self, stable_keys: bool = True) -> Dict:
         """
