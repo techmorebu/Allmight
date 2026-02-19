@@ -416,6 +416,62 @@ class TelemetryLogger:
         self.log_event(event, "bundle_sim_results")
 
 
+    def emit_warning(
+        self,
+        *,
+        subsystem: str,
+        code_namespace: str,
+        warning_codes = None,
+        error_codes = None,
+        chain_id = None,
+        venue_id = None,
+        market_id = None,
+        route_id = None,
+        opportunity_id = None,
+        block_ref = None,
+        block_target = None,
+        notional_usd = None,
+        context = None,
+    ):
+        """Emit TELEMETRY_WARNING event"""
+        from typing import List, Optional, Dict, Any
+        
+        warning_codes = sorted(set([c for c in (warning_codes or []) if c]))
+        error_codes = sorted(set([c for c in (error_codes or []) if c]))
+        
+        if not warning_codes and not error_codes:
+            return
+        
+        if error_codes:
+            severity = "ERROR"
+            ok = False
+        else:
+            severity = "WARN"
+            ok = True
+        
+        evt = TelemetryWarningEvent(
+            ts_ms=int(time.time() * 1000),
+            run_id=self.run_id,
+            opportunity_id=opportunity_id or "",
+            chain_id=chain_id or "",
+            venue_id=venue_id or "",
+            market_id=market_id or "",
+            route_id=route_id or "",
+            notional_usd=float(notional_usd) if notional_usd is not None else 0.0,
+            block_ref=int(block_ref) if block_ref is not None else 0,
+            block_target=block_target,
+            severity=severity,
+            subsystem=subsystem,
+            code_namespace=code_namespace,
+            warning_codes=warning_codes,
+            error_codes=error_codes,
+            ok=ok,
+            context=context,
+        )
+        
+        self.log_event(evt, "telemetry_warnings")
+
+
 # ===== OPPORTUNITY ID GENERATOR =====
 
 def generate_opportunity_id(
