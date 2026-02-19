@@ -1,235 +1,312 @@
-# PHASE 2.4.2 — ROUTE SIMULATOR SPEC (STATE-MODEL BOUNDED)
+# PHASE 2.4.2 — ROUTE SIMULATOR SPEC
 
-Status: DRAFT → IMPLEMENT
-Phase: 2.4.2
-Depends On: Phase 2.4.0 (telemetry+validation), Phase 2.4.1 (preflight)
-Governance: Determinism-first, JSONL canonical, no hidden state, replay-safe.
+**Status:** DRAFT → IMPLEMENT  
+**Phase:** 2.4.2  
+**Governance:** Deterministic simulation, no RPC calls, state-bounded
+
+---
 
 ## 0. Purpose
 
-The Route Simulator is the deterministic “expensive math” layer that simulates a candidate execution route under an explicit, bounded state model (block_ref).
+Route Simulator is the **deterministic execution model** that computes what would happen if we execute a specific route at a specific block state.
 
-It answers:
-- “What would actually happen if we execute this route at block_ref state?”
-- “What is the expected net result after fees + bounded gas?”
-- “Is the outcome robust to bounded drift (safety buffer)?”
-
-It must NOT:
-- perform network I/O
-- query RPCs
-- mutate shared state
-- depend on wall-clock timing
-- embed strategy decisions beyond deterministic simulation rules
+**Must be pure and deterministic:**
+- Same pool state + same swap → same output
+- No network I/O during simulation
+- All state inputs explicit (block_ref)
+- Reproducible results
 
 ---
 
-## 1. Inputs
+## 1. Architecture
 
-Route simulation operates on:
+### 1.1 Layered Design
 
-### 1.1 Route Definition
-A route is a sequence of legs.
+**Layer 1: Core Interfaces** (types.py, base.py)
+- Define canonical types (RouteLeg, Route, SimContext, SimResult)
+- Abstract simulator interface
 
-- `RouteLeg` (one step)
-  - `dex_type`: `V2_AMM | V3_AMM | ORDERBOOK` (orderbook later; V2+V3 first)
-  - `venue_id`
-  - `pool_id` (address or canonical ID)
-  - `token_in` (address)
-  - `token_out` (address)
-  - `fee_bps` (or fee tier identifier)
+**Layer 2A: V2 Simulator** (v2_simulator.py)
+- Constant product formula (Uniswap V2, Sushiswap)
+- Simple, fast, accurate
 
-- `Route`
-  - `route_id`
-  - `chain_id`
-  - `legs: List[RouteLeg]`
+**Layer 2B: V3 Simulator** (v3_simulator.py)
+- Tick-based math (Uniswap V3)
+- Concentrated liquidity
+- More complex, higher precision
 
-### 1.2 Simulation Context
-- `block_ref: int` (explicit)
-- `tier_usd: int` in `{1000, 5000, 10000}` (or explicit notional input)
-- `notional_in`: amount in token_in units OR USD tier translated upstream
-- `gas_model: GasModelV1` (bounded deterministic estimate)
-- `policy: SimulationPolicyV1` (buffers, caps)
-
-### 1.3 Pool State (Canonical)
-Simulation requires pool state at `block_ref` for every leg.
-
-Pool state MUST be provided as input (cached snapshot), never fetched live.
-
-- V2 pool state (minimum)
-  - `token0`, `token1`
-  - `reserve0`, `reserve1` (raw ints)
-  - `fee_bps`
-  - optional: `block_ref` as metadata
-
-- V3 pool state (minimum for approximation)
-  - `token0`, `token1`
-  - `fee_tier` (bps)
-  - `sqrtPriceX96`
-  - `tick`
-  - `liquidity`
-  - optional: `block_ref`
-
-- V3 pool state (exact tick-walk)
-  - everything above, plus
-  - initialized tick data (tick table) sufficient to walk price ranges
-  - tick spacing / bitmap representation (cached)
-
-If any required pool state is missing → deterministic failure code.
+**Layer 3: Route Composer** (route_composer.py)
+- Multi-hop routes
+- Combine legs (V2 → V3 → V2)
 
 ---
 
-## 2. Outputs
+## 2. Core Types
 
-### 2.1 SimResult
-`SimResult` MUST be fully deterministic from inputs:
+### 2.1 RouteLeg
+```python
+@dataclass
+class RouteLeg:
+    """Single swap step in a route"""
+    venue_id: str          # "uniswap_v3", "sushiswap"
+    pool_id: str           # Pool address
+    token_in: str          # Input token address
+    token_out: str         # Output token address
+    amount_in: int         # Amount in (wei)
+    fee_tier: Optional[int] # Fee tier (bps) - V3: 500/3000/10000
+    dex_type: str          # "v2" or "v3"
+```
 
-- `ok: bool`
-- `reason_code: Optional[str]` (canonical)
-- `block_ref: int`
-- `route_id: str`
-- `amount_in: int/float` (token units; deterministic representation)
-- `amount_out: int/float`
-- `gross_edge_bps: float`
-- `fee_bps_total: float`
-- `gas_cost_usd_est: float`
-- `gas_bps_est: float`
-- `net_edge_bps: float`
-- `slippage_bps_realized: float` (if derivable)
-- `price_impact_bps: float` (if derivable)
-- `notes: Optional[str]`
+### 2.2 Route
+```python
+@dataclass
+class Route:
+    """Multi-leg route"""
+    legs: List[RouteLeg]
+    chain_id: str
+    route_id: str  # Stable identifier
+```
 
-### 2.2 Telemetry
-Emit `ROUTE_SIM_RESULT` event (schema_version=1), append-only JSONL.
+### 2.3 SimContext
+```python
+@dataclass
+class SimContext:
+    """Simulation context (deterministic inputs)"""
+    block_ref: int
+    chain_id: str
+    gas_model: GasModelV1  # Bounded gas estimation
+    slippage_tolerance_bps: float = 50.0  # Max acceptable slippage
+```
 
-Required telemetry fields:
-- identity: `ts_ms`, `run_id`, `opportunity_id`, `chain_id`, `venue_id`, `market_id`, `route_id`, `notional_usd`, `block_ref`, optional `block_target`
-- payload: `ok`, `reason_code`, `net_edge_bps`, `gas_bps_est`, `slippage_bps_realized`, `amount_in`, `amount_out`
-
-Namespace suggestion:
-- `data/telemetry/YYYYMMDD/route_sim_results.jsonl`
-
----
-
-## 3. Determinism Rules (Non-Negotiable)
-
-1) No RPC calls, no mempool reads, no network I/O inside simulation.
-2) All state is explicit: route + pool_state + params.
-3) Stable floating math policy:
-   - Prefer integer math where feasible (esp. V2 reserves).
-   - If floats are used, round at fixed precision and serialize deterministically.
-4) Stable rejection/failure codes and ordering.
-5) Missing state yields deterministic failure.
-
----
-
-## 4. Canonical Failure / Reject Codes (Simulation Layer)
-
-Simulation may produce “simulation-level rejects” distinct from preflight.
-
-Minimum codes (additive only):
-- `SIM_MISSING_POOL_STATE`
-- `SIM_BAD_TOKEN_ORDER`
-- `SIM_NONPOSITIVE_INPUT`
-- `SIM_NUMERIC_OVERFLOW`
-- `SIM_UNSUPPORTED_DEX_TYPE`
-- `SIM_V3_TICKDATA_MISSING` (when exact mode requested)
-- `SIM_V3_QUOTE_FAILED`
-
-These are NOT preflight rejection codes; they are simulation failure codes.
-
----
-
-## 5. Implementation Phases
-
-## 5.1 Phase 2.4.2A — Core Interfaces
-Deliver:
-- types: `RouteLeg`, `Route`, `SimContext`, `SimResult`
-- engine entrypoint: `simulate_route(route, pool_state_map, ctx) -> SimResult`
-- deterministic failure behavior
-
-## 5.2 Phase 2.4.2B — V2 AMM Simulation (Fast Win)
-Support constant-product pools (UniswapV2/Sushi).
-
-Given:
-- reserves (token0/token1)
-- fee_bps
-
-Compute:
-- amount_out using x*y=k with fee adjustment
-- multi-leg composition by feeding output of leg i as input to leg i+1
-
-Math (conceptual):
-- amount_in_after_fee = amount_in * (1 - fee)
-- amount_out = (amount_in_after_fee * reserve_out) / (reserve_in + amount_in_after_fee)
-
-Emit:
-- realized price impact and slippage proxies where possible
-
-## 5.3 Phase 2.4.2C — V3 AMM Simulation (Required)
-
-### 5.3.1 C1: Bounded Approximation (Early Acceptable)
-Use slot0 + liquidity to approximate quote deterministically.
-No tick walking; fast and bounded.
-If approximation cannot be computed deterministically → `SIM_V3_QUOTE_FAILED`.
-
-### 5.3.2 C2: Exact Tick-Walk (Target)
-Walk initialized ticks, consuming liquidity across price ranges.
-Requires cached tick table for pool at block_ref.
-If tick data missing → `SIM_V3_TICKDATA_MISSING`.
+### 2.4 SimResult
+```python
+@dataclass
+class SimResult:
+    """Simulation outcome"""
+    ok: bool
+    gross_profit_wei: int
+    net_profit_wei: int
+    gas_used_est_wei: int
+    price_impact_bps: float
+    effective_price: float
+    
+    # Risk flags
+    revert_risk: bool
+    slippage_exceeded: bool
+    
+    # Failure info
+    failure_code: Optional[str]
+    failure_detail: Optional[str]
+```
 
 ---
 
-## 6. Gas Model (Bounded, Deterministic)
+## 3. V2 Simulator (Constant Product)
 
-Simulator MUST use a deterministic gas estimate:
-- `gas_cost_usd_est = gas_model.estimate_usd(chain_id, route, tier_usd)`
-- `gas_bps_est = (gas_cost_usd_est / tier_usd) * 10000`
+### 3.1 Pool State Input
+```python
+@dataclass
+class V2PoolState:
+    """V2 pool state at block_ref"""
+    reserve0: int  # Reserve of token0 (wei)
+    reserve1: int  # Reserve of token1 (wei)
+    token0: str    # Token0 address
+    token1: str    # Token1 address
+    fee_bps: int   # Swap fee (30 bps typical)
+```
 
-No live gas oracle inside simulation.
+### 3.2 Swap Formula
+```python
+def compute_v2_swap_out(
+    amount_in: int,
+    reserve_in: int,
+    reserve_out: int,
+    fee_bps: int
+) -> int:
+    """
+    Uniswap V2 constant product formula
+    
+    x * y = k (constant)
+    amount_out = (amount_in * (1 - fee) * reserve_out) / 
+                 (reserve_in + amount_in * (1 - fee))
+    """
+    amount_in_with_fee = amount_in * (10000 - fee_bps)
+    numerator = amount_in_with_fee * reserve_out
+    denominator = (reserve_in * 10000) + amount_in_with_fee
+    
+    amount_out = numerator // denominator
+    return amount_out
+```
+
+### 3.3 Price Impact
+```python
+def compute_price_impact(
+    amount_in: int,
+    amount_out: int,
+    reserve_in: int,
+    reserve_out: int
+) -> float:
+    """
+    Compute price impact in bps
+    
+    spot_price = reserve_out / reserve_in
+    effective_price = amount_out / amount_in
+    impact = (1 - effective_price / spot_price) * 10000
+    """
+    spot_price = reserve_out / reserve_in
+    effective_price = amount_out / amount_in
+    impact_bps = (1 - effective_price / spot_price) * 10000
+    return impact_bps
+```
 
 ---
 
-## 7. Safety Buffer Integration
+## 4. V3 Simulator (Tick-Based)
 
-Simulator should compute:
-- `net_edge_bps = gross_edge_bps - fee_bps_total - gas_bps_est`
+### 4.1 Pool State Input
+```python
+@dataclass
+class V3PoolState:
+    """V3 pool state at block_ref"""
+    sqrt_price_x96: int  # Current price (sqrtPriceX96)
+    tick: int            # Current tick
+    liquidity: int       # Active liquidity
+    fee_tier: int        # Fee tier (500/3000/10000 bps)
+    token0: str
+    token1: str
+    
+    # Optional: tick data for exact simulation
+    tick_data: Optional[Dict[int, int]] = None  # {tick: liquidityNet}
+```
 
-Safety buffer comparison is owned by 2.4.1 Preflight, but simulator MUST output enough data to support:
-- `net_edge_bps`
-- `slippage_bps_realized`
-- `price_impact_bps`
+### 4.2 Simplified V3 (Phase 2.4.2A)
+```python
+def compute_v3_swap_out_simplified(
+    amount_in: int,
+    sqrt_price_x96: int,
+    liquidity: int,
+    fee_tier: int,
+    zero_for_one: bool
+) -> Tuple[int, int]:
+    """
+    Simplified V3 swap (QuoterV2-style)
+    
+    Assumes sufficient liquidity in current tick range.
+    Returns: (amount_out, new_sqrt_price_x96)
+    """
+    # This is a placeholder - actual implementation requires
+    # tick math from Uniswap V3 core library
+    pass
+```
+
+### 4.3 Exact V3 (Phase 2.4.2B - Later)
+- Walk ticks
+- Track liquidity changes
+- Handle tick crossings
+- More complex, higher precision
 
 ---
 
-## 8. Tests (Required)
+## 5. Deterministic Failure Codes
 
-1) Determinism:
-- identical inputs → identical SimResult
-
-2) V2 single-leg:
-- known reserves → expected out amount
-
-3) V2 multi-leg:
-- composition stable and monotonic
-
-4) Failure modes:
-- missing pool state returns `SIM_MISSING_POOL_STATE`
-- unsupported dex_type returns `SIM_UNSUPPORTED_DEX_TYPE`
-
-5) V3 (when implemented):
-- approximation returns stable results for fixed slot0/liquidity inputs
-- exact mode requires tick data and fails deterministically if missing
+```python
+class SimFailureCode:
+    """Canonical simulation failure codes"""
+    INSUFFICIENT_LIQUIDITY = "SIM_INSUFFICIENT_LIQUIDITY"
+    PRICE_IMPACT_TOO_HIGH = "SIM_PRICE_IMPACT_TOO_HIGH"
+    SLIPPAGE_EXCEEDED = "SIM_SLIPPAGE_EXCEEDED"
+    INVALID_POOL_STATE = "SIM_INVALID_POOL_STATE"
+    RESERVES_DEPLETED = "SIM_RESERVES_DEPLETED"
+    UNKNOWN_DEX_TYPE = "SIM_UNKNOWN_DEX_TYPE"
+```
 
 ---
 
-## 9. Done Criteria (Phase 2.4.2 “Core Done”)
+## 6. Integration Points
 
-Minimum completion (2.4.2B):
-- Core interfaces exist
-- V2 simulator works with tests passing
-- ROUTE_SIM_RESULT telemetry emitted
-- Deterministic failure codes enforced
+### 6.1 Input: Pool State at block_ref
+- Must be fetched BEFORE simulation
+- Cached per block_ref
+- Never fetch during simulation
 
-Next completion (2.4.2C):
-- V3 approximation implemented + tests
-- Exact tick-walk planned/started with deterministic tick-cache input format
+### 6.2 Output: SimResult
+- Feeds into bundle simulator (Phase 2.4.3)
+- Emits telemetry: ROUTE_SIM_RESULT
+
+---
+
+## 7. Tests Required
+
+### 7.1 V2 Tests
+- Single swap (known reserves)
+- Price impact calculation
+- Multi-hop composition
+- Determinism (same state → same output)
+
+### 7.2 V3 Tests
+- Single swap (known sqrtPrice + liquidity)
+- Price impact
+- Determinism
+
+### 7.3 Failure Tests
+- Insufficient liquidity
+- Excessive price impact
+- Invalid pool state
+
+---
+
+## 8. File Layout
+
+```
+scripts/execution/route_simulator/
+    __init__.py
+    types.py              # Core types
+    base.py               # Abstract interfaces
+    v2_simulator.py       # V2 implementation
+    v3_simulator.py       # V3 implementation (simplified)
+    route_composer.py     # Multi-hop
+    failure_codes.py      # Canonical codes
+
+tests/execution/route_simulator/
+    test_v2_determinism.py
+    test_v2_price_impact.py
+    test_v3_determinism.py
+```
+
+---
+
+## 9. Phase 2.4.2 Milestones
+
+### 2.4.2A (MVP - Start Here)
+- ✅ Core types defined
+- ✅ V2 simulator working
+- ✅ Basic tests passing
+- ✅ Single-hop routes
+
+### 2.4.2B (Later)
+- ✅ V3 simplified simulator
+- ✅ Multi-hop composer
+- ✅ Telemetry integration
+
+### 2.4.2C (Future)
+- ⏸ V3 exact tick-walk
+- ⏸ Tick data caching
+- ⏸ Advanced optimizations
+
+---
+
+## 10. Done Criteria
+
+Phase 2.4.2A is complete when:
+- V2 simulator produces correct outputs
+- Determinism verified (same state → same output)
+- Price impact calculation accurate
+- Tests passing
+- Ready for preflight → simulator integration
+
+---
+
+**Next:** Start with types.py and v2_simulator.py
+
+**Status:** Ready to implement  
+**Date:** 2026-02-19
