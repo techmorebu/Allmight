@@ -7,6 +7,7 @@ Deterministic route simulation engine for arbitrage execution modeling.
 Modules:
 - types: Core data types
 - v2_simulator: Uniswap V2 / Sushiswap constant product
+- route_composer: Multi-hop route composition
 - v3_simulator: Uniswap V3 tick-based (coming soon)
 
 Author: Allmight System
@@ -30,6 +31,12 @@ from .v2_simulator import (
     estimate_v2_gas,
 )
 
+from .route_composer import (
+    simulate_route,
+    create_single_hop_route,
+    create_two_hop_route,
+)
+
 __all__ = [
     # Types
     'RouteLeg',
@@ -45,4 +52,9 @@ __all__ = [
     'compute_amount_out',
     'compute_price_impact',
     'estimate_v2_gas',
+    
+    # Route Composer
+    'simulate_route',
+    'create_single_hop_route',
+    'create_two_hop_route',
 ]
