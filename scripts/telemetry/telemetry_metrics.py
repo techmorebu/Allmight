@@ -230,6 +230,88 @@ class MetricsAnalyzer:
             'accepted_avg_edge_bps': sum(accepted_edges) / len(accepted_edges) if accepted_edges else 0
         }
     
+
+    def compute_confidence_distribution(self) -> Dict:
+        """
+        Compute confidence level distribution
+        
+        Returns:
+            {
+                'HIGH': {'count': int, 'accept': int, 'reject': int},
+                'MED': {...},
+                'LOW': {...}
+            }
+        """
+        latest_preflight = self._latest_by_opportunity(self.preflight_results)
+        
+        dist = {
+            'HIGH': {'count': 0, 'accept': 0, 'reject': 0},
+            'MED': {'count': 0, 'accept': 0, 'reject': 0},
+            'LOW': {'count': 0, 'accept': 0, 'reject': 0},
+        }
+        
+        for result in latest_preflight:
+            conf = result.get('confidence_level', 'LOW')
+            if conf not in dist:
+                conf = 'LOW'
+            
+            dist[conf]['count'] += 1
+            
+            if result['preflight_result'] in ['ACCEPT_SIM_ONLY', 'ACCEPT_BUNDLE']:
+                dist[conf]['accept'] += 1
+            else:
+                dist[conf]['reject'] += 1
+        
+        return dist
+    
+    def compute_preflight_edge_stats(self) -> Dict:
+        """
+        Compute edge and buffer statistics
+        
+        Returns:
+            {
+                'accepted': {'avg_net_edge': float, 'avg_buffer': float, ...},
+                'rejected': {...}
+            }
+        """
+        latest_preflight = self._latest_by_opportunity(self.preflight_results)
+        
+        accepted = [r for r in latest_preflight 
+                   if r['preflight_result'] in ['ACCEPT_SIM_ONLY', 'ACCEPT_BUNDLE']]
+        rejected = [r for r in latest_preflight 
+                   if r['preflight_result'] == 'REJECT']
+        
+        def compute_stats(results):
+            if not results:
+                return {
+                    'count': 0,
+                    'avg_net_edge': 0.0,
+                    'min_net_edge': 0.0,
+                    'max_net_edge': 0.0,
+                    'avg_buffer': 0.0,
+                    'avg_margin': 0.0,
+                }
+            
+            edges = [r.get('net_edge_bps', 0.0) for r in results]
+            buffers = [r.get('safety_buffer_bps', 0.0) for r in results]
+            margins = [e - b for e, b in zip(edges, buffers)]
+            
+            return {
+                'count': len(results),
+                'avg_net_edge': sum(edges) / len(edges),
+                'min_net_edge': min(edges),
+                'max_net_edge': max(edges),
+                'avg_buffer': sum(buffers) / len(buffers),
+                'avg_margin': sum(margins) / len(margins),
+            }
+        
+        return {
+            'accepted': compute_stats(accepted),
+            'rejected': compute_stats(rejected),
+            'all': compute_stats(latest_preflight),
+        }
+
+
     def generate_report(self) -> str:
         """
         Generate human-readable metrics report
@@ -284,6 +366,37 @@ class MetricsAnalyzer:
         report.append("")
         
         # Expansion gate status (placeholder - need execution data)
+        # Confidence distribution
+        confidence_dist = self.compute_confidence_distribution()
+        report.append("📊 CONFIDENCE DISTRIBUTION:")
+        for conf in ['HIGH', 'MED', 'LOW']:
+            stats = confidence_dist[conf]
+            if stats['count'] > 0:
+                accept_pct = (stats['accept'] / stats['count']) * 100
+                report.append(f"   {conf:4s}: {stats['count']:3d} total ({stats['accept']:3d} accept, {stats['reject']:3d} reject) - {accept_pct:.1f}% accept rate")
+        report.append("")
+        
+        # Edge statistics
+        edge_stats = self.compute_preflight_edge_stats()
+        report.append("📈 PREFLIGHT EDGE STATISTICS:")
+        
+        acc = edge_stats['accepted']
+        if acc['count'] > 0:
+            report.append(f"   Accepted opportunities ({acc['count']}):")
+            report.append(f"      Avg net edge:   {acc['avg_net_edge']:>8.2f} bps")
+            report.append(f"      Min net edge:   {acc['min_net_edge']:>8.2f} bps")
+            report.append(f"      Max net edge:   {acc['max_net_edge']:>8.2f} bps")
+            report.append(f"      Avg buffer:     {acc['avg_buffer']:>8.2f} bps")
+            report.append(f"      Avg margin:     {acc['avg_margin']:>8.2f} bps")
+        
+        rej = edge_stats['rejected']
+        if rej['count'] > 0:
+            report.append(f"   Rejected opportunities ({rej['count']}):")
+            report.append(f"      Avg net edge:   {rej['avg_net_edge']:>8.2f} bps")
+            report.append(f"      Avg buffer:     {rej['avg_buffer']:>8.2f} bps")
+            report.append(f"      Avg margin:     {rej['avg_margin']:>8.2f} bps")
+        report.append("")
+        
         report.append("🚪 EXPANSION GATE STATUS:")
         report.append("   [Not yet available - need INCLUSION_RESULT events]")
         report.append("   Required:")
