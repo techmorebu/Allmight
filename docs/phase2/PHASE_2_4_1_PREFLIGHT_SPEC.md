@@ -1,8 +1,10 @@
 # PHASE 2.4.1 — PREFLIGHT MODULE SPEC (DETERMINISTIC)
 
-Status: DRAFT → IMPLEMENT
-Phase: 2.4.1
-Governance: JSONL canonical, determinism-first, telemetry contract enforced.
+**Status:** DRAFT → IMPLEMENT  
+**Phase:** 2.4.1  
+**Governance:** JSONL canonical, determinism-first, telemetry contract enforced
+
+---
 
 ## 0. Purpose
 
@@ -65,37 +67,37 @@ Always emit a `PreflightResultEvent` (schema_version=1) with:
 
 The preflight function MUST evaluate and reject using the first matching rule in this exact order:
 
-1) `REJ_POLICY_FORBIDDEN`
+1. **`REJ_POLICY_FORBIDDEN`**
    - denylisted token/venue/market
    - tier not permitted
    - any explicit operator policy
 
-2) `REJ_SIMULATION_FAILED`
+2. **`REJ_SIMULATION_FAILED`**
    - missing required tier fields
    - mismatched chain_id
    - mismatched token pair between buy/sell snapshots
    - non-positive mid reference
    - any undefined/NaN critical numeric
 
-3) `REJ_SLIPPAGE_TOO_HIGH`
+3. **`REJ_SLIPPAGE_TOO_HIGH`**
    - tier slippage exceeds cap (policy)
 
-4) `REJ_GAS_TOO_HIGH`
+4. **`REJ_GAS_TOO_HIGH`**
    - estimated gas bps exceeds cap (policy)
 
-5) `REJ_GAS_COVERAGE_RATIO_LOW` (optional placeholder until 2.4.3)
+5. **`REJ_GAS_COVERAGE_RATIO_LOW`** (optional placeholder until 2.4.3)
    - reserved for bundle-level checks later
 
-6) `REJ_NETEDGE_BELOW_BUFFER`
+6. **`REJ_NETEDGE_BELOW_BUFFER`**
    - net_edge_bps <= safety_buffer_bps
 
-7) `REJ_STATE_DRIFT_RISK`
+7. **`REJ_STATE_DRIFT_RISK`**
    - bounded drift risk too high (policy; uses latency/age proxy)
 
-8) `REJ_COMPETITION_DENSITY_HIGH`
+8. **`REJ_COMPETITION_DENSITY_HIGH`**
    - competition density exceeds cap (policy)
 
-Note: If multiple conditions are true, the earliest rule wins to ensure stable analytics.
+**Note:** If multiple conditions are true, the earliest rule wins to ensure stable analytics.
 
 ---
 
@@ -103,20 +105,20 @@ Note: If multiple conditions are true, the earliest rule wins to ensure stable a
 
 For `tier_usd` select tiered fields from both snapshots:
 
-Tier 1000:
-- buy_px = `buy_px_1k`
-- sell_px = `sell_px_1k`
-- slip_bps = `slippage_bps_1k`
+**Tier 1000:**
+- `buy_px = buy_px_1k`
+- `sell_px = sell_px_1k`
+- `slip_bps = slippage_bps_1k`
 
-Tier 5000:
-- buy_px = `buy_px_5k`
-- sell_px = `sell_px_5k`
-- slip_bps = `slippage_bps_5k`
+**Tier 5000:**
+- `buy_px = buy_px_5k`
+- `sell_px = sell_px_5k`
+- `slip_bps = slippage_bps_5k`
 
-Tier 10000:
-- buy_px = `buy_px_10k`
-- sell_px = `sell_px_10k`
-- slip_bps = `slippage_bps_10k`
+**Tier 10000:**
+- `buy_px = buy_px_10k`
+- `sell_px = sell_px_10k`
+- `slip_bps = slippage_bps_10k`
 
 If required tier fields are missing → `REJ_SIMULATION_FAILED`.
 
@@ -126,25 +128,40 @@ If required tier fields are missing → `REJ_SIMULATION_FAILED`.
 
 ### 5.1 Reference Mid
 Use a stable reference mid:
-- `mid_ref = (snapshot_buy.mid_px + snapshot_sell.mid_px) / 2`
+```python
+mid_ref = (snapshot_buy.mid_px + snapshot_sell.mid_px) / 2
+```
 
 If `mid_ref <= 0` → `REJ_SIMULATION_FAILED`.
 
 ### 5.2 Gross Edge (bps)
-- `gross_edge_bps = ((sell_px - buy_px) / mid_ref) * 10000`
+```python
+gross_edge_bps = ((sell_px - buy_px) / mid_ref) * 10000
+```
 
 ### 5.3 Costs (bps)
-Fees:
-- `fee_bps = snapshot_buy.swap_fee_bps + snapshot_sell.swap_fee_bps`
 
-Gas (bounded estimate):
-- `gas_cost_usd_est = gas_model.estimate_usd(chain_id=..., venue_id=..., tier_usd=tier_usd)`
-- `gas_bps = (gas_cost_usd_est / tier_usd) * 10000`
+**Fees:**
+```python
+fee_bps = snapshot_buy.swap_fee_bps + snapshot_sell.swap_fee_bps
+```
+
+**Gas (bounded estimate):**
+```python
+gas_cost_usd_est = gas_model.estimate_usd(
+    chain_id=..., 
+    venue_id=..., 
+    tier_usd=tier_usd
+)
+gas_bps = (gas_cost_usd_est / tier_usd) * 10000
+```
 
 ### 5.4 Net Edge (bps)
-- `net_edge_bps = gross_edge_bps - fee_bps - gas_bps`
+```python
+net_edge_bps = gross_edge_bps - fee_bps - gas_bps
+```
 
-Important: Do NOT subtract slippage again if the tiered prices are effective execution prices.
+**Important:** Do NOT subtract slippage again if the tiered prices are effective execution prices.
 
 ---
 
@@ -156,60 +173,102 @@ Safety buffer is a conservative margin for:
 - latency skew
 - competition risk
 
-MVP formula:
-safety_buffer_bps =
-base_buffer_bps
+**MVP formula:**
+```python
+safety_buffer_bps = (
+    base_buffer_bps
+    + k_slippage * max(slippage_buy_bps, slippage_sell_bps)
+    + k_latency * (latency_ms_est / 1000)
+    + k_competition * competition_density
+)
+```
 
-k_slippage * max(slippage_buy_bps, slippage_sell_bps)
+**Starting values (conservative):**
+- `base_buffer_bps = 5.0`
+- `k_slippage = 0.20`
+- `k_latency = 2.0`
+- `k_competition = 15.0`
 
-k_latency * (latency_ms_est / 1000)
-
-k_competition * competition_density
-
-Defaults may start conservative and be tuned later.
-
-Decision rule:
+**Decision rule:**
 - if `net_edge_bps <= safety_buffer_bps` → `REJ_NETEDGE_BELOW_BUFFER`
 
 ---
 
 ## 7. Accept Levels (SIM_ONLY vs BUNDLE)
 
-Preflight may classify “bundle-ready” even before full 2.4.3:
-- `ACCEPT_BUNDLE` if:
+Preflight may classify "bundle-ready" even before full 2.4.3:
+
+- **`ACCEPT_BUNDLE`** if:
   - `net_edge_bps >= safety_buffer_bps + bundle_extra_bps`
   - and confidence is HIGH (stable proxies)
-- else if `net_edge_bps > safety_buffer_bps`:
-  - `ACCEPT_SIM_ONLY`
-- else:
-  - `REJECT`
 
-Confidence heuristic (deterministic):
-- HIGH if net edge has meaningful margin above buffer and slippage low.
-- MED default.
-- LOW if near-threshold.
+- **`ACCEPT_SIM_ONLY`** if:
+  - `net_edge_bps > safety_buffer_bps`
+  - but confidence < HIGH
+
+- **`REJECT`** otherwise
+
+**Confidence heuristic (deterministic):**
+- **HIGH** if net edge has meaningful margin above buffer and slippage low
+- **MED** default
+- **LOW** if near-threshold
 
 ---
 
 ## 8. Tests (Required)
 
-1) Determinism:
+### 8.1 Determinism Test
 - identical inputs produce identical outputs
 
-2) Rejection ordering:
+### 8.2 Rejection Ordering Test
 - when multiple conditions true, earliest rule wins
 
-3) Tier selection:
+### 8.3 Tier Selection Test
 - 1k/5k/10k selects correct fields and changes outcome
 
 ---
 
-## 9. Done Criteria (Phase 2.4.1 Complete)
+## 9. File Layout
 
+Create:
+- `scripts/execution/preflight.py` - Main preflight logic
+- `scripts/execution/preflight_policy.py` - Policy dataclass + defaults
+- `scripts/execution/gas_model.py` - Bounded gas estimation
+- `tests/execution/test_preflight_determinism.py`
+- `tests/execution/test_preflight_rejection_order.py`
+- `tests/execution/test_preflight_tier_selection.py`
+
+---
+
+## 10. Done Criteria (Phase 2.4.1 Complete)
+
+✅ Phase 2.4.1 is complete when:
 - Preflight implemented as pure function
 - Preflight telemetry emitted for every evaluation
-- Unit tests passing
+- Unit tests passing (determinism, rejection order, tier selection)
 - Metrics analyzer can compute:
   - accept/reject rates
   - rejection breakdown (codes)
   - edge distribution (net edge vs buffer)
+
+---
+
+## 11. Integration Point
+
+In profiler_runner / opportunity detector:
+1. Build candidate opportunity: `(buy_snapshot, sell_snapshot, tier)`
+2. Call `preflight_check(...)`
+3. Emit `PreflightResultEvent` via telemetry
+4. Only forward `ACCEPT_*` to Phase 2.4.2 route simulator / bundle sim later
+
+---
+
+**Next Phase:** Phase 2.4.2 - Route Simulator (tick-level UniV3 / reserves-based V2)
+
+---
+
+**END OF DOCUMENT**
+
+**Version:** 1.0  
+**Date:** 2026-02-18  
+**Status:** Ready for implementation
