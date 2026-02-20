@@ -1,0 +1,67 @@
+======================================================================
+  PROJECT ALLMIGHT — RC-1 REALITY CHECK REPORT
+======================================================================
+  Generated : 2026-02-20 01:39:53 UTC
+  Run ID    : RC1_20260220_013953
+  Args      : {'minutes': 10, 'tier_usd': 1000.0, 'speed': 'fast', 'redis_url': 'redis://127.0.0.1:6379'}
+  Preflight : REAL
+  Simulator : REAL (V2) / stub (V3 — needs sqrtPriceX96)
+
+──────────────────────────────────────────────────────────────────────
+  INGESTION
+──────────────────────────────────────────────────────────────────────
+  Cycles run              : 1
+  Snapshots ingested      : 13
+  Snapshots with warnings : 0
+
+──────────────────────────────────────────────────────────────────────
+  DETECTION
+──────────────────────────────────────────────────────────────────────
+  Gross-positive candidates : 0
+  Near-misses (fee-killed)  : 6
+  Closest near-miss        : -33.48 bps (negative = fees exceeded spread by this amount)
+
+  Top near-misses (closest to profitable):
+  PAIR                    BUY           SELL   SPREAD    FEES     EDGE  BUY_PX → SELL_PX
+  ────────────────────────────────────────────────────────────────────────────────
+  ETH/USDC         uniswap_v3   sushiswap_v2    1.52    35.0   -33.48  1956.5220 → 1956.8203
+  UNI/ETH        sushiswap_v2     uniswap_v3    7.81    60.0   -52.19  0.0017 → 0.0017
+  AAVE/ETH         uniswap_v3   sushiswap_v2    5.39    60.0   -54.61  0.0643 → 0.0643
+  LINK/ETH         uniswap_v3   sushiswap_v2    2.06    60.0   -57.94  0.0044 → 0.0044
+  ETH/USDC       sushiswap_v2     uniswap_v3    1.48    60.0   -58.52  1956.8203 → 1957.1091
+  WBTC/ETH         uniswap_v3   sushiswap_v2    0.16    60.0   -59.84  34.2786 → 34.2791
+
+  To make these profitable you need EITHER:
+   a) Spread > total fees  (needs market volatility or different pairs)
+   b) Lower fee venue      (L2s: ~1-5 bps gas vs 30 bps mainnet swap fee)
+
+──────────────────────────────────────────────────────────────────────
+  PREFLIGHT
+──────────────────────────────────────────────────────────────────────
+  Accept : 0  (0.0%)
+  Reject : 0
+
+  Codes:
+
+──────────────────────────────────────────────────────────────────────
+  SIMULATION
+──────────────────────────────────────────────────────────────────────
+  Sim OK    : 0
+  Sim FAIL  : 0
+
+  Codes:
+
+──────────────────────────────────────────────────────────────────────
+  SURVIVORS
+──────────────────────────────────────────────────────────────────────
+  Count : 0
+  Zero survivors = filters honest. See near-misses above.
+
+──────────────────────────────────────────────────────────────────────
+  GAS MODEL
+──────────────────────────────────────────────────────────────────────
+  No candidates reached preflight — see near-misses for root cause.
+
+======================================================================
+  END OF REPORT
+======================================================================

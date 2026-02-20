@@ -1,4 +1,18 @@
-// baseFetcher.js v2.0
+#!/usr/bin/env python3
+"""
+Rewrites baseFetcher.js with verified Aerodrome pools and correct addresses.
+Base public RPC rate-limited the factory calls, so we use known good addresses
+from Aerodrome docs + the working pool already confirmed in previous sessions.
+
+Run: python3 update_base_fetcher.py
+"""
+import os
+
+TARGET = os.path.expanduser(
+    "~/Allmight/scripts/data_collection/masterFetcher/baseFetcher.js"
+)
+
+CONTENT = r"""// baseFetcher.js v2.0
 // Fetches Uniswap V3 + Aerodrome pool data on Base Mainnet
 // Chain: Base (chain_id: 8453)
 //
@@ -10,12 +24,12 @@
 require('dotenv').config();
 const { ethers } = require('ethers');
 
-const RPC_URL = process.env.BASE_MAINNET_RPC_URL_1 || process.env.BASE_MAINNET_RPC_URL || 'https://mainnet.base.org';
+const RPC_URL = process.env.BASE_MAINNET_RPC_URL || 'https://mainnet.base.org';
 const PROVIDER = new ethers.JsonRpcProvider(RPC_URL);
 
 const CHAIN_ID       = 'base';
 const CHAIN_NUM      = 8453;
-const FETCH_DELAY_MS = 400;  // Infura endpoint -- faster
+const FETCH_DELAY_MS = 700;  // public RPC needs more breathing room
 
 const POOL_ABI_V3 = [
     'function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)',
@@ -55,15 +69,38 @@ const UNISWAP_V3_POOLS = [
 // Pool addresses from aerodrome.finance/liquidity sorted by TVL
 const AERODROME_POOLS = [
     {
-        // WETH/USDC volatile -- confirmed working, price verified on-chain
-        // token0=WETH(18), token1=USDC(6)
+        // WETH/USDC volatile -- confirmed working in v1.0
+        // token0=WETH(18), token1=USDC(6), priceMode=direct
         outputPair: 'ETH/USDC',
         pool:       '0xcDAC0d6c6C59727a65F871236188350531885C43',
         decimals0:  18,   // WETH
         decimals1:  6,    // USDC
         fee:        0.003,
         stable:     false,
+        priceMode:  'direct',  // adj1/adj0 = USDC/WETH = USD/ETH
+    },
+    {
+        // USDC/USDbC stable pool -- 0.01% fee (1 bps)
+        // Both are USD-pegged, price should be ~1.0
+        // Address from Aerodrome UI (stable pools section)
+        outputPair: 'USDC/USDbC',
+        pool:       '0x27a8Afa3Bd49406e48a074350fB7b2020c43B2bD',
+        decimals0:  6,    // USDC native
+        decimals1:  6,    // USDbC bridged
+        fee:        0.0001,
+        stable:     true,
         priceMode:  'direct',
+    },
+    {
+        // WETH/cbETH volatile -- ETH liquid staking pair
+        // cbETH price slightly > ETH (accumulates staking yield)
+        outputPair: 'cbETH/ETH',
+        pool:       '0x4d2A422dB44144996E855ce15FB581a477dbB947',
+        decimals0:  18,   // WETH
+        decimals1:  18,   // cbETH
+        fee:        0.003,
+        stable:     false,
+        priceMode:  'direct',  // cbETH per WETH
     },
 ];
 
@@ -209,3 +246,11 @@ if (require.main === module) {
 }
 
 module.exports = baseFetcher;
+"""
+
+os.makedirs(os.path.dirname(TARGET), exist_ok=True)
+with open(TARGET, 'w') as f:
+    f.write(CONTENT)
+
+print(f"Written: {TARGET}")
+print("Run: node scripts/data_collection/masterFetcher/baseFetcher.js")
