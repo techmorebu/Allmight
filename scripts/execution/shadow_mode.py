@@ -63,58 +63,95 @@ FEE_WALLS = {
 
 # ── Redis loader ──────────────────────────────────────────────────────────────
 def load_markets(r: redis.Redis) -> list[dict]:
-    """Load all market data from Redis and find arb pairs."""
+    """
+    Load all market data from Redis and find arb pairs.
+
+    Redis schema (confirmed 2026-02-20):
+      key:   fetcher:<fetcherName>
+      value: { ok, name, durationMs, timestamp,
+               data: { status, data: { prices: [...], chain, venues, timestamp } } }
+      price entry: { pair, pool, price, fee, venue, chain, source, timestamp, ... }
+    """
     markets = []
-    keys = r.keys("price:*")
-    prices = {}
+    prices  = {}  # (pair, chain) -> list of {venue, price, fee_pct, chain}
+
+    # ── Load all fetcher keys ─────────────────────────────────────────────────
+    keys = r.keys("fetcher:*")
+    if not keys:
+        return []
 
     for key in keys:
         raw = r.get(key)
         if not raw:
             continue
         try:
-            data = json.loads(raw)
-            if not data or not isinstance(data, list):
+            blob = json.loads(raw)
+            # Navigate to price list: blob -> data -> data -> prices
+            entries = (
+                blob
+                .get("data", {})
+                .get("data", {})
+                .get("prices", [])
+            )
+            if not isinstance(entries, list):
                 continue
-            for entry in data:
-                if not entry or not isinstance(entry, dict):
+
+            for entry in entries:
+                if not isinstance(entry, dict):
                     continue
                 pair  = entry.get("pair", "")
                 venue = entry.get("venue", "") or entry.get("source", "")
-                price = float(entry.get("price", 0))
+                price = float(entry.get("price", 0) or 0)
                 chain = entry.get("chain", "")
-                fee   = float(entry.get("fee", 0))
-                if price > 0 and pair and venue:
-                    k = (pair, chain)
-                    if k not in prices:
-                        prices[k] = []
-                    prices[k].append({
-                        "pair": pair, "venue": venue,
-                        "price": price, "chain": chain,
-                        "fee_pct": fee,
-                    })
-        except Exception:
+                fee   = float(entry.get("fee", 0) or 0)  # fee as fraction e.g. 0.05 = 5 bps
+
+                if price <= 0 or not pair or not venue or not chain:
+                    continue
+
+                k = (pair, chain)
+                if k not in prices:
+                    prices[k] = []
+                prices[k].append({
+                    "pair":    pair,
+                    "venue":   venue,
+                    "price":   price,
+                    "chain":   chain,
+                    "fee_pct": fee,   # fraction, NOT bps
+                })
+
+        except Exception as e:
             continue
 
-    # Find cross-venue pairs
+    # ── Find cross-venue arb pairs ────────────────────────────────────────────
     for (pair, chain), entries in prices.items():
         if len(entries) < 2:
             continue
+
         for i, buy in enumerate(entries):
             for sell in entries[i+1:]:
                 if buy["venue"] == sell["venue"]:
                     continue
                 if buy["price"] >= sell["price"]:
                     continue
-                spread = (sell["price"] - buy["price"]) / buy["price"] * 10000
+
+                spread_bps = (sell["price"] - buy["price"]) / buy["price"] * 10000
+
+                # Look up fee wall from known pairs first, then estimate from fees
+                # fee_pct is fraction (e.g. 0.05 for 5 bps UniV3), convert to bps
+                buy_fee_bps  = buy["fee_pct"] * 100
+                sell_fee_bps = sell["fee_pct"] * 100
+                estimated_fees = buy_fee_bps + sell_fee_bps
+
                 fee_wall = FEE_WALLS.get(
-                    (buy["venue"], sell["venue"]),
+                    (buy["venue"],  sell["venue"]),
                     FEE_WALLS.get(
                         (sell["venue"], buy["venue"]),
-                        int((buy["fee_pct"] + sell["fee_pct"]) * 100)
+                        round(estimated_fees)
                     )
                 )
-                gross = spread - fee_wall
+
+                gross = spread_bps - fee_wall
+
                 markets.append({
                     "chain":      chain,
                     "pair":       pair,
@@ -122,9 +159,9 @@ def load_markets(r: redis.Redis) -> list[dict]:
                     "sell_venue": sell["venue"],
                     "buy_price":  buy["price"],
                     "sell_price": sell["price"],
-                    "spread_bps": spread,
+                    "spread_bps": round(spread_bps, 4),
                     "fee_bps":    fee_wall,
-                    "gross_edge": gross,
+                    "gross_edge": round(gross, 4),
                 })
 
     return sorted(markets, key=lambda x: x["gross_edge"], reverse=True)
