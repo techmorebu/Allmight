@@ -187,6 +187,7 @@ if (require.main === module) {
     runFetchersOnce()
       .then(() => {
         log("info", "One-shot fetchers run completed");
+        process.exit(0);
       })
       .catch((err) => {
         log("error", "Unhandled error in one-shot run", {
