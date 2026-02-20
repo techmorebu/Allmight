@@ -1,31 +1,37 @@
 #!/usr/bin/env python3
-"""Redis adapter for arbitrumFetcher.js"""
+"""
+Redis adapter for Arbitrum chain.
+Loads from:
+  - fetcher:arbitrumFetcher    (UniV3 + Camelot)
+  - fetcher:curveFetcherArbitrum (Curve 2pool + tricrypto)
+"""
 import json, time
 import redis as _redis
 from scripts.market.raw_market_state import RawMarketState
 
-REDIS_KEY = "fetcher:arbitrumFetcher"
-CHAIN_ID  = "arbitrum"
+REDIS_KEYS = [
+    "fetcher:arbitrumFetcher",
+    "fetcher:curveFetcherArbitrum",
+]
+CHAIN_ID = "arbitrum"
 
 
 def _fee_to_bps(fee):
     if fee is None: return 30.0
-    # Fee encoding by venue:
-    #   UniV3:          0.05 (percent) -> 5 bps    [fee >= 0.01]
-    #   UniV3:          0.3  (percent) -> 30 bps   [fee >= 0.01]
-    #   Camelot/Aero:   0.003 (fraction) -> 30 bps [fee < 0.01]
-    #   Aero stable:    0.0001 (fraction) -> 1 bps  [fee < 0.01]
-    if fee < 0.01: return fee * 10000   # raw fraction -> bps
-    if fee < 5:    return fee * 100     # percent -> bps
-    return float(fee)                   # already bps
+    # UniV3 fees stored as percent:     0.05 -> 5 bps,  0.3 -> 30 bps
+    # Camelot/Curve stored as fraction: 0.003 -> 30 bps, 0.0004 -> 4 bps
+    if fee < 0.01: return fee * 10000
+    if fee < 5:    return fee * 100
+    return float(fee)
+
 
 def _split_pair(pair):
     parts = pair.split("/")
     return (parts[0], parts[1]) if len(parts) == 2 else (pair, "USD")
 
 
-def load(r: _redis.Redis) -> list:
-    raw = r.get(REDIS_KEY)
+def _parse_key(r, key):
+    raw = r.get(key)
     if not raw:
         return []
     payload = json.loads(raw)
@@ -53,4 +59,11 @@ def load(r: _redis.Redis) -> list:
             ))
         except (KeyError, ValueError, TypeError):
             continue
+    return states
+
+
+def load(r: _redis.Redis) -> list:
+    states = []
+    for key in REDIS_KEYS:
+        states.extend(_parse_key(r, key))
     return states
