@@ -20,6 +20,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from scripts.market.redis_adapters.arbitrum     import load as load_arbitrum
 from scripts.market.redis_adapters.base         import load as load_base
+from scripts.market.redis_adapters.optimism     import load as load_optimism
 from scripts.market.redis_adapters.uniswap_v3   import parse as load_uniswap_v3
 from scripts.market.redis_adapters.sushiswap_v2 import parse as load_sushiswap_v2
 
@@ -28,10 +29,10 @@ CHAIN_LOADERS = {
     "arbitrum": [load_arbitrum],
     "base":     [load_base],
     "optimism": [load_optimism],
-    "unichain": [load_unichain],
+    "optimism": [load_optimism],
 }
 
-GAS_USD = {"mainnet": 1.25, "arbitrum": 0.02, "base": 0.01}
+GAS_USD = {"mainnet": 1.25, "arbitrum": 0.02, "base": 0.01, "optimism": 0.001}
 
 LOG_DIR = os.path.expanduser("~/Allmight/logs")
 os.makedirs(LOG_DIR, exist_ok=True)
