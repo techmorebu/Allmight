@@ -12,6 +12,7 @@ from scripts.market.raw_market_state import RawMarketState
 REDIS_KEYS = [
     "fetcher:arbitrumFetcher",
     "fetcher:curveFetcherArbitrum",
+    "fetcher:balancerFetcherArbitrum",
 ]
 CHAIN_ID = "arbitrum"
 

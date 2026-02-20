@@ -27,6 +27,8 @@ CHAIN_LOADERS = {
     "mainnet":  [load_uniswap_v3, load_sushiswap_v2],
     "arbitrum": [load_arbitrum],
     "base":     [load_base],
+    "optimism": [load_optimism],
+    "unichain": [load_unichain],
 }
 
 GAS_USD = {"mainnet": 1.25, "arbitrum": 0.02, "base": 0.01}

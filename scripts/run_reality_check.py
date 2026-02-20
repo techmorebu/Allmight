@@ -11,6 +11,8 @@ from scripts.market.redis_adapters.uniswap_v3   import parse as load_uniswap_v3
 from scripts.market.redis_adapters.sushiswap_v2 import parse as load_sushiswap_v2
 from scripts.market.redis_adapters.arbitrum     import load as load_arbitrum
 from scripts.market.redis_adapters.base         import load as load_base
+from scripts.market.redis_adapters.optimism     import load as load_optimism
+from scripts.market.redis_adapters.unichain     import load as load_unichain
 
 GAS_USD = {"mainnet": 1.25, "arbitrum": 0.02, "base": 0.01}
 CHAIN_LOADERS = {
