@@ -1,6 +1,5 @@
 node_modules
 .env
-.env
 outputs/
 outputs/.gitkeep
 
@@ -8,15 +7,12 @@ outputs/.gitkeep
 .venv/
 data/staging/
 logs/
-outputs/
 data/processed/
 
 # ---- AllMight: local runtime & generated artifacts ----
-.venv/
 __pycache__/
 *.pyc
-.env
-.env.*
+.env.local
 secrets.yaml
 config/secrets.yaml
 outputs/*
@@ -26,14 +22,11 @@ data/replay/*
 data/derived/*
 
 # ---- runtime logs ----
-logs/
 *.log
 
 # Python
-__pycache__/
 *.py[cod]
 .pytest_cache/
-.venv/
 
 # local source PDFs (do not commit)
 docs/source_pdfs/*.pdf
@@ -41,20 +34,13 @@ docs/source_pdfs/*.pdf
 artifacts/
 snapshots.jsonl
 
-# Python
-__pycache__/
-*.pyc
 
 # Local envs
-.venv/
-data/snapshots/
-nohup.out
 data/snapshots/
 nohup.out
 
 # Phase 2.4.0 - Telemetry runtime data
 data/telemetry/
-.env
 *.env
 *.sqlite
 *.sqlite3
