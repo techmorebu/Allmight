@@ -30,6 +30,8 @@ const VELO_ABI = [
     'function getReserves() external view returns (uint256 _reserve0, uint256 _reserve1, uint256 _blockTimestampLast)',
     'function token0() external view returns (address)',
     'function token1() external view returns (address)',
+    'function getAmountOut(uint256 amountIn, address tokenIn) external view returns (uint256)',
+    'function totalSupply() external view returns (uint256)',
 ];
 
 // ── Optimism token addresses ──────────────────────────────────────────────────
@@ -44,14 +46,25 @@ const VELO_ABI = [
 // ── Uniswap V3 pools on Optimism ─────────────────────────────────────────────
 const UNISWAP_V3_POOLS = [
     {
+        // ETH/USDC native 0.05% -- verified via factory
         outputPair: 'ETH/USDC',
-        pool:       '0x85149247691df622eaF1a8Bd0CaFd40BC45154a9',
-        decimals0:  18,   // WETH (token0)
-        decimals1:  6,    // USDC (token1)
+        pool:       '0x1fb3cf6e48F1E7B10213E7b6d87D4c073C7Fdb7b',
+        decimals0:  18,
+        decimals1:  6,
         fee:        500,
         priceMode:  'direct',
     },
     {
+        // ETH/USDCe 0.05% -- verified via factory
+        outputPair: 'ETH/USDC',
+        pool:       '0x85149247691df622eaF1a8Bd0CaFd40BC45154a9',
+        decimals0:  18,
+        decimals1:  6,
+        fee:        500,
+        priceMode:  'direct',
+    },
+    {
+        // ETH/USDCe 0.3% -- verified via factory
         outputPair: 'ETH/USDC',
         pool:       '0xB589969D38CE76D3d7AA319De7133bC9755fD840',
         decimals0:  18,
@@ -60,54 +73,77 @@ const UNISWAP_V3_POOLS = [
         priceMode:  'direct',
     },
     {
-        outputPair: 'ETH/USDC',
-        pool:       '0x1fb3cf6e48F1E7B10213E7b6d87D4c073C7Fdb7b',
-        decimals0:  18,
+        // USDC/USDT 0.01% native USDC -- verified via factory
+        outputPair: 'USDC/USDT',
+        pool:       '0xA73C628eaf6e283E26A7b1f8001CF186aa4c0E8E',
+        decimals0:  6,
         decimals1:  6,
-        fee:        3000,
+        fee:        100,
         priceMode:  'direct',
     },
     {
-        outputPair: 'USDC/USDT',
-        pool:       '0xA73C628eaf6e283E26A7b1f8001CF186aa4c0E8E',
-        decimals0:  6,    // USDC.e (token0)
-        decimals1:  6,    // USDT (token1)
+        // USDCe/USDT 0.01% -- confirmed UniV3 fee=100 via on-chain check
+        outputPair: 'USDCe/USDT',
+        pool:       '0xF1F199342687A7d78bCC16fce79fa2665EF870E1',
+        decimals0:  6,
+        decimals1:  6,
         fee:        100,
         priceMode:  'direct',
+    },
+    {
+        // USDCe/USDT 0.05% -- verified via factory
+        outputPair: 'USDCe/USDT',
+        pool:       '0xF3F3433c3a97F70349C138ada81da4D3554982DB',
+        decimals0:  6,
+        decimals1:  6,
+        fee:        500,
+        priceMode:  'direct',
+    },
+    {
+        // DAI/USDC 0.01% -- verified via factory
+        outputPair: 'DAI/USDC',
+        pool:       '0xd28f71e383E93C570D3EdFe82EBbcEb35Ec6C412',
+        decimals0:  18,
+        decimals1:  6,
+        fee:        100,
+        priceMode:  'invert',
     },
 ];
 
 // ── Velodrome V2 pools (verified from velodrome.finance) ──────────────────────
 const VELODROME_POOLS = [
     {
-        // WETH/USDC volatile -- high TVL, main ETH/USD pair
+        // WETH/USDC volatile -- verified via factory
         outputPair: 'ETH/USDC',
-        pool:       '0x0493Bf8b6DBB159Ce2Db2E0E8403E753Abd1235b',
-        decimals0:  18,   // WETH
-        decimals1:  6,    // USDC.e
+        pool:       '0xF4F2657AE744354bAcA871E56775e5083F7276Ab',
+        token0:     '0x4200000000000000000000000000000000000006',  // WETH
+        decimals0:  18,
+        decimals1:  6,    // USDC native
         fee:        0.003,
         stable:     false,
         priceMode:  'direct',
     },
     {
-        // USDC/USDT stable -- 0.02% fee (2 bps) KEY OPPORTUNITY
-        outputPair: 'USDC/USDT',
-        pool:       '0xF1F199342687A7d78bCC16fce79fa2665EF870E1',
-        decimals0:  6,    // USDC.e
+        // USDCe/USDT stable -- 0.02% fee -- verified via factory + getAmountOut
+        outputPair: 'USDCe/USDT',
+        pool:       '0x2B47C794c3789f499D8A54Ec12f949EeCCE8bA16',
+        token0:     '0x7F5c764cBc14f9669B88837ca1490cCa17c31607',  // USDCe
+        decimals0:  6,
         decimals1:  6,    // USDT
         fee:        0.0002,
         stable:     true,
         priceMode:  'direct',
     },
     {
-        // USDC/DAI stable -- 0.02% fee (2 bps)
-        outputPair: 'USDC/DAI',
-        pool:       '0x4F7ebc19844259386DBdDB7b2eB759eeFc6F8353',
-        decimals0:  6,    // USDC.e
-        decimals1:  18,   // DAI
+        // USDC/USDT stable -- verified via factory
+        outputPair: 'USDC/USDT',
+        pool:       '0x1f80b1E3C538Aa5E83BBD60E04386d4e2B4Fa8FC',
+        token0:     '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85',  // USDC native
+        decimals0:  6,
+        decimals1:  6,    // USDT
         fee:        0.0002,
         stable:     true,
-        priceMode:  'invert',  // DAI(18)/USDC(6) needs invert
+        priceMode:  'direct',
     },
 ];
 
@@ -148,28 +184,51 @@ async function fetchUniV3Pool(cfg) {
 
 async function fetchVelodromePool(cfg) {
     try {
-        const c   = new ethers.Contract(cfg.pool, VELO_ABI, PROVIDER);
-        const res = await c.getReserves();
-        const r0b = res[0], r1b = res[1];
-        if (r0b === 0n || r1b === 0n) return null;
-        const PREC = 1000000000n;
-        const adj0 = Number(r0b * PREC / BigInt('1' + '0'.repeat(cfg.decimals0))) / 1e9;
-        const adj1 = Number(r1b * PREC / BigInt('1' + '0'.repeat(cfg.decimals1))) / 1e9;
-        if (!adj0 || !adj1) return null;
-        const raw   = adj1 / adj0;
-        const price = cfg.priceMode === 'invert' ? 1.0 / raw : raw;
-        if (!isFinite(price) || price <= 0 || price > 1e12) return null;
+        const c = new ethers.Contract(cfg.pool, VELO_ABI, PROVIDER);
+
+        // getAmountOut is correct for BOTH stable and volatile Velodrome pools
+        // Reserve ratio gives wrong price for stable pools (stableswap invariant)
+        // For volatile pools, getAmountOut == reserve ratio but is safer
+        const AMOUNT_IN = BigInt(10 ** cfg.decimals0); // 1 unit of token0
+        const [res, amountOut] = await Promise.all([
+            c.getReserves(),
+            c.getAmountOut(AMOUNT_IN, cfg.token0),
+        ]);
+
+        if (res[0] === 0n || res[1] === 0n) return null;
+        if (!amountOut || amountOut === 0n) return null;
+
+        // price = units of token1 per 1 token0
+        const rawPrice = Number(amountOut) / (10 ** cfg.decimals1);
+        const price    = cfg.priceMode === 'invert' ? 1.0 / rawPrice : rawPrice;
+
+        if (!isFinite(price) || price <= 0) return null;
         if (cfg.stable && (price < 0.9 || price > 1.1)) {
-            console.error(`[OP] Velodrome ${cfg.outputPair}: stable price out of range: ${price.toFixed(6)}`);
+            console.error(`[OP] Velodrome ${cfg.outputPair}: stable price=${price.toFixed(6)} out of range`);
             return null;
         }
-        const tvlUSD = cfg.outputPair.includes('ETH') ? adj1 * 2 : cfg.stable ? (adj0 + adj1) : adj1 * price * 2;
+        if (!cfg.stable && price > 1e8) {
+            console.error(`[OP] Velodrome ${cfg.outputPair}: volatile price=${price.toFixed(2)} out of range`);
+            return null;
+        }
+
+        const adj0   = Number(res[0]) / (10 ** cfg.decimals0);
+        const adj1   = Number(res[1]) / (10 ** cfg.decimals1);
+        const tvlUSD = cfg.stable
+            ? adj0 + adj1
+            : cfg.outputPair.includes('ETH') ? adj1 * 2 : adj1 * price * 2;
+
         return {
-            pair: cfg.outputPair, pool: cfg.pool, price,
-            reserve0: r0b.toString(), reserve1: r1b.toString(), reserveUSD: tvlUSD,
-            fee: cfg.fee, stable: cfg.stable,
-            source: 'velodrome_optimism_onchain', venue: 'velodrome',
-            chain: CHAIN_ID, timestamp: new Date().toISOString(),
+            pair:       cfg.outputPair,
+            pool:       cfg.pool,
+            price,
+            reserveUSD: tvlUSD,
+            fee:        cfg.fee,
+            stable:     cfg.stable,
+            source:     'velodrome_optimism_onchain',
+            venue:      'velodrome',
+            chain:      CHAIN_ID,
+            timestamp:  new Date().toISOString(),
         };
     } catch (e) {
         console.error(`[OP] Velodrome ${cfg.outputPair} ${cfg.pool.slice(0,10)}: ${e.message.slice(0,80)}`);

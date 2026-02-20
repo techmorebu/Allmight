@@ -33,31 +33,10 @@ const POOL_ABI_V3 = [
 // Unichain uses Uniswap V4 -- V3 factory not deployed
 // V4 PoolManager: 0x1F98431c8aD98523631AE4a59f267346ea31F984 (TBC)
 // TODO: implement V4 PoolManager.getSlot0() interface
-const UNISWAP_V3_POOLS = [ // EMPTY until V4 ABI implemented
-    {
-        outputPair: 'ETH/USDC',
-        pool:       '0xf04B5FA1Ef01b1c52a84b3B6cF7C7f39c95cB87e',
-        decimals0:  18,
-        decimals1:  6,
-        fee:        500,
-        priceMode:  'direct',
-    },
-    {
-        outputPair: 'ETH/USDC',
-        pool:       '0xE4f4AaC6c0bF56A95e6Ca7440Cde6fCA11e4c39c',
-        decimals0:  18,
-        decimals1:  6,
-        fee:        3000,
-        priceMode:  'direct',
-    },
-    {
-        outputPair: 'USDC/USDT',
-        pool:       '0x5e69aC31c3Dc0f5a86B7E8Ab462E2F5c03C18F1e',
-        decimals0:  6,
-        decimals1:  6,
-        fee:        100,
-        priceMode:  'direct',
-    },
+const UNISWAP_V3_POOLS = [
+    // Unichain uses Uniswap V4 -- V3 factory returns empty for all queries
+    // V4 PoolManager requires different ABI (getSlot0 via manager, not pool)
+    // TODO: implement V4 interface next session
 ];
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }

@@ -29,28 +29,10 @@ const POOL_ABI = [
 // ── Balancer V2 pool configs on Arbitrum ─────────────────────────────────────
 // Pool IDs are fixed -- from Balancer subgraph / app.balancer.fi
 const BALANCER_POOLS = [
-    {
-        // Balancer USDC/USDT/USDC.e ComposableStable on Arbitrum
-        // Pool address from Balancer app -- high TVL stable pool
-        name:       'USDC/USDT/USDCe ComposableStable',
-        outputPair: 'USDC/USDT',
-        poolId:     '0x5a7f39435fd9c381e4932fa2047c9a5136a5e3e7000000000000000000000480',
-        pool:       '0x5A7f39435fD9c381e4932fa2047C9a5136A5E3E7',
-        tokens:     ['USDC', 'USDT', 'USDCe'],
-        decimals:   [6, 6, 6],
-        type:       'stable',
-        i: 0, j: 1,
-    },
-    {
-        name:       'WETH/USDC WeightedPool',
-        outputPair: 'ETH/USDC',
-        poolId:     '0x64541216bafffeec8ea535bb71fbc927831d0595000100000000000000000002',
-        pool:       '0x64541216bAFFFEec8ea535BB71Fbc927831d0595',
-        tokens:     ['WETH', 'USDC'],
-        decimals:   [18, 6],
-        type:       'weighted',
-        i: 0, j: 1,
-    },
+    // Balancer V2 REST API blocked by network policy
+    // To fix: query vault directly with confirmed poolIds from app.balancer.fi
+    // Best Arbitrum stable pool: search for USDC/USDT/USDCe on balancer.fi
+    // TODO next session: hardcode poolId from browser inspection
 ];
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
