@@ -61,3 +61,6 @@ data/telemetry/
 *.db
 .pgpass
 scripts/telemetry/*.backup*
+
+# Deploy/debug scripts and logs
+scripts/deploy/
