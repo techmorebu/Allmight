@@ -1,19 +1,15 @@
 ============================================================
 APPX_SMALL_OPERATOR_EDGE_DOCTRINE
 ============================================================
-
 Status: Authoritative
 Applies To: Phase 2+ (Execution and Capital Allocation)
 Purpose: Define structural edge for small-capital operator
 Last Updated: 2026-02-20
 
-
 ------------------------------------------------------------
 SECTION 1 — CORE DOCTRINE
 ------------------------------------------------------------
-
 AllMight does NOT compete on:
-
 - Latency
 - Private orderflow
 - Institutional capital depth
@@ -21,18 +17,15 @@ AllMight does NOT compete on:
 - Ultra-deep mainnet triangular arb
 
 AllMight competes on:
-
 1. Mid-liquidity inefficiencies
 2. Cross-chain spread drift
 3. Regime-aware sizing
 4. Gas-aware opportunity filtering
 5. Controlled compounding
 
-
 ------------------------------------------------------------
 SECTION 2 — TARGET EDGE ZONES
 ------------------------------------------------------------
-
 Liquidity Band:
 - TVL: $500k to $25M
 - Daily Volume: $200k to $10M
@@ -55,11 +48,9 @@ Excluded:
 
 Ethereum mainnet: DISABLED by default. See Section 4 MVI Gate.
 
-
 ------------------------------------------------------------
 SECTION 3 — EXECUTION MODEL
 ------------------------------------------------------------
-
 Primary mechanism: Flash loans (Aave V3 on Arbitrum/Base/Optimism)
 
 Flash loan model properties:
@@ -70,6 +61,8 @@ Flash loan model properties:
 
 Capital rules (fee reserve and buffer management):
 - Per-trade fee buffer: 2-5% of expected profit
+  NOTE: Future revision will use max(fixed_floor_USD, volatility_factor * expected_profit)
+  to prevent underbuffering when profit is small but gas is spiky
 - Max concurrent trades: 3
 - Daily drawdown limit on reserves: 5-8%
 - Hard halt threshold: 12%
@@ -79,15 +72,12 @@ Compounding model:
 - 15-25% reserve (liquidity buffer)
 - 5-15% hedge allocation
 
-
 ------------------------------------------------------------
 SECTION 4 — MAINNET VIABILITY GATE (MVI)
 ------------------------------------------------------------
-
 Mainnet is DISABLED by default.
 
 Activation requires passing at least 4 of 5:
-
 1. 14-day average spread persistence above defined threshold
 2. Gas volatility below defined ceiling
 3. Fee reserve above viability threshold
@@ -95,19 +85,15 @@ Activation requires passing at least 4 of 5:
 5. Shadow-mode drawdown below 5%
 
 Activation phases:
-
   DISABLED -> SHADOW -> LIMITED (max 10% reserve) -> ENABLED
 
 No full allocation without shadow validation.
 Shadow mode = full simulation with real market data, no on-chain execution.
 
-
 ------------------------------------------------------------
 SECTION 5 — COMPLEXITY GOVERNANCE RULE
 ------------------------------------------------------------
-
 A new execution module must satisfy at least 2 of 4:
-
 1. Increases measurable edge (bps or frequency)
 2. Improves capital efficiency
 3. Reduces variance
@@ -115,11 +101,9 @@ A new execution module must satisfy at least 2 of 4:
 
 If not, reject.
 
-
 ------------------------------------------------------------
 SECTION 6 — CONFIRMED LIVE SIGNALS (as of 2026-02-20)
 ------------------------------------------------------------
-
 These pairs have demonstrated gross-positive spread in real
 market conditions via spread_monitor.py:
 
@@ -136,11 +120,9 @@ PRIORITY 2 -- Near-miss, monitor:
   Optimism USDCe/USDT: UniV3 <-> Velodrome
   - Best observed: -1.73 bps (needs 2 bps to fire)
 
-
 ------------------------------------------------------------
 SECTION 7 — EXECUTION PHILOSOPHY
 ------------------------------------------------------------
-
 AllMight is a capital recycler.
 
 It exploits small inefficiencies:
@@ -154,7 +136,6 @@ Determinism > complexity.
 
 The market does not care how many lines of code were written.
 It responds only to correct inputs at the right moment.
-
 
 ============================================================
 END APPENDIX
