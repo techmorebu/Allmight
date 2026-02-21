@@ -154,7 +154,7 @@ async function fetchUniV3Pool(cfg) {
             return null;
         }
         const liqNum = Number(liq);
-        const tvlUSD /* NOTE: may be wrong for pools where token decimals differ */ /* NOTE: may be wrong for pools where token decimals differ */ = cfg.outputPair.includes('ETH') ? (liqNum / 1e6) * Math.sqrt(price) * 2 : liqNum / 1e9;
+        const tvlUSD /* NOTE: may be wrong for pools where token decimals differ */ /* NOTE: may be wrong for pools where token decimals differ */ /* NOTE: may be wrong for pools where token decimals differ */ = cfg.outputPair.includes('ETH') ? (liqNum / 1e6) * Math.sqrt(price) * 2 : liqNum / 1e9;
         return {
             pair: cfg.outputPair, pool: cfg.pool, price,
             liquidity: liqNum, tvlUSD,

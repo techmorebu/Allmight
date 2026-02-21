@@ -87,6 +87,10 @@ TVLUSD_MAX_SANE = 1_000_000_000  # $1B -- anything above this is a wei bug
 # Values like 366_000_000_000_000 are NOT dollars -- they are unusable
 # Use liquidity field as proxy: pools with real depth have liquidity > 1M
 TVLUSD_MAX_SANE = 1_000_000_000  # $1B -- anything above this is a wei bug
+# tvlUSD from UniV3 fetchers is in raw wei units (fetcher bug, fix pending)
+# Values like 366_000_000_000_000 are NOT dollars -- they are unusable
+# Use liquidity field as proxy: pools with real depth have liquidity > 1M
+TVLUSD_MAX_SANE = 1_000_000_000  # $1B -- anything above this is a wei bug
 
 # ── Redis loader ──────────────────────────────────────────────────────────────
 def load_markets(r: redis.Redis) -> list[dict]:
@@ -429,8 +433,27 @@ def main():
                 except Exception:
                     pass
 
+            # Discord alert on every EXECUTE decision
+            if result["decision"] == "EXECUTE":
+                try:
+                    _discord.execute_alert(
+                        chain     = opp["chain"],
+                        pair      = opp["pair"],
+                        gross_bps = f"{opp['gross_edge']:+.2f}bps",
+                        net_usd   = f"${result['net_profit_usd']:+.4f}",
+                    )
+                except Exception:
+                    pass
+
         if fired == 0:
             print(f"[{ts}] Scan #{scan_count} -- no candidates above {args.min_edge}bps")
+
+        # Hourly shadow report to Discord (every 60 scans)
+        if scan_count % 60 == 0:
+            try:
+                _send_shadow_report()
+            except Exception:
+                pass
 
         # Hourly shadow report to Discord (every 60 scans)
         if scan_count % 60 == 0:
