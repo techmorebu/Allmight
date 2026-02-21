@@ -76,7 +76,7 @@ echo "fetcher=$FETCHER_PID" >> "$PID_FILE"
 echo "Fetcher started (PID $FETCHER_PID) -- logs/fetcher.log"
 
 # Give fetcher time to populate Redis before monitor starts
-echo "Waiting 15s for initial Redis population..."
+echo "Waiting 35s for initial Redis population..."
 sleep 35
 
 # ── 2. Spread monitor ─────────────────────────────────────────────────────────
@@ -97,6 +97,12 @@ python3 "$REPO/scripts/execution/shadow_mode.py" \
 SHADOW_PID=$!
 echo "shadow=$SHADOW_PID" >> "$PID_FILE"
 echo "Shadow started (PID $SHADOW_PID) -- logs/shadow.log"
+
+# ── 4. Watchdog ──────────────────────────────────────────────────────────────
+python3 "$REPO/scripts/watchdog.py" >> "$LOG_DIR/watchdog.log" 2>&1 &
+WATCHDOG_PID=$!
+echo "watchdog=$WATCHDOG_PID" >> "$PID_FILE"
+echo "Watchdog started (PID $WATCHDOG_PID) -- logs/watchdog.log"
 
 # ── Summary ───────────────────────────────────────────────────────────────────
 echo ""

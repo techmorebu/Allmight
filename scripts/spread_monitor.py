@@ -11,7 +11,7 @@ Usage:
 Log file: logs/spread_monitor.csv
 """
 import argparse, os, sys, time, csv
-from datetime import datetime
+from datetime import datetime, timezone
 from collections import defaultdict
 
 import redis
@@ -67,7 +67,7 @@ def scan_chain(r, chain):
 
 def scan_spreads(r, chains, tier_usd=1000):
     results = []
-    ts = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+    ts = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
 
     for chain in chains:
         states = scan_chain(r, chain)
@@ -117,7 +117,7 @@ def scan_spreads(r, chains, tier_usd=1000):
 
 
 def print_snapshot(results, show_all=False):
-    ts = results[0]['timestamp'] if results else datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+    ts = results[0]['timestamp'] if results else datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
     print(f"\n[{ts}] Spread Snapshot")
     print(f"{'CHAIN':<10} {'PAIR':<14} {'BUY':<24} {'SELL':<24} {'SPRD':>6} {'FEES':>5} {'EDGE':>6}  ALERT")
     print("-" * 100)

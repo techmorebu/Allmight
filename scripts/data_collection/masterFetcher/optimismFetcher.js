@@ -99,52 +99,38 @@ const UNISWAP_V3_POOLS = [
         fee:        500,
         priceMode:  'direct',
     },
-    {
-        // DAI/USDC 0.01% -- verified via factory
-        outputPair: 'DAI/USDC',
-        pool:       '0xd28f71e383E93C570D3EdFe82EBbcEb35Ec6C412',
-        decimals0:  18,
-        decimals1:  6,
-        fee:        100,
-        priceMode:  'invert',
-    },
+    // DAI/USDC pool removed -- decimals mismatch causing price=0, needs on-chain verification
 ];
 
 // ── Velodrome V2 pools (verified from velodrome.finance) ──────────────────────
 const VELODROME_POOLS = [
     {
-        // WETH/USDC volatile -- verified via factory
+        // WETH/USDC volatile
+        // On-chain: token0=USDC(6dec), token1=WETH(18dec)
+        // getAmountOut(1 USDC, USDC) -> WETH amount
+        // ETH price = 1e6 / (wethOut / 1e18)
         outputPair: 'ETH/USDC',
         pool:       '0xF4F2657AE744354bAcA871E56775e5083F7276Ab',
-        token0:     '0x4200000000000000000000000000000000000006',  // WETH
-        decimals0:  18,
-        decimals1:  6,    // USDC native
+        token0:     '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85',  // USDC (actual token0)
+        decimals0:  6,    // USDC
+        decimals1:  18,   // WETH
         fee:        0.003,
         stable:     false,
-        priceMode:  'direct',
+        priceMode:  'invert',  // getAmountOut gives WETH/USDC, we want USDC/ETH
     },
     {
-        // USDCe/USDT stable -- 0.02% fee -- verified via factory + getAmountOut
+        // USDCe/USDT stable -- 0.02% fee -- $14k TVL -- REAL SIGNAL
+        // On-chain verified: token0=USDCe, token1=USDT
         outputPair: 'USDCe/USDT',
         pool:       '0x2B47C794c3789f499D8A54Ec12f949EeCCE8bA16',
         token0:     '0x7F5c764cBc14f9669B88837ca1490cCa17c31607',  // USDCe
         decimals0:  6,
-        decimals1:  6,    // USDT
+        decimals1:  6,
         fee:        0.0002,
         stable:     true,
         priceMode:  'direct',
     },
-    {
-        // USDC/USDT stable -- verified via factory
-        outputPair: 'USDC/USDT',
-        pool:       '0x1f80b1E3C538Aa5E83BBD60E04386d4e2B4Fa8FC',
-        token0:     '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85',  // USDC native
-        decimals0:  6,
-        decimals1:  6,    // USDT
-        fee:        0.0002,
-        stable:     true,
-        priceMode:  'direct',
-    },
+    // USDC/USDT stable removed -- $0 TVL, no liquidity
 ];
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
@@ -168,7 +154,7 @@ async function fetchUniV3Pool(cfg) {
             return null;
         }
         const liqNum = Number(liq);
-        const tvlUSD = cfg.outputPair.includes('ETH') ? (liqNum / 1e6) * Math.sqrt(price) * 2 : liqNum / 1e9;
+        const tvlUSD /* NOTE: may be wrong for pools where token decimals differ */ /* NOTE: may be wrong for pools where token decimals differ */ = cfg.outputPair.includes('ETH') ? (liqNum / 1e6) * Math.sqrt(price) * 2 : liqNum / 1e9;
         return {
             pair: cfg.outputPair, pool: cfg.pool, price,
             liquidity: liqNum, tvlUSD,
@@ -207,9 +193,14 @@ async function fetchVelodromePool(cfg) {
             console.error(`[OP] Velodrome ${cfg.outputPair}: stable price=${price.toFixed(6)} out of range`);
             return null;
         }
-        if (!cfg.stable && price > 1e8) {
-            console.error(`[OP] Velodrome ${cfg.outputPair}: volatile price=${price.toFixed(2)} out of range`);
-            return null;
+        if (!cfg.stable) {
+            // ETH/USDC should be ~1500-5000, not 0 or billions
+            const minP = cfg.priceMode === 'invert' ? 100 : 0.00001;
+            const maxP = cfg.priceMode === 'invert' ? 100000 : 1e8;
+            if (price < minP || price > maxP) {
+                console.error(`[OP] Velodrome ${cfg.outputPair}: volatile price=${price.toFixed(4)} out of range`);
+                return null;
+            }
         }
 
         const adj0   = Number(res[0]) / (10 ** cfg.decimals0);

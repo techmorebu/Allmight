@@ -27,6 +27,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import redis
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+from utils.discord_alerts import discord as _discord
 
 # ── Config ────────────────────────────────────────────────────────────────────
 REDIS_HOST  = os.getenv("REDIS_HOST", "localhost")
@@ -76,6 +79,14 @@ FEE_WALLS = {
 # Uses reserveUSD if available, else liquidity field as proxy
 MIN_RESERVE_USD   = 50_000   # $50k minimum pool size
 MIN_LIQUIDITY_RAW = 1_000_000  # fallback for UniV3 liquidity field
+# tvlUSD from UniV3 fetchers is in raw wei units (fetcher bug, fix pending)
+# Values like 366_000_000_000_000 are NOT dollars -- they are unusable
+# Use liquidity field as proxy: pools with real depth have liquidity > 1M
+TVLUSD_MAX_SANE = 1_000_000_000  # $1B -- anything above this is a wei bug
+# tvlUSD from UniV3 fetchers is in raw wei units (fetcher bug, fix pending)
+# Values like 366_000_000_000_000 are NOT dollars -- they are unusable
+# Use liquidity field as proxy: pools with real depth have liquidity > 1M
+TVLUSD_MAX_SANE = 1_000_000_000  # $1B -- anything above this is a wei bug
 
 # ── Redis loader ──────────────────────────────────────────────────────────────
 def load_markets(r: redis.Redis) -> list[dict]:
@@ -134,10 +145,18 @@ def load_markets(r: redis.Redis) -> list[dict]:
                     if float(reserve_usd) < MIN_RESERVE_USD:
                         continue
                 elif tvl_usd is not None:
-                    # UniV3 tvlUSD is in wei units (bug in fetcher)
+                    # UniV3 tvlUSD is in wei units (bug in fetcher, fix pending)
+                    # Values > $1B are almost certainly raw wei, not USD
                     # Use liquidity field as proxy instead
-                    if float(liquidity) < MIN_LIQUIDITY_RAW:
-                        continue
+                    tvl_val = float(tvl_usd)
+                    if tvl_val < TVLUSD_MAX_SANE:
+                        # Looks like a real USD value, use it
+                        if tvl_val < MIN_RESERVE_USD:
+                            continue
+                    else:
+                        # Raw wei value -- fall back to liquidity proxy
+                        if float(liquidity) < MIN_LIQUIDITY_RAW:
+                            continue
                 # If neither field exists, skip to be safe
 
                 k = (pair, chain)
@@ -386,8 +405,46 @@ def main():
                   f"gross={opp['gross_edge']:+.2f}bps | "
                   f"net=${result['net_profit_usd']:+.4f}")
 
+            # Discord alert on every EXECUTE decision
+            if result["decision"] == "EXECUTE":
+                try:
+                    _discord.execute_alert(
+                        chain     = opp["chain"],
+                        pair      = opp["pair"],
+                        gross_bps = f"{opp['gross_edge']:+.2f}bps",
+                        net_usd   = f"${result['net_profit_usd']:+.4f}",
+                    )
+                except Exception:
+                    pass
+
+            # Discord alert on every EXECUTE decision
+            if result["decision"] == "EXECUTE":
+                try:
+                    _discord.execute_alert(
+                        chain     = opp["chain"],
+                        pair      = opp["pair"],
+                        gross_bps = f"{opp['gross_edge']:+.2f}bps",
+                        net_usd   = f"${result['net_profit_usd']:+.4f}",
+                    )
+                except Exception:
+                    pass
+
         if fired == 0:
             print(f"[{ts}] Scan #{scan_count} -- no candidates above {args.min_edge}bps")
+
+        # Hourly shadow report to Discord (every 60 scans)
+        if scan_count % 60 == 0:
+            try:
+                _send_shadow_report()
+            except Exception:
+                pass
+
+        # Hourly shadow report to Discord (every 60 scans)
+        if scan_count % 60 == 0:
+            try:
+                _send_shadow_report()
+            except Exception:
+                pass
 
         if args.once:
             break

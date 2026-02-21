@@ -9,7 +9,7 @@ Two channels:
 """
 
 from typing import Dict, List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from dataclasses import dataclass
 
 
@@ -70,7 +70,7 @@ class DiscordFormatter:
                 'title': '⏸️ No Opportunities',
                 'description': 'No profitable opportunities detected',
                 'color': self.colors['warning'],
-                'timestamp': datetime.utcnow().isoformat(),
+                'timestamp': datetime.now(timezone.utc).isoformat(),
                 'footer': {'text': 'Allmight Arbitrage Scanner'}
             }
             
@@ -130,7 +130,7 @@ class DiscordFormatter:
             'description': description,
             'color': color,
             'fields': fields,
-            'timestamp': datetime.utcnow().isoformat(),
+            'timestamp': datetime.now(timezone.utc).isoformat(),
             'footer': {'text': f'Scan time: {stats.get("scan_time_ms", 0):.2f}ms'}
         }
         
@@ -236,7 +236,7 @@ class DiscordFormatter:
             'description': description,
             'color': self.colors['info'],
             'fields': fields,
-            'timestamp': datetime.utcnow().isoformat(),
+            'timestamp': datetime.now(timezone.utc).isoformat(),
             'footer': {'text': 'Allmight Arbitrage Scanner - Full Report'}
         }
         
@@ -278,7 +278,7 @@ class DiscordFormatter:
                         'inline': False
                     }
                 ],
-                'timestamp': datetime.utcnow().isoformat(),
+                'timestamp': datetime.now(timezone.utc).isoformat(),
                 'footer': {'text': 'Allmight Execution'}
             }
         else:
@@ -298,7 +298,7 @@ class DiscordFormatter:
                         'inline': False
                     }
                 ],
-                'timestamp': datetime.utcnow().isoformat(),
+                'timestamp': datetime.now(timezone.utc).isoformat(),
                 'footer': {'text': 'Allmight Execution'}
             }
         
@@ -354,7 +354,7 @@ class DiscordFormatter:
                     'inline': True
                 }
             ],
-            'timestamp': datetime.utcnow().isoformat(),
+            'timestamp': datetime.now(timezone.utc).isoformat(),
             'footer': {'text': 'Allmight Daily Summary'}
         }
         

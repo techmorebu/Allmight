@@ -71,14 +71,9 @@ const UNISWAP_V3_POOLS = [
         fee:        100,
         priceMode:  'direct',
     },
-    {
-        outputPair: 'DAI/USDC',
-        pool:       '0x7CF803e8d82A50504180f417B8bC7a493C0a0503',
-        decimals0:  18,   // DAI
-        decimals1:  6,    // USDC
-        fee:        100,
-        priceMode:  'invert',  // DAI(18)/USDC(6): sqrtP^2*10^12 -> invert = USDC/DAI ~1.0
-    },
+    // DAI/USDC removed -- decimal mismatch (DAI 18dec vs USDC 6dec)
+    // sqrtPriceX96 math returns 0 -- needs on-chain token order verification
+    //
     {
         outputPair: 'DAI/USDT',
         pool:       '0x7f580f8A02b759C350E6b8340e7c2d4b8162b6a9',
