@@ -77,7 +77,7 @@ echo "Fetcher started (PID $FETCHER_PID) -- logs/fetcher.log"
 
 # Give fetcher time to populate Redis before monitor starts
 echo "Waiting 15s for initial Redis population..."
-sleep 15
+sleep 35
 
 # ── 2. Spread monitor ─────────────────────────────────────────────────────────
 python3 "$REPO/scripts/spread_monitor.py" \
