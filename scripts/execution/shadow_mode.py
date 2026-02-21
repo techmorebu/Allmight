@@ -455,20 +455,6 @@ def main():
             except Exception:
                 pass
 
-        # Hourly shadow report to Discord (every 60 scans)
-        if scan_count % 60 == 0:
-            try:
-                _send_shadow_report()
-            except Exception:
-                pass
-
-        # Hourly shadow report to Discord (every 60 scans)
-        if scan_count % 60 == 0:
-            try:
-                _send_shadow_report()
-            except Exception:
-                pass
-
         if args.once:
             break
 
