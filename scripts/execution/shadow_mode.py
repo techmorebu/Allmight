@@ -33,7 +33,9 @@ REDIS_HOST  = os.getenv("REDIS_HOST", "localhost")
 REDIS_PORT  = int(os.getenv("REDIS_PORT", 6379))
 REDIS_DB    = int(os.getenv("REDIS_DB", 0))
 
-LOG_DIR     = Path("logs")
+# Absolute paths -- works regardless of working directory
+REPO_ROOT   = Path(__file__).resolve().parent.parent.parent
+LOG_DIR     = REPO_ROOT / "logs"
 TRADE_LOG   = LOG_DIR / "shadow_trades.csv"
 SUMMARY_LOG = LOG_DIR / "shadow_summary.txt"
 
@@ -51,18 +53,23 @@ TRADE_LOG_HEADERS = [
 AAVE_FLASH_FEE_PCT  = 0.0005   # 0.05% Aave V3 flash loan fee
 GAS_COST_USD        = 0.02     # ~$0.02 on Arbitrum
 
-# VALIDATED cross-venue pairs only (allowlist + fee wall in bps)
-# Any pair NOT in this dict is rejected -- prevents phantom signal simulation
-# Venue names must match exactly what the fetchers store in Redis
+# VALIDATED pairs: (asset_pair, buy_venue, sell_venue) -> fee_wall_bps
+# Explicit allowlist -- any combo NOT listed is REJECTED
+# Venue names match exactly what fetchers store in Redis (no chain suffix)
 FEE_WALLS = {
-    # Arbitrum -- confirmed signals
-    ("uniswap_v3", "curve"):          10,  # ETH/USDT: 5 + 5 bps  PRIORITY 1
-    ("curve",      "uniswap_v3"):     10,
-    ("uniswap_v3", "uniswap_v3"):      6,  # USDC/USDCe: 3 + 3 bps
+    # ── Arbitrum PRIORITY 1 -- confirmed gross-positive signal ───────────────
+    # ETH/USDT UniV3 <-> Curve: observed 0.5-151 bps, fires daily
+    ("ETH/USDT",   "uniswap_v3", "curve"):        10,
+    ("ETH/USDT",   "curve",      "uniswap_v3"):   10,
 
-    # Optimism -- near-miss signals, monitor only
-    ("velodrome",  "uniswap_v3"):      3,  # USDCe/USDT: 0.02% + 0.01%
-    ("uniswap_v3", "velodrome"):       3,
+    # USDC/USDCe UniV3 <-> UniV3: -2.71 bps best, near-miss
+    ("USDC/USDCe", "uniswap_v3", "uniswap_v3"):    6,
+    ("USDCe/USDC", "uniswap_v3", "uniswap_v3"):    6,
+
+    # ── Optimism PRIORITY 2 -- near-miss, monitor only ────────────────────────
+    # USDCe/USDT Velodrome <-> UniV3: -1.73 bps best, 3 bps fee wall
+    ("USDCe/USDT", "velodrome",  "uniswap_v3"):    3,
+    ("USDCe/USDT", "uniswap_v3", "velodrome"):     3,
 }
 
 # Minimum real liquidity per pool -- rejects phantom/empty pools
@@ -169,13 +176,14 @@ def load_markets(r: redis.Redis) -> list[dict]:
                 sell_fee_bps = sell["fee_pct"] * 100
                 estimated_fees = buy_fee_bps + sell_fee_bps
 
-                # ── Allowlist check -- only simulate validated venue pairs ──
-                venue_key     = (buy["venue"],  sell["venue"])
-                venue_key_rev = (sell["venue"], buy["venue"])
-                if venue_key not in FEE_WALLS and venue_key_rev not in FEE_WALLS:
-                    continue  # not a validated pair -- skip
+                # ── Allowlist: must match (asset_pair, buy_venue, sell_venue) ──
+                # Pair-aware -- prevents ETH/USDC slipping through velodrome check
+                key     = (pair, buy["venue"],  sell["venue"])
+                key_rev = (pair, sell["venue"], buy["venue"])
+                if key not in FEE_WALLS and key_rev not in FEE_WALLS:
+                    continue  # not a validated pair -- reject
 
-                fee_wall = FEE_WALLS.get(venue_key, FEE_WALLS.get(venue_key_rev, round(estimated_fees)))
+                fee_wall = FEE_WALLS.get(key, FEE_WALLS.get(key_rev, round(estimated_fees)))
 
                 gross = spread_bps - fee_wall
 
