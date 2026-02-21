@@ -51,15 +51,24 @@ TRADE_LOG_HEADERS = [
 AAVE_FLASH_FEE_PCT  = 0.0005   # 0.05% Aave V3 flash loan fee
 GAS_COST_USD        = 0.02     # ~$0.02 on Arbitrum
 
-# Fee walls per venue pair (bps) -- from validated RC-1 data
+# VALIDATED cross-venue pairs only (allowlist + fee wall in bps)
+# Any pair NOT in this dict is rejected -- prevents phantom signal simulation
+# Venue names must match exactly what the fetchers store in Redis
 FEE_WALLS = {
-    ("uniswap_v3_arbitrum", "curve_arbitrum"):   10,  # 5 + 5 bps
-    ("curve_arbitrum", "uniswap_v3_arbitrum"):   10,
-    ("uniswap_v3_arbitrum", "uniswap_v3_arbitrum"): 6,
-    ("velodrome_optimism",  "uniswap_v3_optimism"):  3,  # 0.02% + 0.01%
-    ("uniswap_v3_optimism", "velodrome_optimism"):   3,
-    ("uniswap_v3_optimism", "uniswap_v3_optimism"):  6,
+    # Arbitrum -- confirmed signals
+    ("uniswap_v3", "curve"):          10,  # ETH/USDT: 5 + 5 bps  PRIORITY 1
+    ("curve",      "uniswap_v3"):     10,
+    ("uniswap_v3", "uniswap_v3"):      6,  # USDC/USDCe: 3 + 3 bps
+
+    # Optimism -- near-miss signals, monitor only
+    ("velodrome",  "uniswap_v3"):      3,  # USDCe/USDT: 0.02% + 0.01%
+    ("uniswap_v3", "velodrome"):       3,
 }
+
+# Minimum real liquidity per pool -- rejects phantom/empty pools
+# Uses reserveUSD if available, else liquidity field as proxy
+MIN_RESERVE_USD   = 50_000   # $50k minimum pool size
+MIN_LIQUIDITY_RAW = 1_000_000  # fallback for UniV3 liquidity field
 
 # ── Redis loader ──────────────────────────────────────────────────────────────
 def load_markets(r: redis.Redis) -> list[dict]:
@@ -103,20 +112,38 @@ def load_markets(r: redis.Redis) -> list[dict]:
                 venue = entry.get("venue", "") or entry.get("source", "")
                 price = float(entry.get("price", 0) or 0)
                 chain = entry.get("chain", "")
-                fee   = float(entry.get("fee", 0) or 0)  # fee as fraction e.g. 0.05 = 5 bps
+                fee   = float(entry.get("fee", 0) or 0)
 
                 if price <= 0 or not pair or not venue or not chain:
                     continue
+
+                # ── Liquidity filter -- reject empty/phantom pools ────────────
+                reserve_usd = entry.get("reserveUSD")
+                tvl_usd     = entry.get("tvlUSD")
+                liquidity   = entry.get("liquidity", 0) or 0
+
+                if reserve_usd is not None:
+                    # Velodrome and AMM pools -- reserveUSD is reliable
+                    if float(reserve_usd) < MIN_RESERVE_USD:
+                        continue
+                elif tvl_usd is not None:
+                    # UniV3 tvlUSD is in wei units (bug in fetcher)
+                    # Use liquidity field as proxy instead
+                    if float(liquidity) < MIN_LIQUIDITY_RAW:
+                        continue
+                # If neither field exists, skip to be safe
 
                 k = (pair, chain)
                 if k not in prices:
                     prices[k] = []
                 prices[k].append({
-                    "pair":    pair,
-                    "venue":   venue,
-                    "price":   price,
-                    "chain":   chain,
-                    "fee_pct": fee,   # fraction, NOT bps
+                    "pair":       pair,
+                    "venue":      venue,
+                    "price":      price,
+                    "chain":      chain,
+                    "fee_pct":    fee,
+                    "reserve_usd": float(reserve_usd) if reserve_usd else None,
+                    "liquidity":  float(liquidity),
                 })
 
         except Exception as e:
@@ -142,13 +169,13 @@ def load_markets(r: redis.Redis) -> list[dict]:
                 sell_fee_bps = sell["fee_pct"] * 100
                 estimated_fees = buy_fee_bps + sell_fee_bps
 
-                fee_wall = FEE_WALLS.get(
-                    (buy["venue"],  sell["venue"]),
-                    FEE_WALLS.get(
-                        (sell["venue"], buy["venue"]),
-                        round(estimated_fees)
-                    )
-                )
+                # ── Allowlist check -- only simulate validated venue pairs ──
+                venue_key     = (buy["venue"],  sell["venue"])
+                venue_key_rev = (sell["venue"], buy["venue"])
+                if venue_key not in FEE_WALLS and venue_key_rev not in FEE_WALLS:
+                    continue  # not a validated pair -- skip
+
+                fee_wall = FEE_WALLS.get(venue_key, FEE_WALLS.get(venue_key_rev, round(estimated_fees)))
 
                 gross = spread_bps - fee_wall
 
