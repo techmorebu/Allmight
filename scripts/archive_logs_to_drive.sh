@@ -14,7 +14,7 @@
 REPO="$HOME/Allmight"
 LOG_DIR="$REPO/logs"
 STAGE_DIR="$LOG_DIR/upload_staging"
-DRIVE_REMOTE="gdrive"
+DRIVE_REMOTE="techmorebu"
 DRIVE_ROOT="AllMight/logs"
 RETENTION_DAYS=7
 DATE=$(date -u +%Y/%m/%d)
