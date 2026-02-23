@@ -41,6 +41,11 @@ if [[ "${1:-}" == "--stop" ]]; then
     done < "$PID_FILE"
     rm -f "$PID_FILE"
     echo "Done."
+python3 -c "
+import sys; sys.path.insert(0,'$(pwd)')
+from utils.discord_alerts import discord
+discord.shutdown('Manual stop via start_allmight.sh --stop')
+" 2>/dev/null || true
     exit 0
 fi
 
@@ -62,6 +67,8 @@ if ! redis-cli ping > /dev/null 2>&1; then
     exit 1
 fi
 echo "Redis: OK"
+redis-cli --scan --pattern "fetcher:*" | xargs -r redis-cli del > /dev/null 2>&1
+echo "Redis: stale keys cleared"
 
 # ── 1. Master fetcher loop ────────────────────────────────────────────────────
 # Runs node scripts/master-fetcher.js once every INTERVAL seconds
@@ -107,6 +114,21 @@ echo "Watchdog started (PID $WATCHDOG_PID) -- logs/watchdog.log"
 # ── Summary ───────────────────────────────────────────────────────────────────
 echo ""
 echo "AllMight running. PIDs saved to $PID_FILE"
+
+# Notify Discord -- system online
+python3 -c "
+import sys; sys.path.insert(0,'$REPO')
+from utils.discord_alerts import discord
+import re
+pids = {}
+try:
+    for line in open('$PID_FILE').read().splitlines():
+        if '=' in line:
+            k,v = line.split('=',1)
+            pids[k.strip()] = int(v.strip())
+except: pass
+discord.startup(pids)
+" 2>/dev/null || true
 echo ""
 echo "Monitor live output:"
 echo "  tail -f logs/fetcher.log"

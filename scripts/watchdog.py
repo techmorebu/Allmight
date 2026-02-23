@@ -1,20 +1,11 @@
 #!/usr/bin/env python3
 """
 scripts/watchdog.py
-
 Monitors AllMight processes and Redis freshness.
-Sends Discord alerts and auto-restarts dead processes.
-
-Usage (started by start_allmight.sh):
-    python3 scripts/watchdog.py &
+Wired to full notification system in utils/discord_alerts.py.
 """
 
-import os
-import sys
-import time
-import json
-import signal
-import subprocess
+import os, sys, time, json, signal, subprocess
 from pathlib import Path
 from datetime import datetime, timezone
 
@@ -22,140 +13,146 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 from utils.discord_alerts import discord
 
-PID_FILE       = ROOT / "logs/pids.txt"
-FETCHER_LOG    = ROOT / "logs/fetcher.log"
-CHECK_INTERVAL = 300   # 5 minutes
-HEARTBEAT_EVERY = 12   # checks (12 * 5min = 1 hour)
-REDIS_STALE_SEC = 360  # 6 minutes -- fetcher runs every 60s
+PID_FILE        = ROOT / "logs/pids.txt"
+CHECK_INTERVAL  = 300   # 5 minutes
+HEARTBEAT_EVERY = 12    # checks (= 1 hour)
+WEEKLY_DOW      = 6     # Sunday (0=Mon)
+REDIS_STALE_SEC = 360   # 6 minutes
+SESSION_START   = 13    # 8am CST = 13 UTC
+SESSION_END     = 21    # 4pm CST = 21 UTC
+DROUGHT_HOURS   = 6     # alert if no trades in 6hr during session
 
 import redis as _redis
-r = _redis.Redis(host="localhost", port=6379, db=0, decode_responses=True)
+_r = _redis.Redis(host="localhost", port=6379, db=0, decode_responses=True)
 
 
-def load_pids() -> dict:
-    if not PID_FILE.exists():
-        return {}
+def load_pids():
+    if not PID_FILE.exists(): return {}
     pids = {}
     for line in PID_FILE.read_text().splitlines():
         if "=" in line:
-            name, pid = line.strip().split("=", 1)
-            pids[name.strip()] = int(pid.strip())
+            k,v = line.strip().split("=",1)
+            try: pids[k.strip()] = int(v.strip())
+            except: pass
     return pids
 
 
-def is_alive(pid: int) -> bool:
-    try:
-        os.kill(pid, 0)
-        return True
-    except (OSError, ProcessLookupError):
-        return False
+def is_alive(pid):
+    try: os.kill(pid, 0); return True
+    except: return False
 
 
-def redis_is_fresh() -> tuple[bool, int]:
-    """Returns (is_fresh, key_count)."""
+def redis_freshness():
+    """Returns (is_fresh, key_count, age_minutes)."""
     try:
-        keys = r.keys("fetcher:*")
-        if not keys:
-            return False, 0
-        # Check timestamp of most recent write
-        freshest = 0
+        keys = _r.keys("fetcher:*")
+        if not keys: return False, 0, 999
+        ages = []
         for key in keys:
-            raw = r.get(key)
-            if not raw:
-                continue
+            raw = _r.get(key)
+            if not raw: continue
             try:
                 blob = json.loads(raw)
-                ts_str = blob.get("timestamp", "")
-                if ts_str:
-                    from datetime import datetime, timezone
-                    ts = datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
-                    age = (datetime.now(timezone.utc) - ts).total_seconds()
-                    freshest = max(freshest, -age)  # most recent = least negative
-            except Exception:
-                continue
-        # If we got keys but couldn't parse timestamps, assume fresh
-        return True, len(keys)
-    except Exception:
-        return False, 0
+                ts   = blob.get("timestamp","")
+                if ts:
+                    dt  = datetime.fromisoformat(ts.replace("Z","+00:00"))
+                    age = (datetime.now(timezone.utc)-dt).total_seconds()
+                    ages.append(age)
+            except: continue
+        if not ages: return True, len(keys), 0
+        min_age = min(ages) / 60
+        return min_age < 6, len(keys), min_age
+    except: return False, 0, 999
 
 
-def restart_process(name: str, pids: dict) -> int | None:
-    """Attempt to restart a dead process. Returns new PID or None."""
+def restart_process(name, log_dir):
     os.chdir(ROOT)
-    env = os.environ.copy()
-
-    commands = {
-        "fetcher": ["bash", "-c",
-            f"while true; do node {ROOT}/scripts/master-fetcher.js once 2>&1; sleep 60; done"],
+    cmds = {
+        "fetcher": ["bash","-c",
+            f"while true; do node {ROOT}/scripts/master-fetcher.js once 2>&1;"
+            f" sleep 60; done"],
         "monitor": ["python3", f"{ROOT}/scripts/spread_monitor.py",
-            "--chain", "all", "--interval", "60"],
+                    "--chain","all","--interval","60"],
         "shadow":  ["python3", f"{ROOT}/scripts/execution/shadow_mode.py",
-            "--min-edge", "0", "--size", "1000", "--interval", "60"],
+                    "--min-edge","0","--size","1000","--interval","60"],
     }
-
-    if name not in commands:
-        return None
-
-    log_file = open(ROOT / f"logs/{name}.log", "a")
-    proc = subprocess.Popen(
-        commands[name], stdout=log_file, stderr=log_file, env=env
-    )
-
-    # Update PID file
+    if name not in cmds: return None
+    log = open(log_dir / f"{name}.log", "a")
+    proc = subprocess.Popen(cmds[name], stdout=log, stderr=log)
     lines = PID_FILE.read_text().splitlines() if PID_FILE.exists() else []
-    new_lines = [l for l in lines if not l.startswith(name + "=")]
-    new_lines.append(f"{name}={proc.pid}")
-    PID_FILE.write_text("\n".join(new_lines) + "\n")
-
+    new   = [l for l in lines if not l.startswith(name+"=")]
+    new.append(f"{name}={proc.pid}")
+    PID_FILE.write_text("\n".join(new)+"\n")
     return proc.pid
+
+
+def in_session():
+    h = datetime.now(timezone.utc).hour
+    return SESSION_START <= h < SESSION_END
+
+
+def check_drought(check_count):
+    """Alert if no trades during session hours."""
+    if not in_session(): return
+    from utils.discord_alerts import _load_trades, _stats
+    hr_trades = _load_trades(hours=DROUGHT_HOURS)
+    s = _stats(hr_trades)
+    if s["executed"] == 0 and check_count > 1:
+        discord.signal_drought(DROUGHT_HOURS)
+
+
+def check_weekly_rollup():
+    """Fire weekly rollup on Sunday."""
+    now = datetime.now(timezone.utc)
+    if now.weekday() == WEEKLY_DOW and now.hour == 0 and now.minute < 6:
+        discord.weekly_rollup()
 
 
 def main():
     print(f"[watchdog] Started -- check every {CHECK_INTERVAL}s")
-    discord.system_alert("🐕 Watchdog started -- monitoring all processes", level="INFO")
+    discord.system_alert("Watchdog started", level="INFO")
 
     check_count = 0
+    log_dir     = ROOT / "logs"
 
     while True:
         time.sleep(CHECK_INTERVAL)
         check_count += 1
-        ts = datetime.now(timezone.utc).strftime("%H:%M UTC")
-        pids = load_pids()
+        pids   = load_pids()
         issues = []
 
-        # ── Check process health ──────────────────────────────────────────────
-        for name in ("fetcher", "monitor", "shadow"):
+        # Process health
+        for name in ("fetcher","monitor","shadow"):
             pid = pids.get(name)
             if pid is None:
-                issues.append(f"{name}: no PID recorded")
+                issues.append(f"{name}: no PID")
                 continue
             if not is_alive(pid):
-                issues.append(f"{name} (PID {pid}) DEAD -- restarting")
-                new_pid = restart_process(name, pids)
+                discord.process_dead(name, pid)
+                new_pid = restart_process(name, log_dir)
                 if new_pid:
-                    issues[-1] += f" -> new PID {new_pid}"
+                    discord.process_restarted(name, pid, new_pid)
                 else:
-                    issues[-1] += " -> restart FAILED"
+                    discord.error(f"Failed to restart {name}", component="watchdog")
 
-        # ── Check Redis freshness ─────────────────────────────────────────────
-        fresh, key_count = redis_is_fresh()
-        if not fresh or key_count < 5:
-            issues.append(f"Redis stale or empty: {key_count} keys")
+        # Redis freshness
+        fresh, key_count, age_min = redis_freshness()
+        if not fresh:
+            discord.stale_redis(key_count, age_min)
 
-        # ── Send alerts if issues ─────────────────────────────────────────────
-        if issues:
-            msg = "\n".join(issues)
-            print(f"[watchdog {ts}] ISSUES: {msg}")
-            discord.system_alert(f"Issues detected at {ts}:\n{msg}", level="WARNING")
-        else:
-            print(f"[watchdog {ts}] All OK -- {key_count} Redis keys")
+        # Signal drought during session hours
+        check_drought(check_count)
 
-        # ── Hourly heartbeat ──────────────────────────────────────────────────
+        # Weekly rollup
+        check_weekly_rollup()
+
+        # Hourly heartbeat
         if check_count % HEARTBEAT_EVERY == 0:
-            status = f"{key_count} Redis keys | {len(pids)} processes running"
-            if issues:
-                status += f" | {len(issues)} issues"
-            discord.heartbeat(f"Hourly check at {ts} -- {status}")
+            discord.heartbeat()
+
+        ts = datetime.now(timezone.utc).strftime("%H:%M UTC")
+        status = "OK" if not issues and fresh else "ISSUES"
+        print(f"[watchdog {ts}] {status} -- {key_count} Redis keys")
 
 
 if __name__ == "__main__":

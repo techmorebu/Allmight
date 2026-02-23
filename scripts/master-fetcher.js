@@ -119,7 +119,7 @@ async function runFetchersOnce() {
       results[name] = payload;
 
       try {
-        await redisClient.set(`fetcher:${name}`, JSON.stringify(payload));
+        await redisClient.set(`fetcher:${name}`, JSON.stringify(payload), { EX: 300 }); // 5min TTL
         log("info", "Fetcher result stored in Redis", {
           name,
           durationMs,
@@ -144,7 +144,7 @@ async function runFetchersOnce() {
       results[name] = errorPayload;
 
       try {
-        await redisClient.set(`fetcher:${name}:error`, JSON.stringify(errorPayload));
+        await redisClient.set(`fetcher:${name}:error`, JSON.stringify(errorPayload), { EX: 300 }); // 5min TTL
       } catch (redisErr) {
         log("error", "Failed to store fetcher error in Redis", {
           name,
