@@ -398,6 +398,20 @@ class DiscordAlerts:
             f" {sys_.get('mvi_reason','')}\n"
             f"```"
         )
+        # Discord limit is 2000 chars -- split into two messages
+        if len(text) > 1900:
+            # Find a clean split point at a section divider
+            split_marker = "\n```\n```\n"
+            mid = text.find("─"*44, len(text)//2)
+            if mid > 0:
+                part1 = text[:mid].rstrip() + "\n```"
+                part2 = "```\n" + text[mid:]
+            else:
+                part1 = text[:1900] + "\n```"
+                part2 = "```\n" + text[1900:]
+            ok1 = _send(DETAILED_WEBHOOK, part1)
+            ok2 = _send(DETAILED_WEBHOOK, part2)
+            return ok1 and ok2
         return _send(DETAILED_WEBHOOK, text)
 
     def weekly_rollup(self):

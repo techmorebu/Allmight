@@ -528,19 +528,47 @@ def record_new_session():
 # ── CLI test ──────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    print("Running metrics engine test...")
-    m = write_metrics()
-    if m:
-        print(json.dumps({
-            "session":    m["session"],
-            "calendar":   m["calendar"],
-            "rolling_24": m["rolling_24hr"],
-            "all_time":   m["all_time"],
-            "heatmap_best": m["heatmap"]["best_hours"],
-            "anomalies":  m["system"]["anomalies"],
-            "drip":       m["drip"],
-            "estimates":  m["estimates"],
-        }, indent=2))
-        print(f"\nmetrics.json written to: {METRICS_PATH}")
+    import sys, time as _time
+
+    if "--daemon" in sys.argv:
+        # Run as foreground daemon -- loop forever, update every 60s
+        record_new_session()
+        interval = 60
+        print(f"[metrics_engine] Daemon started (interval={interval}s)")
+        print(f"[metrics_engine] Output: {METRICS_PATH}")
+        while True:
+            try:
+                m = write_metrics()
+                if m:
+                    print(
+                        f"[metrics_engine] "
+                        f"session=${m['session']['total_pnl']:.4f} "
+                        f"all_time=${m['all_time']['total_pnl']:.4f} "
+                        f"anomalies={m['system']['anomaly_count']}"
+                    )
+            except Exception as e:
+                print(f"[metrics_engine] ERROR: {e}")
+            _time.sleep(interval)
+
+    elif "--reset-session" in sys.argv:
+        record_new_session()
+        print("Session reset OK")
+
     else:
-        print("ERROR: metrics calculation failed")
+        # One-shot -- write metrics.json and print summary
+        print("Running metrics engine test...")
+        m = write_metrics()
+        if m:
+            print(json.dumps({
+                "session":    m["session"],
+                "calendar":   m["calendar"],
+                "rolling_24hr": m["rolling_24hr"],
+                "all_time":   m["all_time"],
+                "heatmap_best": m["heatmap"]["best_hours"],
+                "anomalies":  m["system"]["anomalies"],
+                "drip":       m["drip"],
+                "estimates":  m["estimates"],
+            }, indent=2))
+            print(f"\nmetrics.json written to: {METRICS_PATH}")
+        else:
+            print("ERROR: metrics calculation failed")
