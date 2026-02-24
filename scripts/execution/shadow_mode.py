@@ -385,6 +385,16 @@ def main():
 
     LOG_DIR.mkdir(exist_ok=True)
 
+    # Write mode to session_start.json so metrics_engine can read it
+    import json as _json
+    _sf = LOG_DIR / "session_start.json"
+    _sd = {}
+    if _sf.exists():
+        try: _sd = _json.loads(_sf.read_text())
+        except: pass
+    _sd["mode"] = "LIVE" if args.live else "SHADOW"
+    _sf.write_text(_json.dumps(_sd, indent=2))
+
     # ── Mode banner ───────────────────────────────────────────────────────
     mode_label = "LIVE" if args.live else "SHADOW"
     if args.live:
