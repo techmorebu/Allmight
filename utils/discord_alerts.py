@@ -523,6 +523,43 @@ class DiscordAlerts:
         return _send(ERRORS_WEBHOOK, text)
 
     # ── test ──────────────────────────────────────────────────────────────────
+
+    def live_execute(self, pair, gross_bps, simulated_usd,
+                     actual_usd, tx_hash, gas_eth, session_id=""):
+        """Fires when a LIVE trade executes successfully on-chain."""
+        slippage = actual_usd - simulated_usd
+        slip_str = f"+${slippage:.4f}" if slippage >= 0 else f"-${abs(slippage):.4f}"
+        short_hash = tx_hash[:10] + "..." + tx_hash[-6:] if len(tx_hash) > 16 else tx_hash
+        text = (
+            f"💰 **LIVE EXECUTE** | {_ts()}\n"
+            f"```\n"
+            f" Chain:      ARBITRUM\n"
+            f" Pair:       {pair}\n"
+            f" Gross edge: {gross_bps}bps\n"
+            f" Sim P&L:    ${simulated_usd:.4f}  [simulated]\n"
+            f" ACTUAL P&L: ${actual_usd:.4f}  [ON-CHAIN]\n"
+            f" Slippage:   {slip_str}\n"
+            f" Gas cost:   ${float(gas_eth)*2700:.4f} (~{gas_eth} ETH)\n"
+            f" Tx:         {short_hash}\n"
+            f" Session:    {session_id[:20]}\n"
+            f"```"
+        )
+        return _send(ALERT_WEBHOOK, text)
+
+    def live_revert(self, pair, gross_bps, session_id=""):
+        """Fires when on-chain profitability gate reverts -- zero loss."""
+        text = (
+            f"🛡️ **LIVE REVERT** | {_ts()}\n"
+            f"```\n"
+            f" Chain:    ARBITRUM\n"
+            f" Pair:     {pair}\n"
+            f" Edge:     {gross_bps}bps\n"
+            f" Result:   On-chain gate protected -- zero loss\n"
+            f" Session:  {session_id[:20]}\n"
+            f"```"
+        )
+        return _send(ALERT_WEBHOOK, text)
+
     def test(self):
         print("Testing v7 notifications (reads from metrics.json)...")
         print("TERMINAL -- heartbeat...")
