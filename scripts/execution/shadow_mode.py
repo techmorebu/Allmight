@@ -51,7 +51,7 @@ TRADE_LOG_HEADERS = [
     "spread_bps", "fee_bps", "gross_edge_bps", "net_edge_bps",
     "trade_size_usd", "gross_profit_usd", "net_profit_usd",
     "aave_fee_usd", "gas_usd",
-    "decision", "would_revert",
+    "decision", "would_revert", "mode",
 ]
 
 # ── Execution constants (doctrine Section 3) ──────────────────────────────────
@@ -472,6 +472,7 @@ def main():
                 "gas_usd":          result["gas_usd"],
                 "decision":         result["decision"],
                 "would_revert":     result["would_revert"],
+                "mode":             "LIVE" if args.live else "SHADOW",
             }
             writer.writerow(row)
             log_file.flush()
