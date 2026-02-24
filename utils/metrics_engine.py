@@ -61,7 +61,15 @@ def _get_session_start():
     now = _now()
     sid = _ts(now)
     SESSION_PATH.parent.mkdir(exist_ok=True)
-    SESSION_PATH.write_text(json.dumps({"start": now.isoformat(), "session_id": sid}))
+    _existing = {}
+    if SESSION_PATH.exists():
+        try: _existing = json.loads(SESSION_PATH.read_text())
+        except: pass
+    SESSION_PATH.write_text(json.dumps({
+        "start":      now.isoformat(),
+        "session_id": sid,
+        "mode":       _existing.get("mode", "SHADOW"),
+    }))
     return now, sid
 
 def _record_session_start():
@@ -69,7 +77,15 @@ def _record_session_start():
     now = _now()
     sid = _ts(now)
     SESSION_PATH.parent.mkdir(exist_ok=True)
-    SESSION_PATH.write_text(json.dumps({"start": now.isoformat(), "session_id": sid}))
+    _existing = {}
+    if SESSION_PATH.exists():
+        try: _existing = json.loads(SESSION_PATH.read_text())
+        except: pass
+    SESSION_PATH.write_text(json.dumps({
+        "start":      now.isoformat(),
+        "session_id": sid,
+        "mode":       _existing.get("mode", "SHADOW"),
+    }))
     return now, sid
 
 # ── CSV loader ────────────────────────────────────────────────────────────────
