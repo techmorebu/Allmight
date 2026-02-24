@@ -1,0 +1,165 @@
+{
+  "_comment": "Oracle integration config for Allmight. All oracles DISABLED by default. Enable after reality check.",
+  "_version": "1.0.0",
+  "_last_updated": "2026-02-24",
+
+  "global": {
+    "enabled": false,
+    "default_chain_id": "arbitrum",
+    "default_timeout_s": 5.0,
+    "default_max_age_ms": 30000,
+    "min_oracles_for_consensus": 2,
+    "consensus_tolerance_pct": 1.0,
+    "suspicious_edge_buffer_bps": 20.0
+  },
+
+  "oracles": {
+
+    "dexscreener": {
+      "_priority": 1,
+      "_tier": "IMMEDIATE",
+      "_comment": "Free, no API key, real-time DEX data across all major venues. Add this first.",
+      "enabled": false,
+      "base_url": "https://api.dexscreener.com/latest/dex",
+      "requires_api_key": false,
+      "api_key_env_var": null,
+      "rate_limit": {
+        "requests_per_minute": 300,
+        "requests_per_day": null
+      },
+      "timeout_s": 5.0,
+      "chains_supported": ["arbitrum", "ethereum", "base", "polygon", "bsc"],
+      "use_case": "cross_dex_price_feed",
+      "implementation_file": "scripts/oracles/implementations/dexscreener_oracle.py",
+      "implementation_status": "NOT_IMPLEMENTED"
+    },
+
+    "zerox": {
+      "_priority": 2,
+      "_tier": "IMMEDIATE",
+      "_comment": "Aggregated DEX liquidity. Use as validation oracle — does your edge beat their quote?",
+      "enabled": false,
+      "base_url": "https://api.0x.org/swap/v1",
+      "requires_api_key": true,
+      "api_key_env_var": "ZEROX_API_KEY",
+      "rate_limit": {
+        "requests_per_minute": 180,
+        "requests_per_day": null
+      },
+      "timeout_s": 5.0,
+      "chains_supported": ["arbitrum", "ethereum", "base", "polygon"],
+      "use_case": "validation_oracle",
+      "implementation_file": "scripts/oracles/implementations/zerox_oracle.py",
+      "implementation_status": "NOT_IMPLEMENTED"
+    },
+
+    "coingecko": {
+      "_priority": 3,
+      "_tier": "HIGH_VALUE",
+      "_comment": "Generous free tier. Use for pair filtering — high volume pairs = better arb opportunities.",
+      "enabled": false,
+      "base_url": "https://api.coingecko.com/api/v3",
+      "requires_api_key": false,
+      "api_key_env_var": "COINGECKO_API_KEY",
+      "rate_limit": {
+        "requests_per_minute": 30,
+        "requests_per_day": null
+      },
+      "timeout_s": 8.0,
+      "chains_supported": ["arbitrum", "ethereum"],
+      "use_case": "pair_filtering_market_cap",
+      "implementation_file": "scripts/oracles/implementations/coingecko_oracle.py",
+      "implementation_status": "NOT_IMPLEMENTED"
+    },
+
+    "oneinch": {
+      "_priority": 4,
+      "_tier": "HIGH_VALUE",
+      "_comment": "Advanced routing benchmark. Compare your multi-hop routes against theirs.",
+      "enabled": false,
+      "base_url": "https://api.1inch.dev/swap/v6.0",
+      "requires_api_key": true,
+      "api_key_env_var": "ONEINCH_API_KEY",
+      "rate_limit": {
+        "requests_per_minute": 60,
+        "requests_per_day": null
+      },
+      "timeout_s": 5.0,
+      "chains_supported": ["arbitrum", "ethereum"],
+      "use_case": "routing_benchmark",
+      "implementation_file": "scripts/oracles/implementations/oneinch_oracle.py",
+      "implementation_status": "NOT_IMPLEMENTED"
+    },
+
+    "coinmarketcap": {
+      "_priority": 5,
+      "_tier": "SUPPLEMENTARY",
+      "_comment": "CEX-focused. Lower priority — use CoinGecko first.",
+      "enabled": false,
+      "base_url": "https://pro-api.coinmarketcap.com/v1",
+      "requires_api_key": true,
+      "api_key_env_var": "CMC_API_KEY",
+      "rate_limit": {
+        "requests_per_minute": null,
+        "requests_per_day": 333
+      },
+      "timeout_s": 5.0,
+      "chains_supported": ["ethereum"],
+      "use_case": "price_validation_cex",
+      "implementation_file": "scripts/oracles/implementations/cmc_oracle.py",
+      "implementation_status": "NOT_IMPLEMENTED"
+    },
+
+    "cryptocompare": {
+      "_priority": 6,
+      "_tier": "SUPPLEMENTARY",
+      "_comment": "News-driven volatility alerts. Lowest priority.",
+      "enabled": false,
+      "base_url": "https://min-api.cryptocompare.com/data",
+      "requires_api_key": true,
+      "api_key_env_var": "CRYPTOCOMPARE_API_KEY",
+      "rate_limit": {
+        "requests_per_minute": null,
+        "requests_per_day": 2777
+      },
+      "timeout_s": 5.0,
+      "chains_supported": ["ethereum"],
+      "use_case": "news_volatility_alerts",
+      "implementation_file": "scripts/oracles/implementations/cryptocompare_oracle.py",
+      "implementation_status": "NOT_IMPLEMENTED"
+    },
+
+    "stub": {
+      "_priority": 99,
+      "_tier": "TESTING_ONLY",
+      "_comment": "Fake oracle for testing. Never enable in production.",
+      "enabled": false,
+      "requires_api_key": false,
+      "api_key_env_var": null,
+      "use_case": "testing",
+      "implementation_status": "COMPLETE"
+    }
+
+  },
+
+  "integration_order": [
+    "1_after_reality_check: dexscreener (free, no key, add first)",
+    "2_after_dexscreener_stable: zerox (validation oracle)",
+    "3_optional: coingecko (pair filtering)",
+    "4_optional: oneinch (routing benchmark — only if multi-hop is underperforming)",
+    "5_low_priority: coinmarketcap",
+    "6_low_priority: cryptocompare"
+  ],
+
+  "websocket_upgrade": {
+    "_comment": "Phase 2 plan: replace HTTP polling with WS event subscriptions",
+    "target_latency_ms": 100,
+    "current_polling_interval_ms": 60000,
+    "alchemy_ws_endpoints": {
+      "uniswap_v3_swap_event": "wss://arb-mainnet.g.alchemy.com/v2/{ALCHEMY_KEY}",
+      "curve_token_exchange": "wss://arb-mainnet.g.alchemy.com/v2/{ALCHEMY_KEY}"
+    },
+    "implementation_status": "NOT_IMPLEMENTED",
+    "prerequisite": "reality_check_complete AND baseline_elapsed_ms_captured"
+  }
+}
