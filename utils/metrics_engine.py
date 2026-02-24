@@ -419,6 +419,7 @@ def calculate_metrics():
     metrics = {
         "schema_version":  SCHEMA_VER,
         "generated_at":    _ts(now),
+        "mode":            json.loads(SESSION_PATH.read_text()).get("mode","SHADOW") if SESSION_PATH.exists() else "SHADOW",
         "session_id":      session_id,
         "session_start":   _ts(session_start),
         "session_hours":   round(session_hrs, 2),
