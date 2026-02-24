@@ -161,14 +161,33 @@ async function main() {
   }
 
   // ── Connect to Arbitrum ─────────────────────────────────────────────────
-  const rpcUrl = process.env.ARBITRUM_MAINNET_RPC_URL_1;
-  if (!rpcUrl || rpcUrl.includes("YOUR_")) {
-    return result(false, { error: "ARBITRUM_MAINNET_RPC_URL_1 not set", session_id });
+  // RPC with fallback
+  const rpcs = [
+    process.env.ARBITRUM_MAINNET_RPC_URL_1,
+    process.env.ARBITRUM_MAINNET_RPC_URL_2,
+  ].filter(r => r && !r.includes("YOUR_"));
+
+  if (rpcs.length === 0) {
+    return result(false, { error: "No RPC URLs configured", session_id });
   }
 
-  let provider, wallet, bot;
+  let provider, wallet, bot, rpcUrl;
+  for (const rpc of rpcs) {
+    try {
+      const testProvider = new ethers.JsonRpcProvider(rpc);
+      await testProvider.getBlockNumber();
+      provider = testProvider;
+      rpcUrl   = rpc;
+      break;
+    } catch (e) {
+      continue;
+    }
+  }
+  if (!provider) {
+    return result(false, { error: "All RPCs failed", session_id });
+  }
+
   try {
-    provider = new ethers.JsonRpcProvider(rpcUrl);
     wallet   = new ethers.Wallet(privKey, provider);
     bot      = new ethers.Contract(botAddress, BOT_ABI, wallet);
   } catch (e) {
