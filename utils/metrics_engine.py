@@ -417,8 +417,8 @@ def calculate_metrics():
         },
         "rolling_24hr": rolling_stats,
         "all_time":     all_stats,
-        "shadow_alltime": _core_stats([t for t in trades if t.get("mode","SHADOW")=="SHADOW"]),
-        "live_alltime":   _core_stats([t for t in trades if t.get("mode","SHADOW")=="LIVE"]),
+        "shadow_alltime": _core_stats([t for t in all_trades if t.get("mode","SHADOW")=="SHADOW"]),
+        "live_alltime":   _core_stats([t for t in all_trades if t.get("mode","SHADOW")=="LIVE"]),
         "week":         week_stats,
 
         # ── Heatmap ─────────────────────────────────────────────────
