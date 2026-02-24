@@ -206,7 +206,8 @@ class DiscordAlerts:
     # ── ALERT ─────────────────────────────────────────────────────────────────
 
     def execute_alert(self, chain, pair, gross_bps, net_usd,
-                      buy_venue="", sell_venue=""):
+                      buy_venue="", sell_venue="",
+                      wallet_eth="n/a", bot_usdt="n/a"):
         state = _load_state()
 
         # 5-min dedup

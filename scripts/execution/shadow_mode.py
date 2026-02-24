@@ -30,6 +30,8 @@ import redis
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from utils.discord_alerts import discord as _discord
+from utils.live_executor import LiveExecutor
+from web3 import Web3
 
 # ── Config ────────────────────────────────────────────────────────────────────
 REDIS_HOST  = os.getenv("REDIS_HOST", "localhost")
@@ -332,6 +334,35 @@ def print_report():
 
 
 # ── Main loop ─────────────────────────────────────────────────────────────────
+
+# ── Balance tracker ───────────────────────────────────────────────────────────
+
+def _get_balances():
+    """Returns wallet ETH and contract USDT profit balances."""
+    try:
+        import os
+        from web3 import Web3
+        rpc      = os.environ.get("ARBITRUM_MAINNET_RPC_URL_1", "")
+        key      = os.environ.get("METAMASK_PRIVATE_KEY", "")
+        bot_addr = os.environ.get("ARBITRAGE_BOT_ADDRESS", "")
+        if not rpc or not key or not bot_addr:
+            return None
+        if not key.startswith("0x"): key = "0x" + key
+        w3       = Web3(Web3.HTTPProvider(rpc))
+        acct     = w3.eth.account.from_key(key)
+        eth_bal  = float(w3.from_wei(w3.eth.get_balance(acct.address), "ether"))
+
+        # USDT balance in contract (profits accumulate here)
+        USDT_ABI = [{"inputs":[{"name":"account","type":"address"}],
+                     "name":"balanceOf","outputs":[{"name":"","type":"uint256"}],
+                     "stateMutability":"view","type":"function"}]
+        USDT_ADDR = "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9"
+        usdt      = w3.eth.contract(address=USDT_ADDR, abi=USDT_ABI)
+        usdt_bal  = float(usdt.functions.balanceOf(bot_addr).call()) / 1e6
+        return {"eth": eth_bal, "usdt_profit": usdt_bal}
+    except:
+        return None
+
 def main():
     parser = argparse.ArgumentParser(description="AllMight Shadow Mode Executor")
     parser.add_argument("--min-edge",  type=float, default=0.0,
@@ -409,41 +440,53 @@ def main():
                   f"gross={opp['gross_edge']:+.2f}bps | "
                   f"net=${result['net_profit_usd']:+.4f}")
 
-            # Discord alert on every EXECUTE decision
+            # ── EXECUTE path ──────────────────────────────────────────
             if result["decision"] == "EXECUTE":
-                try:
-                    _discord.execute_alert(
-                        chain     = opp["chain"],
-                        pair      = opp["pair"],
-                        gross_bps = f"{opp['gross_edge']:+.2f}bps",
-                        net_usd   = f"${result['net_profit_usd']:+.4f}",
-                    )
-                except Exception:
-                    pass
 
-            # Discord alert on every EXECUTE decision
-            if result["decision"] == "EXECUTE":
-                try:
-                    _discord.execute_alert(
-                        chain     = opp["chain"],
-                        pair      = opp["pair"],
-                        gross_bps = f"{opp['gross_edge']:+.2f}bps",
-                        net_usd   = f"${result['net_profit_usd']:+.4f}",
-                    )
-                except Exception:
-                    pass
+                # Fetch balances for notification
+                balances = _get_balances()
+                eth_bal  = f"{balances['eth']:.6f} ETH" if balances else "n/a"
+                usdt_bal = f"${balances['usdt_profit']:.4f}" if balances else "n/a"
 
-            # Discord alert on every EXECUTE decision
-            if result["decision"] == "EXECUTE":
+                # Discord alert (single -- no duplicates)
                 try:
                     _discord.execute_alert(
-                        chain     = opp["chain"],
-                        pair      = opp["pair"],
-                        gross_bps = f"{opp['gross_edge']:+.2f}bps",
-                        net_usd   = f"${result['net_profit_usd']:+.4f}",
+                        chain      = opp["chain"],
+                        pair       = opp["pair"],
+                        gross_bps  = f"{opp['gross_edge']:+.2f}bps",
+                        net_usd    = f"${result['net_profit_usd']:+.4f}",
+                        buy_venue  = opp.get("buy_venue", ""),
+                        sell_venue = opp.get("sell_venue", ""),
+                        wallet_eth = eth_bal,
+                        bot_usdt   = usdt_bal,
                     )
-                except Exception:
-                    pass
+                except Exception as e:
+                    print(f"[discord] alert error: {e}")
+
+                # ── LIVE EXECUTION ────────────────────────────────────────
+                try:
+                    _executor = LiveExecutor()
+                    if _executor.is_enabled():
+                        live_opp = {
+                            "pair":           opp["pair"],
+                            "buy_venue":      opp.get("buy_venue", ""),
+                            "sell_venue":     opp.get("sell_venue", ""),
+                            "gross_bps":      opp["gross_edge"],
+                            "net_profit_usd": result["net_profit_usd"],
+                            "trade_size_usd": 100,
+                        }
+                        live_result = _executor.execute(live_opp)
+                        if live_result.get("success"):
+                            print(f"  💰 LIVE: ${live_result.get('actual_profit_usd',0):.4f} "
+                                  f"tx:{live_result.get('tx_hash','')[:12]}...")
+                        elif live_result.get("reverted"):
+                            print(f"  🛡️  LIVE REVERT: on-chain gate protected")
+                        elif live_result.get("skipped"):
+                            print(f"  ⏭  LIVE SKIP: {live_result.get('reason','')}")
+                        else:
+                            print(f"  ❌ LIVE ERROR: {live_result.get('error','')}")
+                except Exception as e:
+                    print(f"[executor] error: {e}")
 
         if fired == 0:
             print(f"[{ts}] Scan #{scan_count} -- no candidates above {args.min_edge}bps")
