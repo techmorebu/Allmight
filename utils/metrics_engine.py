@@ -411,7 +411,10 @@ def calculate_metrics():
     anomalies = _anomalies(all_stats, rolling_stats, session_stats, sess_heatmap)
 
     # DRIP
-    drip = _drip(week_stats["total_pnl"])
+    # DRIP uses live trades only -- shadow is simulated
+    live_week_trades = [t for t in week_trades if t.get("mode","SHADOW")=="LIVE"]
+    live_week_stats  = _core_stats(live_week_trades) if live_week_trades else _core_stats([])
+    drip = _drip(live_week_stats["total_pnl"])
 
     # MVI gate
     mvi_pass = (all_stats["win_rate"] >= 60 and all_stats["executed"] >= 10)

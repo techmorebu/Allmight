@@ -129,10 +129,10 @@ class DiscordAlerts:
             f" SYSTEM\n"
             f"{'─'*36}\n"
             f" MVI Gate:   {mvi}{anom_s}\n"
-            f" Hit rate:   {at.get('hit_rate',0):.1f}%\n"
-            f" Win rate:   {at.get('win_rate',0):.1f}%\n"
             f" Shadow P&L: ${m.get('shadow_alltime',{}).get('total_pnl',0):.4f}  [SIMULATED]\n"
             f" Live P&L:   ${m.get('live_alltime',{}).get('total_pnl',0):.4f}  [ON-CHAIN]\n"
+            f" Live trades:{m.get('live_alltime',{}).get('executed',0)}  "
+            f"Win: {m.get('live_alltime',{}).get('win_rate',0):.1f}%\n"
             f"\n"
             f"{'─'*36}\n"
             f" THIS SESSION ({m.get('session_hours',0):.1f}hrs)\n"
@@ -182,7 +182,8 @@ class DiscordAlerts:
             f"{'─'*32}\n"
             f" Session P&L:   ${s.get('total_pnl',0):.4f}\n"
             f" Session trades:{s.get('executed',0)}\n"
-            f" All-time P&L:  ${at.get('total_pnl',0):.4f}\n"
+            f" Live P&L:      ${m.get('live_alltime',{}).get('total_pnl',0):.4f}  [ON-CHAIN]\n"
+            f" Shadow P&L:    ${m.get('shadow_alltime',{}).get('total_pnl',0):.4f}  [SIMULATED]\n"
             f"```"
         )
         return _send(TERMINAL_WEBHOOK, text)
