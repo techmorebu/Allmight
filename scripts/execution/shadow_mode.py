@@ -375,6 +375,8 @@ def main():
                         help="Print report and exit")
     parser.add_argument("--once",      action="store_true",
                         help="Run one scan and exit")
+    parser.add_argument("--live",      action="store_true",
+                        help="Enable live on-chain execution (default: shadow only)")
     args = parser.parse_args()
 
     if args.report:
@@ -382,6 +384,37 @@ def main():
         return
 
     LOG_DIR.mkdir(exist_ok=True)
+
+    # ── Mode banner ───────────────────────────────────────────────────────
+    mode_label = "LIVE" if args.live else "SHADOW"
+    if args.live:
+        # MVI gate -- block live trading if win rate < 60%
+        try:
+            import json
+            from pathlib import Path as _P
+            mf = _P(__file__).resolve().parent.parent.parent / "logs/metrics.json"
+            if mf.exists():
+                _m = json.loads(mf.read_text())
+                _mvi = _m.get("system", {}).get("mvi_pass", False)
+                _wr  = _m.get("all_time", {}).get("win_rate", 0)
+                if not _mvi:
+                    print(f"❌ MVI GATE FAIL -- win rate {_wr:.1f}% < 60%")
+                    print("   Run in shadow mode until win rate improves.")
+                    sys.exit(1)
+                print(f"✅ MVI GATE PASS -- win rate {_wr:.1f}%")
+        except Exception as _e:
+            print(f"⚠️  MVI check error: {_e} -- proceeding")
+        print("=" * 55)
+        print("  🔴 LIVE MODE -- real on-chain transactions")
+        print(f"  Contract: {os.getenv('ARBITRAGE_BOT_ADDRESS','NOT SET')}")
+        print(f"  Max size: $100 (hour 0-2 UTC) / $50 (other hours)")
+        print("=" * 55)
+    else:
+        print("=" * 55)
+        print("  🔵 SHADOW MODE -- simulation only, no real tx")
+        print("  Discord alerts: SILENT (log to CSV only)")
+        print("  Use --live flag to enable on-chain execution")
+        print("=" * 55)
 
     # Init CSV
     write_header = not TRADE_LOG.exists()

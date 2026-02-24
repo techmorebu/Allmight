@@ -526,7 +526,8 @@ class DiscordAlerts:
     # ── test ──────────────────────────────────────────────────────────────────
 
     def live_execute(self, pair, gross_bps, simulated_usd,
-                     actual_usd, tx_hash, gas_eth, session_id=""):
+                     actual_usd, tx_hash, gas_eth, session_id="",
+                     wallet_eth="n/a", bot_usdt="n/a"):
         """Fires when a LIVE trade executes successfully on-chain."""
         slippage = actual_usd - simulated_usd
         slip_str = f"+${slippage:.4f}" if slippage >= 0 else f"-${abs(slippage):.4f}"
@@ -543,6 +544,9 @@ class DiscordAlerts:
             f" Gas cost:   ${float(gas_eth)*2700:.4f} (~{gas_eth} ETH)\n"
             f" Tx:         {short_hash}\n"
             f" Session:    {session_id[:20]}\n"
+            f"--------------------------------\n"
+            f" Wallet ETH: {wallet_eth}\n"
+            f" Bot profit: {bot_usdt}  [on-chain]\n"
             f"```"
         )
         return _send(ALERT_WEBHOOK, text)
