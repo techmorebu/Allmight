@@ -171,7 +171,7 @@ class DiscordAlerts:
             f" Session reset -- fresh metrics\n"
             f"{'─'*32}\n"
             f"{pid_lines if pid_lines else '  PIDs not provided'}\n"
-            f" Mode:   {'🔴 LIVE' if m.get('mode','SHADOW')=='LIVE' else '🔵 SHADOW (sim only)'}\n"
+            f" Mode:   {'🔴 LIVE' if _m().get('mode','SHADOW')=='LIVE' else '🔵 SHADOW (sim only)'}\n"
             f" Redis:  OK\n"
             f"```"
         )
