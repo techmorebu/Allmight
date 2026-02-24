@@ -96,10 +96,19 @@ echo "monitor=$MONITOR_PID" >> "$PID_FILE"
 echo "Monitor started (PID $MONITOR_PID) -- logs/monitor.log"
 
 # ── 3. Shadow mode ────────────────────────────────────────────────────────────
+LIVE_FLAG=""
+if [[ "$*" == *"--live"* ]]; then
+  LIVE_FLAG="--live"
+  echo "  LIVE MODE -- real on-chain transactions"
+else
+  echo "  SHADOW MODE -- simulation only"
+fi
+
 python3 "$REPO/scripts/execution/shadow_mode.py" \
     --min-edge 0 \
     --size 1000 \
     --interval "$INTERVAL" \
+  $LIVE_FLAG \
     >> "$LOG_DIR/shadow.log" 2>&1 &
 SHADOW_PID=$!
 echo "shadow=$SHADOW_PID" >> "$PID_FILE"

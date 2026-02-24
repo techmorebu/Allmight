@@ -476,50 +476,66 @@ def main():
             # ── EXECUTE path ──────────────────────────────────────────
             if result["decision"] == "EXECUTE":
 
-                # Fetch balances for notification
-                balances = _get_balances()
-                eth_bal  = f"{balances['eth']:.6f} ETH" if balances else "n/a"
-                usdt_bal = f"${balances['usdt_profit']:.4f}" if balances else "n/a"
-
-                # Discord alert (single -- no duplicates)
-                try:
-                    _discord.execute_alert(
-                        chain      = opp["chain"],
-                        pair       = opp["pair"],
-                        gross_bps  = f"{opp['gross_edge']:+.2f}bps",
-                        net_usd    = f"${result['net_profit_usd']:+.4f}",
-                        buy_venue  = opp.get("buy_venue", ""),
-                        sell_venue = opp.get("sell_venue", ""),
-                        wallet_eth = eth_bal,
-                        bot_usdt   = usdt_bal,
-                    )
-                except Exception as e:
-                    print(f"[discord] alert error: {e}")
-
-                # ── LIVE EXECUTION ────────────────────────────────────────
-                try:
-                    _executor = LiveExecutor()
-                    if _executor.is_enabled():
-                        live_opp = {
+                if args.live:
+                    # ── LIVE MODE ─────────────────────────────────────
+                    _hr   = datetime.now(timezone.utc).hour
+                    _size = 100 if _hr in (0, 1, 2) else 50
+                    try:
+                        _executor = LiveExecutor()
+                        live_opp  = {
                             "pair":           opp["pair"],
                             "buy_venue":      opp.get("buy_venue", ""),
                             "sell_venue":     opp.get("sell_venue", ""),
                             "gross_bps":      opp["gross_edge"],
                             "net_profit_usd": result["net_profit_usd"],
-                            "trade_size_usd": 100,
+                            "trade_size_usd": _size,
                         }
                         live_result = _executor.execute(live_opp)
                         if live_result.get("success"):
-                            print(f"  💰 LIVE: ${live_result.get('actual_profit_usd',0):.4f} "
-                                  f"tx:{live_result.get('tx_hash','')[:12]}...")
+                            _actual = live_result.get("actual_profit_usd", 0)
+                            _txh    = live_result.get("tx_hash", "")
+                            _short  = _txh[:10] + "..." + _txh[-6:] if _txh else "?"
+                            print(f"  [LIVE] EXECUTE | ${_actual:.4f} actual | tx:{_short}")
+                            _bals = _get_balances()
+                            try:
+                                _discord.live_execute(
+                                    pair          = opp["pair"],
+                                    gross_bps     = f"{opp['gross_edge']:+.2f}bps",
+                                    simulated_usd = result["net_profit_usd"],
+                                    actual_usd    = _actual,
+                                    tx_hash       = _txh,
+                                    gas_eth       = live_result.get("gas_cost_eth", 0),
+                                    session_id    = live_result.get("session_id", ""),
+                                    wallet_eth    = f"{_bals['eth']:.6f} ETH" if _bals else "n/a",
+                                    bot_usdt      = f"${_bals['usdt_profit']:.4f}" if _bals else "n/a",
+                                )
+                            except Exception as _de:
+                                print(f"  [discord] error: {_de}")
                         elif live_result.get("reverted"):
-                            print(f"  🛡️  LIVE REVERT: on-chain gate protected")
+                            print(f"  [LIVE] REVERT -- zero loss, gate protected")
+                            try:
+                                _discord.live_revert(
+                                    pair      = opp["pair"],
+                                    gross_bps = f"{opp['gross_edge']:+.2f}bps",
+                                    session_id= live_result.get("session_id", ""),
+                                )
+                            except Exception:
+                                pass
                         elif live_result.get("skipped"):
-                            print(f"  ⏭  LIVE SKIP: {live_result.get('reason','')}")
+                            print(f"  [LIVE] SKIP -- {live_result.get('reason','')}")
                         else:
-                            print(f"  ❌ LIVE ERROR: {live_result.get('error','')}")
-                except Exception as e:
-                    print(f"[executor] error: {e}")
+                            _err = live_result.get("error", "unknown")
+                            print(f"  [LIVE] ERROR -- {_err}")
+                            try:
+                                _discord.error(f"Live trade error: {_err}", component="shadow_mode")
+                            except Exception:
+                                pass
+                    except Exception as _e:
+                        print(f"  [LIVE] executor exception: {_e}")
+
+                else:
+                    # ── SHADOW MODE -- silent, CSV log only ──────────
+                    pass
 
         if fired == 0:
             print(f"[{ts}] Scan #{scan_count} -- no candidates above {args.min_edge}bps")
