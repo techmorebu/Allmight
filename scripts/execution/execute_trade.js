@@ -69,7 +69,7 @@ const VENUES = { uniswap_v3: 0, uniswap: 0, curve: 1 };
 
 // ── Safety config ─────────────────────────────────────────────────────────────
 const MAX_TRADE_USD   = parseFloat(process.env.MAX_TRADE_SIZE_USD  || "100");
-const MIN_PROFIT_BPS  = parseFloat(process.env.MIN_PROFIT_BPS      || "10");
+const MIN_PROFIT_BPS  = parseFloat(process.env.MIN_PROFIT_BPS      || "15");
 const GAS_LIMIT       = 500000n;
 const MAX_GAS_GWEI    = 2.0;   // Arbitrum is cheap -- abort if > 2 gwei
 
