@@ -90,6 +90,11 @@ class LiveExecutor:
         if paused_until and now < paused_until:
             remaining = int(paused_until - now)
             return {"ok": False, "reason": f"Paused for {remaining}s (consecutive reverts)"}
+        elif paused_until and now >= paused_until:
+            # Pause expired -- clear revert counter
+            s["consecutive_reverts"] = 0
+            s["paused_until"]        = 0
+            STATE_FILE.write_text(json.dumps(s, indent=2))
 
         # Rate limit: max trades per hour
         if self._trades_this_hour() >= MAX_TRADES_PER_HOUR:

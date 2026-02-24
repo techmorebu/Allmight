@@ -423,6 +423,7 @@ def calculate_metrics():
         "schema_version":  SCHEMA_VER,
         "generated_at":    _ts(now),
         "mode":            json.loads(SESSION_PATH.read_text()).get("mode","SHADOW") if SESSION_PATH.exists() else "SHADOW",
+        "wallet": _get_wallet_info(),
         "session_id":      session_id,
         "session_start":   _ts(session_start),
         "session_hours":   round(session_hrs, 2),
@@ -481,6 +482,32 @@ def calculate_metrics():
     return metrics
 
 # ── writer ────────────────────────────────────────────────────────────────────
+
+
+def _get_wallet_info():
+    """Fetch wallet ETH and contract balances."""
+    try:
+        rpc      = os.environ.get("ARBITRUM_MAINNET_RPC_URL_1","")
+        key      = os.environ.get("METAMASK_PRIVATE_KEY","")
+        bot_addr = os.environ.get("ARBITRAGE_BOT_ADDRESS","")
+        if not rpc or not key or not bot_addr: return {}
+        if not key.startswith("0x"): key = "0x" + key
+        from web3 import Web3
+        from eth_account import Account
+        w3      = Web3(Web3.HTTPProvider(rpc, request_kwargs={"timeout":5}))
+        acct    = Account.from_key(key)
+        eth_bal = float(w3.from_wei(w3.eth.get_balance(acct.address),"ether"))
+        con_eth = float(w3.from_wei(w3.eth.get_balance(bot_addr),"ether"))
+        USDT_ABI= [{"inputs":[{"name":"account","type":"address"}],
+                    "name":"balanceOf","outputs":[{"name":"","type":"uint256"}],
+                    "stateMutability":"view","type":"function"}]
+        usdt    = w3.eth.contract(address="0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",abi=USDT_ABI)
+        usdt_bal= float(usdt.functions.balanceOf(bot_addr).call())/1e6
+        return {"wallet_eth": round(eth_bal,6),
+                "contract_eth": round(con_eth,6),
+                "contract_usdt": round(usdt_bal,4)}
+    except Exception as e:
+        return {}
 
 def write_metrics():
     try:

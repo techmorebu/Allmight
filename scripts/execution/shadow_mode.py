@@ -359,7 +359,8 @@ def _get_balances():
         USDT_ADDR = "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9"
         usdt      = w3.eth.contract(address=USDT_ADDR, abi=USDT_ABI)
         usdt_bal  = float(usdt.functions.balanceOf(bot_addr).call()) / 1e6
-        return {"eth": eth_bal, "usdt_profit": usdt_bal}
+        contract_eth = float(w3.from_wei(w3.eth.get_balance(bot_addr), "ether"))
+        return {"eth": eth_bal, "usdt_profit": usdt_bal, "contract_eth": contract_eth}
     except:
         return None
 
