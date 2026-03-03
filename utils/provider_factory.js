@@ -45,26 +45,73 @@ function _appendJsonl(filePath, obj) {
 }
 
 // -------------------------
-// Error classification
+// URL safety + redaction
 // -------------------------
-function isRateLimitError(err) {
-  const msg = String(err?.message || '').toLowerCase();
-  const code = err?.code;
-  const val = String(err?.value || '').toLowerCase();
-  // vendor-specific fragments commonly seen through ethers
-  return (
-    msg.includes('too many requests') ||
-    msg.includes('rate limit') ||
-    msg.includes('429') ||
-    msg.includes('over rate limit') ||
-    msg.includes('exceeded') && msg.includes('limit') ||
-    val.includes('-32005') ||
-    val.includes('too many requests') ||
-    code === 'SERVER_ERROR' ||
-    code === 'BAD_DATA'
-  );
+function _sanitizeRpcUrl(raw) {
+  const s = String(raw || '').trim();
+  if (!s) return null;
+
+  let u;
+  try { u = new URL(s); } catch { return null; }
+
+  const host = String(u.host || '').toLowerCase();
+  const pathname = String(u.pathname || '').replace(/\/+$/, '');
+  const segs = pathname.split('/').filter(Boolean);
+
+  // Hard block: bare Ankr endpoints like https://rpc.ankr.com/eth (no key)
+  // Allow: https://rpc.ankr.com/eth/<KEY>...
+  if (host === 'rpc.ankr.com') {
+    // If path is exactly "/<chain>" (one segment), it's bare => drop
+    if (segs.length === 1) return null;
+  }
+
+  return u.toString();
 }
 
+function _looksLikeKey(seg) {
+  const s = String(seg || '');
+  if (!s) return false;
+  // Common API key shapes: long hex/base64-ish
+  if (s.length >= 16) return true;
+  if (/^[a-f0-9]{16,}$/i.test(s)) return true;
+  if (/^[a-z0-9_-]{20,}$/i.test(s)) return true;
+  return false;
+}
+
+function _redactUrl(raw) {
+  try {
+    const u = new URL(String(raw));
+    const segs = String(u.pathname || '').split('/').filter(Boolean);
+
+    // keep only first segment (chain or "v2"), redact anything key-ish after
+    // Examples:
+    //  - /eth/<KEY>    => /eth/REDACTED
+    //  - /v2/<KEY>     => /v2/REDACTED
+    //  - /v3/<KEY>/... => /v3/REDACTED
+    let outSegs = [];
+    if (segs.length >= 1) outSegs.push(segs[0]);
+
+    if (segs.length >= 2) {
+      // If segment 2 looks like a key (or we’re in known key-path patterns), redact it
+      if (_looksLikeKey(segs[1]) || ['v2', 'v3'].includes(segs[0].toLowerCase()) || segs[0].toLowerCase() === 'eth') {
+        outSegs.push('REDACTED');
+      } else {
+        outSegs.push(segs[1]);
+      }
+    }
+
+    u.pathname = '/' + outSegs.join('/');
+    u.search = '';
+    u.hash = '';
+    return u.toString();
+  } catch {
+    return 'INVALID_URL';
+  }
+}
+
+// -------------------------
+// Error classification
+// -------------------------
 function isAuthError(err) {
   const msg = String(err?.message || '').toLowerCase();
   const val = String(err?.value || '').toLowerCase();
@@ -79,358 +126,253 @@ function isAuthError(err) {
   );
 }
 
-function classifyError(err) {
+function isRateLimitError(err) {
   const msg = String(err?.message || '').toLowerCase();
+  const val = String(err?.value || '').toLowerCase();
+
+  // IMPORTANT:
+  // Do NOT treat ethers code BAD_DATA/SERVER_ERROR as rate limit by itself.
+  // Unauthorized errors often arrive wrapped as BAD_DATA.
+  return (
+    msg.includes('too many requests') ||
+    msg.includes('rate limit') ||
+    msg.includes('429') ||
+    msg.includes('over rate limit') ||
+    (msg.includes('exceeded') && msg.includes('limit')) ||
+    val.includes('-32005') ||                    // common “limit exceeded”
+    val.includes('too many requests') ||
+    val.includes('rate limit') ||
+    val.includes('429')
+  );
+}
+
+function isCallException(err) {
+  const code = String(err?.code || '').toUpperCase();
+  return code === 'CALL_EXCEPTION';
+}
+
+function classifyError(err) {
+  // Order matters: AUTH before RATE LIMIT before CALL_EXCEPTION.
+  if (isAuthError(err)) return 'auth';
   if (isRateLimitError(err)) return 'rate_limit';
-  if (msg.includes('timeout') || msg.includes('timed out')) return 'timeout';
-  if (msg.includes('network') || msg.includes('socket') || msg.includes('econnreset')) return 'network';
+  if (isCallException(err)) return 'call_exception';
   return 'other';
 }
 
 // -------------------------
-// URL parsing
+// Config
+// -------------------------
+const TELEMETRY_FILE = process.env.RPC_TELEMETRY_FILE || 'logs/rpc_telemetry.jsonl';
+
+const DEFAULTS = {
+  maxAttempts: Number(process.env.RPC_MAX_ATTEMPTS || 3),
+  baseBackoffMs: Number(process.env.RPC_BASE_BACKOFF_MS || 250),
+  maxBackoffMs: Number(process.env.RPC_MAX_BACKOFF_MS || 8000),
+  jitterMs: Number(process.env.RPC_JITTER_MS || 150),
+  cooldownBaseMs: Number(process.env.RPC_COOLDOWN_BASE_MS || 1500),
+  cooldownMaxMs: Number(process.env.RPC_COOLDOWN_MAX_MS || 15000),
+  minDelayMs: Number(process.env.RPC_MIN_DELAY_MS || 10),
+  perChainConcurrency: Number(process.env.RPC_PER_CHAIN_CONCURRENCY || 8),
+};
+
+// -------------------------
+// RPC URL parsing
 // -------------------------
 function _splitUrls(s) {
-  return (s || '')
-    .split(/[,\s]+/g)
-    .map((x) => x.trim())
+  const raw = String(s || '')
+    .split(',')
+    .map((x) => String(x || '').trim())
     .filter(Boolean);
+
+  const sanitized = [];
+  for (const r of raw) {
+    const u = _sanitizeRpcUrl(r);
+    if (u) sanitized.push(u);
+  }
+  return sanitized;
 }
 
-function _chainToPrefixes(chain) {
-  // Canonical env prefix + legacy ones.
-  const c = String(chain || '').toLowerCase();
-  if (c === 'ethereum' || c === 'eth') return ['ETHEREUM', 'ETH'];
-  if (c === 'arbitrum' || c === 'arb') return ['ARBITRUM', 'ARB'];
-  if (c === 'optimism' || c === 'op') return ['OPTIMISM', 'OP'];
-  if (c === 'base') return ['BASE'];
-  if (c === 'unichain') return ['UNICHAIN'];
-  return [c.toUpperCase()];
-}
-
-function _getUrlsFromChainRpcUrlsJson(chain) {
-  // Optional: CHAIN_RPC_URLS can be:
-  // - JSON object: {"ethereum":[...],"base":"url1,url2",...}
-  // - JSON array: [{"chain":"ethereum","urls":[...]}]
-  // - simple "ethereum=url1,url2;base=url3" (legacy-ish)
-  const raw = (process.env.CHAIN_RPC_URLS || '').trim();
-  if (!raw) return [];
-
-  // JSON forms
-  if (raw.startsWith('{') || raw.startsWith('[')) {
-    try {
-      const parsed = JSON.parse(raw);
-      const c = String(chain || '').toLowerCase();
-
-      if (Array.isArray(parsed)) {
-        const hit = parsed.find((x) => String(x?.chain || '').toLowerCase() === c);
-        if (!hit) return [];
-        if (Array.isArray(hit.urls)) return hit.urls.map(String).map((s) => s.trim()).filter(Boolean);
-        if (typeof hit.urls === 'string') return _splitUrls(hit.urls);
-        return [];
-      }
-
-      if (parsed && typeof parsed === 'object') {
-        const v = parsed[c] ?? parsed[c.toUpperCase()];
-        if (Array.isArray(v)) return v.map(String).map((s) => s.trim()).filter(Boolean);
-        if (typeof v === 'string') return _splitUrls(v);
-      }
-    } catch (_) {
-      return [];
-    }
-    return [];
-  }
-
-  // "ethereum=url1,url2;base=url3"
-  const parts = raw.split(';').map((s) => s.trim()).filter(Boolean);
-  const c = String(chain || '').toLowerCase();
-  for (const p of parts) {
-    const [k, v] = p.split('=');
-    if (!k || !v) continue;
-    if (k.trim().toLowerCase() === c) return _splitUrls(v);
-  }
-  return [];
-}
-
-function getChainRpcUrls(chain) {
-  // 1) CHAIN_RPC_URLS (multi-chain mapping)
-  const fromJson = _getUrlsFromChainRpcUrlsJson(chain);
-  if (fromJson.length) return fromJson;
-
-  // 2) <PREFIX>_RPC_URLS / <PREFIX>_RPC_URL
-  const prefixes = _chainToPrefixes(chain);
-  for (const prefix of prefixes) {
-    const urls = _splitUrls(process.env[`${prefix}_RPC_URLS`]);
-    const single = (process.env[`${prefix}_RPC_URL`] || '').trim();
-    if (urls.length) return urls;
-    if (single) return [single];
-  }
-
-  // 3) Legacy <PREFIX>_MAINNET_RPC_URL_1..9
-  for (const prefix of prefixes) {
-    const legacy = [];
-    for (let i = 1; i <= 9; i++) {
-      const v = (process.env[`${prefix}_MAINNET_RPC_URL_${i}`] || '').trim();
-      if (v) legacy.push(v);
-    }
-    if (legacy.length) return legacy;
-  }
-
-  return [];
+function getRpcUrlsForChain(chainKey) {
+  const envKey = `${chainKey.toUpperCase()}_RPC_URLS`;
+  const urls = _splitUrls(process.env[envKey] || '');
+  return urls;
 }
 
 // -------------------------
-// Limiter (per-chain)
+// Provider factory
 // -------------------------
-function createLimiter({ maxConcurrent, minDelayMs, jitterMs }) {
-  const cfg = {
-    maxConcurrent: Math.max(1, Number(maxConcurrent || 1)),
-    minDelayMs: Math.max(0, Number(minDelayMs || 0)),
-    jitterMs: Math.max(0, Number(jitterMs || 0)),
-  };
+function createProvider(chainKey, opts = {}) {
+  const chain = String(chainKey || '').toLowerCase();
+  const urls = getRpcUrlsForChain(chainKey);
 
-  let active = 0;
-  let lastStartAt = 0;
-  const queue = [];
-
-  async function _drain() {
-    if (active >= cfg.maxConcurrent) return;
-    const item = queue.shift();
-    if (!item) return;
-
-    const now = _now();
-    const jitter = cfg.jitterMs ? _randInt(0, cfg.jitterMs) : 0;
-    const earliest = lastStartAt + cfg.minDelayMs + jitter;
-    const waitMs = Math.max(0, earliest - now);
-
-    active += 1;
-    lastStartAt = now + waitMs;
-
-    try {
-      if (waitMs > 0) await _sleep(waitMs);
-      const out = await item.fn();
-      item.resolve(out);
-    } catch (e) {
-      item.reject(e);
-    } finally {
-      active -= 1;
-      setImmediate(_drain);
-    }
-  }
-
-  function schedule(fn) {
-    return new Promise((resolve, reject) => {
-      queue.push({ fn, resolve, reject });
-      setImmediate(_drain);
-    });
-  }
-
-  function snapshot() {
-    return { ...cfg, active, queued: queue.length };
-  }
-
-  return { schedule, snapshot };
-}
-
-// -------------------------
-// Provider factory (canonical)
-// -------------------------
-function _defaultChainTuning(chain) {
-  const c = String(chain || '').toLowerCase();
-  // Conservative defaults tuned for stability.
-  if (c === 'ethereum' || c === 'eth') {
-    return { maxConcurrent: 1, minDelayMs: 160, jitterMs: 60 };
-  }
-  // L2s
-  return { maxConcurrent: 2, minDelayMs: 120, jitterMs: 60 };
-}
-
-function createProvider(chain, opts = {}) {
-  const urls = getChainRpcUrls(chain);
   if (!urls.length) {
-    throw new Error(`No RPC URLs configured for chain=${chain}. Set CHAIN_RPC_URLS or ${_chainToPrefixes(chain)[0]}_RPC_URLS.`);
+    throw new Error(`[provider_factory] No RPC URLs configured for ${chainKey} (env ${chainKey.toUpperCase()}_RPC_URLS empty or all invalid)`);
   }
 
-  const tuning = { ..._defaultChainTuning(chain), ...(opts.tuning || {}) };
-  const limiter = createLimiter(tuning);
+  const cfg = { ...DEFAULTS, ...(opts || {}) };
 
-  const logFile =
-    opts.logFile ||
-    process.env.RPC_TELEMETRY_LOG_FILE ||
-    path.resolve(process.cwd(), 'logs', 'rpc_telemetry.jsonl');
-
-  // endpoint states
+  // Build endpoint state
   const endpoints = urls.map((url, i) => ({
-    id: i,
+    endpointId: i,
     url,
+    provider: new ethers.JsonRpcProvider(url, undefined, { batchMaxCount: 1 }),
     disabled: false,
-    disabledReason: null,
-    coolUntil: 0,
-    ok: 0,
-    fail: 0,
-    consecutiveFail: 0,
-    lastError: null,
-    lastOkAt: null,
+    cooldownUntil: 0,
+    failCount: 0,
   }));
 
-  let rr = 0; // round-robin cursor
+  // Emit rpc_init ONCE per provider creation (redacted)
+  _appendJsonl(TELEMETRY_FILE, {
+    ts: new Date().toISOString(),
+    ev: 'rpc_init',
+    chain: chainKey.toUpperCase(),
+    endpoints: endpoints.map((e) => ({
+      endpointId: e.endpointId,
+      url: _redactUrl(e.url),
+    })),
+  });
+
+  // Round-robin pointer
+  let rr = 0;
+
+  // Concurrency throttle (simple token bucket)
+  let inFlight = 0;
+
+  async function _acquire() {
+    while (inFlight >= cfg.perChainConcurrency) {
+      await _sleep(_randInt(1, 3));
+    }
+    inFlight += 1;
+  }
+
+  function _release() {
+    inFlight = Math.max(0, inFlight - 1);
+  }
 
   function _pickEndpoint() {
     const n = endpoints.length;
-    const start = rr;
-    const now = _now();
 
     for (let k = 0; k < n; k++) {
-      const idx = (start + k) % n;
-      if (!endpoints[idx].disabled && endpoints[idx].coolUntil <= now) {
-        rr = (idx + 1) % n;
-        return endpoints[idx];
-      }
+      const idx = (rr + k) % n;
+      const e = endpoints[idx];
+      if (e.disabled) continue;
+      if (e.cooldownUntil && e.cooldownUntil > _now()) continue;
+      rr = (idx + 1) % n;
+      return e;
     }
 
-    // none available: pick soonest coolUntil among non-disabled and wait
-    const live = endpoints.filter((e) => !e.disabled);
-    if (!live.length) {
-      throw new Error(`All RPC endpoints are disabled for chain=${chain}. Check API keys / env.`);
+    // If everything is cooled down, pick the earliest cooldown (still not disabled)
+    let best = null;
+    for (const e of endpoints) {
+      if (e.disabled) continue;
+      if (!best || e.cooldownUntil < best.cooldownUntil) best = e;
     }
-    let best = live[0];
-    for (const e of live) {
-      if (e.coolUntil < best.coolUntil) best = e;
-    }
-    rr = (best.id + 1) % n;
     return best;
   }
 
-  function _cooldownMs(kind, consecutiveFail, baseMsOverride) {
-    if (kind === 'auth') return 24 * 60 * 60 * 1000; // 24h
-    const base = Number(baseMsOverride || 0) || (kind === 'rate_limit' ? 1500 : 300);
-    const exp = Math.min(6, Math.max(0, consecutiveFail)); // cap exponent
-    const jitter = _randInt(0, 250);
-    const ms = Math.min(30000, base * Math.pow(2, exp) + jitter);
-    return ms;
+  function _cooldownMsFor(e, kind) {
+    if (kind === 'rate_limit') {
+      const step = Math.min(e.failCount, 6);
+      const ms = Math.min(cfg.cooldownBaseMs * (2 ** step), cfg.cooldownMaxMs);
+      return ms + _randInt(0, cfg.jitterMs);
+    }
+    // small pause for “other” errors
+    return Math.min(cfg.cooldownBaseMs, 1500) + _randInt(0, cfg.jitterMs);
   }
 
-  function _makeEthersProvider(url) {
-    // Batch disabled by default.
-    const batchMaxCount = opts.batchMaxCount ?? 1;
-    const batchStallTime = opts.batchStallTime ?? 0;
-    return new ethers.JsonRpcProvider(url, undefined, { batchMaxCount, batchStallTime });
-  }
+  async function _callWithRetry(label, fn) {
+    await _acquire();
+    try {
+      // per-call min delay to avoid bursting
+      if (cfg.minDelayMs > 0) {
+        await _sleep(cfg.minDelayMs + _randInt(0, cfg.jitterMs));
+      }
 
-  async function call(label, fn, callOpts = {}) {
-    const attempts = Math.max(1, Number(callOpts.attempts || 4));
+      for (let attempt = 1; attempt <= cfg.maxAttempts; attempt++) {
+        const e = _pickEndpoint();
 
-    return limiter.schedule(async () => {
-      const startedAt = _now();
-      let lastErr;
-
-      for (let a = 1; a <= attempts; a++) {
-        const ep = _pickEndpoint();
-        const now = _now();
-        if (ep.coolUntil > now) {
-          const wait = Math.max(0, ep.coolUntil - now);
-          _appendJsonl(logFile, {
-            ts: new Date().toISOString(),
-            ev: 'rpc_wait_cooldown',
-            chain,
-            label,
-            endpointId: ep.id,
-            waitMs: wait,
-          });
-          await _sleep(wait);
+        if (!e) {
+          throw new Error(`[provider_factory] All endpoints disabled for ${chainKey}`);
         }
 
-        const provider = _makeEthersProvider(ep.url);
-
-        _appendJsonl(logFile, {
-          ts: new Date().toISOString(),
-          ev: 'rpc_attempt',
-          chain,
-          label,
-          attempt: a,
-          endpointId: ep.id,
-          limiter: limiter.snapshot(),
-        });
-
         try {
-          const timeoutMs = Math.max(1000, Number(callOpts.timeoutMs || 12000));
-          const out = await Promise.race([
-            fn(provider, ep.url),
-            new Promise((_, rej) => setTimeout(() => rej(new Error(`rpc_timeout after ${timeoutMs}ms`)), timeoutMs)),
-          ]);
-          ep.ok += 1;
-          ep.consecutiveFail = 0;
-          ep.lastOkAt = new Date().toISOString();
+          return await fn(e.provider, e.endpointId);
+        } catch (err) {
+          const kind = classifyError(err);
 
-          _appendJsonl(logFile, {
-            ts: new Date().toISOString(),
-            ev: 'rpc_ok',
-            chain,
-            label,
-            attempt: a,
-            endpointId: ep.id,
-            ms: _now() - startedAt,
-          });
-          return out;
-        } catch (e) {
-          lastErr = e;
-          const kind = classifyError(e);
-          ep.fail += 1;
-
+          // AUTH: immediate disable (no retries, no cooldown)
           if (kind === 'auth') {
-            ep.disabled = true;
-            ep.disabledReason = 'auth';
+            e.disabled = true;
+            e.failCount += 1;
+
+            _appendJsonl(TELEMETRY_FILE, {
+              ts: new Date().toISOString(),
+              ev: 'rpc_fail',
+              chain,
+              label,
+              attempt,
+              endpointId: e.endpointId,
+              kind,
+              disabled: true,
+              error: String(err?.message || err),
+            });
+
+            // Try next endpoint immediately (do not burn attempts on this endpoint)
+            continue;
           }
-          ep.consecutiveFail += 1;
-          ep.lastError = { kind, message: String(e?.message || e) };
 
-          const cd = _cooldownMs(kind, ep.consecutiveFail, callOpts.baseCooldownMs);
-          ep.coolUntil = _now() + cd;
+          // rate_limit / other: cooldown + backoff
+          e.failCount += 1;
+          const cooldownMs = _cooldownMsFor(e, kind);
+          e.cooldownUntil = _now() + cooldownMs;
 
-          _appendJsonl(logFile, {
+          _appendJsonl(TELEMETRY_FILE, {
             ts: new Date().toISOString(),
             ev: 'rpc_fail',
             chain,
             label,
-            attempt: a,
-            endpointId: ep.id,
+            attempt,
+            endpointId: e.endpointId,
             kind,
-            cooldownMs: cd,
-            disabled: ep.disabled,
-            error: String(e?.message || e),
+            cooldownMs,
+            disabled: false,
+            error: String(err?.message || err),
           });
 
-          // brief inter-attempt backoff (also jittered)
-          const inter = Math.min(2000, 150 * a + _randInt(0, 150));
-          await _sleep(inter);
+          // Backoff before retry
+          const backoff = Math.min(cfg.baseBackoffMs * (2 ** (attempt - 1)), cfg.maxBackoffMs) + _randInt(0, cfg.jitterMs);
+          await _sleep(backoff);
         }
       }
 
-      throw lastErr;
-    });
+      throw new Error(`[provider_factory] Exhausted attempts for ${chainKey}:${label}`);
+    } finally {
+      _release();
+    }
   }
 
-  function stats() {
-    return {
-      chain,
-      tuning,
-      endpoints: endpoints.map((e) => ({
-        id: e.id,
-        url: e.url,
-        disabled: e.disabled,
-        disabledReason: e.disabledReason,
-        coolUntil: e.coolUntil,
-        ok: e.ok,
-        fail: e.fail,
-        consecutiveFail: e.consecutiveFail,
-        lastError: e.lastError,
-        lastOkAt: e.lastOkAt,
-      })),
-      limiter: limiter.snapshot(),
-    };
-  }
+  // Public API used by fetchers
+  return {
+    chainKey: chainKey.toUpperCase(),
 
-  return { chain, call, stats, getUrls: () => urls.slice() };
+    // generic JSON-RPC request
+    request(method, params, label = method) {
+      return _callWithRetry(String(label || method), (provider) => provider.send(method, params || []));
+    },
+
+    // typed helpers
+    getBlockNumber(label = 'eth_blockNumber') {
+      return _callWithRetry(label, (provider) => provider.getBlockNumber());
+    },
+
+    // Expose callWithRetry for specialized uses
+    callWithRetry(label, fn) {
+      return _callWithRetry(label, fn);
+    },
+  };
 }
 
-module.exports = { createProvider, getChainRpcUrls };
+module.exports = {
+  createProvider,
+  getRpcUrlsForChain,
+};
