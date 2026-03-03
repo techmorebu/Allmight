@@ -1,0 +1,27 @@
+ID: APPX-FETCHER-RPC-STABILITY-01
+Title: Fetcher RPC Stability + Token Registry Policy
+Applies To: Data collection (master fetcher + on-chain pool fetchers)
+Status: CANONICAL
+Supersedes: Ad-hoc ERC20 metadata calls during fetch cycles
+Notes:
+- Root cause seen in logs: intermittent CALL_EXCEPTION / missing revert data during ERC20 metadata calls (e.g., decimals()).
+- This is usually NOT "token is broken" — it’s frequently RPC instability, transient provider errors, or rate limiting.
+- Policy: fetchers MUST prefer local token registry metadata (symbol/decimals) and only fallback to RPC when registry lacks the token.
+
+Operational Fix Path (sequential):
+1) Ensure env canonical vars exist:
+   - ETHEREUM_RPC_URL, ARBITRUM_RPC_URL, OPTIMISM_RPC_URL, BASE_RPC_URL
+2) Generate token registry from pools:
+   - node scripts/tools/build_token_registry_from_pools.js
+3) Fetchers read symbol/decimals from config/tokens/<chain>.json via utils/token_registry.js
+4) Any remaining RPC metadata call uses retry + timeout wrappers.
+
+Recommended Master Fetcher settings (to reduce lock contention):
+- MASTER_FETCHER_TIMEOUT_MS=30000
+- MASTER_FETCHER_CONCURRENCY=2
+- MASTER_FETCHER_CRON=*/30 * * * * *  (every 30s)
+If lock-held messages persist, either (a) raise the cron interval, or (b) reduce per-run work / concurrency.
+
+Security / Safety:
+- Token registry contains public metadata only (symbol/decimals/address). No secrets.
+- RPC URLs and API keys remain in .env and should never be committed.

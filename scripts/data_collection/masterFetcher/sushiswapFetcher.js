@@ -1,9 +1,12 @@
 // Enhanced Sushiswap Fetcher - Direct On-Chain Pool Queries
 const { ethers } = require('ethers');
+const { getToken } = require('../../../utils/token_registry');
+const { withRetry, withTimeout, buildProviderFromEnv } = require('../../../utils/rpc_helpers');
+const { makeFailoverProvider } = require("../../../utils/rpc_provider");
+const provider = makeFailoverProvider("ETHEREUM");
 
-const PROVIDER = new ethers.JsonRpcProvider(
-    process.env.ETH_RPC_URL || 'https://eth.llamarpc.com'
-);
+const CHAIN = 'ethereum';
+const PROVIDER = buildProviderFromEnv({ chain: CHAIN });
 
 const PAIR_ABI = [
     'function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)',
@@ -24,7 +27,7 @@ const SUSHISWAP_POOLS = [
     token0: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC (correct!)
     token1: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH (correct!)
     pair: '0x397FF1542f962076d0BFE58eA045FfA2d347ACa0',
-    invertPrice: false  // Change to false since we'll use r0/r1
+    invertPrice: false
     },
     {
         name: 'WBTC/ETH',
@@ -63,59 +66,54 @@ const SUSHISWAP_POOLS = [
     }
 ];
 
+async function _erc20Decimals(address) {
+    const reg = getToken(CHAIN, address);
+    if (reg && reg.decimals != null) return Number(reg.decimals);
+
+    const tokenContract = new ethers.Contract(address, ERC20_ABI, PROVIDER);
+    const decimals = await withRetry(
+        () => withTimeout(tokenContract.decimals(), 4000, 'erc20.decimals'),
+        { retries: 2, baseDelayMs: 300, label: 'erc20.decimals' }
+    );
+    return Number(decimals.toString());
+}
+
 async function fetchPoolData(poolConfig) {
     try {
         const pairContract = new ethers.Contract(poolConfig.pair, PAIR_ABI, PROVIDER);
-        
-        const reserves = await pairContract.getReserves();
+
+        const reserves = await withRetry(
+            () => withTimeout(pairContract.getReserves(), 6000, 'sushi.getReserves'),
+            { retries: 1, baseDelayMs: 250, label: 'sushi.getReserves' }
+        );
+
         const reserve0 = reserves[0];
         const reserve1 = reserves[1];
-        
-        const token0Contract = new ethers.Contract(poolConfig.token0, ERC20_ABI, PROVIDER);
-        const token1Contract = new ethers.Contract(poolConfig.token1, ERC20_ABI, PROVIDER);
-        
-        const [decimals0, decimals1] = await Promise.all([
-            token0Contract.decimals(),
-            token1Contract.decimals()
+
+        const [dec0, dec1] = await Promise.all([
+            _erc20Decimals(poolConfig.token0),
+            _erc20Decimals(poolConfig.token1)
         ]);
-        
-        // Convert reserves to numbers with proper decimals - EXPLICIT Number() conversions!
-        const dec0 = Number(decimals0.toString());
-        const dec1 = Number(decimals1.toString());
-        
+
         const reserve0Num = Number(reserve0.toString()) / Math.pow(10, dec0);
         const reserve1Num = Number(reserve1.toString()) / Math.pow(10, dec1);
-        
-        // Calculate raw price (token1 per token0)
+
         let price;
-        
+
         if (poolConfig.name === 'ETH/USDC') {
-            // USDC is token0, WETH is token1
-            // reserve0/reserve1 = USDC per WETH = dollars per ETH ✅
             price = reserve0Num / reserve1Num;
         } else if (poolConfig.name === 'WBTC/ETH') {
-            // WBTC is token0, WETH is token1
-            // reserve1/reserve0 = WETH per WBTC ✅
             price = reserve1Num / reserve0Num;
         } else if (poolConfig.name === 'USDC/USDT') {
-            // USDC is token0, USDT is token1
-            // Both 6 decimals, should be ~1.0
             price = reserve1Num / reserve0Num;
         } else if (poolConfig.name === 'DAI/ETH') {
-            // DAI is token0, WETH is token1
-            // reserve1/reserve0 = WETH per DAI (tiny number)
-            // We want ETH price in DAI, so invert
             price = reserve0Num / reserve1Num;
         } else {
-            // TOKEN/ETH pairs (LINK, UNI, AAVE)
-            // token0 is TOKEN, token1 is WETH
-            // reserve1/reserve0 = WETH per TOKEN ✅
             price = reserve1Num / reserve0Num;
         }
-        
-        // Calculate TVL
+
         const tvl = (reserve0Num * price) + reserve1Num;
-        
+
         return {
             pair: poolConfig.name,
             pool: poolConfig.pair,
@@ -127,7 +125,7 @@ async function fetchPoolData(poolConfig) {
             source: 'sushiswap_onchain',
             timestamp: new Date().toISOString()
         };
-        
+
     } catch (error) {
         console.error(`❌ Error fetching ${poolConfig.name}:`, error.message);
         return null;
@@ -136,16 +134,16 @@ async function fetchPoolData(poolConfig) {
 
 async function fetchSushiswapData() {
     console.log('🔍 Fetching Sushiswap on-chain data...');
-    
+
     try {
         const results = await Promise.all(
             SUSHISWAP_POOLS.map(pool => fetchPoolData(pool))
         );
-        
+
         const prices = results.filter(r => r !== null);
-        
+
         console.log(`✅ Fetched ${prices.length}/${SUSHISWAP_POOLS.length} pools`);
-        
+
         return {
             status: 'success',
             data: {
@@ -155,7 +153,7 @@ async function fetchSushiswapData() {
                 exchange: 'sushiswap'
             }
         };
-        
+
     } catch (error) {
         console.error('❌ Sushiswap fetcher error:', error.message);
         return {
@@ -173,11 +171,11 @@ if (require.main === module) {
     fetchSushiswapData().then(result => {
         console.log('\n📊 SUSHISWAP ON-CHAIN DATA:');
         console.log('═'.repeat(70));
-        
+
         result.data.prices.forEach(price => {
             console.log(`${price.pair.padEnd(15)} $${price.price.toFixed(6).padStart(12)} | TVL: $${(price.reserveUSD/1000000).toFixed(1)}M | Fee: ${price.fee}%`);
         });
-        
+
         console.log('═'.repeat(70));
         console.log(`Total pools: ${result.data.prices.length}`);
     }).catch(console.error);
