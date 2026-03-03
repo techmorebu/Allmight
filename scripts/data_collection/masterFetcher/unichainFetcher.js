@@ -112,4 +112,7 @@ if (require.main === module) {
     }).catch(console.error);
 }
 
+// Declare chain for master scheduler
+unichainFetcher.chain = 'unichain';
+
 module.exports = unichainFetcher;

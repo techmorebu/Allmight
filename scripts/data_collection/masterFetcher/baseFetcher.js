@@ -208,4 +208,7 @@ if (require.main === module) {
     }).catch(console.error);
 }
 
+// Declare chain for master scheduler
+baseFetcher.chain = 'base';
+
 module.exports = baseFetcher;

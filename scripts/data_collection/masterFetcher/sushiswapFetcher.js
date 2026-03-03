@@ -164,6 +164,9 @@ async function fetchSushiswapData() {
     }
 }
 
+// Declare chain for master scheduler
+fetchSushiswapData.chain = 'ethereum';
+
 module.exports = fetchSushiswapData;
 
 // For testing

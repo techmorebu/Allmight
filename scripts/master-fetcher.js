@@ -266,23 +266,70 @@ async function runFetchersOnce() {
     return {};
   }
 
-  const results = {};
-  let idx = 0;
+  // ------------------------------
+  // Chain-aware scheduling
+  // ------------------------------
+  // Fetchers may declare: fn.chain = "ethereum" | "base" | "arbitrum" | ...
+  // If absent, they go to the "global" bucket.
+  function _normChain(x) {
+    return String(x || "global").toLowerCase().trim() || "global";
+  }
 
-  // Simple worker pool
-  const workers = Array.from({ length: Math.min(CONCURRENCY, entries.length) }, async () => {
-    while (true) {
-      const cur = idx++;
-      if (cur >= entries.length) break;
-      const [name, fn] = entries[cur];
-      const out = await runOneFetcher(name, fn);
-      results[name] = out;
-      // tiny jitter to avoid synchronized RPC bursts
-      await _sleep(10);
-    }
+  function _chainConcurrency(chain) {
+    // Allow per-chain overrides via env:
+    //   MASTER_FETCHER_CHAIN_CONCURRENCY_ETHEREUM=1
+    //   MASTER_FETCHER_CHAIN_CONCURRENCY_BASE=2
+    const key = `MASTER_FETCHER_CHAIN_CONCURRENCY_${String(chain).toUpperCase()}`;
+    const v = Number(process.env[key] || 0);
+    if (v > 0) return v;
+
+    // Conservative defaults (stability-first)
+    if (chain === "ethereum" || chain === "eth") return 1;
+    if (chain === "global") return CONCURRENCY;
+    return Math.max(1, Math.min(3, CONCURRENCY)); // L2 default
+  }
+
+  function _chainJitterMs(chain) {
+    const key = `MASTER_FETCHER_CHAIN_JITTER_MS_${String(chain).toUpperCase()}`;
+    const v = Number(process.env[key] || 0);
+    if (v > 0) return v;
+    return chain === "ethereum" ? 40 : 20;
+  }
+
+  const buckets = new Map();
+  for (const [name, fn] of entries) {
+    const chain = _normChain(fn && fn.chain);
+    if (!buckets.has(chain)) buckets.set(chain, []);
+    buckets.get(chain).push([name, fn]);
+  }
+
+  const results = {};
+
+  const bucketWorkers = Array.from(buckets.entries()).map(async ([chain, list]) => {
+    const conc = _chainConcurrency(chain);
+    const jitter = _chainJitterMs(chain);
+    let idx = 0;
+
+    log("info", "Starting chain bucket", { chain, fetchers: list.length, concurrency: conc, jitterMs: jitter });
+
+    const workers = Array.from({ length: Math.min(conc, list.length) }, async () => {
+      while (true) {
+        const cur = idx++;
+        if (cur >= list.length) break;
+
+        const [name, fn] = list[cur];
+        const out = await runOneFetcher(name, fn);
+        results[name] = out;
+
+        // jitter between fetchers to avoid synchronized RPC bursts
+        await _sleep(jitter);
+      }
+    });
+
+    await Promise.allSettled(workers);
   });
 
-  await Promise.allSettled(workers);
+  await Promise.allSettled(bucketWorkers);
   return results;
 }
 

@@ -271,4 +271,7 @@ if (require.main === module) {
     }).catch(console.error);
 }
 
+// Declare chain for master scheduler
+optimismFetcher.chain = 'optimism';
+
 module.exports = optimismFetcher;

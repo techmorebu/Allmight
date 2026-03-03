@@ -194,4 +194,7 @@ if (require.main === module) {
     }).catch(console.error);
 }
 
+// Declare chain for master scheduler
+curveFetcherArbitrum.chain = 'arbitrum';
+
 module.exports = curveFetcherArbitrum;
