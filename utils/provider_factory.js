@@ -371,8 +371,8 @@ function createProvider(chainKey, opts = {}) {
     },
   };
 }
-
 module.exports = {
   createProvider,
-  getRpcUrlsForChain,
+  makeFailoverProvider: createProvider,
+  getChainRpcUrls,
 };
