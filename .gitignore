@@ -50,3 +50,6 @@ scripts/telemetry/*.backup*
 
 # Deploy/debug scripts and logs
 scripts/deploy/
+
+# runtime
+logs/
