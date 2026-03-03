@@ -151,6 +151,8 @@ def main():
     parser.add_argument('--tier',    type=int, default=1000)
     parser.add_argument('--interval',type=int, default=60, help='Seconds between scans')
     parser.add_argument('--all',     action='store_true', help='Show all pairs including far misses')
+    parser.add_argument('--no-fetch', action='store_true', dest='no_fetch',
+                        help='Skip internal master-fetcher calls when managed by start_allmight.sh')
     args = parser.parse_args()
 
     r = redis.from_url("redis://127.0.0.1:6379")
@@ -160,14 +162,14 @@ def main():
     print(f"Interval: {args.interval}s | Ctrl+C to stop")
     print(f"Alert threshold: gross_edge > 0 bps (GROSS_POS) or > -5 bps (NEAR)")
 
-    # Run master fetcher first to ensure fresh data
     import subprocess
-    print("\nFetching fresh data...")
-    subprocess.run(
-        ["node", "scripts/master-fetcher.js", "once"],
-        cwd=os.path.expanduser("~/Allmight"),
-        capture_output=True
-    )
+    if not args.no_fetch:
+        print("\nFetching fresh data...")
+        subprocess.run(
+            ["node", "scripts/master-fetcher.js", "once"],
+            cwd=os.path.expanduser("~/Allmight"),
+            capture_output=True
+        )
 
     while True:
         try:
@@ -187,12 +189,12 @@ def main():
             print(f"\n  Next scan in {args.interval}s... (Ctrl+C to stop)")
             time.sleep(args.interval)
 
-            # Refresh data
-            subprocess.run(
-                ["node", "scripts/master-fetcher.js", "once"],
-                cwd=os.path.expanduser("~/Allmight"),
-                capture_output=True
-            )
+            if not args.no_fetch:
+                subprocess.run(
+                    ["node", "scripts/master-fetcher.js", "once"],
+                    cwd=os.path.expanduser("~/Allmight"),
+                    capture_output=True
+                )
 
         except KeyboardInterrupt:
             print(f"\nStopped. Log saved to {LOG_FILE}")

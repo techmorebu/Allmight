@@ -41,11 +41,38 @@ if [[ "${1:-}" == "--stop" ]]; then
     done < "$PID_FILE"
     rm -f "$PID_FILE"
     echo "Done."
-python3 -c "
+    python3 -c "
 import sys; sys.path.insert(0,'$(pwd)')
 from utils.discord_alerts import discord
 discord.shutdown('Manual stop via start_allmight.sh --stop')
 " 2>/dev/null || true
+    exit 0
+fi
+
+# ── Reset state only (no restart) ─────────────────────────────────────────────
+if [[ "${1:-}" == "--reset-state" ]]; then
+    echo "Resetting session state..."
+    python3 -u -c "
+import json
+from pathlib import Path
+state_file = Path('logs/live_state.json')
+old = {}
+if state_file.exists():
+    try: old = json.loads(state_file.read_text())
+    except: pass
+fresh = {
+    'total_live':          old.get('total_live', 0),
+    'total_live_pnl':      old.get('total_live_pnl', 0.0),
+    'consecutive_reverts': 0,
+    'last_trade_at':       None,
+    'paused_until':        0,
+    'trade_times':         [],
+}
+state_file.write_text(json.dumps(fresh, indent=2))
+print('  live_state.json reset (all-time totals preserved)')
+print('  trade_times cleared, rate limits reset, pause timers cleared')
+"
+    echo "Done."
     exit 0
 fi
 
@@ -54,6 +81,14 @@ if [[ -f "$PID_FILE" ]]; then
     echo "WARNING: PID file exists. Already running? Run with --stop first."
     cat "$PID_FILE"
     exit 1
+fi
+
+# ── Kill orphan metrics_engine daemons ───────────────────────────────────────
+ORPHANS=$(pgrep -fc "metrics_engine.py --daemon" 2>/dev/null || true)
+if [[ "$ORPHANS" -gt 0 ]]; then
+    echo "Killing $ORPHANS orphan metrics_engine daemon(s)..."
+    pkill -f "metrics_engine.py --daemon" 2>/dev/null || true
+    sleep 1
 fi
 
 # ── Load env ──────────────────────────────────────────────────────────────────
@@ -67,6 +102,40 @@ if ! redis-cli ping > /dev/null 2>&1; then
     exit 1
 fi
 echo "Redis: OK"
+# ── Session state reset (runs on every startup) ───────────────────────────────
+SESSION_ID=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+echo "{\"session_id\": \"$SESSION_ID\", \"started_at\": \"$SESSION_ID\"}" \
+    > "$LOG_DIR/session_start.json"
+
+# Reset live executor state -- clears trade_times, rate limits, pause timers
+python3 -c "
+import json
+from pathlib import Path
+state_file = Path('logs/live_state.json')
+fresh = {
+    'total_live': 0,
+    'total_live_pnl': 0.0,
+    'consecutive_reverts': 0,
+    'last_trade_at': None,
+    'paused_until': 0,
+    'trade_times': []
+}
+# Preserve all-time totals if file exists
+if state_file.exists():
+    try:
+        old = json.loads(state_file.read_text())
+        fresh['total_live']     = old.get('total_live', 0)
+        fresh['total_live_pnl'] = old.get('total_live_pnl', 0.0)
+    except: pass
+state_file.parent.mkdir(exist_ok=True)
+state_file.write_text(json.dumps(fresh, indent=2))
+print('  Live state reset (preserved all-time totals)')
+"
+
+echo "  Session ID: $SESSION_ID"
+echo ""
+# ── End session state reset ───────────────────────────────────────────────────
+
 redis-cli --scan --pattern "fetcher:*" | xargs -r redis-cli del > /dev/null 2>&1
 echo "Redis: stale keys cleared"
 
@@ -87,9 +156,10 @@ echo "Waiting 35s for initial Redis population..."
 sleep 35
 
 # ── 2. Spread monitor ─────────────────────────────────────────────────────────
-python3 "$REPO/scripts/spread_monitor.py" \
+python3 -u "$REPO/scripts/spread_monitor.py" \
     --chain all \
     --interval "$INTERVAL" \
+    --no-fetch \
     >> "$LOG_DIR/monitor.log" 2>&1 &
 MONITOR_PID=$!
 echo "monitor=$MONITOR_PID" >> "$PID_FILE"
@@ -104,7 +174,7 @@ else
   echo "  SHADOW MODE -- simulation only"
 fi
 
-python3 "$REPO/scripts/execution/shadow_mode.py" \
+python3 -u "$REPO/scripts/execution/shadow_mode.py" \
     --min-edge 0 \
     --size 1000 \
     --interval "$INTERVAL" \
@@ -114,8 +184,16 @@ SHADOW_PID=$!
 echo "shadow=$SHADOW_PID" >> "$PID_FILE"
 echo "Shadow started (PID $SHADOW_PID) -- logs/shadow.log"
 
+
+# ── 4. Metrics engine daemon ──────────────────────────────────────────────────
+python3 -u "$REPO/utils/metrics_engine.py" --daemon \
+    >> "$LOG_DIR/metrics.log" 2>&1 &
+METRICS_PID=$!
+echo "metrics=$METRICS_PID" >> "$PID_FILE"
+echo "Metrics engine started (PID $METRICS_PID) -- logs/metrics.log"
+
 # ── 4. Watchdog ──────────────────────────────────────────────────────────────
-python3 "$REPO/scripts/watchdog.py" >> "$LOG_DIR/watchdog.log" 2>&1 &
+python3 -u "$REPO/scripts/watchdog.py" >> "$LOG_DIR/watchdog.log" 2>&1 &
 WATCHDOG_PID=$!
 echo "watchdog=$WATCHDOG_PID" >> "$PID_FILE"
 echo "Watchdog started (PID $WATCHDOG_PID) -- logs/watchdog.log"

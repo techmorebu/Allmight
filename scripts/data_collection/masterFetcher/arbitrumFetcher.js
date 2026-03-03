@@ -1,7 +1,8 @@
-// arbitrumFetcher.js v2.0
+// arbitrumFetcher.js v2.1
 // Fetches Uniswap V3 + Camelot V2 pool data on Arbitrum One
 // All pool addresses verified via Uniswap V3 Factory on-chain (2026-02-20)
-// Factory: 0x1F98431c8aD98523631AE4a59f267346ea31F984
+// v2.1: Added ARB/WETH pool (0xC6F780497A95e246EB9449f5e4770916DCd6396A)
+//       $4.7M/24h volume, $1.28M liquidity -- discovered via DexScreener 2026-02-25
 //
 // KEY OPPORTUNITY: Stablecoin pools at 0.01% fee (1 bps)
 //   USDC/USDT 0.01% vs USDC/USDT 0.01% = 2 bps total fee wall
@@ -30,10 +31,13 @@ const PAIR_ABI_V2 = [
 
 // ── Arbitrum token addresses ──────────────────────────────────────────────────
 // WETH:   0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
-// USDC:   0xaf88d065e77c8cC2239327C5EDb3A432268e5831  (native)
+// USDC:   0xaf88d065e77c8cC2239327C5EDb3A432268e5831
+// ARB:    0x912CE59144191C1204E64559FE8253a0e49E6548
+// WBTC:   0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f  (native)
 // USDCe:  0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8  (bridged)
 // USDT:   0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9
 // DAI:    0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1
+// ARB:    0x912CE59144191C1204E64559FE8253a0e49E6548
 
 // ── Uniswap V3 pools (all addresses verified via factory) ─────────────────────
 const UNISWAP_V3_POOLS = [
@@ -54,6 +58,17 @@ const UNISWAP_V3_POOLS = [
         fee:        500,
         priceMode:  'direct',
     },
+    // ── ARB/WETH pool -- HIGH VOLUME ($4.7M/24h, $1.28M liquidity) ─────────
+    // Discovered via DexScreener 2026-02-25. Pool verified on Arbitrum.
+    // fee=3000 (0.30%) -- standard tier for volatile pairs
+    {
+        outputPair: 'ARB/WETH',
+        pool:       '0xC6F780497A95e246EB9449f5e4770916DCd6396A',
+        decimals0:  18,   // ARB  (token0)
+        decimals1:  18,   // WETH (token1)
+        fee:        3000,
+        priceMode:  'direct',  // WETH per ARB
+    },
     // ── Stablecoin pools at 0.01% (1 bps) -- KEY OPPORTUNITY ──────────────
     {
         outputPair: 'USDC/USDT',
@@ -61,7 +76,7 @@ const UNISWAP_V3_POOLS = [
         decimals0:  6,    // USDC (token0)
         decimals1:  6,    // USDT (token1)
         fee:        100,
-        priceMode:  'direct',  // USDT per USDC (should be ~1.0)
+        priceMode:  'direct',
     },
     {
         outputPair: 'USDC/USDCe',
@@ -71,15 +86,41 @@ const UNISWAP_V3_POOLS = [
         fee:        100,
         priceMode:  'direct',
     },
-    // DAI/USDC removed -- decimal mismatch (DAI 18dec vs USDC 6dec)
-    // sqrtPriceX96 math returns 0 -- needs on-chain token order verification
-    //
     {
         outputPair: 'DAI/USDT',
         pool:       '0x7f580f8A02b759C350E6b8340e7c2d4b8162b6a9',
         decimals0:  18,   // DAI
         decimals1:  6,    // USDT
         fee:        100,
+        priceMode:  'direct',
+    },
+    // ── ARB / WBTC pools ──────────────────────────────────────────────────────
+    // ARB/WETH 0.05% (highest liquidity ARB pool on Arbitrum)
+    // WETH=token0, ARB=token1 -- priceMode direct gives WETH per ARB
+    {
+        outputPair: 'ARB/WETH',
+        pool:       ethers.getAddress('0xc6f780497a95e246eb9449f5e4770916dcd6396a'),
+        decimals0:  18,   // WETH (token0)
+        decimals1:  18,   // ARB  (token1)
+        fee:        3000,
+        priceMode:  'direct',
+    },
+    // ARB/USDC 0.3%
+    {
+        outputPair: 'ARB/USDC',
+        pool:       ethers.getAddress('0xb0f6ca40411360c03d41c5ffa5134b1c9e2b2b16'),
+        decimals0:  18,   // ARB  (token0)
+        decimals1:  6,    // USDC (token1)
+        fee:        3000,
+        priceMode:  'direct',
+    },
+    // WBTC/WETH 0.3%
+    {
+        outputPair: 'WBTC/WETH',
+        pool:       ethers.getAddress('0x2f5e87c9312fa29aed5c179e456625d79015299c'),
+        decimals0:  8,    // WBTC (token0)
+        decimals1:  18,   // WETH (token1)
+        fee:        3000,
         priceMode:  'direct',
     },
     // ── 0.05% stablecoin pools (for comparison) ────────────────────────────
@@ -136,15 +177,23 @@ async function fetchUniV3Pool(cfg) {
             return null;
         }
         // For stablecoin pairs, sanity check: price should be 0.9 - 1.1
-        const isStable = !cfg.outputPair.includes('ETH') && !cfg.outputPair.includes('BTC');
+        const isStable = !cfg.outputPair.includes('ETH') && !cfg.outputPair.includes('BTC') && !cfg.outputPair.includes('ARB');
         if (isStable && (price < 0.9 || price > 1.1)) {
             console.error(`[ARB] UniV3 ${cfg.outputPair}: stablecoin price out of range: ${price.toFixed(6)}`);
             return null;
         }
         const liqNum = Number(liq);
-        const tvlUSD = cfg.outputPair.includes('ETH')
-            ? (liqNum / 1e6) * Math.sqrt(price) * 2
-            : liqNum / 1e9;  // rough proxy for stablecoin pools
+        // TVL estimation per pair type
+        let tvlUSD;
+        if (cfg.outputPair.includes('ETH') && !cfg.outputPair.includes('ARB')) {
+            tvlUSD = (liqNum / 1e6) * Math.sqrt(price) * 2;
+        } else if (cfg.outputPair === 'ARB/WETH') {
+            // ARB/WETH: both 18 dec, price = WETH per ARB
+            // rough TVL: liquidity * sqrt(price) * 2 * eth_price
+            tvlUSD = (liqNum / 1e9) * Math.sqrt(price) * 2 * 2700;
+        } else {
+            tvlUSD = liqNum / 1e9;
+        }
         return {
             pair:      cfg.outputPair,
             pool:      cfg.pool,

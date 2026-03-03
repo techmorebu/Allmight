@@ -81,6 +81,12 @@ def _send(url, text):
     except Exception as e:
         print(f"[discord] send failed: {e}"); return False
 
+def _bps(val):
+    """Ensure exactly one bps suffix."""
+    s = str(val)
+    return s if s.endswith("bps") else f"{s}bps"
+
+
 def _heatmap_bar(heatmap):
     """Compact 24hr heatmap -- ASCII block chars scaled to max bucket."""
     if not heatmap: return "  No data yet"
@@ -110,7 +116,7 @@ class DiscordAlerts:
 
     # ── TERMINAL ──────────────────────────────────────────────────────────────
 
-    def heartbeat(self, message=""):
+    def heartbeat(self, message=""):  # 30-min pulse -> TERMINAL
         m = _m()
         if not m: return False
 
@@ -251,7 +257,7 @@ class DiscordAlerts:
             f" Chain:      {chain.upper()}\n"
             f" Pair:       {pair}\n"
             f" Route:      {buy_venue}->{sell_venue}\n"
-            f" Gross edge: {gross_bps}\n"
+            f" Gross edge: {_bps(gross_bps)}\n"
             f" Net P&L:    {net_usd}  [simulated]\n"
             f"{'─'*36}\n"
             f" SESSION ({m.get('session_hours',0):.1f}hrs)\n"
@@ -265,6 +271,82 @@ class DiscordAlerts:
         return _send(ALERT_WEBHOOK, text)
 
     # ── DETAILED ──────────────────────────────────────────────────────────────
+
+
+    def hourly_report(self, gas=None, top_opportunities=None):
+        """60-min detailed report. Routes to DETAILED channel."""
+        m    = _m()
+        sess = m.get("session", {})
+        roll = m.get("rolling_24hr", {})
+        sys_ = m.get("system", {})
+        mvi  = "PASS \u2705" if sys_.get("mvi_pass") else "FAIL \u274c"
+
+        trade_lines = (
+            f"{'\u2500'*40}\n"
+            f" TRADE SUMMARY\n"
+            f"{'\u2500'*40}\n"
+            f" Session ({m.get('session_hours',0):.1f}hrs)\n"
+            f"  Executed: {sess.get('executed',0):>5}  Skipped: {sess.get('skipped',0):>4}\n"
+            f"  Hit rate: {sess.get('hit_rate',0):>5.1f}%  Win rate:{sess.get('win_rate',0):>5.1f}%\n"
+            f"  P&L/hr:   ${sess.get('pnl_per_hr',0):>8.4f}  [session]\n"
+            f"  P&L:      ${sess.get('total_pnl',0):>8.4f}  [ACTUAL]\n"
+            f" Rolling 24hr\n"
+            f"  Executed: {roll.get('executed',0):>5}  Hit: {roll.get('hit_rate',0):.1f}%\n"
+            f"  P&L:      ${roll.get('total_pnl',0):>8.4f}  [ACTUAL]\n"
+            f" All-Time Live\n"
+            f"  Executed: {m.get('live_alltime',{{}}).get('executed',0):>5}  "
+            f"Win: {m.get('live_alltime',{{}}).get('win_rate',0):.1f}%\n"
+            f"  P&L:      ${m.get('live_alltime',{{}}).get('total_pnl',0):>8.4f}  [ON-CHAIN]\n"
+        )
+
+        if gas:
+            gas_lines = (
+                f"{'\u2500'*40}\n"
+                f" GAS SNAPSHOT (Arbitrum)\n"
+                f"{'\u2500'*40}\n"
+                f"  Standard: {gas.get('standard',0):.2f} gwei\n"
+                f"  Fast:     {gas.get('fast',0):.2f} gwei\n"
+                f"  Instant:  {gas.get('instant',0):.2f} gwei\n"
+                f"  Network:  {gas.get('network','UNKNOWN')}\n"
+            )
+        else:
+            gas_lines = f"{'\u2500'*40}\n GAS SNAPSHOT -- no data\n{'\u2500'*40}\n"
+
+        if top_opportunities:
+            opp_lines = f"{'\u2500'*40}\n TOP OPPORTUNITIES (last 1hr)\n{'\u2500'*40}\n"
+            for i, opp in enumerate(top_opportunities[:3], 1):
+                opp_lines += (
+                    f"  {i}. {opp.get('pair','?')}"
+                    f" [{opp.get('chain','?').upper()}]\n"
+                    f"     {opp.get('buy_venue','?')} -> {opp.get('sell_venue','?')}\n"
+                    f"     Gross: {float(opp.get('gross_edge_bps',0)):+.2f}bps"
+                    f"  Net: {float(opp.get('net_edge_bps',0)):+.2f}bps\n"
+                    f"     P&L: ${float(opp.get('net_profit_usd',0)):.4f}"
+                    f"  [{opp.get('decision','?')}]\n"
+                )
+        else:
+            opp_lines = (
+                f"{'\u2500'*40}\n"
+                f" TOP OPPORTUNITIES -- none in last hour\n"
+                f"{'\u2500'*40}\n"
+            )
+
+        text = (
+            f"\U0001f4c8 **Hourly Report** | {_ts()}\n"
+            f"```\n"
+            f" MVI Gate: {mvi}\n\n"
+            f"{trade_lines}\n"
+            f"{gas_lines}\n"
+            f"{opp_lines}"
+            f"{'\u2500'*40}\n"
+            f"```"
+        )
+        if len(text) > 1900:
+            mid   = text.find("\u2500"*40, len(text)//2)
+            part1 = (text[:mid].rstrip() + "\n```") if mid > 0 else text[:1900] + "\n```"
+            part2 = ("```\n" + text[mid:]) if mid > 0 else "```\n" + text[1900:]
+            return _send(DETAILED_WEBHOOK, part1) and _send(DETAILED_WEBHOOK, part2)
+        return _send(DETAILED_WEBHOOK, text)
 
     def shadow_report(self, **kwargs):
         m = _m()
@@ -532,7 +614,7 @@ class DiscordAlerts:
             f"```\n"
             f" Chain:      ARBITRUM\n"
             f" Pair:       {pair}\n"
-            f" Gross edge: {gross_bps}bps\n"
+            f" Gross edge: {_bps(gross_bps)}\n"
             f" Sim P&L:    ${simulated_usd:.4f}  [simulated]\n"
             f" ACTUAL P&L: ${actual_usd:.4f}  [ON-CHAIN]\n"
             f" Slippage:   {slip_str}\n"
@@ -553,7 +635,7 @@ class DiscordAlerts:
             f"```\n"
             f" Chain:    ARBITRUM\n"
             f" Pair:     {pair}\n"
-            f" Edge:     {gross_bps}bps\n"
+            f" Edge:     {gross_bps}" + ("" if str(gross_bps).endswith("bps") else "bps") + "\n"
             f" Result:   On-chain gate protected -- zero loss\n"
             f" Session:  {session_id[:20]}\n"
             f"```"

@@ -1,0 +1,76 @@
+timestamp,session_id,pair,buy_venue,sell_venue,gross_bps,simulated_usd,actual_usd,gas_eth,tx_hash,block,elapsed_ms,success,error
+2026-02-24T09:14:23.336184+00:00,2026-02-24T09:14:15Z,ETH/USDT,uniswap_v3,curve,7.9399,0.274,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-24T09:15:25.832230+00:00,2026-02-24T09:14:21Z,ETH/USDT,uniswap_v3,curve,7.9399,0.274,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-24T09:16:29.146318+00:00,2026-02-24T09:14:21Z,ETH/USDT,uniswap_v3,curve,11.5897,0.639,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-24T12:41:03.754554+00:00,2026-02-24T12:09:04Z,ETH/USDT,uniswap_v3,curve,9.4582,0.4258,0,0,,,0,False,Edge 9.4582bps below minimum 15bps
+2026-02-24T12:42:03.959597+00:00,2026-02-24T12:09:04Z,ETH/USDT,uniswap_v3,curve,7.4788,0.2279,0,0,,,0,False,Edge 7.4788bps below minimum 15bps
+2026-02-24T12:43:04.157194+00:00,2026-02-24T12:09:04Z,ETH/USDT,uniswap_v3,curve,6.8478,0.1648,0,0,,,0,False,Edge 6.8478bps below minimum 15bps
+2026-02-24T12:44:04.364447+00:00,2026-02-24T12:09:04Z,ETH/USDT,uniswap_v3,curve,6.8724,0.1672,0,0,,,0,False,Edge 6.8724bps below minimum 15bps
+2026-02-24T12:45:04.571318+00:00,2026-02-24T12:09:04Z,ETH/USDT,uniswap_v3,curve,6.1669,0.0967,0,0,,,0,False,Edge 6.1669bps below minimum 15bps
+2026-02-24T12:47:04.777985+00:00,2026-02-24T12:09:04Z,ETH/USDT,uniswap_v3,curve,5.8765,0.0677,0,0,,,0,False,Edge 5.8765bps below minimum 15bps
+2026-02-24T13:22:05.273273+00:00,2026-02-24T12:09:04Z,ETH/USDT,uniswap_v3,curve,7.9027,0.2703,0,0,,,0,False,Edge 7.9027bps below minimum 15bps
+2026-02-24T13:23:05.486448+00:00,2026-02-24T12:09:04Z,ETH/USDT,uniswap_v3,curve,10.4887,0.5289,0,0,,,0,False,Edge 10.4887bps below minimum 15bps
+2026-02-24T13:24:05.688699+00:00,2026-02-24T12:09:04Z,ETH/USDT,uniswap_v3,curve,14.9735,0.9773,0,0,,,0,False,Edge 14.9735bps below minimum 15bps
+2026-02-24T13:25:05.903585+00:00,2026-02-24T12:09:04Z,ETH/USDT,uniswap_v3,curve,11.6379,0.6438,0,0,,,0,False,Edge 11.6379bps below minimum 15bps
+2026-02-24T13:51:06.351895+00:00,2026-02-24T12:09:04Z,ETH/USDT,uniswap_v3,curve,11.2317,0.6032,0,0,,,0,False,Edge 11.2317bps below minimum 15bps
+2026-02-24T13:52:06.557299+00:00,2026-02-24T12:09:04Z,ETH/USDT,uniswap_v3,curve,11.2317,0.6032,0,0,,,0,False,Edge 11.2317bps below minimum 15bps
+2026-02-24T14:01:06.832094+00:00,2026-02-24T12:09:04Z,ETH/USDT,uniswap_v3,curve,6.6773,0.1477,0,0,,,0,False,Edge 6.6773bps below minimum 15bps
+2026-02-24T14:02:07.004752+00:00,2026-02-24T12:09:04Z,ETH/USDT,uniswap_v3,curve,6.6773,0.1477,0,0,,,0,False,Edge 6.6773bps below minimum 15bps
+2026-02-24T14:05:07.230185+00:00,2026-02-24T12:09:04Z,ETH/USDT,uniswap_v3,curve,5.5796,0.038,0,0,,,0,False,Edge 5.5796bps below minimum 15bps
+2026-02-24T14:18:09.980784+00:00,2026-02-24T12:09:04Z,ETH/USDT,uniswap_v3,curve,26.195,2.0995,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-24T14:33:13.286327+00:00,2026-02-24T12:09:04Z,ETH/USDT,uniswap_v3,curve,22.562,1.7362,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-24T14:34:16.559053+00:00,2026-02-24T12:09:04Z,ETH/USDT,uniswap_v3,curve,21.914,1.6714,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-24T23:47:23.224814+00:00,2026-02-24T23:22:21Z,ETH/USDT,uniswap_v3,curve,5.5373,0.0337,0,0,,,0,False,Edge 5.5373bps below minimum 15bps
+2026-02-24T23:48:23.430612+00:00,2026-02-24T23:22:21Z,ETH/USDT,uniswap_v3,curve,5.5373,0.0337,0,0,,,0,False,Edge 5.5373bps below minimum 15bps
+2026-02-24T23:49:23.656484+00:00,2026-02-24T23:22:21Z,ETH/USDT,uniswap_v3,curve,7.0398,0.184,0,0,,,0,False,Edge 7.0398bps below minimum 15bps
+2026-02-24T23:50:23.849518+00:00,2026-02-24T23:22:21Z,ETH/USDT,uniswap_v3,curve,9.8367,0.4637,0,0,,,0,False,Edge 9.8367bps below minimum 15bps
+2026-02-24T23:51:24.051271+00:00,2026-02-24T23:22:21Z,ETH/USDT,uniswap_v3,curve,8.3651,0.3165,0,0,,,0,False,Edge 8.3651bps below minimum 15bps
+2026-02-24T23:52:24.261021+00:00,2026-02-24T23:22:21Z,ETH/USDT,uniswap_v3,curve,8.3651,0.3165,0,0,,,0,False,Edge 8.3651bps below minimum 15bps
+2026-02-24T23:53:24.511890+00:00,2026-02-24T23:22:21Z,ETH/USDT,uniswap_v3,curve,8.3651,0.3165,0,0,,,0,False,Edge 8.3651bps below minimum 15bps
+2026-02-24T23:54:24.702672+00:00,2026-02-24T23:22:21Z,ETH/USDT,uniswap_v3,curve,9.2933,0.4093,0,0,,,0,False,Edge 9.2933bps below minimum 15bps
+2026-02-24T23:55:24.908443+00:00,2026-02-24T23:22:21Z,ETH/USDT,uniswap_v3,curve,9.2933,0.4093,0,0,,,0,False,Edge 9.2933bps below minimum 15bps
+2026-02-24T23:56:25.117687+00:00,2026-02-24T23:22:21Z,ETH/USDT,uniswap_v3,curve,7.1444,0.1944,0,0,,,0,False,Edge 7.1444bps below minimum 15bps
+2026-02-25T02:40:44.700054+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,10.1687,0.4969,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-25T02:41:17.964017+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,10.1687,0.4969,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-25T02:41:51.592033+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,11.6972,0.6497,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-25T02:47:22.707922+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,6.7143,0.1514,0,0,,,0,False,Edge 6.7143bps below minimum 8bps
+2026-02-25T02:47:52.913939+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,6.7143,0.1514,0,0,,,0,False,Edge 6.7143bps below minimum 8bps
+2026-02-25T02:54:53.241835+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,6.257,0.1057,0,0,,,0,False,Edge 6.257bps below minimum 8bps
+2026-02-25T02:55:23.452803+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,6.257,0.1057,0,0,,,0,False,Edge 6.257bps below minimum 8bps
+2026-02-25T02:55:53.655691+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,6.257,0.1057,0,0,,,0,False,Edge 6.257bps below minimum 8bps
+2026-02-25T02:56:23.862280+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,6.257,0.1057,0,0,,,0,False,Edge 6.257bps below minimum 8bps
+2026-02-25T02:56:54.065966+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,6.257,0.1057,0,0,,,0,False,Edge 6.257bps below minimum 8bps
+2026-02-25T03:15:20.752001+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,25.2193,2.0019,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-25T03:15:53.930991+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,25.2193,2.0019,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-25T03:16:30.445180+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,25.2193,2.0019,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-25T03:22:06.868954+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,28.0111,2.2811,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-25T03:22:40.157656+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,28.0111,2.2811,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-25T03:23:14.505353+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,39.3693,3.4169,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-25T03:27:51.050140+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,26.1174,2.0917,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-25T03:28:27.746525+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,26.0949,2.0895,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-25T03:29:01.076082+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,26.0949,2.0895,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-25T03:34:32.103471+00:00,2026-02-25T00:34:04Z,ETH/USDC,uniswap_v3,aerodrome,17.4048,1.2205,0,0,,,0,False,Unknown venue: uniswap_v3 / aerodrome
+2026-02-25T03:35:03.306761+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,7.383,0.2183,0,0,,,0,False,Edge 7.383bps below minimum 8bps
+2026-02-25T03:35:33.546473+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,7.383,0.2183,0,0,,,0,False,Edge 7.383bps below minimum 8bps
+2026-02-25T03:36:04.981661+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,10.0035,0.4803,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-25T03:36:41.418185+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,10.0035,0.4803,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-25T03:37:17.996947+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,10.0035,0.4803,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-25T03:41:12.194773+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,23.2777,1.8078,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-25T03:41:48.546616+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,23.2777,1.8078,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-25T03:42:24.609847+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,18.2102,1.301,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-25T03:58:26.275784+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,6.7988,0.1599,0,0,,,0,False,Edge 6.7988bps below minimum 8bps
+2026-02-25T03:58:56.503400+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,6.7988,0.1599,0,0,,,0,False,Edge 6.7988bps below minimum 8bps
+2026-02-25T03:59:26.817837+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,6.7988,0.1599,0,0,,,0,False,Edge 6.7988bps below minimum 8bps
+2026-02-25T03:59:57.021991+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,6.7988,0.1599,0,0,,,0,False,Edge 6.7988bps below minimum 8bps
+2026-02-25T04:00:27.252108+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,6.7988,0.1599,0,0,,,0,False,Edge 6.7988bps below minimum 8bps
+2026-02-25T04:00:57.497422+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,6.5391,0.1339,0,0,,,0,False,Edge 6.5391bps below minimum 8bps
+2026-02-25T04:01:27.746259+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,6.5391,0.1339,0,0,,,0,False,Edge 6.5391bps below minimum 8bps
+2026-02-25T04:01:57.935778+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,6.5391,0.1339,0,0,,,0,False,Edge 6.5391bps below minimum 8bps
+2026-02-25T04:02:28.235545+00:00,2026-02-25T00:34:04Z,ETH/USDC,uniswap_v3,aerodrome,10.223,0.5023,0,0,,,0,False,Unknown venue: uniswap_v3 / aerodrome
+2026-02-25T04:02:59.350632+00:00,2026-02-25T00:34:04Z,ETH/USDC,uniswap_v3,aerodrome,10.223,0.5023,0,0,,,0,False,Unknown venue: uniswap_v3 / aerodrome
+2026-02-25T04:03:32.349865+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,47.3872,4.2187,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-25T04:04:05.307257+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,47.3872,4.2187,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-25T04:04:37.543280+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,47.3872,4.2187,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-25T04:10:13.959589+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,11.0149,0.5815,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-25T04:10:47.895251+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,11.0149,0.5815,0,0,,,0,False,On-chain revert -- profitability gate protected
+2026-02-25T04:11:24.632049+00:00,2026-02-25T00:34:04Z,ETH/USDT,uniswap_v3,curve,11.0115,0.5812,0,0,,,0,False,On-chain revert -- profitability gate protected
