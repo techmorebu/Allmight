@@ -7,7 +7,7 @@
  * - Light retry/backoff on common rate limit patterns.
  *
  * Example:
- *   ETHEREUM_RPC_URLS="https://mainnet.infura.io/v3/KEY,https://eth.llamarpc.com,https://rpc.ankr.com/eth"
+ *   ETHEREUM_RPC_URLS="https://cloudflare-eth.com,https://mainnet.infura.io/v3/YOUR_KEY,https://eth-mainnet.g.alchemy.com/v2/YOUR_KEY,https://rpc.ankr.com/eth/YOUR_KEY"
  */
 const { ethers } = require("ethers");
 

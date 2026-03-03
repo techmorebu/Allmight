@@ -52,7 +52,10 @@ function buildProviderFromEnv({ chain = 'ethereum' } = {}) {
     candidates.push(env.BASE_RPC_URL, env.BASE_MAINNET_RPC_URL_1);
   }
 
-  const url = candidates.find((u) => typeof u === 'string' && u.trim().length > 0) || 'https://eth.llamarpc.com';
+  const url = candidates.find((u) => typeof u === 'string' && u.trim().length > 0);
+  if (!url) {
+    throw new Error('No RPC endpoints configured (candidates empty). Refusing to use any hardcoded fallback.');
+  }
   return new ethers.JsonRpcProvider(url);
 }
 
