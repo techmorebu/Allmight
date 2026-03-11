@@ -1,6 +1,8 @@
-'use strict';
-
-const { ethers } = require('ethers');
+const {
+  createProvider,
+  makeFailoverProvider,
+  getChainRpcUrls,
+} = require('./provider_factory');
 
 function _sanitizeRpcUrl(raw) {
   const s = String(raw || '').trim();
@@ -64,5 +66,7 @@ function makeProviderFromEnv(envKey, telemetryFn, chainKey = 'UNKNOWN') {
 }
 
 module.exports = {
-  makeProviderFromEnv,
+  createProvider,
+  makeFailoverProvider,
+  getChainRpcUrls,
 };
