@@ -3,23 +3,12 @@
 /**
  * utils/rpc_provider.js
  *
- * ⚠️  COMPATIBILITY SHIM — DO NOT USE FOR NEW CODE ⚠️
+ * COMPATIBILITY SHIM — DO NOT USE FOR NEW CODE.
  *
- * This file re-exports from utils/provider_factory.js.
- * It exists only to prevent import errors in code that hasn't been
- * migrated to the canonical provider layer yet.
+ * Re-exports from utils/provider_factory.js to prevent import errors
+ * in fetchers not yet migrated to the canonical provider layer.
  *
- * Migration status:
- *   [ ] sushiswapFetcher.js   — patched (uses createProvider)
- *   [ ] uniswapV3Fetcher.js   — needs audit
- *   [ ] arbitrumFetcher.js    — needs audit
- *   [ ] baseFetcher.js        — needs audit
- *   [ ] optimismFetcher.js    — needs audit
- *   [ ] curveFetcherArbitrum  — needs audit
- *   [ ] balancerFetcherArbitrum — needs audit
- *
- * Once all fetchers import from provider_factory.js directly,
- * delete this file.
+ * Delete this file once all fetchers import from provider_factory.js directly.
  */
 
 const {
@@ -28,7 +17,6 @@ const {
   getChainRpcUrls,
 } = require('./provider_factory');
 
-// Legacy export that older code was trying to call
 function makeProviderFromEnv(opts = {}) {
   const chain = opts.chain || 'ethereum';
   return createProvider(chain).provider();
@@ -37,6 +25,6 @@ function makeProviderFromEnv(opts = {}) {
 module.exports = {
   createProvider,
   makeFailoverProvider,
-  makeProviderFromEnv,   // legacy
+  makeProviderFromEnv,
   getChainRpcUrls,
 };
