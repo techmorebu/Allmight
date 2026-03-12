@@ -1,24 +1,25 @@
-// arbitrumFetcher.js v2.0
+'use strict';
+
+// arbitrumFetcher.js v3.0
 // Fetches Uniswap V3 + Camelot V2 pool data on Arbitrum One
 // All pool addresses verified via Uniswap V3 Factory on-chain (2026-02-20)
-// Factory: 0x1F98431c8aD98523631AE4a59f267346ea31F984
 //
-// KEY OPPORTUNITY: Stablecoin pools at 0.01% fee (1 bps)
-//   USDC/USDT 0.01% vs USDC/USDT 0.01% = 2 bps total fee wall
-//   Any spread > 2 bps = gross-positive
+// v3.0 provider migration:
+//   Removed: new ethers.JsonRpcProvider(...)
+//   Now uses: createProvider('arbitrum') + rpc.call(...)
+//   Pattern matches uniswapV3Fetcher.js — sequential loop, one rpc.call per read.
 
-'use strict';
 require('dotenv').config();
-const { ethers } = require('ethers');
-
-const PROVIDER = new ethers.JsonRpcProvider(
-    process.env.ARBITRUM_MAINNET_RPC_URL_1 || 'https://arb1.arbitrum.io/rpc'
-);
+const { ethers }         = require('ethers');
+const { createProvider } = require('../../../utils/provider_factory');
 
 const CHAIN_ID       = 'arbitrum';
 const CHAIN_NUM      = 42161;
 const FETCH_DELAY_MS = 400;
 
+const rpc = createProvider(CHAIN_ID);
+
+// ── ABIs ──────────────────────────────────────────────────────────────────────
 const POOL_ABI_V3 = [
     'function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)',
     'function liquidity() external view returns (uint128)',
@@ -28,93 +29,22 @@ const PAIR_ABI_V2 = [
     'function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)',
 ];
 
-// ── Arbitrum token addresses ──────────────────────────────────────────────────
-// WETH:   0x82aF49447D8a07e3bd95BD0d56f35241523fBab1
-// USDC:   0xaf88d065e77c8cC2239327C5EDb3A432268e5831  (native)
-// USDCe:  0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8  (bridged)
-// USDT:   0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9
-// DAI:    0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1
-
-// ── Uniswap V3 pools (all addresses verified via factory) ─────────────────────
+// ── Pool registries (unchanged from v2.0) ─────────────────────────────────────
 const UNISWAP_V3_POOLS = [
-    // ── ETH/USD pools ──────────────────────────────────────────────────────
-    {
-        outputPair: 'ETH/USDC',
-        pool:       '0xC6962004f452bE9203591991D15f6b388e09E8D0',
-        decimals0:  18,   // WETH
-        decimals1:  6,    // USDC
-        fee:        500,
-        priceMode:  'direct',
-    },
-    {
-        outputPair: 'ETH/USDT',
-        pool:       '0x641C00A822e8b671738d32a431a4Fb6074E5c79d',
-        decimals0:  18,   // WETH
-        decimals1:  6,    // USDT
-        fee:        500,
-        priceMode:  'direct',
-    },
-    // ── Stablecoin pools at 0.01% (1 bps) -- KEY OPPORTUNITY ──────────────
-    {
-        outputPair: 'USDC/USDT',
-        pool:       '0xbE3aD6a5669Dc0B8b12FeBC03608860C31E2eef6',
-        decimals0:  6,    // USDC (token0)
-        decimals1:  6,    // USDT (token1)
-        fee:        100,
-        priceMode:  'direct',  // USDT per USDC (should be ~1.0)
-    },
-    {
-        outputPair: 'USDC/USDCe',
-        pool:       '0x8e295789c9465487074a65b1ae9Ce0351172393f',
-        decimals0:  6,    // USDC native
-        decimals1:  6,    // USDCe bridged
-        fee:        100,
-        priceMode:  'direct',
-    },
-    // DAI/USDC removed -- decimal mismatch (DAI 18dec vs USDC 6dec)
-    // sqrtPriceX96 math returns 0 -- needs on-chain token order verification
-    //
-    {
-        outputPair: 'DAI/USDT',
-        pool:       '0x7f580f8A02b759C350E6b8340e7c2d4b8162b6a9',
-        decimals0:  18,   // DAI
-        decimals1:  6,    // USDT
-        fee:        100,
-        priceMode:  'direct',
-    },
-    // ── 0.05% stablecoin pools (for comparison) ────────────────────────────
-    {
-        outputPair: 'USDC/USDT',
-        pool:       '0xbcE73c2e5A623054B0e8e2428E956f4b9d0412a5',
-        decimals0:  6,    // USDC
-        decimals1:  6,    // USDT
-        fee:        500,
-        priceMode:  'direct',
-    },
-    {
-        outputPair: 'USDC/USDCe',
-        pool:       '0xA9E9CB16E922892Aa563a5aDb0f7D976EFCe36FB',
-        decimals0:  6,
-        decimals1:  6,
-        fee:        500,
-        priceMode:  'direct',
-    },
+    { outputPair: 'ETH/USDC',   pool: '0xC6962004f452bE9203591991D15f6b388e09E8D0', decimals0: 18, decimals1: 6,  fee: 500, priceMode: 'direct' },
+    { outputPair: 'ETH/USDT',   pool: '0x641C00A822e8b671738d32a431a4Fb6074E5c79d', decimals0: 18, decimals1: 6,  fee: 500, priceMode: 'direct' },
+    { outputPair: 'USDC/USDT',  pool: '0xbE3aD6a5669Dc0B8b12FeBC03608860C31E2eef6', decimals0: 6,  decimals1: 6,  fee: 100, priceMode: 'direct' },
+    { outputPair: 'USDC/USDCe', pool: '0x8e295789c9465487074a65b1ae9Ce0351172393f', decimals0: 6,  decimals1: 6,  fee: 100, priceMode: 'direct' },
+    { outputPair: 'DAI/USDT',   pool: '0x7f580f8A02b759C350E6b8340e7c2d4b8162b6a9', decimals0: 18, decimals1: 6,  fee: 100, priceMode: 'direct' },
+    { outputPair: 'USDC/USDT',  pool: '0xbcE73c2e5A623054B0e8e2428E956f4b9d0412a5', decimals0: 6,  decimals1: 6,  fee: 500, priceMode: 'direct' },
+    { outputPair: 'USDC/USDCe', pool: '0xA9E9CB16E922892Aa563a5aDb0f7D976EFCe36FB', decimals0: 6,  decimals1: 6,  fee: 500, priceMode: 'direct' },
 ];
 
-// ── Camelot V2 pools ──────────────────────────────────────────────────────────
 const CAMELOT_POOLS = [
-    {
-        outputPair: 'ETH/USDC',
-        pool:       '0x84652bb2539513BAf36e225c930Fdd8eaa63CE27',
-        decimals0:  18,   // WETH (token0, confirmed on-chain)
-        decimals1:  6,    // USDC.e (token1, confirmed on-chain)
-        fee:        0.003,
-        priceMode:  'direct',
-    },
+    { outputPair: 'ETH/USDC', pool: '0x84652bb2539513BAf36e225c930Fdd8eaa63CE27', decimals0: 18, decimals1: 6, fee: 0.003, priceMode: 'direct' },
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 function sqrtPriceX96ToPrice(sqrtPriceX96Raw, dec0, dec1, mode) {
@@ -124,27 +54,44 @@ function sqrtPriceX96ToPrice(sqrtPriceX96Raw, dec0, dec1, mode) {
     return mode === 'invert' ? 1.0 / raw : raw;
 }
 
-// ── Fetchers ──────────────────────────────────────────────────────────────────
+// ── Pool fetchers ─────────────────────────────────────────────────────────────
 
 async function fetchUniV3Pool(cfg) {
     try {
-        const c = new ethers.Contract(cfg.pool, POOL_ABI_V3, PROVIDER);
-        const [slot0, liq] = await Promise.all([c.slot0(), c.liquidity()]);
+        const slot0 = await rpc.call(
+            `arb.univ3.slot0:${cfg.pool.slice(0, 10)}`,
+            async (provider) => {
+                const c = new ethers.Contract(cfg.pool, POOL_ABI_V3, provider);
+                return c.slot0();
+            }
+        );
+
+        const liq = await rpc.call(
+            `arb.univ3.liq:${cfg.pool.slice(0, 10)}`,
+            async (provider) => {
+                const c = new ethers.Contract(cfg.pool, POOL_ABI_V3, provider);
+                return c.liquidity();
+            }
+        );
+
         const price = sqrtPriceX96ToPrice(slot0[0], cfg.decimals0, cfg.decimals1, cfg.priceMode);
+
         if (!isFinite(price) || price <= 0 || price > 1e15) {
             console.error(`[ARB] UniV3 ${cfg.outputPair} ${cfg.pool.slice(0,10)}: invalid price=${price.toExponential(2)}`);
             return null;
         }
-        // For stablecoin pairs, sanity check: price should be 0.9 - 1.1
+
         const isStable = !cfg.outputPair.includes('ETH') && !cfg.outputPair.includes('BTC');
         if (isStable && (price < 0.9 || price > 1.1)) {
             console.error(`[ARB] UniV3 ${cfg.outputPair}: stablecoin price out of range: ${price.toFixed(6)}`);
             return null;
         }
+
         const liqNum = Number(liq);
         const tvlUSD = cfg.outputPair.includes('ETH')
             ? (liqNum / 1e6) * Math.sqrt(price) * 2
-            : liqNum / 1e9;  // rough proxy for stablecoin pools
+            : liqNum / 1e9;
+
         return {
             pair:      cfg.outputPair,
             pool:      cfg.pool,
@@ -166,21 +113,31 @@ async function fetchUniV3Pool(cfg) {
 
 async function fetchCamelotPool(cfg) {
     try {
-        const c   = new ethers.Contract(cfg.pool, PAIR_ABI_V2, PROVIDER);
-        const res = await c.getReserves();
+        const res = await rpc.call(
+            `arb.camelot.reserves:${cfg.outputPair}`,
+            async (provider) => {
+                const c = new ethers.Contract(cfg.pool, PAIR_ABI_V2, provider);
+                return c.getReserves();
+            }
+        );
+
         const r0b = res[0];
         const r1b = res[1];
         if (r0b === 0n || r1b === 0n) return null;
+
         const PREC   = 1000000000n;
         const SCALE0 = BigInt('1' + '0'.repeat(cfg.decimals0));
         const SCALE1 = BigInt('1' + '0'.repeat(cfg.decimals1));
-        const adj0 = Number(r0b * PREC / SCALE0) / 1e9;
-        const adj1 = Number(r1b * PREC / SCALE1) / 1e9;
+        const adj0   = Number(r0b * PREC / SCALE0) / 1e9;
+        const adj1   = Number(r1b * PREC / SCALE1) / 1e9;
         if (!adj0 || !adj1) return null;
+
         const raw   = adj1 / adj0;
         const price = cfg.priceMode === 'invert' ? 1.0 / raw : raw;
         if (!isFinite(price) || price <= 0 || price > 1e10) return null;
+
         const tvlUSD = cfg.outputPair === 'ETH/USDC' ? adj1 * 2 : adj1 * price * 2;
+
         return {
             pair:       cfg.outputPair,
             pool:       cfg.pool,
@@ -203,7 +160,7 @@ async function fetchCamelotPool(cfg) {
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 async function arbitrumFetcher() {
-    console.log('Fetching Arbitrum on-chain data (UniV3 + Camelot)...');
+    console.log('[arbitrumFetcher] Fetching Arbitrum on-chain data (UniV3 + Camelot)...');
     const start = Date.now();
 
     const uniPrices = [];
@@ -221,7 +178,7 @@ async function arbitrumFetcher() {
     }
 
     const allPrices = [...uniPrices, ...camelotPrices];
-    console.log(`Arbitrum: ${uniPrices.length}/${UNISWAP_V3_POOLS.length} UniV3, ${camelotPrices.length}/${CAMELOT_POOLS.length} Camelot`);
+    console.log(`[arbitrumFetcher] ${uniPrices.length}/${UNISWAP_V3_POOLS.length} UniV3, ${camelotPrices.length}/${CAMELOT_POOLS.length} Camelot (${Date.now() - start}ms)`);
 
     return {
         status: 'success',
@@ -236,25 +193,20 @@ async function arbitrumFetcher() {
     };
 }
 
+arbitrumFetcher.chain = 'arbitrum';
+
+module.exports = arbitrumFetcher;
+
 if (require.main === module) {
     arbitrumFetcher().then(result => {
         console.log('\nARBITRUM ON-CHAIN DATA:');
         console.log('='.repeat(76));
         result.data.prices.forEach(p => {
-            const tvl    = (p.tvlUSD || p.reserveUSD)
-                ? `$${((p.tvlUSD || p.reserveUSD) / 1000).toFixed(1)}k` : 'n/a';
+            const tvl    = (p.tvlUSD || p.reserveUSD) ? `$${((p.tvlUSD || p.reserveUSD) / 1000).toFixed(1)}k` : 'n/a';
             const feePct = (p.fee * 100).toFixed(4) + '%';
             const px     = p.price > 1 ? `$${p.price.toFixed(4)}` : p.price.toFixed(6);
-            console.log(
-                `${p.venue.padEnd(12)} ${p.pair.padEnd(14)} ` +
-                `${px.padStart(12)} | TVL: ${tvl.padStart(10)} | fee: ${feePct}`
-            );
+            console.log(`${p.venue.padEnd(12)} ${p.pair.padEnd(14)} ${px.padStart(12)} | TVL: ${tvl.padStart(10)} | fee: ${feePct}`);
         });
         console.log('='.repeat(76));
     }).catch(console.error);
 }
-
-// Declare chain for master scheduler
-arbitrumFetcher.chain = 'arbitrum';
-
-module.exports = arbitrumFetcher;
