@@ -1,6 +1,6 @@
 // baseFetcher.js
 // Base mainnet fetcher — Uniswap V3 + Aerodrome
-// Hardened speed-template version
+// Hardened speed-template version with success/partial/error status semantics
 
 'use strict';
 require('dotenv').config();
@@ -232,6 +232,7 @@ async function baseFetcher() {
   } catch (e) {
     return {
       status: 'error',
+      partial: false,
       data: {
         prices: [],
         chain: CHAIN_ID,
@@ -303,8 +304,17 @@ async function baseFetcher() {
   const endpointIdsSeen = [...new Set(priceRows.map((p) => p.endpointId).filter((v) => v !== undefined))];
   const endpointsSeen = [...new Set(priceRows.map((p) => p.endpoint).filter(Boolean))];
 
+  const successCount = priceRows.length;
+  const failureCount = failures.length;
+
+  const status =
+    successCount === 0 ? 'error' :
+    failureCount > 0 ? 'partial' :
+    'success';
+
   return {
-    status: 'success',
+    status,
+    partial: status === 'partial',
     data: {
       prices: priceRows,
       chain: CHAIN_ID,
@@ -320,8 +330,8 @@ async function baseFetcher() {
       endpointsSeen,
       stats: {
         totalPools: UNISWAP_V3_POOLS.length + AERODROME_POOLS.length,
-        successCount: priceRows.length,
-        failureCount: failures.length,
+        successCount,
+        failureCount,
         uniswapV3: {
           total: UNISWAP_V3_POOLS.length,
           success: uniResults.filter((x) => x && x.ok).length,
@@ -344,7 +354,7 @@ if (require.main === module) {
       console.log('\nBASE ON-CHAIN DATA:');
       console.log('='.repeat(90));
       console.log(
-        `status=${result.status} block=${result.data.blockNumber} endpoint=${result.data.endpoint} ` +
+        `status=${result.status} partial=${result.partial} block=${result.data.blockNumber} endpoint=${result.data.endpoint} ` +
         `epSeen=${(result.data.endpointIdsSeen || []).join(',') || 'n/a'} ` +
         `duration=${result.data.durationMs}ms success=${result.data.stats.successCount} ` +
         `failed=${result.data.stats.failureCount}`
