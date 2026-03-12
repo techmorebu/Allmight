@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * utils/provider_factory.js
  *
@@ -8,27 +6,6 @@
  * THIS IS THE ONLY AUTHORIZED PROVIDER SOURCE.
  * All fetchers, quoters, and execution scripts import from here.
  * Do not use utils/rpc_provider.js for new code — it is a compat shim only.
- *
- * What this gives you:
- *   - Per-chain endpoint lists with fallback ordering
- *   - Automatic failover: if endpoint N fails, tries N+1
- *   - Endpoint health scoring: bad endpoints get demoted
- *   - Structured telemetry written to logs/rpc_telemetry.jsonl
- *   - Bare Ankr endpoint blocking (requires auth key)
- *   - One canonical call() interface used by all consumers
- *
- * Usage:
- *   const { createProvider } = require('../utils/provider_factory');
- *   const rpc = createProvider('ethereum');  // or 'arbitrum', 'optimism', 'base'
- *
- *   const result = await rpc.call('my.label', async (provider) => {
- *     const contract = new ethers.Contract(addr, abi, provider);
- *     return contract.someMethod();
- *   });
- *
- * Advanced:
- *   const { makeFailoverProvider } = require('../utils/provider_factory');
- *   const rpc = makeFailoverProvider('ARBITRUM');  // legacy alias
  */
 
 const { ethers } = require('ethers');
@@ -47,7 +24,7 @@ const path = require('path');
   });
 })();
 
-// ── Telemetry ─────────────────────────────────────────────────────────────────
+// ── Telemetry ────────────────────────────────────────────────────────────────
 const TELEMETRY_PATH = path.resolve(__dirname, '../logs/rpc_telemetry.jsonl');
 
 function writeTelemetry(event) {
@@ -55,31 +32,31 @@ function writeTelemetry(event) {
     const line = JSON.stringify({ ...event, ts: new Date().toISOString() }) + '\n';
     fs.mkdirSync(path.dirname(TELEMETRY_PATH), { recursive: true });
     fs.appendFileSync(TELEMETRY_PATH, line);
-  } catch { /* never crash on telemetry */ }
+  } catch {
+    // never crash on telemetry
+  }
 }
 
-// ── URL sanitizer — blocks bare Ankr endpoints without auth key ───────────────
+// ── URL sanitizer — blocks bare Ankr endpoints without auth key ─────────────
 function sanitizeRpcUrl(url) {
   if (!url) return null;
-  url = url.trim().replace(/\/$/, ''); // strip trailing slash
+  url = String(url).trim().replace(/\/$/, '');
   if (!url.startsWith('http')) return null;
 
-  // Block bare Ankr endpoints — they require an API key
   if (url.includes('rpc.ankr.com')) {
     const parts = url.split('/');
-    const last  = parts[parts.length - 1];
-    // If last segment looks like a 40+ char API key, it's authenticated — allow
+    const last = parts[parts.length - 1];
     if (!last || last.length < 40) {
-      writeTelemetry({ ev: 'rpc_blocked', reason: 'ankr_no_auth', url: url.slice(0, 40) });
+      writeTelemetry({ ev: 'rpc_blocked', reason: 'ankr_no_auth', url: url.slice(0, 60) });
       return null;
     }
   }
   return url;
 }
 
-// ── Per-chain RPC endpoint lists ──────────────────────────────────────────────
+// ── Per-chain RPC endpoint lists ─────────────────────────────────────────────
 function getChainRpcUrls(chain) {
-  const c = chain.toLowerCase().replace(/[- ]/g, '_');
+  const c = String(chain).toLowerCase().replace(/[- ]/g, '_');
 
   const maps = {
     ethereum: [
@@ -113,17 +90,16 @@ function getChainRpcUrls(chain) {
     ],
   };
 
-  const raw = maps[c] || [];
-  return raw.map(sanitizeRpcUrl).filter(Boolean);
+  return (maps[c] || []).map(sanitizeRpcUrl).filter(Boolean);
 }
 
-// ── Endpoint health tracker ───────────────────────────────────────────────────
-const MAX_FAILS   = 3;
+// ── Endpoint health tracker ──────────────────────────────────────────────────
+const MAX_FAILS = 3;
 const DEMOTION_MS = 5 * 60 * 1000;
 
 class EndpointHealth {
   constructor() {
-    this._fails     = {};
+    this._fails = {};
     this._demotedAt = {};
   }
 
@@ -139,7 +115,7 @@ class EndpointHealth {
   }
 
   recordSuccess(url) {
-    this._fails[url]     = 0;
+    this._fails[url] = 0;
     this._demotedAt[url] = 0;
   }
 
@@ -147,56 +123,119 @@ class EndpointHealth {
     this._fails[url] = (this._fails[url] || 0) + 1;
     if (this._fails[url] >= MAX_FAILS) {
       this._demotedAt[url] = Date.now();
-      writeTelemetry({ ev: 'rpc_demoted', url: url.slice(0, 50) });
+      writeTelemetry({ ev: 'rpc_demoted', url: url.slice(0, 80) });
     }
   }
 }
 
 const _health = new EndpointHealth();
+const _providerCache = new Map();
 
-// ── Core: createProvider(chain) ───────────────────────────────────────────────
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function redactUrl(url) {
+  return String(url)
+    .replace(/([a-f0-9]{24,})/ig, 'REDACTED')
+    .slice(0, 120);
+}
+
+function classifyRpcError(err) {
+  const msg = String(err?.message || '').toLowerCase();
+  if (msg.includes('rate')) return 'rate_limit';
+  if (msg.includes('429')) return 'http_429';
+  if (msg.includes('timeout')) return 'timeout';
+  if (msg.includes('network')) return 'network';
+  if (msg.includes('socket')) return 'socket';
+  if (msg.includes('missing response')) return 'missing_response';
+  if (msg.includes('server error')) return 'server_error';
+  return 'unknown';
+}
+
+function getProviderOptions() {
+  return {
+    staticNetwork: true,
+    batchMaxCount: 1,
+  };
+}
+
+function getOrCreateProvider(url) {
+  if (_providerCache.has(url)) return _providerCache.get(url);
+  const provider = new ethers.JsonRpcProvider(url, undefined, getProviderOptions());
+  _providerCache.set(url, provider);
+  return provider;
+}
+
+// ── Core: createProvider(chain) ──────────────────────────────────────────────
 function createProvider(chain) {
   const urls = getChainRpcUrls(chain);
 
   if (urls.length === 0) {
     throw new Error(
       `[provider_factory] No valid RPC URLs for chain "${chain}". ` +
-      `Check your .env file for ${chain.toUpperCase()}_MAINNET_RPC_URL_1`
+      `Check your .env file for ${String(chain).toUpperCase()}_MAINNET_RPC_URL_1`
     );
   }
 
   writeTelemetry({
-    ev:        'rpc_init',
+    ev: 'rpc_init',
     chain,
     endpoints: urls.map((url, i) => ({
       endpointId: i,
-      url: url.replace(/\/v\d\/[a-zA-Z0-9]{20,}/, '/v2/REDACTED'),
+      url: redactUrl(url),
+      batchingDisabled: true,
     })),
   });
 
-  async function call(label, fn) {
-    const available = urls.filter(u => _health.isAvailable(u));
+  async function callDetailed(label, fn) {
+    const available = urls.filter((u) => _health.isAvailable(u));
 
     if (available.length === 0) {
       writeTelemetry({ ev: 'rpc_all_demoted', chain, label });
       throw new Error(`[provider_factory] All RPC endpoints demoted for chain "${chain}"`);
     }
 
-    for (const url of available) {
-      const provider = new ethers.JsonRpcProvider(url);
+    for (let i = 0; i < available.length; i++) {
+      const url = available[i];
+      const provider = getOrCreateProvider(url);
+      const t0 = Date.now();
+
       try {
-        const result = await fn(provider);
+        const result = await fn(provider, {
+          chain,
+          url,
+          endpointId: urls.indexOf(url),
+        });
+
         _health.recordSuccess(url);
-        writeTelemetry({ ev: 'rpc_select', chain, label, url: url.slice(0, 50) });
-        return result;
+        writeTelemetry({
+          ev: 'rpc_select',
+          chain,
+          label,
+          url: redactUrl(url),
+          endpointId: urls.indexOf(url),
+          durationMs: Date.now() - t0,
+        });
+
+        return {
+          result,
+          meta: {
+            chain,
+            url,
+            urlRedacted: redactUrl(url),
+            endpointId: urls.indexOf(url),
+            durationMs: Date.now() - t0,
+          },
+        };
       } catch (err) {
         _health.recordFailure(url);
         writeTelemetry({
-          ev:    'rpc_fail',
+          ev: 'rpc_fail',
           chain,
           label,
-          url:   url.slice(0, 50),
-          error: err.message?.slice(0, 120),
+          url: redactUrl(url),
+          endpointId: urls.indexOf(url),
+          durationMs: Date.now() - t0,
+          errorClass: classifyRpcError(err),
+          error: String(err?.message || '').slice(0, 180),
         });
       }
     }
@@ -207,16 +246,37 @@ function createProvider(chain) {
     );
   }
 
-  function provider() {
-    const available = urls.filter(u => _health.isAvailable(u));
-    if (available.length === 0) throw new Error(`No healthy endpoints for chain "${chain}"`);
-    return new ethers.JsonRpcProvider(available[0]);
+  async function call(label, fn) {
+    const { result } = await callDetailed(label, async (provider) => fn(provider));
+    return result;
   }
 
-  return { call, provider, urls, chain };
+  async function getBlockNumber(label = `${chain}.getBlockNumber`) {
+    const { result, meta } = await callDetailed(label, async (provider) => {
+      return provider.getBlockNumber();
+    });
+    return { blockNumber: result, meta };
+  }
+
+  function provider() {
+    const available = urls.filter((u) => _health.isAvailable(u));
+    if (available.length === 0) {
+      throw new Error(`No healthy endpoints for chain "${chain}"`);
+    }
+    return getOrCreateProvider(available[0]);
+  }
+
+  return {
+    call,
+    callDetailed,
+    getBlockNumber,
+    provider,
+    urls,
+    chain,
+  };
 }
 
-// ── makeFailoverProvider — legacy alias ───────────────────────────────────────
+// ── makeFailoverProvider — legacy alias ──────────────────────────────────────
 function makeFailoverProvider(chainOrOpts) {
   const chain = typeof chainOrOpts === 'string'
     ? chainOrOpts.toLowerCase()
