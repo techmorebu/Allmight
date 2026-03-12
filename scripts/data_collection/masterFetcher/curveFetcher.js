@@ -1,234 +1,232 @@
-// scripts/data_collection/masterFetcher/curveFetcher.js
-// Phase 1 - Curve Finance Data Fetcher
-// Fetches stablecoin pool data from Curve Finance
-// Specializes in low-slippage stablecoin arbitrage
+'use strict';
+
+// curveFetcherArbitrum.js v2.0
+// Fetches Curve Finance pool data on Arbitrum One
+// Pool addresses are immutable -- verified from curve.fi/arbitrum
+//
+// v2.0 provider migration:
+//   Removed: new ethers.JsonRpcProvider(...)
+//   Now uses: createProvider('arbitrum') + rpc.call(...)
+//   One rpc.call per on-chain read. Sequential loop. No stampedes.
 
 require('dotenv').config();
-const fetch = require('node-fetch');
+const { ethers }         = require('ethers');
+const { createProvider } = require('../../../utils/provider_factory');
 
-/**
- * Curve Finance Fetcher
- * 
- * Fetches pool data from Curve Finance API
- * Focus: Stablecoin pools (3pool, FRAX, etc.) for low-risk arbitrage
- * 
- * Note: Curve uses its own API, not TheGraph
- * 
- * @returns {Object} Normalized pool data
- */
-module.exports = async function curveFetcher() {
-  const CURVE_API = process.env.CURVE_API || 'https://api.curve.fi/api';
-  const CURVE_THEGRAPH = process.env.CURVE_FINANCE_ETHEREUM_API;
-  
-  const startTime = Date.now();
-  
-  try {
-    // Fetch pool data from Curve API
-    // Endpoints: /getPools/ethereum/main for all pools
-    const poolsResponse = await fetch(`${CURVE_API}/getPools/ethereum/main`, {
-      method: 'GET',
-      headers: { 
-        'Content-Type': 'application/json'
-      }
-    });
-    
-    if (!poolsResponse.ok) {
-      throw new Error(`Curve API error: ${poolsResponse.status} ${poolsResponse.statusText}`);
-    }
-    
-    const poolsData = await poolsResponse.json();
-    
-    if (!poolsData.success) {
-      throw new Error(`Curve API returned unsuccessful response`);
-    }
-    
-    const allPools = poolsData.data?.poolData || [];
-    
-    // Filter for stablecoin pools (main arbitrage targets)
-    // Focus on high TVL, high volume pools
-    const stablecoinPools = allPools.filter(pool => {
-      // Check if pool contains stablecoins
-      const hasStables = pool.coins?.some(coin => 
-        ['USDC', 'USDT', 'DAI', 'FRAX', 'TUSD', 'BUSD', 'sUSD'].includes(coin.symbol)
-      );
-      
-      // Require minimum TVL for arbitrage viability
-      const minTVL = 10000000; // $10M minimum
-      const hasLiquidity = parseFloat(pool.usdTotal || 0) > minTVL;
-      
-      return hasStables && hasLiquidity;
-    }).slice(0, 10); // Top 10 by default sort (TVL)
-    
-    // Process pool data
-    const pools = stablecoinPools.map(pool => {
-      // Calculate pool composition
-      const coins = pool.coins?.map(coin => ({
-        address: coin.address,
-        symbol: coin.symbol,
-        decimals: coin.decimals,
-        balance: parseFloat(coin.poolBalance || 0),
-        usdPrice: parseFloat(coin.usdPrice || 0)
-      })) || [];
-      
-      // Calculate current exchange rates between coins
-      const exchangeRates = [];
-      for (let i = 0; i < coins.length; i++) {
-        for (let j = i + 1; j < coins.length; j++) {
-          if (coins[i].usdPrice > 0 && coins[j].usdPrice > 0) {
-            exchangeRates.push({
-              from: coins[i].symbol,
-              to: coins[j].symbol,
-              rate: coins[i].usdPrice / coins[j].usdPrice,
-              inverseRate: coins[j].usdPrice / coins[i].usdPrice
-            });
-          }
-        }
-      }
-      
-      return {
-        id: pool.id,
-        name: pool.name,
-        address: pool.address,
-        coins,
-        tvlUSD: parseFloat(pool.usdTotal || 0),
-        volume24h: parseFloat(pool.volumeUSD || 0),
-        fee: parseFloat(pool.fee || 0), // Curve fees are typically 0.04% (4 bps)
-        virtualPrice: parseFloat(pool.virtualPrice || 0),
-        adminFee: parseFloat(pool.adminFee || 0),
-        exchangeRates,
-        // Curve-specific: A parameter (amplification coefficient)
-        amplificationCoefficient: pool.a || null,
-        // Pool type
-        poolType: pool.poolType || 'stable'
-      };
-    });
-    
-    // Fetch additional data from TheGraph if available
-    let thegraphData = null;
-    if (CURVE_THEGRAPH) {
-      try {
-        const query = `
-          query GetCurvePools {
-            pools(first: 10, orderBy: totalValueLockedUSD, orderDirection: desc) {
-              id
-              name
-              swapFee
-              totalValueLockedUSD
-              totalVolumeUSD
-              swaps(first: 10, orderBy: timestamp, orderDirection: desc) {
-                timestamp
-                tokenAmountIn
-                tokenAmountOut
-                amountUSD
-              }
+const CHAIN_ID       = 'arbitrum';
+const FETCH_DELAY_MS = 400;
+
+const rpc = createProvider(CHAIN_ID);
+
+// ── ABIs ──────────────────────────────────────────────────────────────────────
+const CURVE_2POOL_ABI = [
+    'function get_dy(int128 i, int128 j, uint256 dx) external view returns (uint256)',
+    'function balances(uint256 i) external view returns (uint256)',
+    'function fee() external view returns (uint256)',
+    'function coins(uint256 i) external view returns (address)',
+    'function A() external view returns (uint256)',
+];
+
+const CURVE_TRICRYPTO_ABI = [
+    'function get_dy(uint256 i, uint256 j, uint256 dx) external view returns (uint256)',
+    'function balances(uint256 i) external view returns (uint256)',
+    'function fee() external view returns (uint256)',
+    'function price_oracle(uint256 k) external view returns (uint256)',
+];
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ── Pool configs (unchanged from v1.0) ────────────────────────────────────────
+const CURVE_POOLS = [
+    {
+        name:       'USDC/USDT 2pool',
+        outputPair: 'USDC/USDT',
+        pool:       '0x7f90122BF0700F9E7e1F688fe926940E8839F353',
+        type:       '2pool',
+        coin0dec:   6,
+        coin1dec:   6,
+        i:          0,
+        j:          1,
+        dx:         1000n * 1000000n,  // 1000 USDC
+    },
+    {
+        name:       'tricrypto (USDT/WBTC/ETH)',
+        outputPair: 'ETH/USDT',
+        pool:       '0x960ea3e3C7FB317332d990873d354E18d7645590',
+        type:       'tricrypto',
+        coin0dec:   6,
+        coin1dec:   18,
+        i:          0,
+        j:          2,
+        dx:         1000n * 1000000n,  // 1000 USDT
+    },
+];
+
+// ── Fetchers ──────────────────────────────────────────────────────────────────
+
+async function fetchCurve2Pool(cfg) {
+    try {
+        const dy = await rpc.call(
+            `arb.curve.2pool.dy:${cfg.outputPair}`,
+            async (provider) => {
+                const c = new ethers.Contract(cfg.pool, CURVE_2POOL_ABI, provider);
+                return c.get_dy(cfg.i, cfg.j, cfg.dx);
             }
-          }
-        `;
-        
-        const response = await fetch(CURVE_THEGRAPH, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query })
-        });
-        
-        if (response.ok) {
-          thegraphData = await response.json();
-        }
-      } catch (err) {
-        // TheGraph is optional, continue without it
-        console.warn('TheGraph data fetch failed (optional):', err.message);
-      }
-    }
-    
-    // Calculate statistics
-    const stats = {
-      totalPools: pools.length,
-      totalTVL: pools.reduce((sum, p) => sum + p.tvlUSD, 0),
-      totalVolume24h: pools.reduce((sum, p) => sum + p.volume24h, 0),
-      avgFee: pools.reduce((sum, p) => sum + p.fee, 0) / pools.length,
-      hasTheGraphData: !!thegraphData
-    };
-    
-    // Extract arbitrage opportunities (price deviations from $1.00)
-    const opportunities = [];
-    pools.forEach(pool => {
-      pool.coins.forEach(coin => {
-        const deviation = Math.abs(coin.usdPrice - 1.0);
-        if (deviation > 0.001) { // More than 0.1% deviation
-          opportunities.push({
-            pool: pool.name,
-            poolAddress: pool.address,
-            coin: coin.symbol,
-            expectedPrice: 1.0,
-            actualPrice: coin.usdPrice,
-            deviation: deviation,
-            deviationPct: (deviation / 1.0) * 100,
-            arbitrageType: coin.usdPrice > 1.0 ? 'SELL' : 'BUY'
-          });
-        }
-      });
-    });
-    
-    // Sort opportunities by deviation (largest first)
-    opportunities.sort((a, b) => b.deviation - a.deviation);
-    
-    const duration = Date.now() - startTime;
-    
-    return {
-      fetcher: 'curveFetcher',
-      exchange: 'curve',
-      timestamp: new Date().toISOString(),
-      durationMs: duration,
-      status: 'success',
-      data: {
-        pools,
-        opportunities: opportunities.slice(0, 5), // Top 5 opportunities
-        stats,
-        thegraphData: thegraphData?.data || null
-      }
-    };
-    
-  } catch (error) {
-    const duration = Date.now() - startTime;
-    
-    return {
-      fetcher: 'curveFetcher',
-      exchange: 'curve',
-      timestamp: new Date().toISOString(),
-      durationMs: duration,
-      status: 'error',
-      error: {
-        message: error.message,
-        stack: error.stack,
-        name: error.name
-      }
-    };
-  }
-};
+        );
 
-// Allow running standalone for testing
-if (require.main === module) {
-  (async () => {
-    console.log('Testing Curve Finance Fetcher...\n');
-    const result = await module.exports();
-    console.log(JSON.stringify(result, null, 2));
-    
-    if (result.status === 'success') {
-      console.log('\n✅ Fetcher executed successfully');
-      console.log(`📊 Pools monitored: ${result.data.stats.totalPools}`);
-      console.log(`💰 Total TVL: $${result.data.stats.totalTVL.toFixed(2)}`);
-      console.log(`📈 24h Volume: $${result.data.stats.totalVolume24h.toFixed(2)}`);
-      console.log(`⚡ Avg Fee: ${(result.data.stats.avgFee * 100).toFixed(3)}%`);
-      
-      if (result.data.opportunities.length > 0) {
-        console.log(`\n🎯 Arbitrage Opportunities Found: ${result.data.opportunities.length}`);
-        result.data.opportunities.forEach((opp, i) => {
-          console.log(`  ${i + 1}. ${opp.coin} in ${opp.pool}: ${opp.deviationPct.toFixed(3)}% from peg (${opp.arbitrageType})`);
-        });
-      }
-    } else {
-      console.log('\n❌ Fetcher failed');
-      console.log(`Error: ${result.error.message}`);
+        const fee = await rpc.call(
+            `arb.curve.2pool.fee:${cfg.outputPair}`,
+            async (provider) => {
+                const c = new ethers.Contract(cfg.pool, CURVE_2POOL_ABI, provider);
+                return c.fee();
+            }
+        );
+
+        const bal0 = await rpc.call(
+            `arb.curve.2pool.bal0:${cfg.outputPair}`,
+            async (provider) => {
+                const c = new ethers.Contract(cfg.pool, CURVE_2POOL_ABI, provider);
+                return c.balances(0);
+            }
+        );
+
+        const bal1 = await rpc.call(
+            `arb.curve.2pool.bal1:${cfg.outputPair}`,
+            async (provider) => {
+                const c = new ethers.Contract(cfg.pool, CURVE_2POOL_ABI, provider);
+                return c.balances(1);
+            }
+        );
+
+        const dx_human    = Number(cfg.dx) / Math.pow(10, cfg.coin0dec);
+        const dy_human    = Number(dy)     / Math.pow(10, cfg.coin1dec);
+        const price       = dy_human / dx_human;
+        const fee_bps_val = Number(fee) / 1e10 * 10000;
+
+        if (price < 0.9 || price > 1.1) {
+            console.error(`[CURVE-ARB] ${cfg.outputPair}: price out of range: ${price.toFixed(6)}`);
+            return null;
+        }
+
+        const tvl = (Number(bal0) / Math.pow(10, cfg.coin0dec)) +
+                    (Number(bal1) / Math.pow(10, cfg.coin1dec));
+
+        return {
+            pair:       cfg.outputPair,
+            pool:       cfg.pool,
+            price,
+            fee:        fee_bps_val / 10000,
+            fee_bps:    fee_bps_val,
+            tvlUSD:     tvl,
+            source:     'curve_arbitrum_onchain',
+            venue:      'curve',
+            chain:      CHAIN_ID,
+            timestamp:  new Date().toISOString(),
+        };
+    } catch (e) {
+        console.error(`[CURVE-ARB] ${cfg.name}: ${e.message.slice(0, 100)}`);
+        return null;
     }
-  })();
+}
+
+async function fetchCurveTricrypto(cfg) {
+    try {
+        const oracle = await rpc.call(
+            `arb.curve.tricrypto.oracle:${cfg.outputPair}`,
+            async (provider) => {
+                const c = new ethers.Contract(cfg.pool, CURVE_TRICRYPTO_ABI, provider);
+                return c.price_oracle(1);  // index 1 = ETH/USDT price
+            }
+        );
+
+        const fee = await rpc.call(
+            `arb.curve.tricrypto.fee:${cfg.outputPair}`,
+            async (provider) => {
+                const c = new ethers.Contract(cfg.pool, CURVE_TRICRYPTO_ABI, provider);
+                return c.fee();
+            }
+        );
+
+        const bal0 = await rpc.call(
+            `arb.curve.tricrypto.bal0:${cfg.outputPair}`,
+            async (provider) => {
+                const c = new ethers.Contract(cfg.pool, CURVE_TRICRYPTO_ABI, provider);
+                return c.balances(0);
+            }
+        );
+
+        const price       = Number(oracle) / 1e18;
+        const fee_bps_val = Number(fee) / 1e10 * 10000;
+
+        if (price < 100 || price > 100000) {
+            console.error(`[CURVE-ARB] ${cfg.outputPair}: ETH price out of range: ${price}`);
+            return null;
+        }
+
+        const tvl = Number(bal0) / 1e6 * 2;
+
+        return {
+            pair:       cfg.outputPair,
+            pool:       cfg.pool,
+            price,
+            fee:        fee_bps_val / 10000,
+            fee_bps:    fee_bps_val,
+            tvlUSD:     tvl,
+            source:     'curve_arbitrum_onchain',
+            venue:      'curve',
+            chain:      CHAIN_ID,
+            timestamp:  new Date().toISOString(),
+        };
+    } catch (e) {
+        console.error(`[CURVE-ARB] ${cfg.name}: ${e.message.slice(0, 100)}`);
+        return null;
+    }
+}
+
+// ── Main ──────────────────────────────────────────────────────────────────────
+
+async function curveFetcherArbitrum() {
+    console.log('[curveFetcherArbitrum] Fetching Curve Arbitrum on-chain data...');
+    const start  = Date.now();
+    const prices = [];
+
+    for (const cfg of CURVE_POOLS) {
+        const r = cfg.type === 'tricrypto'
+            ? await fetchCurveTricrypto(cfg)
+            : await fetchCurve2Pool(cfg);
+        if (r) prices.push(r);
+        await sleep(FETCH_DELAY_MS);
+    }
+
+    console.log(`[curveFetcherArbitrum] ${prices.length}/${CURVE_POOLS.length} pools (${Date.now() - start}ms)`);
+
+    return {
+        status: 'success',
+        data: {
+            prices,
+            chain:      CHAIN_ID,
+            chain_id:   42161,
+            venues:     ['curve'],
+            timestamp:  new Date().toISOString(),
+            durationMs: Date.now() - start,
+        },
+    };
+}
+
+curveFetcherArbitrum.chain = 'arbitrum';
+
+module.exports = curveFetcherArbitrum;
+
+if (require.main === module) {
+    curveFetcherArbitrum().then(result => {
+        console.log('\nCURVE ARBITRUM DATA:');
+        console.log('='.repeat(72));
+        result.data.prices.forEach(p => {
+            const tvl    = p.tvlUSD ? `$${(p.tvlUSD / 1000).toFixed(1)}k` : 'n/a';
+            const feePct = (p.fee * 100).toFixed(4) + '%';
+            const px     = p.price > 10 ? `$${p.price.toFixed(2)}` : p.price.toFixed(6);
+            console.log(`${'curve'.padEnd(12)} ${p.pair.padEnd(14)} ${px.padStart(12)} | TVL: ${tvl.padStart(10)} | fee: ${feePct}`);
+        });
+        console.log('='.repeat(72));
+    }).catch(console.error);
 }
