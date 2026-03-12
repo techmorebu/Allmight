@@ -1,214 +1,324 @@
-// baseFetcher.js v2.0
 // Fetches Uniswap V3 + Aerodrome pool data on Base Mainnet
-// Chain: Base (chain_id: 8453)
-//
-// Aerodrome stable pools: 0.01% fee (1 bps)
-// Combined with UniV3 0.05%: total fee wall = 6 bps
-// Any spread > 6 bps = gross-positive
+// Speed-template conversion:
+// - canonical provider_factory
+// - no fixed sleeps
+// - bounded concurrency
+// - richer telemetry
 
 'use strict';
 require('dotenv').config();
+
 const { ethers } = require('ethers');
+const { createProvider } = require('../../../utils/provider_factory');
 
-const RPC_URL = process.env.BASE_MAINNET_RPC_URL_1 || process.env.BASE_MAINNET_RPC_URL || 'https://mainnet.base.org';
-const PROVIDER = new ethers.JsonRpcProvider(RPC_URL);
+const rpc = createProvider('base');
 
-const CHAIN_ID       = 'base';
-const CHAIN_NUM      = 8453;
-const FETCH_DELAY_MS = 400;  // Infura endpoint -- faster
+const CHAIN_ID = 'base';
+const CHAIN_NUM = 8453;
+const FETCH_CONCURRENCY = Math.max(1, Number(process.env.BASE_FETCHER_CONCURRENCY || 4));
 
 const POOL_ABI_V3 = [
-    'function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)',
-    'function liquidity() external view returns (uint128)',
+  'function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)',
+  'function liquidity() external view returns (uint128)',
 ];
 
-// Aerodrome returns uint256 reserves
 const PAIR_ABI_AERO = [
-    'function getReserves() external view returns (uint256 _reserve0, uint256 _reserve1, uint256 _blockTimestampLast)',
-    'function token0() external view returns (address)',
-    'function token1() external view returns (address)',
+  'function getReserves() external view returns (uint256 _reserve0, uint256 _reserve1, uint256 _blockTimestampLast)',
+  'function token0() external view returns (address)',
+  'function token1() external view returns (address)',
 ];
 
-// ── Base token addresses ──────────────────────────────────────────────────────
-// WETH:   0x4200000000000000000000000000000000000006
-// USDC:   0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913  (native)
-// USDbC:  0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA  (bridged)
-// DAI:    0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb
-// cbETH:  0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22
-
-// ── Uniswap V3 pools on Base (verified working) ───────────────────────────────
+// ── Uniswap V3 pools on Base ─────────────────────────────────────────────────
 const UNISWAP_V3_POOLS = [
-    {
-        // WETH/USDC 0.05% — verified working, correct token ordering confirmed
-        outputPair: 'ETH/USDC',
-        pool:       '0xd0b53D9277642d899DF5C87A3966A349A798F224',
-        decimals0:  18,   // WETH (token0, confirmed on-chain)
-        decimals1:  6,    // USDC (token1, confirmed on-chain)
-        fee:        500,
-        priceMode:  'direct',  // adj1/adj0 = USDC/WETH = USD/ETH
-    },
+  {
+    outputPair: 'ETH/USDC',
+    pool: '0xd0b53D9277642d899DF5C87A3966A349A798F224',
+    decimals0: 18,
+    decimals1: 6,
+    fee: 500,
+    priceMode: 'direct',
+  },
 ];
 
-// ── Aerodrome pools on Base ───────────────────────────────────────────────────
-// Aerodrome is the dominant DEX on Base (~$800M TVL as of 2026)
-// Stable pools charge 0.01% (1 bps) -- major fee advantage
-// Pool addresses from aerodrome.finance/liquidity sorted by TVL
+// ── Aerodrome pools on Base ──────────────────────────────────────────────────
 const AERODROME_POOLS = [
-    {
-        // WETH/USDC volatile -- confirmed working, price verified on-chain
-        // token0=WETH(18), token1=USDC(6)
-        outputPair: 'ETH/USDC',
-        pool:       '0xcDAC0d6c6C59727a65F871236188350531885C43',
-        decimals0:  18,   // WETH
-        decimals1:  6,    // USDC
-        fee:        0.003,
-        stable:     false,
-        priceMode:  'direct',
-    },
+  {
+    outputPair: 'ETH/USDC',
+    pool: '0xcDAC0d6c6C59727a65F871236188350531885C43',
+    decimals0: 18,
+    decimals1: 6,
+    fee: 0.003,
+    stable: false,
+    priceMode: 'direct',
+  },
 ];
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
+// ── Helpers ──────────────────────────────────────────────────────────────────
 function sqrtPriceX96ToPrice(sqrtPriceX96Raw, dec0, dec1, mode) {
-    const Q96   = 2n ** 96n;
-    const sqrtP = Number(sqrtPriceX96Raw) / Number(Q96);
-    const raw   = sqrtP * sqrtP * Math.pow(10, dec0 - dec1);
-    return mode === 'invert' ? 1.0 / raw : raw;
+  const Q96 = 2n ** 96n;
+  const sqrtP = Number(sqrtPriceX96Raw) / Number(Q96);
+  const raw = sqrtP * sqrtP * Math.pow(10, dec0 - dec1);
+  return mode === 'invert' ? 1.0 / raw : raw;
 }
 
-// ── Fetchers ──────────────────────────────────────────────────────────────────
+async function mapWithConcurrency(items, limit, worker) {
+  const out = new Array(items.length);
+  let idx = 0;
 
-async function fetchUniV3Pool(cfg) {
-    try {
-        const c = new ethers.Contract(cfg.pool, POOL_ABI_V3, PROVIDER);
-        const [slot0, liq] = await Promise.all([c.slot0(), c.liquidity()]);
-        const price = sqrtPriceX96ToPrice(slot0[0], cfg.decimals0, cfg.decimals1, cfg.priceMode);
-        if (!isFinite(price) || price <= 0 || price > 1e15) {
-            console.error(`[BASE] UniV3 ${cfg.outputPair}: invalid price=${price.toExponential(2)}`);
-            return null;
-        }
-        const liqNum = Number(liq);
-        const tvlUSD = (liqNum / 1e6) * Math.sqrt(price) * 2;
-        return {
-            pair:      cfg.outputPair,
-            pool:      cfg.pool,
-            price,
-            liquidity: liqNum,
-            tvlUSD,
-            fee:       cfg.fee / 10000,
-            tick:      Number(slot0[1]),
-            source:    'uniswap_v3_base_onchain',
-            venue:     'uniswap_v3',
-            chain:     CHAIN_ID,
-            timestamp: new Date().toISOString(),
-        };
-    } catch (e) {
-        console.error(`[BASE] UniV3 ${cfg.outputPair} ${cfg.pool.slice(0,10)}: ${e.message.slice(0,80)}`);
-        return null;
+  const runners = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (true) {
+      const cur = idx++;
+      if (cur >= items.length) break;
+      out[cur] = await worker(items[cur], cur);
     }
+  });
+
+  await Promise.all(runners);
+  return out;
 }
 
-async function fetchAerodromePool(cfg) {
-    try {
-        const c   = new ethers.Contract(cfg.pool, PAIR_ABI_AERO, PROVIDER);
-        const res = await c.getReserves();
-        const r0b = res[0];
-        const r1b = res[1];
-        if (r0b === 0n || r1b === 0n) return null;
-        const PREC   = 1000000000n;
-        const SCALE0 = BigInt('1' + '0'.repeat(cfg.decimals0));
-        const SCALE1 = BigInt('1' + '0'.repeat(cfg.decimals1));
-        const adj0 = Number(r0b * PREC / SCALE0) / 1e9;
-        const adj1 = Number(r1b * PREC / SCALE1) / 1e9;
-        if (!adj0 || !adj1) return null;
-        const raw   = adj1 / adj0;
-        const price = cfg.priceMode === 'invert' ? 1.0 / raw : raw;
-        if (!isFinite(price) || price <= 0 || price > 1e12) return null;
-        // Sanity check stablecoin pools
-        if (cfg.stable && (price < 0.9 || price > 1.1)) {
-            console.error(`[BASE] Aerodrome ${cfg.outputPair}: stable price out of range: ${price.toFixed(6)}`);
-            return null;
-        }
-        const tvlUSD = cfg.outputPair === 'ETH/USDC'
-            ? adj1 * 2
-            : cfg.stable ? (adj0 + adj1) : adj1 * price * 2;
-        return {
-            pair:       cfg.outputPair,
-            pool:       cfg.pool,
-            price,
-            reserve0:   r0b.toString(),
-            reserve1:   r1b.toString(),
-            reserveUSD: tvlUSD,
-            fee:        cfg.fee,
-            stable:     cfg.stable,
-            source:     'aerodrome_base_onchain',
-            venue:      'aerodrome',
-            chain:      CHAIN_ID,
-            timestamp:  new Date().toISOString(),
-        };
-    } catch (e) {
-        console.error(`[BASE] Aerodrome ${cfg.outputPair} ${cfg.pool.slice(0,10)}: ${e.message.slice(0,80)}`);
-        return null;
-    }
+function nowIso() {
+  return new Date().toISOString();
 }
 
-// ── Main ──────────────────────────────────────────────────────────────────────
+// ── Pool fetchers ────────────────────────────────────────────────────────────
+async function fetchUniV3Pool(cfg, blockNumber) {
+  try {
+    const { result, meta } = await rpc.callDetailed(
+      `base.univ3.${cfg.outputPair}.${cfg.pool.slice(0, 10)}`,
+      async (provider) => {
+        const c = new ethers.Contract(cfg.pool, POOL_ABI_V3, provider);
+        const [slot0, liq] = await Promise.all([
+          c.slot0({ blockTag: blockNumber }),
+          c.liquidity({ blockTag: blockNumber }),
+        ]);
+        return { slot0, liq };
+      }
+    );
 
-async function baseFetcher() {
-    console.log('Fetching Base on-chain data (UniV3 + Aerodrome)...');
-    const start = Date.now();
+    const price = sqrtPriceX96ToPrice(
+      result.slot0[0],
+      cfg.decimals0,
+      cfg.decimals1,
+      cfg.priceMode
+    );
 
-    const uniPrices = [];
-    for (const cfg of UNISWAP_V3_POOLS) {
-        const r = await fetchUniV3Pool(cfg);
-        if (r) uniPrices.push(r);
-        await sleep(FETCH_DELAY_MS);
+    if (!isFinite(price) || price <= 0 || price > 1e15) {
+      throw new Error(`invalid price ${price}`);
     }
 
-    const aeroPrices = [];
-    for (const cfg of AERODROME_POOLS) {
-        const r = await fetchAerodromePool(cfg);
-        if (r) aeroPrices.push(r);
-        await sleep(FETCH_DELAY_MS);
-    }
-
-    const allPrices = [...uniPrices, ...aeroPrices];
-    console.log(`Base: ${uniPrices.length}/${UNISWAP_V3_POOLS.length} UniV3, ${aeroPrices.length}/${AERODROME_POOLS.length} Aerodrome`);
+    const liqNum = Number(result.liq);
+    const tvlUSD = (liqNum / 1e6) * Math.sqrt(price) * 2;
 
     return {
-        status: 'success',
-        data: {
-            prices:     allPrices,
-            chain:      CHAIN_ID,
-            chain_id:   CHAIN_NUM,
-            venues:     ['uniswap_v3', 'aerodrome'],
-            timestamp:  new Date().toISOString(),
-            durationMs: Date.now() - start,
-        },
+      ok: true,
+      price: {
+        pair: cfg.outputPair,
+        pool: cfg.pool,
+        price,
+        liquidity: liqNum,
+        tvlUSD,
+        fee: cfg.fee / 10000,
+        tick: Number(result.slot0[1]),
+        source: 'uniswap_v3_base_onchain',
+        venue: 'uniswap_v3',
+        chain: CHAIN_ID,
+        blockNumber,
+        endpointId: meta.endpointId,
+        endpoint: meta.urlRedacted,
+        timestamp: nowIso(),
+      },
+      endpointMeta: meta,
     };
+  } catch (e) {
+    return {
+      ok: false,
+      venue: 'uniswap_v3',
+      pair: cfg.outputPair,
+      pool: cfg.pool,
+      error: String(e.message || e).slice(0, 160),
+    };
+  }
+}
+
+async function fetchAerodromePool(cfg, blockNumber) {
+  try {
+    const { result, meta } = await rpc.callDetailed(
+      `base.aerodrome.${cfg.outputPair}.${cfg.pool.slice(0, 10)}`,
+      async (provider) => {
+        const c = new ethers.Contract(cfg.pool, PAIR_ABI_AERO, provider);
+        const reserves = await c.getReserves({ blockTag: blockNumber });
+        return { reserves };
+      }
+    );
+
+    const r0b = result.reserves[0];
+    const r1b = result.reserves[1];
+
+    if (r0b === 0n || r1b === 0n) {
+      throw new Error('zero reserves');
+    }
+
+    const PREC = 1000000000n;
+    const SCALE0 = BigInt('1' + '0'.repeat(cfg.decimals0));
+    const SCALE1 = BigInt('1' + '0'.repeat(cfg.decimals1));
+    const adj0 = Number((r0b * PREC) / SCALE0) / 1e9;
+    const adj1 = Number((r1b * PREC) / SCALE1) / 1e9;
+
+    if (!adj0 || !adj1) {
+      throw new Error('adjusted reserves invalid');
+    }
+
+    const raw = adj1 / adj0;
+    const price = cfg.priceMode === 'invert' ? 1.0 / raw : raw;
+
+    if (!isFinite(price) || price <= 0 || price > 1e12) {
+      throw new Error(`invalid price ${price}`);
+    }
+
+    if (cfg.stable && (price < 0.9 || price > 1.1)) {
+      throw new Error(`stable price out of range ${price}`);
+    }
+
+    const tvlUSD = cfg.outputPair === 'ETH/USDC'
+      ? adj1 * 2
+      : cfg.stable ? (adj0 + adj1) : adj1 * price * 2;
+
+    return {
+      ok: true,
+      price: {
+        pair: cfg.outputPair,
+        pool: cfg.pool,
+        price,
+        reserve0: r0b.toString(),
+        reserve1: r1b.toString(),
+        reserveUSD: tvlUSD,
+        fee: cfg.fee,
+        stable: cfg.stable,
+        source: 'aerodrome_base_onchain',
+        venue: 'aerodrome',
+        chain: CHAIN_ID,
+        blockNumber,
+        endpointId: meta.endpointId,
+        endpoint: meta.urlRedacted,
+        timestamp: nowIso(),
+      },
+      endpointMeta: meta,
+    };
+  } catch (e) {
+    return {
+      ok: false,
+      venue: 'aerodrome',
+      pair: cfg.outputPair,
+      pool: cfg.pool,
+      error: String(e.message || e).slice(0, 160),
+    };
+  }
+}
+
+// ── Main ─────────────────────────────────────────────────────────────────────
+async function baseFetcher() {
+  const startedAt = Date.now();
+  const startedIso = nowIso();
+
+  const { blockNumber, meta: blockMeta } = await rpc.getBlockNumber('base.fetcher.block');
+
+  const uniResults = await mapWithConcurrency(
+    UNISWAP_V3_POOLS,
+    FETCH_CONCURRENCY,
+    (cfg) => fetchUniV3Pool(cfg, blockNumber)
+  );
+
+  const aeroResults = await mapWithConcurrency(
+    AERODROME_POOLS,
+    FETCH_CONCURRENCY,
+    (cfg) => fetchAerodromePool(cfg, blockNumber)
+  );
+
+  const priceRows = [...uniResults, ...aeroResults]
+    .filter((x) => x && x.ok && x.price)
+    .map((x) => x.price);
+
+  const failures = [...uniResults, ...aeroResults]
+    .filter((x) => !x || !x.ok)
+    .map((x) => ({
+      venue: x?.venue || 'unknown',
+      pair: x?.pair || 'unknown',
+      pool: x?.pool || 'unknown',
+      error: x?.error || 'unknown error',
+    }));
+
+  const durationMs = Date.now() - startedAt;
+
+  return {
+    status: 'success',
+    data: {
+      prices: priceRows,
+      chain: CHAIN_ID,
+      chain_id: CHAIN_NUM,
+      venues: ['uniswap_v3', 'aerodrome'],
+      timestamp: startedIso,
+      durationMs,
+      blockNumber,
+      fetchConcurrency: FETCH_CONCURRENCY,
+      endpointId: blockMeta.endpointId,
+      endpoint: blockMeta.urlRedacted,
+      stats: {
+        totalPools: UNISWAP_V3_POOLS.length + AERODROME_POOLS.length,
+        successCount: priceRows.length,
+        failureCount: failures.length,
+        uniswapV3: {
+          total: UNISWAP_V3_POOLS.length,
+          success: uniResults.filter((x) => x && x.ok).length,
+          failed: uniResults.filter((x) => !x || !x.ok).length,
+        },
+        aerodrome: {
+          total: AERODROME_POOLS.length,
+          success: aeroResults.filter((x) => x && x.ok).length,
+          failed: aeroResults.filter((x) => !x || !x.ok).length,
+        },
+      },
+      failures,
+    },
+  };
 }
 
 if (require.main === module) {
-    baseFetcher().then(result => {
-        console.log('\nBASE ON-CHAIN DATA:');
-        console.log('='.repeat(76));
-        result.data.prices.forEach(p => {
-            const tvl    = (p.tvlUSD || p.reserveUSD)
-                ? `$${((p.tvlUSD || p.reserveUSD) / 1000).toFixed(1)}k` : 'n/a';
-            const feePct = (p.fee * 100).toFixed(4) + '%';
-            const px     = p.price > 1 ? `$${p.price.toFixed(4)}` : p.price.toFixed(6);
-            console.log(
-                `${p.venue.padEnd(12)} ${p.pair.padEnd(14)} ` +
-                `${px.padStart(12)} | TVL: ${tvl.padStart(10)} | fee: ${feePct}`
-            );
+  baseFetcher()
+    .then((result) => {
+      console.log('\nBASE ON-CHAIN DATA:');
+      console.log('='.repeat(90));
+      console.log(
+        `block=${result.data.blockNumber} endpoint=${result.data.endpoint} ` +
+        `duration=${result.data.durationMs}ms success=${result.data.stats.successCount} ` +
+        `failed=${result.data.stats.failureCount}`
+      );
+
+      result.data.prices.forEach((p) => {
+        const tvl = (p.tvlUSD || p.reserveUSD)
+          ? `$${((p.tvlUSD || p.reserveUSD) / 1000).toFixed(1)}k`
+          : 'n/a';
+        const feePct = (p.fee * 100).toFixed(4) + '%';
+        const px = p.price > 1 ? `$${p.price.toFixed(4)}` : p.price.toFixed(6);
+        console.log(
+          `${p.venue.padEnd(12)} ${p.pair.padEnd(14)} ${px.padStart(12)} | ` +
+          `TVL: ${tvl.padStart(10)} | fee: ${feePct} | ep:${String(p.endpointId).padStart(2)}`
+        );
+      });
+
+      if (result.data.failures.length) {
+        console.log('-'.repeat(90));
+        console.log('FAILURES:');
+        result.data.failures.forEach((f) => {
+          console.log(`${f.venue.padEnd(12)} ${f.pair.padEnd(14)} ${f.pool} :: ${f.error}`);
         });
-        console.log('='.repeat(76));
-    }).catch(console.error);
+      }
+
+      console.log('='.repeat(90));
+    })
+    .catch(console.error);
 }
 
-// Declare chain for master scheduler
 baseFetcher.chain = 'base';
 
 module.exports = baseFetcher;
