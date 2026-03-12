@@ -87,7 +87,6 @@ function getChainRpcUrls(chain) {
       process.env.ETHEREUM_MAINNET_RPC_URL_1,
       process.env.ETHEREUM_MAINNET_RPC_URL_2,
       'https://eth.llamarpc.com',
-      'https://cloudflare-eth.com/',
     ],
     arbitrum: [
       process.env.ARBITRUM_MAINNET_RPC_URL_1,
