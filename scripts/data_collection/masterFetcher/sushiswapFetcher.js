@@ -4,20 +4,18 @@
  * scripts/data_collection/masterFetcher/sushiswapFetcher.js
  *
  * Sushiswap V2 on-chain pool data fetcher — Ethereum mainnet.
- * Uses utils/provider_factory.js (canonical provider layer).
+ * Canonical provider layer + token registry first.
  */
 
 const { ethers }         = require('ethers');
 const { createProvider } = require('../../../utils/provider_factory');
+const { getToken }       = require('../../../utils/token_registry');
 
 const CHAIN = 'ethereum';
 const rpc   = createProvider(CHAIN);
 
 const PAIR_ABI = [
   'function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)',
-  'function token0() external view returns (address)',
-  'function token1() external view returns (address)',
-  'function totalSupply() external view returns (uint256)',
 ];
 
 const ERC20_ABI = [
@@ -72,6 +70,29 @@ function computePrice(poolName, reserve0Num, reserve1Num) {
   return reserve1Num / reserve0Num;
 }
 
+async function erc20Meta(address) {
+  const reg = getToken(CHAIN, address);
+  if (reg && reg.decimals != null && reg.symbol) {
+    return {
+      decimals: Number(reg.decimals),
+      symbol: reg.symbol,
+    };
+  }
+
+  const decimals = await rpc.call(`erc20.decimals:${address}`, async (provider) => {
+    return new ethers.Contract(address, ERC20_ABI, provider).decimals();
+  });
+
+  const symbol = await rpc.call(`erc20.symbol:${address}`, async (provider) => {
+    return new ethers.Contract(address, ERC20_ABI, provider).symbol();
+  });
+
+  return {
+    decimals: Number(decimals.toString()),
+    symbol,
+  };
+}
+
 async function fetchPoolData(poolConfig) {
   try {
     const reserves = await rpc.call(
@@ -82,21 +103,15 @@ async function fetchPoolData(poolConfig) {
       }
     );
 
-    const [decimals0, decimals1] = await Promise.all([
-      rpc.call(`erc20.decimals:${poolConfig.token0}`, async (provider) => {
-        return new ethers.Contract(poolConfig.token0, ERC20_ABI, provider).decimals();
-      }),
-      rpc.call(`erc20.decimals:${poolConfig.token1}`, async (provider) => {
-        return new ethers.Contract(poolConfig.token1, ERC20_ABI, provider).decimals();
-      }),
+    const [meta0, meta1] = await Promise.all([
+      erc20Meta(poolConfig.token0),
+      erc20Meta(poolConfig.token1),
     ]);
 
-    const dec0 = Number(decimals0.toString());
-    const dec1 = Number(decimals1.toString());
-    const reserve0Num = Number(reserves[0].toString()) / Math.pow(10, dec0);
-    const reserve1Num = Number(reserves[1].toString()) / Math.pow(10, dec1);
-    const price = computePrice(poolConfig.name, reserve0Num, reserve1Num);
-    const tvl   = (reserve0Num * price) + reserve1Num;
+    const reserve0Num = Number(reserves[0].toString()) / Math.pow(10, meta0.decimals);
+    const reserve1Num = Number(reserves[1].toString()) / Math.pow(10, meta1.decimals);
+    const price       = computePrice(poolConfig.name, reserve0Num, reserve1Num);
+    const tvl         = (reserve0Num * price) + reserve1Num;
 
     return {
       pair:       poolConfig.name,
@@ -107,43 +122,61 @@ async function fetchPoolData(poolConfig) {
       reserveUSD: tvl,
       fee:        0.3,
       source:     'sushiswap_onchain',
+      venue:      'sushiswap',
+      chain:      CHAIN,
       timestamp:  new Date().toISOString(),
     };
-
   } catch (error) {
-    console.error(`[sushiswapFetcher] ❌ ${poolConfig.name}: ${error.message}`);
+    console.error(`[sushiswapFetcher] ${poolConfig.name}: ${error.message}`);
     return null;
   }
 }
 
 async function fetchSushiswapData() {
-  console.log('[sushiswapFetcher] 🔍 Fetching Sushiswap on-chain data...');
+  console.log('[sushiswapFetcher] Fetching Sushiswap on-chain data...');
+
   try {
     const results = await Promise.all(SUSHISWAP_POOLS.map(fetchPoolData));
-    const prices  = results.filter(Boolean);
-    console.log(`[sushiswapFetcher] ✅ ${prices.length}/${SUSHISWAP_POOLS.length} pools fetched`);
+    const prices = results.filter(Boolean);
+
+    console.log(`[sushiswapFetcher] ${prices.length}/${SUSHISWAP_POOLS.length} pools fetched`);
+
     return {
       status: 'success',
-      data: { prices, timestamp: new Date().toISOString(), source: 'sushiswap_onchain', exchange: 'sushiswap' },
+      data: {
+        prices,
+        chain: CHAIN,
+        venues: ['sushiswap'],
+        timestamp: new Date().toISOString(),
+        source: 'sushiswap_onchain',
+        exchange: 'sushiswap',
+      },
     };
   } catch (error) {
-    console.error('[sushiswapFetcher] ❌ Fatal error:', error.message);
-    return { status: 'error', error: error.message, data: { prices: [], timestamp: new Date().toISOString() } };
+    console.error('[sushiswapFetcher] Fatal error:', error.message);
+    return {
+      status: 'error',
+      error: error.message,
+      data: {
+        prices: [],
+        chain: CHAIN,
+        timestamp: new Date().toISOString(),
+      },
+    };
   }
 }
 
-fetchSushiswapData.chain = 'ethereum';
+fetchSushiswapData.chain = CHAIN;
 module.exports = fetchSushiswapData;
 
 if (require.main === module) {
   fetchSushiswapData()
     .then((result) => {
-      console.log('\n📊 SUSHISWAP ON-CHAIN DATA:');
+      console.log('\nSUSHISWAP ON-CHAIN DATA:');
       console.log('═'.repeat(70));
       result.data.prices.forEach((p) => {
         console.log(
-          `${p.pair.padEnd(15)} $${p.price.toFixed(6).padStart(12)}` +
-          ` | TVL: $${(p.reserveUSD / 1_000_000).toFixed(1)}M | Fee: ${p.fee}%`
+          `${p.pair.padEnd(15)} $${p.price.toFixed(6).padStart(12)} | TVL: $${(p.reserveUSD / 1_000_000).toFixed(1)}M | Fee: ${p.fee}%`
         );
       });
       console.log('═'.repeat(70));
