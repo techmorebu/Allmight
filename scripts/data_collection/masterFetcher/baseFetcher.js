@@ -108,7 +108,8 @@ async function fetchUniV3Pool(cfg, blockNumber) {
     }
 
     const liqNum = Number(result.liq);
-    const tvlUSD = (liqNum / 1e6) * Math.sqrt(price) * 2;
+    const liquidityRaw = result.liq.toString();
+    const tvlUSD = null;
 
     return {
       ok: true,
@@ -117,8 +118,9 @@ async function fetchUniV3Pool(cfg, blockNumber) {
         pool: cfg.pool,
         price,
         liquidity: liqNum,
+        liquidityRaw,
         tvlUSD,
-        fee: cfg.fee / 10000,
+        fee: cfg.fee / 1_000_000,
         tick: Number(result.slot0[1]),
         source: 'uniswap_v3_base_onchain',
         venue: 'uniswap_v3',
