@@ -28,7 +28,7 @@ function sleep(ms) {
 }
 
 function redactUrl(url) {
-  return url.replace(/https?:\/\//, '');
+  return String(url || '').replace(/^https?:\/\//, '');
 }
 
 function withTimeout(promise, ms, label) {
@@ -71,6 +71,7 @@ class EndpointHealth {
       e.slowStrikes++;
     } else {
       e.slowStrikes = Math.max(0, e.slowStrikes - 1);
+      e.demoted = false;
     }
 
     if (e.slowStrikes >= RPC_SLOW_STRIKES) {
@@ -100,7 +101,13 @@ const _rrStart = {};
 
 function getOrCreateProvider(url) {
   if (!_providerCache.has(url)) {
-    _providerCache.set(url, new ethers.JsonRpcProvider(url));
+    _providerCache.set(
+      url,
+      new ethers.JsonRpcProvider(url, undefined, {
+        staticNetwork: true,
+        batchMaxCount: 1
+      })
+    );
   }
   return _providerCache.get(url);
 }
@@ -111,23 +118,60 @@ function classifyRpcError(err) {
   return 'rpc_error';
 }
 
-function createProvider(chain) {
+function cleanRpcList(values) {
+  return values
+    .map(v => (typeof v === 'string' ? v.trim() : ''))
+    .filter(Boolean);
+}
+
+function getChainRpcUrls(chain) {
+  const chainKey = String(chain).toLowerCase();
 
   const RPCS = {
-    base: [
+    base: cleanRpcList([
+      process.env.BASE_MAINNET_RPC_URL_1,
+      process.env.BASE_MAINNET_RPC_URL,
       'https://mainnet.base.org',
       'https://base.llamarpc.com'
-    ]
+    ]),
+    optimism: cleanRpcList([
+      process.env.OPTIMISM_MAINNET_RPC_URL_1,
+      process.env.OPTIMISM_MAINNET_RPC_URL,
+      'https://mainnet.optimism.io',
+      'https://optimism.llamarpc.com'
+    ]),
+    arbitrum: cleanRpcList([
+      process.env.ARBITRUM_MAINNET_RPC_URL_1,
+      process.env.ARBITRUM_MAINNET_RPC_URL_2,
+      process.env.ARBITRUM_MAINNET_RPC_URL,
+      'https://arb1.arbitrum.io/rpc',
+      'https://arbitrum.llamarpc.com'
+    ]),
+    ethereum: cleanRpcList([
+      process.env.ETHEREUM_MAINNET_RPC_URL_1,
+      process.env.ETHEREUM_MAINNET_RPC_URL_2,
+      process.env.ETH_RPC_URL,
+      process.env.ETHEREUM_MAINNET_RPC_URL,
+      'https://eth.llamarpc.com'
+    ]),
+    unichain: cleanRpcList([
+      process.env.UNICHAIN_MAINNET_RPC_URL_1,
+      process.env.UNICHAIN_MAINNET_RPC_URL,
+      'https://mainnet.unichain.org'
+    ])
   };
 
-  const urls = RPCS[chain];
+  return RPCS[chainKey] || [];
+}
 
-  if (!urls) {
+function createProvider(chain) {
+  const urls = getChainRpcUrls(chain);
+
+  if (!urls.length) {
     throw new Error(`Unknown chain: ${chain}`);
   }
 
   async function callDetailed(label, fn, opts = {}) {
-
     const timeoutMs = opts.timeoutMs || RPC_CALL_TIMEOUT_MS;
     const hedge = Boolean(opts.hedge);
 
@@ -138,25 +182,18 @@ function createProvider(chain) {
     }
 
     const start = _rrStart[chain] || 0;
-
-    const rotated = candidates.map(
-      (_, i) => candidates[(start + i) % candidates.length]
-    );
-
+    const rotated = candidates.map((_, i) => candidates[(start + i) % candidates.length]);
     _rrStart[chain] = (start + 1) % candidates.length;
 
     async function attempt(url, delay = 0) {
-
       if (delay) {
         await sleep(delay);
       }
 
       const provider = getOrCreateProvider(url);
-
-      const start = Date.now();
+      const startedAt = Date.now();
 
       try {
-
         const result = await withTimeout(
           fn(provider, {
             url,
@@ -166,8 +203,7 @@ function createProvider(chain) {
           `${chain}:${label}`
         );
 
-        const duration = Date.now() - start;
-
+        const duration = Date.now() - startedAt;
         _health.recordSuccess(url, duration);
 
         return {
@@ -180,19 +216,16 @@ function createProvider(chain) {
             durationMs: duration
           }
         };
-
       } catch (err) {
-
-        const duration = Date.now() - start;
-
         _health.recordFailure(url, classifyRpcError(err));
-
-        return { ok: false, err };
+        return {
+          ok: false,
+          err
+        };
       }
     }
 
     if (hedge && rotated.length >= 2) {
-
       const first = rotated[0];
       const second = rotated[1];
 
@@ -206,7 +239,6 @@ function createProvider(chain) {
       }
 
       const retry = await attempt(second);
-
       if (retry.ok) {
         return retry;
       }
@@ -215,9 +247,7 @@ function createProvider(chain) {
     }
 
     for (const url of rotated) {
-
       const r = await attempt(url);
-
       if (r.ok) {
         return r;
       }
@@ -227,7 +257,6 @@ function createProvider(chain) {
   }
 
   async function getBlockNumber(label, opts = {}) {
-
     const r = await callDetailed(
       label,
       provider => provider.getBlockNumber(),
@@ -242,10 +271,13 @@ function createProvider(chain) {
 
   return {
     callDetailed,
-    getBlockNumber
+    getBlockNumber,
+    urls: urls.slice(),
+    chain
   };
 }
 
 module.exports = {
-  createProvider
+  createProvider,
+  getChainRpcUrls
 };
