@@ -13,6 +13,7 @@ Features:
 - round-robin rotation
 - hedged RPC requests
 - degraded retry if all endpoints demoted
+- explicit static network config per chain
 */
 
 const { ethers } = require('ethers');
@@ -99,25 +100,6 @@ const _health = new EndpointHealth();
 const _providerCache = new Map();
 const _rrStart = {};
 
-function getOrCreateProvider(url) {
-  if (!_providerCache.has(url)) {
-    _providerCache.set(
-      url,
-      new ethers.JsonRpcProvider(url, undefined, {
-        staticNetwork: true,
-        batchMaxCount: 1
-      })
-    );
-  }
-  return _providerCache.get(url);
-}
-
-function classifyRpcError(err) {
-  if (!err) return 'unknown';
-  if (err.code === 'RPC_TIMEOUT') return 'timeout';
-  return 'rpc_error';
-}
-
 function cleanRpcList(values) {
   return values
     .map(v => (typeof v === 'string' ? v.trim() : ''))
@@ -156,16 +138,58 @@ function getChainRpcUrls(chain) {
     ]),
     unichain: cleanRpcList([
       process.env.UNICHAIN_MAINNET_RPC_URL_1,
-      process.env.UNICHAIN_MAINNET_RPC_URL,
-      'https://mainnet.unichain.org'
+      process.env.UNICHAIN_MAINNET_RPC_URL
     ])
   };
 
   return RPCS[chainKey] || [];
 }
 
+function getChainNetwork(chain) {
+  const chainKey = String(chain).toLowerCase();
+
+  const networks = {
+    ethereum: ethers.Network.from({ name: 'mainnet', chainId: 1 }),
+    arbitrum: ethers.Network.from({ name: 'arbitrum', chainId: 42161 }),
+    optimism: ethers.Network.from({ name: 'optimism', chainId: 10 }),
+    base: ethers.Network.from({ name: 'base', chainId: 8453 }),
+    unichain: ethers.Network.from({ name: 'unichain', chainId: 130 }) // adjust later if needed
+  };
+
+  return networks[chainKey] || null;
+}
+
+function getProviderKey(chain, url) {
+  return `${String(chain).toLowerCase()}::${url}`;
+}
+
+function getOrCreateProvider(chain, url) {
+  const key = getProviderKey(chain, url);
+
+  if (!_providerCache.has(key)) {
+    const network = getChainNetwork(chain);
+
+    _providerCache.set(
+      key,
+      new ethers.JsonRpcProvider(url, network, {
+        staticNetwork: network,
+        batchMaxCount: 1
+      })
+    );
+  }
+
+  return _providerCache.get(key);
+}
+
+function classifyRpcError(err) {
+  if (!err) return 'unknown';
+  if (err.code === 'RPC_TIMEOUT') return 'timeout';
+  return 'rpc_error';
+}
+
 function createProvider(chain) {
-  const urls = getChainRpcUrls(chain);
+  const chainKey = String(chain).toLowerCase();
+  const urls = getChainRpcUrls(chainKey);
 
   if (!urls.length) {
     throw new Error(`Unknown chain: ${chain}`);
@@ -181,16 +205,16 @@ function createProvider(chain) {
       candidates = urls.slice();
     }
 
-    const start = _rrStart[chain] || 0;
+    const start = _rrStart[chainKey] || 0;
     const rotated = candidates.map((_, i) => candidates[(start + i) % candidates.length]);
-    _rrStart[chain] = (start + 1) % candidates.length;
+    _rrStart[chainKey] = (start + 1) % candidates.length;
 
     async function attempt(url, delay = 0) {
       if (delay) {
         await sleep(delay);
       }
 
-      const provider = getOrCreateProvider(url);
+      const provider = getOrCreateProvider(chainKey, url);
       const startedAt = Date.now();
 
       try {
@@ -200,7 +224,7 @@ function createProvider(chain) {
             endpointId: urls.indexOf(url)
           }),
           timeoutMs,
-          `${chain}:${label}`
+          `${chainKey}:${label}`
         );
 
         const duration = Date.now() - startedAt;
@@ -243,7 +267,7 @@ function createProvider(chain) {
         return retry;
       }
 
-      throw new Error(`RPC hedged failure (${chain}:${label})`);
+      throw new Error(`RPC hedged failure (${chainKey}:${label})`);
     }
 
     for (const url of rotated) {
@@ -253,7 +277,7 @@ function createProvider(chain) {
       }
     }
 
-    throw new Error(`RPC exhausted (${chain}:${label})`);
+    throw new Error(`RPC exhausted (${chainKey}:${label})`);
   }
 
   async function getBlockNumber(label, opts = {}) {
@@ -273,7 +297,7 @@ function createProvider(chain) {
     callDetailed,
     getBlockNumber,
     urls: urls.slice(),
-    chain
+    chain: chainKey
   };
 }
 
