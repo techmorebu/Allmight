@@ -34,10 +34,10 @@ const UNISWAP_V3_POOLS = [
   {
     outputPair: 'ETH/USDC',
     pool: '0x1fb3cf6e48F1E7B10213E7b6d87D4c073C7Fdb7b',
-    decimals0: 18,
-    decimals1: 6,
+    decimals0: 6,
+    decimals1: 18,
     fee: 500,
-    priceMode: 'direct',
+    priceMode: 'invert',
   },
   {
     outputPair: 'ETH/USDC',
@@ -65,15 +65,6 @@ const VELODROME_POOLS = [
     decimals1: 6,
     fee: 0.002,
     stable: false,
-    priceMode: 'direct',
-  },
-  {
-    outputPair: 'USDC/USDT',
-    pool: '0xC5be2c918EB04B091962fDF095A217A55CFA42C5',
-    decimals0: 6,
-    decimals1: 6,
-    fee: 0.0002,
-    stable: true,
     priceMode: 'direct',
   },
 ];
