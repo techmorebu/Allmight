@@ -28,7 +28,7 @@ const PAIR_ABI_V2 = [
 
 const UNISWAP_V3_POOLS = [
   { outputPair: 'ETH/USDC',   pool: '0xC6962004f452bE9203591991D15f6b388e09E8D0', decimals0: 18, decimals1: 6, fee: 500,  priceMode: 'direct' },
-  { outputPair: 'ETH/USDT',   pool: '0x641C00A822e8b671738d32a431a4Fb6074E5c79d', decimals0: 18, decimals1: 6, fee: 500,  priceMode: 'direct' },
+  { outputPair: 'ETH/USDT',   pool: '0x641C00A822e8b671738d32a431a4Fb6074E5c79d', decimals0: 18, decimals1: 6, fee: 500,  priceMode: 'direct', timeoutMs: 2200 },
   { outputPair: 'USDC/USDT',  pool: '0xbE3aD6a5669Dc0B8b12FeBC03608860C31E2eef6', decimals0: 6,  decimals1: 6, fee: 100,  priceMode: 'direct' },
   { outputPair: 'USDC/USDCe', pool: '0x8e295789c9465487074a65b1ae9Ce0351172393f', decimals0: 6,  decimals1: 6, fee: 100,  priceMode: 'direct' },
   { outputPair: 'DAI/USDT',   pool: '0x7f580f8A02b759C350E6b8340e7c2d4b8162b6a9', decimals0: 18, decimals1: 6, fee: 100,  priceMode: 'direct' },
@@ -79,7 +79,7 @@ async function fetchUniV3Pool(cfg, blockNumber) {
         ]);
         return { slot0, liq };
       },
-      { timeoutMs: 1500, hedge: true }
+      { timeoutMs: cfg.timeoutMs || 1500, hedge: true }
     );
 
     const price = sqrtPriceX96ToPrice(
