@@ -12,8 +12,6 @@ require('dotenv').config();
 const { ethers } = require('ethers');
 const { createProvider } = require('../../../utils/provider_factory');
 
-const rpc = createProvider('unichain');
-
 const CHAIN_ID = 'unichain';
 const CHAIN_NUM = 130;
 const FETCH_CONCURRENCY = Math.max(
@@ -59,7 +57,7 @@ async function mapWithConcurrency(items, limit, worker) {
   return out;
 }
 
-async function fetchUniV3Pool(cfg, blockNumber) {
+async function fetchUniV3Pool(rpc, cfg, blockNumber) {
   try {
     const { result, meta } = await rpc.callDetailed(
       `unichain.univ3.${cfg.outputPair}.${cfg.pool.slice(0, 10)}`,
@@ -123,8 +121,6 @@ async function unichainFetcher() {
   const startedAt = Date.now();
   const startedIso = nowIso();
 
-  // No verified active pools yet: return a clean structured idle-success result.
-  // This keeps the master fetcher stable while preserving the truth.
   if (UNISWAP_V3_POOLS.length === 0) {
     return {
       status: 'success',
@@ -154,6 +150,48 @@ async function unichainFetcher() {
         },
         failures: [],
         note: 'No verified Unichain pools configured yet. V4 / validated pool integration pending.',
+      },
+    };
+  }
+
+  let rpc;
+  try {
+    rpc = createProvider('unichain');
+  } catch (e) {
+    return {
+      status: 'error',
+      partial: false,
+      data: {
+        prices: [],
+        chain: CHAIN_ID,
+        chain_id: CHAIN_NUM,
+        venues: ['uniswap_v3'],
+        timestamp: startedIso,
+        durationMs: Date.now() - startedAt,
+        blockNumber: null,
+        fetchConcurrency: FETCH_CONCURRENCY,
+        endpointId: null,
+        endpoint: null,
+        endpointIdsSeen: [],
+        endpointsSeen: [],
+        stats: {
+          totalPools: UNISWAP_V3_POOLS.length,
+          successCount: 0,
+          failureCount: UNISWAP_V3_POOLS.length,
+          uniswapV3: {
+            total: UNISWAP_V3_POOLS.length,
+            success: 0,
+            failed: UNISWAP_V3_POOLS.length,
+          },
+        },
+        failures: [
+          {
+            venue: 'provider_init',
+            pair: 'n/a',
+            pool: 'n/a',
+            error: String(e.message || e).slice(0, 160),
+          },
+        ],
       },
     };
   }
@@ -210,7 +248,7 @@ async function unichainFetcher() {
   const uniResults = await mapWithConcurrency(
     UNISWAP_V3_POOLS,
     FETCH_CONCURRENCY,
-    (cfg) => fetchUniV3Pool(cfg, blockNumber)
+    (cfg) => fetchUniV3Pool(rpc, cfg, blockNumber)
   );
 
   const combined = [...uniResults];
