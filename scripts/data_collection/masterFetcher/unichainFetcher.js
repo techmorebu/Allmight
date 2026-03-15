@@ -1,118 +1,323 @@
-// unichainFetcher.js v1.0
-// Fetches Uniswap V3 + V4 pool data on Unichain
-// Chain: Unichain (chain_id: 130 per Infura)
-// Gas: ~0.002 gwei -- near free
-// Status: low competition -- new chain, most bots not deployed here yet
-//
-// Note: Uniswap V4 uses a single PoolManager contract
-// V3 pools still exist and are the most liquid initially
+// unichainFetcher.js
+// Unichain mainnet fetcher — hardened template placeholder
+// Current truth:
+// - provider path normalized via provider_factory
+// - no direct provider / no fixed sleeps
+// - no active pool list yet
+// - ready for future Uniswap V4 / verified pool integration
 
 'use strict';
 require('dotenv').config();
+
 const { ethers } = require('ethers');
+const { createProvider } = require('../../../utils/provider_factory');
 
-const RPC_URL  = process.env.UNICHAIN_MAINNET_RPC_URL_1 || 'https://mainnet.unichain.org';
-const PROVIDER = new ethers.JsonRpcProvider(RPC_URL);
+const rpc = createProvider('unichain');
 
-const CHAIN_ID       = 'unichain';
-const CHAIN_NUM      = 130;
-const FETCH_DELAY_MS = 500;
+const CHAIN_ID = 'unichain';
+const CHAIN_NUM = 130;
+const FETCH_CONCURRENCY = Math.max(
+  1,
+  Number(process.env.UNICHAIN_FETCHER_CONCURRENCY || 4)
+);
 
 const POOL_ABI_V3 = [
-    'function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16, uint16, uint16, uint8, bool)',
-    'function liquidity() external view returns (uint128)',
-    'function token0() external view returns (address)',
-    'function token1() external view returns (address)',
+  'function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16, uint16, uint16, uint8, bool)',
+  'function liquidity() external view returns (uint128)',
 ];
 
-// ── Unichain token addresses ──────────────────────────────────────────────────
-// WETH:  0x4200000000000000000000000000000000000006  (same as other OP-stack chains)
-// USDC:  0x078D782b760474a361dDA0AF3839290b0EF57E2e  (native USDC on Unichain)
-// USDT:  0x9151434b16b9763660705744e285bE4BDB5B00Ca
+// Unichain notes:
+// - current working V3 pool list is not yet validated
+// - chain appears to center around Uniswap V4 style infra
+// - keep V3 support scaffolded, but do not fake active pools
+const UNISWAP_V3_POOLS = [];
 
-// Unichain uses Uniswap V4 -- V3 factory not deployed
-// V4 PoolManager: 0x1F98431c8aD98523631AE4a59f267346ea31F984 (TBC)
-// TODO: implement V4 PoolManager.getSlot0() interface
-const UNISWAP_V3_POOLS = [
-    // Unichain uses Uniswap V4 -- V3 factory returns empty for all queries
-    // V4 PoolManager requires different ABI (getSlot0 via manager, not pool)
-    // TODO: implement V4 interface next session
-];
-
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-function sqrtPriceX96ToPrice(sqrtPriceX96Raw, dec0, dec1, mode) {
-    const Q96   = 2n ** 96n;
-    const sqrtP = Number(sqrtPriceX96Raw) / Number(Q96);
-    const raw   = sqrtP * sqrtP * Math.pow(10, dec0 - dec1);
-    return mode === 'invert' ? 1.0 / raw : raw;
+function nowIso() {
+  return new Date().toISOString();
 }
 
-async function fetchUniV3Pool(cfg) {
-    try {
-        const c = new ethers.Contract(cfg.pool, POOL_ABI_V3, PROVIDER);
-        const [slot0, liq] = await Promise.all([c.slot0(), c.liquidity()]);
-        const price = sqrtPriceX96ToPrice(slot0[0], cfg.decimals0, cfg.decimals1, cfg.priceMode);
-        if (!isFinite(price) || price <= 0 || price > 1e15) return null;
-        const isStable = !cfg.outputPair.includes('ETH') && !cfg.outputPair.includes('BTC');
-        if (isStable && (price < 0.9 || price > 1.1)) {
-            console.error(`[UNICHAIN] ${cfg.outputPair}: price out of range: ${price.toFixed(6)}`);
-            return null;
-        }
-        return {
-            pair: cfg.outputPair, pool: cfg.pool, price,
-            liquidity: Number(liq),
-            fee: cfg.fee / 10000,
-            source: 'uniswap_v3_unichain_onchain', venue: 'uniswap_v3',
-            chain: CHAIN_ID, timestamp: new Date().toISOString(),
-        };
-    } catch (e) {
-        console.error(`[UNICHAIN] ${cfg.outputPair} ${cfg.pool.slice(0,10)}: ${e.message.slice(0,80)}`);
-        return null;
+function sqrtPriceX96ToPrice(sqrtPriceX96Raw, dec0, dec1, mode) {
+  const Q96 = 2n ** 96n;
+  const sqrtP = Number(sqrtPriceX96Raw) / Number(Q96);
+  const raw = sqrtP * sqrtP * Math.pow(10, dec0 - dec1);
+  return mode === 'invert' ? 1 / raw : raw;
+}
+
+async function mapWithConcurrency(items, limit, worker) {
+  const out = new Array(items.length);
+  let idx = 0;
+
+  const runners = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (true) {
+      const cur = idx++;
+      if (cur >= items.length) break;
+      out[cur] = await worker(items[cur], cur);
     }
+  });
+
+  await Promise.all(runners);
+  return out;
+}
+
+async function fetchUniV3Pool(cfg, blockNumber) {
+  try {
+    const { result, meta } = await rpc.callDetailed(
+      `unichain.univ3.${cfg.outputPair}.${cfg.pool.slice(0, 10)}`,
+      async (provider) => {
+        const c = new ethers.Contract(cfg.pool, POOL_ABI_V3, provider);
+        const [slot0, liq] = await Promise.all([
+          c.slot0({ blockTag: blockNumber }),
+          c.liquidity({ blockTag: blockNumber }),
+        ]);
+        return { slot0, liq };
+      },
+      { timeoutMs: 1500, hedge: true }
+    );
+
+    const price = sqrtPriceX96ToPrice(
+      result.slot0[0],
+      cfg.decimals0,
+      cfg.decimals1,
+      cfg.priceMode
+    );
+
+    if (!isFinite(price) || price <= 0 || price > 1e15) {
+      throw new Error(`invalid price ${price}`);
+    }
+
+    const liqNum = Number(result.liq);
+    const liquidityRaw = result.liq.toString();
+
+    return {
+      ok: true,
+      price: {
+        pair: cfg.outputPair,
+        pool: cfg.pool,
+        price,
+        liquidity: liqNum,
+        liquidityRaw,
+        tvlUSD: null,
+        fee: cfg.fee / 1_000_000,
+        tick: Number(result.slot0[1]),
+        source: 'uniswap_v3_unichain_onchain',
+        venue: 'uniswap_v3',
+        chain: CHAIN_ID,
+        blockNumber,
+        endpointId: meta.endpointId,
+        endpoint: meta.urlRedacted,
+        timestamp: nowIso(),
+      },
+    };
+  } catch (e) {
+    return {
+      ok: false,
+      venue: 'uniswap_v3',
+      pair: cfg.outputPair,
+      pool: cfg.pool,
+      error: String(e.message || e).slice(0, 160),
+    };
+  }
 }
 
 async function unichainFetcher() {
-    console.log('Fetching Unichain on-chain data (UniV3)...');
-    const start  = Date.now();
-    const prices = [];
+  const startedAt = Date.now();
+  const startedIso = nowIso();
 
-    for (const cfg of UNISWAP_V3_POOLS) {
-        const r = await fetchUniV3Pool(cfg);
-        if (r) prices.push(r);
-        await sleep(FETCH_DELAY_MS);
-    }
-
-    console.log(`Unichain: ${prices.length}/${UNISWAP_V3_POOLS.length} UniV3`);
-
+  // No verified active pools yet: return a clean structured idle-success result.
+  // This keeps the master fetcher stable while preserving the truth.
+  if (UNISWAP_V3_POOLS.length === 0) {
     return {
-        status: 'success',
-        data: {
-            prices, chain: CHAIN_ID, chain_id: CHAIN_NUM,
-            venues: ['uniswap_v3'],
-            timestamp: new Date().toISOString(), durationMs: Date.now() - start,
+      status: 'success',
+      partial: false,
+      data: {
+        prices: [],
+        chain: CHAIN_ID,
+        chain_id: CHAIN_NUM,
+        venues: ['uniswap_v3'],
+        timestamp: startedIso,
+        durationMs: Date.now() - startedAt,
+        blockNumber: null,
+        fetchConcurrency: FETCH_CONCURRENCY,
+        endpointId: null,
+        endpoint: null,
+        endpointIdsSeen: [],
+        endpointsSeen: [],
+        stats: {
+          totalPools: 0,
+          successCount: 0,
+          failureCount: 0,
+          uniswapV3: {
+            total: 0,
+            success: 0,
+            failed: 0,
+          },
         },
+        failures: [],
+        note: 'No verified Unichain pools configured yet. V4 / validated pool integration pending.',
+      },
     };
+  }
+
+  let blockNumber = null;
+  let blockMeta = null;
+
+  try {
+    const blockResp = await rpc.getBlockNumber(
+      'unichain.fetcher.block',
+      { timeoutMs: 1200, hedge: true }
+    );
+    blockNumber = blockResp.blockNumber;
+    blockMeta = blockResp.meta;
+  } catch (e) {
+    return {
+      status: 'error',
+      partial: false,
+      data: {
+        prices: [],
+        chain: CHAIN_ID,
+        chain_id: CHAIN_NUM,
+        venues: ['uniswap_v3'],
+        timestamp: startedIso,
+        durationMs: Date.now() - startedAt,
+        blockNumber: null,
+        fetchConcurrency: FETCH_CONCURRENCY,
+        endpointId: null,
+        endpoint: null,
+        endpointIdsSeen: [],
+        endpointsSeen: [],
+        stats: {
+          totalPools: UNISWAP_V3_POOLS.length,
+          successCount: 0,
+          failureCount: UNISWAP_V3_POOLS.length,
+          uniswapV3: {
+            total: UNISWAP_V3_POOLS.length,
+            success: 0,
+            failed: UNISWAP_V3_POOLS.length,
+          },
+        },
+        failures: [
+          {
+            venue: 'block_fetch',
+            pair: 'n/a',
+            pool: 'n/a',
+            error: String(e.message || e).slice(0, 160),
+          },
+        ],
+      },
+    };
+  }
+
+  const uniResults = await mapWithConcurrency(
+    UNISWAP_V3_POOLS,
+    FETCH_CONCURRENCY,
+    (cfg) => fetchUniV3Pool(cfg, blockNumber)
+  );
+
+  const combined = [...uniResults];
+
+  const priceRows = combined
+    .filter((x) => x && x.ok && x.price)
+    .map((x) => x.price);
+
+  const failures = combined
+    .filter((x) => !x || !x.ok)
+    .map((x) => ({
+      venue: x?.venue || 'unknown',
+      pair: x?.pair || 'unknown',
+      pool: x?.pool || 'unknown',
+      error: x?.error || 'unknown error',
+    }));
+
+  const durationMs = Date.now() - startedAt;
+  const endpointIdsSeen = [...new Set(priceRows.map((p) => p.endpointId).filter((v) => v !== undefined))];
+  const endpointsSeen = [...new Set(priceRows.map((p) => p.endpoint).filter(Boolean))];
+
+  const successCount = priceRows.length;
+  const failureCount = failures.length;
+
+  const status =
+    successCount === 0 ? 'error' :
+    failureCount > 0 ? 'partial' :
+    'success';
+
+  return {
+    status,
+    partial: status === 'partial',
+    data: {
+      prices: priceRows,
+      chain: CHAIN_ID,
+      chain_id: CHAIN_NUM,
+      venues: ['uniswap_v3'],
+      timestamp: startedIso,
+      durationMs,
+      blockNumber,
+      fetchConcurrency: FETCH_CONCURRENCY,
+      endpointId: blockMeta?.endpointId ?? null,
+      endpoint: blockMeta?.urlRedacted ?? null,
+      endpointIdsSeen,
+      endpointsSeen,
+      stats: {
+        totalPools: UNISWAP_V3_POOLS.length,
+        successCount,
+        failureCount,
+        uniswapV3: {
+          total: UNISWAP_V3_POOLS.length,
+          success: uniResults.filter((x) => x && x.ok).length,
+          failed: uniResults.filter((x) => !x || !x.ok).length,
+        },
+      },
+      failures,
+    },
+  };
 }
 
 if (require.main === module) {
-    unichainFetcher().then(result => {
-        console.log('\nUNICHAIN ON-CHAIN DATA:');
-        console.log('='.repeat(76));
-        if (result.data.prices.length === 0) {
-            console.log('No pools found -- pool addresses may need verification');
-            console.log('Run discover_pools.py with UNICHAIN_MAINNET_RPC_URL_1 to find correct addresses');
-        }
-        result.data.prices.forEach(p => {
-            const feePct = (p.fee * 100).toFixed(4) + '%';
-            const px     = p.price > 1 ? `$${p.price.toFixed(4)}` : p.price.toFixed(6);
-            console.log(`${'uniswap_v3'.padEnd(12)} ${p.pair.padEnd(14)} ${px.padStart(12)} | fee: ${feePct}`);
+  unichainFetcher()
+    .then((result) => {
+      console.log('\nUNICHAIN ON-CHAIN DATA:');
+      console.log('='.repeat(90));
+      console.log(
+        `status=${result.status} partial=${result.partial} block=${result.data.blockNumber} endpoint=${result.data.endpoint} ` +
+        `epSeen=${(result.data.endpointIdsSeen || []).join(',') || 'n/a'} ` +
+        `duration=${result.data.durationMs}ms success=${result.data.stats.successCount} ` +
+        `failed=${result.data.stats.failureCount}`
+      );
+
+      if (result.data.note) {
+        console.log(result.data.note);
+      }
+
+      result.data.prices.forEach((p) => {
+        const tvl = (p.tvlUSD || p.reserveUSD)
+          ? `$${((p.tvlUSD || p.reserveUSD) / 1000).toFixed(1)}k`
+          : 'n/a';
+        const feePct = (p.fee * 100).toFixed(4) + '%';
+        const px = p.price > 1 ? `$${p.price.toFixed(4)}` : p.price.toFixed(6);
+
+        console.log(
+          `${p.venue.padEnd(12)} ${p.pair.padEnd(14)} ${px.padStart(12)} | ` +
+          `TVL: ${tvl.padStart(10)} | fee: ${feePct} | ep:${String(p.endpointId).padStart(2)}`
+        );
+      });
+
+      if (result.data.failures.length) {
+        console.log('-'.repeat(90));
+        console.log('FAILURES:');
+        result.data.failures.forEach((f) => {
+          console.log(
+            `${f.venue.padEnd(12)} ${String(f.pair).padEnd(14)} ${f.pool} :: ${f.error}`
+          );
         });
-        console.log('='.repeat(76));
-    }).catch(console.error);
+      }
+
+      console.log('='.repeat(90));
+    })
+    .catch((err) => {
+      console.error(err);
+      process.exit(1);
+    });
 }
 
-// Declare chain for master scheduler
 unichainFetcher.chain = 'unichain';
 
 module.exports = unichainFetcher;
