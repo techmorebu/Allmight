@@ -707,7 +707,9 @@ async function main() {
   console.log(`\n[rpc_benchmark] Done. ${writtenFiles.length} file(s) written to ${params.outDir}`);
 }
 
-main().catch((err) => {
-  console.error('[rpc_benchmark] Fatal:', err.message);
-  process.exit(1);
-});
+main()
+  .then(() => process.exit(0))   // ethers JsonRpcProvider holds the event loop open — must force exit
+  .catch((err) => {
+    console.error('[rpc_benchmark] Fatal:', err.message);
+    process.exit(1);
+  });
