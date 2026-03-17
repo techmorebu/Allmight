@@ -22,8 +22,9 @@
 //   --out <dir>              output directory (default logs/rpc_benchmark)
 //
 // ENDPOINTS
-//   Loaded from provider_factory env vars — no new config required.
-//   All endpoints already configured in your .env are benchmarked automatically.
+//   Loaded from BOTH provider_factory vars (_MAINNET_RPC_URL_N) AND
+//   comma-separated *_RPC_URLS env vars — merged and deduplicated.
+//   Cloudflare excluded by default. Override via BENCHMARK_EXCLUDED_URLS.
 //
 // OUTPUT
 //   logs/rpc_benchmark/<chain>_scorecard.json  — per-endpoint metrics
@@ -42,8 +43,62 @@ const { ethers } = require('ethers');
 const fs         = require('fs');
 const path       = require('path');
 
-// Reuse provider_factory's env-var→URL mapping — no need to reinvent it.
+// Endpoint loader — merges two sources and deduplicates.
+//
+// Source 1: provider_factory.getChainRpcUrls() — reads _MAINNET_RPC_URL_N vars.
+// Source 2: comma-separated *_RPC_URLS env vars — the broader authenticated list.
+//
+// Both are required because the env uses two parallel naming conventions.
+// getChainRpcUrls alone misses authenticated Alchemy/Infura/Ankr endpoints on
+// Arbitrum, Optimism, Base, and Unichain that are stored in *_RPC_URLS lists.
+//
+// Exclusion: BENCHMARK_EXCLUDED_URLS (comma-separated domain fragments).
+// Defaults to blocking cloudflare-eth.com (previously ruled out in project).
+// Set BENCHMARK_EXCLUDED_URLS=none to allow everything.
 const { getChainRpcUrls } = require('../../utils/provider_factory');
+
+// Map chain name → comma-separated env var name
+const CHAIN_RPC_URLS_ENV = {
+  ethereum: 'ETHEREUM_RPC_URLS',
+  arbitrum: 'ARBITRUM_RPC_URLS',
+  optimism: 'OPTIMISM_RPC_URLS',
+  base:     'BASE_RPC_URLS',
+  unichain: 'UNICHAIN_RPC_URLS',
+};
+
+// Build exclusion set from env (default: cloudflare)
+const _rawExcluded = process.env.BENCHMARK_EXCLUDED_URLS ?? 'cloudflare-eth.com';
+const EXCLUDED_FRAGMENTS = _rawExcluded === 'none'
+  ? []
+  : _rawExcluded.split(',').map(s => s.trim()).filter(Boolean);
+
+function isExcluded(url) {
+  return EXCLUDED_FRAGMENTS.some(frag => url.includes(frag));
+}
+
+function loadEndpointsForChain(chainName) {
+  const seen = new Set();
+  const merged = [];
+
+  function add(url) {
+    const u = (url || '').trim();
+    if (!u || seen.has(u)) return;
+    if (isExcluded(u)) return;
+    seen.add(u);
+    merged.push(u);
+  }
+
+  // Source 1: provider_factory individual vars (_MAINNET_RPC_URL_N pattern)
+  for (const u of getChainRpcUrls(chainName)) add(u);
+
+  // Source 2: comma-separated *_RPC_URLS env var
+  const envKey = CHAIN_RPC_URLS_ENV[chainName];
+  if (envKey && process.env[envKey]) {
+    for (const u of process.env[envKey].split(',')) add(u);
+  }
+
+  return merged;
+}
 
 // ── Chain config table ────────────────────────────────────────────────────────
 //
@@ -449,7 +504,7 @@ async function benchmarkChain(chainName, params) {
     return null;
   }
 
-  const urls = getChainRpcUrls(chainName);
+  const urls = loadEndpointsForChain(chainName);
   if (!urls.length) {
     console.warn(`[rpc_benchmark] No endpoints configured for chain: ${chainName} — skipping`);
     return { chain: chainName, endpoints: [], skipped: true };
