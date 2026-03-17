@@ -1,163 +1,331 @@
-// Enhanced Uniswap V3 Fetcher - Direct On-Chain Pool Queries (CONTROLLED RPC)
-// v2.1 — added 500ms inter-pool sleep, batched slot0+liquidity into single rpc.call()
+// scripts/data_collection/masterFetcher/uniswapV3Fetcher.js
+// Uniswap V3 Ethereum mainnet fetcher
+// Hardened speed-template version with success/partial/error status semantics
 //
 // Migration history:
 //   v2.0 — createProvider('ethereum'), serial loop, chain tag, token_registry
-//   v2.1 — FETCH_DELAY_MS sleep added, slot0+liquidity batched under one provider call
+//   v2.1 — FETCH_DELAY_MS serial sleep added, slot0+liquidity batched under one rpc.call()
+//   v3.0 — Full hardened template: callDetailed, block anchoring, mapWithConcurrency,
+//           uniform envelope (status/partial/stats/failures/endpointIdsSeen),
+//           decimals baked into pool config (no token_registry RPC dependency),
+//           correct on-chain token ordering with explicit priceMode per pool
+
 'use strict';
+require('dotenv').config();
 
 const { ethers }         = require('ethers');
-const { getToken }       = require('../../../utils/token_registry');
 const { createProvider } = require('../../../utils/provider_factory');
 
-const CHAIN          = 'ethereum';
-const FETCH_DELAY_MS = 500;  // conservative — Ethereum endpoints are rate-sensitive
+const rpc = createProvider('ethereum');
 
-const rpc = createProvider(CHAIN);
+const CHAIN_ID  = 'ethereum';
+const CHAIN_NUM = 1;
+const FETCH_CONCURRENCY = Math.max(
+  1,
+  Number(process.env.ETH_FETCHER_CONCURRENCY || 2)   // conservative — Ethereum RPC is rate-sensitive
+);
 
-const UNISWAP_V3_POOL_ABI = [
+// ── ABI ───────────────────────────────────────────────────────────────────────
+
+const POOL_ABI_V3 = [
   'function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)',
   'function liquidity() external view returns (uint128)',
-  'function token0() external view returns (address)',
-  'function token1() external view returns (address)',
-  'function fee() external view returns (uint24)',
 ];
 
-const ERC20_ABI = [
-  'function decimals() external view returns (uint8)',
-  'function symbol() external view returns (string)',
-];
+// ── Pool configs ──────────────────────────────────────────────────────────────
+//
+// decimals0 / decimals1 reflect the ACTUAL on-chain token ordering (lower
+// address = token0 in Uniswap V3). They are NOT the "named" order shown in
+// the outputPair label.
+//
+// fee is the Uniswap V3 raw fee tier in bps (500 = 0.05%, 3000 = 0.3%, 100 = 0.01%).
+// The output row stores fee / 1_000_000 as a decimal fraction.
+//
+// priceMode:
+//   'direct' → price = sqrtP^2 * 10^(dec0-dec1)   (token1 per token0, human units)
+//   'invert' → price = 1 / above                   (token0 per token1, human units)
+//
+// ETH/USDC pools: on-chain token0=USDC(0xA0b..) token1=WETH(0xC02..)
+//   direct → WETH per USDC (tiny).  invert → USDC per WETH (ETH price in USD) ✓
 
 const UNISWAP_V3_POOLS = [
-  { name: 'ETH/USDC',  token0: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', token1: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', pool: '0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640', fee: 0.05 },
-  { name: 'ETH/USDC',  token0: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', token1: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', pool: '0x8ad599c3A0ff1De082011EFDDc58f1908eb6e6D8', fee: 0.3  },
-  { name: 'WBTC/ETH',  token0: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', token1: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', pool: '0xCBCdF9626bC03E24f779434178A73a0B4bad62eD', fee: 0.3  },
-  { name: 'USDC/USDT', token0: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', token1: '0xdAC17F958D2ee523a2206206994597C13D831ec7', pool: '0x3416cF6C708Da44DB2624D63ea0AAef7113527C6', fee: 0.01 },
-  { name: 'LINK/ETH',  token0: '0x514910771AF9Ca656af840dff83E8264EcF986CA', token1: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', pool: '0xa6Cc3C2531FdaA6Ae1A3CA84c2855806728693e8', fee: 0.3  },
-  { name: 'UNI/ETH',   token0: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984', token1: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', pool: '0x1d42064Fc4Beb5F8aAF85F4617AE8b3b5B8Bd801', fee: 0.3  },
-  { name: 'AAVE/ETH',  token0: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9', token1: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', pool: '0x5aB53EE1d50eeF2C1DD3d5402789cd27bB52c1bB', fee: 0.3  },
-  { name: 'MATIC/ETH', token0: '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0', token1: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', pool: '0x290A6a7460B308ee3F19023D2D00dE604bcf5B42', fee: 0.3  },
+  // ETH / USDC
+  { outputPair: 'ETH/USDC',  pool: '0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640', decimals0: 6,  decimals1: 18, fee: 500,  priceMode: 'invert'  }, // 0.05%
+  { outputPair: 'ETH/USDC',  pool: '0x8ad599c3A0ff1De082011EFDDc58f1908eb6e6D8', decimals0: 6,  decimals1: 18, fee: 3000, priceMode: 'invert'  }, // 0.30%
+  // WBTC / ETH — on-chain token0=WBTC(0x2260..) token1=WETH(0xC02..)
+  { outputPair: 'WBTC/ETH',  pool: '0xCBCdF9626bC03E24f779434178A73a0B4bad62eD', decimals0: 8,  decimals1: 18, fee: 3000, priceMode: 'direct'  }, // ETH per BTC
+  // USDC / USDT — on-chain token0=USDC(0xA0b..) token1=USDT(0xdAC..)
+  { outputPair: 'USDC/USDT', pool: '0x3416cF6C708Da44DB2624D63ea0AAef7113527C6', decimals0: 6,  decimals1: 6,  fee: 100,  priceMode: 'direct'  }, // USDT per USDC ≈ 1.0
+  // LINK / ETH — on-chain token0=LINK(0x514..) token1=WETH(0xC02..)
+  { outputPair: 'LINK/ETH',  pool: '0xa6Cc3C2531FdaA6Ae1A3CA84c2855806728693e8', decimals0: 18, decimals1: 18, fee: 3000, priceMode: 'direct'  }, // ETH per LINK
+  // UNI / ETH — on-chain token0=UNI(0x1f9..) token1=WETH(0xC02..)
+  { outputPair: 'UNI/ETH',   pool: '0x1d42064Fc4Beb5F8aAF85F4617AE8b3b5B8Bd801', decimals0: 18, decimals1: 18, fee: 3000, priceMode: 'direct'  }, // ETH per UNI
+  // AAVE / ETH — on-chain token0=AAVE(0x7Fc..) token1=WETH(0xC02..)
+  { outputPair: 'AAVE/ETH',  pool: '0x5aB53EE1d50eeF2C1DD3d5402789cd27bB52c1bB', decimals0: 18, decimals1: 18, fee: 3000, priceMode: 'direct'  }, // ETH per AAVE
+  // MATIC / ETH — on-chain token0=MATIC(0x7D1..) token1=WETH(0xC02..)
+  { outputPair: 'MATIC/ETH', pool: '0x290A6a7460B308ee3F19023D2D00dE604bcf5B42', decimals0: 18, decimals1: 18, fee: 3000, priceMode: 'direct'  }, // ETH per MATIC
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-function calculatePrice(sqrtPriceX96, decimals0, decimals1) {
-  // NOTE: Number() loses precision on large sqrtPriceX96. Acceptable for coarse monitoring.
-  const sqrtPrice = Number(sqrtPriceX96.toString());
-  const price     = (sqrtPrice * sqrtPrice) / (2 ** 192);
-  return price * (10 ** (decimals0 - decimals1));
+function nowIso() {
+  return new Date().toISOString();
 }
 
-async function _erc20Meta(address) {
-  // Token registry first — avoids RPC call for all known tokens
-  const reg = getToken(CHAIN, address);
-  if (reg && reg.decimals != null && reg.symbol) {
-    return { decimals: reg.decimals, symbol: reg.symbol };
-  }
-
-  // Registry miss — controlled RPC fallback (should be rare)
-  const decimals = await rpc.call(`erc20.decimals:${address.slice(0, 10)}`, async (provider) => {
-    const token = new ethers.Contract(address, ERC20_ABI, provider);
-    return token.decimals();
-  });
-
-  const symbol = await rpc.call(`erc20.symbol:${address.slice(0, 10)}`, async (provider) => {
-    const token = new ethers.Contract(address, ERC20_ABI, provider);
-    return token.symbol();
-  });
-
-  return { decimals: Number(decimals.toString()), symbol };
+function sqrtPriceX96ToPrice(sqrtPriceX96Raw, dec0, dec1, mode) {
+  // Approximate floating-point conversion for monitoring quotes.
+  // This is not fully integer-precision-safe for all uint160 values.
+  const Q96  = 2n ** 96n;
+  const sqrtP = Number(sqrtPriceX96Raw) / Number(Q96);
+  const raw   = sqrtP * sqrtP * Math.pow(10, dec0 - dec1);
+  return mode === 'invert' ? 1 / raw : raw;
 }
 
-// ── Pool fetcher ──────────────────────────────────────────────────────────────
+async function mapWithConcurrency(items, limit, worker) {
+  const out = new Array(items.length);
+  let idx = 0;
 
-async function fetchPoolData(poolConfig) {
-  // slot0 + liquidity: same contract, same provider, batched inside one rpc.call.
-  // This is NOT cross-pool fan-out — two reads on one contract under one context.
-  const [slot0, liquidity] = await rpc.call(
-    `eth.univ3.${poolConfig.name.replace('/', '-')}.${poolConfig.pool.slice(0, 10)}`,
-    async (provider) => {
-      const pool = new ethers.Contract(poolConfig.pool, UNISWAP_V3_POOL_ABI, provider);
-      return Promise.all([pool.slot0(), pool.liquidity()]);
+  const runners = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (true) {
+      const cur = idx++;
+      if (cur >= items.length) break;
+      out[cur] = await worker(items[cur], cur);
     }
-  );
+  });
 
-  const [meta0, meta1] = await Promise.all([
-    _erc20Meta(poolConfig.token0),
-    _erc20Meta(poolConfig.token1),
-  ]);
+  await Promise.all(runners);
+  return out;
+}
 
-  const priceRaw = calculatePrice(slot0[0], meta0.decimals, meta1.decimals);
-  const tvl      = Number(liquidity.toString()) / (10 ** meta0.decimals) * priceRaw;
+// ── Per-pool fetcher ──────────────────────────────────────────────────────────
 
-  return {
-    pair:       poolConfig.name,
-    pool:       poolConfig.pool,
-    price:      poolConfig.name === 'ETH/USDC' ? (1 / priceRaw) : priceRaw,
-    liquidity:  liquidity.toString(),
-    reserveUSD: tvl,
-    fee:        poolConfig.fee,
-    source:     'uniswap_v3_onchain',
-    venue:      'uniswap_v3',
-    chain:      CHAIN,
-    timestamp:  new Date().toISOString(),
-  };
+async function fetchUniV3Pool(cfg, blockNumber) {
+  try {
+    const { result, meta } = await rpc.callDetailed(
+      `eth.univ3.${cfg.outputPair.replace('/', '-')}.${cfg.pool.slice(0, 10)}`,
+      async (provider) => {
+        const c = new ethers.Contract(cfg.pool, POOL_ABI_V3, provider);
+        const [slot0, liq] = await Promise.all([
+          c.slot0({ blockTag: blockNumber }),
+          c.liquidity({ blockTag: blockNumber }),
+        ]);
+        return { slot0, liq };
+      },
+      { timeoutMs: 2000, hedge: true }   // 2 s — Ethereum L1 is slower than Arbitrum
+    );
+
+    const price = sqrtPriceX96ToPrice(
+      result.slot0[0],
+      cfg.decimals0,
+      cfg.decimals1,
+      cfg.priceMode
+    );
+
+    if (!isFinite(price) || price <= 0 || price > 1e15) {
+      throw new Error(`invalid price ${price}`);
+    }
+
+    // Stable-pair sanity guard (USDC/USDT only — no ETH/BTC in outputPair)
+    const isStable = !cfg.outputPair.includes('ETH') && !cfg.outputPair.includes('BTC');
+    if (isStable && (price < 0.9 || price > 1.1)) {
+      throw new Error(`stable price out of range: ${price.toFixed(6)}`);
+    }
+
+    const liqNum = Number(result.liq);
+
+    return {
+      ok: true,
+      price: {
+        pair:        cfg.outputPair,
+        pool:        cfg.pool,
+        price,
+        liquidity:   liqNum,
+        liquidityRaw: result.liq.toString(),
+        tvlUSD:      null,          // TVL requires oracle — out of scope for this fetcher
+        fee:         cfg.fee / 1_000_000,
+        tick:        Number(result.slot0[1]),
+        source:      'uniswap_v3_ethereum_onchain',
+        venue:       'uniswap_v3',
+        chain:       CHAIN_ID,
+        blockNumber,
+        endpointId:  meta.endpointId,
+        endpoint:    meta.urlRedacted,
+        timestamp:   nowIso(),
+      },
+    };
+  } catch (e) {
+    return {
+      ok:    false,
+      venue: 'uniswap_v3',
+      pair:  cfg.outputPair,
+      pool:  cfg.pool,
+      error: String(e.message || e).slice(0, 160),
+    };
+  }
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
-async function fetchUniswapV3Data() {
-  const started = Date.now();
-  console.log('Fetching Uniswap V3 on-chain data (Ethereum mainnet)...');
+async function uniswapV3Fetcher() {
+  const startedAt  = Date.now();
+  const startedIso = nowIso();
 
-  const prices = [];
-  let ok = 0;
+  const TOTAL_POOLS = UNISWAP_V3_POOLS.length;
 
-  // Serial with sleep — no cross-pool Promise.all burst
-  for (const pool of UNISWAP_V3_POOLS) {
-    try {
-      const row = await fetchPoolData(pool);
-      prices.push(row);
-      ok += 1;
-    } catch (e) {
-      console.error(`[ETH-UNIV3] ${pool.name} ${pool.pool.slice(0, 10)}: ${e.message.slice(0, 80)}`);
-      // Fault isolated per pool — continue
-    }
-    await sleep(FETCH_DELAY_MS);
+  // ── 1. Block anchor ───────────────────────────────────────────────────────
+  let blockNumber = null;
+  let blockMeta   = null;
+
+  try {
+    const blockResp = await rpc.getBlockNumber(
+      'eth.uniswapV3Fetcher.block',
+      { timeoutMs: 2000, hedge: true }
+    );
+    blockNumber = blockResp.blockNumber;
+    blockMeta   = blockResp.meta;
+  } catch (e) {
+    // Block fetch failed — cannot anchor reads, return full error envelope
+    return {
+      status:  'error',
+      partial: false,
+      data: {
+        prices:           [],
+        chain:            CHAIN_ID,
+        chain_id:         CHAIN_NUM,
+        venues:           ['uniswap_v3'],
+        timestamp:        startedIso,
+        durationMs:       Date.now() - startedAt,
+        blockNumber:      null,
+        fetchConcurrency: FETCH_CONCURRENCY,
+        endpointId:       null,
+        endpoint:         null,
+        endpointIdsSeen:  [],
+        endpointsSeen:    [],
+        stats: {
+          totalPools:   TOTAL_POOLS,
+          successCount: 0,
+          failureCount: TOTAL_POOLS,
+          uniswapV3: { total: TOTAL_POOLS, success: 0, failed: TOTAL_POOLS },
+        },
+        failures: [
+          {
+            venue: 'block_fetch',
+            pair:  'n/a',
+            pool:  'n/a',
+            error: String(e.message || e).slice(0, 160),
+          },
+        ],
+      },
+    };
   }
 
-  console.log(`UniswapV3 Ethereum: ${ok}/${UNISWAP_V3_POOLS.length} pools in ${Date.now() - started}ms`);
+  // ── 2. Pool reads (bounded concurrency, block-anchored) ───────────────────
+  const uniResults = await mapWithConcurrency(
+    UNISWAP_V3_POOLS,
+    FETCH_CONCURRENCY,
+    (cfg) => fetchUniV3Pool(cfg, blockNumber)
+  );
+
+  // ── 3. Assemble envelope ──────────────────────────────────────────────────
+  const priceRows = uniResults
+    .filter((x) => x && x.ok && x.price)
+    .map((x) => x.price);
+
+  const failures = uniResults
+    .filter((x) => !x || !x.ok)
+    .map((x) => ({
+      venue: x?.venue || 'unknown',
+      pair:  x?.pair  || 'unknown',
+      pool:  x?.pool  || 'unknown',
+      error: x?.error || 'unknown error',
+    }));
+
+  const durationMs       = Date.now() - startedAt;
+  const successCount     = priceRows.length;
+  const failureCount     = failures.length;
+  const endpointIdsSeen  = [...new Set(priceRows.map((p) => p.endpointId).filter((v) => v !== undefined))];
+  const endpointsSeen    = [...new Set(priceRows.map((p) => p.endpoint).filter(Boolean))];
+
+  const status =
+    successCount === 0  ? 'error'   :
+    failureCount  > 0   ? 'partial' :
+    'success';
 
   return {
-    status: 'success',
+    status,
+    partial: status === 'partial',
     data: {
-      prices,
-      chain:      CHAIN,
-      venues:     ['uniswap_v3'],
-      timestamp:  new Date().toISOString(),
-      durationMs: Date.now() - started,
-      source:     'uniswap_v3_onchain',
-      exchange:   'uniswap_v3',
+      prices:           priceRows,
+      chain:            CHAIN_ID,
+      chain_id:         CHAIN_NUM,
+      venues:           ['uniswap_v3'],
+      timestamp:        startedIso,
+      durationMs,
+      blockNumber,
+      fetchConcurrency: FETCH_CONCURRENCY,
+      endpointId:       blockMeta?.endpointId  ?? null,
+      endpoint:         blockMeta?.urlRedacted  ?? null,
+      endpointIdsSeen,
+      endpointsSeen,
+      stats: {
+        totalPools:   TOTAL_POOLS,
+        successCount,
+        failureCount,
+        uniswapV3: {
+          total:   TOTAL_POOLS,
+          success: successCount,
+          failed:  failureCount,
+        },
+      },
+      failures,
     },
   };
 }
 
-fetchUniswapV3Data.chain = CHAIN;
-module.exports = fetchUniswapV3Data;
+// ── CLI runner ────────────────────────────────────────────────────────────────
 
 if (require.main === module) {
-  fetchUniswapV3Data().then(result => {
-    console.log('\nUNISWAP V3 ETHEREUM DATA:');
-    console.log('═'.repeat(70));
-    result.data.prices.forEach(p => {
-      const tvl = p.reserveUSD ? `$${(p.reserveUSD / 1e6).toFixed(1)}M` : 'n/a';
+  uniswapV3Fetcher()
+    .then((result) => {
+      console.log('\nUNISWAP V3 ETHEREUM ON-CHAIN DATA:');
+      console.log('='.repeat(95));
       console.log(
-        `${p.pair.padEnd(15)} $${p.price.toFixed(6).padStart(12)} | TVL: ${tvl.padStart(8)} | Fee: ${p.fee}%`
+        `status=${result.status} partial=${result.partial} block=${result.data.blockNumber} ` +
+        `endpoint=${result.data.endpoint} ` +
+        `epSeen=${(result.data.endpointIdsSeen || []).join(',') || 'n/a'} ` +
+        `duration=${result.data.durationMs}ms ` +
+        `success=${result.data.stats.successCount} ` +
+        `failed=${result.data.stats.failureCount}`
       );
+
+      result.data.prices.forEach((p) => {
+        const feePct = (p.fee * 100).toFixed(4) + '%';
+        const px     = p.price > 1 ? `$${p.price.toFixed(4)}` : p.price.toFixed(8);
+        console.log(
+          `${'uniswap_v3'.padEnd(12)} ${p.pair.padEnd(14)} ${px.padStart(16)} | ` +
+          `liq: ${String(p.liquidity).padStart(20)} | fee: ${feePct} | ep:${String(p.endpointId).padStart(2)}`
+        );
+      });
+
+      if (result.data.failures.length) {
+        console.log('-'.repeat(95));
+        console.log('FAILURES:');
+        result.data.failures.forEach((f) => {
+          console.log(
+            `${'uniswap_v3'.padEnd(12)} ${String(f.pair).padEnd(14)} ${f.pool} :: ${f.error}`
+          );
+        });
+      }
+
+      console.log('='.repeat(95));
+    })
+    .catch((err) => {
+      console.error(err);
+      process.exit(1);
     });
-    console.log('═'.repeat(70));
-    console.log(`Total pools: ${result.data.prices.length}`);
-  }).catch(console.error);
 }
+
+// ── Exports ───────────────────────────────────────────────────────────────────
+
+uniswapV3Fetcher.chain = CHAIN_ID;
+module.exports = uniswapV3Fetcher;
