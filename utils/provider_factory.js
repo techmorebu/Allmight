@@ -109,37 +109,47 @@ function cleanRpcList(values) {
 function getChainRpcUrls(chain) {
   const chainKey = String(chain).toLowerCase();
 
+  // Endpoint ordering is benchmark-derived (APPX_RPC_MESH_POLICY_V1, March 2026).
+  // Order = priority: first healthy endpoint wins round-robin rotation.
+  // Hardcoded public fallbacks that benchmarked as unreliable have been removed.
+  // LlamaRPC rejected across all chains. Public chain RPCs rejected from critical routing.
+  //
+  // NOTE: Authenticated keys (Infura/Alchemy/Ankr) must be wired into _MAINNET_RPC_URL_N
+  // vars in .env for the factory to see them. *_RPC_URLS comma-lists are NOT read here —
+  // only the benchmark tool reads both patterns. This is a known env cleanup deferred item.
+  //
+  // Arbitrum: Infura primary only. No healthy backup in tested set.
+  // Procurement target: Chainstack or dRPC before scaling Arbitrum load.
   const RPCS = {
-    base: cleanRpcList([
-      process.env.BASE_MAINNET_RPC_URL_1,
-      process.env.BASE_MAINNET_RPC_URL,
-      'https://mainnet.base.org',
-      'https://base.llamarpc.com'
-    ]),
-    optimism: cleanRpcList([
-      process.env.OPTIMISM_MAINNET_RPC_URL_1,
-      process.env.OPTIMISM_MAINNET_RPC_URL,
-      'https://mainnet.optimism.io',
-      'https://optimism.llamarpc.com'
-    ]),
-    arbitrum: cleanRpcList([
-      process.env.ARBITRUM_MAINNET_RPC_URL_1,
-      process.env.ARBITRUM_MAINNET_RPC_URL_2,
-      process.env.ARBITRUM_MAINNET_RPC_URL,
-      'https://arb1.arbitrum.io/rpc',
-      'https://arbitrum.llamarpc.com'
-    ]),
+    // Ethereum: Alchemy → Infura → Ankr (benchmark order)
     ethereum: cleanRpcList([
-      process.env.ETHEREUM_MAINNET_RPC_URL_1,
-      process.env.ETHEREUM_MAINNET_RPC_URL_2,
-      process.env.ETH_RPC_URL,
-      process.env.ETHEREUM_MAINNET_RPC_URL,
-      'https://eth.llamarpc.com'
+      process.env.ETH_RPC_URL,                    // slot 0: Alchemy (benchmark primary)
+      process.env.ETHEREUM_MAINNET_RPC_URL_1,      // slot 1: Infura  (benchmark backup)
+      process.env.ETHEREUM_MAINNET_RPC_URL_2,      // slot 2: Ankr    (benchmark tertiary)
+      process.env.ETHEREUM_MAINNET_RPC_URL,        // slot 3: legacy alias
     ]),
+    // Arbitrum: Infura primary only — Alchemy lag confirmed, no backup yet
+    // ACTION REQUIRED: wire ARBITRUM_MAINNET_RPC_URL_1 = Infura key in .env
+    arbitrum: cleanRpcList([
+      process.env.ARBITRUM_MAINNET_RPC_URL_1,      // slot 0: Infura  (benchmark primary)
+      process.env.ARBITRUM_MAINNET_RPC_URL_2,      // slot 1: future backup (Chainstack/dRPC)
+      process.env.ARBITRUM_MAINNET_RPC_URL,        // slot 2: legacy alias
+    ]),
+    // Optimism: Alchemy → Infura (benchmark order)
+    optimism: cleanRpcList([
+      process.env.OPTIMISM_MAINNET_RPC_URL_1,      // slot 0: Alchemy (benchmark primary)
+      process.env.OPTIMISM_MAINNET_RPC_URL,        // slot 1: Infura  (benchmark backup)
+    ]),
+    // Base: Infura → Alchemy (benchmark order)
+    base: cleanRpcList([
+      process.env.BASE_MAINNET_RPC_URL_1,          // slot 0: Infura  (benchmark primary)
+      process.env.BASE_MAINNET_RPC_URL,            // slot 1: Alchemy (benchmark backup)
+    ]),
+    // Unichain: Infura only (Alchemy lag confirmed)
     unichain: cleanRpcList([
-      process.env.UNICHAIN_MAINNET_RPC_URL_1,
-      process.env.UNICHAIN_MAINNET_RPC_URL
-    ])
+      process.env.UNICHAIN_MAINNET_RPC_URL_1,      // slot 0: Infura  (benchmark primary)
+      process.env.UNICHAIN_MAINNET_RPC_URL,        // slot 1: legacy alias
+    ]),
   };
 
   return RPCS[chainKey] || [];
