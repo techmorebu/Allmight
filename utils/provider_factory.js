@@ -7,13 +7,13 @@ Purpose:
 Robust RPC provider manager for AllMight fetchers.
 
 Features:
-- endpoint health tracking
-- slow endpoint strike system
-- failure demotion
-- round-robin rotation
+- endpoint health tracking (latency strikes + failure demotion)
+- global runtime freshness-aware health (block-lag penalty scoring)
+- round-robin rotation with freshness-sorted candidate ordering
 - hedged RPC requests
 - degraded retry if all endpoints demoted
 - explicit static network config per chain
+- graceful fallback if freshness probing fails
 */
 
 const { ethers } = require('ethers');
@@ -23,6 +23,39 @@ const RPC_SLOW_THRESHOLD_MS = Number(process.env.RPC_SLOW_THRESHOLD_MS || 1000);
 const RPC_SLOW_STRIKES = Number(process.env.RPC_SLOW_STRIKES || 2);
 const MAX_FAILS = Number(process.env.RPC_MAX_FAILS || 3);
 const RPC_HEDGE_DELAY_MS = Number(process.env.RPC_HEDGE_DELAY_MS || 250);
+
+// ── Global RPC Freshness-Aware Health (EVM v1) ────────────────────────────────
+// Extends existing latency+failure health with runtime block-lag awareness.
+// Probes eth_blockNumber across all endpoints per chain, computes lag, and
+// applies short-lived score penalties so stale endpoints sort to the back of
+// the candidate list during selection. Gracefully falls back to existing
+// behavior if probing fails. No static ordering assumptions.
+//
+// Benchmark tool (rpc_benchmark.js) = offline measurement.
+// This layer                         = runtime continuous adaptation.
+//
+// Env vars (all optional — safe defaults shown):
+//   RPC_FRESHNESS_AWARE_ENABLED=1       set to 0 to disable entirely
+//   RPC_FRESHNESS_REFRESH_MS=20000      how often to re-probe per chain
+//   RPC_FRESHNESS_PROBE_TIMEOUT_MS=800  per-endpoint probe timeout
+//   RPC_FRESHNESS_WARNING_BLOCKS=2      lag threshold for small penalty
+//   RPC_FRESHNESS_STALE_BLOCKS=4        lag threshold for medium penalty
+//   RPC_FRESHNESS_SEVERE_BLOCKS=8       lag threshold for heavy penalty
+//   RPC_FRESHNESS_PENALTY_MS=30000      how long a penalty lasts
+//   RPC_FRESHNESS_WARNING_PENALTY=300   score added for warning lag
+//   RPC_FRESHNESS_STALE_PENALTY=1000    score added for stale lag
+//   RPC_FRESHNESS_SEVERE_PENALTY=3000   score added for severe lag
+
+const FRESHNESS_ENABLED         = process.env.RPC_FRESHNESS_AWARE_ENABLED !== '0';
+const FRESHNESS_REFRESH_MS      = Number(process.env.RPC_FRESHNESS_REFRESH_MS       || 20000);
+const FRESHNESS_PROBE_TIMEOUT   = Number(process.env.RPC_FRESHNESS_PROBE_TIMEOUT_MS || 800);
+const FRESHNESS_WARNING_BLOCKS  = Number(process.env.RPC_FRESHNESS_WARNING_BLOCKS   || 2);
+const FRESHNESS_STALE_BLOCKS    = Number(process.env.RPC_FRESHNESS_STALE_BLOCKS     || 4);
+const FRESHNESS_SEVERE_BLOCKS   = Number(process.env.RPC_FRESHNESS_SEVERE_BLOCKS    || 8);
+const FRESHNESS_PENALTY_MS      = Number(process.env.RPC_FRESHNESS_PENALTY_MS       || 30000);
+const FRESHNESS_WARNING_PENALTY = Number(process.env.RPC_FRESHNESS_WARNING_PENALTY  || 300);
+const FRESHNESS_STALE_PENALTY   = Number(process.env.RPC_FRESHNESS_STALE_PENALTY    || 1000);
+const FRESHNESS_SEVERE_PENALTY  = Number(process.env.RPC_FRESHNESS_SEVERE_PENALTY   || 3000);
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -99,6 +132,105 @@ class EndpointHealth {
 const _health = new EndpointHealth();
 const _providerCache = new Map();
 const _rrStart = {};
+
+// ── Freshness state ───────────────────────────────────────────────────────────
+// Per-URL: { lastBlock, lagBlocks, penaltyScore, penaltyUntil, lastCheckedAt }
+// Per-chain: refresh timestamp + in-flight lock to prevent probe stampede.
+
+const _freshness        = new Map();   // url → freshness entry
+const _freshnessRefresh = {};          // chainKey → last refresh timestamp ms
+const _freshnessLock    = {};          // chainKey → boolean (prevents concurrent probes)
+
+function _freshnessEntry(url) {
+  if (!_freshness.has(url)) {
+    _freshness.set(url, {
+      lastBlock:    null,
+      lagBlocks:    null,
+      penaltyScore: 0,
+      penaltyUntil: 0,
+      lastCheckedAt: 0,
+    });
+  }
+  return _freshness.get(url);
+}
+
+// Returns virtual ms penalty for this URL (0 = fresh, higher = more stale).
+// Used to sort candidates so fresher endpoints are tried first.
+function getFreshnessPenalty(url) {
+  if (!FRESHNESS_ENABLED) return 0;
+  const e = _freshness.get(url);
+  if (!e || e.penaltyUntil <= Date.now()) return 0;
+  return e.penaltyScore;
+}
+
+// Background freshness probe for all endpoints on a chain.
+// Fire-and-forget — never blocks the caller.
+async function _probeFreshnessForChain(chainKey, urls) {
+  if (_freshnessLock[chainKey]) return;   // already in flight
+  _freshnessLock[chainKey]    = true;
+  _freshnessRefresh[chainKey] = Date.now();
+
+  try {
+    // Probe all endpoints concurrently with a short timeout.
+    const probes = await Promise.allSettled(urls.map(async (url) => {
+      const provider = getOrCreateProvider(chainKey, url);
+      const block    = await withTimeout(
+        provider.getBlockNumber(),
+        FRESHNESS_PROBE_TIMEOUT,
+        `freshness:${chainKey}:${redactUrl(url).slice(0, 20)}`
+      );
+      return { url, block };
+    }));
+
+    const succeeded = probes
+      .filter(r => r.status === 'fulfilled')
+      .map(r => r.value);
+
+    if (!succeeded.length) return;   // all probes failed — preserve old state
+
+    const bestBlock = Math.max(...succeeded.map(r => r.block));
+    const now       = Date.now();
+
+    for (const { url, block } of succeeded) {
+      const lag = bestBlock - block;
+      const e   = _freshnessEntry(url);
+      e.lastBlock    = block;
+      e.lagBlocks    = lag;
+      e.lastCheckedAt = now;
+
+      if (lag >= FRESHNESS_SEVERE_BLOCKS) {
+        e.penaltyScore = FRESHNESS_SEVERE_PENALTY;
+        e.penaltyUntil = now + FRESHNESS_PENALTY_MS;
+      } else if (lag >= FRESHNESS_STALE_BLOCKS) {
+        e.penaltyScore = FRESHNESS_STALE_PENALTY;
+        e.penaltyUntil = now + FRESHNESS_PENALTY_MS;
+      } else if (lag >= FRESHNESS_WARNING_BLOCKS) {
+        e.penaltyScore = FRESHNESS_WARNING_PENALTY;
+        e.penaltyUntil = now + FRESHNESS_PENALTY_MS;
+      } else {
+        // Fresh — clear any existing penalty
+        e.penaltyScore = 0;
+        e.penaltyUntil = 0;
+      }
+    }
+    // Endpoints that failed the probe keep their existing state (no change).
+
+  } catch {
+    // Probe error — silently preserve existing state. Never break routing.
+  } finally {
+    _freshnessLock[chainKey] = false;
+  }
+}
+
+// Trigger a background probe if the cache is stale. Non-blocking.
+// Only probes chains with ≥ 2 endpoints (no point comparing against self).
+function _maybeRefreshFreshness(chainKey, urls) {
+  if (!FRESHNESS_ENABLED || urls.length < 2) return;
+  const age = Date.now() - (_freshnessRefresh[chainKey] || 0);
+  if (age > FRESHNESS_REFRESH_MS) {
+    _probeFreshnessForChain(chainKey, urls).catch(() => {});
+  }
+}
 
 function cleanRpcList(values) {
   return values
@@ -220,6 +352,16 @@ function createProvider(chain) {
       candidates = urls.slice();
     }
 
+    // Trigger background freshness probe if cache is stale (non-blocking).
+    _maybeRefreshFreshness(chainKey, urls);
+
+    // Sort candidates so fresher endpoints are tried first.
+    // Within equal-penalty candidates, round-robin rotation still applies.
+    // Stale endpoints stay in the list — they serve as graceful fallback.
+    if (FRESHNESS_ENABLED && candidates.length > 1) {
+      candidates.sort((a, b) => getFreshnessPenalty(a) - getFreshnessPenalty(b));
+    }
+
     const start = _rrStart[chainKey] || 0;
     const rotated = candidates.map((_, i) => candidates[(start + i) % candidates.length]);
     _rrStart[chainKey] = (start + 1) % candidates.length;
@@ -318,5 +460,7 @@ function createProvider(chain) {
 
 module.exports = {
   createProvider,
-  getChainRpcUrls
+  getChainRpcUrls,
+  getFreshnessPenalty,   // exposed for diagnostics / telemetry
+  _freshness,            // exposed for diagnostics (read-only intent)
 };
