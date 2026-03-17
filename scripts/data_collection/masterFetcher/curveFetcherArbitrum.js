@@ -34,24 +34,18 @@ const CURVE_TRICRYPTO_ABI = [
 ];
 
 const CURVE_POOLS = [
-  {
-    name: 'USDC/USDT 2pool',
-    outputPair: 'USDC/USDT',
-    pool: '0x7f90122BF0700F9E7e1F688fe926940E8839F353',
-    type: '2pool',
-    coin0dec: 6,
-    coin1dec: 6,
-    i: 0,
-    j: 1,
-    dx: 1000n * 1000000n,
-  },
-  // REMOVED: tricrypto v1 (0x960ea3e3C7FB317332d990873d354E18d7645590)
-  // Killed after August 2023 Vyper compiler vulnerability disclosure.
-  // Curve Finance urged all LPs to withdraw. Pool's is_killed flag is set.
-  // All calls (exchange, price_oracle, etc.) revert with missing revert data.
-  // Confirmed via telemetry: persistent CALL_EXCEPTION on every fetch cycle.
-  // Replacement: add Curve tricrypto-ng or tricrypto2 pool when ready.
-  // Reference: https://twitter.com/CurveFinance/status/1685925429041917952
+  // ── Active pools ──────────────────────────────────────────────────────────
+  // ALL Curve pools removed — both confirmed dead via CALL_EXCEPTION telemetry.
+  // Pool list needs restocking with current active Arbitrum Curve addresses.
+  // Find replacements at: https://arbitrum.curve.finance
+  //
+  // ── REMOVED pools ─────────────────────────────────────────────────────────
+  // USDC/USDT 2pool 0x7f90122BF0700F9E7e1F688fe926940E8839F353 — CALL_EXCEPTION
+  //   Removed 2026-03-17: confirmed dead via rpc_attempt_fail telemetry
+  //
+  // tricrypto v1 0x960ea3e3C7FB317332d990873d354E18d7645590 — CALL_EXCEPTION
+  //   Removed earlier: pool killed post-Aug 2023 Vyper compiler vulnerability
+  //   Reference: https://twitter.com/CurveFinance/status/1685925429041917952
 ];
 
 function nowIso() {
