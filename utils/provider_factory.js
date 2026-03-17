@@ -220,8 +220,9 @@ async function _probeFreshnessForChain(chainKey, urls) {
     const now       = Date.now();
 
     for (const { url, block } of succeeded) {
-      const lag = bestBlock - block;
-      const e   = _freshnessEntry(url);
+      const lag  = bestBlock - block;
+      const e    = _freshnessEntry(url);
+      const prevPenalty = e.penaltyScore;   // capture before update for change detection
       e.lastBlock    = block;
       e.lagBlocks    = lag;
       e.lastCheckedAt = now;
@@ -240,6 +241,19 @@ async function _probeFreshnessForChain(chainKey, urls) {
         e.penaltyScore = 0;
         e.penaltyUntil = 0;
       }
+
+      // Emit penalty_change when tier shifts (not on every probe — only on transition).
+      if (e.penaltyScore !== prevPenalty) {
+        _logEvent({
+          ev:         'penalty_change',
+          ts:         new Date().toISOString(),
+          chain:      chainKey,
+          url:        redactUrl(url),
+          lag,
+          prevPenalty,
+          newPenalty: e.penaltyScore,
+        });
+      }
     }
     // Endpoints that failed the probe keep their existing state (no change).
 
@@ -256,8 +270,14 @@ async function _probeFreshnessForChain(chainKey, urls) {
       })),
     });
 
-  } catch {
+  } catch (probeErr) {
     // Probe error — silently preserve existing state. Never break routing.
+    _logEvent({
+      ev:    'freshness_probe_fail',
+      ts:    new Date().toISOString(),
+      chain: chainKey,
+      error: String(probeErr?.message || probeErr).slice(0, 120),
+    });
   } finally {
     _freshnessLock[chainKey] = false;
   }
@@ -481,6 +501,18 @@ function createProvider(chain) {
         };
       } catch (err) {
         _health.recordFailure(url);
+        // Emit per-attempt failure — records which endpoint failed and why.
+        _logEvent({
+          ev:        'rpc_attempt_fail',
+          ts:        new Date().toISOString(),
+          chain:     chainKey,
+          label,
+          url:       redactUrl(url),
+          lag:       _freshness.get(url)?.lagBlocks    ?? null,
+          penalty:   _freshness.get(url)?.penaltyScore ?? 0,
+          errorCode: err?.code  || null,
+          error:     String(err?.message || err).slice(0, 120),
+        });
         return {
           ok: false,
           err
@@ -506,6 +538,14 @@ function createProvider(chain) {
         return retry;
       }
 
+      _logEvent({
+        ev:    'rpc_exhausted',
+        ts:    new Date().toISOString(),
+        chain: chainKey,
+        label,
+        mode:  'hedged',
+        urls:  [first, second].map(redactUrl),
+      });
       throw new Error(`RPC hedged failure (${chainKey}:${label})`);
     }
 
@@ -516,6 +556,14 @@ function createProvider(chain) {
       }
     }
 
+    _logEvent({
+      ev:    'rpc_exhausted',
+      ts:    new Date().toISOString(),
+      chain: chainKey,
+      label,
+      mode:  'serial',
+      urls:  rotated.map(redactUrl),
+    });
     throw new Error(`RPC exhausted (${chainKey}:${label})`);
   }
 
