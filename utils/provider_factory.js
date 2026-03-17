@@ -128,12 +128,17 @@ function getChainRpcUrls(chain) {
       process.env.ETHEREUM_MAINNET_RPC_URL_2,      // slot 2: Ankr    (benchmark tertiary)
       process.env.ETHEREUM_MAINNET_RPC_URL,        // slot 3: legacy alias
     ]),
-    // Arbitrum: Infura primary only — Alchemy lag confirmed, no backup yet
-    // ACTION REQUIRED: wire ARBITRUM_MAINNET_RPC_URL_1 = Infura key in .env
+    // TEMPORARY ARBITRUM EMERGENCY OVERRIDE (March 2026)
+    // Fresh 20-sample benchmark showed arb1 public RPC was the only non-lagging endpoint.
+    // Infura (+24 blocks), Alchemy (+19 blocks), Ankr (+10 blocks, 1 timeout) all stale.
+    // arb1 restored to slot 0 until Arbitrum provider health is revalidated.
+    // Do NOT remove this comment or promote authenticated providers without a fresh benchmark.
+    // Procurement target for genuine backup: Chainstack or dRPC (not more Infura/Alchemy).
     arbitrum: cleanRpcList([
-      process.env.ARBITRUM_MAINNET_RPC_URL_1,      // slot 0: Infura  (benchmark primary)
-      process.env.ARBITRUM_MAINNET_RPC_URL_2,      // slot 1: future backup (Chainstack/dRPC)
-      process.env.ARBITRUM_MAINNET_RPC_URL,        // slot 2: legacy alias
+      process.env.ARBITRUM_MAINNET_RPC_URL,        // slot 0: arb1 public (emergency primary — freshest)
+      process.env.ARBITRUM_MAINNET_RPC_URL_1,      // slot 1: Infura  (stale — keep for failover only)
+      process.env.ARBITRUM_MAINNET_RPC_URL_2,      // slot 2: Alchemy (stale — keep for failover only)
+      process.env.ARBITRUM_MAINNET_RPC_URL_3,      // slot 3: Ankr    (stale — keep for failover only)
     ]),
     // Optimism: Alchemy → Infura (benchmark order)
     optimism: cleanRpcList([
