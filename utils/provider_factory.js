@@ -214,6 +214,24 @@ async function _probeFreshnessForChain(chainKey, urls) {
       .filter(r => r.status === 'fulfilled')
       .map(r => r.value);
 
+    // Emit per-endpoint probe failure for every rejected result.
+    // Promise.allSettled() never throws on individual failures — they must be
+    // pulled from the rejected entries here. This is what makes "Ankr disappeared
+    // from the snapshot" distinguishable from "Ankr was just stale."
+    const _probeNow = new Date().toISOString();
+    probes.forEach((r, i) => {
+      if (r.status === 'rejected') {
+        _logEvent({
+          ev:        'freshness_probe_fail',
+          ts:        _probeNow,
+          chain:     chainKey,
+          url:       redactUrl(urls[i]),
+          errorCode: r.reason?.code  || null,
+          error:     String(r.reason?.message || r.reason).slice(0, 120),
+        });
+      }
+    });
+
     if (!succeeded.length) return;   // all probes failed — preserve old state
 
     const bestBlock = Math.max(...succeeded.map(r => r.block));
