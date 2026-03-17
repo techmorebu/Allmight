@@ -1,8 +1,9 @@
 // curveFetcherArbitrum.js
 // Arbitrum Curve fetcher — hardened speed-template version
 // Covers:
-// - USDC/USDT 2pool
-// - tricrypto (USDT/WBTC/ETH) via ETH oracle path
+// - USDC/USDT 2pool (active)
+// - tricrypto (USDT/WBTC/ETH) — REMOVED: pool killed post-Aug 2023 Vyper vuln
+//   Restore when a replacement tricrypto-ng pool is added to CURVE_POOLS.
 
 'use strict';
 require('dotenv').config();
@@ -44,17 +45,13 @@ const CURVE_POOLS = [
     j: 1,
     dx: 1000n * 1000000n,
   },
-  {
-    name: 'tricrypto (USDT/WBTC/ETH)',
-    outputPair: 'ETH/USDT',
-    pool: '0x960ea3e3C7FB317332d990873d354E18d7645590',
-    type: 'tricrypto',
-    coin0dec: 6,
-    coin1dec: 18,
-    i: 0,
-    j: 2,
-    dx: 1000n * 1000000n,
-  },
+  // REMOVED: tricrypto v1 (0x960ea3e3C7FB317332d990873d354E18d7645590)
+  // Killed after August 2023 Vyper compiler vulnerability disclosure.
+  // Curve Finance urged all LPs to withdraw. Pool's is_killed flag is set.
+  // All calls (exchange, price_oracle, etc.) revert with missing revert data.
+  // Confirmed via telemetry: persistent CALL_EXCEPTION on every fetch cycle.
+  // Replacement: add Curve tricrypto-ng or tricrypto2 pool when ready.
+  // Reference: https://twitter.com/CurveFinance/status/1685925429041917952
 ];
 
 function nowIso() {
