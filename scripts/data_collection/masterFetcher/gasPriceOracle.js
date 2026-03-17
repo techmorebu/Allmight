@@ -1,404 +1,392 @@
 // scripts/data_collection/masterFetcher/gasPriceOracle.js
-// Phase 1 - Gas Price Oracle
-// Fetches current Ethereum gas prices from multiple sources
-// Critical for flash loan profitability calculations
+// Ethereum gas price oracle — HTTP source aggregator
+// Hardened oracle-class version with normalized envelope
+//
+// Migration history:
+//   v1.0 — anonymous export, always-success status, no .chain tag, no failures envelope
+//   v2.0 — named export, .chain tag, honest status, normalized envelope
+//           (status/partial/stats/failures), hardcoded ETH price warning,
+//           internal errors[] wired to failures[], source-level fault isolation
+//
+// ── Oracle class distinction ──────────────────────────────────────────────────
+// This is NOT a pool-state fetcher. It does not use provider_factory, ethers,
+// or block anchoring. It aggregates gas price data from HTTP APIs:
+//   1. Infura Gas API   (primary  — EIP-1559 aware)
+//   2. Etherscan        (backup   — legacy gwei tiers)
+//   3. Direct RPC JSON  (fallback — raw eth_gasPrice)
+//
+// Because it uses HTTP sources rather than on-chain contract reads, the
+// endpointIdsSeen / fetchConcurrency fields are not applicable and are
+// emitted as null/[] for envelope schema consistency.
+// ─────────────────────────────────────────────────────────────────────────────
 
+'use strict';
 require('dotenv').config();
+
 const fetch = require('node-fetch');
 
-/**
- * Gas Price Oracle Fetcher
- * 
- * Fetches current gas prices from multiple sources:
- * 1. Infura Gas API (primary)
- * 2. Etherscan Gas Tracker (backup)
- * 3. EIP-1559 base fee from RPC (fallback)
- * 
- * Used to calculate if arbitrage is profitable after gas costs
- * 
- * @returns {Object} Current gas prices and profitability thresholds
- */
-module.exports = async function gasPriceOracle() {
-  const startTime = Date.now();
-  
-  const INFURA_API_KEY = process.env.ETHEREUM_MAINNET_RPC_URL_1?.split('/v3/')[1];
-  const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY;
-  const ETHEREUM_RPC = process.env.ETHEREUM_MAINNET_RPC_URL_1 || process.env.ETHEREUM_MAINNET_RPC_URL_2;
-  
-  try {
-    const gasPrices = {
-      infura: null,
-      etherscan: null,
-      rpc: null
-    };
-    
-    const errors = [];
-    
-    // Source 1: Infura Gas API (most reliable for EIP-1559)
-    if (INFURA_API_KEY) {
-      try {
-        const infuraResponse = await fetch(
-          `https://gas.api.infura.io/v3/${INFURA_API_KEY}/networks/1/suggestedGasFees`,
-          {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
-          }
-        );
-        
-        if (infuraResponse.ok) {
-          const data = await infuraResponse.json();
-          
-          gasPrices.infura = {
-            low: {
-              maxPriorityFeePerGas: parseFloat(data.low.suggestedMaxPriorityFeePerGas),
-              maxFeePerGas: parseFloat(data.low.suggestedMaxFeePerGas)
-            },
-            medium: {
-              maxPriorityFeePerGas: parseFloat(data.medium.suggestedMaxPriorityFeePerGas),
-              maxFeePerGas: parseFloat(data.medium.suggestedMaxFeePerGas)
-            },
-            high: {
-              maxPriorityFeePerGas: parseFloat(data.high.suggestedMaxPriorityFeePerGas),
-              maxFeePerGas: parseFloat(data.high.suggestedMaxFeePerGas)
-            },
-            estimatedBaseFee: parseFloat(data.estimatedBaseFee),
-            networkCongestion: data.networkCongestion || 0,
-            priorityFeePercentile: data.priorityFeePercentile || null
-          };
-        }
-      } catch (err) {
-        errors.push({ source: 'infura', error: err.message });
-      }
-    }
-    
-    // Source 2: Etherscan Gas Tracker (backup)
-    if (ETHERSCAN_API_KEY) {
-      try {
-        const etherscanResponse = await fetch(
-          `https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${ETHERSCAN_API_KEY}`
-        );
-        
-        if (etherscanResponse.ok) {
-          const data = await etherscanResponse.json();
-          
-          if (data.status === '1' && data.result) {
-            gasPrices.etherscan = {
-              safe: parseFloat(data.result.SafeGasPrice),
-              propose: parseFloat(data.result.ProposeGasPrice),
-              fast: parseFloat(data.result.FastGasPrice),
-              suggestBaseFee: parseFloat(data.result.suggestBaseFee),
-              gasUsedRatio: data.result.gasUsedRatio
-            };
-          }
-        }
-      } catch (err) {
-        errors.push({ source: 'etherscan', error: err.message });
-      }
-    }
-    
-    // Source 3: Direct RPC call (fallback)
-    if (ETHEREUM_RPC) {
-      try {
-        const rpcResponse = await fetch(ETHEREUM_RPC, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            jsonrpc: '2.0',
-            method: 'eth_gasPrice',
-            params: [],
-            id: 1
-          })
-        });
-        
-        if (rpcResponse.ok) {
-          const data = await rpcResponse.json();
-          
-          if (data.result) {
-            // Convert from hex wei to gwei
-            const gasPriceWei = parseInt(data.result, 16);
-            const gasPriceGwei = gasPriceWei / 1e9;
-            
-            gasPrices.rpc = {
-              gasPrice: gasPriceGwei
-            };
-          }
-        }
-        
-        // Also fetch base fee from latest block
-        const blockResponse = await fetch(ETHEREUM_RPC, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            jsonrpc: '2.0',
-            method: 'eth_getBlockByNumber',
-            params: ['latest', false],
-            id: 2
-          })
-        });
-        
-        if (blockResponse.ok) {
-          const blockData = await blockResponse.json();
-          
-          if (blockData.result?.baseFeePerGas) {
-            const baseFeeWei = parseInt(blockData.result.baseFeePerGas, 16);
-            const baseFeeGwei = baseFeeWei / 1e9;
-            
-            gasPrices.rpc.baseFee = baseFeeGwei;
-          }
-        }
-      } catch (err) {
-        errors.push({ source: 'rpc', error: err.message });
-      }
-    }
-    
-    // Aggregate and select best estimates
-    const consensus = calculateConsensus(gasPrices);
-    
-    // Calculate profitability thresholds for different transaction types
-    const thresholds = calculateProfitabilityThresholds(consensus);
-    
-    // Determine current network state
-    const networkState = analyzeNetworkState(gasPrices, consensus);
-    
-    const duration = Date.now() - startTime;
-    
-    return {
-      fetcher: 'gasPriceOracle',
-      exchange: 'ethereum_mainnet',
-      timestamp: new Date().toISOString(),
-      durationMs: duration,
-      status: 'success',
-      data: {
-        sources: {
-          infura: gasPrices.infura,
-          etherscan: gasPrices.etherscan,
-          rpc: gasPrices.rpc
-        },
-        consensus,
-        thresholds,
-        networkState,
-        errors: errors.length > 0 ? errors : null
-      }
-    };
-    
-  } catch (error) {
-    const duration = Date.now() - startTime;
-    
-    return {
-      fetcher: 'gasPriceOracle',
-      exchange: 'ethereum_mainnet',
-      timestamp: new Date().toISOString(),
-      durationMs: duration,
-      status: 'error',
-      error: {
-        message: error.message,
-        stack: error.stack,
-        name: error.name
-      }
-    };
-  }
-};
+const CHAIN_ID  = 'ethereum';
+const CHAIN_NUM = 1;
 
-/**
- * Calculate consensus gas price from multiple sources
- * @param {Object} gasPrices - Gas prices from all sources
- * @returns {Object} Consensus gas prices
- */
-function calculateConsensus(gasPrices) {
-  const { infura, etherscan, rpc } = gasPrices;
-  
-  // Priority: Infura (most accurate for EIP-1559) > Etherscan > RPC
-  const consensus = {
-    instant: null,  // For urgent transactions
-    fast: null,     // For flash loans (typical)
-    standard: null, // For normal transactions
-    slow: null,     // For non-urgent
-    baseFee: null
+// ── ETH price stub ────────────────────────────────────────────────────────────
+// WARNING: This is a hardcoded fallback used only for profitability threshold
+// estimates inside this oracle. It is NOT sourced from live DEX data.
+// Thresholds produced by calculateProfitabilityThresholds() will be stale
+// if ETH price has moved significantly.
+// TODO: Replace with live ETH/USDC price from uniswapV3Fetcher Redis key once
+// cross-fetcher data sharing is wired into the pipeline.
+const ETH_PRICE_USD_STUB = 2400;
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function nowIso() {
+  return new Date().toISOString();
+}
+
+// ── Source fetchers ───────────────────────────────────────────────────────────
+
+async function fetchInfuraGas(apiKey) {
+  const res = await fetch(
+    `https://gas.api.infura.io/v3/${apiKey}/networks/1/suggestedGasFees`,
+    { method: 'GET', headers: { 'Content-Type': 'application/json' } }
+  );
+  if (!res.ok) throw new Error(`Infura gas API HTTP ${res.status}`);
+  const data = await res.json();
+  return {
+    low: {
+      maxPriorityFeePerGas: parseFloat(data.low.suggestedMaxPriorityFeePerGas),
+      maxFeePerGas:         parseFloat(data.low.suggestedMaxFeePerGas),
+    },
+    medium: {
+      maxPriorityFeePerGas: parseFloat(data.medium.suggestedMaxPriorityFeePerGas),
+      maxFeePerGas:         parseFloat(data.medium.suggestedMaxFeePerGas),
+    },
+    high: {
+      maxPriorityFeePerGas: parseFloat(data.high.suggestedMaxPriorityFeePerGas),
+      maxFeePerGas:         parseFloat(data.high.suggestedMaxFeePerGas),
+    },
+    estimatedBaseFee:      parseFloat(data.estimatedBaseFee),
+    networkCongestion:     data.networkCongestion     || 0,
+    priorityFeePercentile: data.priorityFeePercentile || null,
   };
-  
-  // Use Infura as primary source (EIP-1559 compatible)
-  if (infura) {
-    consensus.instant = infura.high.maxFeePerGas;
-    consensus.fast = infura.medium.maxFeePerGas;
-    consensus.standard = infura.low.maxFeePerGas;
-    consensus.slow = infura.low.maxFeePerGas * 0.9;
-    consensus.baseFee = infura.estimatedBaseFee;
+}
+
+async function fetchEtherscanGas(apiKey) {
+  const res = await fetch(
+    `https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${apiKey}`
+  );
+  if (!res.ok) throw new Error(`Etherscan gas API HTTP ${res.status}`);
+  const data = await res.json();
+  if (data.status !== '1' || !data.result) {
+    throw new Error(`Etherscan gas API bad response: status=${data.status}`);
   }
-  // Fallback to Etherscan
-  else if (etherscan) {
-    consensus.instant = etherscan.fast;
-    consensus.fast = etherscan.propose;
-    consensus.standard = etherscan.safe;
-    consensus.slow = etherscan.safe * 0.9;
-    consensus.baseFee = etherscan.suggestBaseFee;
-  }
-  // Last resort: RPC
-  else if (rpc) {
-    const basePrice = rpc.gasPrice || rpc.baseFee || 0;
-    consensus.instant = basePrice * 1.5;
-    consensus.fast = basePrice * 1.2;
-    consensus.standard = basePrice;
-    consensus.slow = basePrice * 0.9;
-    consensus.baseFee = rpc.baseFee || basePrice;
-  }
-  
-  // Round to 2 decimal places
-  Object.keys(consensus).forEach(key => {
-    if (consensus[key] !== null) {
-      consensus[key] = Math.round(consensus[key] * 100) / 100;
-    }
+  return {
+    safe:           parseFloat(data.result.SafeGasPrice),
+    propose:        parseFloat(data.result.ProposeGasPrice),
+    fast:           parseFloat(data.result.FastGasPrice),
+    suggestBaseFee: parseFloat(data.result.suggestBaseFee),
+    gasUsedRatio:   data.result.gasUsedRatio,
+  };
+}
+
+async function fetchRpcGas(rpcUrl) {
+  // Raw eth_gasPrice
+  const gasPriceRes = await fetch(rpcUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ jsonrpc: '2.0', method: 'eth_gasPrice', params: [], id: 1 }),
   });
-  
+  if (!gasPriceRes.ok) throw new Error(`RPC eth_gasPrice HTTP ${gasPriceRes.status}`);
+  const gasPriceData = await gasPriceRes.json();
+  if (!gasPriceData.result) throw new Error('RPC eth_gasPrice returned no result');
+
+  const gasPriceGwei = parseInt(gasPriceData.result, 16) / 1e9;
+  let baseFeeGwei = null;
+
+  // EIP-1559 base fee from latest block header
+  try {
+    const blockRes = await fetch(rpcUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jsonrpc: '2.0', method: 'eth_getBlockByNumber', params: ['latest', false], id: 2,
+      }),
+    });
+    if (blockRes.ok) {
+      const blockData = await blockRes.json();
+      if (blockData.result?.baseFeePerGas) {
+        baseFeeGwei = parseInt(blockData.result.baseFeePerGas, 16) / 1e9;
+      }
+    }
+  } catch {
+    // Base fee is bonus data — don't fail the whole RPC source if this errors
+  }
+
+  return { gasPrice: gasPriceGwei, baseFee: baseFeeGwei };
+}
+
+// ── Aggregation helpers ───────────────────────────────────────────────────────
+
+function calculateConsensus(sources) {
+  const { infura, etherscan, rpc } = sources;
+
+  const consensus = {
+    instant:  null,
+    fast:     null,
+    standard: null,
+    slow:     null,
+    baseFee:  null,
+  };
+
+  // Priority: Infura (EIP-1559 native) → Etherscan → RPC
+  if (infura) {
+    consensus.instant  = infura.high.maxFeePerGas;
+    consensus.fast     = infura.medium.maxFeePerGas;
+    consensus.standard = infura.low.maxFeePerGas;
+    consensus.slow     = infura.low.maxFeePerGas * 0.9;
+    consensus.baseFee  = infura.estimatedBaseFee;
+  } else if (etherscan) {
+    consensus.instant  = etherscan.fast;
+    consensus.fast     = etherscan.propose;
+    consensus.standard = etherscan.safe;
+    consensus.slow     = etherscan.safe * 0.9;
+    consensus.baseFee  = etherscan.suggestBaseFee;
+  } else if (rpc) {
+    const base         = rpc.gasPrice || rpc.baseFee || 0;
+    consensus.instant  = base * 1.5;
+    consensus.fast     = base * 1.2;
+    consensus.standard = base;
+    consensus.slow     = base * 0.9;
+    consensus.baseFee  = rpc.baseFee ?? base;
+  }
+
+  // Round to 2 dp
+  for (const k of Object.keys(consensus)) {
+    if (consensus[k] !== null) consensus[k] = Math.round(consensus[k] * 100) / 100;
+  }
+
   return consensus;
 }
 
-/**
- * Calculate minimum profit thresholds for different transaction types
- * @param {Object} consensus - Consensus gas prices
- * @returns {Object} Profitability thresholds in USD
- */
 function calculateProfitabilityThresholds(consensus) {
-  // Assume ETH price ~$2400 (will be replaced with real price from DEX data)
-  const ETH_PRICE_USD = 2400;
-  
-  // Gas estimates for different transaction types (in gas units)
+  // Gas unit estimates per transaction type
   const GAS_ESTIMATES = {
-    simpleSwap: 150000,        // Basic Uniswap swap
-    flashLoanSimple: 250000,   // Flash loan with 1 swap
-    flashLoanTriangle: 400000, // Flash loan with 3 swaps (triangle arb)
-    flashLoanComplex: 600000   // Complex multi-hop flash loan
+    simpleSwap:         150_000,
+    flashLoanSimple:    250_000,
+    flashLoanTriangle:  400_000,
+    flashLoanComplex:   600_000,
   };
-  
+
   const thresholds = {};
-  
-  Object.keys(GAS_ESTIMATES).forEach(txType => {
-    const gasUnits = GAS_ESTIMATES[txType];
-    
-    // Calculate cost in ETH and USD for each speed
-    thresholds[txType] = {
-      slow: {
-        gasCostETH: (consensus.slow * gasUnits) / 1e9,
-        gasCostUSD: ((consensus.slow * gasUnits) / 1e9) * ETH_PRICE_USD,
-        minProfitUSD: (((consensus.slow * gasUnits) / 1e9) * ETH_PRICE_USD) * 1.5 // 1.5x gas for safety margin
-      },
-      standard: {
-        gasCostETH: (consensus.standard * gasUnits) / 1e9,
-        gasCostUSD: ((consensus.standard * gasUnits) / 1e9) * ETH_PRICE_USD,
-        minProfitUSD: (((consensus.standard * gasUnits) / 1e9) * ETH_PRICE_USD) * 1.5
-      },
-      fast: {
-        gasCostETH: (consensus.fast * gasUnits) / 1e9,
-        gasCostUSD: ((consensus.fast * gasUnits) / 1e9) * ETH_PRICE_USD,
-        minProfitUSD: (((consensus.fast * gasUnits) / 1e9) * ETH_PRICE_USD) * 1.5
-      },
-      instant: {
-        gasCostETH: (consensus.instant * gasUnits) / 1e9,
-        gasCostUSD: ((consensus.instant * gasUnits) / 1e9) * ETH_PRICE_USD,
-        minProfitUSD: (((consensus.instant * gasUnits) / 1e9) * ETH_PRICE_USD) * 1.5
+
+  for (const [txType, gasUnits] of Object.entries(GAS_ESTIMATES)) {
+    thresholds[txType] = {};
+    for (const speed of ['slow', 'standard', 'fast', 'instant']) {
+      const gweiPrice = consensus[speed];
+      if (gweiPrice === null) {
+        thresholds[txType][speed] = null;
+        continue;
       }
-    };
-    
-    // Round to 2 decimal places
-    Object.keys(thresholds[txType]).forEach(speed => {
-      Object.keys(thresholds[txType][speed]).forEach(key => {
-        thresholds[txType][speed][key] = Math.round(thresholds[txType][speed][key] * 100) / 100;
-      });
-    });
-  });
-  
+      const gasCostETH = (gweiPrice * gasUnits) / 1e9;
+      const gasCostUSD = gasCostETH * ETH_PRICE_USD_STUB;
+      thresholds[txType][speed] = {
+        gasCostETH:   Math.round(gasCostETH    * 1e6) / 1e6,
+        gasCostUSD:   Math.round(gasCostUSD    * 100) / 100,
+        minProfitUSD: Math.round(gasCostUSD * 1.5 * 100) / 100,  // 1.5x safety margin
+      };
+    }
+  }
+
   return thresholds;
 }
 
-/**
- * Analyze current network state
- * @param {Object} gasPrices - All gas price sources
- * @param {Object} consensus - Consensus prices
- * @returns {Object} Network state analysis
- */
-function analyzeNetworkState(gasPrices, consensus) {
+function analyzeNetworkState(sources, consensus) {
   const state = {
-    congestion: 'unknown',
-    recommendation: 'standard',
+    congestion:      'unknown',
+    recommendation:  'standard',
     flashLoanViable: true,
-    warnings: []
+    baseFeeGwei:     consensus.baseFee,
+    warnings:        [],
   };
-  
-  // Determine congestion level
-  if (consensus.fast) {
-    if (consensus.fast < 30) {
-      state.congestion = 'low';
-      state.recommendation = 'slow';
-    } else if (consensus.fast < 50) {
-      state.congestion = 'normal';
-      state.recommendation = 'standard';
-    } else if (consensus.fast < 100) {
+
+  if (consensus.fast !== null) {
+    if      (consensus.fast < 30)  { state.congestion = 'low';     state.recommendation = 'slow';     }
+    else if (consensus.fast < 50)  { state.congestion = 'normal';  state.recommendation = 'standard'; }
+    else if (consensus.fast < 100) {
       state.congestion = 'high';
       state.recommendation = 'fast';
-      state.warnings.push('High gas prices - only large arbitrage opportunities profitable');
+      state.warnings.push('High gas prices — only large arbitrage opportunities are profitable');
     } else {
-      state.congestion = 'extreme';
+      state.congestion     = 'extreme';
       state.recommendation = 'wait';
       state.flashLoanViable = false;
-      state.warnings.push('Extremely high gas - flash loans likely unprofitable');
+      state.warnings.push('Extremely high gas — flash loans likely unprofitable');
     }
   }
-  
-  // Check if Infura data includes congestion metric
-  if (gasPrices.infura?.networkCongestion) {
-    const infuraCongestion = gasPrices.infura.networkCongestion;
-    if (infuraCongestion > 0.7) {
-      state.warnings.push('Network congestion > 70%');
-    }
+
+  if (sources.infura?.networkCongestion > 0.7) {
+    state.warnings.push(`Infura network congestion: ${(sources.infura.networkCongestion * 100).toFixed(0)}%`);
   }
-  
-  // Add base fee analysis (EIP-1559)
-  if (consensus.baseFee) {
-    state.baseFeeGwei = consensus.baseFee;
-    
-    if (consensus.baseFee > 50) {
-      state.warnings.push('High base fee - consider waiting for lower gas');
-    }
+
+  if (consensus.baseFee !== null && consensus.baseFee > 50) {
+    state.warnings.push('High base fee — consider waiting for lower gas window');
   }
-  
+
   return state;
 }
 
-// Allow running standalone for testing
-if (require.main === module) {
-  (async () => {
-    console.log('Testing Gas Price Oracle...\n');
-    const result = await module.exports();
-    console.log(JSON.stringify(result, null, 2));
-    
-    if (result.status === 'success') {
-      console.log('\n✅ Gas Price Oracle executed successfully');
-      
-      const { consensus, networkState, thresholds } = result.data;
-      
-      console.log('\n📊 Current Gas Prices (gwei):');
-      console.log(`  Slow:     ${consensus.slow}`);
-      console.log(`  Standard: ${consensus.standard}`);
-      console.log(`  Fast:     ${consensus.fast}`);
-      console.log(`  Instant:  ${consensus.instant}`);
-      console.log(`  Base Fee: ${consensus.baseFee}`);
-      
-      console.log(`\n🌐 Network State: ${networkState.congestion.toUpperCase()}`);
-      console.log(`   Recommendation: ${networkState.recommendation}`);
-      console.log(`   Flash Loans Viable: ${networkState.flashLoanViable ? 'YES' : 'NO'}`);
-      
-      if (networkState.warnings.length > 0) {
-        console.log('\n⚠️  Warnings:');
-        networkState.warnings.forEach(w => console.log(`   - ${w}`));
-      }
-      
-      console.log('\n💰 Flash Loan Profitability (Triangle Arb):');
-      const triangle = thresholds.flashLoanTriangle;
-      console.log(`   Gas Cost (fast): $${triangle.fast.gasCostUSD}`);
-      console.log(`   Min Profit Needed: $${triangle.fast.minProfitUSD}`);
-      
-    } else {
-      console.log('\n❌ Gas Price Oracle failed');
-      console.log(`Error: ${result.error.message}`);
+// ── Main ──────────────────────────────────────────────────────────────────────
+
+async function gasPriceOracle() {
+  const startedAt  = Date.now();
+  const startedIso = nowIso();
+
+  const INFURA_API_KEY  = process.env.ETHEREUM_MAINNET_RPC_URL_1?.split('/v3/')[1];
+  const ETHERSCAN_KEY   = process.env.ETHERSCAN_API_KEY;
+  const ETHEREUM_RPC    = process.env.ETHEREUM_MAINNET_RPC_URL_1 || process.env.ETHEREUM_MAINNET_RPC_URL_2;
+
+  const sources   = { infura: null, etherscan: null, rpc: null };
+  const failures  = [];
+  let sourcesHit  = 0;
+
+  // ── Source 1: Infura Gas API ──────────────────────────────────────────────
+  if (INFURA_API_KEY) {
+    try {
+      sources.infura = await fetchInfuraGas(INFURA_API_KEY);
+      sourcesHit++;
+    } catch (e) {
+      failures.push({ source: 'infura', error: String(e.message || e).slice(0, 160) });
     }
-  })();
+  } else {
+    failures.push({ source: 'infura', error: 'ETHEREUM_MAINNET_RPC_URL_1 not set or missing /v3/ key' });
+  }
+
+  // ── Source 2: Etherscan Gas Tracker ──────────────────────────────────────
+  if (ETHERSCAN_KEY) {
+    try {
+      sources.etherscan = await fetchEtherscanGas(ETHERSCAN_KEY);
+      sourcesHit++;
+    } catch (e) {
+      failures.push({ source: 'etherscan', error: String(e.message || e).slice(0, 160) });
+    }
+  } else {
+    failures.push({ source: 'etherscan', error: 'ETHERSCAN_API_KEY not set' });
+  }
+
+  // ── Source 3: Direct RPC fallback ────────────────────────────────────────
+  if (ETHEREUM_RPC) {
+    try {
+      sources.rpc = await fetchRpcGas(ETHEREUM_RPC);
+      sourcesHit++;
+    } catch (e) {
+      failures.push({ source: 'rpc', error: String(e.message || e).slice(0, 160) });
+    }
+  } else {
+    failures.push({ source: 'rpc', error: 'No Ethereum RPC URL configured' });
+  }
+
+  const consensus    = calculateConsensus(sources);
+  const hasConsensus = Object.values(consensus).some((v) => v !== null);
+
+  // ── Honest status ─────────────────────────────────────────────────────────
+  // 'error'   → zero sources returned data AND no consensus
+  // 'partial' → at least one source failed but we have usable consensus
+  // 'success' → all configured sources succeeded
+  const configuredSources = [
+    INFURA_API_KEY  ? 'infura'    : null,
+    ETHERSCAN_KEY   ? 'etherscan' : null,
+    ETHEREUM_RPC    ? 'rpc'       : null,
+  ].filter(Boolean).length;
+
+  const status =
+    !hasConsensus           ? 'error'   :
+    sourcesHit < configuredSources ? 'partial' :
+    'success';
+
+  const thresholds   = hasConsensus ? calculateProfitabilityThresholds(consensus) : null;
+  const networkState = hasConsensus ? analyzeNetworkState(sources, consensus)     : null;
+  const durationMs   = Date.now() - startedAt;
+
+  return {
+    status,
+    partial: status === 'partial',
+    data: {
+      chain:    CHAIN_ID,
+      chain_id: CHAIN_NUM,
+      sources,
+      consensus,
+      thresholds,
+      networkState,
+      timestamp:        startedIso,
+      durationMs,
+      // Oracle-class fields — HTTP sources, not on-chain RPC endpoints
+      fetchConcurrency: null,   // N/A: sequential HTTP fetches by design
+      endpointId:       null,   // N/A: no provider_factory routing
+      endpoint:         null,
+      endpointIdsSeen:  [],
+      endpointsSeen:    [],
+      stats: {
+        sourcesConfigured: configuredSources,
+        sourcesSucceeded:  sourcesHit,
+        sourcesFailed:     failures.length,
+      },
+      failures,
+      ethPriceStubUSD: ETH_PRICE_USD_STUB,  // surfaced so callers know thresholds are approximate
+    },
+  };
 }
+
+// ── CLI runner ────────────────────────────────────────────────────────────────
+
+if (require.main === module) {
+  gasPriceOracle()
+    .then((result) => {
+      console.log('\nGAS PRICE ORACLE — ETHEREUM MAINNET:');
+      console.log('='.repeat(70));
+      console.log(
+        `status=${result.status} partial=${result.partial} ` +
+        `sources=${result.data.stats.sourcesSucceeded}/${result.data.stats.sourcesConfigured} ` +
+        `duration=${result.data.durationMs}ms`
+      );
+
+      const { consensus, networkState, thresholds } = result.data;
+
+      if (consensus.fast !== null) {
+        console.log('\nGas prices (gwei):');
+        console.log(`  slow:     ${consensus.slow}`);
+        console.log(`  standard: ${consensus.standard}`);
+        console.log(`  fast:     ${consensus.fast}`);
+        console.log(`  instant:  ${consensus.instant}`);
+        console.log(`  baseFee:  ${consensus.baseFee}`);
+      }
+
+      if (networkState) {
+        console.log(`\nNetwork: ${networkState.congestion.toUpperCase()} | recommend=${networkState.recommendation} | flashLoan=${networkState.flashLoanViable ? 'viable' : 'NOT viable'}`);
+        if (networkState.warnings.length) {
+          networkState.warnings.forEach((w) => console.log(`  ⚠  ${w}`));
+        }
+      }
+
+      if (thresholds?.flashLoanTriangle?.fast) {
+        const t = thresholds.flashLoanTriangle.fast;
+        console.log(`\nFlash loan triangle arb (fast): gas=$${t.gasCostUSD} | minProfit=$${t.minProfitUSD}`);
+        console.log(`  (ETH price stub: $${result.data.ethPriceStubUSD} — replace with live oracle)`);
+      }
+
+      if (result.data.failures.length) {
+        console.log('\nFailures:');
+        result.data.failures.forEach((f) => console.log(`  ${f.source}: ${f.error}`));
+      }
+
+      console.log('='.repeat(70));
+    })
+    .catch((err) => {
+      console.error(err);
+      process.exit(1);
+    });
+}
+
+// ── Exports ───────────────────────────────────────────────────────────────────
+
+gasPriceOracle.chain = CHAIN_ID;
+module.exports = gasPriceOracle;
