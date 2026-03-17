@@ -28,22 +28,21 @@ const PAIR_ABI_V2 = [
 
 const UNISWAP_V3_POOLS = [
   // ── Active pools ──────────────────────────────────────────────────────────
-  { outputPair: 'DAI/USDT',   pool: '0x7f580f8A02b759C350E6b8340e7c2d4b8162b6a9', decimals0: 18, decimals1: 6, fee: 100,  priceMode: 'direct' },
-
+  // ALL UniV3 pools removed — every address confirmed dead via CALL_EXCEPTION telemetry.
+  // Pool list needs restocking with current active Arbitrum UniV3 addresses.
+  // Find replacements at: https://app.uniswap.org/explore/pools/arbitrum
+  //
   // ── REMOVED pools — confirmed CALL_EXCEPTION on every fetch cycle ─────────
-  // Verified via rpc_attempt_fail telemetry: missing revert data on slot0()/liquidity().
-  // Removed 2026-03-17 after Arbiscan verification confirmed dormant/non-viable.
-  // Restore only if replacement pool addresses are confirmed active on Arbiscan.
-  //
-  // Batch 1 (removed earlier):
-  // { outputPair: 'ETH/USDT',   pool: '0x641C00A822e8b671738d32a431a4Fb6074E5c79d', fee: 500  } // CALL_EXCEPTION
-  // { outputPair: 'USDC/USDT',  pool: '0xbE3aD6a5669Dc0B8b12FeBC03608860C31E2eef6', fee: 100  } // CALL_EXCEPTION
-  // { outputPair: 'USDC/USDCe', pool: '0x8e295789c9465487074a65b1ae9Ce0351172393f', fee: 100  } // CALL_EXCEPTION
-  // { outputPair: 'USDC/USDCe', pool: '0xA9E9CB16E922892Aa563a5aDb0f7D976EFCe36FB', fee: 500  } // CALL_EXCEPTION
-  //
-  // Batch 2 (removed 2026-03-17 — CALL_EXCEPTION confirmed in telemetry):
-  // { outputPair: 'ETH/USDC',   pool: '0xC6962004f452bE9203591991D15f6b388e09E8D0', fee: 500  } // CALL_EXCEPTION
-  // { outputPair: 'USDC/USDT',  pool: '0xbcE73c2e5A623054B0e8e2428E956f4b9d0412a5', fee: 500  } // CALL_EXCEPTION
+  // Batch 1 (removed 2026-03-17):
+  // { outputPair: 'ETH/USDT',   pool: '0x641C00A822e8b671738d32a431a4Fb6074E5c79d', fee: 500  }
+  // { outputPair: 'USDC/USDT',  pool: '0xbE3aD6a5669Dc0B8b12FeBC03608860C31E2eef6', fee: 100  }
+  // { outputPair: 'USDC/USDCe', pool: '0x8e295789c9465487074a65b1ae9Ce0351172393f', fee: 100  }
+  // { outputPair: 'USDC/USDCe', pool: '0xA9E9CB16E922892Aa563a5aDb0f7D976EFCe36FB', fee: 500  }
+  // Batch 2 (removed 2026-03-17):
+  // { outputPair: 'ETH/USDC',   pool: '0xC6962004f452bE9203591991D15f6b388e09E8D0', fee: 500  }
+  // { outputPair: 'USDC/USDT',  pool: '0xbcE73c2e5A623054B0e8e2428E956f4b9d0412a5', fee: 500  }
+  // Batch 3 (removed 2026-03-17):
+  // { outputPair: 'DAI/USDT',   pool: '0x7f580f8A02b759C350E6b8340e7c2d4b8162b6a9', fee: 100  }
 ];
 
 const CAMELOT_POOLS = [
