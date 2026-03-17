@@ -41,7 +41,7 @@ nohup.out
 
 # Phase 2.4.0 - Telemetry runtime data
 data/telemetry/
-
+*.env
 *.sqlite
 *.sqlite3
 *.db
