@@ -17,6 +17,34 @@ Features:
 */
 
 const { ethers } = require('ethers');
+const fs         = require('fs');
+const path       = require('path');
+
+// ── Freshness telemetry writer ────────────────────────────────────────────────
+// Append-only JSONL — one event per line, fire-and-forget, never blocks routing.
+// Location: logs/rpc_freshness.jsonl (relative to process.cwd())
+// Disabled via RPC_FRESHNESS_LOG_ENABLED=0
+
+const FRESHNESS_LOG_ENABLED = process.env.RPC_FRESHNESS_LOG_ENABLED !== '0';
+const FRESHNESS_LOG_PATH    = path.resolve(
+  process.cwd(),
+  process.env.RPC_FRESHNESS_LOG_PATH || 'logs/rpc_freshness.jsonl'
+);
+
+function _ensureLogDir() {
+  try {
+    const dir = path.dirname(FRESHNESS_LOG_PATH);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  } catch { /* silent — never block */ }
+}
+_ensureLogDir();
+
+function _logEvent(obj) {
+  if (!FRESHNESS_LOG_ENABLED) return;
+  try {
+    fs.appendFile(FRESHNESS_LOG_PATH, JSON.stringify(obj) + '\n', () => {});
+  } catch { /* fire-and-forget — silent on error */ }
+}
 
 const RPC_CALL_TIMEOUT_MS = Number(process.env.RPC_CALL_TIMEOUT_MS || 1500);
 const RPC_SLOW_THRESHOLD_MS = Number(process.env.RPC_SLOW_THRESHOLD_MS || 1000);
@@ -214,6 +242,19 @@ async function _probeFreshnessForChain(chainKey, urls) {
       }
     }
     // Endpoints that failed the probe keep their existing state (no change).
+
+    // Emit freshness snapshot — one record per probe cycle per chain.
+    _logEvent({
+      ev:        'freshness_snapshot',
+      ts:        new Date().toISOString(),
+      chain:     chainKey,
+      bestBlock,
+      endpoints: succeeded.map(({ url, block }) => ({
+        url:     redactUrl(url),
+        lag:     bestBlock - block,
+        penalty: getFreshnessPenalty(url),
+      })),
+    });
 
   } catch {
     // Probe error — silently preserve existing state. Never break routing.
@@ -414,6 +455,19 @@ function createProvider(chain) {
 
         const duration = Date.now() - startedAt;
         _health.recordSuccess(url, duration);
+
+        // Emit selection event — records which endpoint was actually used.
+        const _fe = _freshness.get(url);
+        _logEvent({
+          ev:         'rpc_select',
+          ts:         new Date().toISOString(),
+          chain:      chainKey,
+          label,
+          url:        redactUrl(url),
+          lag:        _fe?.lagBlocks    ?? null,
+          penalty:    _fe?.penaltyScore ?? 0,
+          durationMs: duration,
+        });
 
         return {
           ok: true,
