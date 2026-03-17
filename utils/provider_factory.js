@@ -9,7 +9,7 @@ Robust RPC provider manager for AllMight fetchers.
 Features:
 - endpoint health tracking (latency strikes + failure demotion)
 - global runtime freshness-aware health (block-lag penalty scoring)
-- round-robin rotation with freshness-sorted candidate ordering
+- round-robin rotation within freshness tier (fresh endpoints always attempt first)
 - hedged RPC requests
 - degraded retry if all endpoints demoted
 - explicit static network config per chain
@@ -355,16 +355,44 @@ function createProvider(chain) {
     // Trigger background freshness probe if cache is stale (non-blocking).
     _maybeRefreshFreshness(chainKey, urls);
 
-    // Sort candidates so fresher endpoints are tried first.
-    // Within equal-penalty candidates, round-robin rotation still applies.
-    // Stale endpoints stay in the list — they serve as graceful fallback.
-    if (FRESHNESS_ENABLED && candidates.length > 1) {
-      candidates.sort((a, b) => getFreshnessPenalty(a) - getFreshnessPenalty(b));
-    }
+    // Build attempt order: freshness tier first, round-robin within each tier.
+    //
+    // Problem with sort-then-rotate: rotating the fully-sorted list allows stale
+    // endpoints to leapfrog fresh ones based on round-robin offset. e.g. if fresh=[A,B]
+    // and stale=[C,D], rotation can produce [C,D,A,B] — stale attempts first.
+    //
+    // Fix: group by penalty tier → round-robin within the best (lowest) tier only
+    // → append worse tiers in ascending penalty order. Fresh endpoints always get
+    // first-attempt priority. Equal-freshness endpoints still rotate fairly.
+    let rotated;
 
-    const start = _rrStart[chainKey] || 0;
-    const rotated = candidates.map((_, i) => candidates[(start + i) % candidates.length]);
-    _rrStart[chainKey] = (start + 1) % candidates.length;
+    if (FRESHNESS_ENABLED && candidates.length > 1) {
+      // Group candidates by penalty score
+      const groups = new Map();   // penaltyScore → url[]
+      for (const url of candidates) {
+        const p = getFreshnessPenalty(url);
+        if (!groups.has(p)) groups.set(p, []);
+        groups.get(p).push(url);
+      }
+
+      // Sort groups ascending by penalty (freshest tier first)
+      const sortedTiers = [...groups.entries()].sort((a, b) => a[0] - b[0]);
+
+      // Round-robin within the best tier only; append worse tiers as-is
+      const [, bestTier] = sortedTiers[0];
+      const start = _rrStart[chainKey] || 0;
+      const rotatedBest = bestTier.map((_, i) => bestTier[(start + i) % bestTier.length]);
+      _rrStart[chainKey] = (start + 1) % bestTier.length;
+
+      const worseTiers = sortedTiers.slice(1).flatMap(([, tier]) => tier);
+      rotated = [...rotatedBest, ...worseTiers];
+
+    } else {
+      // Freshness disabled or single endpoint — preserve original round-robin behavior
+      const start = _rrStart[chainKey] || 0;
+      rotated = candidates.map((_, i) => candidates[(start + i) % candidates.length]);
+      _rrStart[chainKey] = (start + 1) % candidates.length;
+    }
 
     async function attempt(url, delay = 0) {
       if (delay) {
@@ -398,7 +426,7 @@ function createProvider(chain) {
           }
         };
       } catch (err) {
-        _health.recordFailure(url, classifyRpcError(err));
+        _health.recordFailure(url);
         return {
           ok: false,
           err
