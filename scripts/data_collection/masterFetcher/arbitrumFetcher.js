@@ -20,6 +20,8 @@ const FETCH_CONCURRENCY = Math.max(
 const POOL_ABI_V3 = [
   'function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)',
   'function liquidity() external view returns (uint128)',
+  'function token0() external view returns (address)',
+  'function token1() external view returns (address)',
 ];
 
 const PAIR_ABI_V2 = [
@@ -27,26 +29,66 @@ const PAIR_ABI_V2 = [
 ];
 
 const UNISWAP_V3_POOLS = [
-  // ── Active pools ──────────────────────────────────────────────────────────
-  // ALL UniV3 pools removed — every address confirmed dead via CALL_EXCEPTION telemetry.
-  // Pool list needs restocking with current active Arbitrum UniV3 addresses.
-  // Find replacements at: https://app.uniswap.org/explore/pools/arbitrum
-  //
-  // ── REMOVED pools — confirmed CALL_EXCEPTION on every fetch cycle ─────────
-  // Batch 1 (removed 2026-03-17):
-  // { outputPair: 'ETH/USDT',   pool: '0x641C00A822e8b671738d32a431a4Fb6074E5c79d', fee: 500  }
-  // { outputPair: 'USDC/USDT',  pool: '0xbE3aD6a5669Dc0B8b12FeBC03608860C31E2eef6', fee: 100  }
-  // { outputPair: 'USDC/USDCe', pool: '0x8e295789c9465487074a65b1ae9Ce0351172393f', fee: 100  }
-  // { outputPair: 'USDC/USDCe', pool: '0xA9E9CB16E922892Aa563a5aDb0f7D976EFCe36FB', fee: 500  }
-  // Batch 2 (removed 2026-03-17):
-  // { outputPair: 'ETH/USDC',   pool: '0xC6962004f452bE9203591991D15f6b388e09E8D0', fee: 500  }
-  // { outputPair: 'USDC/USDT',  pool: '0xbcE73c2e5A623054B0e8e2428E956f4b9d0412a5', fee: 500  }
-  // Batch 3 (removed 2026-03-17):
-  // { outputPair: 'DAI/USDT',   pool: '0x7f580f8A02b759C350E6b8340e7c2d4b8162b6a9', fee: 100  }
+  // ── Active Phase 1 re-entry set ───────────────────────────────────────────
+  // These pools were revalidated on-chain after prior false removal.
+  // Root cause of earlier removal: chain-specific token ordering assumptions
+  // caused wrong price-direction handling on Arbitrum.
+
+  // token0 = WETH (18), token1 = USDC (6)
+  // raw price already returns USDC per WETH on Arbitrum → direct
+  {
+    outputPair: 'ETH/USDC',
+    pool: '0xC6962004f452bE9203591991D15f6b388e09E8D0',
+    decimals0: 18,
+    decimals1: 6,
+    fee: 500,
+    priceMode: 'direct',
+    expectedToken0: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
+    expectedToken1: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+  },
+
+  // token0 = WETH (18), token1 = USDT (6)
+  // raw price already returns USDT per WETH on Arbitrum → direct
+  {
+    outputPair: 'ETH/USDT',
+    pool: '0x641C00A822e8b671738d32a431a4Fb6074E5c79d',
+    decimals0: 18,
+    decimals1: 6,
+    fee: 500,
+    priceMode: 'direct',
+    expectedToken0: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
+    expectedToken1: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
+  },
+
+  // token0 = USDC (6), token1 = USDT (6)
+  // raw price returns USDT per USDC → direct
+  {
+    outputPair: 'USDC/USDT',
+    pool: '0xbE3aD6a5669Dc0B8b12FeBC03608860C31E2eef6',
+    decimals0: 6,
+    decimals1: 6,
+    fee: 100,
+    priceMode: 'direct',
+    expectedToken0: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+    expectedToken1: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
+  },
+
+  // ── Removed / avoid list ──────────────────────────────────────────────────
+  // { outputPair: 'USDC/USDCe', pool: '0x8e295789c9465487074a65b1ae9Ce0351172393f', fee: 100 }
+  // { outputPair: 'USDC/USDCe', pool: '0xA9E9CB16E922892Aa563a5aDb0f7D976EFCe36FB', fee: 500 }
+  // { outputPair: 'USDC/USDT',  pool: '0xbcE73c2e5A623054B0e8e2428E956f4b9d0412a5', fee: 500 }
+  // { outputPair: 'DAI/USDT',   pool: '0x7f580f8A02b759C350E6b8340e7c2d4b8162b6a9', fee: 100 }
 ];
 
 const CAMELOT_POOLS = [
-  { outputPair: 'ETH/USDC', pool: '0x84652bb2539513BAf36e225c930Fdd8eaa63CE27', decimals0: 18, decimals1: 6, fee: 0.003, priceMode: 'direct' },
+  {
+    outputPair: 'ETH/USDC',
+    pool: '0x84652bb2539513BAf36e225c930Fdd8eaa63CE27',
+    decimals0: 18,
+    decimals1: 6,
+    fee: 0.003,
+    priceMode: 'direct',
+  },
 ];
 
 function nowIso() {
@@ -58,6 +100,10 @@ function sqrtPriceX96ToPrice(sqrtPriceX96Raw, dec0, dec1, mode) {
   const sqrtP = Number(sqrtPriceX96Raw) / Number(Q96);
   const raw = sqrtP * sqrtP * Math.pow(10, dec0 - dec1);
   return mode === 'invert' ? 1 / raw : raw;
+}
+
+function sameAddress(a, b) {
+  return String(a || '').toLowerCase() === String(b || '').toLowerCase();
 }
 
 async function mapWithConcurrency(items, limit, worker) {
@@ -82,14 +128,28 @@ async function fetchUniV3Pool(cfg, blockNumber) {
       `arb.univ3.${cfg.outputPair}.${cfg.pool.slice(0, 10)}`,
       async (provider) => {
         const c = new ethers.Contract(cfg.pool, POOL_ABI_V3, provider);
-        const [slot0, liq] = await Promise.all([
+        const [slot0, liq, token0, token1] = await Promise.all([
           c.slot0({ blockTag: blockNumber }),
           c.liquidity({ blockTag: blockNumber }),
+          c.token0(),
+          c.token1(),
         ]);
-        return { slot0, liq };
+        return { slot0, liq, token0, token1 };
       },
       { timeoutMs: cfg.timeoutMs || 1500, hedge: true }
     );
+
+    if (cfg.expectedToken0 && !sameAddress(result.token0, cfg.expectedToken0)) {
+      throw new Error(
+        `token0 mismatch expected=${cfg.expectedToken0} got=${result.token0}`
+      );
+    }
+
+    if (cfg.expectedToken1 && !sameAddress(result.token1, cfg.expectedToken1)) {
+      throw new Error(
+        `token1 mismatch expected=${cfg.expectedToken1} got=${result.token1}`
+      );
+    }
 
     const price = sqrtPriceX96ToPrice(
       result.slot0[0],
@@ -121,6 +181,8 @@ async function fetchUniV3Pool(cfg, blockNumber) {
         tvlUSD: null,
         fee: cfg.fee / 1_000_000,
         tick: Number(result.slot0[1]),
+        token0: result.token0,
+        token1: result.token1,
         source: 'uniswap_v3_arbitrum_onchain',
         venue: 'uniswap_v3',
         chain: CHAIN_ID,
