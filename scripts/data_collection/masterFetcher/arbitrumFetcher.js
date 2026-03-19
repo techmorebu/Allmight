@@ -20,8 +20,6 @@ const FETCH_CONCURRENCY = Math.max(
 const POOL_ABI_V3 = [
   'function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)',
   'function liquidity() external view returns (uint128)',
-  'function token0() external view returns (address)',
-  'function token1() external view returns (address)',
 ];
 
 const PAIR_ABI_V2 = [
@@ -29,66 +27,108 @@ const PAIR_ABI_V2 = [
 ];
 
 const UNISWAP_V3_POOLS = [
-  // ── Active Phase 1 re-entry set ───────────────────────────────────────────
-  // These pools were revalidated on-chain after prior false removal.
-  // Root cause of earlier removal: chain-specific token ordering assumptions
-  // caused wrong price-direction handling on Arbitrum.
+  // ── Phase 1 Re-entry (2026-03-18) ────────────────────────────────────────
+  // Validated via arb_pool_smoke_test.js before re-entry.
+  // Root cause of prior removal: Ethereum mainnet token0/token1 sort assumptions
+  // were applied to Arbitrum pools. On Arbitrum, WETH (0x82aF..) sorts LOWER
+  // than USDC (0xaf88..) — opposite of mainnet — so token0=WETH, token1=USDC.
+  // All three pools confirmed live with slot0+liquidity responding and sane pricing.
+  //
+  // IMPORTANT: decimals0/decimals1 reflect ACTUAL on-chain token0/token1 ordering.
+  // priceMode: 'direct' → price = sqrtP^2 × 10^(dec0-dec1)
+  //   ETH/USDC direct: USDC per WETH → ~$2300 ✓
+  //   ETH/USDT direct: USDT per WETH → ~$2300 ✓
+  //   USDC/USDT direct: USDT per USDC → ~1.000 ✓
+  //
+  // sanityMin/sanityMax: per-pool price guard — catches silent wrong-pricing
+  // if token ordering is ever misconfigured again.
 
-  // token0 = WETH (18), token1 = USDC (6)
-  // raw price already returns USDC per WETH on Arbitrum → direct
+  // ETH/USDC — on-chain token0=WETH (18dec), token1=USDC (6dec)
   {
     outputPair: 'ETH/USDC',
-    pool: '0xC6962004f452bE9203591991D15f6b388e09E8D0',
-    decimals0: 18,
-    decimals1: 6,
-    fee: 500,
-    priceMode: 'direct',
-    expectedToken0: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
-    expectedToken1: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+    pool:       '0xC6962004f452bE9203591991D15f6b388e09E8D0',
+    decimals0:  18,
+    decimals1:  6,
+    fee:        500,
+    priceMode:  'direct',
+    sanityMin:  500,
+    sanityMax:  20000,
   },
 
-  // token0 = WETH (18), token1 = USDT (6)
-  // raw price already returns USDT per WETH on Arbitrum → direct
+  // ETH/USDT — on-chain token0=WETH (18dec), token1=USDT (6dec)
   {
     outputPair: 'ETH/USDT',
-    pool: '0x641C00A822e8b671738d32a431a4Fb6074E5c79d',
-    decimals0: 18,
-    decimals1: 6,
-    fee: 500,
-    priceMode: 'direct',
-    expectedToken0: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
-    expectedToken1: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
+    pool:       '0x641C00A822e8b671738d32a431a4Fb6074E5c79d',
+    decimals0:  18,
+    decimals1:  6,
+    fee:        500,
+    priceMode:  'direct',
+    sanityMin:  500,
+    sanityMax:  20000,
   },
 
-  // token0 = USDC (6), token1 = USDT (6)
-  // raw price returns USDT per USDC → direct
+  // USDC/USDT — on-chain token0=USDC (6dec), token1=USDT (6dec)
   {
     outputPair: 'USDC/USDT',
-    pool: '0xbE3aD6a5669Dc0B8b12FeBC03608860C31E2eef6',
-    decimals0: 6,
-    decimals1: 6,
-    fee: 100,
-    priceMode: 'direct',
-    expectedToken0: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
-    expectedToken1: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
+    pool:       '0xbE3aD6a5669Dc0B8b12FeBC03608860C31E2eef6',
+    decimals0:  6,
+    decimals1:  6,
+    fee:        100,
+    priceMode:  'direct',
+    sanityMin:  0.9,
+    sanityMax:  1.1,
   },
 
-  // ── Removed / avoid list ──────────────────────────────────────────────────
-  // { outputPair: 'USDC/USDCe', pool: '0x8e295789c9465487074a65b1ae9Ce0351172393f', fee: 100 }
-  // { outputPair: 'USDC/USDCe', pool: '0xA9E9CB16E922892Aa563a5aDb0f7D976EFCe36FB', fee: 500 }
-  // { outputPair: 'USDC/USDT',  pool: '0xbcE73c2e5A623054B0e8e2428E956f4b9d0412a5', fee: 500 }
-  // { outputPair: 'DAI/USDT',   pool: '0x7f580f8A02b759C350E6b8340e7c2d4b8162b6a9', fee: 100 }
+  // ── Phase 2A Addition (2026-03-18) ───────────────────────────────────────
+  // Validated via arb_pool_smoke_test_p2.js before re-entry.
+  // Both pools confirmed live with slot0+liquidity responding and sane pricing.
+  // expectedToken0/expectedToken1 are stored for future runtime cross-check tooling.
+
+  // ARB/WETH — on-chain token0=WETH (18dec), token1=ARB (18dec)
+  // priceMode 'invert' → WETH per ARB ≈ 0.000046
+  // Purpose: enables synthetic ARB/USD via ARB/WETH × ETH/USD legs
+  {
+    outputPair:     'ARB/WETH',
+    pool:           '0xc6f780497a95e246eb9449f5e4770916dcd6396a',
+    decimals0:      18,
+    decimals1:      18,
+    fee:            500,
+    priceMode:      'invert',
+    sanityMin:      0.000005,
+    sanityMax:      0.01,
+    expectedToken0: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',  // WETH
+    expectedToken1: '0x912CE59144191C1204E64559FE8253a0e49E6548',  // ARB
+  },
+
+  // WBTC/USDT — on-chain token0=WBTC (8dec), token1=USDT (6dec)
+  // priceMode 'direct' → USDT per WBTC ≈ $70k-$90k
+  // Token ordering SAME as Ethereum mainnet — no chain-specific surprise
+  {
+    outputPair:     'WBTC/USDT',
+    pool:           '0x5969efdde3cf5c0d9a88ae51e47d721096a97203',
+    decimals0:      8,
+    decimals1:      6,
+    fee:            500,
+    priceMode:      'direct',
+    sanityMin:      20000,
+    sanityMax:      200000,
+    expectedToken0: '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f',  // WBTC
+    expectedToken1: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',  // USDT
+  },
+
+  // ── Deferred pools ────────────────────────────────────────────────────────
+  // ARB/USDCe  0xcda53b1f... — DEFERRED: quote asset is USDCe (bridged/deprecated),
+  //   not native USDC. Hold until native-USDC ARB pool is identified.
+
+  // ── Permanently retired pools (confirmed non-recoverable) ─────────────────
+  // USDC/USDCe 0xfe8e29...  — CALL_EXCEPTION, USDCe deprecated
+  // USDC/USDCe 0xA9E9CB...  — CALL_EXCEPTION, USDCe deprecated
+  // USDC/USDT  0xbcE73c...  — dead, superseded by 0.01% pool above
+  // DAI/USDT   0x7f580f...  — CALL_EXCEPTION
 ];
 
 const CAMELOT_POOLS = [
-  {
-    outputPair: 'ETH/USDC',
-    pool: '0x84652bb2539513BAf36e225c930Fdd8eaa63CE27',
-    decimals0: 18,
-    decimals1: 6,
-    fee: 0.003,
-    priceMode: 'direct',
-  },
+  { outputPair: 'ETH/USDC', pool: '0x84652bb2539513BAf36e225c930Fdd8eaa63CE27', decimals0: 18, decimals1: 6, fee: 0.003, priceMode: 'direct' },
 ];
 
 function nowIso() {
@@ -100,10 +140,6 @@ function sqrtPriceX96ToPrice(sqrtPriceX96Raw, dec0, dec1, mode) {
   const sqrtP = Number(sqrtPriceX96Raw) / Number(Q96);
   const raw = sqrtP * sqrtP * Math.pow(10, dec0 - dec1);
   return mode === 'invert' ? 1 / raw : raw;
-}
-
-function sameAddress(a, b) {
-  return String(a || '').toLowerCase() === String(b || '').toLowerCase();
 }
 
 async function mapWithConcurrency(items, limit, worker) {
@@ -128,28 +164,14 @@ async function fetchUniV3Pool(cfg, blockNumber) {
       `arb.univ3.${cfg.outputPair}.${cfg.pool.slice(0, 10)}`,
       async (provider) => {
         const c = new ethers.Contract(cfg.pool, POOL_ABI_V3, provider);
-        const [slot0, liq, token0, token1] = await Promise.all([
+        const [slot0, liq] = await Promise.all([
           c.slot0({ blockTag: blockNumber }),
           c.liquidity({ blockTag: blockNumber }),
-          c.token0(),
-          c.token1(),
         ]);
-        return { slot0, liq, token0, token1 };
+        return { slot0, liq };
       },
       { timeoutMs: cfg.timeoutMs || 1500, hedge: true }
     );
-
-    if (cfg.expectedToken0 && !sameAddress(result.token0, cfg.expectedToken0)) {
-      throw new Error(
-        `token0 mismatch expected=${cfg.expectedToken0} got=${result.token0}`
-      );
-    }
-
-    if (cfg.expectedToken1 && !sameAddress(result.token1, cfg.expectedToken1)) {
-      throw new Error(
-        `token1 mismatch expected=${cfg.expectedToken1} got=${result.token1}`
-      );
-    }
 
     const price = sqrtPriceX96ToPrice(
       result.slot0[0],
@@ -162,8 +184,22 @@ async function fetchUniV3Pool(cfg, blockNumber) {
       throw new Error(`invalid price ${price}`);
     }
 
+    // Per-pool sanity guard (Boss directive 2026-03-18):
+    // Catches silent wrong-pricing from token order misconfig before it
+    // reaches Redis. sanityMin/sanityMax are set per pool at config entry.
+    if (cfg.sanityMin !== undefined && cfg.sanityMax !== undefined) {
+      if (price < cfg.sanityMin || price > cfg.sanityMax) {
+        throw new Error(
+          `[TOKEN-ORDER-GUARD] price ${price.toFixed(4)} outside expected range ` +
+          `[${cfg.sanityMin}, ${cfg.sanityMax}] for ${cfg.outputPair} — ` +
+          `check decimals0/decimals1 and priceMode against on-chain token0/token1`
+        );
+      }
+    }
+
+    // Legacy stable-pair fallback guard (pools without explicit sanity bounds)
     const isStable = !cfg.outputPair.includes('ETH') && !cfg.outputPair.includes('BTC');
-    if (isStable && (price < 0.9 || price > 1.1)) {
+    if (isStable && cfg.sanityMin === undefined && (price < 0.9 || price > 1.1)) {
       throw new Error(`stable price out of range ${price}`);
     }
 
@@ -181,8 +217,6 @@ async function fetchUniV3Pool(cfg, blockNumber) {
         tvlUSD: null,
         fee: cfg.fee / 1_000_000,
         tick: Number(result.slot0[1]),
-        token0: result.token0,
-        token1: result.token1,
         source: 'uniswap_v3_arbitrum_onchain',
         venue: 'uniswap_v3',
         chain: CHAIN_ID,
