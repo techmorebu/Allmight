@@ -116,6 +116,29 @@ const UNISWAP_V3_POOLS = [
     expectedToken1: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',  // USDT
   },
 
+  // ── Phase 3 Addition (2026-03-19) ────────────────────────────────────────
+  // WBTC/WETH — validated via on-chain smoke test.
+  // token0=WBTC, token1=WETH — same ordering as Ethereum mainnet.
+  // Purpose: enables synthetic WBTC/USD via WBTC/WETH × ETH/USDC
+  //          to compare against existing WBTC/USDT direct leg.
+  // Single-read estimate: spread ~0.14%, fee ~0.10%, net ~+0.04%.
+  // First surface showing potential fee-positive signal — requires persistence test.
+
+  // WBTC/WETH — on-chain token0=WBTC (8dec), token1=WETH (18dec)
+  // priceMode 'direct' → WETH per WBTC ≈ 32.4 ETH/BTC
+  {
+    outputPair:     'WBTC/WETH',
+    pool:           '0x2f5e87c9312fa29aed5c179e456625d79015299c',
+    decimals0:      8,
+    decimals1:      18,
+    fee:            500,
+    priceMode:      'direct',
+    sanityMin:      5,
+    sanityMax:      200,
+    expectedToken0: '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f',  // WBTC
+    expectedToken1: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',  // WETH
+  },
+
   // ── Phase 2B Addition (2026-03-19) ───────────────────────────────────────
   // ARB/nativeUSDC — validated via factory query + on-chain smoke test.
   // token1 confirmed as Circle native USDC (0xaf88..), NOT USDCe (0xFF97..).
