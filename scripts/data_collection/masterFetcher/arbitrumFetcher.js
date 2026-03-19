@@ -1,5 +1,5 @@
 // arbitrumFetcher.js
-// Arbitrum mainnet fetcher — Uniswap V3 + Camelot V2
+// Arbitrum mainnet fetcher — Uniswap V3 + Camelot V2 + Camelot V3 (Algebra)
 // Hardened speed-template version with success/partial/error status semantics
 
 'use strict';
@@ -24,6 +24,13 @@ const POOL_ABI_V3 = [
 
 const PAIR_ABI_V2 = [
   'function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)',
+];
+
+// Algebra (Camelot V3) ABI — uses globalState() instead of slot0().
+// sqrtPriceX96 is at index 0, feeZto (dynamic token0->token1 fee) at index 2.
+const POOL_ABI_ALGEBRA = [
+  'function globalState() external view returns (uint160 price, int24 tick, uint16 feeZto, uint16 feeOtz, uint16 timepointIndex, uint8 communityFeeToken0, uint8 communityFeeToken1, bool unlocked)',
+  'function liquidity() external view returns (uint128)',
 ];
 
 const UNISWAP_V3_POOLS = [
@@ -174,6 +181,25 @@ const UNISWAP_V3_POOLS = [
 
 const CAMELOT_POOLS = [
   { outputPair: 'ETH/USDC', pool: '0x84652bb2539513BAf36e225c930Fdd8eaa63CE27', decimals0: 18, decimals1: 6, fee: 0.003, priceMode: 'direct' },
+];
+
+// Camelot V3 (Algebra) pools — use fetchCamelotV3Pool(), NOT fetchUniV3Pool().
+// fee field = dynamic feeZto in millionths (249 = 0.0249%).
+const CAMELOT_V3_POOLS = [
+  // ARB/USDC — token0=ARB (18dec), token1=nativeUSDC (6dec)
+  // Dynamic fee: 249/1e6 = 0.0249%. Native USDC confirmed.
+  // Round-trip with UniV3 ARB/USDC: 0.0249% + 0.05% = 0.075%.
+  {
+    outputPair:     'ARB/USDC',
+    pool:           '0xfae2ae0a9f87fd35b5b0e24b47bac796a7eefea1',
+    decimals0:      18,
+    decimals1:      6,
+    priceMode:      'direct',
+    sanityMin:      0.01,
+    sanityMax:      20,
+    expectedToken0: '0x912CE59144191C1204E64559FE8253a0e49E6548',
+    expectedToken1: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+  },
 ];
 
 function nowIso() {
@@ -352,6 +378,68 @@ async function fetchCamelotPool(cfg, blockNumber) {
   }
 }
 
+// Algebra (Camelot V3) pool fetcher — separate from UniV3.
+// Uses globalState() to get sqrtPriceX96 and dynamic feeZto.
+// Math after extraction is identical to fetchUniV3Pool.
+async function fetchCamelotV3Pool(cfg, blockNumber) {
+  try {
+    const { result, meta } = await rpc.callDetailed(
+      `arb.camelotv3.${cfg.outputPair.replace('/','_')}.${cfg.pool.slice(0, 10)}`,
+      async (provider) => {
+        const c = new ethers.Contract(cfg.pool, POOL_ABI_ALGEBRA, provider);
+        const [gs, liq] = await Promise.all([
+          c.globalState({ blockTag: blockNumber }),
+          c.liquidity({ blockTag: blockNumber }),
+        ]);
+        return { gs, liq };
+      },
+      { timeoutMs: 1500, hedge: true }
+    );
+
+    const sqrtPriceX96 = result.gs[0];
+    const feeZto       = Number(result.gs[2]);
+
+    const price = sqrtPriceX96ToPrice(sqrtPriceX96, cfg.decimals0, cfg.decimals1, cfg.priceMode);
+
+    if (!isFinite(price) || price <= 0 || price > 1e15) {
+      throw new Error(`invalid price ${price}`);
+    }
+
+    // TOKEN-ORDER-GUARD — same discipline as UniV3
+    if (cfg.sanityMin !== undefined && cfg.sanityMax !== undefined) {
+      if (price < cfg.sanityMin || price > cfg.sanityMax) {
+        throw new Error(
+          `[TOKEN-ORDER-GUARD] price ${price.toFixed(4)} outside expected range ` +
+          `[${cfg.sanityMin}, ${cfg.sanityMax}] for ${cfg.outputPair}`
+        );
+      }
+    }
+
+    return {
+      ok: true,
+      price: {
+        pair:         cfg.outputPair,
+        pool:         cfg.pool,
+        price,
+        liquidity:    Number(result.liq),
+        liquidityRaw: result.liq.toString(),
+        tvlUSD:       null,
+        fee:          feeZto / 1_000_000,
+        tick:         Number(result.gs[1]),
+        source:       'camelot_v3_arbitrum_onchain',
+        venue:        'camelot_v3',
+        chain:        CHAIN_ID,
+        blockNumber,
+        endpointId:   meta.endpointId,
+        endpoint:     meta.urlRedacted,
+        timestamp:    nowIso(),
+      },
+    };
+  } catch (e) {
+    return { ok: false, venue: 'camelot_v3', pair: cfg.outputPair, pool: cfg.pool, error: String(e.message || e).slice(0, 160) };
+  }
+}
+
 async function arbitrumFetcher() {
   const startedAt = Date.now();
   const startedIso = nowIso();
@@ -374,7 +462,7 @@ async function arbitrumFetcher() {
         prices: [],
         chain: CHAIN_ID,
         chain_id: CHAIN_NUM,
-        venues: ['uniswap_v3', 'camelot_v2'],
+        venues: ['uniswap_v3', 'camelot_v2', 'camelot_v3'],
         timestamp: startedIso,
         durationMs: Date.now() - startedAt,
         blockNumber: null,
@@ -384,9 +472,9 @@ async function arbitrumFetcher() {
         endpointIdsSeen: [],
         endpointsSeen: [],
         stats: {
-          totalPools: UNISWAP_V3_POOLS.length + CAMELOT_POOLS.length,
+          totalPools: UNISWAP_V3_POOLS.length + CAMELOT_POOLS.length + CAMELOT_V3_POOLS.length,
           successCount: 0,
-          failureCount: UNISWAP_V3_POOLS.length + CAMELOT_POOLS.length,
+          failureCount: UNISWAP_V3_POOLS.length + CAMELOT_POOLS.length + CAMELOT_V3_POOLS.length,
           uniswapV3: {
             total: UNISWAP_V3_POOLS.length,
             success: 0,
@@ -396,6 +484,11 @@ async function arbitrumFetcher() {
             total: CAMELOT_POOLS.length,
             success: 0,
             failed: CAMELOT_POOLS.length,
+          },
+          camelotV3: {
+            total: CAMELOT_V3_POOLS.length,
+            success: 0,
+            failed: CAMELOT_V3_POOLS.length,
           },
         },
         failures: [
@@ -422,7 +515,13 @@ async function arbitrumFetcher() {
     (cfg) => fetchCamelotPool(cfg, blockNumber)
   );
 
-  const combined = [...uniResults, ...camelotResults];
+  const camelotV3Results = await mapWithConcurrency(
+    CAMELOT_V3_POOLS,
+    FETCH_CONCURRENCY,
+    (cfg) => fetchCamelotV3Pool(cfg, blockNumber)
+  );
+
+  const combined = [...uniResults, ...camelotResults, ...camelotV3Results];
 
   const priceRows = combined
     .filter((x) => x && x.ok && x.price)
@@ -456,7 +555,7 @@ async function arbitrumFetcher() {
       prices: priceRows,
       chain: CHAIN_ID,
       chain_id: CHAIN_NUM,
-      venues: ['uniswap_v3', 'camelot_v2'],
+      venues: ['uniswap_v3', 'camelot_v2', 'camelot_v3'],
       timestamp: startedIso,
       durationMs,
       blockNumber,
@@ -466,7 +565,7 @@ async function arbitrumFetcher() {
       endpointIdsSeen,
       endpointsSeen,
       stats: {
-        totalPools: UNISWAP_V3_POOLS.length + CAMELOT_POOLS.length,
+        totalPools: UNISWAP_V3_POOLS.length + CAMELOT_POOLS.length + CAMELOT_V3_POOLS.length,
         successCount,
         failureCount,
         uniswapV3: {
@@ -478,6 +577,11 @@ async function arbitrumFetcher() {
           total: CAMELOT_POOLS.length,
           success: camelotResults.filter((x) => x && x.ok).length,
           failed: camelotResults.filter((x) => !x || !x.ok).length,
+        },
+        camelotV3: {
+          total: CAMELOT_V3_POOLS.length,
+          success: camelotV3Results.filter((x) => x && x.ok).length,
+          failed: camelotV3Results.filter((x) => !x || !x.ok).length,
         },
       },
       failures,
