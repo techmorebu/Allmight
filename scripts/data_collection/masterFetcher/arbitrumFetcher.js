@@ -116,9 +116,31 @@ const UNISWAP_V3_POOLS = [
     expectedToken1: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',  // USDT
   },
 
+  // ── Phase 2B Addition (2026-03-19) ───────────────────────────────────────
+  // ARB/nativeUSDC — validated via factory query + on-chain smoke test.
+  // token1 confirmed as Circle native USDC (0xaf88..), NOT USDCe (0xFF97..).
+  // Factory: getPool(ARB, nativeUSDC, 500) = 0xb0f6cA40...
+  // Purpose: direct ARB/USD surface for comparison against synthetic
+  //          ARB/WETH x ETH/USDC and ARB/WETH x ETH/USDT legs.
+  // Single-read direct-vs-synthetic gap observed ~1.1% — warrants persistence test.
+
+  // ARB/USDC — on-chain token0=ARB (18dec), token1=nativeUSDC (6dec)
+  {
+    outputPair:     "ARB/USDC",
+    pool:           "0xb0f6cA40411360c03d41C5fFc5F179b8403CdcF8",
+    decimals0:      18,
+    decimals1:      6,
+    fee:            500,
+    priceMode:      "direct",
+    sanityMin:      0.01,
+    sanityMax:      20,
+    expectedToken0: "0x912CE59144191C1204E64559FE8253a0e49E6548",  // ARB
+    expectedToken1: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",  // native USDC
+  },
+
   // ── Deferred pools ────────────────────────────────────────────────────────
-  // ARB/USDCe  0xcda53b1f... — DEFERRED: quote asset is USDCe (bridged/deprecated),
-  //   not native USDC. Hold until native-USDC ARB pool is identified.
+  // ARB/USDCe  0xcda53b1f... — DEFERRED: quote asset is USDCe (bridged/deprecated).
+  //   Identity confirmed by factory query 2026-03-19. Not native USDC.
 
   // ── Permanently retired pools (confirmed non-recoverable) ─────────────────
   // USDC/USDCe 0xfe8e29...  — CALL_EXCEPTION, USDCe deprecated
