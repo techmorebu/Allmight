@@ -110,7 +110,7 @@ const VENUE_DEFS = [
     name:          'sushiv3',
     displayName:   'SushiSwap V3',
     protocol:      'univ3_fork',
-    factory:       '0x1af415a1EbA07a4986a52B6f2e7dE7003D82231b',
+    factory:       '0x1af415a1EbA07a4986a52B6f2e7dE7003D82231e',
     feeTiers:      [100, 500, 3000, 10000],
     referenceOnly: false,
   },
