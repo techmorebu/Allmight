@@ -11,7 +11,7 @@
 require('dotenv').config();
 
 const { ethers } = require('ethers');
-const { createProvider } = require('./utils/provider_factory');
+const { createProvider } = require('../../utils/provider_factory');
 
 const rpc = createProvider('arbitrum');
 
