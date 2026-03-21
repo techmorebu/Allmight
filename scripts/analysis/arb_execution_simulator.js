@@ -1,147 +1,116 @@
 'use strict';
 /**
- * scripts/analysis/arb_execution_simulator.js  v2.0
+ * scripts/analysis/arb_opportunity_watcher.js
  *
  * Purpose:
- *   Simulate real execution conditions against detected opportunities.
- *   Answers the question: "Does the edge survive friction?"
+ *   Single-loop automation: detects executable opportunities AND immediately
+ *   simulates execution friction — no manual intervention required.
  *
- * What it models:
- *   1. Quote-to-execution drift  — price movement across +0/+1/+2 block delays
- *   2. Slippage vs size curve    — $10 → $200 sweep at actual UniV3 depth
- *   3. Gas cost (LIVE or MANUAL) — Arbitrum L2 live gas + ETH price reference
- *   4. Boss gate check           — spread >= fee+slip+gas AND depth >= $15k
- *                                  AND delay=0 profitable AND delay=1 non-negative
+ *   When spread > threshold AND depth > $15k:
+ *     → runs full size×delay simulation on that exact snapshot
+ *     → evaluates Boss gate (d0 > 0, d1 >= 0, depth >= $15k)
+ *     → logs result to console + optionally to JSONL file
+ *     → enters cooldown to avoid hammering the same window
  *
  * Usage:
- *   node -r dotenv/config scripts/analysis/arb_execution_simulator.js --sweep
- *   node -r dotenv/config scripts/analysis/arb_execution_simulator.js --sweep --gas=manual
- *   node -r dotenv/config scripts/analysis/arb_execution_simulator.js --size=50 --delay=1
- *   node -r dotenv/config scripts/analysis/arb_execution_simulator.js --sweep --json
+ *   node -r dotenv/config scripts/analysis/arb_opportunity_watcher.js
+ *   node -r dotenv/config scripts/analysis/arb_opportunity_watcher.js --gas=manual
+ *   node -r dotenv/config scripts/analysis/arb_opportunity_watcher.js --duration=3600
+ *   node -r dotenv/config scripts/analysis/arb_opportunity_watcher.js --log=./opp_log.jsonl
  *
- * Gas modes:
- *   --gas=live    (default) fetch live gasPrice from Arbitrum chain via provider.getFeeData()
- *   --gas=manual  fallback  use hardcoded conservative values
+ * Output:
+ *   - Live tick display (same as trigger_monitor, suppresses noise)
+ *   - ★★★ banner + full simulation table when gate fires
+ *   - Optional JSONL log file (one JSON line per opportunity + sim result)
  *
  * Hard rules:
  *   - No execution logic
- *   - No smart contract calls beyond pool reads and getFeeData
+ *   - No smart contract calls beyond pool reads + getFeeData
  *   - No flash loan logic
  *   - provider_factory.js ONLY
  *   - Promise.all only within single rpc.callDetailed() on same contract
+ *   - Serial loops with sleep for delay snapshots
  */
 
 require('dotenv').config();
 
-const { ethers }         = require('ethers');
+const fs             = require('fs');
+const { ethers }     = require('ethers');
 const { createProvider } = require('../../utils/provider_factory');
 
 // ─────────────────────────────────────────────────────────────────────────────
 // POOL CONSTANTS
 // ─────────────────────────────────────────────────────────────────────────────
 const UNIV3_POOL       = '0xb0f6cA40411360c03d41C5fFc5F179b8403CdcF8';
-const UNIV3_FEE_FRAC   = 0.0005;     // 0.05%
+const UNIV3_FEE_FRAC   = 0.0005;
 const CAMELOT_POOL     = '0xfae2ae0a9f87fd35b5b0e24b47bac796a7eefea1';
-const CAMELOT_FEE_FRAC = 0.000249;   // 0.0249% measured
+const CAMELOT_FEE_FRAC = 0.000249;
 
-const DEC0 = 18;  // ARB
-const DEC1 = 6;   // USDC
+const DEC0 = 18;
+const DEC1 = 6;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// GAS MODEL DEFAULTS  (manual fallback)
-//   Arbitrum floor gas is typically 0.005–0.02 gwei off-peak.
-//   500k gas units is conservative for a 2-leg arb via flash loan + 2 swaps.
-//   ETH price hardcoded — no oracle call needed at this simulation stage.
+// TRIGGER CONFIG (mirrors arb_trigger_monitor.js defaults)
+// ─────────────────────────────────────────────────────────────────────────────
+const TRIGGER_BUFFER_PCT    = 0.02;   // safety buffer on top of fees+slippage
+const TRIGGER_SIZE_USD      = 25;     // reference size for trigger threshold
+const GATE_MIN_DEPTH_USD    = 15_000;
+const POLL_INTERVAL_MS      = 1_500;
+const COOLDOWN_AFTER_SIM_MS = 10_000; // wait after sim before detecting again
+const ARBI_BLOCK_MS         = 250;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SIMULATION CONFIG
+// ─────────────────────────────────────────────────────────────────────────────
+const SIM_SIZE_RANGE  = [10, 25, 50, 100, 200];
+const SIM_DELAY_RANGE = [0, 1, 2];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GAS MODEL
 // ─────────────────────────────────────────────────────────────────────────────
 const GAS_MANUAL = {
-  gasPriceGwei:   0.01,     // conservative Arbitrum floor
-  estimatedUnits: 500_000,  // 2-leg arb tx gas estimate
-  ethPriceUSD:    2000,     // ETH reference price
+  gasPriceGwei:   0.01,
+  estimatedUnits: 500_000,
+  ethPriceUSD:    2000,
   source:         'manual',
 };
 
-// Boss gate constants
-const GATE_MIN_DEPTH_USD = 15_000;
-const ARBI_BLOCK_MS      = 250;
-
-// ─────────────────────────────────────────────────────────────────────────────
-// LIVE GAS FETCH
-//   Uses provider.getFeeData() — standard ethers.js call, no extra contracts.
-//   Returns gasPrice in wei; we convert to gwei.
-//   Falls back to manual if fetch fails.
-// ─────────────────────────────────────────────────────────────────────────────
 async function fetchLiveGasModel(rpc) {
   try {
     const res = await rpc.callDetailed(
-      'sim.gas.feedata',
+      'watcher.gas.feedata',
       async (provider) => provider.getFeeData(),
       { timeoutMs: 3000, hedge: true }
     );
     const fd = res.result;
-    const gasPriceWei = fd.gasPrice ?? fd.maxFeePerGas ?? fd.lastBaseFeePerGas;
-    if (!gasPriceWei) throw new Error('no gasPrice field in feeData');
-    return {
-      gasPriceGwei:   Number(gasPriceWei) / 1e9,
-      estimatedUnits: GAS_MANUAL.estimatedUnits,
-      ethPriceUSD:    GAS_MANUAL.ethPriceUSD,
-      source:         'live',
-    };
+    const wei = fd.gasPrice ?? fd.maxFeePerGas ?? fd.lastBaseFeePerGas;
+    if (!wei) throw new Error('no gasPrice in feeData');
+    return { gasPriceGwei: Number(wei) / 1e9, estimatedUnits: 500_000, ethPriceUSD: 2000, source: 'live' };
   } catch (e) {
-    process.stderr.write(`\n  [gas] live fetch failed (${e.message}) — using manual fallback\n`);
+    process.stderr.write(`  [gas] live fetch failed (${e.message}) — using manual\n`);
     return { ...GAS_MANUAL, source: 'manual_fallback' };
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// GAS CALCULATIONS
-// ─────────────────────────────────────────────────────────────────────────────
-function calcGasUSD(gm) {
-  return gm.estimatedUnits * gm.gasPriceGwei * 1e-9 * gm.ethPriceUSD;
-}
-
-function calcGasPct(sizeUSD, gm) {
-  return (calcGasUSD(gm) / sizeUSD) * 100;
-}
+function calcGasUSD(gm) { return gm.estimatedUnits * gm.gasPriceGwei * 1e-9 * gm.ethPriceUSD; }
+function calcGasPct(size, gm) { return (calcGasUSD(gm) / size) * 100; }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PRICE / SLIPPAGE MATH
+// MATH
 // ─────────────────────────────────────────────────────────────────────────────
 function sqrtPriceToUSDC(sqrtPriceX96) {
-  const Q96   = 2n ** 96n;
-  const sqrtP = Number(sqrtPriceX96) / Number(Q96);
+  const sqrtP = Number(sqrtPriceX96) / Number(2n ** 96n);
   return sqrtP * sqrtP * Math.pow(10, DEC0 - DEC1);
 }
-
-function activeTickDepthUSD(liquidityRaw, sqrtPriceX96) {
-  const Q96   = 2n ** 96n;
-  const sqrtP = Number(sqrtPriceX96) / Number(Q96);
-  return (Number(liquidityRaw) * sqrtP) / Math.pow(10, DEC1);
+function activeTickDepthUSD(liq, sqrtPriceX96) {
+  const sqrtP = Number(sqrtPriceX96) / Number(2n ** 96n);
+  return (Number(liq) * sqrtP) / Math.pow(10, DEC1);
 }
-
-function slippagePct(sizeUSD, depthUSD) {
-  if (depthUSD <= 0) return Infinity;
-  return (sizeUSD / (2 * depthUSD)) * 100;
+function slippagePct(size, depth) {
+  return depth <= 0 ? Infinity : (size / (2 * depth)) * 100;
 }
-
-function spreadPct(priceA, priceB) {
-  return Math.abs(priceA - priceB) / Math.min(priceA, priceB) * 100;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// BOSS GATE EVALUATION
-//   All four must be true to promote toward execution prep
-// ─────────────────────────────────────────────────────────────────────────────
-function evaluateBossGate(d0Result, d1Result) {
-  if (!d0Result || !d1Result) {
-    return { passed: false, reason: 'missing delay data' };
-  }
-  const checks = {
-    depth_above_15k:     d0Result.uniDepth >= GATE_MIN_DEPTH_USD,
-    delay0_profitable:   d0Result.finalEdge > 0,
-    delay1_non_negative: d1Result.finalEdge >= 0,
-    spread_above_fees:   d0Result.executedSpread > d0Result.feeBurden + d0Result.gasPct,
-  };
-  return { passed: Object.values(checks).every(Boolean), checks };
+function spreadPct(a, b) {
+  return Math.abs(a - b) / Math.min(a, b) * 100;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -161,63 +130,54 @@ const ALGEBRA_ABI = [
 // ─────────────────────────────────────────────────────────────────────────────
 async function readBothPools(blockNumber, rpc) {
   const [uniRes, camRes] = await Promise.all([
-    rpc.callDetailed(
-      `sim.univ3.${blockNumber}`,
-      async (provider) => {
-        const pool = new ethers.Contract(UNIV3_POOL, UNIV3_ABI, provider);
-        const [s0, liq] = await Promise.all([
-          pool.slot0({ blockTag: blockNumber }),
-          pool.liquidity({ blockTag: blockNumber }),
-        ]);
-        return { s0, liq };
-      },
-      { timeoutMs: 3000, hedge: true }
-    ),
-    rpc.callDetailed(
-      `sim.camelot.${blockNumber}`,
-      async (provider) => {
-        const pool = new ethers.Contract(CAMELOT_POOL, ALGEBRA_ABI, provider);
-        const [gs, liq] = await Promise.all([
-          pool.globalState({ blockTag: blockNumber }),
-          pool.liquidity({ blockTag: blockNumber }),
-        ]);
-        return { gs, liq };
-      },
-      { timeoutMs: 3000, hedge: true }
-    ),
+    rpc.callDetailed(`watcher.univ3.${blockNumber}`, async (p) => {
+      const pool = new ethers.Contract(UNIV3_POOL, UNIV3_ABI, p);
+      const [s0, liq] = await Promise.all([
+        pool.slot0({ blockTag: blockNumber }),
+        pool.liquidity({ blockTag: blockNumber }),
+      ]);
+      return { s0, liq };
+    }, { timeoutMs: 2000, hedge: true }),
+    rpc.callDetailed(`watcher.camelot.${blockNumber}`, async (p) => {
+      const pool = new ethers.Contract(CAMELOT_POOL, ALGEBRA_ABI, p);
+      const [gs, liq] = await Promise.all([
+        pool.globalState({ blockTag: blockNumber }),
+        pool.liquidity({ blockTag: blockNumber }),
+      ]);
+      return { gs, liq };
+    }, { timeoutMs: 2000, hedge: true }),
   ]);
 
   const uniSqrtP  = uniRes.result.s0[0];
-  const uniLiq    = uniRes.result.liq;
   const camSqrtP  = camRes.result.gs[0];
   const camFeeRaw = Number(camRes.result.gs[2]);
 
   return {
     uniPrice:   sqrtPriceToUSDC(uniSqrtP),
     camPrice:   sqrtPriceToUSDC(camSqrtP),
-    uniDepth:   activeTickDepthUSD(uniLiq, uniSqrtP),
+    uniDepth:   activeTickDepthUSD(uniRes.result.liq, uniSqrtP),
     camFee:     camFeeRaw > 0 ? camFeeRaw / 10000 / 100 : CAMELOT_FEE_FRAC,
     blockNumber,
   };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SIMULATE ONE POINT
+// SINGLE SIM POINT
 // ─────────────────────────────────────────────────────────────────────────────
-function simulateOne(detected, delayed, sizeUSD, gm) {
-  const detectedSpread = spreadPct(detected.uniPrice, detected.camPrice);
-  const executedSpread = spreadPct(delayed.uniPrice, delayed.camPrice);
-  const slip           = slippagePct(sizeUSD, delayed.uniDepth);
-  const feeBurden      = (UNIV3_FEE_FRAC + delayed.camFee) * 100;
-  const gasUsd         = calcGasUSD(gm);
-  const gasPct         = calcGasPct(sizeUSD, gm);
-  const finalEdge      = executedSpread - feeBurden - slip - gasPct;
+function simulateOne(detected, delayed, size, gm) {
+  const detSpread  = spreadPct(detected.uniPrice, detected.camPrice);
+  const execSpread = spreadPct(delayed.uniPrice, delayed.camPrice);
+  const slip       = slippagePct(size, delayed.uniDepth);
+  const feeBurden  = (UNIV3_FEE_FRAC + delayed.camFee) * 100;
+  const gasUsd     = calcGasUSD(gm);
+  const gasPct     = calcGasPct(size, gm);
+  const finalEdge  = execSpread - feeBurden - slip - gasPct;
 
   return {
-    size:           sizeUSD,
+    size,
     delayBlocks:    delayed.blockNumber - detected.blockNumber,
-    detectedEdge:   +detectedSpread.toFixed(5),
-    executedSpread: +executedSpread.toFixed(5),
+    detectedEdge:   +detSpread.toFixed(5),
+    executedSpread: +execSpread.toFixed(5),
     slippage:       +slip.toFixed(5),
     feeBurden:      +feeBurden.toFixed(5),
     gasUsd:         +gasUsd.toFixed(6),
@@ -232,71 +192,80 @@ function simulateOne(detected, delayed, sizeUSD, gm) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SWEEP
+// BOSS GATE
 // ─────────────────────────────────────────────────────────────────────────────
-const SIZE_RANGE  = [10, 25, 50, 100, 200];
-const DELAY_RANGE = [0, 1, 2];
+function bossGate(d0, d1) {
+  if (!d0 || !d1) return { passed: false, reason: 'missing data' };
+  const checks = {
+    depth_above_15k:     d0.uniDepth >= GATE_MIN_DEPTH_USD,
+    delay0_profitable:   d0.finalEdge > 0,
+    delay1_non_negative: d1.finalEdge >= 0,
+    spread_above_fees:   d0.executedSpread > d0.feeBurden + d0.gasPct,
+  };
+  return { passed: Object.values(checks).every(Boolean), checks };
+}
 
-async function runSweep(rpc, gm, jsonMode) {
-  const { blockNumber: baseBlock } = await rpc.getBlockNumber(
-    'sim.sweep.block', { timeoutMs: 3000, hedge: true }
-  );
+// ─────────────────────────────────────────────────────────────────────────────
+// FULL SIMULATION — runs immediately on a detected snapshot
+// ─────────────────────────────────────────────────────────────────────────────
+async function runSimulation(detectedSnap, rpc, gm) {
+  const baseBlock = detectedSnap.blockNumber;
 
-  if (!jsonMode) {
-    console.log(`\n[arb_execution_simulator v2.0] ${new Date().toISOString()}`);
-    console.log(`  SWEEP MODE — baseBlock ${baseBlock}`);
-    console.log(`  Gas: ${gm.source} | ${gm.gasPriceGwei.toFixed(6)} gwei | $${calcGasUSD(gm).toFixed(6)}/tx (${gm.estimatedUnits.toLocaleString()} units × $${gm.ethPriceUSD} ETH)`);
-  }
-
-  const detected = await readBothPools(baseBlock, rpc);
-  const snaps    = {};
-  for (const d of DELAY_RANGE) {
+  // Read delay snapshots serially
+  const snaps = { 0: detectedSnap };
+  for (const d of [1, 2]) {
     await sleep(400);
-    snaps[d] = await readBothPools(baseBlock + d, rpc);
-  }
-
-  // Build result matrix  [delay][size]
-  const matrix = {};
-  const allResults = [];
-  for (const d of DELAY_RANGE) {
-    matrix[d] = {};
-    for (const s of SIZE_RANGE) {
-      const r = simulateOne(detected, snaps[d], s, gm);
-      matrix[d][s] = r;
-      allResults.push(r);
+    try {
+      snaps[d] = await readBothPools(baseBlock + d, rpc);
+    } catch (e) {
+      snaps[d] = { ...detectedSnap, blockNumber: baseBlock + d }; // fallback: same price
     }
   }
 
-  // Boss gate per size
+  // Build matrix
+  const matrix = {};
+  const all    = [];
+  for (const d of SIM_DELAY_RANGE) {
+    matrix[d] = {};
+    for (const s of SIM_SIZE_RANGE) {
+      const r = simulateOne(detectedSnap, snaps[d], s, gm);
+      matrix[d][s] = r;
+      all.push(r);
+    }
+  }
+
+  // Gates per size
   const gates = {};
-  for (const s of SIZE_RANGE) {
-    gates[s] = evaluateBossGate(matrix[0][s], matrix[1][s]);
+  for (const s of SIM_SIZE_RANGE) {
+    gates[s] = bossGate(matrix[0][s], matrix[1][s]);
   }
 
-  if (jsonMode) {
-    console.log(JSON.stringify({
-      mode: 'sweep', baseBlock,
-      gas: { source: gm.source, gasPriceGwei: gm.gasPriceGwei, gasUsd: +calcGasUSD(gm).toFixed(6) },
-      results: allResults, gates,
-    }, null, 2));
-    return;
-  }
+  return { matrix, all, gates, snaps };
+}
 
+// ─────────────────────────────────────────────────────────────────────────────
+// PRINT SIM RESULTS
+// ─────────────────────────────────────────────────────────────────────────────
+function printSimResults(detectedSnap, simResult, gm, triggerTime) {
+  const { all, gates, matrix } = simResult;
   const W   = 120;
+  const EQ  = '★'.repeat(W);
   const DIV = '─'.repeat(W);
-  const EQ  = '═'.repeat(W);
+
   console.log('\n' + EQ);
-  console.log('  ARB/USDC — EXECUTION SIMULATOR v2.0   size × delay matrix');
+  console.log('  ★★★  OPPORTUNITY DETECTED + SIMULATED  ★★★');
+  console.log(`  Time: ${triggerTime}   Block: ${detectedSnap.blockNumber}`);
+  console.log(`  Snapshot: cam=$${detectedSnap.camPrice.toFixed(6)}  uni=$${detectedSnap.uniPrice.toFixed(6)}  depth=$${detectedSnap.uniDepth.toFixed(2)}`);
+  console.log(`  Gas: ${gm.source} | ${gm.gasPriceGwei.toFixed(6)} gwei | $${calcGasUSD(gm).toFixed(6)}/tx`);
   console.log(EQ);
   console.log(
     `  ${'size'.padEnd(7)} ${'delay'.padEnd(7)} ${'det%'.padEnd(9)} ${'exec%'.padEnd(9)} ` +
-    `${'slip%'.padEnd(9)} ${'fee%'.padEnd(8)} ${'gasUsd'.padEnd(10)} ${'gas%'.padEnd(9)} ` +
-    `${'final%'.padEnd(9)} ${'depth$'.padEnd(10)} status`
+    `${'slip%'.padEnd(9)} ${'fee%'.padEnd(8)} ${'gas%'.padEnd(9)} ${'final%'.padEnd(9)} status`
   );
   console.log('  ' + DIV);
 
   let lastDelay = null;
-  for (const r of allResults) {
+  for (const r of all) {
     if (lastDelay !== null && r.delayBlocks !== lastDelay) console.log('  ' + DIV);
     lastDelay = r.delayBlocks;
     const tag = r.status === 'PROFITABLE' ? '✓ PROFITABLE'
@@ -306,89 +275,196 @@ async function runSweep(rpc, gm, jsonMode) {
       `  $${String(r.size).padEnd(6)} ${(r.delayBlocks+'blk').padEnd(7)} ` +
       `${String(r.detectedEdge).padEnd(9)} ${String(r.executedSpread).padEnd(9)} ` +
       `${String(r.slippage).padEnd(9)} ${String(r.feeBurden).padEnd(8)} ` +
-      `$${String(r.gasUsd.toFixed(5)).padEnd(9)} ${String(r.gasPct).padEnd(9)} ` +
-      `${String(r.finalEdge).padEnd(9)} $${String(r.uniDepth).padEnd(9)} ${tag}`
+      `${String(r.gasPct).padEnd(9)} ${String(r.finalEdge).padEnd(9)} ${tag}`
     );
   }
 
-  console.log('\n' + EQ);
-  console.log('  BOSS GATE  (depth>=$15k  AND  d0>0  AND  d1>=0  AND  spread>fee+gas)');
+  console.log('\n  BOSS GATE  (depth>=$15k  d0>0  d1>=0  spread>fee+gas)');
   console.log('  ' + DIV);
-  for (const s of SIZE_RANGE) {
+  let anyGatePassed = false;
+  for (const s of SIM_SIZE_RANGE) {
     const g  = gates[s];
-    const ok = g.passed ? '✓ PASS' : '✗ FAIL';
-    const detail = g.checks
-      ? Object.entries(g.checks).map(([k,v]) => `${k}:${v?'Y':'N'}`).join('  ')
+    if (g.passed) anyGatePassed = true;
+    const ok = g.passed ? '✓ GATE PASS' : '✗ GATE FAIL';
+    const chk = g.checks
+      ? Object.entries(g.checks).map(([k,v]) => `${k.replace(/_/g,'-')}:${v?'Y':'N'}`).join('  ')
       : g.reason;
-    console.log(`  $${String(s).padEnd(5)} ${ok}   ${detail}`);
+    console.log(`  $${String(s).padEnd(6)} ${ok}   ${chk}`);
   }
 
-  const prof   = allResults.filter(r => r.status === 'PROFITABLE');
-  const marg   = allResults.filter(r => r.status === 'MARGINAL');
-  const lost   = allResults.filter(r => r.status === 'LOST');
-  console.log('\n' + EQ);
-  console.log(`  PROFITABLE: ${prof.length}/${allResults.length}   MARGINAL: ${marg.length}/${allResults.length}   LOST: ${lost.length}/${allResults.length}`);
+  // Summary line
+  const prof = all.filter(r => r.status === 'PROFITABLE');
+  const marg = all.filter(r => r.status === 'MARGINAL');
+  console.log('\n  ──────────────────────────────────────────────────────────');
+  console.log(`  PROFITABLE: ${prof.length}/${all.length}   MARGINAL: ${marg.length}/${all.length}   BOSS GATE: ${anyGatePassed ? '✓ PASS (at least one size)' : '✗ FAIL (all sizes)'}`);
   if (prof.length > 0) {
-    const best     = prof.reduce((a,b) => a.finalEdge > b.finalEdge ? a : b);
-    const profSizes = [...new Set(prof.map(r => '$'+r.size))].join(', ');
-    console.log(`  Best:       size=$${best.size}  delay=${best.delayBlocks}blk  finalEdge=+${best.finalEdge}%  depth=$${best.uniDepth}`);
-    console.log(`  Profitable sizes (any delay): ${profSizes}`);
-    // First size where delay-0 final edge goes negative
-    const firstLoss = SIZE_RANGE.find(s => (matrix[0][s]?.finalEdge ?? -1) < 0);
-    if (firstLoss) console.log(`  Edge turns negative (delay=0) at: $${firstLoss}`);
+    const best = prof.reduce((a,b) => a.finalEdge > b.finalEdge ? a : b);
+    console.log(`  Best: size=$${best.size}  delay=${best.delayBlocks}blk  finalEdge=+${best.finalEdge}%`);
+    const negStart = SIM_SIZE_RANGE.find(s => (matrix[0]?.[s]?.finalEdge ?? -1) < 0);
+    if (negStart) console.log(`  Edge turns negative at: $${negStart} (delay=0)`);
   }
   console.log(EQ + '\n');
+
+  return anyGatePassed;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SINGLE MODE
+// JSONL LOGGER
 // ─────────────────────────────────────────────────────────────────────────────
-async function runSingle(sizeUSD, delayBlocks, rpc, gm, jsonMode) {
-  const { blockNumber: baseBlock } = await rpc.getBlockNumber(
-    'sim.single.block', { timeoutMs: 3000, hedge: true }
-  );
-
-  if (!jsonMode) {
-    console.log(`\n[arb_execution_simulator v2.0] ${new Date().toISOString()}`);
-    console.log(`  SINGLE MODE — size=$${sizeUSD}  delay=${delayBlocks}blk  gas=${gm.source}`);
+function appendLog(logPath, record) {
+  if (!logPath) return;
+  try {
+    fs.appendFileSync(logPath, JSON.stringify(record) + '\n');
+  } catch (e) {
+    process.stderr.write(`  [log] write failed: ${e.message}\n`);
   }
+}
 
-  const detected = await readBothPools(baseBlock, rpc);
-  let   delayed  = detected;
-  if (delayBlocks > 0) {
-    await sleep(delayBlocks * 400);
-    delayed = await readBothPools(baseBlock + delayBlocks, rpc);
-  }
+// ─────────────────────────────────────────────────────────────────────────────
+// MAIN WATCH LOOP
+// ─────────────────────────────────────────────────────────────────────────────
+async function watchLoop(rpc, gm, durationS, logPath) {
+  const endMs    = Date.now() + durationS * 1000;
+  let lastBlock  = null;
+  let lastStatus = null;
+  let inCooldown = false;
+  let cooldownUntil = 0;
 
-  const result = simulateOne(detected, delayed, sizeUSD, gm);
+  // Session stats
+  const stats = {
+    ticks:         0,
+    errors:        0,
+    detections:    0,
+    gatePasses:    0,
+    startMs:       Date.now(),
+  };
 
-  if (jsonMode) {
-    console.log(JSON.stringify({ mode: 'single', baseBlock,
-      gas: { source: gm.source, gasPriceGwei: gm.gasPriceGwei, gasUsd: +calcGasUSD(gm).toFixed(6) },
-      result }, null, 2));
-    return;
-  }
-
-  const LINE = '═'.repeat(92);
+  const LINE = '═'.repeat(108);
   console.log('\n' + LINE);
-  console.log('  ARB/USDC — EXECUTION SIMULATOR v2.0  SINGLE');
+  console.log('  ARB/USDC — OPPORTUNITY WATCHER   (trigger + auto-simulate)');
+  console.log(`  Gas: ${gm.source}  |  ${gm.gasPriceGwei.toFixed(6)} gwei  |  $${calcGasUSD(gm).toFixed(6)}/tx`);
+  console.log(`  Duration: ${durationS}s   Cooldown after sim: ${COOLDOWN_AFTER_SIM_MS/1000}s`);
+  if (logPath) console.log(`  Log file: ${logPath}`);
   console.log(LINE);
-  console.log(`  Detected block:    ${baseBlock}`);
-  console.log(`  Executed block:    ${baseBlock + delayBlocks}  (+${delayBlocks} blk ~${delayBlocks * ARBI_BLOCK_MS}ms)`);
-  console.log(`  Direction:         ${result.direction}`);
-  console.log(`  Notional size:     $${result.size}`);
-  console.log('');
-  console.log(`  Detected spread:   ${result.detectedEdge}%`);
-  console.log(`  Executed spread:   ${result.executedSpread}%`);
-  console.log(`  Slippage:         -${result.slippage}%   (size / 2×$${result.uniDepth})`);
-  console.log(`  Fee burden:       -${result.feeBurden}%`);
-  console.log(`  Gas cost:         -${result.gasPct}%   ($${result.gasUsd} | ${gm.gasPriceGwei.toFixed(6)} gwei | ${gm.source})`);
-  console.log('                     ─────────');
-  console.log(`  Final edge:       ${result.finalEdge >= 0 ? '+' : ''}${result.finalEdge}%`);
-  console.log('');
-  console.log(`  STATUS:  ${result.status}`);
+  console.log(
+    `  ${'time'.padEnd(10)} ${'block'.padEnd(12)} ${'cam'.padEnd(10)} ${'uni'.padEnd(10)} ` +
+    `${'spread%'.padEnd(10)} ${'thresh%'.padEnd(10)} ${'depth$'.padEnd(10)} state`
+  );
+  console.log('  ' + '─'.repeat(106));
+
+  while (Date.now() < endMs) {
+    const loopStart = Date.now();
+
+    // Get current block
+    let blockNumber;
+    try {
+      const b = await rpc.getBlockNumber('watcher.block', { timeoutMs: 1200, hedge: true });
+      blockNumber = b.blockNumber;
+    } catch {
+      stats.errors++;
+      await sleep(POLL_INTERVAL_MS);
+      continue;
+    }
+
+    // Skip if cooldown active
+    if (inCooldown && Date.now() < cooldownUntil) {
+      await sleep(POLL_INTERVAL_MS);
+      continue;
+    }
+    inCooldown = false;
+
+    // Read pools
+    let snap;
+    try {
+      snap = await readBothPools(blockNumber, rpc);
+    } catch (e) {
+      stats.errors++;
+      process.stdout.write(`  [!] ${fmtTime()} ERR: ${String(e.message).slice(0,80)}\n`);
+      await sleep(POLL_INTERVAL_MS);
+      continue;
+    }
+
+    stats.ticks++;
+
+    // Compute trigger metrics (using reference size for threshold)
+    const spread    = spreadPct(snap.uniPrice, snap.camPrice);
+    const feeBurden = (UNIV3_FEE_FRAC + snap.camFee) * 100;
+    const slip      = slippagePct(TRIGGER_SIZE_USD, snap.uniDepth);
+    const threshold = feeBurden + slip + TRIGGER_BUFFER_PCT;
+    const triggered = spread > threshold && snap.uniDepth >= GATE_MIN_DEPTH_USD;
+
+    const stateLabel = triggered   ? '★ TRIGGERED'
+                     : snap.uniDepth < GATE_MIN_DEPTH_USD ? 'low_depth'
+                     : spread < feeBurden ? 'blocked_fee'
+                     : 'blocked_slippage';
+
+    // Print tick only on block change or state change
+    const isNew = blockNumber !== lastBlock || stateLabel !== lastStatus;
+    if (isNew) {
+      const line =
+        `  ${fmtTime().padEnd(10)} ${String(blockNumber).padEnd(12)} ` +
+        `$${snap.camPrice.toFixed(5).padEnd(9)} $${snap.uniPrice.toFixed(5).padEnd(9)} ` +
+        `${String(spread.toFixed(5)).padEnd(10)} ${String(threshold.toFixed(5)).padEnd(10)} ` +
+        `$${snap.uniDepth.toFixed(2).padEnd(9)} ${stateLabel}`;
+      if (triggered) console.log('\x1b[1m' + line + '\x1b[0m');
+      else console.log(line);
+      lastBlock  = blockNumber;
+      lastStatus = stateLabel;
+    }
+
+    // If triggered — run simulation immediately
+    if (triggered) {
+      stats.detections++;
+      const triggerTime = new Date().toISOString();
+      console.log(`\n  → Trigger confirmed at block ${blockNumber}. Running simulation...`);
+
+      try {
+        const simResult  = await runSimulation(snap, rpc, gm);
+        const gatePassed = printSimResults(snap, simResult, gm, triggerTime);
+        if (gatePassed) stats.gatePasses++;
+
+        appendLog(logPath, {
+          ts:          triggerTime,
+          block:       blockNumber,
+          spread:      +spread.toFixed(5),
+          threshold:   +threshold.toFixed(5),
+          uniDepth:    +snap.uniDepth.toFixed(2),
+          uniPrice:    +snap.uniPrice.toFixed(6),
+          camPrice:    +snap.camPrice.toFixed(6),
+          gasSource:   gm.source,
+          gasPriceGwei: gm.gasPriceGwei,
+          gatePassed,
+          simResults:  simResult.all,
+          gates:       simResult.gates,
+        });
+      } catch (e) {
+        console.error(`  [sim] ERROR: ${e.message}`);
+      }
+
+      // Enter cooldown so we don't re-simulate the same window on every tick
+      inCooldown    = true;
+      cooldownUntil = Date.now() + COOLDOWN_AFTER_SIM_MS;
+      console.log(`  → Cooldown ${COOLDOWN_AFTER_SIM_MS/1000}s — watching for next opportunity...\n`);
+    }
+
+    const elapsed = Date.now() - loopStart;
+    await sleep(Math.max(0, POLL_INTERVAL_MS - elapsed));
+  }
+
+  // Final summary
+  const elapsed = ((Date.now() - stats.startMs) / 1000).toFixed(0);
+  console.log('\n' + LINE);
+  console.log(`  WATCHER SUMMARY   (${elapsed}s  |  ${stats.ticks} ticks  |  ${stats.errors} errors)`);
+  console.log(`  Triggers detected:  ${stats.detections}`);
+  console.log(`  Boss gate passes:   ${stats.gatePasses}`);
   console.log(LINE + '\n');
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
+function fmtTime() { return new Date().toISOString().slice(11, 19); }
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CLI PARSER
@@ -398,11 +474,9 @@ function parseArgs() {
   const getN = (f, d) => { const a = args.find(a => a.startsWith(f+'=')); return a ? Number(a.split('=')[1]) : d; };
   const getS = (f, d) => { const a = args.find(a => a.startsWith(f+'=')); return a ? a.split('=')[1] : d; };
   return {
-    sweep:   args.includes('--sweep'),
-    json:    args.includes('--json'),
-    size:    getN('--size',  25),
-    delay:   getN('--delay',  1),
-    gasMode: getS('--gas', 'live'),
+    gasMode:  getS('--gas',      'live'),
+    duration: getN('--duration', 1800),      // default 30 minutes
+    logPath:  getS('--log',      null),
   };
 }
 
@@ -410,27 +484,21 @@ function parseArgs() {
 // MAIN
 // ─────────────────────────────────────────────────────────────────────────────
 async function main() {
-  const { sweep, json, size, delay, gasMode } = parseArgs();
+  const { gasMode, duration, logPath } = parseArgs();
   const rpc = createProvider('arbitrum');
 
   let gm;
   if (gasMode === 'manual') {
     gm = { ...GAS_MANUAL };
-    if (!json) console.log(`\n  Gas mode: manual (${gm.gasPriceGwei} gwei)`);
+    console.log(`\n  Gas mode: manual (${gm.gasPriceGwei} gwei)`);
   } else {
-    if (!json) process.stdout.write('\n  Fetching live Arbitrum gas price... ');
+    process.stdout.write('\n  Fetching live Arbitrum gas price... ');
     gm = await fetchLiveGasModel(rpc);
-    if (!json) console.log(`${gm.gasPriceGwei.toFixed(6)} gwei | $${calcGasUSD(gm).toFixed(6)}/tx`);
+    console.log(`${gm.gasPriceGwei.toFixed(6)} gwei | $${calcGasUSD(gm).toFixed(6)}/tx`);
   }
 
-  if (sweep) {
-    await runSweep(rpc, gm, json);
-  } else {
-    await runSingle(size, delay, rpc, gm, json);
-  }
+  await watchLoop(rpc, gm, duration, logPath);
 }
-
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 main().catch(err => {
   console.error('\n[FATAL]', err.message || err);
