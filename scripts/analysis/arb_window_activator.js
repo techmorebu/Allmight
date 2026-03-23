@@ -1,0 +1,623 @@
+'use strict';
+/**
+ * scripts/analysis/arb_window_activator.js
+ *
+ * Purpose:
+ *   Automate transitions between PASSIVE → ARMED → EXECUTABLE states.
+ *   Connects tick map thresholds → price monitoring → depth gate → simulator → signal.
+ *
+ * Key distinction from arb_opportunity_watcher.js:
+ *   The watcher uses hardcoded price thresholds ($0.1000).
+ *   This activator derives thresholds DYNAMICALLY from a live tick map query.
+ *   If liquidity moves (LP repositions), the activator adapts automatically.
+ *   It also emits structured EXECUTION_READY signals — the clean output layer
+ *   that future execution logic will consume.
+ *
+ * Architecture (Boss ruling 2026-03-23):
+ *   [tick map]  → nearest HIGH zone price  → ARMED threshold
+ *   [price]     → crosses ARMED threshold  → switch to high-freq
+ *   [depth]     → crosses $15k             → run simulator
+ *   [simulator] → passes Boss gate          → emit EXECUTION_READY
+ *
+ * Signal format (EXECUTION_READY):
+ *   {
+ *     "signal":      "EXECUTION_READY",
+ *     "ts":          "ISO timestamp",
+ *     "block":       444810000,
+ *     "uniPrice":    0.101200,
+ *     "camPrice":    0.100900,
+ *     "uniDepth":    17650.00,
+ *     "spread":      0.22600,
+ *     "bestSize":    25,
+ *     "bestDelay":   0,
+ *     "finalEdge":   0.07990,
+ *     "gasSource":   "live",
+ *     "gasPriceGwei": 0.008000,
+ *     "armedThreshold":  0.1000,       ← derived from tick map
+ *     "nearestHighTick": -299250,
+ *     "nearestHighPrice": 0.101015,
+ *     "nearestHighDepth": 17650.97
+ *   }
+ *
+ * Usage:
+ *   node -r dotenv/config scripts/analysis/arb_window_activator.js
+ *   node -r dotenv/config scripts/analysis/arb_window_activator.js --duration=28800
+ *   node -r dotenv/config scripts/analysis/arb_window_activator.js --gas=manual
+ *   node -r dotenv/config scripts/analysis/arb_window_activator.js --log=./logs/activator.jsonl
+ *   node -r dotenv/config scripts/analysis/arb_window_activator.js --remap-ticks
+ *     (force a fresh tick map scan on startup instead of using cached thresholds)
+ *
+ * Hard rules:
+ *   - NO execution logic
+ *   - NO contract deployment or calls beyond pool reads + getFeeData
+ *   - provider_factory.js ONLY
+ *   - Promise.all only within single rpc.callDetailed() on same contract
+ *   - Serial loops with sleep for multi-tick/delay reads
+ */
+
+require('dotenv').config();
+
+const fs             = require('fs');
+const path           = require('path');
+const { ethers }     = require('ethers');
+const { createProvider } = require('../../utils/provider_factory');
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POOL CONSTANTS
+// ─────────────────────────────────────────────────────────────────────────────
+const UNIV3_POOL       = '0xb0f6cA40411360c03d41C5fFc5F179b8403CdcF8';
+const UNIV3_FEE_FRAC   = 0.0005;
+const CAMELOT_POOL     = '0xfae2ae0a9f87fd35b5b0e24b47bac796a7eefea1';
+const CAMELOT_FEE_FRAC = 0.000249;
+const TICK_SPACING     = 10;
+const DEC0 = 18;  // ARB
+const DEC1 = 6;   // USDC
+
+// ─────────────────────────────────────────────────────────────────────────────
+// THRESHOLDS — static fallbacks, overridden by live tick map
+// ─────────────────────────────────────────────────────────────────────────────
+const STATIC_ARMED_PRICE    = 0.1000;   // Boss-approved static fallback
+const DEPTH_EXECUTION       = 15_000;
+const TICK_MAP_SCAN_RANGE   = 5_000;    // ±5000 ticks for threshold derivation
+const ARMED_BUFFER_TICKS    = 80;       // ticks below HIGH zone to arm early
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POLLING
+// ─────────────────────────────────────────────────────────────────────────────
+const POLL_PASSIVE_MS       = 1_500;
+const POLL_ARMED_MS         =   500;
+const COOLDOWN_AFTER_SIM_MS = 10_000;
+const TICK_MAP_REFRESH_MS   = 30 * 60 * 1000;  // re-run tick map every 30 min
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SIM CONFIG
+// ─────────────────────────────────────────────────────────────────────────────
+const TRIGGER_BUFFER_PCT = 0.02;
+const TRIGGER_SIZE_USD   = 25;
+const SIM_SIZE_RANGE     = [10, 25, 50, 100, 200];
+const SIM_DELAY_RANGE    = [0, 1, 2];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GAS MODEL
+// ─────────────────────────────────────────────────────────────────────────────
+const GAS_MANUAL = {
+  gasPriceGwei: 0.01, estimatedUnits: 500_000, ethPriceUSD: 2000, source: 'manual',
+};
+async function fetchLiveGasModel(rpc) {
+  try {
+    const res = await rpc.callDetailed('act.gas', async (p) => p.getFeeData(), { timeoutMs: 3000, hedge: true });
+    const fd  = res.result;
+    const wei = fd.gasPrice ?? fd.maxFeePerGas ?? fd.lastBaseFeePerGas;
+    if (!wei) throw new Error('no gasPrice');
+    return { gasPriceGwei: Number(wei) / 1e9, estimatedUnits: 500_000, ethPriceUSD: 2000, source: 'live' };
+  } catch (e) {
+    process.stderr.write(`  [gas] ${e.message} — manual fallback\n`);
+    return { ...GAS_MANUAL, source: 'manual_fallback' };
+  }
+}
+function calcGasUSD(gm)       { return gm.estimatedUnits * gm.gasPriceGwei * 1e-9 * gm.ethPriceUSD; }
+function calcGasPct(size, gm) { return (calcGasUSD(gm) / size) * 100; }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MATH
+// ─────────────────────────────────────────────────────────────────────────────
+function sqrtPriceToUSDC(sqrtPriceX96) {
+  const sqrtP = Number(sqrtPriceX96) / Number(2n ** 96n);
+  return sqrtP * sqrtP * Math.pow(10, DEC0 - DEC1);
+}
+function activeTickDepthUSD(liq, sqrtP96) {
+  const sqrtP = Number(sqrtP96) / Number(2n ** 96n);
+  return (Number(liq) * sqrtP) / Math.pow(10, DEC1);
+}
+function slippagePct(size, depth) { return depth <= 0 ? Infinity : (size / (2 * depth)) * 100; }
+function spreadPct(a, b)          { return Math.abs(a - b) / Math.min(a, b) * 100; }
+function tickToPrice(tick)        { return Math.pow(1.0001, tick) * Math.pow(10, DEC0 - DEC1); }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ABIs
+// ─────────────────────────────────────────────────────────────────────────────
+const UNIV3_ABI = [
+  'function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16, uint16, uint16, uint8, bool)',
+  'function liquidity() external view returns (uint128)',
+  'function tickBitmap(int16 wordPosition) external view returns (uint256)',
+  'function ticks(int24 tick) external view returns (uint128 liquidityGross, int128 liquidityNet, uint256, uint256, int56, uint160, uint32, bool initialized)',
+];
+const ALGEBRA_ABI = [
+  'function globalState() external view returns (uint160 sqrtPriceX96, int24 tick, uint16 fee, uint16, uint8, uint8, bool)',
+  'function liquidity() external view returns (uint128)',
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POOL READ (both pools)
+// ─────────────────────────────────────────────────────────────────────────────
+async function readBothPools(blockNumber, rpc) {
+  const [uniRes, camRes] = await Promise.all([
+    rpc.callDetailed(`act.univ3.${blockNumber}`, async (p) => {
+      const pool = new ethers.Contract(UNIV3_POOL, UNIV3_ABI, p);
+      const [s0, liq] = await Promise.all([pool.slot0({ blockTag: blockNumber }), pool.liquidity({ blockTag: blockNumber })]);
+      return { s0, liq };
+    }, { timeoutMs: 2000, hedge: true }),
+    rpc.callDetailed(`act.camelot.${blockNumber}`, async (p) => {
+      const pool = new ethers.Contract(CAMELOT_POOL, ALGEBRA_ABI, p);
+      const [gs, liq] = await Promise.all([pool.globalState({ blockTag: blockNumber }), pool.liquidity({ blockTag: blockNumber })]);
+      return { gs, liq };
+    }, { timeoutMs: 2000, hedge: true }),
+  ]);
+  const uniSqrtP  = uniRes.result.s0[0];
+  const camSqrtP  = camRes.result.gs[0];
+  const camFeeRaw = Number(camRes.result.gs[2]);
+  return {
+    uniPrice: sqrtPriceToUSDC(uniSqrtP),
+    camPrice: sqrtPriceToUSDC(camSqrtP),
+    uniDepth: activeTickDepthUSD(uniRes.result.liq, uniSqrtP),
+    camFee:   camFeeRaw > 0 ? camFeeRaw / 10000 / 100 : CAMELOT_FEE_FRAC,
+    blockNumber,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TICK MAP — derive ARMED threshold from nearest HIGH zone above current price
+// ─────────────────────────────────────────────────────────────────────────────
+async function deriveThresholdsFromTickMap(rpc) {
+  console.log('\n  [tick-map] Running threshold derivation...');
+
+  // Get current state
+  const stateRes = await rpc.callDetailed('act.tickmap.slot0', async (p) => {
+    const pool = new ethers.Contract(UNIV3_POOL, UNIV3_ABI, p);
+    const [s0, liq] = await Promise.all([pool.slot0(), pool.liquidity()]);
+    return { s0, liq };
+  }, { timeoutMs: 5000, hedge: true });
+
+  const sqrtP96    = stateRes.result.s0[0];
+  const currentTick = Number(stateRes.result.s0[1]);
+  const currentLiq  = stateRes.result.liq;
+  const currentPrice = sqrtPriceToUSDC(sqrtP96);
+
+  // Scan bitmap for initialized ticks
+  const minTick  = currentTick - TICK_MAP_SCAN_RANGE;
+  const maxTick  = currentTick + TICK_MAP_SCAN_RANGE;
+  const minWord  = Math.floor(currentTick / TICK_SPACING / 256) - Math.ceil(TICK_MAP_SCAN_RANGE / TICK_SPACING / 256) - 1;
+  const maxWord  = Math.floor(currentTick / TICK_SPACING / 256) + Math.ceil(TICK_MAP_SCAN_RANGE / TICK_SPACING / 256) + 1;
+
+  const initTicks = [];
+  for (let w = minWord; w <= maxWord; w++) {
+    try {
+      const res = await rpc.callDetailed(`act.bitmap.${w}`, async (p) => {
+        const pool = new ethers.Contract(UNIV3_POOL, UNIV3_ABI, p);
+        return pool.tickBitmap(w);
+      }, { timeoutMs: 3000, hedge: true });
+      const bm = BigInt(res.result.toString());
+      if (bm === 0n) { await sleep(50); continue; }
+      for (let bit = 0; bit < 256; bit++) {
+        if ((bm >> BigInt(bit)) & 1n) {
+          const tick = (w * 256 + bit) * TICK_SPACING;
+          if (tick >= minTick && tick <= maxTick) initTicks.push(tick);
+        }
+      }
+    } catch { /* skip */ }
+    await sleep(80);
+  }
+
+  // Read tick data serially
+  const tickData = {};
+  for (const tick of initTicks) {
+    try {
+      const res = await rpc.callDetailed(`act.tickdata.${tick}`, async (p) => {
+        const pool = new ethers.Contract(UNIV3_POOL, UNIV3_ABI, p);
+        return pool.ticks(tick);
+      }, { timeoutMs: 3000, hedge: true });
+      const d = res.result;
+      if (d[7]) tickData[tick] = { liquidityNet: BigInt(d[1].toString()), liquidityGross: BigInt(d[0].toString()) };
+    } catch { /* skip */ }
+    await sleep(60);
+  }
+
+  // Walk upward from current tick to find nearest HIGH zone
+  const sortedAbove = Object.keys(tickData).map(Number).filter(t => t > currentTick).sort((a, b) => a - b);
+  let liq = BigInt(currentLiq.toString());
+  let nearestHighTick = null;
+  let nearestHighDepth = 0;
+  let nearestHighPrice = 0;
+
+  for (const tick of sortedAbove) {
+    liq = liq + tickData[tick].liquidityNet;
+    if (liq < 0n) liq = 0n;
+    const depth = activeTickDepthUSD(liq, sqrtP96);
+    if (depth >= DEPTH_EXECUTION) {
+      nearestHighTick  = tick;
+      nearestHighDepth = depth;
+      nearestHighPrice = tickToPrice(tick);
+      break;
+    }
+  }
+
+  // Derive ARMED threshold: nearest HIGH zone price minus buffer ticks
+  let armedPrice = STATIC_ARMED_PRICE;
+  if (nearestHighTick !== null) {
+    const bufferTick = nearestHighTick - ARMED_BUFFER_TICKS;
+    armedPrice = tickToPrice(bufferTick);
+    // Never arm below static floor
+    armedPrice = Math.max(armedPrice, STATIC_ARMED_PRICE * 0.98);
+  }
+
+  console.log(`  [tick-map] currentTick=${currentTick}  price=$${currentPrice.toFixed(6)}`);
+  if (nearestHighTick !== null) {
+    console.log(`  [tick-map] Nearest HIGH zone: tick ${nearestHighTick}  price=$${nearestHighPrice.toFixed(6)}  depth=$${nearestHighDepth.toFixed(0)}`);
+    console.log(`  [tick-map] ARMED threshold set to: $${armedPrice.toFixed(6)}  (${ARMED_BUFFER_TICKS} ticks below HIGH zone)`);
+  } else {
+    console.log(`  [tick-map] No HIGH zone found within ±${TICK_MAP_SCAN_RANGE} ticks — using static fallback $${STATIC_ARMED_PRICE}`);
+  }
+
+  return { armedPrice, nearestHighTick, nearestHighPrice, nearestHighDepth, currentTick, currentPrice, derivedAt: Date.now() };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SIMULATE ONE POINT
+// ─────────────────────────────────────────────────────────────────────────────
+function simulateOne(detected, delayed, size, gm) {
+  const detSpread  = spreadPct(detected.uniPrice, detected.camPrice);
+  const execSpread = spreadPct(delayed.uniPrice, delayed.camPrice);
+  const slip       = slippagePct(size, delayed.uniDepth);
+  const feeBurden  = (UNIV3_FEE_FRAC + delayed.camFee) * 100;
+  const gasPct     = calcGasPct(size, gm);
+  const finalEdge  = execSpread - feeBurden - slip - gasPct;
+  return {
+    size, delayBlocks: delayed.blockNumber - detected.blockNumber,
+    detectedEdge: +detSpread.toFixed(5), executedSpread: +execSpread.toFixed(5),
+    slippage: +slip.toFixed(5), feeBurden: +feeBurden.toFixed(5),
+    gasUsd: +calcGasUSD(gm).toFixed(6), gasPct: +gasPct.toFixed(5),
+    finalEdge: +finalEdge.toFixed(5),
+    uniDepth: +delayed.uniDepth.toFixed(2),
+    uniPrice: +delayed.uniPrice.toFixed(6), camPrice: +delayed.camPrice.toFixed(6),
+    direction: delayed.uniPrice > delayed.camPrice ? 'sell_uni_buy_camelot' : 'buy_uni_sell_camelot',
+    status: finalEdge > 0.05 ? 'PROFITABLE' : finalEdge > 0 ? 'MARGINAL' : 'LOST',
+  };
+}
+
+// Boss gate
+function bossGate(d0, d1) {
+  if (!d0 || !d1) return { passed: false };
+  const checks = {
+    depth_above_15k:     d0.uniDepth >= DEPTH_EXECUTION,
+    delay0_profitable:   d0.finalEdge > 0,
+    delay1_non_negative: d1.finalEdge >= 0,
+    spread_above_fees:   d0.executedSpread > d0.feeBurden + d0.gasPct,
+  };
+  return { passed: Object.values(checks).every(Boolean), checks };
+}
+
+// Full simulation
+async function runSimulation(snap, rpc, gm) {
+  const base  = snap.blockNumber;
+  const snaps = { 0: snap };
+  for (const d of [1, 2]) {
+    await sleep(400);
+    try   { snaps[d] = await readBothPools(base + d, rpc); }
+    catch { snaps[d] = { ...snap, blockNumber: base + d }; }
+  }
+  const matrix = {};
+  const all    = [];
+  for (const d of SIM_DELAY_RANGE) {
+    matrix[d] = {};
+    for (const s of SIM_SIZE_RANGE) {
+      const r = simulateOne(snap, snaps[d], s, gm);
+      matrix[d][s] = r;
+      all.push(r);
+    }
+  }
+  const gates = {};
+  for (const s of SIM_SIZE_RANGE) gates[s] = bossGate(matrix[0][s], matrix[1][s]);
+  return { matrix, all, gates };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// EXECUTION_READY SIGNAL EMITTER
+// ─────────────────────────────────────────────────────────────────────────────
+function emitSignal(type, snap, simResult, gm, thresholds) {
+  const { all, matrix } = simResult;
+  const prof = all.filter(r => r.status !== 'LOST' && r.delayBlocks === 0);
+  const best = prof.length > 0 ? prof.reduce((a, b) => a.finalEdge > b.finalEdge ? a : b) : null;
+
+  const signal = {
+    signal:           type,   // EXECUTION_READY | SIMULATION_MARGINAL | SIMULATION_LOST
+    ts:               new Date().toISOString(),
+    block:            snap.blockNumber,
+    uniPrice:         +snap.uniPrice.toFixed(6),
+    camPrice:         +snap.camPrice.toFixed(6),
+    uniDepth:         +snap.uniDepth.toFixed(2),
+    spread:           +spreadPct(snap.uniPrice, snap.camPrice).toFixed(5),
+    bestSize:         best ? best.size : null,
+    bestDelay:        best ? best.delayBlocks : null,
+    finalEdge:        best ? best.finalEdge : null,
+    gasSource:        gm.source,
+    gasPriceGwei:     +gm.gasPriceGwei.toFixed(6),
+    armedThreshold:   +thresholds.armedPrice.toFixed(6),
+    nearestHighTick:  thresholds.nearestHighTick,
+    nearestHighPrice: thresholds.nearestHighPrice ? +thresholds.nearestHighPrice.toFixed(6) : null,
+    nearestHighDepth: thresholds.nearestHighDepth ? +thresholds.nearestHighDepth.toFixed(2) : null,
+  };
+
+  // Print signal banner
+  const STAR = type === 'EXECUTION_READY' ? '★' : '○';
+  const BAR  = STAR.repeat(90);
+  console.log('\n' + BAR);
+  console.log(`  ${STAR}${STAR}${STAR}  SIGNAL: ${type}  ${STAR}${STAR}${STAR}`);
+  console.log(`  ${signal.ts}   block=${signal.block}`);
+  console.log(`  price=$${signal.uniPrice}   depth=$${signal.uniDepth}   spread=${signal.spread}%`);
+  if (best) console.log(`  best: size=$${best.size}  delay=${best.delayBlocks}blk  edge=+${best.finalEdge}%`);
+  console.log(BAR + '\n');
+
+  return signal;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LOG
+// ─────────────────────────────────────────────────────────────────────────────
+function appendLog(logPath, record) {
+  if (!logPath) return;
+  try {
+    const dir = path.dirname(logPath);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.appendFileSync(logPath, JSON.stringify(record) + '\n');
+  } catch (e) {
+    process.stderr.write(`  [log] ${e.message}\n`);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MAIN ACTIVATION LOOP
+// ─────────────────────────────────────────────────────────────────────────────
+async function activatorLoop(rpc, gm, durationS, logPath, forceRemap) {
+  const endMs = Date.now() + durationS * 1000;
+
+  // Initial tick map scan
+  let thresholds;
+  if (!forceRemap) {
+    // Use known static thresholds from last tick map run (Boss-confirmed values)
+    thresholds = {
+      armedPrice:       STATIC_ARMED_PRICE,
+      nearestHighTick:  -299250,
+      nearestHighPrice: 0.101015,
+      nearestHighDepth: 17650.97,
+      currentTick:      -300177,
+      currentPrice:     0.092079,
+      derivedAt:        Date.now(),
+    };
+    console.log(`\n  [thresholds] Using confirmed static map  armedPrice=$${thresholds.armedPrice}  nearestHigh=$${thresholds.nearestHighPrice}`);
+  } else {
+    thresholds = await deriveThresholdsFromTickMap(rpc);
+  }
+  let tickMapRefreshAt = Date.now() + TICK_MAP_REFRESH_MS;
+
+  // State
+  let state         = 'PASSIVE';
+  let lastBlock     = null;
+  let lastPrintKey  = null;
+  let cooldownUntil = 0;
+
+  const stats = {
+    ticks: 0, errors: 0,
+    armedCount: 0, disarmedCount: 0,
+    simRuns: 0, readySignals: 0,
+    tickMapRefreshes: 0,
+    startMs: Date.now(),
+  };
+
+  const W   = 100;
+  const EQ  = '═'.repeat(W);
+  const DIV = '─'.repeat(W);
+
+  console.log('\n' + EQ);
+  console.log('  ARB/USDC — WINDOW ACTIVATOR   (tick-map-aware state machine)');
+  console.log(`  Gas: ${gm.source}  |  ${gm.gasPriceGwei.toFixed(6)} gwei  |  $${calcGasUSD(gm).toFixed(6)}/tx`);
+  console.log(`  ARMED threshold:    $${thresholds.armedPrice.toFixed(6)}  (dynamic, from tick map)`);
+  console.log(`  Nearest HIGH zone:  $${thresholds.nearestHighPrice?.toFixed(6) ?? 'none'}  depth=$${thresholds.nearestHighDepth?.toFixed(0) ?? '?'}`);
+  console.log(`  EXECUTION gate:     depth >= $${DEPTH_EXECUTION.toLocaleString()} + spread + d0>0 + d1>=0`);
+  console.log(`  Tick map refresh:   every ${TICK_MAP_REFRESH_MS / 60000} minutes`);
+  if (logPath) console.log(`  Log: ${logPath}`);
+  console.log(EQ);
+  console.log(`  ${'time'.padEnd(10)} ${'block'.padEnd(12)} ${'price$'.padEnd(10)} ${'depth$'.padEnd(10)} ${'spread%'.padEnd(9)} state`);
+  console.log('  ' + DIV);
+
+  while (Date.now() < endMs) {
+    const loopStart = Date.now();
+
+    // Periodic tick map refresh
+    if (Date.now() >= tickMapRefreshAt) {
+      try {
+        thresholds = await deriveThresholdsFromTickMap(rpc);
+        tickMapRefreshAt = Date.now() + TICK_MAP_REFRESH_MS;
+        stats.tickMapRefreshes++;
+        appendLog(logPath, { ts: new Date().toISOString(), type: 'tick_map_refresh', thresholds });
+      } catch (e) {
+        process.stderr.write(`  [tick-map refresh] ${e.message}\n`);
+      }
+    }
+
+    // Cooldown
+    if (Date.now() < cooldownUntil) {
+      await sleep(POLL_PASSIVE_MS);
+      continue;
+    }
+
+    // Block
+    let blockNumber;
+    try {
+      const b = await rpc.getBlockNumber('act.block', { timeoutMs: 1200, hedge: true });
+      blockNumber = b.blockNumber;
+    } catch {
+      stats.errors++;
+      await sleep(POLL_PASSIVE_MS);
+      continue;
+    }
+
+    if (blockNumber === lastBlock) {
+      await sleep(state === 'ARMED' ? POLL_ARMED_MS : POLL_PASSIVE_MS);
+      continue;
+    }
+    lastBlock = blockNumber;
+
+    // Pool read
+    let snap;
+    try {
+      snap = await readBothPools(blockNumber, rpc);
+    } catch (e) {
+      stats.errors++;
+      await sleep(POLL_PASSIVE_MS);
+      continue;
+    }
+
+    stats.ticks++;
+
+    const spread        = spreadPct(snap.uniPrice, snap.camPrice);
+    const feeBurden     = (UNIV3_FEE_FRAC + snap.camFee) * 100;
+    const slip          = slippagePct(TRIGGER_SIZE_USD, snap.uniDepth);
+    const threshold     = feeBurden + slip + TRIGGER_BUFFER_PCT;
+    const isArmedPrice  = snap.uniPrice >= thresholds.armedPrice;
+    const isExecDepth   = snap.uniDepth >= DEPTH_EXECUTION;
+    const isAboveSpread = spread > threshold;
+
+    // ── STATE TRANSITIONS ────────────────────────────────────────────────────
+    if (state === 'PASSIVE' && isArmedPrice) {
+      state = 'ARMED';
+      stats.armedCount++;
+      const msg = `○ PASSIVE → ◉ ARMED  price=$${snap.uniPrice.toFixed(6)} >= $${thresholds.armedPrice.toFixed(6)}`;
+      console.log(`\n  [STATE] ${msg}   ${fmtTime()}\n`);
+      appendLog(logPath, { ts: new Date().toISOString(), type: 'state_transition', from: 'PASSIVE', to: 'ARMED', block: blockNumber, uniPrice: +snap.uniPrice.toFixed(6), armedThreshold: thresholds.armedPrice });
+    }
+    else if (state === 'ARMED' && !isArmedPrice) {
+      state = 'PASSIVE';
+      stats.disarmedCount++;
+      console.log(`\n  [STATE] ◉ ARMED → ○ PASSIVE  price fell below $${thresholds.armedPrice.toFixed(6)}   ${fmtTime()}\n`);
+      appendLog(logPath, { ts: new Date().toISOString(), type: 'state_transition', from: 'ARMED', to: 'PASSIVE', block: blockNumber, uniPrice: +snap.uniPrice.toFixed(6) });
+    }
+
+    // ── PRINT TICK LINE ──────────────────────────────────────────────────────
+    const stateTag = state === 'PASSIVE' ? '○ PASSIVE'
+                   : state === 'ARMED'   ? '◉ ARMED  '
+                   :                       '★ EXEC   ';
+    const printKey = `${blockNumber}:${state}`;
+    if (printKey !== lastPrintKey) {
+      const line =
+        `  ${fmtTime().padEnd(10)} ${String(blockNumber).padEnd(12)} ` +
+        `$${String(snap.uniPrice.toFixed(6)).padEnd(9)} ` +
+        `$${String(snap.uniDepth.toFixed(2)).padEnd(9)} ` +
+        `${String(spread.toFixed(5)).padEnd(9)} ${stateTag}`;
+      if (state === 'ARMED')   console.log('\x1b[33m' + line + '\x1b[0m');
+      else if (isExecDepth)    console.log('\x1b[1m'  + line + '\x1b[0m');
+      else                     console.log(line);
+      lastPrintKey = printKey;
+    }
+
+    // ── ARMED: check for executable conditions ───────────────────────────────
+    if (state === 'ARMED' && isExecDepth && isAboveSpread) {
+      stats.simRuns++;
+      console.log(`\n  → ★ ARMED + depth + spread all pass. Running simulation  block=${blockNumber}`);
+
+      try {
+        const simResult  = await runSimulation(snap, rpc, gm);
+        const anyGate    = Object.values(simResult.gates).some(g => g.passed);
+        const profitable = simResult.all.filter(r => r.status !== 'LOST');
+
+        const signalType = anyGate       ? 'EXECUTION_READY'
+                         : profitable.length > 0 ? 'SIMULATION_MARGINAL'
+                         :                          'SIMULATION_LOST';
+
+        const signal = emitSignal(signalType, snap, simResult, gm, thresholds);
+        if (signalType === 'EXECUTION_READY') stats.readySignals++;
+
+        // Log both the signal and the full sim detail
+        appendLog(logPath, { ...signal, simResults: simResult.all, gates: simResult.gates });
+
+      } catch (e) {
+        console.error(`  [sim] ERROR: ${e.message}`);
+      }
+
+      cooldownUntil = Date.now() + COOLDOWN_AFTER_SIM_MS;
+      console.log(`  → Cooldown ${COOLDOWN_AFTER_SIM_MS / 1000}s\n`);
+    }
+
+    const elapsed = Date.now() - loopStart;
+    await sleep(Math.max(0, (state === 'ARMED' ? POLL_ARMED_MS : POLL_PASSIVE_MS) - elapsed));
+  }
+
+  // ── FINAL SUMMARY ────────────────────────────────────────────────────────
+  const elapsed = ((Date.now() - stats.startMs) / 1000).toFixed(0);
+  console.log('\n' + EQ);
+  console.log(`  ACTIVATOR SUMMARY   (${elapsed}s  |  ${stats.ticks} ticks  |  ${stats.errors} errors)`);
+  console.log(`  PASSIVE→ARMED:      ${stats.armedCount}`);
+  console.log(`  ARMED→PASSIVE:      ${stats.disarmedCount}`);
+  console.log(`  Simulations run:    ${stats.simRuns}`);
+  console.log(`  EXECUTION_READY:    ${stats.readySignals}`);
+  console.log(`  Tick map refreshes: ${stats.tickMapRefreshes}`);
+  if (logPath) console.log(`  Log: ${logPath}`);
+  console.log(EQ + '\n');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
+function fmtTime() { return new Date().toISOString().slice(11, 19); }
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CLI PARSER
+// ─────────────────────────────────────────────────────────────────────────────
+function parseArgs() {
+  const args = process.argv.slice(2);
+  const getN = (f,d) => { const a = args.find(a => a.startsWith(f+'=')); return a ? Number(a.split('=')[1]) : d; };
+  const getS = (f,d) => { const a = args.find(a => a.startsWith(f+'=')); return a ? a.split('=')[1] : d; };
+  return {
+    gasMode:    getS('--gas',      'live'),
+    duration:   getN('--duration', 28800),   // default 8 hours
+    logPath:    getS('--log',      null),
+    remapTicks: args.includes('--remap-ticks'),
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MAIN
+// ─────────────────────────────────────────────────────────────────────────────
+async function main() {
+  const { gasMode, duration, logPath, remapTicks } = parseArgs();
+  const rpc = createProvider('arbitrum');
+
+  console.log(`\n[arb_window_activator] ${new Date().toISOString()}`);
+
+  let gm;
+  if (gasMode === 'manual') {
+    gm = { ...GAS_MANUAL };
+    console.log(`  Gas: manual (${gm.gasPriceGwei} gwei)`);
+  } else {
+    process.stdout.write('  Fetching live Arbitrum gas price... ');
+    gm = await fetchLiveGasModel(rpc);
+    console.log(`${gm.gasPriceGwei.toFixed(6)} gwei | $${calcGasUSD(gm).toFixed(6)}/tx`);
+  }
+
+  await activatorLoop(rpc, gm, duration, logPath, remapTicks);
+}
+
+main().catch(err => {
+  console.error('\n[FATAL]', err.message || err);
+  process.exit(1);
+});
