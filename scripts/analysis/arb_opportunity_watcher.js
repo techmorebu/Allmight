@@ -1,26 +1,33 @@
 'use strict';
 /**
- * scripts/analysis/arb_opportunity_watcher.js  v2.0
+ * scripts/analysis/arb_opportunity_watcher.js  v3.0
  *
- * Three-tier depth structure (Boss ruling 2026-03-22):
+ * Predictive state machine (Boss ruling 2026-03-23):
  *
- *   Tier 1 — execution   uniDepth >= 15000
- *     → triggers full simulation + Boss gate evaluation
- *     → only tier that can promote toward execution prep
+ *   PASSIVE      default state — slow poll, log spread/depth baseline
+ *                currentPrice < $0.1000
  *
- *   Tier 2 — subcritical  5000 <= uniDepth < 15000
- *     → logged as subcritical_depth for research only
- *     → does NOT trigger simulation or Boss gate
- *     → records spread/depth for post-session analysis
+ *   ARMED        predictive pre-alert — price approaching known liquidity wall
+ *                currentPrice >= $0.1000  (80 ticks below $17k zone entry)
+ *                → high-frequency polling (500ms)
+ *                → spread + depth checks active
+ *                → simulator gating primed
  *
- *   Tier 3 — dead  uniDepth < 5000
- *     → baseline tick only, no action
+ *   EXECUTABLE   full execution-quality gate passed
+ *                uniDepth >= $15k AND spread >= threshold AND d0>0 AND d1>=0
+ *                → simulation runs + Boss gate evaluated
  *
- * Usage:
- *   node -r dotenv/config scripts/analysis/arb_opportunity_watcher.js
- *   node -r dotenv/config scripts/analysis/arb_opportunity_watcher.js --gas=manual
- *   node -r dotenv/config scripts/analysis/arb_opportunity_watcher.js --duration=7200
- *   node -r dotenv/config scripts/analysis/arb_opportunity_watcher.js --log=./opp_log.jsonl
+ *   DISARMED     price fell back below $0.1000 after being ARMED
+ *                → log transition, return to PASSIVE
+ *
+ * Why $0.1000 threshold (Boss ruling):
+ *   Tick map confirmed: first HIGH zone ($17,650 depth) at tick -299250 = $0.101015
+ *   Pre-alert at $0.1000 gives ~80-tick warning before depth activates
+ *   That is the earliest viable detection point for this surface
+ *
+ * Polling rates:
+ *   PASSIVE:  1500ms  (baseline, low RPC cost)
+ *   ARMED:     500ms  (high-frequency, 3× faster)
  *
  * Hard rules:
  *   - No execution logic
@@ -44,52 +51,42 @@ const UNIV3_POOL       = '0xb0f6cA40411360c03d41C5fFc5F179b8403CdcF8';
 const UNIV3_FEE_FRAC   = 0.0005;
 const CAMELOT_POOL     = '0xfae2ae0a9f87fd35b5b0e24b47bac796a7eefea1';
 const CAMELOT_FEE_FRAC = 0.000249;
-
 const DEC0 = 18;
 const DEC1 = 6;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// DEPTH TIERS (Boss ruling)
+// STATE MACHINE THRESHOLDS
 // ─────────────────────────────────────────────────────────────────────────────
-const DEPTH_EXECUTION   = 15_000;
-const DEPTH_SUBCRITICAL =  5_000;
-
-function depthTier(d) {
-  if (d >= DEPTH_EXECUTION)   return 'execution';
-  if (d >= DEPTH_SUBCRITICAL) return 'subcritical';
-  return 'dead';
-}
+const ARMED_PRICE_THRESHOLD = 0.1000;   // Boss ruling: pre-alert activation
+const DEPTH_EXECUTION       = 15_000;   // Boss gate: execution-grade depth
+const DEPTH_SUBCRITICAL     =  5_000;   // research band
 
 // ─────────────────────────────────────────────────────────────────────────────
-// TRIGGER CONFIG
+// POLLING RATES
 // ─────────────────────────────────────────────────────────────────────────────
-const TRIGGER_BUFFER_PCT    = 0.02;
-const TRIGGER_SIZE_USD      = 25;     // reference size for threshold computation
-const POLL_INTERVAL_MS      = 1_500;
+const POLL_PASSIVE_MS       = 1_500;    // PASSIVE mode
+const POLL_ARMED_MS         =   500;    // ARMED mode — 3× faster
 const COOLDOWN_AFTER_SIM_MS = 10_000;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SIM CONFIG
 // ─────────────────────────────────────────────────────────────────────────────
-const SIM_SIZE_RANGE  = [10, 25, 50, 100, 200];
-const SIM_DELAY_RANGE = [0, 1, 2];
-const ARBI_BLOCK_MS   = 250;
+const TRIGGER_BUFFER_PCT = 0.02;
+const TRIGGER_SIZE_USD   = 25;
+const SIM_SIZE_RANGE     = [10, 25, 50, 100, 200];
+const SIM_DELAY_RANGE    = [0, 1, 2];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GAS MODEL
 // ─────────────────────────────────────────────────────────────────────────────
 const GAS_MANUAL = {
-  gasPriceGwei:   0.01,
-  estimatedUnits: 500_000,
-  ethPriceUSD:    2000,
-  source:         'manual',
+  gasPriceGwei: 0.01, estimatedUnits: 500_000, ethPriceUSD: 2000, source: 'manual',
 };
 
 async function fetchLiveGasModel(rpc) {
   try {
     const res = await rpc.callDetailed(
-      'watcher.gas.feedata',
-      async (p) => p.getFeeData(),
+      'watcher.gas.feedata', async (p) => p.getFeeData(),
       { timeoutMs: 3000, hedge: true }
     );
     const fd  = res.result;
@@ -97,13 +94,13 @@ async function fetchLiveGasModel(rpc) {
     if (!wei) throw new Error('no gasPrice in feeData');
     return { gasPriceGwei: Number(wei) / 1e9, estimatedUnits: 500_000, ethPriceUSD: 2000, source: 'live' };
   } catch (e) {
-    process.stderr.write(`  [gas] live fetch failed (${e.message}) — manual fallback\n`);
+    process.stderr.write(`  [gas] ${e.message} — manual fallback\n`);
     return { ...GAS_MANUAL, source: 'manual_fallback' };
   }
 }
 
-function calcGasUSD(gm)         { return gm.estimatedUnits * gm.gasPriceGwei * 1e-9 * gm.ethPriceUSD; }
-function calcGasPct(size, gm)   { return (calcGasUSD(gm) / size) * 100; }
+function calcGasUSD(gm)       { return gm.estimatedUnits * gm.gasPriceGwei * 1e-9 * gm.ethPriceUSD; }
+function calcGasPct(size, gm) { return (calcGasUSD(gm) / size) * 100; }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MATH
@@ -168,11 +165,12 @@ async function readBothPools(blockNumber, rpc) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// BOSS GATE
+// BOSS GATE (execution quality — unchanged)
 // ─────────────────────────────────────────────────────────────────────────────
 function bossGate(d0, d1) {
   if (!d0 || !d1) return { passed: false, reason: 'missing data' };
   const checks = {
+    price_armed:         d0.uniPrice >= ARMED_PRICE_THRESHOLD,
     depth_above_15k:     d0.uniDepth >= DEPTH_EXECUTION,
     delay0_profitable:   d0.finalEdge > 0,
     delay1_non_negative: d1.finalEdge >= 0,
@@ -192,67 +190,55 @@ function simulateOne(detected, delayed, size, gm) {
   const gasUsd     = calcGasUSD(gm);
   const gasPct     = calcGasPct(size, gm);
   const finalEdge  = execSpread - feeBurden - slip - gasPct;
-
   return {
-    size,
-    delayBlocks:    delayed.blockNumber - detected.blockNumber,
-    detectedEdge:   +detSpread.toFixed(5),
-    executedSpread: +execSpread.toFixed(5),
-    slippage:       +slip.toFixed(5),
-    feeBurden:      +feeBurden.toFixed(5),
-    gasUsd:         +gasUsd.toFixed(6),
-    gasPct:         +gasPct.toFixed(5),
-    finalEdge:      +finalEdge.toFixed(5),
-    uniDepth:       +delayed.uniDepth.toFixed(2),
-    uniPrice:       +delayed.uniPrice.toFixed(6),
-    camPrice:       +delayed.camPrice.toFixed(6),
-    direction:      delayed.uniPrice > delayed.camPrice ? 'sell_uni_buy_camelot' : 'buy_uni_sell_camelot',
-    status:         finalEdge > 0.05 ? 'PROFITABLE' : finalEdge > 0 ? 'MARGINAL' : 'LOST',
+    size, delayBlocks: delayed.blockNumber - detected.blockNumber,
+    detectedEdge: +detSpread.toFixed(5), executedSpread: +execSpread.toFixed(5),
+    slippage: +slip.toFixed(5), feeBurden: +feeBurden.toFixed(5),
+    gasUsd: +gasUsd.toFixed(6), gasPct: +gasPct.toFixed(5),
+    finalEdge: +finalEdge.toFixed(5),
+    uniDepth: +delayed.uniDepth.toFixed(2),
+    uniPrice: +delayed.uniPrice.toFixed(6), camPrice: +delayed.camPrice.toFixed(6),
+    direction: delayed.uniPrice > delayed.camPrice ? 'sell_uni_buy_camelot' : 'buy_uni_sell_camelot',
+    status: finalEdge > 0.05 ? 'PROFITABLE' : finalEdge > 0 ? 'MARGINAL' : 'LOST',
   };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// FULL SIMULATION  (Tier 1 only)
+// FULL SIMULATION (EXECUTABLE state only)
 // ─────────────────────────────────────────────────────────────────────────────
-async function runSimulation(detectedSnap, rpc, gm) {
-  const base  = detectedSnap.blockNumber;
-  const snaps = { 0: detectedSnap };
+async function runSimulation(snap, rpc, gm) {
+  const base  = snap.blockNumber;
+  const snaps = { 0: snap };
   for (const d of [1, 2]) {
     await sleep(400);
     try   { snaps[d] = await readBothPools(base + d, rpc); }
-    catch { snaps[d] = { ...detectedSnap, blockNumber: base + d }; }
+    catch { snaps[d] = { ...snap, blockNumber: base + d }; }
   }
-
   const matrix = {};
   const all    = [];
   for (const d of SIM_DELAY_RANGE) {
     matrix[d] = {};
     for (const s of SIM_SIZE_RANGE) {
-      const r = simulateOne(detectedSnap, snaps[d], s, gm);
+      const r = simulateOne(snap, snaps[d], s, gm);
       matrix[d][s] = r;
       all.push(r);
     }
   }
-
   const gates = {};
   for (const s of SIM_SIZE_RANGE) gates[s] = bossGate(matrix[0][s], matrix[1][s]);
-
   return { matrix, all, gates };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PRINT SIM RESULTS
 // ─────────────────────────────────────────────────────────────────────────────
-function printSimResults(snap, simResult, gm, triggerTime) {
+function printSimResults(snap, simResult, gm, ts) {
   const { all, gates, matrix } = simResult;
-  const W  = 120;
-  const EQ = '★'.repeat(W);
-  const DV = '─'.repeat(W);
-
+  const EQ = '★'.repeat(110);
+  const DV = '─'.repeat(110);
   console.log('\n' + EQ);
-  console.log('  ★★★  TIER 1 EXECUTION-GRADE OPPORTUNITY — SIMULATED  ★★★');
-  console.log(`  Time: ${triggerTime}   Block: ${snap.blockNumber}`);
-  console.log(`  cam=$${snap.camPrice.toFixed(6)}  uni=$${snap.uniPrice.toFixed(6)}  depth=$${snap.uniDepth.toFixed(2)}`);
+  console.log('  ★★★  STATE: EXECUTABLE — FULL SIMULATION  ★★★');
+  console.log(`  ${ts}   block=${snap.blockNumber}   price=$${snap.uniPrice.toFixed(6)}   depth=$${snap.uniDepth.toFixed(2)}`);
   console.log(`  Gas: ${gm.source} | ${gm.gasPriceGwei.toFixed(6)} gwei | $${calcGasUSD(gm).toFixed(6)}/tx`);
   console.log(EQ);
   console.log(
@@ -260,7 +246,6 @@ function printSimResults(snap, simResult, gm, triggerTime) {
     `${'slip%'.padEnd(9)} ${'fee%'.padEnd(8)} ${'gas%'.padEnd(9)} ${'final%'.padEnd(9)} status`
   );
   console.log('  ' + DV);
-
   let lastDelay = null;
   for (const r of all) {
     if (lastDelay !== null && r.delayBlocks !== lastDelay) console.log('  ' + DV);
@@ -274,28 +259,24 @@ function printSimResults(snap, simResult, gm, triggerTime) {
       `${String(r.gasPct).padEnd(9)} ${String(r.finalEdge).padEnd(9)} ${tag}`
     );
   }
-
-  console.log('\n  BOSS GATE  (depth>=$15k  d0>0  d1>=0  spread>fee+gas)');
+  console.log('\n  BOSS GATE');
   console.log('  ' + DV);
   let anyPass = false;
   for (const s of SIM_SIZE_RANGE) {
-    const g  = gates[s];
+    const g = gates[s];
     if (g.passed) anyPass = true;
-    const ok = g.passed ? '✓ GATE PASS' : '✗ GATE FAIL';
+    const ok  = g.passed ? '✓ GATE PASS' : '✗ GATE FAIL';
     const chk = g.checks
       ? Object.entries(g.checks).map(([k,v]) => `${k.replace(/_/g,'-')}:${v?'Y':'N'}`).join('  ')
       : g.reason;
     console.log(`  $${String(s).padEnd(6)} ${ok}   ${chk}`);
   }
-
   const prof = all.filter(r => r.status === 'PROFITABLE');
-  const marg = all.filter(r => r.status === 'MARGINAL');
-  console.log('\n  ───────────────────────────────────────────────────────');
-  console.log(`  PROFITABLE: ${prof.length}/${all.length}   MARGINAL: ${marg.length}/${all.length}   BOSS GATE: ${anyPass ? '✓ PASS' : '✗ FAIL'}`);
+  console.log(`\n  PROFITABLE: ${prof.length}/${all.length}   GATE: ${anyPass ? '✓ PASS' : '✗ FAIL'}`);
   if (prof.length > 0) {
-    const best = prof.reduce((a,b) => a.finalEdge > b.finalEdge ? a : b);
-    console.log(`  Best: size=$${best.size}  delay=${best.delayBlocks}blk  finalEdge=+${best.finalEdge}%`);
+    const best     = prof.reduce((a,b) => a.finalEdge > b.finalEdge ? a : b);
     const negStart = SIM_SIZE_RANGE.find(s => (matrix[0]?.[s]?.finalEdge ?? -1) < 0);
+    console.log(`  Best: size=$${best.size}  delay=${best.delayBlocks}blk  edge=+${best.finalEdge}%`);
     if (negStart) console.log(`  Edge turns negative at: $${negStart} (delay=0)`);
   }
   console.log(EQ + '\n');
@@ -303,33 +284,22 @@ function printSimResults(snap, simResult, gm, triggerTime) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SUBCRITICAL RESEARCH LOG  (Tier 2 — no simulation, logged only)
+// STATE TRANSITION PRINTER
 // ─────────────────────────────────────────────────────────────────────────────
-function logSubcritical(snap, spread, threshold, logPath) {
-  if (!logPath) return;
-  const record = {
-    ts:         new Date().toISOString(),
-    type:       'subcritical_depth',
-    block:      snap.blockNumber,
-    uniDepth:   +snap.uniDepth.toFixed(2),
-    uniPrice:   +snap.uniPrice.toFixed(6),
-    camPrice:   +snap.camPrice.toFixed(6),
-    spread:     +spread.toFixed(5),
-    threshold:  +threshold.toFixed(5),
-    direction:  snap.uniPrice > snap.camPrice ? 'sell_uni_buy_camelot' : 'buy_uni_sell_camelot',
-    note:       'research_only_not_execution_signal',
-  };
-  try {
-    const dir = path.dirname(logPath);
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    fs.appendFileSync(logPath, JSON.stringify(record) + '\n');
-  } catch (e) {
-    process.stderr.write(`  [log] ${e.message}\n`);
-  }
+function printStateTransition(from, to, snap, reason) {
+  const icons = { PASSIVE: '○', ARMED: '◉', EXECUTABLE: '★', DISARMED: '✗' };
+  const LINE  = '─'.repeat(90);
+  console.log(`\n  ${LINE}`);
+  console.log(
+    `  [STATE] ${icons[from] || '?'} ${from} → ${icons[to] || '?'} ${to}` +
+    `   ${fmtTime()}   price=$${snap.uniPrice.toFixed(6)}   depth=$${snap.uniDepth.toFixed(2)}`
+  );
+  if (reason) console.log(`  [STATE] reason: ${reason}`);
+  console.log(`  ${LINE}\n`);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// JSONL LOG
+// LOG
 // ─────────────────────────────────────────────────────────────────────────────
 function appendLog(logPath, record) {
   if (!logPath) return;
@@ -343,18 +313,21 @@ function appendLog(logPath, record) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// MAIN WATCH LOOP
+// MAIN WATCH LOOP — state machine
 // ─────────────────────────────────────────────────────────────────────────────
 async function watchLoop(rpc, gm, durationS, logPath) {
-  const endMs  = Date.now() + durationS * 1000;
-  let lastBlock = null;
-  let lastLabel = null;
+  const endMs = Date.now() + durationS * 1000;
+
+  // State
+  let state         = 'PASSIVE';   // PASSIVE | ARMED | EXECUTABLE | DISARMED
+  let lastBlock     = null;
+  let lastPrintKey  = null;
   let cooldownUntil = 0;
 
   const stats = {
     ticks: 0, errors: 0,
-    t1detections: 0, t1gatePasses: 0,
-    t2logged: 0,
+    armedCount: 0, disarmedCount: 0,
+    executableCount: 0, gatePasses: 0,
     startMs: Date.now(),
   };
 
@@ -363,21 +336,28 @@ async function watchLoop(rpc, gm, durationS, logPath) {
   const DIV = '─'.repeat(W);
 
   console.log('\n' + EQ);
-  console.log('  ARB/USDC — OPPORTUNITY WATCHER v2.0   (three-tier depth)');
+  console.log('  ARB/USDC — OPPORTUNITY WATCHER v3.0   (predictive state machine)');
   console.log(`  Gas: ${gm.source}  |  ${gm.gasPriceGwei.toFixed(6)} gwei  |  $${calcGasUSD(gm).toFixed(6)}/tx`);
-  console.log(`  Tier 1 execution: depth >= $${DEPTH_EXECUTION.toLocaleString()}  → simulate + gate`);
-  console.log(`  Tier 2 subcrit:   depth $${DEPTH_SUBCRITICAL.toLocaleString()}–$${(DEPTH_EXECUTION-1).toLocaleString()}     → log only (research)`);
-  console.log(`  Tier 3 dead:      depth < $${DEPTH_SUBCRITICAL.toLocaleString()}       → baseline only`);
+  console.log(`  PASSIVE threshold:    price < $${ARMED_PRICE_THRESHOLD}   → poll ${POLL_PASSIVE_MS}ms`);
+  console.log(`  ARMED threshold:      price >= $${ARMED_PRICE_THRESHOLD}  → poll ${POLL_ARMED_MS}ms`);
+  console.log(`  EXECUTABLE gate:      depth >= $${DEPTH_EXECUTION.toLocaleString()} + spread + d0>0 + d1>=0`);
+  console.log(`  Nearest HIGH zone:    $0.101015  (+927 ticks from today's price)`);
   if (logPath) console.log(`  Log: ${logPath}`);
   console.log(EQ);
   console.log(
-    `  ${'time'.padEnd(10)} ${'block'.padEnd(12)} ${'depth$'.padEnd(11)} ` +
-    `${'spread%'.padEnd(10)} ${'thresh%'.padEnd(10)} tier`
+    `  ${'time'.padEnd(10)} ${'block'.padEnd(12)} ${'price$'.padEnd(10)} ` +
+    `${'depth$'.padEnd(10)} ${'spread%'.padEnd(9)} state`
   );
   console.log('  ' + DIV);
 
   while (Date.now() < endMs) {
     const loopStart = Date.now();
+
+    // Cooldown check
+    if (Date.now() < cooldownUntil) {
+      await sleep(POLL_PASSIVE_MS);
+      continue;
+    }
 
     // Block
     let blockNumber;
@@ -386,72 +366,107 @@ async function watchLoop(rpc, gm, durationS, logPath) {
       blockNumber = b.blockNumber;
     } catch {
       stats.errors++;
-      await sleep(POLL_INTERVAL_MS);
+      await sleep(POLL_PASSIVE_MS);
       continue;
     }
 
-    // Cooldown
-    if (Date.now() < cooldownUntil) {
-      await sleep(POLL_INTERVAL_MS);
+    if (blockNumber === lastBlock) {
+      await sleep(state === 'ARMED' ? POLL_ARMED_MS : POLL_PASSIVE_MS);
       continue;
     }
+    lastBlock = blockNumber;
 
-    // Pools
+    // Pool read
     let snap;
     try {
       snap = await readBothPools(blockNumber, rpc);
     } catch (e) {
       stats.errors++;
-      await sleep(POLL_INTERVAL_MS);
+      await sleep(POLL_PASSIVE_MS);
       continue;
     }
 
     stats.ticks++;
 
-    const spread    = spreadPct(snap.uniPrice, snap.camPrice);
-    const feeBurden = (UNIV3_FEE_FRAC + snap.camFee) * 100;
-    const slip      = slippagePct(TRIGGER_SIZE_USD, snap.uniDepth);
-    const threshold = feeBurden + slip + TRIGGER_BUFFER_PCT;
-    const tier      = depthTier(snap.uniDepth);
-    const aboveThreshold = spread > threshold;
+    // ── STATE MACHINE ────────────────────────────────────────────────────────
+    const spread         = spreadPct(snap.uniPrice, snap.camPrice);
+    const feeBurden      = (UNIV3_FEE_FRAC + snap.camFee) * 100;
+    const slip           = slippagePct(TRIGGER_SIZE_USD, snap.uniDepth);
+    const threshold      = feeBurden + slip + TRIGGER_BUFFER_PCT;
+    const isArmedPrice   = snap.uniPrice >= ARMED_PRICE_THRESHOLD;
+    const isExecDepth    = snap.uniDepth >= DEPTH_EXECUTION;
+    const isAboveThresh  = spread > threshold;
+    const prevState      = state;
 
-    // Determine label for display / change detection
-    let label;
-    if (tier === 'execution' && aboveThreshold)    label = '★ T1 TRIGGERED';
-    else if (tier === 'execution')                  label = 'T1 below_thresh';
-    else if (tier === 'subcritical' && aboveThreshold) label = '~ T2 subcritical';
-    else if (tier === 'subcritical')                label = 'T2 low_spread';
-    else                                            label = 'T3 dead';
-
-    // Print on block change or label change
-    if (blockNumber !== lastBlock || label !== lastLabel) {
-      const tierIcon = tier === 'execution'   ? '[T1]'
-                     : tier === 'subcritical' ? '[T2]'
-                     :                          '[T3]';
-      const line =
-        `  ${fmtTime().padEnd(10)} ${String(blockNumber).padEnd(12)} ` +
-        `$${String(snap.uniDepth.toFixed(2)).padEnd(10)} ` +
-        `${String(spread.toFixed(5)).padEnd(10)} ${String(threshold.toFixed(5)).padEnd(10)} ` +
-        `${tierIcon} ${label}`;
-      if (tier === 'execution' && aboveThreshold) console.log('\x1b[1m' + line + '\x1b[0m');
-      else console.log(line);
-      lastBlock = blockNumber;
-      lastLabel = label;
+    // State transitions
+    if (state === 'PASSIVE' && isArmedPrice) {
+      state = 'ARMED';
+      stats.armedCount++;
+      printStateTransition('PASSIVE', 'ARMED', snap, `price $${snap.uniPrice.toFixed(6)} >= $${ARMED_PRICE_THRESHOLD}`);
+      appendLog(logPath, { ts: new Date().toISOString(), type: 'state_transition', from: 'PASSIVE', to: 'ARMED', block: blockNumber, uniPrice: +snap.uniPrice.toFixed(6), uniDepth: +snap.uniDepth.toFixed(2) });
+    }
+    else if (state === 'ARMED' && !isArmedPrice) {
+      state = 'DISARMED';
+      stats.disarmedCount++;
+      printStateTransition('ARMED', 'DISARMED', snap, `price $${snap.uniPrice.toFixed(6)} fell below $${ARMED_PRICE_THRESHOLD}`);
+      appendLog(logPath, { ts: new Date().toISOString(), type: 'state_transition', from: 'ARMED', to: 'DISARMED', block: blockNumber, uniPrice: +snap.uniPrice.toFixed(6), uniDepth: +snap.uniDepth.toFixed(2) });
+      state = 'PASSIVE';  // immediately return to PASSIVE
+    }
+    else if (state === 'ARMED' && isExecDepth && isAboveThresh) {
+      state = 'EXECUTABLE';
+      stats.executableCount++;
+      printStateTransition('ARMED', 'EXECUTABLE', snap, `depth=$${snap.uniDepth.toFixed(2)} spread=${spread.toFixed(5)}% > threshold ${threshold.toFixed(5)}%`);
+    }
+    else if (state === 'EXECUTABLE' && (!isExecDepth || !isAboveThresh)) {
+      // Opportunity window closed — return to ARMED if price still above threshold
+      const nextState = isArmedPrice ? 'ARMED' : 'PASSIVE';
+      printStateTransition('EXECUTABLE', nextState, snap, 'window closed');
+      appendLog(logPath, { ts: new Date().toISOString(), type: 'state_transition', from: 'EXECUTABLE', to: nextState, block: blockNumber, uniPrice: +snap.uniPrice.toFixed(6), uniDepth: +snap.uniDepth.toFixed(2) });
+      state = nextState;
     }
 
-    // ── Tier 1: trigger + simulate ──────────────────────────────────────────
-    if (tier === 'execution' && aboveThreshold) {
-      stats.t1detections++;
-      const triggerTime = new Date().toISOString();
-      console.log(`\n  → Tier 1 trigger at block ${blockNumber}. Running simulation...`);
+    // ── PRINT TICK LINE ──────────────────────────────────────────────────────
+    const printKey = `${blockNumber}:${state}`;
+    if (printKey !== lastPrintKey) {
+      const stateTag = state === 'PASSIVE'    ? '○ PASSIVE   '
+                     : state === 'ARMED'      ? '◉ ARMED     '
+                     : state === 'EXECUTABLE' ? '★ EXECUTABLE'
+                     :                          '✗ DISARMED  ';
+      const line =
+        `  ${fmtTime().padEnd(10)} ${String(blockNumber).padEnd(12)} ` +
+        `$${String(snap.uniPrice.toFixed(6)).padEnd(9)} ` +
+        `$${String(snap.uniDepth.toFixed(2)).padEnd(9)} ` +
+        `${String(spread.toFixed(5)).padEnd(9)} ${stateTag}`;
+      if (state === 'EXECUTABLE') console.log('\x1b[1m' + line + '\x1b[0m');
+      else if (state === 'ARMED') console.log('\x1b[33m' + line + '\x1b[0m');  // yellow
+      else console.log(line);
+      lastPrintKey = printKey;
+    }
 
+    // ── ACTIONS BY STATE ─────────────────────────────────────────────────────
+
+    // ARMED — high-frequency, spread/depth monitoring only, log subcritical
+    if (state === 'ARMED') {
+      if (snap.uniDepth >= DEPTH_SUBCRITICAL && isAboveThresh) {
+        appendLog(logPath, {
+          ts: new Date().toISOString(), type: 'armed_subcritical',
+          block: blockNumber, spread: +spread.toFixed(5), threshold: +threshold.toFixed(5),
+          uniDepth: +snap.uniDepth.toFixed(2), uniPrice: +snap.uniPrice.toFixed(6),
+        });
+      }
+    }
+
+    // EXECUTABLE — run full simulation
+    else if (state === 'EXECUTABLE') {
+      const triggerTime = new Date().toISOString();
+      console.log(`\n  → EXECUTABLE at block ${blockNumber}. Running simulation...`);
       try {
         const simResult  = await runSimulation(snap, rpc, gm);
         const gatePassed = printSimResults(snap, simResult, gm, triggerTime);
-        if (gatePassed) stats.t1gatePasses++;
+        if (gatePassed) stats.gatePasses++;
 
         appendLog(logPath, {
-          ts: triggerTime, type: 'tier1_execution',
+          ts: triggerTime, type: 'executable',
           block: blockNumber, spread: +spread.toFixed(5),
           threshold: +threshold.toFixed(5),
           uniDepth: +snap.uniDepth.toFixed(2),
@@ -465,27 +480,25 @@ async function watchLoop(rpc, gm, durationS, logPath) {
       }
 
       cooldownUntil = Date.now() + COOLDOWN_AFTER_SIM_MS;
-      console.log(`  → Cooldown ${COOLDOWN_AFTER_SIM_MS / 1000}s...\n`);
+      state = isArmedPrice ? 'ARMED' : 'PASSIVE';
+      console.log(`  → Cooldown ${COOLDOWN_AFTER_SIM_MS / 1000}s → back to ${state}\n`);
     }
 
-    // ── Tier 2: research log only ────────────────────────────────────────────
-    else if (tier === 'subcritical' && aboveThreshold) {
-      stats.t2logged++;
-      logSubcritical(snap, spread, threshold, logPath);
-    }
-
+    // Adaptive poll interval
     const elapsed = Date.now() - loopStart;
-    await sleep(Math.max(0, POLL_INTERVAL_MS - elapsed));
+    const pollMs  = state === 'ARMED' ? POLL_ARMED_MS : POLL_PASSIVE_MS;
+    await sleep(Math.max(0, pollMs - elapsed));
   }
 
-  // Summary
+  // ── SUMMARY ─────────────────────────────────────────────────────────────────
   const elapsed = ((Date.now() - stats.startMs) / 1000).toFixed(0);
   console.log('\n' + EQ);
-  console.log(`  WATCHER SUMMARY   (${elapsed}s  |  ${stats.ticks} ticks  |  ${stats.errors} errors)`);
-  console.log(`  Tier 1 triggers detected:  ${stats.t1detections}`);
-  console.log(`  Tier 1 Boss gate passes:   ${stats.t1gatePasses}`);
-  console.log(`  Tier 2 subcritical logged: ${stats.t2logged}  (research only)`);
-  if (logPath) console.log(`  Log file: ${logPath}`);
+  console.log(`  WATCHER SUMMARY v3.0   (${elapsed}s  |  ${stats.ticks} ticks  |  ${stats.errors} errors)`);
+  console.log(`  PASSIVE→ARMED transitions:  ${stats.armedCount}`);
+  console.log(`  ARMED→DISARMED transitions: ${stats.disarmedCount}`);
+  console.log(`  EXECUTABLE events:          ${stats.executableCount}`);
+  console.log(`  Boss gate passes:           ${stats.gatePasses}`);
+  if (logPath) console.log(`  Log: ${logPath}`);
   console.log(EQ + '\n');
 }
 
