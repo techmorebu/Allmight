@@ -1,16 +1,20 @@
 'use strict';
 /**
- * scripts/analysis/arb_historical_mint_scan.js
+ * scripts/analysis/arb_historical_mint_scan.js  v2
  *
- * One-shot scan: find the Mint event that created the $17k depth spike
- * around block 443758000 (2026-03-20 ~11:30 UTC).
+ * One-shot scan: find the Mint that created the $17k depth spike
+ * at block ~443758085 (first EXECUTABLE signal, 2026-03-20 11:30 UTC).
  *
- * Scans a configurable window around the target block and reports
- * all Mint/Burn events with depth reconstruction where possible.
+ * Fixes from v1:
+ *   - null-safe iface.parseLog (ethers can return null on ABI mismatch)
+ *   - tight window around the actual profitable block (not ±500)
+ *   - depth reads only on unique Mint owners, not every event
+ *   - chunk size tunable (default 100 to avoid RPC range errors)
+ *   - churn detection: skip depth read if owner already seen as symmetric burner
  *
  * Usage:
  *   node -r dotenv/config scripts/analysis/arb_historical_mint_scan.js
- *   node -r dotenv/config scripts/analysis/arb_historical_mint_scan.js --center=443758000 --window=500
+ *   node -r dotenv/config scripts/analysis/arb_historical_mint_scan.js --center=443758085 --window=200 --chunk=100
  */
 
 require('dotenv').config();
@@ -19,8 +23,8 @@ const { ethers }         = require('ethers');
 const { createProvider } = require('../../utils/provider_factory');
 
 const UNIV3_POOL = '0xb0f6cA40411360c03d41C5fFc5F179b8403CdcF8';
-const DEC0 = 18;
-const DEC1 = 6;
+const DEC0 = 18;  // ARB
+const DEC1 = 6;   // USDC
 
 const UNIV3_ABI = [
   'event Mint(address sender, address indexed owner, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount, uint256 amount0, uint256 amount1)',
@@ -28,6 +32,9 @@ const UNIV3_ABI = [
   'function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16, uint16, uint16, uint8, bool)',
   'function liquidity() external view returns (uint128)',
 ];
+
+// Known profitable block from trigger monitor session
+const PROFITABLE_BLOCK = 443_758_085;
 
 function sqrtPriceToUSDC(sqrtPriceX96) {
   const sqrtP = Number(sqrtPriceX96) / Number(2n ** 96n);
@@ -37,20 +44,21 @@ function activeTickDepthUSD(liq, sqrtP96) {
   const sqrtP = Number(sqrtP96) / Number(2n ** 96n);
   return (Number(liq) * sqrtP) / Math.pow(10, DEC1);
 }
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 function parseArgs() {
   const args = process.argv.slice(2);
   const getN = (f, d) => { const a = args.find(a => a.startsWith(f+'=')); return a ? Number(a.split('=')[1]) : d; };
   return {
-    center: getN('--center', 443758000),
-    window: getN('--window', 500),   // blocks either side
-    chunk:  getN('--chunk',  200),   // getLogs max range (some RPCs cap at 1000)
+    center: getN('--center', PROFITABLE_BLOCK),
+    window: getN('--window', 200),   // ±200 blocks (~50 seconds on Arbitrum)
+    chunk:  getN('--chunk',  100),   // getLogs chunk size
   };
 }
 
-async function scanRange(fromBlock, toBlock, rpc) {
+async function getLogs(fromBlock, toBlock, rpc) {
   const res = await rpc.callDetailed(
-    `hist.events.${fromBlock}-${toBlock}`,
+    `hist.logs.${fromBlock}-${toBlock}`,
     async (provider) => {
       const pool = new ethers.Contract(UNIV3_POOL, UNIV3_ABI, provider);
       const [mints, burns] = await Promise.all([
@@ -84,8 +92,6 @@ async function readDepthAt(block, rpc) {
   };
 }
 
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
 async function main() {
   const { center, window: win, chunk } = parseArgs();
   const fromBlock = center - win;
@@ -93,125 +99,174 @@ async function main() {
   const rpc       = createProvider('arbitrum');
   const iface     = new ethers.Interface(UNIV3_ABI);
 
-  console.log(`\n[arb_historical_mint_scan] ${new Date().toISOString()}`);
-  console.log(`  Target: blocks ${fromBlock} – ${toBlock}  (center=${center} ± ${win})`);
+  console.log(`\n[arb_historical_mint_scan v2] ${new Date().toISOString()}`);
+  console.log(`  Target: blocks ${fromBlock}–${toBlock}  (profitable block=${center} ± ${win})`);
   console.log(`  Pool:   ${UNIV3_POOL}\n`);
 
-  // Chunked getLogs to avoid RPC range limits
-  const allMints = [];
-  const allBurns = [];
+  // ── Step 1: collect all logs in chunks ────────────────────────────────────
+  const allMintLogs = [];
+  const allBurnLogs = [];
 
   for (let from = fromBlock; from <= toBlock; from += chunk) {
     const to = Math.min(from + chunk - 1, toBlock);
-    process.stdout.write(`  Scanning ${from}–${to}...`);
+    process.stdout.write(`  Scanning ${from}–${to}... `);
     try {
-      const { mints, burns } = await scanRange(from, to, rpc);
-      allMints.push(...mints);
-      allBurns.push(...burns);
-      console.log(` ${mints.length} mints  ${burns.length} burns`);
+      const { mints, burns } = await getLogs(from, to, rpc);
+      allMintLogs.push(...mints);
+      allBurnLogs.push(...burns);
+      console.log(`${mints.length} mints  ${burns.length} burns`);
     } catch (e) {
-      console.log(` ERROR: ${e.message}`);
+      console.log(`SKIP (${e.message.slice(0, 60)})`);
     }
-    await sleep(300);
+    await sleep(250);
   }
 
-  const allEvents = [
-    ...allMints.map(l => ({ ...l, _type: 'Mint' })),
-    ...allBurns.map(l => ({ ...l, _type: 'Burn' })),
-  ].sort((a, b) => a.blockNumber - b.blockNumber || a.logIndex - b.logIndex);
+  console.log(`\n  Raw totals: ${allMintLogs.length} mints  ${allBurnLogs.length} burns\n`);
 
-  console.log(`\n  Total: ${allMints.length} mints  ${allBurns.length} burns  (${allEvents.length} total)\n`);
+  // ── Step 2: parse logs — null-safe ────────────────────────────────────────
+  const parsedMints = [];
+  const parsedBurns = [];
 
-  if (allEvents.length === 0) {
-    console.log('  No events found in range. Try --window=2000\n');
-    return;
+  for (const log of allMintLogs) {
+    try {
+      const d = iface.parseLog({ topics: log.topics, data: log.data });
+      if (!d || !d.args) continue;
+      parsedMints.push({
+        type: 'Mint', block: log.blockNumber, txHash: log.transactionHash,
+        owner: d.args.owner,
+        tickLower: Number(d.args.tickLower), tickUpper: Number(d.args.tickUpper),
+        tickWidth: Number(d.args.tickUpper) - Number(d.args.tickLower),
+        amount: d.args.amount.toString(),
+        amount0: Number(d.args.amount0) / Math.pow(10, DEC0),
+        amount1: Number(d.args.amount1) / Math.pow(10, DEC1),
+      });
+    } catch { /* skip */ }
   }
 
-  // Parse and display each event + read depth at that block
+  for (const log of allBurnLogs) {
+    try {
+      const d = iface.parseLog({ topics: log.topics, data: log.data });
+      if (!d || !d.args) continue;
+      parsedBurns.push({
+        type: 'Burn', block: log.blockNumber, txHash: log.transactionHash,
+        owner: d.args.owner,
+        tickLower: Number(d.args.tickLower), tickUpper: Number(d.args.tickUpper),
+        tickWidth: Number(d.args.tickUpper) - Number(d.args.tickLower),
+        amount: d.args.amount.toString(),
+        amount0: Number(d.args.amount0) / Math.pow(10, DEC0),
+        amount1: Number(d.args.amount1) / Math.pow(10, DEC1),
+      });
+    } catch { /* skip */ }
+  }
+
+  console.log(`  Parsed: ${parsedMints.length} mints  ${parsedBurns.length} burns`);
+
+  // ── Step 3: owner behavior profile ───────────────────────────────────────
+  // Count mints and burns per owner to identify churn bots
+  const ownerStats = {};
+  for (const e of [...parsedMints, ...parsedBurns]) {
+    if (!ownerStats[e.owner]) ownerStats[e.owner] = { mints: 0, burns: 0, mintBlocks: [], maxTickWidth: 0, maxAmount0: 0 };
+    const s = ownerStats[e.owner];
+    if (e.type === 'Mint') {
+      s.mints++;
+      s.mintBlocks.push(e.block);
+      s.maxTickWidth = Math.max(s.maxTickWidth, e.tickWidth);
+      s.maxAmount0   = Math.max(s.maxAmount0, e.amount0);
+    } else {
+      s.burns++;
+    }
+  }
+
+  // Classify owners
+  for (const [owner, s] of Object.entries(ownerStats)) {
+    const ratio = s.mints === 0 ? Infinity : s.burns / s.mints;
+    s.pattern = (ratio > 0.8 && ratio < 1.2 && s.mints > 5) ? 'churn_bot'
+              : s.mints > s.burns * 2                        ? 'net_adder'
+              : s.burns > s.mints * 2                        ? 'net_remover'
+              :                                                 'balanced';
+  }
+
   const LINE = '═'.repeat(100);
   const DIV  = '─'.repeat(100);
-  console.log(LINE);
-  console.log('  HISTORICAL MINT/BURN ANALYSIS');
-  console.log(LINE);
 
-  const summary = [];
-
-  for (const log of allEvents) {
-    let parsed;
-    try {
-      parsed = iface.parseLog(log);
-    } catch { continue; }
-
-    const type      = log._type;
-    const block     = log.blockNumber;
-    const txHash    = log.transactionHash;
-    const owner     = parsed.args.owner;
-    const tickLower = Number(parsed.args.tickLower);
-    const tickUpper = Number(parsed.args.tickUpper);
-    const tickWidth = tickUpper - tickLower;
-    const amount    = parsed.args.amount.toString();
-    const amount0   = Number(parsed.args.amount0) / Math.pow(10, DEC0);
-    const amount1   = Number(parsed.args.amount1) / Math.pow(10, DEC1);
-
-    // Read actual depth at event block
-    let depthAfter = null;
-    let price      = null;
-    try {
-      const snap = await readDepthAt(block, rpc);
-      depthAfter = snap.depth;
-      price      = snap.price;
-    } catch { /* leave null */ }
-    await sleep(200);
-
-    const depthTag = depthAfter === null        ? 'depth=?'
-                   : depthAfter >= 15000         ? `★ depth=$${depthAfter.toFixed(0)} ← EXECUTION-GRADE`
-                   : depthAfter >= 5000          ? `~ depth=$${depthAfter.toFixed(0)}  subcritical`
-                   :                               `  depth=$${depthAfter.toFixed(0)}  dead`;
-
-    const record = { type, block, txHash, owner, tickLower, tickUpper, tickWidth, amount, amount0, amount1, depthAfter, price };
-    summary.push(record);
-
-    console.log(`\n  ${type.padEnd(5)} block=${block}  tx=${txHash.slice(0,18)}...`);
-    console.log(`    owner:      ${owner}`);
-    console.log(`    ticks:      [${tickLower}, ${tickUpper}]  width=${tickWidth}`);
-    console.log(`    amount0:    ${amount0.toFixed(4)} ARB`);
-    console.log(`    amount1:    ${amount1.toFixed(4)} USDC`);
-    console.log(`    price:      $${price ? price.toFixed(6) : '?'} USDC/ARB`);
-    console.log(`    ${depthTag}`);
-  }
-
-  // Summary table — sort by depth desc
-  const withDepth = summary.filter(r => r.depthAfter !== null).sort((a,b) => b.depthAfter - a.depthAfter);
-
+  // ── Step 4: print owner summary ───────────────────────────────────────────
   console.log('\n' + LINE);
-  console.log('  TOP EVENTS BY POST-EVENT DEPTH');
+  console.log('  OWNER BEHAVIOR PROFILES');
   console.log('  ' + DIV);
-  console.log(`  ${'type'.padEnd(6)} ${'block'.padEnd(12)} ${'depth$'.padEnd(12)} ${'tickW'.padEnd(8)} ${'ARB'.padEnd(12)} ${'USDC'.padEnd(12)} owner`);
+  console.log(`  ${'owner'.padEnd(44)} ${'mints'.padEnd(7)} ${'burns'.padEnd(7)} ${'maxARB'.padEnd(12)} ${'maxTickW'.padEnd(10)} pattern`);
   console.log('  ' + DIV);
-  for (const r of withDepth.slice(0, 20)) {
-    const alert = r.depthAfter >= 15000 ? ' ★' : '';
+
+  const sortedOwners = Object.entries(ownerStats)
+    .sort((a, b) => b[1].maxAmount0 - a[1].maxAmount0);
+
+  for (const [owner, s] of sortedOwners) {
+    const flag = s.pattern === 'churn_bot' ? '' : ' ← REAL LP?';
     console.log(
-      `  ${r.type.padEnd(6)} ${String(r.block).padEnd(12)} ` +
-      `$${String(r.depthAfter.toFixed(0)).padEnd(11)} ` +
-      `${String(r.tickWidth).padEnd(8)} ` +
-      `${String(r.amount0.toFixed(2)).padEnd(12)} ` +
-      `${String(r.amount1.toFixed(2)).padEnd(12)} ` +
-      `${r.owner.slice(0,12)}...${alert}`
+      `  ${owner.padEnd(44)} ${String(s.mints).padEnd(7)} ${String(s.burns).padEnd(7)} ` +
+      `${String(s.maxAmount0.toFixed(2)).padEnd(12)} ${String(s.maxTickWidth).padEnd(10)} ${s.pattern}${flag}`
     );
   }
 
-  // Unique owners
-  const owners = [...new Set(summary.map(r => r.owner))];
+  // ── Step 5: depth read on non-churn owners only ───────────────────────────
+  const realLPs = sortedOwners.filter(([, s]) => s.pattern !== 'churn_bot');
+
+  console.log(`\n  Non-churn owners: ${realLPs.length}  (reading depth at their Mint blocks...)\n`);
+
+  const depthResults = [];
+
+  for (const [owner, s] of realLPs) {
+    // Read depth at each of their Mint blocks (max 5)
+    const blocksToCheck = [...new Set(s.mintBlocks)].sort((a, b) => a - b).slice(0, 5);
+    for (const blk of blocksToCheck) {
+      process.stdout.write(`  depth @ block ${blk} (owner ${owner.slice(0, 10)}...)... `);
+      try {
+        const snap = await readDepthAt(blk, rpc);
+        const alert = snap.depth >= 15000 ? ' ★ EXECUTION-GRADE' : '';
+        console.log(`$${snap.depth.toFixed(2)}${alert}  price=$${snap.price.toFixed(6)}`);
+        depthResults.push({ owner, block: blk, depth: snap.depth, price: snap.price, pattern: s.pattern });
+      } catch (e) {
+        console.log(`error: ${e.message.slice(0, 50)}`);
+      }
+      await sleep(300);
+    }
+  }
+
+  // ── Step 6: final report ──────────────────────────────────────────────────
   console.log('\n' + LINE);
-  console.log(`  UNIQUE LP OWNERS: ${owners.length}`);
-  for (const o of owners) {
-    const evs   = summary.filter(r => r.owner === o);
-    const mints = evs.filter(r => r.type === 'Mint').length;
-    const burns = evs.filter(r => r.type === 'Burn').length;
-    const maxD  = Math.max(...evs.filter(r => r.depthAfter).map(r => r.depthAfter));
-    const label = mints === burns ? 'churn_bot_pattern' : mints > burns ? 'net_adder' : 'net_remover';
-    console.log(`\n  ${o}`);
-    console.log(`    mints=${mints}  burns=${burns}  maxDepth=$${maxD.toFixed(0)}  pattern=${label}`);
+  console.log('  DEPTH RESULTS — NON-CHURN OWNERS');
+  console.log('  ' + DIV);
+
+  const hits = depthResults.filter(r => r.depth >= 15000);
+  if (hits.length === 0) {
+    console.log('  No execution-grade depth detected from non-churn owners in this range.');
+    console.log('  The $17k spike may have occurred just outside the scan window.');
+    console.log('  Try: --center=443758085 --window=500 --chunk=50');
+  } else {
+    console.log(`  ★ EXECUTION-GRADE events found: ${hits.length}`);
+    for (const r of hits) {
+      console.log(`\n  owner:  ${r.owner}`);
+      console.log(`  block:  ${r.block}`);
+      console.log(`  depth:  $${r.depth.toFixed(2)}`);
+      console.log(`  price:  $${r.price.toFixed(6)}`);
+      // Find their Mint details
+      const mint = parsedMints.find(m => m.owner === r.owner && m.block === r.block);
+      if (mint) {
+        console.log(`  ticks:  [${mint.tickLower}, ${mint.tickUpper}]  width=${mint.tickWidth}`);
+        console.log(`  amount: ${mint.amount0.toFixed(4)} ARB  /  ${mint.amount1.toFixed(4)} USDC`);
+      }
+    }
+  }
+
+  // Also report depths around the profitable block specifically
+  console.log('\n' + LINE);
+  console.log(`  DEPTH AT KNOWN PROFITABLE BLOCK (${PROFITABLE_BLOCK})`);
+  console.log('  ' + DIV);
+  try {
+    const snap = await readDepthAt(PROFITABLE_BLOCK, rpc);
+    console.log(`  depth=$${snap.depth.toFixed(2)}  price=$${snap.price.toFixed(6)}`);
+    if (snap.depth >= 15000) console.log('  ★ EXECUTION-GRADE confirmed at this block');
+  } catch (e) {
+    console.log(`  error: ${e.message}`);
   }
 
   console.log('\n' + LINE + '\n');
