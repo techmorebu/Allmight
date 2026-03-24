@@ -33,19 +33,27 @@ const path = require('path');
 // ─────────────────────────────────────────────────────────────────────────────
 // CONSTANTS (match activator/watcher definitions)
 // ─────────────────────────────────────────────────────────────────────────────
-const DEPTH_EXECUTION   = 15_000;
-const DEPTH_SUBCRITICAL =  5_000;
+const DEPTH_EXECUTION   = 15_000;  // confirmed_default: Boss-approved execution gate
+const DEPTH_SUBCRITICAL =  5_000;  // confirmed_default: Boss-approved research band floor
 const UNIV3_FEE_FRAC    = 0.0005;
 const CAMELOT_FEE_FRAC  = 0.000249;
 const FEE_BURDEN_PCT    = (UNIV3_FEE_FRAC + CAMELOT_FEE_FRAC) * 100;  // ~0.0749%
 const TRIGGER_BUFFER    = 0.02;
-const CHURN_RATIO_BAND  = 0.20;   // mint:burn ratio within 20% of 1:1 = suspected churn
-const CHURN_MIN_EVENTS  = 10;     // need at least 10 events to label churn
+const CHURN_RATIO_BAND  = 0.20;  // confirmed_default: mint:burn ratio within 20% of 1:1   // mint:burn ratio within 20% of 1:1 = suspected churn
+const CHURN_MIN_EVENTS  = 10;    // confirmed_default: min events to classify as churn     // need at least 10 events to label churn
 
 // ─────────────────────────────────────────────────────────────────────────────
 // FILE CLASSIFIER
 //   Sniffs the first record to determine which log type a file is
 // ─────────────────────────────────────────────────────────────────────────────
+
+// ─────────────────────────────────────────────────────────────────────────────
+// JSONL BASE ENVELOPE (Pass B1)
+// ─────────────────────────────────────────────────────────────────────────────
+const LOG_SOURCE = 'arb_session_analyzer';
+const LOG_CHAIN  = 'arbitrum';
+const LOG_PAIR   = 'ARB/USDC';
+
 function classifyFile(filePath) {
   try {
     const firstLine = fs.readFileSync(filePath, 'utf8').split('\n').find(l => l.trim());
@@ -517,6 +525,7 @@ function analyze(files) {
   const verdict  = deriveVerdict(summary);
 
   return {
+    source: 'arb_session_analyzer', chain: 'arbitrum', pair: 'ARB/USDC',
     timeRange, stateDistribution, price, depth, spread, alignment,
     events, states, verdict, executableSignals,
     _meta: { filesLoaded: loadedFiles, ticksAnalyzed: allTicks.length, eventRecordsAnalyzed: eventRecords.length },
@@ -530,6 +539,10 @@ function parseArgs() {
   const args    = process.argv.slice(2);
   const getS    = (f, d) => { const a = args.find(a => a.startsWith(f+'=')); return a ? a.split('=').slice(1).join('=') : d; };
   const hasFlag = (f)    => args.includes(f);
+  if (args.includes('--help') || args.includes('-h')) {
+    console.log('\narb_session_analyzer.js — analyze completed monitoring sessions\n\nUSAGE:\n  node scripts/analysis/arb_session_analyzer.js \\\n    --depth=./logs/depth.jsonl \\\n    --events=./logs/liq_events.jsonl \\\n    --activator=./logs/activator.jsonl\n\nFLAGS:\n  --depth=PATH      Depth time-series log\n  --events=PATH     Liquidity event log\n  --activator=PATH  Activator state log\n  --glob=PATTERN    Auto-classify all matching files\n  --json            Machine-readable JSON output\n  --out=PATH        Write JSON verdict to file\n  --help            Show this message\n');
+    process.exit(0);
+  }
 
   const files = [];
 
@@ -576,7 +589,10 @@ function main() {
   if (files.length === 0) {
     console.error([
       '',
-      '  arb_session_analyzer.js — usage:',
+      '  arb_session_analyzer.js — analyzes completed monitoring sessions',
+      '  Inputs: depth_*.jsonl, liq_events_*.jsonl, activator_*.jsonl',
+      '  Output: session verdict + price/depth/spread/alignment summary',
+      '',,
       '',
       '  node scripts/analysis/arb_session_analyzer.js \\',
       '    --depth=./logs/depth_20260322.jsonl \\',
