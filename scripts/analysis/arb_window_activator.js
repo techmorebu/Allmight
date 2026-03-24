@@ -90,6 +90,14 @@ const COOLDOWN_AFTER_SIM_MS = 10_000;
 const TICK_MAP_REFRESH_MS   = 30 * 60 * 1000;  // re-run tick map every 30 min
 
 // ─────────────────────────────────────────────────────────────────────────────
+// HEALTH THRESHOLDS — stale-state detection (Boss ruling 2026-03-24)
+// ─────────────────────────────────────────────────────────────────────────────
+const HEALTH_POOL_STALE_MS     =  30_000;   // pool read silent for > 30s → unhealthy
+const HEALTH_BLOCK_FROZEN_MS   =  60_000;   // block number unchanged for > 60s → frozen
+const HEALTH_TICKMAP_STALE_MS  =  35 * 60 * 1000;  // tick map not refreshed in > 35 min
+const HEALTH_CHECK_INTERVAL_MS =  60_000;   // run health check every 60s
+
+// ─────────────────────────────────────────────────────────────────────────────
 // SIM CONFIG
 // ─────────────────────────────────────────────────────────────────────────────
 const TRIGGER_BUFFER_PCT = 0.02;
@@ -415,11 +423,50 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap) {
   let lastPrintKey  = null;
   let cooldownUntil = 0;
 
+  // Health tracking
+  const health = {
+    lastPoolReadMs:     Date.now(),
+    lastBlockChangeMs:  Date.now(),
+    lastTickMapMs:      Date.now(),
+    lastHealthCheckMs:  Date.now(),
+    currentlyUnhealthy: false,
+    unhealthyReasons:   [],
+  };
+
+  function checkHealth() {
+    const now = Date.now();
+    const reasons = [];
+    if (now - health.lastPoolReadMs    > HEALTH_POOL_STALE_MS)    reasons.push(`pool_read_stale:${Math.round((now - health.lastPoolReadMs)/1000)}s`);
+    if (now - health.lastBlockChangeMs > HEALTH_BLOCK_FROZEN_MS)  reasons.push(`block_frozen:${Math.round((now - health.lastBlockChangeMs)/1000)}s`);
+    if (now - health.lastTickMapMs     > HEALTH_TICKMAP_STALE_MS) reasons.push(`tickmap_stale:${Math.round((now - health.lastTickMapMs)/1000)}s`);
+
+    const isUnhealthy = reasons.length > 0;
+
+    if (isUnhealthy && !health.currentlyUnhealthy) {
+      // Transition into unhealthy
+      health.currentlyUnhealthy = true;
+      health.unhealthyReasons   = reasons;
+      const record = { ts: new Date().toISOString(), type: 'STATE_UNHEALTHY', reasons, state };
+      process.stderr.write(`\n  ⚠ STATE_UNHEALTHY: ${reasons.join(', ')}\n`);
+      appendLog(logPath, record);
+    } else if (!isUnhealthy && health.currentlyUnhealthy) {
+      // Recovered
+      health.currentlyUnhealthy = false;
+      health.unhealthyReasons   = [];
+      const record = { ts: new Date().toISOString(), type: 'STATE_HEALTHY', state };
+      console.log(`\n  ✓ STATE_HEALTHY — recovered\n`);
+      appendLog(logPath, record);
+    }
+
+    health.lastHealthCheckMs = now;
+    return !isUnhealthy;
+  }
+
   const stats = {
     ticks: 0, errors: 0,
     armedCount: 0, disarmedCount: 0,
     simRuns: 0, readySignals: 0,
-    tickMapRefreshes: 0,
+    tickMapRefreshes: 0, unhealthyEvents: 0,
     startMs: Date.now(),
   };
 
@@ -447,11 +494,18 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap) {
       try {
         thresholds = await deriveThresholdsFromTickMap(rpc);
         tickMapRefreshAt = Date.now() + TICK_MAP_REFRESH_MS;
+        health.lastTickMapMs = Date.now();
         stats.tickMapRefreshes++;
         appendLog(logPath, { ts: new Date().toISOString(), type: 'tick_map_refresh', thresholds });
       } catch (e) {
         process.stderr.write(`  [tick-map refresh] ${e.message}\n`);
       }
+    }
+
+    // Periodic health check
+    if (Date.now() - health.lastHealthCheckMs >= HEALTH_CHECK_INTERVAL_MS) {
+      const healthy = checkHealth();
+      if (!healthy) stats.unhealthyEvents++;
     }
 
     // Cooldown
@@ -476,11 +530,13 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap) {
       continue;
     }
     lastBlock = blockNumber;
+    health.lastBlockChangeMs = Date.now();
 
     // Pool read
     let snap;
     try {
       snap = await readBothPools(blockNumber, rpc);
+      health.lastPoolReadMs = Date.now();
     } catch (e) {
       stats.errors++;
       await sleep(POLL_PASSIVE_MS);
@@ -570,6 +626,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap) {
   console.log(`  Simulations run:    ${stats.simRuns}`);
   console.log(`  EXECUTION_READY:    ${stats.readySignals}`);
   console.log(`  Tick map refreshes: ${stats.tickMapRefreshes}`);
+  console.log(`  Unhealthy events:   ${stats.unhealthyEvents}`);
   if (logPath) console.log(`  Log: ${logPath}`);
   console.log(EQ + '\n');
 }
