@@ -1,117 +1,110 @@
 'use strict';
 /**
- * scripts/analysis/arb_trigger_monitor.js
+ * scripts/analysis/arb_trigger_monitor.js  v2.0
  *
- * Purpose:
- *   Continuously monitor Camelot V3 vs UniV3 ARB/USDC spread and emit
- *   an EXECUTABLE signal when spread > fees + slippage + safety buffer.
+ * PURPOSE:
+ *   Continuously monitor Camelot V3 vs UniV3 ARB/USDC spread and emit an
+ *   EXECUTABLE signal when spread > fees + slippage + safety buffer.
+ *   Primary tool for confirming whether a live executable edge exists.
  *
- * Usage:
- *   node -r dotenv/config scripts/analysis/arb_trigger_monitor.js
- *   node -r dotenv/config scripts/analysis/arb_trigger_monitor.js --size=50
- *   node -r dotenv/config scripts/analysis/arb_trigger_monitor.js --buffer=0.03
- *   node -r dotenv/config scripts/analysis/arb_trigger_monitor.js --interval=1500
- *   node -r dotenv/config scripts/analysis/arb_trigger_monitor.js --duration=1800
+ * INPUTS:
+ *   - Arbitrum mainnet via provider_factory.js (no Redis, no fetchers)
+ *   - CLI flags (see --help)
  *
- * Threshold logic:
- *   trigger = fee_burden + slippage_estimate + safety_buffer
- *   fee_burden    = UniV3(0.05%) + Camelot(0.0249%) = 0.0749%
- *   safety_buffer = 0.02% default (CLI: --buffer=N where N is %)
- *   slippage      = size / (2 × uniActiveTick)
+ * OUTPUTS:
+ *   - Console tick table (human-readable)
+ *   - ★★★ EXECUTABLE banner + JSON payload when threshold is crossed
+ *   - Optional JSONL log via --log=
+ *   - Session summary on exit
  *
- *   EXECUTABLE when: spread > trigger
+ * IN SCOPE:
+ *   - Spread detection between Camelot V3 and UniV3 ARB/USDC
+ *   - Threshold calculation: fees + slippage + buffer
+ *   - Opportunity logging
  *
- * Hard rules (same as lag_detector):
+ * OUT OF SCOPE:
  *   - No execution logic
- *   - No new venues
  *   - No Redis writes
  *   - No fetcher mutation
- *   - Same-block reads mandatory
- *   - provider_factory.js ONLY
- *   - Promise.all only within single rpc.callDetailed() on same contract
+ *   - No new venues or chains
+ *   - No state machine (see arb_window_activator.js)
  *
- * Path note: scripts/analysis/ → provider_factory at ../../utils/provider_factory
+ * USAGE:
+ *   node -r dotenv/config scripts/analysis/arb_trigger_monitor.js --help
+ *   node -r dotenv/config scripts/analysis/arb_trigger_monitor.js
+ *   node -r dotenv/config scripts/analysis/arb_trigger_monitor.js --size=25 --buffer=0.01
+ *   node -r dotenv/config scripts/analysis/arb_trigger_monitor.js --duration=3600 --log=./logs/trigger.jsonl
  */
 
 require('dotenv').config();
 
-const { ethers }         = require('ethers');
+const fs             = require('fs');
+const path           = require('path');
+const { ethers }     = require('ethers');
 const { createProvider } = require('../../utils/provider_factory');
 
 // ─────────────────────────────────────────────────────────────────────────────
-// POOL CONSTANTS — canonical, do not change
+// CONSTANTS — canonical, do not change without Boss approval
 // ─────────────────────────────────────────────────────────────────────────────
-const UNIV3_POOL      = '0xb0f6cA40411360c03d41C5fFc5F179b8403CdcF8';
-const UNIV3_FEE_FRAC  = 0.0005;     // 0.05%
-
-const CAMELOT_POOL    = '0xfae2ae0a9f87fd35b5b0e24b47bac796a7eefea1';
-const CAMELOT_FEE_FRAC = 0.000249;  // 0.0249% measured dynamic fee
-
-const FEE_BURDEN_FRAC = UNIV3_FEE_FRAC + CAMELOT_FEE_FRAC;  // 0.0749%
-
+const UNIV3_POOL       = '0xb0f6cA40411360c03d41C5fFc5F179b8403CdcF8';
+const UNIV3_FEE_FRAC   = 0.0005;     // confirmed_default: UniV3 0.05% fee tier
+const CAMELOT_POOL     = '0xfae2ae0a9f87fd35b5b0e24b47bac796a7eefea1';
+const CAMELOT_FEE_FRAC = 0.000249;   // confirmed_default: measured dynamic fee
+const FEE_BURDEN_FRAC  = UNIV3_FEE_FRAC + CAMELOT_FEE_FRAC;  // 0.0749%
 const DEC0 = 18;  // ARB
 const DEC1 = 6;   // USDC
-
 const PRICE_MIN = 0.05;
 const PRICE_MAX = 10.0;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// DEFAULTS (overridden by CLI)
-// ─────────────────────────────────────────────────────────────────────────────
-const DEFAULT_SIZE_USD     = 50;      // trade notional in USD
-const DEFAULT_BUFFER_PCT   = 0.02;    // safety buffer in %
-const DEFAULT_INTERVAL_MS  = 1500;    // poll interval in ms
-const DEFAULT_DURATION_S   = 1800;    // run duration in seconds (30 min)
+// JSONL envelope constants
+const LOG_SOURCE = 'arb_trigger_monitor';
+const LOG_CHAIN  = 'arbitrum';
+const LOG_PAIR   = 'ARB/USDC';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ABIs — same as lag_detector
+// DEFAULTS — labeled by type
+// ─────────────────────────────────────────────────────────────────────────────
+const DEFAULT_SIZE_USD    = 50;     // confirmed_default: reference trade notional USD
+const DEFAULT_BUFFER_PCT  = 0.02;   // confirmed_default: safety buffer in %
+const DEFAULT_INTERVAL_MS = 1500;   // confirmed_default: poll interval ms
+const DEFAULT_DURATION_S  = 1800;   // confirmed_default: run duration seconds
+const HEARTBEAT_INTERVAL  = 300;    // confirmed_default: heartbeat every 300 ticks
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ABIs
 // ─────────────────────────────────────────────────────────────────────────────
 const UNIV3_ABI = [
   'function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16, uint16, uint16, uint8, bool)',
   'function liquidity() external view returns (uint128)',
 ];
-
 const ALGEBRA_ABI = [
   'function globalState() external view returns (uint160 sqrtPriceX96, int24 tick, uint16 fee, uint16, uint8, uint8, bool)',
   'function liquidity() external view returns (uint128)',
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// MATH — identical to lag_detector for consistency
+// MATH
 // ─────────────────────────────────────────────────────────────────────────────
-function sqrtPriceToUSDC(sqrtPriceX96, dec0, dec1) {
-  const Q96   = 2n ** 96n;
-  const sqrtP = Number(sqrtPriceX96) / Number(Q96);
-  return sqrtP * sqrtP * Math.pow(10, dec0 - dec1);
+function sqrtPriceToUSDC(sqrtPriceX96) {
+  const sqrtP = Number(sqrtPriceX96) / Number(2n ** 96n);
+  return sqrtP * sqrtP * Math.pow(10, DEC0 - DEC1);
 }
-
-function activeTickDepthUSD(liquidityRaw, sqrtPriceX96, dec1) {
-  const Q96   = 2n ** 96n;
-  const sqrtP = Number(sqrtPriceX96) / Number(Q96);
-  return (Number(liquidityRaw) * sqrtP) / Math.pow(10, dec1);
+function activeTickDepthUSD(liquidityRaw, sqrtPriceX96) {
+  const sqrtP = Number(sqrtPriceX96) / Number(2n ** 96n);
+  return (Number(liquidityRaw) * sqrtP) / Math.pow(10, DEC1);
 }
-
-function estimateSlippage(sizeUsd, activeTickUsd) {
-  if (activeTickUsd <= 0) return Infinity;
-  return sizeUsd / (2 * activeTickUsd);
+function estimateSlippage(sizeUsd, depthUsd) {
+  return depthUsd <= 0 ? Infinity : sizeUsd / (2 * depthUsd);
 }
-
-function computeSpread(priceA, priceB) {
-  return Math.abs(priceA - priceB) / Math.min(priceA, priceB);
-}
-
-function tradeDirection(uniPrice, camelotPrice) {
-  if (uniPrice < camelotPrice) return 'buy_uni_sell_camelot';
-  if (uniPrice > camelotPrice) return 'sell_uni_buy_camelot';
-  return 'none';
+function computeSpread(a, b) {
+  return Math.abs(a - b) / Math.min(a, b);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SINGLE TICK — read both pools at same block
+// POOL READ
 // ─────────────────────────────────────────────────────────────────────────────
-async function tick(blockNumber, sizeUsd, bufferFrac, rpc) {
-  // UniV3 — slot0 + liquidity, single callDetailed on same contract
-  let uniRes;
+async function readTick(blockNumber, sizeUsd, bufferFrac, rpc) {
+  let uniRes, camRes;
   try {
     uniRes = await rpc.callDetailed(
       `trigger.univ3.${blockNumber}`,
@@ -125,12 +118,8 @@ async function tick(blockNumber, sizeUsd, bufferFrac, rpc) {
       },
       { timeoutMs: 2000, hedge: true }
     );
-  } catch (e) {
-    return { ok: false, error: `univ3: ${String(e.message).slice(0, 80)}` };
-  }
+  } catch (e) { return { ok: false, error: `univ3: ${String(e.message).slice(0, 80)}` }; }
 
-  // Camelot V3 — globalState + liquidity, single callDetailed on same contract
-  let camRes;
   try {
     camRes = await rpc.callDetailed(
       `trigger.camelot.${blockNumber}`,
@@ -144,17 +133,14 @@ async function tick(blockNumber, sizeUsd, bufferFrac, rpc) {
       },
       { timeoutMs: 2000, hedge: true }
     );
-  } catch (e) {
-    return { ok: false, error: `camelot: ${String(e.message).slice(0, 80)}` };
-  }
+  } catch (e) { return { ok: false, error: `camelot: ${String(e.message).slice(0, 80)}` }; }
 
-  const uniSqrtP   = uniRes.result.s0[0];
-  const uniLiq     = uniRes.result.liq;
-  const camSqrtP   = camRes.result.gs[0];
-  const camFeeRaw  = Number(camRes.result.gs[2]);
+  const uniSqrtP  = uniRes.result.s0[0];
+  const camSqrtP  = camRes.result.gs[0];
+  const camFeeRaw = Number(camRes.result.gs[2]);
 
-  const uniPrice     = sqrtPriceToUSDC(uniSqrtP,  DEC0, DEC1);
-  const camPrice     = sqrtPriceToUSDC(camSqrtP,  DEC0, DEC1);
+  const uniPrice = sqrtPriceToUSDC(uniSqrtP);
+  const camPrice = sqrtPriceToUSDC(camSqrtP);
 
   if (!isFinite(uniPrice) || uniPrice < PRICE_MIN || uniPrice > PRICE_MAX)
     return { ok: false, error: `univ3 price insane: ${uniPrice}` };
@@ -163,84 +149,85 @@ async function tick(blockNumber, sizeUsd, bufferFrac, rpc) {
 
   const camFeeFrac   = camFeeRaw > 0 ? camFeeRaw / 10000 / 100 : CAMELOT_FEE_FRAC;
   const feeBurden    = UNIV3_FEE_FRAC + camFeeFrac;
-
-  const uniDepth     = activeTickDepthUSD(uniLiq, uniSqrtP, DEC1);
-  const slippageFrac = estimateSlippage(sizeUsd, uniDepth);
+  const depth        = activeTickDepthUSD(uniRes.result.liq, uniSqrtP);
+  const slippageFrac = estimateSlippage(sizeUsd, depth);
   const spread       = computeSpread(uniPrice, camPrice);
   const threshold    = feeBurden + slippageFrac + bufferFrac;
   const netEdge      = spread - feeBurden - slippageFrac;
-  const direction    = tradeDirection(uniPrice, camPrice);
+  const direction    = uniPrice < camPrice ? 'buy_uni_sell_camelot' : 'sell_uni_buy_camelot';
   const executable   = spread > threshold;
 
-  const status = executable          ? 'EXECUTABLE'
-               : spread < feeBurden  ? 'blocked_fee'
-               : spread < threshold  ? 'blocked_slippage'
-               : 'blocked_fee';
+  const status = executable         ? 'EXECUTABLE'
+               : spread < feeBurden ? 'blocked_fee'
+               :                      'blocked_slippage';
 
   return {
     ok: true,
-    blockNumber,
-    uniPrice:      parseFloat(uniPrice.toFixed(6)),
-    camPrice:      parseFloat(camPrice.toFixed(6)),
-    spread:        parseFloat((spread * 100).toFixed(5)),
-    feeBurden:     parseFloat((feeBurden * 100).toFixed(5)),
-    slippage:      parseFloat((slippageFrac * 100).toFixed(5)),
-    buffer:        parseFloat((bufferFrac * 100).toFixed(4)),
-    threshold:     parseFloat((threshold * 100).toFixed(5)),
-    netEdge:       parseFloat((netEdge * 100).toFixed(5)),
-    uniDepth:      parseFloat(uniDepth.toFixed(2)),
+    // JSONL base envelope
+    ts:     new Date().toISOString(),
+    source: LOG_SOURCE,
+    chain:  LOG_CHAIN,
+    pair:   LOG_PAIR,
+    block:  blockNumber,
+    state:  executable ? 'EXECUTABLE' : 'PASSIVE',
+    // Canonical field names
+    price:     +uniPrice.toFixed(6),
+    depth:     +depth.toFixed(2),
+    spread:    +(spread * 100).toFixed(5),
+    // Trigger-specific fields
+    camPrice:  +camPrice.toFixed(6),
+    feeBurden: +(feeBurden * 100).toFixed(5),
+    slippage:  +(slippageFrac * 100).toFixed(5),
+    buffer:    +(bufferFrac * 100).toFixed(4),
+    threshold: +(threshold * 100).toFixed(5),
+    netEdge:   +(netEdge * 100).toFixed(5),
     direction,
     status,
     executable,
     sizeUsd,
-    ts:            new Date().toISOString(),
   };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// FORMAT HELPERS
+// LOG
 // ─────────────────────────────────────────────────────────────────────────────
-function fmtTime(ts) {
-  return ts.slice(11, 19);  // HH:MM:SS
+function appendLog(logPath, record) {
+  if (!logPath) return;
+  try {
+    const dir = path.dirname(logPath);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.appendFileSync(logPath, JSON.stringify(record) + '\n');
+  } catch (e) {
+    process.stderr.write(`  [log] ${e.message}\n`);
+  }
 }
 
-function printHeader(sizeUsd, bufferPct, intervalMs, durationS, threshold) {
+// ─────────────────────────────────────────────────────────────────────────────
+// DISPLAY
+// ─────────────────────────────────────────────────────────────────────────────
+function printHeader(sizeUsd, bufferPct, intervalMs, durationS) {
   const LINE = '═'.repeat(108);
   console.log('\n' + LINE);
-  console.log('  ARB/USDC  —  TRIGGER MONITOR   Camelot V3 (anchor) ↔ UniV3 (mirror)');
+  console.log('  ARB/USDC — TRIGGER MONITOR   Camelot V3 (anchor) ↔ UniV3 (mirror)');
   console.log(`  size=$${sizeUsd}  buffer=${bufferPct}%  interval=${intervalMs}ms  duration=${durationS}s`);
-  console.log(`  threshold=${threshold.toFixed(5)}%  (fees + slippage + buffer)`);
-  console.log(`  UniV3:   ${UNIV3_POOL}`);
-  console.log(`  Camelot: ${CAMELOT_POOL}`);
+  console.log(`  fee_burden=${(FEE_BURDEN_FRAC*100).toFixed(4)}%  (UniV3 ${(UNIV3_FEE_FRAC*100).toFixed(4)}% + Camelot ${(CAMELOT_FEE_FRAC*100).toFixed(4)}%)`);
   console.log(LINE);
   console.log(
     `  ${'time'.padEnd(10)} ${'block'.padEnd(12)} ${'cam'.padEnd(10)} ${'uni'.padEnd(10)} ` +
-    `${'spread%'.padEnd(10)} ${'thresh%'.padEnd(10)} ${'net%'.padEnd(10)} ` +
-    `${'depth$'.padEnd(10)} status`
+    `${'spread%'.padEnd(10)} ${'thresh%'.padEnd(10)} ${'net%'.padEnd(10)} ${'depth$'.padEnd(10)} status`
   );
   console.log('  ' + '─'.repeat(106));
 }
 
-function printTick(r, isNew) {
+function printTick(r) {
   const icon = r.executable ? '★ EXECUTABLE' : r.status;
   const line =
-    `  ${fmtTime(r.ts).padEnd(10)} ` +
-    `${String(r.blockNumber).padEnd(12)} ` +
-    `$${String(r.camPrice).padEnd(9)} ` +
-    `$${String(r.uniPrice).padEnd(9)} ` +
-    `${String(r.spread).padEnd(10)} ` +
-    `${String(r.threshold).padEnd(10)} ` +
-    `${String(r.netEdge).padEnd(10)} ` +
-    `$${String(r.uniDepth).padEnd(9)} ` +
-    `${icon}`;
-
-  if (r.executable) {
-    // ANSI bold for terminal visibility — degrades gracefully if unsupported
-    console.log('\x1b[1m' + line + '\x1b[0m');
-  } else if (isNew) {
-    console.log(line);
-  }
-  // Suppress repeated identical blocks to reduce noise
+    `  ${r.ts.slice(11,19).padEnd(10)} ${String(r.block).padEnd(12)} ` +
+    `$${String(r.camPrice).padEnd(9)} $${String(r.price).padEnd(9)} ` +
+    `${String(r.spread).padEnd(10)} ${String(r.threshold).padEnd(10)} ` +
+    `${String(r.netEdge).padEnd(10)} $${String(r.depth).padEnd(9)} ${icon}`;
+  if (r.executable) console.log('\x1b[1m' + line + '\x1b[0m');
+  else              console.log(line);
 }
 
 function printOpportunity(r) {
@@ -249,59 +236,58 @@ function printOpportunity(r) {
   console.log('  ★★★  EXECUTABLE OPPORTUNITY DETECTED  ★★★');
   console.log(LINE);
   console.log(JSON.stringify({
-    spread:    r.spread,
-    fees:      r.feeBurden,
-    slippage:  r.slippage,
-    buffer:    r.buffer,
-    threshold: r.threshold,
-    net:       r.netEdge,
-    status:    r.status,
-    direction: r.direction,
-    size:      r.sizeUsd,
-    block:     r.blockNumber,
-    time:      r.ts,
-    uniDepth:  r.uniDepth,
-    uniPrice:  r.uniPrice,
-    camPrice:  r.camPrice,
+    spread: r.spread, fees: r.feeBurden, slippage: r.slippage,
+    buffer: r.buffer, threshold: r.threshold, net: r.netEdge,
+    status: r.status, direction: r.direction, size: r.sizeUsd,
+    block: r.block, time: r.ts, uniDepth: r.depth,
+    uniPrice: r.price, camPrice: r.camPrice,
   }, null, 2));
   console.log(LINE + '\n');
 }
 
-function printSummary(stats, durationS) {
-  const LINE = '═'.repeat(108);
-  const elapsed = ((Date.now() - stats.startMs) / 1000).toFixed(0);
-  console.log('\n' + LINE);
-  console.log(`  MONITOR SUMMARY   (${elapsed}s elapsed, ${stats.ticks} ticks, ${stats.errors} errors)`);
-  console.log(LINE);
-  console.log(`  Opportunities fired: ${stats.opportunities}`);
-  console.log(`  Spread range:        ${stats.minSpread.toFixed(5)}% – ${stats.maxSpread.toFixed(5)}%`);
-  console.log(`  Avg spread:          ${stats.ticks > 0 ? (stats.sumSpread / stats.ticks).toFixed(5) : 'n/a'}%`);
-  console.log(`  Fee burden:          ${(FEE_BURDEN_FRAC * 100).toFixed(5)}%`);
-  console.log(`  Gap to threshold:    ${stats.minGap.toFixed(5)}%  (closest approach)`);
-  console.log(`  UniV3 depth range:   $${stats.minDepth.toFixed(2)} – $${stats.maxDepth.toFixed(2)}`);
-  console.log(`  Direction counts:    ${JSON.stringify(stats.dirCounts)}`);
-  if (stats.opportunities === 0) {
-    console.log(`\n  No executable edge during this window.`);
-    console.log(`  Closest was ${stats.minGap.toFixed(5)}% below threshold.`);
-    console.log(`  Spread needs to reach ${(FEE_BURDEN_FRAC * 100 + stats.bufferPct + 0.001).toFixed(4)}%+ to trigger.`);
-  }
-  console.log(LINE + '\n');
+// ─────────────────────────────────────────────────────────────────────────────
+// CLI
+// ─────────────────────────────────────────────────────────────────────────────
+function printHelp() {
+  console.log(`
+arb_trigger_monitor.js — ARB/USDC spread trigger monitor
+
+USAGE:
+  node -r dotenv/config scripts/analysis/arb_trigger_monitor.js [flags]
+
+FLAGS:
+  --size=N       Trade notional in USD         (default: ${DEFAULT_SIZE_USD})
+  --buffer=N     Safety buffer in %            (default: ${DEFAULT_BUFFER_PCT})
+  --interval=N   Poll interval in ms           (default: ${DEFAULT_INTERVAL_MS})
+  --duration=N   Run duration in seconds       (default: ${DEFAULT_DURATION_S})
+  --log=PATH     Append JSONL opportunity log  (default: none)
+  --json         Emit opportunity payloads as clean JSON (suppresses table)
+  --help         Show this message
+
+OUTPUTS:
+  - Console tick table with spread/threshold/status per block
+  - ★★★ EXECUTABLE banner + JSON payload when threshold is crossed
+  - Optional JSONL log (--log=) with base envelope: ts/source/chain/pair/block/state
+
+EXAMPLES:
+  node -r dotenv/config scripts/analysis/arb_trigger_monitor.js
+  node -r dotenv/config scripts/analysis/arb_trigger_monitor.js --size=25 --buffer=0.01 --duration=3600
+  node -r dotenv/config scripts/analysis/arb_trigger_monitor.js --log=./logs/trigger.jsonl
+`);
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// CLI PARSER
-// ─────────────────────────────────────────────────────────────────────────────
 function parseArgs() {
   const args = process.argv.slice(2);
-  const getN = (flag, def) => {
-    const a = args.find(a => a.startsWith(flag + '='));
-    return a ? Number(a.split('=')[1]) : def;
-  };
+  if (args.includes('--help') || args.includes('-h')) { printHelp(); process.exit(0); }
+  const getN = (f, d) => { const a = args.find(a => a.startsWith(f+'=')); return a ? Number(a.split('=')[1]) : d; };
+  const getS = (f, d) => { const a = args.find(a => a.startsWith(f+'=')); return a ? a.split('=').slice(1).join('=') : d; };
   return {
     sizeUsd:    getN('--size',     DEFAULT_SIZE_USD),
-    bufferPct:  getN('--buffer',   DEFAULT_BUFFER_PCT),   // in %
+    bufferPct:  getN('--buffer',   DEFAULT_BUFFER_PCT),
     intervalMs: getN('--interval', DEFAULT_INTERVAL_MS),
     durationS:  getN('--duration', DEFAULT_DURATION_S),
+    logPath:    getS('--log',      null),
+    jsonMode:   args.includes('--json'),
   };
 }
 
@@ -309,112 +295,109 @@ function parseArgs() {
 // MAIN
 // ─────────────────────────────────────────────────────────────────────────────
 async function main() {
-  const { sizeUsd, bufferPct, intervalMs, durationS } = parseArgs();
-
-  const bufferFrac  = bufferPct / 100;
-  // Threshold display uses estimated slippage at typical $8k depth — just for header
-  const typicalSlip = estimateSlippage(sizeUsd, 8138);
-  const thresholdDisplay = (FEE_BURDEN_FRAC + typicalSlip + bufferFrac) * 100;
-
-  console.log(`\n[arb_trigger_monitor] ${new Date().toISOString()}`);
-  console.log(`  Press Ctrl+C to stop early.`);
-
-  printHeader(sizeUsd, bufferPct, intervalMs, durationS, thresholdDisplay);
-
+  const { sizeUsd, bufferPct, intervalMs, durationS, logPath, jsonMode } = parseArgs();
+  const bufferFrac = bufferPct / 100;
   const rpc = createProvider('arbitrum');
 
-  const stats = {
-    startMs:       Date.now(),
-    ticks:         0,
-    errors:        0,
-    opportunities: 0,
-    sumSpread:     0,
-    minSpread:     Infinity,
-    maxSpread:     -Infinity,
-    minDepth:      Infinity,
-    maxDepth:      -Infinity,
-    minGap:        Infinity,   // closest approach to threshold (negative = how far under)
-    dirCounts:     {},
-    bufferPct,
+  if (!jsonMode) {
+    console.log(`\n[arb_trigger_monitor] ${new Date().toISOString()}`);
+    printHeader(sizeUsd, bufferPct, intervalMs, durationS);
+  }
+
+  const runStats = {
+    startMs: Date.now(), ticks: 0, errors: 0, opportunities: 0,
+    sumSpread: 0, minSpread: Infinity, maxSpread: -Infinity,
+    minDepth: Infinity, maxDepth: -Infinity, minGap: Infinity,
+    dirCounts: {}, bufferPct,
   };
 
-  const endMs    = Date.now() + durationS * 1000;
-  let lastBlock  = null;
-  let lastStatus = null;
+  const endMs   = Date.now() + durationS * 1000;
+  let lastBlock = null, lastStatus = null;
 
   while (Date.now() < endMs) {
     const loopStart = Date.now();
 
-    // Get current block
     let blockNumber;
     try {
       const b = await rpc.getBlockNumber('trigger.block', { timeoutMs: 1200, hedge: true });
       blockNumber = b.blockNumber;
-    } catch (e) {
-      stats.errors++;
+    } catch {
+      runStats.errors++;
       await sleep(intervalMs);
       continue;
     }
 
-    // Read both pools at this block
-    const r = await tick(blockNumber, sizeUsd, bufferFrac, rpc);
+    const r = await readTick(blockNumber, sizeUsd, bufferFrac, rpc);
 
     if (!r.ok) {
-      stats.errors++;
-      process.stdout.write(`  [!] ${fmtTime(new Date().toISOString())} ERR: ${r.error}\n`);
+      runStats.errors++;
+      if (!jsonMode) process.stdout.write(`  [!] ${new Date().toISOString().slice(11,19)} ERR: ${r.error}\n`);
       await sleep(intervalMs);
       continue;
     }
 
-    // Update stats
-    stats.ticks++;
-    stats.sumSpread += r.spread;
-    if (r.spread < stats.minSpread) stats.minSpread = r.spread;
-    if (r.spread > stats.maxSpread) stats.maxSpread = r.spread;
-    if (r.uniDepth < stats.minDepth) stats.minDepth = r.uniDepth;
-    if (r.uniDepth > stats.maxDepth) stats.maxDepth = r.uniDepth;
+    runStats.ticks++;
+    runStats.sumSpread += r.spread;
+    if (r.spread < runStats.minSpread) runStats.minSpread = r.spread;
+    if (r.spread > runStats.maxSpread) runStats.maxSpread = r.spread;
+    if (r.depth  < runStats.minDepth)  runStats.minDepth  = r.depth;
+    if (r.depth  > runStats.maxDepth)  runStats.maxDepth  = r.depth;
+    const gap = r.spread - r.threshold;
+    if (gap < 0) { const absGap = Math.abs(gap); if (absGap < runStats.minGap) runStats.minGap = absGap; }
+    runStats.dirCounts[r.direction] = (runStats.dirCounts[r.direction] || 0) + 1;
 
-    const gap = r.spread - r.threshold;  // negative = under threshold
-    if (gap < stats.minGap || stats.minGap === Infinity) {
-      // Track closest approach (least negative = closest to firing)
-      if (gap < 0 && gap > -stats.minGap) stats.minGap = Math.abs(gap);
-      else if (gap < 0) stats.minGap = Math.abs(gap);
-    }
-
-    stats.dirCounts[r.direction] = (stats.dirCounts[r.direction] || 0) + 1;
-
-    // Only print if block changed or status changed (suppress noise)
+    // Display
     const isNewBlock  = blockNumber !== lastBlock;
-    const isNewStatus = r.status    !== lastStatus;
-
-    if (isNewBlock || isNewStatus || r.executable) {
-      printTick(r, true);
-      lastBlock  = blockNumber;
-      lastStatus = r.status;
+    const isNewStatus = r.status !== lastStatus;
+    if (!jsonMode && (isNewBlock || isNewStatus || r.executable)) {
+      printTick(r);
+      lastBlock = blockNumber; lastStatus = r.status;
     }
 
-    // Fire opportunity alert
+    // Heartbeat (every N ticks)
+    if (!jsonMode && runStats.ticks % HEARTBEAT_INTERVAL === 0) {
+      const uptime = ((Date.now() - runStats.startMs) / 1000 / 60).toFixed(1);
+      console.log(
+        `\n  ── heartbeat  ${uptime}min  ticks=${runStats.ticks}  errors=${runStats.errors}  opps=${runStats.opportunities}  avgSpread=${runStats.ticks > 0 ? (runStats.sumSpread/runStats.ticks).toFixed(5) : 0}%  depth=$${r.depth} ──\n`
+      );
+      appendLog(logPath, {
+        ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
+        type: 'heartbeat', uptime_min: +uptime, ticks: runStats.ticks,
+        errors: runStats.errors, opportunities: runStats.opportunities,
+        avgSpread: runStats.ticks > 0 ? +(runStats.sumSpread/runStats.ticks).toFixed(5) : 0,
+        depth: r.depth, state: r.state,
+      });
+    }
+
+    // Opportunity
     if (r.executable) {
-      stats.opportunities++;
-      printOpportunity(r);
+      runStats.opportunities++;
+      if (!jsonMode) printOpportunity(r);
+      if (jsonMode)  console.log(JSON.stringify(r));
+      appendLog(logPath, { ...r, type: 'opportunity' });
     }
 
-    // Pace to interval
-    const elapsed = Date.now() - loopStart;
-    const wait    = Math.max(0, intervalMs - elapsed);
-    if (wait > 0) await sleep(wait);
+    await sleep(Math.max(0, intervalMs - (Date.now() - loopStart)));
   }
 
-  printSummary(stats, durationS);
+  if (!jsonMode) {
+    const elapsed = ((Date.now() - runStats.startMs) / 1000).toFixed(0);
+    const LINE = '═'.repeat(108);
+    console.log('\n' + LINE);
+    console.log(`  MONITOR SUMMARY   (${elapsed}s  |  ${runStats.ticks} ticks  |  ${runStats.errors} errors)`);
+    console.log(`  Opportunities:   ${runStats.opportunities}`);
+    console.log(`  Spread range:    ${runStats.minSpread.toFixed(5)}% – ${runStats.maxSpread.toFixed(5)}%`);
+    console.log(`  Avg spread:      ${runStats.ticks > 0 ? (runStats.sumSpread/runStats.ticks).toFixed(5) : 'n/a'}%`);
+    console.log(`  Closest to gate: ${runStats.minGap === Infinity ? 'n/a' : runStats.minGap.toFixed(5)}% below threshold`);
+    console.log(`  Depth range:     $${runStats.minDepth.toFixed(2)} – $${runStats.maxDepth.toFixed(2)}`);
+    console.log(LINE + '\n');
+  }
+
+  process.exit(0);
 }
 
-function sleep(ms) {
-  return new Promise(r => setTimeout(r, ms));
-}
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ENTRY
-// ─────────────────────────────────────────────────────────────────────────────
 main().catch(err => {
   console.error('\n[FATAL]', err.message || err);
   process.exit(1);
