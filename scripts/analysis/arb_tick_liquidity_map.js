@@ -55,8 +55,8 @@ const DEC1          = 6;     // USDC
 // ─────────────────────────────────────────────────────────────────────────────
 // DEPTH ZONE THRESHOLDS (USD, matching Boss gate)
 // ─────────────────────────────────────────────────────────────────────────────
-const ZONE_HIGH   = 15_000;
-const ZONE_MEDIUM =  5_000;
+const ZONE_HIGH   = 15_000;  // confirmed_default: Boss-approved execution-grade depth
+const ZONE_MEDIUM =  5_000;  // confirmed_default: subcritical research band
 
 // ─────────────────────────────────────────────────────────────────────────────
 // UNIV3 ABI — only what we need
@@ -101,6 +101,14 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 // ─────────────────────────────────────────────────────────────────────────────
 // READ SLOT0 + CURRENT LIQUIDITY
 // ─────────────────────────────────────────────────────────────────────────────
+
+// ─────────────────────────────────────────────────────────────────────────────
+// JSONL BASE ENVELOPE (Pass B1)
+// ─────────────────────────────────────────────────────────────────────────────
+const LOG_SOURCE = 'arb_tick_liquidity_map';
+const LOG_CHAIN  = 'arbitrum';
+const LOG_PAIR   = 'ARB/USDC';
+
 async function readPoolState(rpc) {
   const res = await rpc.callDetailed(
     'tickmap.slot0',
@@ -372,9 +380,37 @@ function printSummary(state, tickData, zones, range) {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CLI PARSER
+// ─────
+// ─────────────────────────────────────────────────────────────────────────────
+// HELP (Pass A1)
+// ─────────────────────────────────────────────────────────────────────────────
+function printHelp() {
+  console.log([
+    '',
+    '  arb_tick_liquidity_map.js',
+    '',
+    '  PURPOSE: Map UniV3 ARB/USDC liquidity density by tick — predicts where depth will activate',
+    '',
+    '  USAGE:',
+        '    node -r dotenv/config scripts/analysis/arb_tick_liquidity_map.js',
+    '    node -r dotenv/config scripts/analysis/arb_tick_liquidity_map.js --range=10000',
+    '    node -r dotenv/config scripts/analysis/arb_tick_liquidity_map.js --json > tick_map.json',,
+    '',
+    '  FLAGS:',
+    '    --help          Show this message',
+    '    --json          Machine-readable JSON output',
+    '    --duration=N    Run duration in seconds (long-running scripts)',
+    '    --log=PATH      Output JSONL log file path',
+    '    --gas=live|manual  Gas price source (simulators)',
+    '    --out=PATH      Write JSON summary to file (analyzers)',
+    '',
+  ].join('\n'));
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 function parseArgs() {
   const args = process.argv.slice(2);
+  if (args.includes('--help') || args.includes('-h')) { printHelp(); process.exit(0); }
   const getN = (f,d) => { const a = args.find(a => a.startsWith(f+'=')); return a ? Number(a.split('=')[1]) : d; };
   return {
     range:   getN('--range', 2000),
@@ -428,6 +464,9 @@ async function main() {
   if (json) {
     console.log(JSON.stringify({
       ts:          new Date().toISOString(),
+      source:      LOG_SOURCE,
+      chain:       LOG_CHAIN,
+      pair:        LOG_PAIR,
       pool:        UNIV3_POOL,
       currentTick: state.currentTick,
       currentPrice: +state.currentPrice.toFixed(6),
