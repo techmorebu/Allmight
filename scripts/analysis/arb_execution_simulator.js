@@ -54,14 +54,14 @@ const DEC1 = 6;   // USDC
 //   ETH price hardcoded — no oracle call needed at this simulation stage.
 // ─────────────────────────────────────────────────────────────────────────────
 const GAS_MANUAL = {
-  gasPriceGwei:   0.01,     // conservative Arbitrum floor
-  estimatedUnits: 500_000,  // 2-leg arb tx gas estimate
-  ethPriceUSD:    2000,     // ETH reference price
+  gasPriceGwei:   0.01,     // fallback_only: conservative Arbitrum floor gwei
+  estimatedUnits: 500_000,  // confirmed_default: 2-leg arb tx gas estimate
+  ethPriceUSD:    2000,     // operator_override: update as ETH price changes
   source:         'manual',
 };
 
 // Boss gate constants
-const GATE_MIN_DEPTH_USD = 15_000;
+const GATE_MIN_DEPTH_USD = 15_000;  // confirmed_default: Boss-approved execution gate
 const ARBI_BLOCK_MS      = 250;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -70,6 +70,14 @@ const ARBI_BLOCK_MS      = 250;
 //   Returns gasPrice in wei; we convert to gwei.
 //   Falls back to manual if fetch fails.
 // ─────────────────────────────────────────────────────────────────────────────
+
+// ─────────────────────────────────────────────────────────────────────────────
+// JSONL BASE ENVELOPE (Pass B1)
+// ─────────────────────────────────────────────────────────────────────────────
+const LOG_SOURCE = 'arb_execution_simulator';
+const LOG_CHAIN  = 'arbitrum';
+const LOG_PAIR   = 'ARB/USDC';
+
 async function fetchLiveGasModel(rpc) {
   try {
     const res = await rpc.callDetailed(
@@ -275,6 +283,7 @@ async function runSweep(rpc, gm, jsonMode) {
 
   if (jsonMode) {
     console.log(JSON.stringify({
+      source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
       mode: 'sweep', baseBlock,
       gas: { source: gm.source, gasPriceGwei: gm.gasPriceGwei, gasUsd: +calcGasUSD(gm).toFixed(6) },
       results: allResults, gates,
@@ -363,7 +372,7 @@ async function runSingle(sizeUSD, delayBlocks, rpc, gm, jsonMode) {
   const result = simulateOne(detected, delayed, sizeUSD, gm);
 
   if (jsonMode) {
-    console.log(JSON.stringify({ mode: 'single', baseBlock,
+    console.log(JSON.stringify({ source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR, mode: 'single', baseBlock,
       gas: { source: gm.source, gasPriceGwei: gm.gasPriceGwei, gasUsd: +calcGasUSD(gm).toFixed(6) },
       result }, null, 2));
     return;
@@ -392,9 +401,38 @@ async function runSingle(sizeUSD, delayBlocks, rpc, gm, jsonMode) {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CLI PARSER
+// ─────
+// ─────────────────────────────────────────────────────────────────────────────
+// HELP (Pass A1)
+// ─────────────────────────────────────────────────────────────────────────────
+function printHelp() {
+  console.log([
+    '',
+    '  arb_execution_simulator.js',
+    '',
+    '  PURPOSE: Simulate real execution friction on detected ARB/USDC opportunities',
+    '',
+    '  USAGE:',
+        '    node -r dotenv/config scripts/analysis/arb_execution_simulator.js --sweep',
+    '    node -r dotenv/config scripts/analysis/arb_execution_simulator.js --sweep --gas=manual',
+    '    node -r dotenv/config scripts/analysis/arb_execution_simulator.js --size=50 --delay=1',
+    '    node -r dotenv/config scripts/analysis/arb_execution_simulator.js --json',,
+    '',
+    '  FLAGS:',
+    '    --help          Show this message',
+    '    --json          Machine-readable JSON output',
+    '    --duration=N    Run duration in seconds (long-running scripts)',
+    '    --log=PATH      Output JSONL log file path',
+    '    --gas=live|manual  Gas price source (simulators)',
+    '    --out=PATH      Write JSON summary to file (analyzers)',
+    '',
+  ].join('\n'));
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 function parseArgs() {
   const args = process.argv.slice(2);
+  if (args.includes('--help') || args.includes('-h')) { printHelp(); process.exit(0); }
   const getN = (f, d) => { const a = args.find(a => a.startsWith(f+'=')); return a ? Number(a.split('=')[1]) : d; };
   const getS = (f, d) => { const a = args.find(a => a.startsWith(f+'=')); return a ? a.split('=')[1] : d; };
   return {
