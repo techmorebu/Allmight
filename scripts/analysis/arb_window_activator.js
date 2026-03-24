@@ -76,10 +76,10 @@ const DEC1 = 6;   // USDC
 // ─────────────────────────────────────────────────────────────────────────────
 // THRESHOLDS — static fallbacks, overridden by live tick map
 // ─────────────────────────────────────────────────────────────────────────────
-const STATIC_ARMED_PRICE    = 0.1000;   // Boss-approved static fallback
-const DEPTH_EXECUTION       = 15_000;
-const TICK_MAP_SCAN_RANGE   = 5_000;    // ±5000 ticks for threshold derivation
-const ARMED_BUFFER_TICKS    = 80;       // ticks below HIGH zone to arm early
+const STATIC_ARMED_PRICE    = 0.1000;   // confirmed_default: Boss-approved static pre-alert price   // Boss-approved static fallback
+const DEPTH_EXECUTION       = 15_000;   // confirmed_default: Boss-approved execution gate
+const TICK_MAP_SCAN_RANGE   = 5_000;    // confirmed_default: ±ticks for threshold derivation    // ±5000 ticks for threshold derivation
+const ARMED_BUFFER_TICKS    = 80;       // confirmed_default: ticks below HIGH zone to arm early       // ticks below HIGH zone to arm early
 
 // ─────────────────────────────────────────────────────────────────────────────
 // POLLING
@@ -87,7 +87,7 @@ const ARMED_BUFFER_TICKS    = 80;       // ticks below HIGH zone to arm early
 const POLL_PASSIVE_MS       = 1_500;
 const POLL_ARMED_MS         =   500;
 const COOLDOWN_AFTER_SIM_MS = 10_000;
-const TICK_MAP_REFRESH_MS   = 30 * 60 * 1000;  // re-run tick map every 30 min
+const TICK_MAP_REFRESH_MS   = 30 * 60 * 1000;  // confirmed_default: 30-min refresh interval  // re-run tick map every 30 min
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HEALTH THRESHOLDS — stale-state detection (Boss ruling 2026-03-24)
@@ -96,6 +96,7 @@ const HEALTH_POOL_STALE_MS     =  30_000;   // pool read silent for > 30s → un
 const HEALTH_BLOCK_FROZEN_MS   =  60_000;   // block number unchanged for > 60s → frozen
 const HEALTH_TICKMAP_STALE_MS  =  35 * 60 * 1000;  // tick map not refreshed in > 35 min
 const HEALTH_CHECK_INTERVAL_MS =  60_000;   // run health check every 60s
+const HEARTBEAT_TICKS           =  200;        // confirmed_default: emit heartbeat every N ticks
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SIM CONFIG
@@ -111,6 +112,14 @@ const SIM_DELAY_RANGE    = [0, 1, 2];
 const GAS_MANUAL = {
   gasPriceGwei: 0.01, estimatedUnits: 500_000, ethPriceUSD: 2000, source: 'manual',
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// JSONL BASE ENVELOPE (Pass B1)
+// ─────────────────────────────────────────────────────────────────────────────
+const LOG_SOURCE = 'arb_window_activator';
+const LOG_CHAIN  = 'arbitrum';
+const LOG_PAIR   = 'ARB/USDC';
+
 async function fetchLiveGasModel(rpc) {
   try {
     const res = await rpc.callDetailed('act.gas', async (p) => p.getFeeData(), { timeoutMs: 3000, hedge: true });
@@ -466,7 +475,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap) {
     ticks: 0, errors: 0,
     armedCount: 0, disarmedCount: 0,
     simRuns: 0, readySignals: 0,
-    tickMapRefreshes: 0, unhealthyEvents: 0,
+    tickMapRefreshes: 0, unhealthyEvents: 0, heartbeats: 0,
     startMs: Date.now(),
   };
 
@@ -496,7 +505,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap) {
         tickMapRefreshAt = Date.now() + TICK_MAP_REFRESH_MS;
         health.lastTickMapMs = Date.now();
         stats.tickMapRefreshes++;
-        appendLog(logPath, { ts: new Date().toISOString(), type: 'tick_map_refresh', thresholds });
+        appendLog(logPath, { ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR, type: 'tick_map_refresh', thresholds });
       } catch (e) {
         process.stderr.write(`  [tick-map refresh] ${e.message}\n`);
       }
@@ -559,13 +568,30 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap) {
       stats.armedCount++;
       const msg = `○ PASSIVE → ◉ ARMED  price=$${snap.uniPrice.toFixed(6)} >= $${thresholds.armedPrice.toFixed(6)}`;
       console.log(`\n  [STATE] ${msg}   ${fmtTime()}\n`);
-      appendLog(logPath, { ts: new Date().toISOString(), type: 'state_transition', from: 'PASSIVE', to: 'ARMED', block: blockNumber, uniPrice: +snap.uniPrice.toFixed(6), armedThreshold: thresholds.armedPrice });
+      appendLog(logPath, { ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR, type: 'state_transition', from: 'PASSIVE', to: 'ARMED', block: blockNumber, uniPrice: +snap.uniPrice.toFixed(6), armedThreshold: thresholds.armedPrice });
     }
     else if (state === 'ARMED' && !isArmedPrice) {
       state = 'PASSIVE';
       stats.disarmedCount++;
       console.log(`\n  [STATE] ◉ ARMED → ○ PASSIVE  price fell below $${thresholds.armedPrice.toFixed(6)}   ${fmtTime()}\n`);
-      appendLog(logPath, { ts: new Date().toISOString(), type: 'state_transition', from: 'ARMED', to: 'PASSIVE', block: blockNumber, uniPrice: +snap.uniPrice.toFixed(6) });
+      appendLog(logPath, { ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR, type: 'state_transition', from: 'ARMED', to: 'PASSIVE', block: blockNumber, uniPrice: +snap.uniPrice.toFixed(6) });
+    }
+
+
+    // Periodic heartbeat log
+    if (stats.ticks > 0 && stats.ticks % HEARTBEAT_TICKS === 0) {
+      const uptimeMin = +((Date.now() - stats.startMs) / 60000).toFixed(1);
+      const hbRecord = {
+        ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
+        type: 'heartbeat', state, uptime_min: uptimeMin,
+        ticks: stats.ticks, errors: stats.errors, armed: stats.armedCount,
+        simRuns: stats.simRuns, readySignals: stats.readySignals,
+        unhealthyEvents: stats.unhealthyEvents,
+        armedThreshold: thresholds.armedPrice, nearestHighPrice: thresholds.nearestHighPrice,
+      };
+      console.log(`  ── heartbeat  ${uptimeMin}min  ticks=${stats.ticks}  errors=${stats.errors}  state=${state}  armed=${stats.armedCount}  ready=${stats.readySignals} ──`);
+      appendLog(logPath, hbRecord);
+      stats.heartbeats++;
     }
 
     // ── PRINT TICK LINE ──────────────────────────────────────────────────────
@@ -639,9 +665,37 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CLI PARSER
+// ─────
+// ─────────────────────────────────────────────────────────────────────────────
+// HELP (Pass A1)
+// ─────────────────────────────────────────────────────────────────────────────
+function printHelp() {
+  console.log([
+    '',
+    '  arb_window_activator.js',
+    '',
+    '  PURPOSE: Tick-map-aware state machine: PASSIVE→ARMED→EXECUTABLE with EXECUTION_READY signal emission',
+    '',
+    '  USAGE:',
+        '    node -r dotenv/config scripts/analysis/arb_window_activator.js',
+    '    node -r dotenv/config scripts/analysis/arb_window_activator.js --remap-ticks --log=./logs/activator.jsonl',
+    '    node -r dotenv/config scripts/analysis/arb_window_activator.js --duration=86400 --log=./logs/activator_$(date +%Y%m%d).jsonl',,
+    '',
+    '  FLAGS:',
+    '    --help          Show this message',
+    '    --json          Machine-readable JSON output',
+    '    --duration=N    Run duration in seconds (long-running scripts)',
+    '    --log=PATH      Output JSONL log file path',
+    '    --gas=live|manual  Gas price source (simulators)',
+    '    --out=PATH      Write JSON summary to file (analyzers)',
+    '',
+  ].join('\n'));
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 function parseArgs() {
   const args = process.argv.slice(2);
+  if (args.includes('--help') || args.includes('-h')) { printHelp(); process.exit(0); }
   const getN = (f,d) => { const a = args.find(a => a.startsWith(f+'=')); return a ? Number(a.split('=')[1]) : d; };
   const getS = (f,d) => { const a = args.find(a => a.startsWith(f+'=')); return a ? a.split('=')[1] : d; };
   return {
