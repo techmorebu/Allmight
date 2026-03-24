@@ -73,9 +73,9 @@ const DEC1         = 6;    // USDC (token1)
 // ─────────────────────────────────────────────────────────────────────────────
 // CLASSIFICATION THRESHOLDS
 // ─────────────────────────────────────────────────────────────────────────────
-const DEPTH_EXECUTION    = 15_000;   // Boss gate — execution-grade
-const DEPTH_MEANINGFUL   =  7_500;   // worth watching
-const DEPTH_LARGE_REMOVE = -5_000;   // significant withdrawal
+const DEPTH_EXECUTION    = 15_000;  // confirmed_default: Boss-approved execution threshold   // Boss gate — execution-grade
+const DEPTH_MEANINGFUL   =  7_500;  // confirmed_default: watch threshold   // worth watching
+const DEPTH_LARGE_REMOVE = -5_000;  // confirmed_default: significant withdrawal signal   // significant withdrawal
 
 function classifyEvent(type, depthAfter, depthDelta) {
   if (type === 'Mint') {
@@ -92,7 +92,7 @@ function classifyEvent(type, depthAfter, depthDelta) {
 // DEFAULTS
 // ─────────────────────────────────────────────────────────────────────────────
 const DEFAULT_OUT        = './logs/arb_liq_events.jsonl';
-const DEFAULT_POLL_BLOCKS = 2;      // check every N blocks (~500ms on Arbitrum)
+const DEFAULT_POLL_BLOCKS = 2;      // confirmed_default: getLogs every N blocks      // check every N blocks (~500ms on Arbitrum)
 const DEFAULT_LOOKBACK   = 20;      // blocks to scan on first run
 const DEFAULT_DURATION_S = 7_200;   // 2 hours
 const BLOCK_INTERVAL_MS  = 300;     // ~250–300ms per Arbitrum block
@@ -125,6 +125,14 @@ function activeTickDepthUSD(liq, sqrtPriceX96) {
 // ─────────────────────────────────────────────────────────────────────────────
 // DEPTH READ  (post-event snapshot)
 // ─────────────────────────────────────────────────────────────────────────────
+
+// ─────────────────────────────────────────────────────────────────────────────
+// JSONL BASE ENVELOPE (Pass B1)
+// ─────────────────────────────────────────────────────────────────────────────
+const LOG_SOURCE = 'arb_liquidity_event_monitor';
+const LOG_CHAIN  = 'arbitrum';
+const LOG_PAIR   = 'ARB/USDC';
+
 async function readDepth(blockNumber, rpc) {
   const res = await rpc.callDetailed(
     `liq.depth.${blockNumber}`,
@@ -412,9 +420,37 @@ async function monitorLoop(rpc, outPath, pollBlocks, lookback, durationS) {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CLI PARSER
+// ─────
+// ─────────────────────────────────────────────────────────────────────────────
+// HELP (Pass A1)
+// ─────────────────────────────────────────────────────────────────────────────
+function printHelp() {
+  console.log([
+    '',
+    '  arb_liquidity_event_monitor.js',
+    '',
+    '  PURPOSE: Detect UniV3 ARB/USDC Mint/Burn events that create execution-grade depth windows',
+    '',
+    '  USAGE:',
+        '    node -r dotenv/config scripts/analysis/arb_liquidity_event_monitor.js',
+    '    node -r dotenv/config scripts/analysis/arb_liquidity_event_monitor.js --out=./logs/liq.jsonl',
+    '    node -r dotenv/config scripts/analysis/arb_liquidity_event_monitor.js --lookback=100 --duration=28800',,
+    '',
+    '  FLAGS:',
+    '    --help          Show this message',
+    '    --json          Machine-readable JSON output',
+    '    --duration=N    Run duration in seconds (long-running scripts)',
+    '    --log=PATH      Output JSONL log file path',
+    '    --gas=live|manual  Gas price source (simulators)',
+    '    --out=PATH      Write JSON summary to file (analyzers)',
+    '',
+  ].join('\n'));
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 function parseArgs() {
   const args = process.argv.slice(2);
+  if (args.includes('--help') || args.includes('-h')) { printHelp(); process.exit(0); }
   const getN = (f,d) => { const a = args.find(a => a.startsWith(f+'=')); return a ? Number(a.split('=')[1]) : d; };
   const getS = (f,d) => { const a = args.find(a => a.startsWith(f+'=')); return a ? a.split('=')[1] : d; };
   return {
