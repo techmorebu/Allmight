@@ -99,6 +99,19 @@ const HEALTH_CHECK_INTERVAL_MS =  60_000;   // run health check every 60s
 const HEARTBEAT_TICKS           =  200;        // confirmed_default: emit heartbeat every N ticks
 
 // ─────────────────────────────────────────────────────────────────────────────
+// SELF-RECOVERY LADDER (Boss ruling 2026-03-25)
+//   Level 1 — single read timeout     → log + continue
+//   Level 2 — N consecutive timeouts  → STATE_UNHEALTHY + rebuild provider
+//   Level 3 — provider rebuild fails M times → exit non-zero (clean crash)
+//
+//   A clean crash is better than a zombie.
+// ─────────────────────────────────────────────────────────────────────────────
+const READ_TIMEOUT_MS           =  8_000;   // confirmed_default: outer hard timeout per loop read
+const CONSECUTIVE_FAIL_WARN     =  3;       // confirmed_default: log warning at this many consecutive failures
+const CONSECUTIVE_FAIL_REBUILD  =  5;       // confirmed_default: rebuild provider after this many
+const MAX_PROVIDER_REBUILDS     =  3;       // confirmed_default: exit non-zero after this many rebuild attempts
+
+// ─────────────────────────────────────────────────────────────────────────────
 // SIM CONFIG
 // ─────────────────────────────────────────────────────────────────────────────
 const TRIGGER_BUFFER_PCT = 0.02;
@@ -405,6 +418,8 @@ function appendLog(logPath, record) {
 // MAIN ACTIVATION LOOP
 // ─────────────────────────────────────────────────────────────────────────────
 async function activatorLoop(rpc, gm, durationS, logPath, forceRemap) {
+  // rpc is reassignable for provider rebuild recovery
+  rpc = rpc;
   const endMs = Date.now() + durationS * 1000;
 
   // Initial tick map scan
@@ -431,6 +446,47 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap) {
   let lastBlock     = null;
   let lastPrintKey  = null;
   let cooldownUntil = 0;
+
+  // Self-recovery state (Boss ruling 2026-03-25)
+  let providerRebuilds = 0;
+  const blockFail = new ConsecutiveFailTracker('getBlockNumber');
+  const poolFail  = new ConsecutiveFailTracker('readBothPools');
+
+  async function rebuildProvider(logPath, state) {
+    providerRebuilds++;
+    const msg = `provider rebuild #${providerRebuilds}`;
+    process.stderr.write(`\n  ⚠ [recover] ${msg} — attempting createProvider('arbitrum')\n`);
+    appendLog(logPath, {
+      ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
+      type: 'provider_rebuild', attempt: providerRebuilds, state,
+    });
+
+    if (providerRebuilds > MAX_PROVIDER_REBUILDS) {
+      const fatal = `[FATAL] provider rebuild limit (${MAX_PROVIDER_REBUILDS}) exceeded — exiting`;
+      process.stderr.write(`\n  ${fatal}\n`);
+      appendLog(logPath, {
+        ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
+        type: 'fatal_exit', reason: fatal, providerRebuilds,
+      });
+      process.exit(2);  // non-zero so supervisor can restart
+    }
+
+    try {
+      const newRpc = createProvider('arbitrum');
+      // Quick sanity check — if this hangs too, we catch it
+      await withTimeout(
+        newRpc.getBlockNumber('recover.sanity', { timeoutMs: 5000, hedge: true }),
+        10_000, 'rebuild.sanity'
+      );
+      process.stderr.write(`  ✓ [recover] provider rebuild #${providerRebuilds} succeeded\n`);
+      blockFail.success();
+      poolFail.success();
+      return newRpc;
+    } catch (e) {
+      process.stderr.write(`  ✗ [recover] provider rebuild #${providerRebuilds} failed: ${e.message}\n`);
+      return null;  // caller will retry or escalate
+    }
+  }
 
   // Health tracking
   const health = {
@@ -523,13 +579,28 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap) {
       continue;
     }
 
-    // Block
+    // ── BLOCK READ (Level 1/2/3 recovery) ────────────────────────────────────
     let blockNumber;
     try {
-      const b = await rpc.getBlockNumber('act.block', { timeoutMs: 1200, hedge: true });
+      const b = await withTimeout(
+        rpc.getBlockNumber('act.block', { timeoutMs: 1200, hedge: true }),
+        READ_TIMEOUT_MS, 'getBlockNumber'
+      );
       blockNumber = b.blockNumber;
-    } catch {
+      blockFail.success();
+    } catch (e) {
       stats.errors++;
+      const { count, level } = blockFail.failure(e);
+      if (level === 'rebuild') {
+        process.stderr.write(`  ⚠ [recover] getBlockNumber: ${count} failures — rebuilding provider\n`);
+        appendLog(logPath, {
+          ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
+          type: 'STATE_UNHEALTHY', reasons: [`block_read_failed_${count}x:${e.message.slice(0,60)}`], state,
+        });
+        health.currentlyUnhealthy = true;
+        const newRpc = await rebuildProvider(logPath, state);
+        if (newRpc) rpc = newRpc;
+      }
       await sleep(POLL_PASSIVE_MS);
       continue;
     }
@@ -541,13 +612,28 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap) {
     lastBlock = blockNumber;
     health.lastBlockChangeMs = Date.now();
 
-    // Pool read
+    // ── POOL READ (Level 1/2/3 recovery) ─────────────────────────────────────
     let snap;
     try {
-      snap = await readBothPools(blockNumber, rpc);
+      snap = await withTimeout(
+        readBothPools(blockNumber, rpc),
+        READ_TIMEOUT_MS, 'readBothPools'
+      );
       health.lastPoolReadMs = Date.now();
+      poolFail.success();
     } catch (e) {
       stats.errors++;
+      const { count, level } = poolFail.failure(e);
+      if (level === 'rebuild') {
+        process.stderr.write(`  ⚠ [recover] readBothPools: ${count} failures — rebuilding provider\n`);
+        appendLog(logPath, {
+          ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
+          type: 'STATE_UNHEALTHY', reasons: [`pool_read_failed_${count}x:${e.message.slice(0,60)}`], state,
+        });
+        health.currentlyUnhealthy = true;
+        const newRpc = await rebuildProvider(logPath, state);
+        if (newRpc) rpc = newRpc;
+      }
       await sleep(POLL_PASSIVE_MS);
       continue;
     }
@@ -662,6 +748,54 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap) {
 // ─────────────────────────────────────────────────────────────────────────────
 function fmtTime() { return new Date().toISOString().slice(11, 19); }
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SELF-RECOVERY HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * withTimeout — wraps any promise with a hard deadline.
+ * If the promise doesn't resolve within ms, rejects with TimeoutError.
+ * This is the core fix for the "await never returns" failure mode.
+ */
+function withTimeout(promise, ms, label) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(
+      () => reject(new Error(`TIMEOUT:${label}:${ms}ms`)),
+      ms
+    );
+    promise.then(
+      (v) => { clearTimeout(timer); resolve(v); },
+      (e) => { clearTimeout(timer); reject(e); }
+    );
+  });
+}
+
+/**
+ * ConsecutiveFailTracker — counts consecutive failures on a named operation.
+ * Resets on success. Reports level (warn/rebuild/fatal) based on Boss ladder.
+ */
+class ConsecutiveFailTracker {
+  constructor(label) {
+    this.label   = label;
+    this.count   = 0;
+    this.lastErr = null;
+  }
+  success() { this.count = 0; this.lastErr = null; }
+  failure(err) {
+    this.count++;
+    this.lastErr = err?.message ?? String(err);
+    if (this.count === CONSECUTIVE_FAIL_WARN) {
+      process.stderr.write(`  [recover] ${this.label}: ${this.count} consecutive failures — ${this.lastErr}\n`);
+    }
+    return {
+      count:   this.count,
+      level:   this.count >= CONSECUTIVE_FAIL_REBUILD ? 'rebuild'
+             : this.count >= CONSECUTIVE_FAIL_WARN    ? 'warn'
+             :                                          'ok',
+    };
+  }
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CLI PARSER
