@@ -813,7 +813,7 @@ function printHelp() {
     '  USAGE:',
         '    node -r dotenv/config scripts/analysis/arb_window_activator.js',
     '    node -r dotenv/config scripts/analysis/arb_window_activator.js --remap-ticks --log=./logs/activator.jsonl',
-    '    node -r dotenv/config scripts/analysis/arb_window_activator.js --duration=86400 --log=./logs/activator_$(date +%Y%m%d).jsonl',,
+    '    node -r dotenv/config scripts/analysis/arb_window_activator.js --duration=86400 --log=./logs/activator_$(date +%Y%m%d).jsonl',
     '',
     '  FLAGS:',
     '    --help          Show this message',
