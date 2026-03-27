@@ -691,7 +691,7 @@ function printSummary(allCandidates, allResults) {
     console.log(`     Score:     ${top.priorityScore}/100`);
     console.log('');
     console.log('     Next command:');
-    console.log(`     node -r dotenv/config scripts/tools/arb_pool_smoke_test_p2.js --pool=${top.poolAddress}`);
+    console.log(`     node -r dotenv/config scripts/discovery/arb_pool_smoke_test_p2.js --pool=${top.poolAddress}`);
     console.log('');
     console.log('     After smoke test passes → measure L×sqrtP → add to breakeven_report.js');
   } else {

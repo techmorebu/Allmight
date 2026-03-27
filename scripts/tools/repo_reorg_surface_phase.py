@@ -229,19 +229,19 @@ Statuses: ACTIVE | ACTIVE_MIXED | LEGACY | DORMANT | UNVERIFIED
 
 | Path | Purpose |
 |---|---|
-| scripts/tools/find_arb_usdc_pools.js | ARB/USDC pool discovery |
-| scripts/tools/arb_pool_smoke_test.js | Pool probe smoke test |
-| scripts/tools/arb_pool_smoke_test_p2.js | Pool probe smoke test part 2 |
+| scripts/discovery/find_arb_usdc_pools.js | ARB/USDC pool discovery |
+| scripts/discovery/arb_pool_smoke_test.js | Pool probe smoke test |
+| scripts/discovery/arb_pool_smoke_test_p2.js | Pool probe smoke test part 2 |
 
 ## ACTIVE -- Validators (moved to scripts/validators/ after reorg)
 
 | Path | Purpose |
 |---|---|
-| scripts/tools/arb_direct_validator.js | ARB direct-vs-direct spread validator |
-| scripts/tools/arb_synthetic_validator.js | ARB synthetic route validator |
-| scripts/tools/wbtc_spread_validator.js | WBTC spread validator |
-| scripts/tools/arb_slippage_model.js | ARB slippage notional model |
-| scripts/tools/spread_validator.js | Same-block spread validation |
+| scripts/validators/arb_direct_validator.js | ARB direct-vs-direct spread validator |
+| scripts/validators/arb_synthetic_validator.js | ARB synthetic route validator |
+| scripts/validators/wbtc_spread_validator.js | WBTC spread validator |
+| scripts/validators/arb_slippage_model.js | ARB slippage notional model |
+| scripts/validators/spread_validator.js | Same-block spread validation |
 | scripts/tools/rpc_healthcheck.py | RPC endpoint health check |
 
 ## ACTIVE_MIXED -- Inspect before editing (fetcher fleet, not uniformly hardened)

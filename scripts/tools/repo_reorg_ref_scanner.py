@@ -43,14 +43,14 @@ SCRIPT_NAME = "repo_reorg_ref_scanner.py"
 
 MOVE_MAP: Sequence[Tuple[str, str]] = (
     # (old_relative_path,                        new_relative_path)
-    ("scripts/tools/find_arb_usdc_pools.js",    "scripts/discovery/find_arb_usdc_pools.js"),
-    ("scripts/tools/arb_pool_smoke_test.js",    "scripts/discovery/arb_pool_smoke_test.js"),
-    ("scripts/tools/arb_pool_smoke_test_p2.js", "scripts/discovery/arb_pool_smoke_test_p2.js"),
-    ("scripts/tools/spread_validator.js",       "scripts/validators/spread_validator.js"),
-    ("scripts/tools/arb_direct_validator.js",   "scripts/validators/arb_direct_validator.js"),
-    ("scripts/tools/arb_synthetic_validator.js","scripts/validators/arb_synthetic_validator.js"),
-    ("scripts/tools/wbtc_spread_validator.js",  "scripts/validators/wbtc_spread_validator.js"),
-    ("scripts/tools/arb_slippage_model.js",     "scripts/validators/arb_slippage_model.js"),
+    ("scripts/discovery/find_arb_usdc_pools.js",    "scripts/discovery/find_arb_usdc_pools.js"),
+    ("scripts/discovery/arb_pool_smoke_test.js",    "scripts/discovery/arb_pool_smoke_test.js"),
+    ("scripts/discovery/arb_pool_smoke_test_p2.js", "scripts/discovery/arb_pool_smoke_test_p2.js"),
+    ("scripts/validators/spread_validator.js",       "scripts/validators/spread_validator.js"),
+    ("scripts/validators/arb_direct_validator.js",   "scripts/validators/arb_direct_validator.js"),
+    ("scripts/validators/arb_synthetic_validator.js","scripts/validators/arb_synthetic_validator.js"),
+    ("scripts/validators/wbtc_spread_validator.js",  "scripts/validators/wbtc_spread_validator.js"),
+    ("scripts/validators/arb_slippage_model.js",     "scripts/validators/arb_slippage_model.js"),
 )
 
 # Extensions to scan
@@ -130,8 +130,8 @@ def scan_file(path: Path, repo_root: Path) -> List[Hit]:
         # Match both forward-slash and the bare filename in various reference styles:
         #   require('./scripts/tools/arb_direct_validator')
         #   require('../tools/arb_direct_validator')
-        #   node scripts/tools/arb_direct_validator.js
-        #   scripts/tools/arb_direct_validator.js   (in markdown)
+        #   node scripts/validators/arb_direct_validator.js
+        #   scripts/validators/arb_direct_validator.js   (in markdown)
         filename = old_path.split("/")[-1]
         stem = filename.rsplit(".", 1)[0]   # without extension
 
