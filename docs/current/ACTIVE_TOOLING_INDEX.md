@@ -1,0 +1,70 @@
+# ACTIVE TOOLING INDEX
+
+<!-- STATUS: CURRENT | Last Reviewed: 2026-03-27 -->
+
+Statuses: ACTIVE | ACTIVE_MIXED | LEGACY | DORMANT | UNVERIFIED
+
+## ACTIVE -- Do not rewrite, do not bypass
+
+| Path | Category | Status | Purpose | Safe To Edit |
+|---|---|---|---|---|
+| scripts/data_collection/masterFetcher/arbitrumFetcher.js | fetcher | ACTIVE | Primary Arbitrum pool fetcher | cautious -- add pools with TOKEN-ORDER-GUARD only |
+| scripts/analysis/breakeven_engine.js | analysis | ACTIVE | Surface classification engine | no -- Boss ruling required |
+| scripts/tools/breakeven_report.js | reporting | ACTIVE | Run surface classification report | cautious -- add SURFACES[] entries only |
+| scripts/tools/rpc_benchmark.js | infra | ACTIVE | Endpoint health benchmarking | yes |
+| utils/provider_factory.js | infra | ACTIVE | Canonical RPC layer | no -- do not bypass |
+| utils/rpc_provider.js | infra | ACTIVE | Compatibility shim (temporary) | no -- do not remove |
+| scripts/master-fetcher.js | runner | ACTIVE | Orchestrates all fetchers | no -- do not restructure |
+
+## ACTIVE -- Discovery helpers (moved to scripts/discovery/ after reorg)
+
+| Path | Purpose |
+|---|---|
+| scripts/discovery/find_arb_usdc_pools.js | ARB/USDC pool discovery |
+| scripts/discovery/arb_pool_smoke_test.js | Pool probe smoke test |
+| scripts/discovery/arb_pool_smoke_test_p2.js | Pool probe smoke test part 2 |
+
+## ACTIVE -- Validators (moved to scripts/validators/ after reorg)
+
+| Path | Purpose |
+|---|---|
+| scripts/validators/arb_direct_validator.js | ARB direct-vs-direct spread validator |
+| scripts/validators/arb_synthetic_validator.js | ARB synthetic route validator |
+| scripts/validators/wbtc_spread_validator.js | WBTC spread validator |
+| scripts/validators/arb_slippage_model.js | ARB slippage notional model |
+| scripts/validators/spread_validator.js | Same-block spread validation |
+| scripts/tools/rpc_healthcheck.py | RPC endpoint health check |
+
+## ACTIVE_MIXED -- Inspect before editing (fetcher fleet, not uniformly hardened)
+
+| Path | Notes |
+|---|---|
+| scripts/data_collection/masterFetcher/uniswapV3Fetcher.js | v2.0 partial migration confirmed |
+| scripts/data_collection/masterFetcher/sushiswapFetcher.js | inspect before use |
+| scripts/data_collection/masterFetcher/curveFetcherArbitrum.js | patched -- verify |
+| scripts/data_collection/masterFetcher/balancerFetcherArbitrum.js | patched -- verify |
+| scripts/data_collection/masterFetcher/gasPriceOracle.js | check provider pattern |
+| scripts/data_collection/masterFetcher/baseFetcher.js | non-primary chain |
+| scripts/data_collection/masterFetcher/optimismFetcher.js | non-primary chain |
+| scripts/data_collection/masterFetcher/unichainFetcher.js | non-primary chain |
+
+## UNVERIFIED -- Not yet assessed
+
+| Path | Why |
+|---|---|
+| scripts/data_collection/surfaces/arbSyntheticFetcher.js | surface-specific, status unknown |
+| scripts/data_collection/surfaces/arbUsdtFetcher.js | surface-specific, status unknown |
+| scripts/data_collection/surfaces/camelotV2Fetcher.js | surface-specific, status unknown |
+| scripts/analysis/arb_window_activator.js | may be active activator -- verify |
+| scripts/analysis/arb_tick_liquidity_map.js | may be useful for depth measurement |
+
+## DORMANT -- Future phases, do not activate now
+
+| Area | Location |
+|---|---|
+| Execution engine | scripts/execution/ |
+| Flash loan / contract layer | scripts/ (various) |
+| Phase 5-9 runners | scripts/phase5/ through scripts/phase9/ |
+| Shadow A/B | scripts/shadow_ab/ |
+| Regime layer | scripts/regime/ |
+| Audit sink | scripts/phase8/, scripts/phase9/ |
