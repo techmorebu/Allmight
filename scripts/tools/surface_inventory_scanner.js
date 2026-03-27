@@ -74,22 +74,30 @@ const POOL_META = {
 //  Aligned with breakeven_engine.js confirmed session values (2026-03-19).
 
 const THRESHOLDS = {
-  DEPTH_THIN      : 5_000,    // < $5k   → blocked_liquidity / thin
-  DEPTH_CANDIDATE : 10_000,   // ≥ $10k  → monitored floor
-  DEPTH_STRONG    : 50_000,   // ≥ $50k  → candidate
-  MIN_SPREAD_FRAC : 0.000050, // 0.005%  → below this is noise
+  DEPTH_THIN           : 5_000,    // < $5k    → blocked_liquidity / thin
+  DEPTH_NEAR_THRESHOLD : 7_500,    // ≥ $7.5k  → near_threshold (Boss ruling 2026-03-27)
+  DEPTH_CANDIDATE      : 10_000,   // ≥ $10k   → monitored floor  ← HARD FLOOR, DO NOT LOWER
+  DEPTH_STRONG         : 50_000,   // ≥ $50k   → candidate
+  MIN_SPREAD_FRAC      : 0.000050, // 0.005%   → below this is noise
 };
+//
+// near_threshold conditions (Boss ruling 2026-03-27):
+//   net spread > 0  AND  depthMin >= DEPTH_NEAR_THRESHOLD  AND  depthMin < DEPTH_CANDIDATE
+// Meaning: not actionable, not promoted, but explicitly prioritised for venue discovery.
+// GOVERNANCE NOTE: DEPTH_CANDIDATE ($10k) is a hard floor. near_threshold is a watch
+// label only. It must never be used to justify promoting a surface to actionable.
 
 // Tier rank for deterministic sort (lower = better)
 const TIER_RANK = {
   candidate        : 0,
   monitored        : 1,
-  blocked_liquidity: 2,
-  blocked_fee      : 3,
-  thin_liquidity   : 4,
-  incomplete       : 5,
-  cross_block      : 6,
-  noise            : 7,
+  near_threshold   : 2,   // fee-valid, depth $7.5k–$10k — priority watch, NOT actionable
+  blocked_liquidity: 3,
+  blocked_fee      : 4,
+  thin_liquidity   : 5,
+  incomplete       : 6,
+  cross_block      : 7,
+  noise            : 8,
 };
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
@@ -176,8 +184,23 @@ function classify(s) {
     };
   }
 
+  const net = s.spreadFrac - s.feeBurdenFrac;
   const score = scoreSurface(s.spreadFrac, s.feeBurdenFrac, depthMin);
-  const netPct = ((s.spreadFrac - s.feeBurdenFrac) * 100).toFixed(4);
+  const netPct = (net * 100).toFixed(4);
+
+  // near_threshold: fee-valid, depth approaching but below candidate floor
+  // NOT actionable — priority venue discovery target only (Boss ruling 2026-03-27)
+  if (net > 0 &&
+      depthMin >= THRESHOLDS.DEPTH_NEAR_THRESHOLD &&
+      depthMin < THRESHOLDS.DEPTH_CANDIDATE) {
+    const thinVenue = s.depthA < s.depthB ? s.venueA : s.venueB;
+    const thinDepth = Math.min(s.depthA, s.depthB);
+    return {
+      tier  : 'near_threshold',
+      score,
+      reason: `net +${netPct}% | depth $${(depthMin / 1000).toFixed(1)}k | thin leg: ${thinVenue} ($${thinDepth.toFixed(0)}) — find deeper venue`,
+    };
+  }
 
   if (depthMin >= THRESHOLDS.DEPTH_STRONG) {
     return {
@@ -224,7 +247,12 @@ async function readFetcherPayloads(redis) {
 function extractRows(payloads) {
   const rows = [];
   for (const { key, payload } of payloads) {
-    const prices = payload.data?.prices;
+    // master-fetcher wraps fetcher return as:
+    //   { ok, name, timestamp, data: <fetcher_return> }
+    // arbitrumFetcher return is:
+    //   { status, partial, data: { prices: [...] } }
+    // So full path is payload.data.data.prices
+    const prices = payload.data?.data?.prices ?? payload.data?.prices;
     if (!Array.isArray(prices)) continue;
     for (const p of prices) {
       if (!p || !p.price || !isFinite(p.price) || p.price <= 0) continue;
@@ -391,6 +419,7 @@ function printReport(surfaces, scannedAt, redisAgeSec) {
   };
 
   const ACTIONABLE = new Set(['candidate', 'monitored']);
+  const NEAR       = new Set(['near_threshold']);
 
   // Tally
   const counts = {};
@@ -446,6 +475,22 @@ function printReport(surfaces, scannedAt, redisAgeSec) {
     console.log('\n No actionable surfaces in current snapshot.');
     console.log(' → Run fetcher first: node -r dotenv/config scripts/master-fetcher.js');
     console.log(' → Then re-scan: node -r dotenv/config scripts/tools/surface_inventory_scanner.js');
+  }
+
+  // near_threshold block — separate from actionable, clearly labelled
+  const nearThreshold = surfaces.filter(s => NEAR.has(s.tier));
+  if (nearThreshold.length) {
+    console.log('\n NEAR THRESHOLD — NOT actionable | priority venue discovery targets:\n');
+    for (const s of nearThreshold) {
+      const net = (s.spreadFrac - s.feeBurdenFrac);
+      console.log(` ⏳ [NEAR_THRESHOLD]  ${s.pair}  —  ${s.venueA} vs ${s.venueB}`);
+      console.log(`   spread: ${fmtPct(s.spreadFrac).trim()}  fee: ${fmtPct(s.feeBurdenFrac).trim()}  net: ${fmtPct(net).trim()}  depth_min: ${fmtUSD(s.depthMin).trim()}`);
+      console.log(`   pool A: ${s.poolA}  depth: ${fmtUSD(s.depthA).trim()}`);
+      console.log(`   pool B: ${s.poolB}  depth: ${fmtUSD(s.depthB).trim()}`);
+      console.log(`   ↳ ${s.reason}`);
+      console.log(`   ↳ ACTION: find deeper venue for thin leg — target depth > $10k`);
+      console.log();
+    }
   }
 
   console.log('\n REMINDERS:');
