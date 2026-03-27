@@ -34,9 +34,9 @@ from typing import Dict, List, Sequence
 SCRIPT_NAME = "repo_reorg_surface_phase.py"
 
 
-# -----------------------------
+# ─────────────────────────────────────────────────────────────────────────────
 # Data models
-# -----------------------------
+# ─────────────────────────────────────────────────────────────────────────────
 
 @dataclass(frozen=True)
 class MoveSpec:
@@ -60,9 +60,9 @@ class Report:
     notes: List[str] = field(default_factory=list)
 
 
-# -----------------------------
+# ─────────────────────────────────────────────────────────────────────────────
 # Planned structure
-# -----------------------------
+# ─────────────────────────────────────────────────────────────────────────────
 
 DIRECTORIES_TO_CREATE: Sequence[str] = (
     "docs/current",
@@ -79,155 +79,363 @@ DIRECTORIES_TO_CREATE: Sequence[str] = (
 )
 
 FILE_STUBS: Dict[str, str] = {
-    "docs/current/PROJECT_STATE_CURRENT.md": """# PROJECT STATE CURRENT
 
-Status: CURRENT
-Last Reviewed: TBD
-Supersedes: implicit repo assumptions
+    "docs/current/PROJECT_STATE_CURRENT.md": """\
+# PROJECT STATE CURRENT
+
+<!-- STATUS: CURRENT | Last Reviewed: 2026-03-27 -->
+<!-- Supersedes: all prior architecture or execution planning docs -->
 
 ## Current Phase
 Surface Discovery & Classification (Pre-Execution)
 
 ## Primary Chain
-Arbitrum
+Arbitrum mainnet
 
 ## Current Objective
-Build a surface inventory framework that scans, classifies, and ranks candidate pools/venues without adding execution logic.
+Build a surface inventory framework that scans, classifies, and ranks candidate
+pools/venues without adding execution logic.
 
 ## Core Insight
-Edge appears when price moves into pre-existing liquidity zones, not from assuming that new LP events create edge by themselves.
+Edge appears when price moves into pre-existing liquidity zones (tick map),
+not from assuming that new LP events create edge by themselves.
 
 ## Best Current Research Target
 ARB/USDC UniV3 vs Camelot V3
 
+## Validated Surfaces (breakeven engine v1)
+
+| Surface                              | Avg Spread | Fee Burden | Avg Net   | Classification     |
+|--------------------------------------|-----------|------------|-----------|-------------------|
+| ETH/USDC:univ3-camelotv2             | 0.0594%   | 0.3500%    | -0.2906%  | BLOCKED_FEE       |
+| ARB/USD:univ3-direct-vs-synthetic    | 0.0715%   | 0.1500%    | -0.0785%  | BLOCKED_FEE       |
+| ARB/USDC:univ3-camelotv3-direct      | 0.1110%   | 0.0749%    | +0.0361%  | BLOCKED_LIQUIDITY |
+| WBTC/USD:univ3-direct-vs-synthetic   | 0.0276%   | 0.1500%    | -0.1224%  | BLOCKED_FEE       |
+
 ## Current Blocker
-Liquidity / active-tick depth
+**ARB/USDC active-tick depth** — UniV3 ARB/USDC = $3,090 (too thin).
+Camelot V3 = $56,016 (deep). Need a second deep venue to complete the surface.
 
 ## In Scope
 - discovery
-- pool inventory
-- fast classification
-- validation routing
+- pool inventory and active-tick depth measurement (L x sqrtP)
+- fast classification via breakeven engine
+- validation routing (8-step sequence)
 - ranking candidate surfaces
 - selective fetcher hardening only when directly justified
 
 ## Out of Scope
-- execution logic
-- contract rewrites
-- broad chain expansion
-- capital deployment
-- vault logic
+- execution logic (frozen)
+- flash loan orchestration (frozen)
+- contract rewrites (frozen)
+- broad chain expansion (frozen -- Arbitrum only)
+- capital deployment / vault logic (frozen)
 
 ## Next Build Target
-Surface Inventory Framework
+Surface Inventory Framework -- scan candidate venues, classify by depth + fee,
+feed only passing surfaces into the existing validation stack.
+
+## Priority Queue (Boss-approved 2026-03-19)
+1. PRIORITY 1 -- Fix ARB/USDC blocked_liquidity
+   - Target: venue with active-tick depth > $10k, fee <= 0.10%
+   - NOT UniV3 ARB/USDC (confirmed $3,090)
+   - native USDC (0xaf88..) preferred
+   - Candidates: SushiSwap V3, Ramses V2, UniV3 alt fee tiers
+2. PRIORITY 2 -- WBTC blocked_fee investigation
+   - Research 1-hop WBTC/USDC venue <= 0.05%
+   - Or test WBTC/WETH at different time window (burst-trading noted)
+
+## Hard Rules (session 2026-03-19, Boss-approved)
+1. Same-block anchoring mandatory -- tag every measurement with block number
+2. Active-tick depth = L x sqrtP -- NEVER use GeckoTerminal TVL as proxy
+3. Fee burden checked before excitement
+4. Blocker classes are distinct: blocked_fee / blocked_liquidity / blocked_slippage
+5. Always verify on-disk state before patching
+6. Promise.all only within single rpc.call() on same contract
+
+## Key Addresses (Arbitrum mainnet)
+    ARB:           0x912CE59144191C1204E64559FE8253a0e49E6548  (18 dec)
+    native USDC:   0xaf88d065e77c8cC2239327C5EDb3A432268e5831  (6 dec)   <- USE THIS
+    USDCe:         0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8  (6 dec)   <- AVOID
+    WETH:          0x82aF49447D8a07e3bd95BD0d56f35241523fBab1  (18 dec)
+    WBTC:          0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f  (8 dec)
+
+## Health Check Commands
+    node -r dotenv/config scripts/data_collection/masterFetcher/arbitrumFetcher.js
+    # expect: status=success partial=false success=9 failed=0
+
+    node scripts/tools/breakeven_report.js
+    # expect: 4 surfaces, ARB/USDC = BLOCKED_LIQUIDITY, rest = BLOCKED_FEE
 """,
-    "docs/current/NEXT_ACTIONS.md": """# NEXT ACTIONS
 
-Status: CURRENT
+    "docs/current/NEXT_ACTIONS.md": """\
+# NEXT ACTIONS
 
-1. Establish repo operator map
-2. Group discovery helpers
-3. Group validator helpers
-4. Build Surface Inventory Framework
-5. Feed best candidates into existing validation stack
-6. Harden only the fetchers that directly block discovery quality
+<!-- STATUS: CURRENT | Last Reviewed: 2026-03-27 -->
+
+Ordered queue. Do not reorder without Boss approval.
+
+## 1 -- Repo Hygiene (IN PROGRESS)
+- [x] Boss ruling received (2026-03-27)
+- [x] Reorg script written: scripts/tools/repo_reorg_surface_phase.py
+- [ ] Run --plan and verify output
+- [ ] Run --apply and commit
+- [ ] Run path-reference scanner: scripts/tools/repo_reorg_ref_scanner.py
+- [ ] Fix any broken require() / import references
+- [ ] Commit 1: repo: establish current-phase operator map and archive structure
+- [ ] Commit 2: repo: group discovery and validator helpers
+
+## 2 -- Surface Inventory Framework
+- [ ] Deploy surface_inventory_scanner.js to scripts/tools/
+- [ ] Run scan -- collect depth measurements for SushiSwap V3, Ramses V2, UniV3 alt tiers
+- [ ] Report all classifications to Boss before proceeding
+
+## 3 -- PRIORITY 1: Resolve ARB/USDC blocked_liquidity
+- [ ] Identify venue with active-tick depth > $10k, fee <= 0.10%
+- [ ] Run standard 8-step validation sequence (see VALIDATION_PIPELINE.md)
+- [ ] Add to breakeven_report.js, run engine, report to Boss -- await ruling
+
+## 4 -- PRIORITY 2: WBTC blocked_fee
+- [ ] Research 1-hop WBTC/USDC <= 0.05% (SushiSwap V3, UniV3)
+- [ ] Or test WBTC/WETH at different time window (burst-trading pattern)
+
+## DO NOT START
+- Execution logic
+- Contract work
+- Chain expansion
+- Rewriting working fetchers, breakeven engine, or provider factory
 """,
-    "docs/current/ACTIVE_TOOLING_INDEX.md": """# ACTIVE TOOLING INDEX
 
-Status: CURRENT
+    "docs/current/ACTIVE_TOOLING_INDEX.md": """\
+# ACTIVE TOOLING INDEX
+
+<!-- STATUS: CURRENT | Last Reviewed: 2026-03-27 -->
+
+Statuses: ACTIVE | ACTIVE_MIXED | LEGACY | DORMANT | UNVERIFIED
+
+## ACTIVE -- Do not rewrite, do not bypass
 
 | Path | Category | Status | Purpose | Safe To Edit |
 |---|---|---|---|---|
-| scripts/master-fetcher.js | runner | ACTIVE | master fetch loop | cautious |
-| scripts/analysis/breakeven_engine.js | analysis | ACTIVE | breakeven math | cautious |
-| scripts/tools/breakeven_report.js | reporting | ACTIVE | surface reporting | cautious |
-| scripts/tools/rpc_benchmark.js | infra | ACTIVE | provider benchmarking | yes |
-| utils/provider_factory.js | infra | ACTIVE | provider selection/routing | cautious |
-| scripts/data_collection/masterFetcher/arbitrumFetcher.js | fetcher | ACTIVE | Arbitrum pool collection | cautious |
+| scripts/data_collection/masterFetcher/arbitrumFetcher.js | fetcher | ACTIVE | Primary Arbitrum pool fetcher | cautious -- add pools with TOKEN-ORDER-GUARD only |
+| scripts/analysis/breakeven_engine.js | analysis | ACTIVE | Surface classification engine | no -- Boss ruling required |
+| scripts/tools/breakeven_report.js | reporting | ACTIVE | Run surface classification report | cautious -- add SURFACES[] entries only |
+| scripts/tools/rpc_benchmark.js | infra | ACTIVE | Endpoint health benchmarking | yes |
+| utils/provider_factory.js | infra | ACTIVE | Canonical RPC layer | no -- do not bypass |
+| utils/rpc_provider.js | infra | ACTIVE | Compatibility shim (temporary) | no -- do not remove |
+| scripts/master-fetcher.js | runner | ACTIVE | Orchestrates all fetchers | no -- do not restructure |
 
-## Mixed-State Candidates
-Fill this section in after repo review:
-- uniswapV3Fetcher.js
-- sushiswapFetcher.js
-- curveFetcherArbitrum.js
-- balancerFetcherArbitrum.js
-- gasPriceOracle.js
+## ACTIVE -- Discovery helpers (moved to scripts/discovery/ after reorg)
+
+| Path | Purpose |
+|---|---|
+| scripts/tools/find_arb_usdc_pools.js | ARB/USDC pool discovery |
+| scripts/tools/arb_pool_smoke_test.js | Pool probe smoke test |
+| scripts/tools/arb_pool_smoke_test_p2.js | Pool probe smoke test part 2 |
+
+## ACTIVE -- Validators (moved to scripts/validators/ after reorg)
+
+| Path | Purpose |
+|---|---|
+| scripts/tools/arb_direct_validator.js | ARB direct-vs-direct spread validator |
+| scripts/tools/arb_synthetic_validator.js | ARB synthetic route validator |
+| scripts/tools/wbtc_spread_validator.js | WBTC spread validator |
+| scripts/tools/arb_slippage_model.js | ARB slippage notional model |
+| scripts/tools/spread_validator.js | Same-block spread validation |
+| scripts/tools/rpc_healthcheck.py | RPC endpoint health check |
+
+## ACTIVE_MIXED -- Inspect before editing (fetcher fleet, not uniformly hardened)
+
+| Path | Notes |
+|---|---|
+| scripts/data_collection/masterFetcher/uniswapV3Fetcher.js | v2.0 partial migration confirmed |
+| scripts/data_collection/masterFetcher/sushiswapFetcher.js | inspect before use |
+| scripts/data_collection/masterFetcher/curveFetcherArbitrum.js | patched -- verify |
+| scripts/data_collection/masterFetcher/balancerFetcherArbitrum.js | patched -- verify |
+| scripts/data_collection/masterFetcher/gasPriceOracle.js | check provider pattern |
+| scripts/data_collection/masterFetcher/baseFetcher.js | non-primary chain |
+| scripts/data_collection/masterFetcher/optimismFetcher.js | non-primary chain |
+| scripts/data_collection/masterFetcher/unichainFetcher.js | non-primary chain |
+
+## UNVERIFIED -- Not yet assessed
+
+| Path | Why |
+|---|---|
+| scripts/data_collection/surfaces/arbSyntheticFetcher.js | surface-specific, status unknown |
+| scripts/data_collection/surfaces/arbUsdtFetcher.js | surface-specific, status unknown |
+| scripts/data_collection/surfaces/camelotV2Fetcher.js | surface-specific, status unknown |
+| scripts/analysis/arb_window_activator.js | may be active activator -- verify |
+| scripts/analysis/arb_tick_liquidity_map.js | may be useful for depth measurement |
+
+## DORMANT -- Future phases, do not activate now
+
+| Area | Location |
+|---|---|
+| Execution engine | scripts/execution/ |
+| Flash loan / contract layer | scripts/ (various) |
+| Phase 5-9 runners | scripts/phase5/ through scripts/phase9/ |
+| Shadow A/B | scripts/shadow_ab/ |
+| Regime layer | scripts/regime/ |
+| Audit sink | scripts/phase8/, scripts/phase9/ |
 """,
-    "docs/current/VALIDATION_PIPELINE.md": """# VALIDATION PIPELINE
 
-Status: CURRENT
+    "docs/current/VALIDATION_PIPELINE.md": """\
+# VALIDATION PIPELINE
 
-1. Probe candidate on-chain
-2. Confirm token ordering / quote correctness
-3. Add candidate to discovery/fetcher coverage where needed
-4. Run fetcher
-5. Run master fetcher
-6. Run validator
-7. Measure active-tick depth / liquidity quality
-8. Run breakeven / classification
-9. Rank or reject candidate
+<!-- STATUS: CURRENT | Last Reviewed: 2026-03-27 -->
+
+Standard 8-step sequence for any new pool/surface.
+Do not skip steps. Do not reorder.
+
+## Step 1 -- On-chain smoke test
+    node -r dotenv/config -e "
+      // probe: slot0() or globalState(), liquidity(), token0(), token1()
+      // confirm: price sane, token addresses match known tokens
+      // confirm: native USDC (0xaf88..) not USDCe (0xFF97..)
+    "
+
+## Step 2 -- Add to arbitrumFetcher.js
+- Include TOKEN-ORDER-GUARD (sanityMin / sanityMax bounds)
+- For Algebra pools (Camelot V3, Ramses): use fetchCamelotV3Pool() path
+- Do NOT merge Algebra logic with UniV3 logic
+
+## Step 3 -- Run arbitrum fetcher
+    node -r dotenv/config scripts/data_collection/masterFetcher/arbitrumFetcher.js
+    # expect: status=success partial=false success=N failed=0
+
+## Step 4 -- Run master fetcher
+    node -r dotenv/config scripts/master-fetcher.js
+
+## Step 5 -- Run spread validator (10 samples, same-block)
+- Every sample must be tagged with block number
+- Cross-session comparisons are invalid (5-14x inflation artifact)
+
+## Step 6 -- Measure active-tick depth (L x sqrtP)
+    activeTick_usd = (L x sqrtP / 10^dec1) x 2
+
+- Measure for BOTH venues before classifying surface quality
+- Reference: UniV3 ARB/USDC = $3,090 | Camelot V3 ARB/USDC = $56,016
+- NEVER use GeckoTerminal TVL as proxy
+
+## Step 7 -- Add to breakeven_report.js and run
+    node scripts/tools/breakeven_report.js
+
+## Step 8 -- Report to Boss
+State: classification, blocker, active-tick depth, fee burden.
+Await Boss ruling before any further work on that surface.
+
+## Blocker Classes (distinct -- treat separately)
+
+| Class | Meaning | Next Action |
+|---|---|---|
+| blocked_fee | fee > spread | find lower-fee venue or reduce hop count |
+| blocked_liquidity | thin active-tick depth | find deeper venue (same pair, NOT higher TVL) |
+| blocked_slippage | notional too large | reduce size or wait for depth increase |
+| monitored | conditions not met yet | watch, do not force-expand |
 """,
-    "docs/current/REPO_STATUS_MATRIX.md": """# REPO STATUS MATRIX
 
-Status: CURRENT
+    "docs/current/REPO_STATUS_MATRIX.md": """\
+# REPO STATUS MATRIX
+
+<!-- STATUS: CURRENT | Last Reviewed: 2026-03-27 -->
+
+Anti-confusion reference. Check here before touching anything.
 
 | Area | Current Status | Authority Source | Action Required | Owner |
 |---|---|---|---|---|
-| discovery | active | current handoff | organize + extend | TBD |
-| validators | active | current handoff | group + verify paths | TBD |
-| fetchers | mixed-state | repo review | label + selectively normalize | TBD |
-| provider layer | active | repo review | benchmark + preserve | TBD |
-| execution | frozen | current handoff | none | TBD |
-| docs | mixed | repo reality | reorganize | TBD |
-| governance | present | governance docs | keep visible | TBD |
+| Surface discovery | ACTIVE | session_handoff_2026-03-19.md | Continue -- find deeper ARB/USDC venue | CPT |
+| Breakeven classification | ACTIVE | scripts/analysis/breakeven_engine.js | Add surfaces only, do not rewrite | CPT |
+| Arbitrum fetcher | ACTIVE | arbitrumFetcher.js | Add pools with TOKEN-ORDER-GUARD only | CPT |
+| Provider layer | ACTIVE | utils/provider_factory.js | Do not bypass or rewrite | Locked |
+| Validators | ACTIVE | scripts/tools/ | Use as-is per validation pipeline | CPT |
+| Ethereum mainnet | SECONDARY | provider_factory.js | Token registry issue pending | CPT |
+| Fetcher fleet | ACTIVE_MIXED | session notes | Inspect before editing; label status | CPT |
+| Execution engine | FROZEN | Boss ruling | Do not touch | Boss gate |
+| Flash loan / contracts | FROZEN | Boss ruling | Do not touch | Boss gate |
+| Phase 5-9 code | DORMANT | Historical phases | Preserve, do not activate | Preserve |
+| Docs / appendices | MULTI-GEN | This reorg | Separating active vs archive | CPT |
+| New chain expansion | FROZEN | Boss ruling | Arbitrum only for now | Boss gate |
+| Surface inventory scanner | BUILT, PARKED | CPT session 2026-03-27 | Deploy after reorg complete | CPT |
 """,
-    "docs/archive/README.md": """# ARCHIVE README
 
-Status: ARCHIVE
+    "docs/archive/README.md": """\
+# ARCHIVE
 
-This directory stores materials that are:
+<!-- STATUS: ARCHIVE | Last Reviewed: 2026-03-27 -->
 
-- superseded
-- historical
-- dormant
-- not part of the current operator flow
-- retained for context, traceability, or future review
+## Purpose
+Historical material no longer part of the active operator flow.
+Preserved for context, traceability, and future reference.
 
-Archive rules:
-- do not delete by default
-- do not treat archived files as current instructions
-- move only when clearly no longer part of active operator guidance
-- preserve filenames unless there is a strong reason to normalize them
+## What belongs here
+- Handoffs that describe execution as active (execution is now frozen)
+- Architecture docs for flash loans, vaults, capital policy, XRPL
+- Older strategic planning docs and consolidated master docs
+- Phase build notes from completed or frozen phases (Phase 0-14)
+- Chat-derived artifacts used for memory, not current engineering
+
+## What does NOT belong here
+- The March 2026 session handoff (governs current work)
+- Active fetcher code, provider factory, breakeven engine
+- Current governance or safety rules
+
+## Sub-folders
+
+| Folder | Contents |
+|---|---|
+| legacy_strategy/ | Old broad architecture, vault/capital docs |
+| superseded_handoffs/ | Handoffs from phases before surface discovery |
+| old_phase_summaries/ | Phase 0-14 summaries that are complete/frozen |
+| quarantine/ | Files under review -- status uncertain |
+
+## Rule
+Do not delete from archive without explicit Boss ruling.
 """,
-    "docs/handoffs/HANDOFF_INDEX.md": """# HANDOFF INDEX
 
-Status: HANDOFF
+    "docs/handoffs/HANDOFF_INDEX.md": """\
+# HANDOFF INDEX
 
-Use this index to track the currently relevant handoff files.
+<!-- STATUS: HANDOFF | Last Reviewed: 2026-03-27 -->
 
-Suggested contents:
-- latest active master handoff
-- latest active review handoff
-- continuation prompt for the next chat
-- superseded handoffs should move to docs/archive/superseded_handoffs
+## Active Handoffs (govern current work)
+
+| File | Date | Phase | Notes |
+|---|---|---|---|
+| session_handoff_2026-03-19.md (repo root) | 2026-03-19 | Surface Discovery | PRIMARY -- governs all current work |
+
+## Archived Handoffs
+See docs/archive/superseded_handoffs/ for handoffs describing
+execution or prior phases as active.
+
+## Handoff Protocol
+Each session wrap-up produces: HANDOFF_YYYY-MM-DD_<topic>.md
+
+Required fields:
+- current phase
+- in-scope / out-of-scope
+- hard rules learned this session
+- next session directive (Boss-approved)
+- health check commands
+- key addresses / file map
 """,
+
 }
 
 MOVES: Sequence[MoveSpec] = (
-    MoveSpec("find_arb_usdc_pools.js", "scripts/discovery", "discovery"),
-    MoveSpec("arb_pool_smoke_test.js", "scripts/discovery", "discovery"),
-    MoveSpec("arb_pool_smoke_test_p2.js", "scripts/discovery", "discovery"),
-    MoveSpec("spread_validator.js", "scripts/validators", "validator"),
-    MoveSpec("arb_direct_validator.js", "scripts/validators", "validator"),
+    MoveSpec("find_arb_usdc_pools.js",     "scripts/discovery",  "discovery"),
+    MoveSpec("arb_pool_smoke_test.js",     "scripts/discovery",  "discovery"),
+    MoveSpec("arb_pool_smoke_test_p2.js",  "scripts/discovery",  "discovery"),
+    MoveSpec("spread_validator.js",        "scripts/validators", "validator"),
+    MoveSpec("arb_direct_validator.js",    "scripts/validators", "validator"),
     MoveSpec("arb_synthetic_validator.js", "scripts/validators", "validator"),
-    MoveSpec("wbtc_spread_validator.js", "scripts/validators", "validator"),
-    MoveSpec("arb_slippage_model.js", "scripts/validators", "validator"),
+    MoveSpec("wbtc_spread_validator.js",   "scripts/validators", "validator"),
+    MoveSpec("arb_slippage_model.js",      "scripts/validators", "validator"),
 )
 
 
-# -----------------------------
+# ─────────────────────────────────────────────────────────────────────────────
 # Helpers
-# -----------------------------
+# ─────────────────────────────────────────────────────────────────────────────
 
 def utc_now_iso() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
@@ -239,19 +447,15 @@ def parse_args() -> argparse.Namespace:
     )
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument(
-        "--plan",
-        action="store_true",
+        "--plan", action="store_true",
         help="Dry run only. Print and report what would happen.",
     )
     mode.add_argument(
-        "--apply",
-        action="store_true",
+        "--apply", action="store_true",
         help="Apply filesystem changes.",
     )
     parser.add_argument(
-        "--root",
-        type=str,
-        default=".",
+        "--root", type=str, default=".",
         help="Repository root. Defaults to current working directory.",
     )
     return parser.parse_args()
@@ -277,9 +481,6 @@ def write_text_file(path: Path, content: str) -> None:
 
 
 def mkdir_if_needed(path: Path, apply: bool) -> bool:
-    """
-    Returns True if directory was created, False if it already existed.
-    """
     if path.exists():
         return False
     if apply:
@@ -288,9 +489,6 @@ def mkdir_if_needed(path: Path, apply: bool) -> bool:
 
 
 def create_stub_if_needed(path: Path, content: str, apply: bool) -> bool:
-    """
-    Returns True if file was created, False if it already existed.
-    """
     if path.exists():
         return False
     if apply:
@@ -300,12 +498,6 @@ def create_stub_if_needed(path: Path, content: str, apply: bool) -> bool:
 
 
 def move_file_safely(src: Path, dst: Path, apply: bool) -> str:
-    """
-    Returns one of:
-    - moved
-    - missing
-    - conflict
-    """
     if not src.exists():
         return "missing"
     if dst.exists():
@@ -316,29 +508,21 @@ def move_file_safely(src: Path, dst: Path, apply: bool) -> str:
     return "moved"
 
 
-def find_source(repo_root: Path, filename: str) -> Path | None:
+def find_source(repo_root: Path, filename: str) -> "Path | None":
     """
     Deterministic search for the first matching filename under repo root.
-
-    Safety notes:
-    - We do not guess by fuzzy names.
-    - We allow recursive exact-filename search because many of the targeted
-      helper scripts may live in different folders in different repo snapshots.
-    - If multiple candidates exist, we pick the shortest relative path, then
-      lexicographically, so behavior stays deterministic.
+    Picks shortest relative path, then lexicographically -- stays deterministic.
     """
-    candidates = [
-        p for p in repo_root.rglob(filename)
-        if p.is_file()
-    ]
+    candidates = [p for p in repo_root.rglob(filename) if p.is_file()]
     if not candidates:
         return None
-
-    candidates_sorted = sorted(
+    return sorted(
         candidates,
-        key=lambda p: (len(p.relative_to(repo_root).as_posix()), p.relative_to(repo_root).as_posix())
-    )
-    return candidates_sorted[0]
+        key=lambda p: (
+            len(p.relative_to(repo_root).as_posix()),
+            p.relative_to(repo_root).as_posix(),
+        )
+    )[0]
 
 
 def build_markdown_report(report: Report) -> str:
@@ -391,18 +575,18 @@ def write_reports(repo_root: Path, report: Report, apply: bool) -> None:
         report_dir.mkdir(parents=True, exist_ok=True)
 
     json_path = report_dir / "repo_reorg_report.json"
-    md_path = report_dir / "repo_reorg_report.md"
+    md_path   = report_dir / "repo_reorg_report.md"
 
     report_json = json.dumps(asdict(report), indent=2, sort_keys=True)
-    report_md = build_markdown_report(report)
+    report_md   = build_markdown_report(report)
 
     if apply:
         write_text_file(json_path, report_json + "\n")
-        write_text_file(md_path, report_md + "\n")
+        write_text_file(md_path,   report_md   + "\n")
     else:
-        # In plan mode, still print where reports WOULD be written.
         report.notes.append(
-            f"Plan mode only: reports would be written to {json_path.relative_to(repo_root).as_posix()} "
+            f"Plan mode only: reports would be written to "
+            f"{json_path.relative_to(repo_root).as_posix()} "
             f"and {md_path.relative_to(repo_root).as_posix()}"
         )
 
@@ -422,9 +606,9 @@ def print_summary(report: Report) -> None:
     print("==========================\n")
 
 
-# -----------------------------
+# ─────────────────────────────────────────────────────────────────────────────
 # Main logic
-# -----------------------------
+# ─────────────────────────────────────────────────────────────────────────────
 
 def run(repo_root: Path, apply: bool) -> Report:
     report = Report(
@@ -458,20 +642,19 @@ def run(repo_root: Path, apply: bool) -> Report:
 
         if src is None:
             report.skipped_missing.append({
-                "category": spec.category,
-                "source": spec.source,
+                "category":    spec.category,
+                "source":      spec.source,
                 "destination": normalize_relpath(dst, repo_root),
-                "reason": "source_not_found",
+                "reason":      "source_not_found",
             })
             continue
 
-        # If the source is already in the destination, treat as already organized.
         if src.resolve() == dst.resolve():
             report.skipped_conflict.append({
-                "category": spec.category,
-                "source": normalize_relpath(src, repo_root),
+                "category":    spec.category,
+                "source":      normalize_relpath(src, repo_root),
                 "destination": normalize_relpath(dst, repo_root),
-                "reason": "already_in_destination",
+                "reason":      "already_in_destination",
             })
             continue
 
@@ -479,31 +662,31 @@ def run(repo_root: Path, apply: bool) -> Report:
 
         if result == "moved":
             report.files_moved.append({
-                "category": spec.category,
-                "source": normalize_relpath(src, repo_root),
+                "category":    spec.category,
+                "source":      normalize_relpath(src, repo_root),
                 "destination": normalize_relpath(dst, repo_root),
             })
         elif result == "missing":
             report.skipped_missing.append({
-                "category": spec.category,
-                "source": normalize_relpath(src, repo_root),
+                "category":    spec.category,
+                "source":      normalize_relpath(src, repo_root),
                 "destination": normalize_relpath(dst, repo_root),
-                "reason": "resolved_source_missing_before_move",
+                "reason":      "resolved_source_missing_before_move",
             })
         elif result == "conflict":
             report.skipped_conflict.append({
-                "category": spec.category,
-                "source": normalize_relpath(src, repo_root),
+                "category":    spec.category,
+                "source":      normalize_relpath(src, repo_root),
                 "destination": normalize_relpath(dst, repo_root),
-                "reason": "destination_exists",
+                "reason":      "destination_exists",
             })
         else:
             raise RuntimeError(f"Unexpected move result: {result}")
 
-    report.directories_created = sorted_unique(report.directories_created)
+    report.directories_created         = sorted_unique(report.directories_created)
     report.directories_already_present = sorted_unique(report.directories_already_present)
-    report.files_created = sorted_unique(report.files_created)
-    report.files_already_present = sorted_unique(report.files_already_present)
+    report.files_created               = sorted_unique(report.files_created)
+    report.files_already_present       = sorted_unique(report.files_already_present)
 
     report.files_moved = sorted(
         report.files_moved,
@@ -522,13 +705,7 @@ def run(repo_root: Path, apply: bool) -> Report:
     report.notes.append("No existing destination files were overwritten.")
     report.notes.append("Unknown files were not moved or classified automatically.")
 
-    # 4) Reports
     write_reports(repo_root, report, apply=apply)
-
-    # In apply mode, make sure the report files themselves exist in the report.
-    if apply:
-        # The report directory should already exist at this point.
-        pass
 
     return report
 
@@ -543,7 +720,6 @@ def main() -> int:
         report = run(repo_root=repo_root, apply=apply)
         print_summary(report)
 
-        # In plan mode, echo the markdown report to stdout for immediate review.
         if not apply:
             print(build_markdown_report(report))
 
