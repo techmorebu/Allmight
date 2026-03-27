@@ -1,8 +1,6 @@
 {
   "directories_already_present": [
-    "docs/architecture"
-  ],
-  "directories_created": [
+    "docs/architecture",
     "docs/archive",
     "docs/archive/legacy_strategy",
     "docs/archive/old_phase_summaries",
@@ -14,8 +12,8 @@
     "scripts/discovery",
     "scripts/validators"
   ],
-  "files_already_present": [],
-  "files_created": [
+  "directories_created": [],
+  "files_already_present": [
     "docs/archive/README.md",
     "docs/current/ACTIVE_TOOLING_INDEX.md",
     "docs/current/NEXT_ACTIONS.md",
@@ -24,49 +22,9 @@
     "docs/current/VALIDATION_PIPELINE.md",
     "docs/handoffs/HANDOFF_INDEX.md"
   ],
-  "files_moved": [
-    {
-      "category": "discovery",
-      "destination": "scripts/discovery/arb_pool_smoke_test.js",
-      "source": "scripts/discovery/arb_pool_smoke_test.js"
-    },
-    {
-      "category": "discovery",
-      "destination": "scripts/discovery/arb_pool_smoke_test_p2.js",
-      "source": "scripts/discovery/arb_pool_smoke_test_p2.js"
-    },
-    {
-      "category": "discovery",
-      "destination": "scripts/discovery/find_arb_usdc_pools.js",
-      "source": "scripts/discovery/find_arb_usdc_pools.js"
-    },
-    {
-      "category": "validator",
-      "destination": "scripts/validators/arb_direct_validator.js",
-      "source": "scripts/validators/arb_direct_validator.js"
-    },
-    {
-      "category": "validator",
-      "destination": "scripts/validators/arb_slippage_model.js",
-      "source": "scripts/validators/arb_slippage_model.js"
-    },
-    {
-      "category": "validator",
-      "destination": "scripts/validators/arb_synthetic_validator.js",
-      "source": "scripts/validators/arb_synthetic_validator.js"
-    },
-    {
-      "category": "validator",
-      "destination": "scripts/validators/spread_validator.js",
-      "source": "scripts/validators/spread_validator.js"
-    },
-    {
-      "category": "validator",
-      "destination": "scripts/validators/wbtc_spread_validator.js",
-      "source": "scripts/validators/wbtc_spread_validator.js"
-    }
-  ],
-  "generated_at_utc": "2026-03-27T09:00:46+00:00",
+  "files_created": [],
+  "files_moved": [],
+  "generated_at_utc": "2026-03-27T09:04:26+00:00",
   "mode": "apply",
   "notes": [
     "No files were deleted.",
@@ -74,6 +32,55 @@
     "Unknown files were not moved or classified automatically."
   ],
   "repo_root": "/home/allmight/Allmight",
-  "skipped_conflict": [],
+  "skipped_conflict": [
+    {
+      "category": "discovery",
+      "destination": "scripts/discovery/arb_pool_smoke_test.js",
+      "reason": "already_in_destination",
+      "source": "scripts/discovery/arb_pool_smoke_test.js"
+    },
+    {
+      "category": "discovery",
+      "destination": "scripts/discovery/arb_pool_smoke_test_p2.js",
+      "reason": "already_in_destination",
+      "source": "scripts/discovery/arb_pool_smoke_test_p2.js"
+    },
+    {
+      "category": "discovery",
+      "destination": "scripts/discovery/find_arb_usdc_pools.js",
+      "reason": "already_in_destination",
+      "source": "scripts/discovery/find_arb_usdc_pools.js"
+    },
+    {
+      "category": "validator",
+      "destination": "scripts/validators/arb_direct_validator.js",
+      "reason": "already_in_destination",
+      "source": "scripts/validators/arb_direct_validator.js"
+    },
+    {
+      "category": "validator",
+      "destination": "scripts/validators/arb_slippage_model.js",
+      "reason": "already_in_destination",
+      "source": "scripts/validators/arb_slippage_model.js"
+    },
+    {
+      "category": "validator",
+      "destination": "scripts/validators/arb_synthetic_validator.js",
+      "reason": "already_in_destination",
+      "source": "scripts/validators/arb_synthetic_validator.js"
+    },
+    {
+      "category": "validator",
+      "destination": "scripts/validators/spread_validator.js",
+      "reason": "already_in_destination",
+      "source": "scripts/validators/spread_validator.js"
+    },
+    {
+      "category": "validator",
+      "destination": "scripts/validators/wbtc_spread_validator.js",
+      "reason": "already_in_destination",
+      "source": "scripts/validators/wbtc_spread_validator.js"
+    }
+  ],
   "skipped_missing": []
 }

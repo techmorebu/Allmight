@@ -2,10 +2,15 @@
 
 - Mode: `apply`
 - Repo Root: `/home/allmight/Allmight`
-- Generated At (UTC): `2026-03-27T09:00:46+00:00`
+- Generated At (UTC): `2026-03-27T09:04:26+00:00`
 
 ## Directories Created
 
+_None_
+
+## Directories Already Present
+
+- `docs/architecture`
 - `docs/archive`
 - `docs/archive/legacy_strategy`
 - `docs/archive/old_phase_summaries`
@@ -17,11 +22,11 @@
 - `scripts/discovery`
 - `scripts/validators`
 
-## Directories Already Present
-
-- `docs/architecture`
-
 ## Files Created
+
+_None_
+
+## Files Already Present
 
 - `docs/archive/README.md`
 - `docs/current/ACTIVE_TOOLING_INDEX.md`
@@ -31,20 +36,9 @@
 - `docs/current/VALIDATION_PIPELINE.md`
 - `docs/handoffs/HANDOFF_INDEX.md`
 
-## Files Already Present
-
-_None_
-
 ## Files Moved
 
-- category=`discovery`, destination=`scripts/discovery/arb_pool_smoke_test.js`, source=`scripts/discovery/arb_pool_smoke_test.js`
-- category=`discovery`, destination=`scripts/discovery/arb_pool_smoke_test_p2.js`, source=`scripts/discovery/arb_pool_smoke_test_p2.js`
-- category=`discovery`, destination=`scripts/discovery/find_arb_usdc_pools.js`, source=`scripts/discovery/find_arb_usdc_pools.js`
-- category=`validator`, destination=`scripts/validators/arb_direct_validator.js`, source=`scripts/validators/arb_direct_validator.js`
-- category=`validator`, destination=`scripts/validators/arb_slippage_model.js`, source=`scripts/validators/arb_slippage_model.js`
-- category=`validator`, destination=`scripts/validators/arb_synthetic_validator.js`, source=`scripts/validators/arb_synthetic_validator.js`
-- category=`validator`, destination=`scripts/validators/spread_validator.js`, source=`scripts/validators/spread_validator.js`
-- category=`validator`, destination=`scripts/validators/wbtc_spread_validator.js`, source=`scripts/validators/wbtc_spread_validator.js`
+_None_
 
 ## Skipped Missing
 
@@ -52,7 +46,14 @@ _None_
 
 ## Skipped Conflict
 
-_None_
+- category=`discovery`, destination=`scripts/discovery/arb_pool_smoke_test.js`, reason=`already_in_destination`, source=`scripts/discovery/arb_pool_smoke_test.js`
+- category=`discovery`, destination=`scripts/discovery/arb_pool_smoke_test_p2.js`, reason=`already_in_destination`, source=`scripts/discovery/arb_pool_smoke_test_p2.js`
+- category=`discovery`, destination=`scripts/discovery/find_arb_usdc_pools.js`, reason=`already_in_destination`, source=`scripts/discovery/find_arb_usdc_pools.js`
+- category=`validator`, destination=`scripts/validators/arb_direct_validator.js`, reason=`already_in_destination`, source=`scripts/validators/arb_direct_validator.js`
+- category=`validator`, destination=`scripts/validators/arb_slippage_model.js`, reason=`already_in_destination`, source=`scripts/validators/arb_slippage_model.js`
+- category=`validator`, destination=`scripts/validators/arb_synthetic_validator.js`, reason=`already_in_destination`, source=`scripts/validators/arb_synthetic_validator.js`
+- category=`validator`, destination=`scripts/validators/spread_validator.js`, reason=`already_in_destination`, source=`scripts/validators/spread_validator.js`
+- category=`validator`, destination=`scripts/validators/wbtc_spread_validator.js`, reason=`already_in_destination`, source=`scripts/validators/wbtc_spread_validator.js`
 
 ## Notes
 
