@@ -90,6 +90,17 @@ const COOLDOWN_AFTER_SIM_MS = 10_000;
 const TICK_MAP_REFRESH_MS   = 30 * 60 * 1000;  // confirmed_default: 30-min refresh interval  // re-run tick map every 30 min
 
 // ─────────────────────────────────────────────────────────────────────────────
+// PROXIMITY ARM THRESHOLDS (Boss ruling 2026-03-27)
+// Replaces fixed absolute armedPrice trigger with relative market geometry.
+// ARM when price approaches nearestHighTick zone — not when it crosses a static level.
+// ─────────────────────────────────────────────────────────────────────────────
+const ARM_TICK_DISTANCE      = 150;    // ticks from nearestHighTick → arm
+const ARM_PRICE_DISTANCE_BPS = 120;    // bps from nearestHighPrice  → arm
+const ARM_MIN_DEPTH_USD      = 7_000;  // active-tick depth floor to arm
+const READY_MIN_DEPTH_USD    = 10_000; // candidate floor for READY_CHECK (hard — do not lower)
+const READY_CONFIRM_SCANS    = 3;      // consecutive scans above READY floor to confirm
+
+// ─────────────────────────────────────────────────────────────────────────────
 // HEALTH THRESHOLDS — stale-state detection (Boss ruling 2026-03-24)
 // ─────────────────────────────────────────────────────────────────────────────
 const HEALTH_POOL_STALE_MS     =  30_000;   // pool read silent for > 30s → unhealthy
@@ -197,10 +208,11 @@ async function readBothPools(blockNumber, rpc) {
   const camSqrtP  = camRes.result.gs[0];
   const camFeeRaw = Number(camRes.result.gs[2]);
   return {
-    uniPrice: sqrtPriceToUSDC(uniSqrtP),
-    camPrice: sqrtPriceToUSDC(camSqrtP),
-    uniDepth: activeTickDepthUSD(uniRes.result.liq, uniSqrtP),
-    camFee:   camFeeRaw > 0 ? camFeeRaw / 10000 / 100 : CAMELOT_FEE_FRAC,
+    uniPrice   : sqrtPriceToUSDC(uniSqrtP),
+    camPrice   : sqrtPriceToUSDC(camSqrtP),
+    uniDepth   : activeTickDepthUSD(uniRes.result.liq, uniSqrtP),
+    camFee     : camFeeRaw > 0 ? camFeeRaw / 10000 / 100 : CAMELOT_FEE_FRAC,
+    currentTick: Number(uniRes.result.s0[1]),   // needed for proximity arm check
     blockNumber,
   };
 }
@@ -282,12 +294,13 @@ async function deriveThresholdsFromTickMap(rpc) {
   }
 
   // Derive ARMED threshold: nearest HIGH zone price minus buffer ticks
+  // NOTE: armedPrice is now informational only — arm trigger uses proximity geometry.
+  // Kept for signal emission context and legacy log fields.
   let armedPrice = STATIC_ARMED_PRICE;
   if (nearestHighTick !== null) {
     const bufferTick = nearestHighTick - ARMED_BUFFER_TICKS;
     armedPrice = tickToPrice(bufferTick);
-    // Never arm below static floor
-    armedPrice = Math.max(armedPrice, STATIC_ARMED_PRICE * 0.98);
+    // Floor removed (Boss ruling 2026-03-27) — was blocking arm when market lived below 0.098
   }
 
   console.log(`  [tick-map] currentTick=${currentTick}  price=$${currentPrice.toFixed(6)}`);
@@ -435,7 +448,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap) {
       currentPrice:     0.092079,
       derivedAt:        Date.now(),
     };
-    console.log(`\n  [thresholds] Using confirmed static map  armedPrice=$${thresholds.armedPrice}  nearestHigh=$${thresholds.nearestHighPrice}`);
+    console.log(`\n  [thresholds] Static map  nearestHighTick=${thresholds.nearestHighTick}  nearestHighPrice=$${thresholds.nearestHighPrice}  ARM: tickDist<=${ARM_TICK_DISTANCE} OR bps<=${ARM_PRICE_DISTANCE_BPS}`);
   } else {
     thresholds = await deriveThresholdsFromTickMap(rpc);
   }
@@ -446,6 +459,9 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap) {
   let lastBlock     = null;
   let lastPrintKey  = null;
   let cooldownUntil = 0;
+  let readyCheckCount = 0;   // consecutive ARMED scans above READY_MIN_DEPTH_USD
+  let readyCheckAt    = null; // ISO timestamp when readyCheckCount first hit 1
+  let snap            = null; // last successful pool read — available to heartbeat
 
   // Self-recovery state (Boss ruling 2026-03-25)
   let providerRebuilds = 0;
@@ -613,12 +629,13 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap) {
     health.lastBlockChangeMs = Date.now();
 
     // ── POOL READ (Level 1/2/3 recovery) ─────────────────────────────────────
-    let snap;
+    let snapRead;
     try {
-      snap = await withTimeout(
+      snapRead = await withTimeout(
         readBothPools(blockNumber, rpc),
         READ_TIMEOUT_MS, 'readBothPools'
       );
+      snap = snapRead;   // update outer-scoped snap for heartbeat access
       health.lastPoolReadMs = Date.now();
       poolFail.success();
     } catch (e) {
@@ -637,6 +654,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap) {
       await sleep(POLL_PASSIVE_MS);
       continue;
     }
+    snap = snapRead;
 
     stats.ticks++;
 
@@ -644,23 +662,97 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap) {
     const feeBurden     = (UNIV3_FEE_FRAC + snap.camFee) * 100;
     const slip          = slippagePct(TRIGGER_SIZE_USD, snap.uniDepth);
     const threshold     = feeBurden + slip + TRIGGER_BUFFER_PCT;
-    const isArmedPrice  = snap.uniPrice >= thresholds.armedPrice;
     const isExecDepth   = snap.uniDepth >= DEPTH_EXECUTION;
     const isAboveSpread = spread > threshold;
 
+    // ── LAYER 1: PROXIMITY TRIGGER (Boss ruling 2026-03-27) ──────────────────
+    // Arm when market approaches the nearest high-depth zone — not when it
+    // crosses a fixed absolute price level. Uses live tick geometry.
+    const currentTick      = snap.currentTick ?? thresholds.currentTick;
+    const tickDistance     = thresholds.nearestHighTick != null
+      ? Math.abs(currentTick - thresholds.nearestHighTick)
+      : Infinity;
+    const priceDistanceBps = thresholds.nearestHighPrice > 0
+      ? Math.abs(thresholds.nearestHighPrice - snap.uniPrice) / snap.uniPrice * 10_000
+      : Infinity;
+    const isProximate = tickDistance <= ARM_TICK_DISTANCE ||
+                        priceDistanceBps <= ARM_PRICE_DISTANCE_BPS;
+
+    // ── LAYER 2: QUALITY GATE ────────────────────────────────────────────────
+    // Only arm if the live surface is worth watching.
+    // Replicates scanner tier logic inline — no Redis read needed.
+    const netSpreadFrac = (spread / 100) - (UNIV3_FEE_FRAC + snap.camFee);
+    const depthMin      = snap.uniDepth;   // UniV3 is the confirmed thin leg
+    const scannerTier   = depthMin >= READY_MIN_DEPTH_USD ? 'candidate'      // ≥$10k — matches scanner candidate floor
+                        : depthMin >= ARM_MIN_DEPTH_USD   ? 'near_threshold'  // $7k–$10k — arm floor
+                        : depthMin >= 5_000               ? 'thin_liquidity'
+                        : 'blocked_liquidity';
+    const isQualified   = (scannerTier === 'near_threshold' || scannerTier === 'thin_liquidity')
+                       && netSpreadFrac > 0
+                       && depthMin >= ARM_MIN_DEPTH_USD;
+
+    const shouldArm = isProximate && isQualified;
+
     // ── STATE TRANSITIONS ────────────────────────────────────────────────────
-    if (state === 'PASSIVE' && isArmedPrice) {
+    if (state === 'PASSIVE' && shouldArm) {
       state = 'ARMED';
       stats.armedCount++;
-      const msg = `○ PASSIVE → ◉ ARMED  price=$${snap.uniPrice.toFixed(6)} >= $${thresholds.armedPrice.toFixed(6)}`;
+      const armedReason = tickDistance <= ARM_TICK_DISTANCE ? 'proximity_tick' : 'proximity_price';
+      const msg = `○ PASSIVE → ◉ ARMED  tickDist=${tickDistance}  priceBps=${priceDistanceBps.toFixed(1)}  depthMin=$${depthMin.toFixed(0)}  net=+${(netSpreadFrac*100).toFixed(4)}%  reason=${armedReason}`;
       console.log(`\n  [STATE] ${msg}   ${fmtTime()}\n`);
-      appendLog(logPath, { ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR, type: 'state_transition', from: 'PASSIVE', to: 'ARMED', block: blockNumber, uniPrice: +snap.uniPrice.toFixed(6), armedThreshold: thresholds.armedPrice });
+      appendLog(logPath, {
+        ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
+        type: 'state_transition', from: 'PASSIVE', to: 'ARMED', block: blockNumber,
+        uniPrice: +snap.uniPrice.toFixed(6), tickDistance, priceDistanceBps: +priceDistanceBps.toFixed(1),
+        depthMin: +depthMin.toFixed(0), netSpreadFrac: +netSpreadFrac.toFixed(6),
+        scannerTier, armedReason,
+      });
     }
-    else if (state === 'ARMED' && !isArmedPrice) {
+    else if (state === 'ARMED' && !shouldArm) {
       state = 'PASSIVE';
       stats.disarmedCount++;
-      console.log(`\n  [STATE] ◉ ARMED → ○ PASSIVE  price fell below $${thresholds.armedPrice.toFixed(6)}   ${fmtTime()}\n`);
-      appendLog(logPath, { ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR, type: 'state_transition', from: 'ARMED', to: 'PASSIVE', block: blockNumber, uniPrice: +snap.uniPrice.toFixed(6) });
+      readyCheckCount = 0;
+      readyCheckAt    = null;
+      const blockedReason = !isProximate          ? 'too_far_from_liquidity_zone'
+                          : netSpreadFrac <= 0    ? 'negative_net'
+                          : depthMin < ARM_MIN_DEPTH_USD ? 'depth_below_arm_floor'
+                          :                          'quality_gate_fail';
+      console.log(`\n  [STATE] ◉ ARMED → ○ PASSIVE  ${blockedReason}  tickDist=${tickDistance}  priceBps=${priceDistanceBps.toFixed(1)}  depthMin=$${depthMin.toFixed(0)}   ${fmtTime()}\n`);
+      appendLog(logPath, {
+        ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
+        type: 'state_transition', from: 'ARMED', to: 'PASSIVE', block: blockNumber,
+        uniPrice: +snap.uniPrice.toFixed(6), tickDistance, priceDistanceBps: +priceDistanceBps.toFixed(1),
+        depthMin: +depthMin.toFixed(0), netSpreadFrac: +netSpreadFrac.toFixed(6), blockedReason,
+      });
+    }
+
+    // ── LAYER 3: READY_CHECK (within ARMED) ──────────────────────────────────
+    // Track consecutive scans above READY_MIN_DEPTH_USD with net > 0.
+    // Does NOT promote to execution — that still requires isExecDepth ($15k) + sim.
+    // Provides persistence confirmation and explicit logging.
+    if (state === 'ARMED') {
+      if (depthMin >= READY_MIN_DEPTH_USD && netSpreadFrac > 0) {
+        if (readyCheckCount === 0) readyCheckAt = new Date().toISOString();
+        readyCheckCount++;
+        if (readyCheckCount === READY_CONFIRM_SCANS) {
+          console.log(`\n  [READY_CHECK] ✓ ${readyCheckCount} consecutive scans: depthMin=$${depthMin.toFixed(0)} >= $${READY_MIN_DEPTH_USD.toLocaleString()} net=+${(netSpreadFrac*100).toFixed(4)}%\n`);
+          appendLog(logPath, {
+            ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
+            type: 'ready_check_confirmed', block: blockNumber, readyCheckCount,
+            depthMin: +depthMin.toFixed(0), netSpreadFrac: +netSpreadFrac.toFixed(6), firstAboveAt: readyCheckAt,
+          });
+        }
+      } else {
+        if (readyCheckCount > 0) {
+          appendLog(logPath, {
+            ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
+            type: 'ready_check_reset', block: blockNumber, wasCount: readyCheckCount,
+            depthMin: +depthMin.toFixed(0), netSpreadFrac: +netSpreadFrac.toFixed(6),
+          });
+        }
+        readyCheckCount = 0;
+        readyCheckAt    = null;  // Boss fix 2026-03-27: prevent stale first-hit metadata in audit trail
+      }
     }
 
 
@@ -673,7 +765,24 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap) {
         ticks: stats.ticks, errors: stats.errors, armed: stats.armedCount,
         simRuns: stats.simRuns, readySignals: stats.readySignals,
         unhealthyEvents: stats.unhealthyEvents,
-        armedThreshold: thresholds.armedPrice, nearestHighPrice: thresholds.nearestHighPrice,
+        // proximity geometry — live values at heartbeat time (Boss advisory 2026-03-27)
+        nearestHighTick    : thresholds.nearestHighTick,
+        nearestHighPrice   : thresholds.nearestHighPrice,
+        tickDistance       : thresholds.nearestHighTick != null
+          ? Math.abs((snap?.currentTick ?? thresholds.currentTick) - thresholds.nearestHighTick)
+          : null,
+        priceDistanceBps   : (thresholds.nearestHighPrice > 0 && snap)
+          ? +((Math.abs(thresholds.nearestHighPrice - snap.uniPrice) / snap.uniPrice) * 10_000).toFixed(1)
+          : null,
+        depthMin           : snap ? +snap.uniDepth.toFixed(0) : null,
+        netSpreadFrac      : snap ? +(((spreadPct(snap.uniPrice, snap.camPrice) / 100) - (UNIV3_FEE_FRAC + snap.camFee)).toFixed(6)) : null,
+        scannerTier        : snap
+          ? (snap.uniDepth >= READY_MIN_DEPTH_USD ? 'candidate'
+            : snap.uniDepth >= ARM_MIN_DEPTH_USD  ? 'near_threshold'
+            : snap.uniDepth >= 5_000              ? 'thin_liquidity'
+            : 'blocked_liquidity')
+          : null,
+        readyCheckCount,
       };
       console.log(`  ── heartbeat  ${uptimeMin}min  ticks=${stats.ticks}  errors=${stats.errors}  state=${state}  armed=${stats.armedCount}  ready=${stats.readySignals} ──`);
       appendLog(logPath, hbRecord);
