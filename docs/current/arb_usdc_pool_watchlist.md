@@ -70,18 +70,25 @@ AND Boss rules admission
 
 ---
 
-## PENDING DISCOVERY
+## VENUE EXPANSION — FROZEN (Boss ruling 2026-03-28)
 
-### SushiSwap V3 (Arbitrum)
-- Factory address corrected: `0x1af415a1EbA07a4986a52B6f2e7dE7003D82231e`
-- Previous attempt used `...231b` (1-char typo) → RPC exhausted on all fee tiers
-- Status: re-run discovery pending with corrected address
+Discovery pass complete. No venue beat UniV3 0.05% on confirmed live usability.
+Venue expansion frozen until one of:
+- ARB/USDC 0.05% depth materially improves (reduces urgency)
+- A reputable source provides a **known live pool address** for Sushi or Ramses ARB/USDC
+- A new venue identified from pool-first trace, not factory-first speculation
 
-### Ramses V2 CL (Arbitrum)
-- Factory address: requires `ARB_RAMSES_V2_FACTORY` env var
-- Arbitrum CL factory address not yet confirmed from canonical source
-- Ramses docs show HyperEVM contracts — Arbitrum factory needs direct verification
-- Status: research pending
+### SushiSwap V3 (Arbitrum) — `skip_venue_unresolved` PARKED
+- Factory: `0x1af415a1EbA07a4986a52B6f2e7dE7003D82231e` (4 total txns on Arbiscan)
+- All 4 fee-tier `getPool()` probes failed identically. Current classification: `skip_venue_unresolved`.
+- Not confirmed dead. Not confirmed usable. Requires known pool address to proceed.
+- **Do not resume factory-first research until a live pool address is available.**
+
+### Ramses V2 CL (Arbitrum) — `skip_venue_unresolved` PARKED
+- Factory: `0xa67f82621540017a679153423CA0B8a1b4518B49` (confirmed IRamsesV2Factory source)
+- All 4 standard fee tier calls fail — hypothesis: Ramses may use non-standard fee tiers or a deployment pattern not covered by the current probe set
+- Hypothesis: fee tier 100 reverts; 500/3000/10000 may return zero pool (no ARB/USDC CL pool)
+- **Do not resume until known live ARB/USDC Ramses CL pool address obtained from reputable source.**
 
 ---
 
