@@ -576,4 +576,8 @@ async function main() {
 main().catch(err => {
   console.error('[scanner] FATAL:', err.message || err);
   process.exit(1);
+
+  const { run: runVolatilityScanner } = require("./volatility_surface_scanner");
+
+await runVolatilityScanner();
 });
