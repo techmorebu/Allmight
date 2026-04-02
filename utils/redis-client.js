@@ -11,7 +11,7 @@ class RedisClient {
     constructor() {
         if (!RedisClient.instance) {
             this.client = new Redis(REDIS_URL);
-            this.client.on('connect', () => console.log('Redis connected.'));
+            this.client.on('connect', () => console.error('Redis connected.'));
             this.client.on('error', (err) => console.error('Redis error:', err));
             RedisClient.instance = this;
         }
