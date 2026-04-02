@@ -65,13 +65,59 @@ const { createProvider } = require('../../utils/provider_factory');
 // ─────────────────────────────────────────────────────────────────────────────
 // POOL CONSTANTS
 // ─────────────────────────────────────────────────────────────────────────────
-const UNIV3_POOL       = '0xb0f6cA40411360c03d41C5fFc5F179b8403CdcF8';
-const UNIV3_FEE_FRAC   = 0.0005;
-const CAMELOT_POOL     = '0xfae2ae0a9f87fd35b5b0e24b47bac796a7eefea1';
-const CAMELOT_FEE_FRAC = 0.000249;
-const TICK_SPACING     = 10;
-const DEC0 = 18;  // ARB
-const DEC1 = 6;   // USDC
+// ─────────────────────────────────────────────────────────────────────────────
+// PAIR CONFIG MAP — one entry per supported surface.
+// Swaps pool addresses, fees, decimals, and tick spacing by --pair flag.
+// All depth/arm/ready thresholds are universal — unchanged per pair.
+// ─────────────────────────────────────────────────────────────────────────────
+const PAIR_CONFIGS = {
+  'ARB/USDC': {
+    univ3Pool:          '0xb0f6cA40411360c03d41C5fFc5F179b8403CdcF8',
+    univ3FeeFrac:       0.0005,
+    camelotPool:        '0xfae2ae0a9f87fd35b5b0e24b47bac796a7eefea1',
+    camelotFeeFrac:     0.000249,
+    tickSpacing:        10,      // UniV3 0.05% pool spacing
+    dec0:               18,      // ARB
+    dec1:               6,       // USDC
+    staticArmedPrice:   0.1000,
+    // Static fallback thresholds from last confirmed tick-map scan (2026-03-23).
+    // Used when --remap-ticks is NOT passed. ARB/USDC only.
+    staticHighTick:     -299250,
+    staticHighPrice:    0.101015,
+    staticHighDepth:    17650.97,
+    staticCurrentTick:  -300177,
+    staticCurrentPrice: 0.092079,
+  },
+  'ETH/USDC': {
+    univ3Pool:          '0x6f38e884725a116C9C7fBF208e79FE8828a2595F',
+    univ3FeeFrac:       0.0001,
+    camelotPool:        '0xB1026b8e7276e7AC75410F1fcbbe21796e8f7526',
+    camelotFeeFrac:     0.0001,  // fallback only — feeZto read live from globalState()
+    tickSpacing:        1,       // UniV3 0.01% pool spacing
+    dec0:               18,      // WETH
+    dec1:               6,       // USDC
+    staticArmedPrice:   1800.00, // informational fallback — always use --remap-ticks
+    // No valid static thresholds — tick-map scan required.
+    // Without --remap-ticks: isProximate=false, activator stays PASSIVE (safe).
+    staticHighTick:     null,
+    staticHighPrice:    null,
+    staticHighDepth:    null,
+    staticCurrentTick:  null,
+    staticCurrentPrice: null,
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POOL CONSTANTS — populated from PAIR_CONFIGS in main() via --pair flag.
+// Declared as let so main() can assign before activatorLoop() runs.
+// ─────────────────────────────────────────────────────────────────────────────
+let UNIV3_POOL       = '';
+let UNIV3_FEE_FRAC   = 0;
+let CAMELOT_POOL     = '';
+let CAMELOT_FEE_FRAC = 0;
+let TICK_SPACING     = 10;
+let DEC0 = 18;
+let DEC1 = 6;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // THRESHOLDS — static fallbacks, overridden by live tick map
@@ -142,7 +188,7 @@ const GAS_MANUAL = {
 // ─────────────────────────────────────────────────────────────────────────────
 const LOG_SOURCE = 'arb_window_activator';
 const LOG_CHAIN  = 'arbitrum';
-const LOG_PAIR   = 'ARB/USDC';
+let   LOG_PAIR   = 'ARB/USDC';  // overridden by --pair flag in main()
 
 async function fetchLiveGasModel(rpc) {
   try {
@@ -430,7 +476,7 @@ function appendLog(logPath, record) {
 // ─────────────────────────────────────────────────────────────────────────────
 // MAIN ACTIVATION LOOP
 // ─────────────────────────────────────────────────────────────────────────────
-async function activatorLoop(rpc, gm, durationS, logPath, forceRemap) {
+async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
   // rpc is reassignable for provider rebuild recovery
   rpc = rpc;
   const endMs = Date.now() + durationS * 1000;
@@ -438,14 +484,16 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap) {
   // Initial tick map scan
   let thresholds;
   if (!forceRemap) {
-    // Use known static thresholds from last tick map run (Boss-confirmed values)
+    // Use known static thresholds from last tick map run (pair-specific).
+    // ETH/USDC: all null → isProximate=false → activator stays PASSIVE (safe).
+    // ARB/USDC: Boss-confirmed values from 2026-03-23 tick-map scan.
     thresholds = {
-      armedPrice:       STATIC_ARMED_PRICE,
-      nearestHighTick:  -299250,
-      nearestHighPrice: 0.101015,
-      nearestHighDepth: 17650.97,
-      currentTick:      -300177,
-      currentPrice:     0.092079,
+      armedPrice:       pairCfg.staticArmedPrice,
+      nearestHighTick:  pairCfg.staticHighTick,
+      nearestHighPrice: pairCfg.staticHighPrice,
+      nearestHighDepth: pairCfg.staticHighDepth,
+      currentTick:      pairCfg.staticCurrentTick,
+      currentPrice:     pairCfg.staticCurrentPrice,
       derivedAt:        Date.now(),
     };
     console.log(`\n  [thresholds] Static map  nearestHighTick=${thresholds.nearestHighTick}  nearestHighPrice=$${thresholds.nearestHighPrice}  ARM: tickDist<=${ARM_TICK_DISTANCE} OR bps<=${ARM_PRICE_DISTANCE_BPS}`);
@@ -556,7 +604,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap) {
   const DIV = '─'.repeat(W);
 
   console.log('\n' + EQ);
-  console.log('  ARB/USDC — WINDOW ACTIVATOR   (tick-map-aware state machine)');
+  console.log(`  ${LOG_PAIR} — WINDOW ACTIVATOR   (tick-map-aware state machine)`);
   console.log(`  Gas: ${gm.source}  |  ${gm.gasPriceGwei.toFixed(6)} gwei  |  $${calcGasUSD(gm).toFixed(6)}/tx`);
   console.log(`  ARMED threshold:    $${thresholds.armedPrice.toFixed(6)}  (dynamic, from tick map)`);
   console.log(`  Nearest HIGH zone:  $${thresholds.nearestHighPrice?.toFixed(6) ?? 'none'}  depth=$${thresholds.nearestHighDepth?.toFixed(0) ?? '?'}`);
@@ -931,6 +979,8 @@ function printHelp() {
     '    --log=PATH      Output JSONL log file path',
     '    --gas=live|manual  Gas price source (simulators)',
     '    --out=PATH      Write JSON summary to file (analyzers)',
+    '    --pair=PAIR     Surface pair: ARB/USDC (default) | ETH/USDC',
+    '    --remap-ticks   Force fresh tick-map scan on startup (required for ETH/USDC)',
     '',
   ].join('\n'));
 }
@@ -946,6 +996,7 @@ function parseArgs() {
     duration:   getN('--duration', 28800),   // default 8 hours
     logPath:    getS('--log',      null),
     remapTicks: args.includes('--remap-ticks'),
+    pair:       getS('--pair',     'ARB/USDC'),
   };
 }
 
@@ -953,10 +1004,38 @@ function parseArgs() {
 // MAIN
 // ─────────────────────────────────────────────────────────────────────────────
 async function main() {
-  const { gasMode, duration, logPath, remapTicks } = parseArgs();
+  const { gasMode, duration, logPath, remapTicks, pair } = parseArgs();
+
+  // ── Pair resolution ────────────────────────────────────────────────────────
+  const pairCfg = PAIR_CONFIGS[pair];
+  if (!pairCfg) {
+    console.error(
+      `[activator] Unknown --pair "${pair}". Supported: ${Object.keys(PAIR_CONFIGS).join(', ')}`
+    );
+    process.exit(1);
+  }
+
+  // Assign pair-specific constants. All let — logic is unchanged.
+  UNIV3_POOL       = pairCfg.univ3Pool;
+  UNIV3_FEE_FRAC   = pairCfg.univ3FeeFrac;
+  CAMELOT_POOL     = pairCfg.camelotPool;
+  CAMELOT_FEE_FRAC = pairCfg.camelotFeeFrac;
+  TICK_SPACING     = pairCfg.tickSpacing;
+  DEC0             = pairCfg.dec0;
+  DEC1             = pairCfg.dec1;
+  LOG_PAIR         = pair;
+
+  if (pair === 'ETH/USDC' && !remapTicks) {
+    console.warn(
+      '  [activator] WARNING: --remap-ticks not passed for ETH/USDC.\n' +
+      '  Static thresholds are null → activator will stay PASSIVE.\n' +
+      '  Strongly recommended: add --remap-ticks to derive live thresholds.\n'
+    );
+  }
+
   const rpc = createProvider('arbitrum');
 
-  console.log(`\n[arb_window_activator] ${new Date().toISOString()}`);
+  console.log(`\n[arb_window_activator] ${new Date().toISOString()}  pair=${pair}`);
 
   let gm;
   if (gasMode === 'manual') {
@@ -968,7 +1047,7 @@ async function main() {
     console.log(`${gm.gasPriceGwei.toFixed(6)} gwei | $${calcGasUSD(gm).toFixed(6)}/tx`);
   }
 
-  await activatorLoop(rpc, gm, duration, logPath, remapTicks);
+  await activatorLoop(rpc, gm, duration, logPath, remapTicks, pairCfg);
 }
 
 main().catch(err => {
