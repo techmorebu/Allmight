@@ -61,7 +61,10 @@ const CONFIRM_SCANS_REQUIRED = Number(argVal('--confirm', 3));    // consecutive
 const QUIET                 = ARGS.includes('--quiet');
 
 const LOG_DIR  = path.resolve(process.cwd(), 'logs');
-const LOG_FILE = path.join(LOG_DIR, 'surface_timeseries.jsonl');
+// Log filename derived from watch pair — avoids cross-contamination between surfaces.
+// ETH/USDC → surface_timeseries_eth.jsonl  |  ARB/USDC → surface_timeseries_arb.jsonl
+const PAIR_SLUG = WATCH_PAIR.split('/')[0].toLowerCase();
+const LOG_FILE  = path.join(LOG_DIR, `surface_timeseries_${PAIR_SLUG}.jsonl`);
 
 const NODE_BIN     = process.execPath;
 const FETCHER_PATH = path.resolve(process.cwd(), 'scripts/master-fetcher.js');
