@@ -372,7 +372,12 @@ async function loadState() {
 }
 
 async function saveState(state) {
-  await redis.set(STATE_KEY, stableStringify(state));
+  // Plain JSON.stringify — stableStringify cannot be used here because its
+  // array-replacer acts as a property whitelist at every nesting level, which
+  // silently strips nested fields (seen, lastPromotedAt, updatedAt) since they
+  // don't match the top-level surfaceKey strings. State is machine-read only;
+  // deterministic ordering is not required.
+  await redis.set(STATE_KEY, JSON.stringify(state));
 }
 
 function updatePersistence(entry, isHot) {
