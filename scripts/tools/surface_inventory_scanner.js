@@ -68,6 +68,9 @@ const POOL_META = {
   '0x84652bb2539513baf36e225c930fdd8eaa63ce27': { pair: 'ETH/USDC',   dec0: 18, dec1: 6,  quoteToken: 'USDC',  v2: true },
   // ── Camelot V3 (Algebra) ────────────────────────────────────────────────────
   '0xfae2ae0a9f87fd35b5b0e24b47bac796a7eefea1': { pair: 'ARB/USDC',   dec0: 18, dec1: 6,  quoteToken: 'USDC'  },
+  // ── ETH/USDC surface pools (Boss session 2026-04-02) ─────────────────────
+  '0x6f38e884725a116c9c7fbf208e79fe8828a2595f': { pair: 'ETH/USDC',   dec0: 18, dec1: 6,  quoteToken: 'USDC'  },  // UniV3 0.01%
+  '0xb1026b8e7276e7ac75410f1fcbbe21796e8f7526': { pair: 'ETH/USDC',   dec0: 18, dec1: 6,  quoteToken: 'USDC'  },  // Camelot V3
 };
 
 // ─── THRESHOLDS ───────────────────────────────────────────────────────────────
