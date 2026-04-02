@@ -46,7 +46,7 @@ function _logEvent(obj) {
   } catch { /* fire-and-forget — silent on error */ }
 }
 
-const RPC_CALL_TIMEOUT_MS = Number(process.env.RPC_CALL_TIMEOUT_MS || 1500);
+const RPC_CALL_TIMEOUT_MS = Number(process.env.RPC_CALL_TIMEOUT_MS || 4000);
 const RPC_SLOW_THRESHOLD_MS = Number(process.env.RPC_SLOW_THRESHOLD_MS || 1000);
 const RPC_SLOW_STRIKES = Number(process.env.RPC_SLOW_STRIKES || 2);
 const MAX_FAILS = Number(process.env.RPC_MAX_FAILS || 3);
