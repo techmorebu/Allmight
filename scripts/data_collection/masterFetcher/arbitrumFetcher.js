@@ -168,6 +168,25 @@ const UNISWAP_V3_POOLS = [
     expectedToken1: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",  // native USDC
   },
 
+  // ── Phase 4 Addition (2026-04-02) ────────────────────────────────────────
+  // ETH/USDC 0.01% — PRIMARY surface target (Boss session 2026-04-02).
+  // Counterpart to Camelot V3 ETH/USDC below. Both validated via pool smoke test.
+  // token0=WETH (0x82aF..) sorts LOWER than USDC (0xaf88..) on Arbitrum — same ordering
+  // as existing 0.05% ETH/USDC pool above. decimals0=18 (WETH), decimals1=6 (USDC).
+  // fee: 100/1e6 = 0.01%. sanityMin/Max same range as the 0.05% pool.
+  {
+    outputPair:     'ETH/USDC',
+    pool:           '0x6f38e884725a116C9C7fBF208e79FE8828a2595F',
+    decimals0:      18,
+    decimals1:      6,
+    fee:            100,
+    priceMode:      'direct',
+    sanityMin:      500,
+    sanityMax:      20000,
+    expectedToken0: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',  // WETH
+    expectedToken1: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',  // native USDC
+  },
+
   // ── Deferred pools ────────────────────────────────────────────────────────
   // ARB/USDCe  0xcda53b1f... — DEFERRED: quote asset is USDCe (bridged/deprecated).
   //   Identity confirmed by factory query 2026-03-19. Not native USDC.
@@ -199,6 +218,22 @@ const CAMELOT_V3_POOLS = [
     sanityMax:      20,
     expectedToken0: '0x912CE59144191C1204E64559FE8253a0e49E6548',
     expectedToken1: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+  },
+
+  // ETH/USDC — token0=WETH (18dec), token1=nativeUSDC (6dec)
+  // Primary surface target (Boss session 2026-04-02). Paired with UniV3 ETH/USDC 0.01%.
+  // token0=WETH (0x82aF..) confirmed lower sort order than USDC (0xaf88..) on Arbitrum.
+  // Dynamic fee read live from globalState() index 2 (feeZto). Fallback: 0.01%.
+  {
+    outputPair:     'ETH/USDC',
+    pool:           '0xB1026b8e7276e7AC75410F1fcbbe21796e8f7526',
+    decimals0:      18,
+    decimals1:      6,
+    priceMode:      'direct',
+    sanityMin:      500,
+    sanityMax:      20000,
+    expectedToken0: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',  // WETH
+    expectedToken1: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',  // native USDC
   },
 ];
 
@@ -241,7 +276,7 @@ async function fetchUniV3Pool(cfg, blockNumber) {
         ]);
         return { slot0, liq };
       },
-      { timeoutMs: cfg.timeoutMs || 1500, hedge: true }
+      { timeoutMs: cfg.timeoutMs || 4000, hedge: true }
     );
 
     const price = sqrtPriceX96ToPrice(
@@ -317,7 +352,7 @@ async function fetchCamelotPool(cfg, blockNumber) {
         const reserves = await c.getReserves({ blockTag: blockNumber });
         return { reserves };
       },
-      { timeoutMs: 1500, hedge: true }
+      { timeoutMs: 4000, hedge: true }
     );
 
     const r0b = result.reserves[0];
@@ -393,7 +428,7 @@ async function fetchCamelotV3Pool(cfg, blockNumber) {
         ]);
         return { gs, liq };
       },
-      { timeoutMs: 1500, hedge: true }
+      { timeoutMs: 4000, hedge: true }
     );
 
     const sqrtPriceX96 = result.gs[0];
