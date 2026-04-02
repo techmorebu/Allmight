@@ -583,108 +583,115 @@ function printTop(rows) {
 async function run() {
   const fetcherKey = FETCHER_KEY_BY_CHAIN[CHAIN];
   if (!fetcherKey) {
+    await redis.quit().catch(() => {});
     throw new Error(`unsupported chain: ${CHAIN}`);
   }
 
-  const raw = await redis.get(fetcherKey);
-  if (!raw) {
-    throw new Error(`missing redis key: ${fetcherKey}`);
-  }
-
-  const parsed = JSON.parse(raw);
-  // Redis payload shape (written by master-fetcher):
-  //   { ok, name, durationMs, timestamp, data: <arbitrumFetcher return> }
-  // arbitrumFetcher return shape:
-  //   { status, partial, data: { prices: [...], chain, ... } }
-  // Full path to price rows: parsed.data.data.prices
-  // Fallback: parsed.data.prices  (direct fetcher writes, if any)
-  // Fallback: parsed              (bare array, not expected but defensive)
-  const rows =
-    Array.isArray(parsed?.data?.data?.prices) ? parsed.data.data.prices :
-    Array.isArray(parsed?.data?.prices)        ? parsed.data.prices :
-    Array.isArray(parsed?.data)                ? parsed.data :
-    Array.isArray(parsed)                      ? parsed :
-    [];
-
-  const normalized = rows.map(row => normalizeRow(CHAIN, row));
-  const compatibilityIndex = buildCompatibilityIndex(normalized);
-  const state = await loadState();
-
-  const ranked = [];
-  const nextState = { ...state };
-
-  for (const row of normalized) {
-    const prior = nextState[row.surfaceKey] || null;
-    const result = scoreCandidate(row, compatibilityIndex, prior);
-
-    if (result.stateEntry) {
-      nextState[row.surfaceKey] = {
-        ...prior,
-        ...result.stateEntry,
-        updatedAt: nowIso(),
-      };
+  try {
+    const raw = await redis.get(fetcherKey);
+    if (!raw) {
+      throw new Error(`missing redis key: ${fetcherKey}`);
     }
 
-    if (result.candidate && !cooldownActive(prior)) {
-      nextState[row.surfaceKey] = {
-        ...(nextState[row.surfaceKey] || {}),
-        lastPromotedAt: nowMs(),
-      };
+    const parsed = JSON.parse(raw);
+    // Redis payload shape (written by master-fetcher):
+    //   { ok, name, durationMs, timestamp, data: <arbitrumFetcher return> }
+    // arbitrumFetcher return shape:
+    //   { status, partial, data: { prices: [...], chain, ... } }
+    // Full path to price rows: parsed.data.data.prices
+    // Fallback: parsed.data.prices  (direct fetcher writes, if any)
+    // Fallback: parsed              (bare array, not expected but defensive)
+    const rows =
+      Array.isArray(parsed?.data?.data?.prices) ? parsed.data.data.prices :
+      Array.isArray(parsed?.data?.prices)        ? parsed.data.prices :
+      Array.isArray(parsed?.data)                ? parsed.data :
+      Array.isArray(parsed)                      ? parsed :
+      [];
+
+    const normalized = rows.map(row => normalizeRow(CHAIN, row));
+    const compatibilityIndex = buildCompatibilityIndex(normalized);
+    const state = await loadState();
+
+    const ranked = [];
+    const nextState = { ...state };
+
+    for (const row of normalized) {
+      const prior = nextState[row.surfaceKey] || null;
+      const result = scoreCandidate(row, compatibilityIndex, prior);
+
+      if (result.stateEntry) {
+        nextState[row.surfaceKey] = {
+          ...prior,
+          ...result.stateEntry,
+          updatedAt: nowIso(),
+        };
+      }
+
+      if (result.candidate && !cooldownActive(prior)) {
+        nextState[row.surfaceKey] = {
+          ...(nextState[row.surfaceKey] || {}),
+          lastPromotedAt: nowMs(),
+        };
+      }
+
+      ranked.push({
+        surfaceKey: row.surfaceKey,
+        chain: row.chain,
+        venue: row.venue,
+        poolId: row.poolId,
+        pair: row.pair,
+        base: row.base,
+        quote: row.quote,
+        quoteFamily: row.quoteFamily,
+        priceNow: row.priceNow,
+        liquidityUSD: row.liquidityUSD,
+        volumeUSD: row.volumeUSD,
+        blockNumber: row.blockNumber,
+        timestamp: row.timestamp,
+        candidate: result.candidate,
+        score: result.score,
+        signals: result.signalSummary || {},
+        penalties: result.penalties,
+        why: result.reasons,
+        hardReject: result.hardReject,
+        hardRejectReason: result.hardRejectReason,
+      });
     }
 
-    ranked.push({
-      surfaceKey: row.surfaceKey,
-      chain: row.chain,
-      venue: row.venue,
-      poolId: row.poolId,
-      pair: row.pair,
-      base: row.base,
-      quote: row.quote,
-      quoteFamily: row.quoteFamily,
-      priceNow: row.priceNow,
-      liquidityUSD: row.liquidityUSD,
-      volumeUSD: row.volumeUSD,
-      blockNumber: row.blockNumber,
-      timestamp: row.timestamp,
-      candidate: result.candidate,
-      score: result.score,
-      signals: result.signalSummary || {},
-      penalties: result.penalties,
-      why: result.reasons,
-      hardReject: result.hardReject,
-      hardRejectReason: result.hardRejectReason,
-    });
-  }
+    const sorted = sortDeterministic(ranked);
+    const top = sorted.slice(0, TOP_N);
 
-  const sorted = sortDeterministic(ranked);
-  const top = sorted.slice(0, TOP_N);
+    await redis.set(RANKED_KEY, JSON.stringify(top, null, 2));
+    await saveState(nextState);
 
-  await redis.set(RANKED_KEY, JSON.stringify(top, null, 2));
-  await saveState(nextState);
+    if (JSON_OUT) {
+      process.stdout.write(JSON.stringify({
+        generatedAt: nowIso(),
+        chain: CHAIN,
+        sourceKey: fetcherKey,
+        count: top.length,
+        candidates: top,
+      }, null, 2));
+      return;
+    }
 
-  if (JSON_OUT) {
-    process.stdout.write(JSON.stringify({
+    if (!QUIET) {
+      printTop(top);
+      console.log(`\n[ranker] wrote ${top.length} candidates → ${RANKED_KEY}`);
+    }
+
+    return {
       generatedAt: nowIso(),
       chain: CHAIN,
       sourceKey: fetcherKey,
       count: top.length,
       candidates: top,
-    }, null, 2));
-    return;
+    };
+  } finally {
+    // Always close the Redis connection so Node.js exits cleanly.
+    // Without this the ioredis singleton keeps the event loop alive indefinitely.
+    await redis.quit().catch(() => {});
   }
-
-  if (!QUIET) {
-    printTop(top);
-    console.log(`\n[ranker] wrote ${top.length} candidates → ${RANKED_KEY}`);
-  }
-
-  return {
-    generatedAt: nowIso(),
-    chain: CHAIN,
-    sourceKey: fetcherKey,
-    count: top.length,
-    candidates: top,
-  };
 }
 
 if (require.main === module) {
