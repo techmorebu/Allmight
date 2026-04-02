@@ -71,6 +71,23 @@ const POOL_META = {
   // ── ETH/USDC surface pools (Boss session 2026-04-02) ─────────────────────
   '0x6f38e884725a116c9c7fbf208e79fe8828a2595f': { pair: 'ETH/USDC',   dec0: 18, dec1: 6,  quoteToken: 'USDC'  },  // UniV3 0.01%
   '0xb1026b8e7276e7ac75410f1fcbbe21796e8f7526': { pair: 'ETH/USDC',   dec0: 18, dec1: 6,  quoteToken: 'USDC'  },  // Camelot V3
+  // ── Phase 5 expansion pools (Boss directive 2026-04-02) ───────────────────
+  // ETH cross-tier
+  '0xc473e2aee3441bf9240be85eb122abb059a3b57c': { pair: 'ETH/USDC',   dec0: 18, dec1: 6,  quoteToken: 'USDC'  },  // UniV3 0.30%
+  '0x42161084d0672e1d3f26a9b53e653be2084ff19c': { pair: 'ETH/USDT',   dec0: 18, dec1: 6,  quoteToken: 'USDT'  },  // UniV3 0.01%
+  '0xc82819f72a9e77e2c0c3a69b3196478f44303cf4': { pair: 'ETH/USDT',   dec0: 18, dec1: 6,  quoteToken: 'USDT'  },  // UniV3 0.30%
+  // WBTC new pair
+  '0x0e4831319a50228b9e450861297ab92dee15b44f': { pair: 'WBTC/USDC',  dec0: 8,  dec1: 6,  quoteToken: 'USDC'  },  // UniV3 0.05%
+  '0x6985cb98ce393fce8d6272127f39013f61e36166': { pair: 'WBTC/USDC',  dec0: 8,  dec1: 6,  quoteToken: 'USDC'  },  // UniV3 0.30%
+  // WBTC/USDT cross-tier
+  '0x53c6ca2597711ca7a73b6921faf4031eedf71339': { pair: 'WBTC/USDT',  dec0: 8,  dec1: 6,  quoteToken: 'USDT'  },  // UniV3 0.30%
+  // DAI/USDC new stable pair — token0=USDC(6dec), token1=DAI(18dec). quoteToken='DAI' (~$1)
+  '0x7cf803e8d82a50504180f417b8bc7a493c0a0503': { pair: 'DAI/USDC',   dec0: 6,  dec1: 18, quoteToken: 'DAI'   },  // UniV3 0.01%
+  '0xd46c8a1940113ae64f960b7aa12ef5dcab0ffe0e': { pair: 'DAI/USDC',   dec0: 6,  dec1: 18, quoteToken: 'DAI'   },  // UniV3 0.30%
+  // GMX/UNI — single-venue, approved ≥$25k (Boss ruling 2026-04-02). token0=USDC, token1=asset.
+  // Depth returns null (non-stable quote) → classified as 'incomplete' in scanner. Expected.
+  '0x135e49cc315fed87f989e072ee11132686cf84f3': { pair: 'GMX/USDC',   dec0: 6,  dec1: 18, quoteToken: 'GMX'   },  // UniV3 0.30%
+  '0x05477c22a5349cee601500da0489dad137fd6bfa': { pair: 'UNI/USDC',   dec0: 6,  dec1: 18, quoteToken: 'UNI'   },  // UniV3 0.30%
 };
 
 // ─── THRESHOLDS ───────────────────────────────────────────────────────────────
@@ -131,6 +148,7 @@ function computeActiveTickUSD(liquidityRaw, priceHuman, dec0, dec1, quoteToken) 
 
   if (quoteToken === 'USDC' || quoteToken === 'USDT') return bothSides;
   if (quoteToken === 'USDCe') return bothSides;        // ~1:1 USD for scanning
+  if (quoteToken === 'DAI')   return bothSides;        // DAI ≈ $1 — treat as USD stable for depth
   if (quoteToken === 'WETH' && ETH_PRICE_USD > 0) return bothSides * ETH_PRICE_USD;
   return null;  // need ETH price, don't have it yet
 }
