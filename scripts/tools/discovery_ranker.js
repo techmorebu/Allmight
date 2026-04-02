@@ -66,15 +66,15 @@ const CONFIG = {
 
 // Quote-family compatibility is strict, not optimistic.
 const QUOTE_FAMILY = {
-  USDC: 'USD_STABLE_NATIVE',
-  USDT: 'USD_STABLE_TETHER',
-  USDCE: 'USD_STABLE_BRIDGED',
-  USDC.E: 'USD_STABLE_BRIDGED',
-  DAI: 'USD_STABLE_OTHER',
-  WETH: 'ETH_QUOTE',
-  ETH: 'ETH_QUOTE',
-  WBTC: 'BTC_QUOTE',
-  BTC: 'BTC_QUOTE',
+  USDC:     'USD_STABLE_NATIVE',
+  USDT:     'USD_STABLE_TETHER',
+  USDCE:    'USD_STABLE_BRIDGED',   // USDCe without dot
+  'USDC.E': 'USD_STABLE_BRIDGED',   // USDCe with dot — must be quoted key in JS
+  DAI:      'USD_STABLE_OTHER',
+  WETH:     'ETH_QUOTE',
+  ETH:      'ETH_QUOTE',
+  WBTC:     'BTC_QUOTE',
+  BTC:      'BTC_QUOTE',
 };
 
 const STABLE_QUOTE_FAMILIES = new Set([
@@ -179,10 +179,6 @@ function buildSurfaceKey(chain, pair, venue, poolId) {
   return `${chain}|${pair}|${venue}|${poolId}`;
 }
 
-function compatibleQuoteFamily(a, b) {
-  return a && b && a === b;
-}
-
 function hasStableFamily(fam) {
   return STABLE_QUOTE_FAMILIES.has(fam);
 }
@@ -196,7 +192,9 @@ function normalizeVenue(rawVenue) {
 }
 
 function rowPoolId(row) {
-  return lower(row.poolAddress || row.address || row.poolId || row.id || '');
+  // arbitrumFetcher emits the pool address as `pool` — check it first.
+  // Fallback chain covers other fetcher shapes.
+  return lower(row.pool || row.poolAddress || row.address || row.poolId || row.id || '');
 }
 
 function inferBaseQuote(row) {
@@ -218,19 +216,65 @@ function inferBaseQuote(row) {
   return { base: '', quote: '' };
 }
 
+// ─── DECIMAL TABLE — for active-tick depth approximation ──────────────────────
+// Used when fetcher emits raw L + price but no USD depth proxy.
+// arbitrumFetcher emits liquidity (raw L uint128), price (human USD), tvlUSD: null.
+// Scanner formula: reserveQuote = (L × sqrtP) / 10^dec1  where sqrtP = sqrt(price × 10^(dec1-dec0))
+// Covers all tokens currently in arbitrumFetcher config.
+const DEC_BY_SYMBOL = {
+  WETH: 18, ETH: 18, ARB: 18, DAI: 18,
+  WBTC: 8,  BTC: 8,
+  USDC: 6,  USDT: 6,
+};
+
+/**
+ * Approximate active-tick depth in USD for V3 pools using raw L + price.
+ * Matches the scanner's computeActiveTickUSD formula exactly.
+ * Returns null for WETH/WBTC-quoted pairs (no oracle available here).
+ * Returns null if inputs are missing or degenerate.
+ */
+function approxDepthUSD(row) {
+  const liq   = safeNum(row.liquidity);
+  const price = safeNum(row.price);
+  if (!liq || !price || liq <= 0 || price <= 0) return null;
+
+  const { base, quote } = inferBaseQuote(row);
+  const dec0 = DEC_BY_SYMBOL[upper(base)]  ?? 18;
+  const dec1 = DEC_BY_SYMBOL[upper(quote)] ?? 18;
+  const qf   = quoteFamilyFromSymbol(quote);
+
+  // Cannot convert to USD without an oracle for non-stable quotes.
+  if (qf === 'ETH_QUOTE' || qf === 'BTC_QUOTE' || qf === 'UNKNOWN') return null;
+
+  const sqrtP        = Math.sqrt(price * Math.pow(10, dec1 - dec0));
+  const reserveQuote = (liq * sqrtP) / Math.pow(10, dec1);
+  const depthBoth    = reserveQuote * 2;
+
+  return Number.isFinite(depthBoth) && depthBoth > 0 ? depthBoth : null;
+}
+
 function inferLiquidityUSD(row) {
-  // prefer active / usable depth proxies if present
-  return safeNum(
-    row.activeTickUsd ??
-    row.activeTickUSD ??
-    row.depthUsd ??
-    row.depthUSD ??
-    row.liquidityUsd ??
-    row.liquidityUSD ??
-    row.tvlUsd ??
-    row.tvlUSD ??
+  // Priority 1: explicit USD depth proxies (active-tick preferred over TVL).
+  const explicit = safeNum(
+    row.activeTickUsd    ??
+    row.activeTickUSD    ??
+    row.depthUsd         ??
+    row.depthUSD         ??
+    row.liquidityUsd     ??
+    row.liquidityUSD     ??
+    row.tvlUsd           ??
+    row.tvlUSD           ??
     row.totalValueLockedUSD
   );
+  if (explicit != null && explicit > 0) return explicit;
+
+  // Priority 2: Camelot V2 / AMM V2 pools emit reserveUSD (total both sides TVL).
+  const reserveUSD = safeNum(row.reserveUSD);
+  if (reserveUSD != null && reserveUSD > 0) return reserveUSD;
+
+  // Priority 3: V3 pools emit raw liquidity L + human price.
+  // Compute approximate active-tick depth using scanner-identical formula.
+  return approxDepthUSD(row);
 }
 
 function inferVolumeUSD(row) {
@@ -548,9 +592,19 @@ async function run() {
   }
 
   const parsed = JSON.parse(raw);
-  const rows = Array.isArray(parsed?.data)
-    ? parsed.data
-    : (Array.isArray(parsed) ? parsed : []);
+  // Redis payload shape (written by master-fetcher):
+  //   { ok, name, durationMs, timestamp, data: <arbitrumFetcher return> }
+  // arbitrumFetcher return shape:
+  //   { status, partial, data: { prices: [...], chain, ... } }
+  // Full path to price rows: parsed.data.data.prices
+  // Fallback: parsed.data.prices  (direct fetcher writes, if any)
+  // Fallback: parsed              (bare array, not expected but defensive)
+  const rows =
+    Array.isArray(parsed?.data?.data?.prices) ? parsed.data.data.prices :
+    Array.isArray(parsed?.data?.prices)        ? parsed.data.prices :
+    Array.isArray(parsed?.data)                ? parsed.data :
+    Array.isArray(parsed)                      ? parsed :
+    [];
 
   const normalized = rows.map(row => normalizeRow(CHAIN, row));
   const compatibilityIndex = buildCompatibilityIndex(normalized);
