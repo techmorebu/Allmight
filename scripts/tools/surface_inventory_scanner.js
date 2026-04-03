@@ -94,7 +94,7 @@ const POOL_META = {
   '0x96ada81328abce21939a51d971a63077e16db26e': { pair: 'ETH/USDT',   dec0: 18, dec1: 6,  quoteToken: 'USDT'  },  // Sushi 0.05%
   '0x92d543a8a158a6bc2c7018ae17803819cb9150b2': { pair: 'ETH/USDT',   dec0: 18, dec1: 6,  quoteToken: 'USDT'  },  // Sushi 0.30%
   '0x699f628a8a1de0f28cf9181c1f8ed848ebb0bbdf': { pair: 'WBTC/USDC',  dec0: 8,  dec1: 6,  quoteToken: 'USDC'  },  // Sushi 0.05%
-  '0xafafdba8a2a51654987cdc385bd302443c461679e':{ pair: 'WBTC/USDT',  dec0: 8,  dec1: 6,  quoteToken: 'USDT'  },  // Sushi 0.05%
+  '0xafadba8a2a51654987cdc385bd302443c461679e': { pair: 'WBTC/USDT',  dec0: 8,  dec1: 6,  quoteToken: 'USDT'  },  // Sushi 0.05%
   '0xfa1cc0cae7779b214b1112322a2d1cf0b511c3bc': { pair: 'ARB/USDC',   dec0: 18, dec1: 6,  quoteToken: 'USDC'  },  // Sushi 0.05%
   '0x14716a16ef9eeaada7e266bcf023b71d2c9adbf3': { pair: 'ARB/USDC',   dec0: 18, dec1: 6,  quoteToken: 'USDC'  },  // Sushi 0.30%
   // ── Camelot V3 new pools (2026-04-03) ───────────────────────────────────
