@@ -230,7 +230,7 @@ const VENUES = [
   {
     venue  : 'camelot_v3',
     type   : 'algebra_factory', // uses poolByPair(A, B) — no fee tier argument
-    factory: process.env.ARB_CAMELOT_V3_FACTORY || '0x1a3c9B1d2F92C84F37C2dE53AE52d6Ff8E5a0E6',
+    factory: process.env.ARB_CAMELOT_V3_FACTORY || '0x1a3c9B1d2F0529D97f2afC5136Cc23e58f1FD35B',
     slotFn : 'globalState',
   },
   {
