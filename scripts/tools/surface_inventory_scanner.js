@@ -85,9 +85,22 @@ const POOL_META = {
   '0x7cf803e8d82a50504180f417b8bc7a493c0a0503': { pair: 'DAI/USDC',   dec0: 6,  dec1: 18, quoteToken: 'DAI'   },  // UniV3 0.01%
   '0xd46c8a1940113ae64f960b7aa12ef5dcab0ffe0e': { pair: 'DAI/USDC',   dec0: 6,  dec1: 18, quoteToken: 'DAI'   },  // UniV3 0.30%
   // GMX/UNI — single-venue, approved ≥$25k (Boss ruling 2026-04-02). token0=USDC, token1=asset.
-  // Depth returns null (non-stable quote) → classified as 'incomplete' in scanner. Expected.
   '0x135e49cc315fed87f989e072ee11132686cf84f3': { pair: 'GMX/USDC',   dec0: 6,  dec1: 18, quoteToken: 'GMX'   },  // UniV3 0.30%
   '0x05477c22a5349cee601500da0489dad137fd6bfa': { pair: 'UNI/USDC',   dec0: 6,  dec1: 18, quoteToken: 'UNI'   },  // UniV3 0.30%
+  // ── SushiSwap V3 pools (2026-04-03) ─────────────────────────────────────
+  // Factory 0x1af415a1...231e confirmed. All pools confirmed via getPool().
+  '0xf3eb87c1f6020982173c908e7eb31aa66c1f0296': { pair: 'ETH/USDC',   dec0: 18, dec1: 6,  quoteToken: 'USDC'  },  // Sushi 0.05%
+  '0xc96525298419f7e00da8826b733ee52e271662b5': { pair: 'ETH/USDC',   dec0: 18, dec1: 6,  quoteToken: 'USDC'  },  // Sushi 0.30%
+  '0x96ada81328abce21939a51d971a63077e16db26e': { pair: 'ETH/USDT',   dec0: 18, dec1: 6,  quoteToken: 'USDT'  },  // Sushi 0.05%
+  '0x92d543a8a158a6bc2c7018ae17803819cb9150b2': { pair: 'ETH/USDT',   dec0: 18, dec1: 6,  quoteToken: 'USDT'  },  // Sushi 0.30%
+  '0x699f628a8a1de0f28cf9181c1f8ed848ebb0bbdf': { pair: 'WBTC/USDC',  dec0: 8,  dec1: 6,  quoteToken: 'USDC'  },  // Sushi 0.05%
+  '0xafafdba8a2a51654987cdc385bd302443c461679e':{ pair: 'WBTC/USDT',  dec0: 8,  dec1: 6,  quoteToken: 'USDT'  },  // Sushi 0.05%
+  '0xfa1cc0cae7779b214b1112322a2d1cf0b511c3bc': { pair: 'ARB/USDC',   dec0: 18, dec1: 6,  quoteToken: 'USDC'  },  // Sushi 0.05%
+  '0x14716a16ef9eeaada7e266bcf023b71d2c9adbf3': { pair: 'ARB/USDC',   dec0: 18, dec1: 6,  quoteToken: 'USDC'  },  // Sushi 0.30%
+  // ── Camelot V3 new pools (2026-04-03) ───────────────────────────────────
+  // Factory corrected: 0x1a3c9B1d2F0529D97f2afC5136Cc23e58f1FD35B
+  '0x7cccba38e2d959fe135e79aebb57ccb27b128358': { pair: 'ETH/USDT',   dec0: 18, dec1: 6,  quoteToken: 'USDT'  },  // Camelot V3
+  '0x02be4f98fc9ee4f612a139d84494cbf6c6c7f97f': { pair: 'WBTC/USDC',  dec0: 8,  dec1: 6,  quoteToken: 'USDC'  },  // Camelot V3
 };
 
 // ─── THRESHOLDS ───────────────────────────────────────────────────────────────
