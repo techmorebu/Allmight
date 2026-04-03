@@ -105,6 +105,31 @@ const PAIR_CONFIGS = {
     staticCurrentTick:  null,
     staticCurrentPrice: null,
   },
+
+  // ── ETH/USDT (Boss ruling 2026-04-03) ─────────────────────────────────────
+  // First valid surface with sustained cross-venue edge.
+  // UniV3 0.01% (thin leg $36.5k) vs Camelot V3 ($121.2k).
+  // Timeseries: 80% positive rate, 16 consecutive scans, mean net +0.0299%.
+  // Classification: MONITOR (PROMOTABLE) — depth-constrained, not spread-constrained.
+  // Depth promotion target: $36.5k → $50k+ on thin leg.
+  // tick spacing=1 on UniV3 0.01% — remap-ticks is slower than ARB/USDC, expected.
+  'ETH/USDT': {
+    univ3Pool:          '0x42161084d0672e1d3F26a9B53E653bE2084ff19C',  // UniV3 0.01%
+    univ3FeeFrac:       0.0001,
+    camelotPool:        '0x7CcCBA38E2D959fe135e79AEBB57CCb27B128358',  // Camelot V3
+    camelotFeeFrac:     0.0001,  // fallback — feeZto read live from globalState()
+    tickSpacing:        1,       // UniV3 0.01% pool spacing
+    dec0:               18,      // WETH
+    dec1:               6,       // USDT
+    staticArmedPrice:   1800.00, // informational fallback — always use --remap-ticks
+    // No valid static thresholds — tick-map scan required.
+    // Without --remap-ticks: isProximate=false, activator stays PASSIVE (safe).
+    staticHighTick:     null,
+    staticHighPrice:    null,
+    staticHighDepth:    null,
+    staticCurrentTick:  null,
+    staticCurrentPrice: null,
+  },
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -979,8 +1004,8 @@ function printHelp() {
     '    --log=PATH      Output JSONL log file path',
     '    --gas=live|manual  Gas price source (simulators)',
     '    --out=PATH      Write JSON summary to file (analyzers)',
-    '    --pair=PAIR     Surface pair: ARB/USDC (default) | ETH/USDC',
-    '    --remap-ticks   Force fresh tick-map scan on startup (required for ETH/USDC)',
+    '    --pair=PAIR     Surface pair: ARB/USDC (default) | ETH/USDC | ETH/USDT',
+    '    --remap-ticks   Force fresh tick-map scan on startup (required for ETH/USDC, ETH/USDT)',
     '',
   ].join('\n'));
 }
@@ -1025,9 +1050,9 @@ async function main() {
   DEC1             = pairCfg.dec1;
   LOG_PAIR         = pair;
 
-  if (pair === 'ETH/USDC' && !remapTicks) {
+  if (pairCfg.staticHighTick === null && !remapTicks) {
     console.warn(
-      '  [activator] WARNING: --remap-ticks not passed for ETH/USDC.\n' +
+      `  [activator] WARNING: --remap-ticks not passed for ${pair}.\n` +
       '  Static thresholds are null → activator will stay PASSIVE.\n' +
       '  Strongly recommended: add --remap-ticks to derive live thresholds.\n'
     );
