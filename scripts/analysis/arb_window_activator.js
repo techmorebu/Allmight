@@ -760,7 +760,11 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
                         : depthMin >= ARM_MIN_DEPTH_USD   ? 'near_threshold'  // $7k–$10k — arm floor
                         : depthMin >= 5_000               ? 'thin_liquidity'
                         : 'blocked_liquidity';
-    const isQualified   = (scannerTier === 'near_threshold' || scannerTier === 'thin_liquidity')
+    const isQualified   = (
+                            scannerTier === 'candidate'      ||
+                            scannerTier === 'near_threshold' ||
+                            scannerTier === 'thin_liquidity'
+                          )
                        && netSpreadFrac > 0
                        && depthMin >= ARM_MIN_DEPTH_USD;
 
