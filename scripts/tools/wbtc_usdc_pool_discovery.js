@@ -76,9 +76,9 @@ const VENUES = [
     venue  : 'camelot_v3',
     type   : 'algebra_factory',
     // Camelot V3 (Algebra) — uses poolByPair(tokenA, tokenB) not getPool(A,B,fee)
-    // Factory confirmed: https://arbiscan.io/address/0x1a3c9B1d2F92C84F37C2dE53AE52d6Ff8E5a0E6
-    // Fee is dynamic per pool via globalState()[2] not constructor
-    factory: process.env.ARB_CAMELOT_V3_FACTORY   || '0x1a3c9B1d2F92C84F37C2dE53AE52d6Ff8E5a0E6',
+    // Factory confirmed from Camelot official docs (docs.camelot.exchange/contracts/arbitrum/one-mainnet)
+    // and Arbiscan label "Camelot: Factory V3" (2026-04-01)
+    factory: process.env.ARB_CAMELOT_V3_FACTORY   || '0x1a3c9B1d2F0529D97f2afC5136Cc23e58f1FD35B',
     slotFn : 'globalState',  // Algebra: globalState() not slot0()
   },
   {

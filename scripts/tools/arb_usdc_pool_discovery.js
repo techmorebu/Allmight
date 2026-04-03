@@ -22,14 +22,14 @@
 //  UniSwap V3 — hardcoded fallback already correct, env var optional:
 //    ARB_UNISWAP_V3_FACTORY   = 0x1F98431c8aD98523631AE4a59f267346ea31F984
 //
-//  SushiSwap V3 — hardcoded fallback confirmed via Arbiscan (2026-03-28), env var optional:
+//  SushiSwap V3 — hardcoded fallback confirmed via Arbiscan label (2026-03-28), env var optional:
 //    ARB_SUSHISWAP_V3_FACTORY = 0x1af415a1EbA07a4986a52B6f2e7dE7003D82231e
-//    (prior typo was ...231b — caused RPC exhausted on all fee tiers)
+//    Status: skip_venue_unresolved — factory exists (4 txns) but all getPool() calls fail.
+//    Requires on-chain pool trace to confirm. Do not mark as dead yet.
 //
-//  Ramses V2 CL — NO hardcoded fallback; env var REQUIRED before venue runs:
-//    ARB_RAMSES_V2_FACTORY    = <verify on Arbiscan before setting>
-//    (Ramses docs contract-addresses page rendered HyperEVM tab during research 2026-03-28;
-//     Arbitrum CL factory address not yet confirmed — do not guess)
+//  Ramses V2 CL — confirmed via IRamsesV2Factory source on Arbiscan (2026-03-28):
+//    ARB_RAMSES_V2_FACTORY    = 0xa67f82621540017a679153423CA0B8a1b4518B49
+//    getPool(tokenA, tokenB, fee) ABI confirmed — compatible with v3_factory type.
 //
 //  USAGE
 //  ─────
@@ -101,14 +101,12 @@ const VENUES = [
     venue  : 'ramses_v2',
     type   : 'v3_factory',
     // Ramses V2 CL factory on Arbitrum.
-    // Ramses docs contract-addresses page rendered HyperEVM tab during research (2026-03-28).
-    // Arbitrum CLFactory address NOT YET confirmed from canonical source.
-    // Set ARB_RAMSES_V2_FACTORY in .env once address is verified on Arbiscan.
-    // Do not use a hardcoded fallback — factory address is version-sensitive.
-    factory: process.env.ARB_RAMSES_V2_FACTORY    || null,
-    slotFn : 'slot0',  // Ramses V2 CL uses standard slot0(), not globalState()
-    // Note: Ramses CL is built on top of UniV3, NOT Algebra — slot0() is correct.
-    // (Camelot V3 uses Algebra/globalState; Ramses V2 CL does not)
+    // Address confirmed via Arbiscan (2026-03-28): IRamsesV2Factory source shows
+    // getPool(tokenA, tokenB, fee) — same ABI as UniV3 factory. Compatible.
+    // Ramses CL pools use slot0(), NOT globalState() (that is Algebra/Camelot V3).
+    // Env var takes precedence if set; canonical fallback used otherwise.
+    factory: process.env.ARB_RAMSES_V2_FACTORY    || '0xa67f82621540017a679153423CA0B8a1b4518B49',
+    slotFn : 'slot0',
   },
 ];
 
@@ -318,6 +316,11 @@ async function scanVenue(rpc, venue, blockNumber, verbose) {
 
   if (verbose) console.log(`  [disc] scanning ${venue.venue}  factory=${venue.factory.slice(0, 12)}...`);
 
+  // Track factory errors across all fee tiers for this venue.
+  // If ALL fee tiers fail with the same error class, we emit skip_venue_unresolved
+  // instead of individual skip_query_error per tier — per Boss ruling 2026-03-28.
+  const factoryErrors = [];
+
   // Probe each fee tier — serial with sleep (anti-stampede, per project rules)
   for (const feeTier of FEE_TIERS) {
     await sleep(200);  // 200ms between factory calls
@@ -334,13 +337,7 @@ async function scanVenue(rpc, venue, blockNumber, verbose) {
       );
       poolAddress = result;
     } catch (e) {
-      const rec = {
-        venue      : venue.venue,
-        feeTierQueried: feeTier,
-        status     : 'skip_query_error',
-        rejectReason: `factory_getPool_failed: ${e.message.slice(0, 100)}`,
-      };
-      results.skipped.push(rec);
+      factoryErrors.push({ feeTier, error: e.message.slice(0, 100) });
       if (verbose) console.log(`  [disc]   ${venue.venue} fee=${feeTier} → factory error: ${e.message.slice(0, 60)}`);
       continue;
     }
@@ -371,6 +368,23 @@ async function scanVenue(rpc, venue, blockNumber, verbose) {
       results.rejected.push(inspection);
       if (verbose) console.log(`  [disc]   ✗ ${inspection.status}  reason=${inspection.rejectReason}`);
     }
+  }
+
+  // Post-loop: if ALL fee tiers for this venue failed with factory errors and we got
+  // zero kept/rejected results, classify as skip_venue_unresolved (Boss ruling 2026-03-28).
+  // Rationale: all-fail could mean wrong factory, uninitialised factory, or no ARB/USDC CL
+  // pool — these are distinct conclusions that require on-chain pool tracing to disambiguate.
+  if (factoryErrors.length === FEE_TIERS.length &&
+      results.kept.length === 0 &&
+      results.rejected.length === 0) {
+    results.skipped.push({
+      venue        : venue.venue,
+      status       : 'skip_venue_unresolved',
+      rejectReason : `all ${FEE_TIERS.length} fee-tier factory calls failed — factory may exist but be uninitialised, ` +
+                     `or no ARB/USDC CL pool deployed — requires on-chain pool trace to confirm`,
+      factoryErrors: factoryErrors.map(e => `fee=${e.feeTier}: ${e.error.slice(0, 60)}`),
+    });
+    if (verbose) console.log(`  [disc]   ${venue.venue} → skip_venue_unresolved (all ${FEE_TIERS.length} tiers failed)`);
   }
 
   return results;
