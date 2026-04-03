@@ -1014,8 +1014,19 @@ function printHelp() {
 function parseArgs() {
   const args = process.argv.slice(2);
   if (args.includes('--help') || args.includes('-h')) { printHelp(); process.exit(0); }
-  const getN = (f,d) => { const a = args.find(a => a.startsWith(f+'=')); return a ? Number(a.split('=')[1]) : d; };
-  const getS = (f,d) => { const a = args.find(a => a.startsWith(f+'=')); return a ? a.split('=')[1] : d; };
+  // Support both --flag=VALUE and --flag VALUE formats
+  const getS = (f, d) => {
+    const eq = args.find(a => a.startsWith(f + '='));
+    if (eq) return eq.split('=')[1];
+    const i = args.indexOf(f);
+    return (i !== -1 && args[i + 1] && !args[i + 1].startsWith('--')) ? args[i + 1] : d;
+  };
+  const getN = (f, d) => {
+    const eq = args.find(a => a.startsWith(f + '='));
+    if (eq) return Number(eq.split('=')[1]);
+    const i = args.indexOf(f);
+    return (i !== -1 && args[i + 1] && !args[i + 1].startsWith('--')) ? Number(args[i + 1]) : d;
+  };
   return {
     gasMode:    getS('--gas',      'live'),
     duration:   getN('--duration', 28800),   // default 8 hours
