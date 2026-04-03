@@ -198,8 +198,15 @@ const MAX_PROVIDER_REBUILDS     =  3;       // confirmed_default: exit non-zero 
 // ─────────────────────────────────────────────────────────────────────────────
 const TRIGGER_BUFFER_PCT = 0.02;
 const TRIGGER_SIZE_USD   = 25;
-const SIM_SIZE_RANGE     = [10, 25, 50, 100, 200];
+const SIM_SIZE_RANGE     = [25, 50, 100, 200, 500];   // full sweep — reveals size-efficiency cliff
 const SIM_DELAY_RANGE    = [0, 1, 2];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// REGIME CLASSIFICATION THRESHOLD (Boss ruling 2026-04-03)
+// Separates base-depth regime ($18k) from LP-surge regime ($1M+).
+// Label added to all state_transition, heartbeat, and signal records.
+// ─────────────────────────────────────────────────────────────────────────────
+const REGIME_SURGE_THRESHOLD = 100_000;  // depth above this = 'surge', below = 'base'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GAS MODEL
@@ -459,6 +466,7 @@ function emitSignal(type, snap, simResult, gm, thresholds) {
     uniPrice:         +snap.uniPrice.toFixed(6),
     camPrice:         +snap.camPrice.toFixed(6),
     uniDepth:         +snap.uniDepth.toFixed(2),
+    regime:           regimeLabel(snap.uniDepth),
     spread:           +spreadPct(snap.uniPrice, snap.camPrice).toFixed(5),
     bestSize:         best ? best.size : null,
     bestDelay:        best ? best.delayBlocks : null,
@@ -469,6 +477,19 @@ function emitSignal(type, snap, simResult, gm, thresholds) {
     nearestHighTick:  thresholds.nearestHighTick,
     nearestHighPrice: thresholds.nearestHighPrice ? +thresholds.nearestHighPrice.toFixed(6) : null,
     nearestHighDepth: thresholds.nearestHighDepth ? +thresholds.nearestHighDepth.toFixed(2) : null,
+    // Full size-sweep at delay=0 for economic analysis (Boss ruling 2026-04-03)
+    sizeSweep: SIM_SIZE_RANGE.map(sz => {
+      const r = matrix[0]?.[sz];
+      if (!r) return { size: sz, status: 'missing' };
+      return {
+        size:      sz,
+        finalEdge: r.finalEdge,
+        slippage:  r.slippage,
+        feeBurden: r.feeBurden,
+        gasPct:    r.gasPct,
+        status:    r.status,
+      };
+    }),
   };
 
   // Print signal banner
@@ -535,6 +556,11 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
   let readyCheckCount = 0;   // consecutive ARMED scans above READY_MIN_DEPTH_USD
   let readyCheckAt    = null; // ISO timestamp when readyCheckCount first hit 1
   let snap            = null; // last successful pool read — available to heartbeat
+
+  // Window segmentation tracking (Boss ruling 2026-04-03)
+  let windowId        = 0;    // monotonic window counter for log correlation
+  let windowStartTs   = null; // ISO timestamp when current ARMED window opened
+  let windowStartDepth= null; // depthMin at window open — regime classification anchor
 
   // Self-recovery state (Boss ruling 2026-03-25)
   let providerRebuilds = 0;
@@ -774,15 +800,20 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
     if (state === 'PASSIVE' && shouldArm) {
       state = 'ARMED';
       stats.armedCount++;
+      windowId++;
+      windowStartTs    = new Date().toISOString();
+      windowStartDepth = +depthMin.toFixed(0);
       const armedReason = tickDistance <= ARM_TICK_DISTANCE ? 'proximity_tick' : 'proximity_price';
-      const msg = `○ PASSIVE → ◉ ARMED  tickDist=${tickDistance}  priceBps=${priceDistanceBps.toFixed(1)}  depthMin=$${depthMin.toFixed(0)}  net=+${(netSpreadFrac*100).toFixed(4)}%  reason=${armedReason}`;
+      const regime = regimeLabel(depthMin);
+      const msg = `○ PASSIVE → ◉ ARMED  tickDist=${tickDistance}  priceBps=${priceDistanceBps.toFixed(1)}  depthMin=$${depthMin.toFixed(0)}  net=+${(netSpreadFrac*100).toFixed(4)}%  reason=${armedReason}  regime=${regime}`;
       console.log(`\n  [STATE] ${msg}   ${fmtTime()}\n`);
       appendLog(logPath, {
         ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
         type: 'state_transition', from: 'PASSIVE', to: 'ARMED', block: blockNumber,
+        windowId, windowStartTs,
         uniPrice: +snap.uniPrice.toFixed(6), tickDistance, priceDistanceBps: +priceDistanceBps.toFixed(1),
         depthMin: +depthMin.toFixed(0), netSpreadFrac: +netSpreadFrac.toFixed(6),
-        scannerTier, armedReason,
+        scannerTier, armedReason, regime,
       });
     }
     else if (state === 'ARMED' && !shouldArm) {
@@ -794,13 +825,22 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
                           : netSpreadFrac <= 0    ? 'negative_net'
                           : depthMin < ARM_MIN_DEPTH_USD ? 'depth_below_arm_floor'
                           :                          'quality_gate_fail';
-      console.log(`\n  [STATE] ◉ ARMED → ○ PASSIVE  ${blockedReason}  tickDist=${tickDistance}  priceBps=${priceDistanceBps.toFixed(1)}  depthMin=$${depthMin.toFixed(0)}   ${fmtTime()}\n`);
+      const windowEndTs  = new Date().toISOString();
+      const windowDurMs  = windowStartTs
+        ? (new Date(windowEndTs) - new Date(windowStartTs))
+        : null;
+      const regime = regimeLabel(windowStartDepth);
+      console.log(`\n  [STATE] ◉ ARMED → ○ PASSIVE  ${blockedReason}  tickDist=${tickDistance}  priceBps=${priceDistanceBps.toFixed(1)}  depthMin=$${depthMin.toFixed(0)}  regime=${regime}  dur=${windowDurMs != null ? Math.round(windowDurMs/1000)+'s' : '?'}   ${fmtTime()}\n`);
       appendLog(logPath, {
-        ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
+        ts: windowEndTs, source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
         type: 'state_transition', from: 'ARMED', to: 'PASSIVE', block: blockNumber,
+        windowId, windowStartTs, windowEndTs, windowDurationMs: windowDurMs,
         uniPrice: +snap.uniPrice.toFixed(6), tickDistance, priceDistanceBps: +priceDistanceBps.toFixed(1),
-        depthMin: +depthMin.toFixed(0), netSpreadFrac: +netSpreadFrac.toFixed(6), blockedReason,
+        depthMin: +depthMin.toFixed(0), netSpreadFrac: +netSpreadFrac.toFixed(6),
+        blockedReason, regime,
       });
+      windowStartTs    = null;
+      windowStartDepth = null;
     }
 
     // ── LAYER 3: READY_CHECK (within ARMED) ──────────────────────────────────
@@ -859,7 +899,9 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
             : snap.uniDepth >= 5_000              ? 'thin_liquidity'
             : 'blocked_liquidity')
           : null,
+        regime             : snap ? regimeLabel(snap.uniDepth) : null,
         readyCheckCount,
+        windowId           : state === 'ARMED' ? windowId : null,
       };
       console.log(`  ── heartbeat  ${uptimeMin}min  ticks=${stats.ticks}  errors=${stats.errors}  state=${state}  armed=${stats.armedCount}  ready=${stats.readySignals} ──`);
       appendLog(logPath, hbRecord);
@@ -900,8 +942,8 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
         const signal = emitSignal(signalType, snap, simResult, gm, thresholds);
         if (signalType === 'EXECUTION_READY') stats.readySignals++;
 
-        // Log both the signal and the full sim detail
-        appendLog(logPath, { ...signal, simResults: simResult.all, gates: simResult.gates });
+        // Log signal with full sim detail and window correlation
+        appendLog(logPath, { ...signal, windowId, simResults: simResult.all, gates: simResult.gates });
 
       } catch (e) {
         console.error(`  [sim] ERROR: ${e.message}`);
@@ -934,6 +976,12 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
 // ─────────────────────────────────────────────────────────────────────────────
 function fmtTime() { return new Date().toISOString().slice(11, 19); }
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+/** Classify depth into regime for logging and analysis. */
+function regimeLabel(depthUsd) {
+  if (depthUsd == null) return 'unknown';
+  return depthUsd >= REGIME_SURGE_THRESHOLD ? 'surge' : 'base';
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SELF-RECOVERY HELPERS
