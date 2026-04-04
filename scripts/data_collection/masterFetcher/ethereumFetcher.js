@@ -227,93 +227,18 @@ const UNISWAP_V3_POOLS = [
     expectedToken1: USDC,
   },
 
-  // ── ETH/USDT 0.01% ────────────────────────────────────────────────────────────
-  {
-    outputPair:     'ETH/USDT',
-    pool:           '0xC5aF84701f98Fa483eCe78aF83F11b6C38ACA71d',
-    decimals0:      18,
-    decimals1:      6,
-    fee:            100,
-    priceMode:      'direct',
-    sanityMin:      500,
-    sanityMax:      20000,
-    expectedToken0: WETH,
-    expectedToken1: USDT,
-  },
+  // ETH/USDT 0.01% — EXCLUDED: 0xC5aF8470... failed all RPC hedging (2026-04-04).
+  // Remove until confirmed via factory.getPool() probe.
 
 ];
 
 // ─── SUSHISWAP V3 POOLS (Ethereum mainnet) ─────────────────────────────────────
-// SushiSwap V3 factory (Ethereum): 0xbACEB8eC6b9355Dfc0269C18bac9d6E2Bdc29C4f
-// All pools confirmed via factory.getPool() + depth probe (2026-04-04).
-// Same slot0+liquidity interface as UniV3 — fetched via fetchUniV3Pool().
-
+// PENDING: SushiSwap V3 factory on Ethereum not yet confirmed.
+// Factory candidate 0xbACEB8eC... returned RPC exhausted on all calls (2026-04-04).
+// Pools will be added once factory address is confirmed via sushi_eth_factory_probe.js.
+// SushiSwap will be wired in the next patch after factory confirmation.
 const SUSHISWAP_V3_POOLS = [
-
-  // ETH/USDC 0.05% — cross-venue primary
-  {
-    outputPair:     'ETH/USDC',
-    pool:           '0xB891afB5D7c2C384ce5A9DF7e710c8EF9ebcB266',
-    decimals0:      6,
-    decimals1:      18,
-    fee:            500,
-    priceMode:      'invert',
-    sanityMin:      500,
-    sanityMax:      20000,
-    venue:          'sushiswap_v3',
-    source:         'sushiswap_v3_ethereum_onchain',
-    expectedToken0: USDC,
-    expectedToken1: WETH,
-  },
-
-  // ETH/USDC 0.30%
-  {
-    outputPair:     'ETH/USDC',
-    pool:           '0x87C7056BBE6084f03304196Be51c6B90B6d85Aa2',
-    decimals0:      6,
-    decimals1:      18,
-    fee:            3000,
-    priceMode:      'invert',
-    sanityMin:      500,
-    sanityMax:      20000,
-    venue:          'sushiswap_v3',
-    source:         'sushiswap_v3_ethereum_onchain',
-    expectedToken0: USDC,
-    expectedToken1: WETH,
-  },
-
-  // ETH/USDT 0.05%
-  {
-    outputPair:     'ETH/USDT',
-    pool:           '0x3D9Bd4A01737C8f3b9BDAEe940b26e5e52e1e34a',
-    decimals0:      18,
-    decimals1:      6,
-    fee:            500,
-    priceMode:      'direct',
-    sanityMin:      500,
-    sanityMax:      20000,
-    venue:          'sushiswap_v3',
-    source:         'sushiswap_v3_ethereum_onchain',
-    expectedToken0: WETH,
-    expectedToken1: USDT,
-  },
-
-  // WBTC/USDC 0.30%
-  {
-    outputPair:     'WBTC/USDC',
-    pool:           '0xa33F9b0e4F9A8aB1E6dB2de44B87b5e53a38Ae3a',
-    decimals0:      8,
-    decimals1:      6,
-    fee:            3000,
-    priceMode:      'direct',
-    sanityMin:      10000,
-    sanityMax:      100000,
-    venue:          'sushiswap_v3',
-    source:         'sushiswap_v3_ethereum_onchain',
-    expectedToken0: WBTC,
-    expectedToken1: USDC,
-  },
-
+  // PLACEHOLDER — empty until factory confirmed. Fetcher runs cleanly without Sushi.
 ];
 
 // ─── HELPERS ───────────────────────────────────────────────────────────────────
