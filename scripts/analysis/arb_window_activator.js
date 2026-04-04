@@ -211,8 +211,21 @@ const REGIME_SURGE_THRESHOLD = 100_000;  // depth above this = 'surge', below = 
 // ─────────────────────────────────────────────────────────────────────────────
 // GAS MODEL
 // ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// GAS MODEL (Boss ruling 2026-04-04)
+// Canonical model = 1 atomic on-chain transaction (flash-loan-style multicall).
+// Three profiles for sensitivity analysis — baseline used at runtime.
+// Previous model (500k) was a single light read; understated real execution cost.
+// ─────────────────────────────────────────────────────────────────────────────
+const GAS_PROFILES = {
+  atomic_optimistic: 700_000,   // optimistic atomic multicall
+  atomic_baseline  : 900_000,   // canonical baseline for signal classification
+  atomic_stressed  : 1_200_000, // stressed / complex routing
+};
+const GAS_UNITS_ACTIVE = GAS_PROFILES.atomic_baseline;  // runtime default
+
 const GAS_MANUAL = {
-  gasPriceGwei: 0.01, estimatedUnits: 500_000, ethPriceUSD: 2000, source: 'manual',
+  gasPriceGwei: 0.01, estimatedUnits: GAS_UNITS_ACTIVE, ethPriceUSD: 2000, source: 'manual',
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -228,7 +241,7 @@ async function fetchLiveGasModel(rpc) {
     const fd  = res.result;
     const wei = fd.gasPrice ?? fd.maxFeePerGas ?? fd.lastBaseFeePerGas;
     if (!wei) throw new Error('no gasPrice');
-    return { gasPriceGwei: Number(wei) / 1e9, estimatedUnits: 500_000, ethPriceUSD: 2000, source: 'live' };
+    return { gasPriceGwei: Number(wei) / 1e9, estimatedUnits: GAS_UNITS_ACTIVE, ethPriceUSD: 2000, source: 'live' };
   } catch (e) {
     process.stderr.write(`  [gas] ${e.message} — manual fallback\n`);
     return { ...GAS_MANUAL, source: 'manual_fallback' };
@@ -412,6 +425,7 @@ function simulateOne(detected, delayed, size, gm) {
     uniPrice: +delayed.uniPrice.toFixed(6), camPrice: +delayed.camPrice.toFixed(6),
     direction: delayed.uniPrice > delayed.camPrice ? 'sell_uni_buy_camelot' : 'buy_uni_sell_camelot',
     status: finalEdge > 0.05 ? 'PROFITABLE' : finalEdge > 0 ? 'MARGINAL' : 'LOST',
+    economicStatus: economicStatus(+finalEdge.toFixed(5)),
   };
 }
 
@@ -454,7 +468,7 @@ async function runSimulation(snap, rpc, gm) {
 // ─────────────────────────────────────────────────────────────────────────────
 // EXECUTION_READY SIGNAL EMITTER
 // ─────────────────────────────────────────────────────────────────────────────
-function emitSignal(type, snap, simResult, gm, thresholds) {
+function emitSignal(type, snap, simResult, gm, thresholds, regime) {
   const { all, matrix } = simResult;
   const prof = all.filter(r => r.status !== 'LOST' && r.delayBlocks === 0);
   const best = prof.length > 0 ? prof.reduce((a, b) => a.finalEdge > b.finalEdge ? a : b) : null;
@@ -466,11 +480,13 @@ function emitSignal(type, snap, simResult, gm, thresholds) {
     uniPrice:         +snap.uniPrice.toFixed(6),
     camPrice:         +snap.camPrice.toFixed(6),
     uniDepth:         +snap.uniDepth.toFixed(2),
-    regime:           regimeLabel(snap.uniDepth),
+    regime:           regime || regimeLabel(snap.uniDepth),
     spread:           +spreadPct(snap.uniPrice, snap.camPrice).toFixed(5),
     bestSize:         best ? best.size : null,
     bestDelay:        best ? best.delayBlocks : null,
     finalEdge:        best ? best.finalEdge : null,
+    economicStatus:   economicStatus(best ? best.finalEdge : null),  // Boss ruling 2026-04-04
+    gasUnits:         GAS_UNITS_ACTIVE,
     gasSource:        gm.source,
     gasPriceGwei:     +gm.gasPriceGwei.toFixed(6),
     armedThreshold:   +thresholds.armedPrice.toFixed(6),
@@ -482,12 +498,13 @@ function emitSignal(type, snap, simResult, gm, thresholds) {
       const r = matrix[0]?.[sz];
       if (!r) return { size: sz, status: 'missing' };
       return {
-        size:      sz,
-        finalEdge: r.finalEdge,
-        slippage:  r.slippage,
-        feeBurden: r.feeBurden,
-        gasPct:    r.gasPct,
-        status:    r.status,
+        size:          sz,
+        finalEdge:     r.finalEdge,
+        economicStatus:r.economicStatus,
+        slippage:      r.slippage,
+        feeBurden:     r.feeBurden,
+        gasPct:        r.gasPct,
+        status:        r.status,
       };
     }),
   };
@@ -561,6 +578,12 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
   let windowId        = 0;    // monotonic window counter for log correlation
   let windowStartTs   = null; // ISO timestamp when current ARMED window opened
   let windowStartDepth= null; // depthMin at window open — regime classification anchor
+
+  // Persistent depth regime tracking (Boss ruling 2026-04-04)
+  // Surge depth (>$100k) that holds for >2 hours = 'persistent_depth_regime'
+  const PERSIST_SURGE_MS = 2 * 60 * 60 * 1000;  // 2 hours
+  let surgeEnteredAt  = null;  // timestamp when depth first crossed REGIME_SURGE_THRESHOLD
+  let persistentDepth = false; // true once surge has held for >2 hours
 
   // Self-recovery state (Boss ruling 2026-03-25)
   let providerRebuilds = 0;
@@ -786,6 +809,31 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
                         : depthMin >= ARM_MIN_DEPTH_USD   ? 'near_threshold'  // $7k–$10k — arm floor
                         : depthMin >= 5_000               ? 'thin_liquidity'
                         : 'blocked_liquidity';
+
+    // ── PERSISTENT DEPTH REGIME TRACKER (Boss ruling 2026-04-04) ──────────────
+    // Surge depth (>$100k) that holds for >2h = 'persistent_depth_regime'.
+    // Fires once; resets if depth drops below threshold.
+    if (depthMin >= REGIME_SURGE_THRESHOLD) {
+      if (!surgeEnteredAt) surgeEnteredAt = Date.now();
+      if (!persistentDepth && (Date.now() - surgeEnteredAt) >= PERSIST_SURGE_MS) {
+        persistentDepth = true;
+        const pdRecord = {
+          ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
+          type: 'persistent_depth_regime', depthUsd: +depthMin.toFixed(0),
+          surgeEnteredAt: new Date(surgeEnteredAt).toISOString(),
+          heldMs: Date.now() - surgeEnteredAt,
+        };
+        console.log(`\n  [REGIME] ★ persistent_depth_regime confirmed — surge depth held >2h  depth=$${depthMin.toFixed(0)}\n`);
+        appendLog(logPath, pdRecord);
+      }
+    } else {
+      // Depth dropped below surge threshold — reset tracker
+      if (surgeEnteredAt) {
+        surgeEnteredAt  = null;
+        persistentDepth = false;
+      }
+    }
+    const activeRegime = persistentDepth ? 'persistent_depth_regime' : regimeLabel(depthMin);
     const isQualified   = (
                             scannerTier === 'candidate'      ||
                             scannerTier === 'near_threshold' ||
@@ -804,7 +852,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
       windowStartTs    = new Date().toISOString();
       windowStartDepth = +depthMin.toFixed(0);
       const armedReason = tickDistance <= ARM_TICK_DISTANCE ? 'proximity_tick' : 'proximity_price';
-      const regime = regimeLabel(depthMin);
+      const regime = activeRegime;
       const msg = `○ PASSIVE → ◉ ARMED  tickDist=${tickDistance}  priceBps=${priceDistanceBps.toFixed(1)}  depthMin=$${depthMin.toFixed(0)}  net=+${(netSpreadFrac*100).toFixed(4)}%  reason=${armedReason}  regime=${regime}`;
       console.log(`\n  [STATE] ${msg}   ${fmtTime()}\n`);
       appendLog(logPath, {
@@ -829,7 +877,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
       const windowDurMs  = windowStartTs
         ? (new Date(windowEndTs) - new Date(windowStartTs))
         : null;
-      const regime = regimeLabel(windowStartDepth);
+      const regime = persistentDepth ? 'persistent_depth_regime' : regimeLabel(windowStartDepth);
       console.log(`\n  [STATE] ◉ ARMED → ○ PASSIVE  ${blockedReason}  tickDist=${tickDistance}  priceBps=${priceDistanceBps.toFixed(1)}  depthMin=$${depthMin.toFixed(0)}  regime=${regime}  dur=${windowDurMs != null ? Math.round(windowDurMs/1000)+'s' : '?'}   ${fmtTime()}\n`);
       appendLog(logPath, {
         ts: windowEndTs, source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
@@ -899,7 +947,8 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
             : snap.uniDepth >= 5_000              ? 'thin_liquidity'
             : 'blocked_liquidity')
           : null,
-        regime             : snap ? regimeLabel(snap.uniDepth) : null,
+        regime             : activeRegime,
+        persistentDepth    : persistentDepth,
         readyCheckCount,
         windowId           : state === 'ARMED' ? windowId : null,
       };
@@ -939,7 +988,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
                          : profitable.length > 0 ? 'SIMULATION_MARGINAL'
                          :                          'SIMULATION_LOST';
 
-        const signal = emitSignal(signalType, snap, simResult, gm, thresholds);
+        const signal = emitSignal(signalType, snap, simResult, gm, thresholds, activeRegime);
         if (signalType === 'EXECUTION_READY') stats.readySignals++;
 
         // Log signal with full sim detail and window correlation
@@ -981,6 +1030,26 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 function regimeLabel(depthUsd) {
   if (depthUsd == null) return 'unknown';
   return depthUsd >= REGIME_SURGE_THRESHOLD ? 'surge' : 'base';
+}
+
+/**
+ * Economic status classification (Boss ruling 2026-04-04).
+ * Separate from technical status — 'EXECUTION_READY' can still fire while
+ * economicStatus is 'dust_positive'. Preserves signal history without
+ * conflating technical viability with business viability.
+ *
+ * Thresholds (at $200 optimal size):
+ *   economically_viable   > 0.05%  edge  → gross > $0.10
+ *   economically_marginal 0.01–0.05%      → gross $0.02–$0.10
+ *   dust_positive         0–0.01%         → gross < $0.02
+ *   negative              ≤ 0%
+ */
+function economicStatus(finalEdgePct) {
+  if (finalEdgePct == null)  return 'unknown';
+  if (finalEdgePct <= 0)     return 'negative';
+  if (finalEdgePct < 0.01)   return 'dust_positive';
+  if (finalEdgePct < 0.05)   return 'economically_marginal';
+  return 'economically_viable';
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
