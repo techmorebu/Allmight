@@ -118,7 +118,7 @@ const UNISWAP_V3_POOLS = [
     fee:            500,
     priceMode:      'direct',
     sanityMin:      20000,
-    sanityMax:      200000,
+    sanityMax:      100000,
     expectedToken0: '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f',  // WBTC
     expectedToken1: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',  // USDT
   },
@@ -254,7 +254,7 @@ const UNISWAP_V3_POOLS = [
     fee:            500,
     priceMode:      'direct',
     sanityMin:      10000,
-    sanityMax:      200000,
+    sanityMax:      100000,
     expectedToken0: '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f',  // WBTC
     expectedToken1: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',  // native USDC
   },
@@ -269,7 +269,7 @@ const UNISWAP_V3_POOLS = [
     fee:            3000,
     priceMode:      'direct',
     sanityMin:      10000,
-    sanityMax:      200000,
+    sanityMax:      100000,
     expectedToken0: '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f',  // WBTC
     expectedToken1: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',  // native USDC
   },
@@ -284,7 +284,7 @@ const UNISWAP_V3_POOLS = [
     fee:            3000,
     priceMode:      'direct',
     sanityMin:      10000,
-    sanityMax:      200000,
+    sanityMax:      100000,
     expectedToken0: '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f',  // WBTC
     expectedToken1: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',  // USDT
   },
@@ -432,7 +432,7 @@ const CAMELOT_V3_POOLS = [
     decimals1:      6,
     priceMode:      'direct',
     sanityMin:      10000,
-    sanityMax:      200000,
+    sanityMax:      100000,
     expectedToken0: '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f',  // WBTC
     expectedToken1: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',  // native USDC
   },
@@ -514,7 +514,7 @@ const SUSHISWAP_V3_POOLS = [
     fee:            500,
     priceMode:      'direct',
     sanityMin:      10000,
-    sanityMax:      200000,
+    sanityMax:      100000,
     venue:          'sushiswap_v3',
     source:         'sushiswap_v3_arbitrum_onchain',
     expectedToken0: '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f',  // WBTC
@@ -529,7 +529,7 @@ const SUSHISWAP_V3_POOLS = [
     fee:            500,
     priceMode:      'direct',
     sanityMin:      10000,
-    sanityMax:      200000,
+    sanityMax:      100000,
     venue:          'sushiswap_v3',
     source:         'sushiswap_v3_arbitrum_onchain',
     expectedToken0: '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f',  // WBTC
@@ -563,6 +563,40 @@ const SUSHISWAP_V3_POOLS = [
     venue:          'sushiswap_v3',
     source:         'sushiswap_v3_arbitrum_onchain',
     expectedToken0: '0x912CE59144191C1204E64559FE8253a0e49E6548',  // ARB
+    expectedToken1: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',  // native USDC
+  },
+];
+
+// ─── RAMSES V2 CL POOLS ───────────────────────────────────────────────────────
+// Ramses V2 uses UniV3-compatible slot0()+liquidity() interface — same as SushiSwap.
+// Fetched via fetchUniV3Pool() with venue/source overrides in cfg.
+// Factory: 0xAA2cd7477c451E703f3B9Ba5663334914763edF8 (confirmed 2026-04-04)
+// Active fee tiers on Arbitrum: 250, 500, 3000, 10000 (50/100/2500 revert — not registered)
+//
+// Depth probe results (2026-04-04, block 448881084):
+//   ETH/USDC fee=250  (0x...772bE): $0    — ghost pool, stale sqrtPrice
+//   ETH/USDT fee=250  (0x...dBE):   $9    — thin, skip
+//   ETH/USDC fee=500  (0x...4110):  $225.8k — CANDIDATE (only viable pool)
+//   ETH/USDT fee=500  (0x...dbf0):  $22   — thin
+//   ETH/USDC fee=3000 (0x...bf81):  $0    — ghost, price=$2550 (stale)
+//   ETH/USDT fee=3000 (0x...400A):  $0    — ghost, price=$2919 (stale)
+//   ETH/USDC fee=10k  (0x...94Fb):  $0    — ghost, price=$104  (stale)
+// WBTC/USDC, WBTC/USDT, ARB/USDC: all $0 or trace — excluded
+const RAMSES_V2_POOLS = [
+  // ETH/USDC 0.05% — only viable Ramses pool. Cross-venue with UniV3 + Camelot V3.
+  // token0=WETH (0x82aF < 0xaf88) → dec0=18, priceMode=direct. Depth $225.8k confirmed.
+  {
+    outputPair:     'ETH/USDC',
+    pool:           '0x30AFBcF9458c3131A6d051C621E307E6278E4110',
+    decimals0:      18,
+    decimals1:      6,
+    fee:            500,
+    priceMode:      'direct',
+    sanityMin:      500,
+    sanityMax:      20000,
+    venue:          'ramses_v2',
+    source:         'ramses_v2_arbitrum_onchain',
+    expectedToken0: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',  // WETH
     expectedToken1: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',  // native USDC
   },
 ];
@@ -827,7 +861,7 @@ async function arbitrumFetcher() {
         prices: [],
         chain: CHAIN_ID,
         chain_id: CHAIN_NUM,
-        venues: ['uniswap_v3', 'sushiswap_v3', 'camelot_v2', 'camelot_v3'],
+        venues: ['uniswap_v3', 'sushiswap_v3', 'ramses_v2', 'camelot_v2', 'camelot_v3'],
         timestamp: startedIso,
         durationMs: Date.now() - startedAt,
         blockNumber: null,
@@ -837,29 +871,14 @@ async function arbitrumFetcher() {
         endpointIdsSeen: [],
         endpointsSeen: [],
         stats: {
-          totalPools: UNISWAP_V3_POOLS.length + SUSHISWAP_V3_POOLS.length + CAMELOT_POOLS.length + CAMELOT_V3_POOLS.length,
+          totalPools: UNISWAP_V3_POOLS.length + SUSHISWAP_V3_POOLS.length + RAMSES_V2_POOLS.length + CAMELOT_POOLS.length + CAMELOT_V3_POOLS.length,
           successCount: 0,
-          failureCount: UNISWAP_V3_POOLS.length + SUSHISWAP_V3_POOLS.length + CAMELOT_POOLS.length + CAMELOT_V3_POOLS.length,
-          uniswapV3: {
-            total: UNISWAP_V3_POOLS.length,
-            success: 0,
-            failed: UNISWAP_V3_POOLS.length,
-          },
-          sushiswapV3: {
-            total: SUSHISWAP_V3_POOLS.length,
-            success: 0,
-            failed: SUSHISWAP_V3_POOLS.length,
-          },
-          camelot: {
-            total: CAMELOT_POOLS.length,
-            success: 0,
-            failed: CAMELOT_POOLS.length,
-          },
-          camelotV3: {
-            total: CAMELOT_V3_POOLS.length,
-            success: 0,
-            failed: CAMELOT_V3_POOLS.length,
-          },
+          failureCount: UNISWAP_V3_POOLS.length + SUSHISWAP_V3_POOLS.length + RAMSES_V2_POOLS.length + CAMELOT_POOLS.length + CAMELOT_V3_POOLS.length,
+          uniswapV3: { total: UNISWAP_V3_POOLS.length, success: 0, failed: UNISWAP_V3_POOLS.length },
+          sushiswapV3: { total: SUSHISWAP_V3_POOLS.length, success: 0, failed: SUSHISWAP_V3_POOLS.length },
+          ramsesV2: { total: RAMSES_V2_POOLS.length, success: 0, failed: RAMSES_V2_POOLS.length },
+          camelot: { total: CAMELOT_POOLS.length, success: 0, failed: CAMELOT_POOLS.length },
+          camelotV3: { total: CAMELOT_V3_POOLS.length, success: 0, failed: CAMELOT_V3_POOLS.length },
         },
         failures: [
           {
@@ -885,6 +904,12 @@ async function arbitrumFetcher() {
     (cfg) => fetchUniV3Pool(cfg, blockNumber)  // identical interface — venue/source come from cfg
   );
 
+  const ramsesResults = await mapWithConcurrency(
+    RAMSES_V2_POOLS,
+    FETCH_CONCURRENCY,
+    (cfg) => fetchUniV3Pool(cfg, blockNumber)  // identical slot0+liquidity interface — venue/source from cfg
+  );
+
   const camelotResults = await mapWithConcurrency(
     CAMELOT_POOLS,
     FETCH_CONCURRENCY,
@@ -897,7 +922,7 @@ async function arbitrumFetcher() {
     (cfg) => fetchCamelotV3Pool(cfg, blockNumber)
   );
 
-  const combined = [...uniResults, ...sushiResults, ...camelotResults, ...camelotV3Results];
+  const combined = [...uniResults, ...sushiResults, ...ramsesResults, ...camelotResults, ...camelotV3Results];
 
   const priceRows = combined
     .filter((x) => x && x.ok && x.price)
@@ -931,7 +956,7 @@ async function arbitrumFetcher() {
       prices: priceRows,
       chain: CHAIN_ID,
       chain_id: CHAIN_NUM,
-      venues: ['uniswap_v3', 'sushiswap_v3', 'camelot_v2', 'camelot_v3'],
+      venues: ['uniswap_v3', 'sushiswap_v3', 'ramses_v2', 'camelot_v2', 'camelot_v3'],
       timestamp: startedIso,
       durationMs,
       blockNumber,
@@ -941,29 +966,14 @@ async function arbitrumFetcher() {
       endpointIdsSeen,
       endpointsSeen,
       stats: {
-        totalPools: UNISWAP_V3_POOLS.length + SUSHISWAP_V3_POOLS.length + CAMELOT_POOLS.length + CAMELOT_V3_POOLS.length,
+        totalPools: UNISWAP_V3_POOLS.length + SUSHISWAP_V3_POOLS.length + RAMSES_V2_POOLS.length + CAMELOT_POOLS.length + CAMELOT_V3_POOLS.length,
         successCount,
         failureCount,
-        uniswapV3: {
-          total: UNISWAP_V3_POOLS.length,
-          success: uniResults.filter((x) => x && x.ok).length,
-          failed: uniResults.filter((x) => !x || !x.ok).length,
-        },
-        sushiswapV3: {
-          total: SUSHISWAP_V3_POOLS.length,
-          success: sushiResults.filter((x) => x && x.ok).length,
-          failed: sushiResults.filter((x) => !x || !x.ok).length,
-        },
-        camelot: {
-          total: CAMELOT_POOLS.length,
-          success: camelotResults.filter((x) => x && x.ok).length,
-          failed: camelotResults.filter((x) => !x || !x.ok).length,
-        },
-        camelotV3: {
-          total: CAMELOT_V3_POOLS.length,
-          success: camelotV3Results.filter((x) => x && x.ok).length,
-          failed: camelotV3Results.filter((x) => !x || !x.ok).length,
-        },
+        uniswapV3:  { total: UNISWAP_V3_POOLS.length,  success: uniResults.filter(x=>x?.ok).length,     failed: uniResults.filter(x=>!x?.ok).length },
+        sushiswapV3:{ total: SUSHISWAP_V3_POOLS.length, success: sushiResults.filter(x=>x?.ok).length,   failed: sushiResults.filter(x=>!x?.ok).length },
+        ramsesV2:   { total: RAMSES_V2_POOLS.length,    success: ramsesResults.filter(x=>x?.ok).length,  failed: ramsesResults.filter(x=>!x?.ok).length },
+        camelot:    { total: CAMELOT_POOLS.length,      success: camelotResults.filter(x=>x?.ok).length,  failed: camelotResults.filter(x=>!x?.ok).length },
+        camelotV3:  { total: CAMELOT_V3_POOLS.length,   success: camelotV3Results.filter(x=>x?.ok).length,failed: camelotV3Results.filter(x=>!x?.ok).length },
       },
       failures,
     },
