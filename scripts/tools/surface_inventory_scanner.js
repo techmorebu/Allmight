@@ -101,6 +101,10 @@ const POOL_META = {
   // Factory corrected: 0x1a3c9B1d2F0529D97f2afC5136Cc23e58f1FD35B
   '0x7cccba38e2d959fe135e79aebb57ccb27b128358': { pair: 'ETH/USDT',   dec0: 18, dec1: 6,  quoteToken: 'USDT'  },  // Camelot V3
   '0x02be4f98fc9ee4f612a139d84494cbf6c6c7f97f': { pair: 'WBTC/USDC',  dec0: 8,  dec1: 6,  quoteToken: 'USDC'  },  // Camelot V3
+  // ── Ramses V2 CL pools (2026-04-04) ─────────────────────────────────────
+  // Factory 0xAA2cd7...edF8 confirmed. Depth probe: only 1 pool viable.
+  // Active tiers: 250/500/3000/10000. Ghost pools excluded (stale sqrtPrice).
+  '0x30afbcf9458c3131a6d051c621e307e6278e4110': { pair: 'ETH/USDC',   dec0: 18, dec1: 6,  quoteToken: 'USDC'  },  // Ramses 0.05% $225.8k
 };
 
 // ─── THRESHOLDS ───────────────────────────────────────────────────────────────
