@@ -436,6 +436,26 @@ const CAMELOT_V3_POOLS = [
     expectedToken0: '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f',  // WBTC
     expectedToken1: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',  // native USDC
   },
+
+  // ── DAI/USDC (Boss ruling 2026-04-04) ────────────────────────────────────────
+  // Discovered via multi_pair_pool_discovery.js --venue camelot_v3.
+  // Depth: $808M active-tick — largest pool in entire system inventory.
+  // Fee: 0.005% — system minimum fee tier.
+  // Combined fee burden with UniV3 DAI/USDC 0.01%: 0.015% (system record low).
+  // Classification: WATCHLIST (HIGH VALUE, EVENT-DRIVEN)
+  // token0=USDC(6dec, 0xaf88), token1=DAI(18dec, 0xDA10) — USDC sorts lower on Arbitrum.
+  // priceMode='direct' → DAI per USDC ≈ 1.000013 (same convention as existing DAI/USDC pools).
+  {
+    outputPair:     'DAI/USDC',
+    pool:           '0x45FaE8D0D2acE73544baab452f9020925AfCCC75',
+    decimals0:      6,
+    decimals1:      18,
+    priceMode:      'direct',
+    sanityMin:      0.9,
+    sanityMax:      1.1,
+    expectedToken0: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',  // native USDC
+    expectedToken1: '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1',  // DAI
+  },
 ];
 
 // ─── SUSHISWAP V3 POOLS ───────────────────────────────────────────────────────

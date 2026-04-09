@@ -130,6 +130,34 @@ const PAIR_CONFIGS = {
     staticCurrentTick:  null,
     staticCurrentPrice: null,
   },
+
+  // ── ETH/USDC-RAMSES (Boss ruling 2026-04-04) ──────────────────────────────
+  // VENUE INERTIA surface — Ramses V2 reprices slower than UniV3/Camelot.
+  // Timeseries: CONFIRMED promotion scan #3, net +0.0169% after compression.
+  // Peak spread at dislocation: +0.097% (Ramses frozen, market converged upward).
+  // Mechanism: LP range imbalance causes Ramses to lag market repricing.
+  // Classification: CANDIDATE (STRUCTURAL, UNDER VALIDATION)
+  //
+  // KEY: Ramses V2 uses slot0() like UniV3, NOT globalState() like Algebra.
+  // camelotType:'univ3' instructs readBothPools() to call slot0() on pool B.
+  // camelotFeeFrac = 0.0005 (Ramses 0.05% fixed fee — no dynamic read needed).
+  // tickSpacing = 1 (UniV3 0.01% pool is the tick-map source).
+  'ETH/USDC-RAMSES': {
+    univ3Pool:          '0x6f38e884725a116C9C7fBF208e79FE8828a2595F',  // UniV3 0.01% ETH/USDC
+    univ3FeeFrac:       0.0001,
+    camelotPool:        '0x30AFBcF9458c3131A6d051C621E307E6278E4110',  // Ramses V2 0.05%
+    camelotFeeFrac:     0.0005,  // fixed — Ramses fee confirmed 0.05%, no globalState() needed
+    camelotType:        'univ3', // DISPATCH FLAG: use slot0() not globalState() for pool B
+    tickSpacing:        1,       // UniV3 0.01% tick spacing (tick-map source)
+    dec0:               18,      // WETH
+    dec1:               6,       // USDC
+    staticArmedPrice:   1800.00, // informational fallback — always use --remap-ticks
+    staticHighTick:     null,
+    staticHighPrice:    null,
+    staticHighDepth:    null,
+    staticCurrentTick:  null,
+    staticCurrentPrice: null,
+  },
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -140,6 +168,7 @@ let UNIV3_POOL       = '';
 let UNIV3_FEE_FRAC   = 0;
 let CAMELOT_POOL     = '';
 let CAMELOT_FEE_FRAC = 0;
+let CAMELOT_TYPE     = 'algebra';  // 'algebra' → globalState() | 'univ3' → slot0()
 let TICK_SPACING     = 10;
 let DEC0 = 18;
 let DEC1 = 6;
@@ -191,7 +220,13 @@ const HEARTBEAT_TICKS           =  200;        // confirmed_default: emit heartb
 const READ_TIMEOUT_MS           =  8_000;   // confirmed_default: outer hard timeout per loop read
 const CONSECUTIVE_FAIL_WARN     =  3;       // confirmed_default: log warning at this many consecutive failures
 const CONSECUTIVE_FAIL_REBUILD  =  5;       // confirmed_default: rebuild provider after this many
-const MAX_PROVIDER_REBUILDS     =  3;       // confirmed_default: exit non-zero after this many rebuild attempts
+const MAX_PROVIDER_REBUILDS     =  5;       // Boss ruling 2026-04-06: increased from 3 → 5 for longer runs
+// Exponential backoff between rebuild attempts (Boss ruling 2026-04-06)
+// 1st: 2s, 2nd: 4s, 3rd: 8s, 4th: 16s, 5th: 30s (capped)
+const REBUILD_BACKOFF_BASE_MS   = 2_000;
+const REBUILD_BACKOFF_CAP_MS    = 30_000;
+// After this many rebuilds, force SAFE profile (degraded mode — Boss ruling 2026-04-06)
+const REBUILD_DEGRADED_AFTER    = 3;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SIM CONFIG
@@ -222,10 +257,84 @@ const GAS_PROFILES = {
   atomic_baseline  : 900_000,   // canonical baseline for signal classification
   atomic_stressed  : 1_200_000, // stressed / complex routing
 };
-const GAS_UNITS_ACTIVE = GAS_PROFILES.atomic_baseline;  // runtime default
+// --gas-profile flag selects profile. Default = atomic_baseline (conservative).
+// Use --gas-profile atomic_optimistic for 700k comparison runs (Boss ruling 2026-04-05).
+const GAS_PROFILE_ARG = (() => {
+  const i = process.argv.indexOf('--gas-profile');
+  if (i !== -1 && process.argv[i+1]) return process.argv[i+1];
+  const eq = process.argv.find(a => a.startsWith('--gas-profile='));
+  return eq ? eq.split('=')[1] : 'atomic_baseline';
+})();
+const GAS_UNITS_ACTIVE = GAS_PROFILES[GAS_PROFILE_ARG] ?? GAS_PROFILES.atomic_baseline;
 
 const GAS_MANUAL = {
   gasPriceGwei: 0.01, estimatedUnits: GAS_UNITS_ACTIVE, ethPriceUSD: 2000, source: 'manual',
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// REGIME-BASED PROFILE SELECTOR v4 (Boss directive 2026-04-07)
+// ─────────────────────────────────────────────────────────────────────────────
+// v3 → v4 change: data from three runs proved 0.13% is the hard viability
+// boundary for ETH/USDC-Ramses. Below 0.13%: 0/56 viable signals.
+// Above 0.13%: 145/232 viable (62%).
+//
+// NEW RULE: spread floor is a SURFACE LAW, not a profile preference.
+// All profiles now share the same minimum viable spread.
+// Profiles differ ONLY by timing, stability, and eco requirements.
+//
+// Profile intent:
+//   SAFE       → precision mode. Fail-closed default. Post-rebuild / startup / degraded.
+//   BALANCED   → bridge mode. Reduce missed signals inside proven viable regime.
+//   AGGRESSIVE → event-capture mode. Fast response, same hard floor.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// SURFACE LAW — do not move this inside profiles or make it configurable at runtime.
+// Data-proven: 0/56 signals viable below this threshold (v2+v3 runs, 2026-04-07).
+// UNITS: pct form (0.13 = 0.13%) — matches signal.spread field which is also pct form.
+// DO NOT use fraction form (0.0013) — the gate comparison will always pass (bug found v4).
+const MIN_VIABLE_SPREAD_PCT  = 0.13;   // 0.13% — hard viability floor, pct form for gate comparison
+const MIN_VIABLE_SPREAD_FRAC = 0.0013; // 0.13% — fraction form for logging/audit fields only
+
+const ENTRY_PROFILES = {
+  // SAFE — highest precision, most confirmation required.
+  // Default on: startup, post-rebuild, RPC degraded, regime uncertain.
+  SAFE: {
+    minStableSamples:   5,       // most confirmation
+    maxSpreadStdDev:    0.006,   // tightest variance
+    minEntrySpread:     MIN_VIABLE_SPREAD_PCT,   // hard floor pct-form — surface law
+    minDepthUsd:        200_000, // $200k depth floor (recommender-proven)
+    minEcoViableRate:   0,
+    label:              'SAFE',
+  },
+  // BALANCED — bridge mode. Same spread floor, more permissive timing/stability.
+  // No longer explores sub-viable spread zones (v4 change — data-proven useless).
+  BALANCED: {
+    minStableSamples:   3,       // moderate confirmation
+    maxSpreadStdDev:    0.012,   // moderate variance tolerance
+    minEntrySpread:     MIN_VIABLE_SPREAD_PCT,   // same hard floor pct-form — v4 change (was 0.11)
+    minDepthUsd:        150_000, // $150k depth floor
+    minEcoViableRate:   0,
+    label:              'BALANCED',
+  },
+  // AGGRESSIVE — event-capture mode. Fast response inside proven viable regime.
+  // Still bounded by hard spread floor — "aggressive" = timing, not recklessness.
+  AGGRESSIVE: {
+    minStableSamples:   2,       // fastest confirmation
+    maxSpreadStdDev:    0.015,   // loosest variance (still bounded)
+    minEntrySpread:     MIN_VIABLE_SPREAD_PCT,   // same hard floor pct-form
+    minDepthUsd:        100_000, // $100k depth floor
+    minEcoViableRate:   0,
+    label:              'AGGRESSIVE',
+  },
+};
+
+// Hysteresis rules (Boss mandate — prevents thrashing)
+// Upgrade requires conditions to hold for MIN_UPGRADE_TICKS
+// Downgrade requires MIN_DOWNGRADE_TICKS of degraded conditions (except safety)
+const PROFILE_HYSTERESIS = {
+  upgradeMinTicks:   20,   // ~10s at 500ms poll — must hold before upgrading
+  downgradeMinTicks:  6,   // ~3s degraded before downgrading (safety bypasses)
+  safetyDowngradeTicks: 1, // immediate downgrade if depth below ARM_MIN_DEPTH_USD
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -289,15 +398,25 @@ async function readBothPools(blockNumber, rpc) {
       const [s0, liq] = await Promise.all([pool.slot0({ blockTag: blockNumber }), pool.liquidity({ blockTag: blockNumber })]);
       return { s0, liq };
     }, { timeoutMs: 2000, hedge: true }),
-    rpc.callDetailed(`act.camelot.${blockNumber}`, async (p) => {
-      const pool = new ethers.Contract(CAMELOT_POOL, ALGEBRA_ABI, p);
-      const [gs, liq] = await Promise.all([pool.globalState({ blockTag: blockNumber }), pool.liquidity({ blockTag: blockNumber })]);
-      return { gs, liq };
-    }, { timeoutMs: 2000, hedge: true }),
+    // Pool B dispatch: Algebra venues use globalState(), UniV3-compatible venues (Ramses) use slot0().
+    // CAMELOT_TYPE is set from pairCfg.camelotType in main() — default 'algebra'.
+    CAMELOT_TYPE === 'univ3'
+      ? rpc.callDetailed(`act.camuniv3.${blockNumber}`, async (p) => {
+          const pool = new ethers.Contract(CAMELOT_POOL, UNIV3_ABI, p);
+          const [s0, liq] = await Promise.all([pool.slot0({ blockTag: blockNumber }), pool.liquidity({ blockTag: blockNumber })]);
+          // Map slot0 result to gs shape: [sqrtPriceX96, tick, fee=0 (use static), ...]
+          return { gs: s0, liq };
+        }, { timeoutMs: 2000, hedge: true })
+      : rpc.callDetailed(`act.camelot.${blockNumber}`, async (p) => {
+          const pool = new ethers.Contract(CAMELOT_POOL, ALGEBRA_ABI, p);
+          const [gs, liq] = await Promise.all([pool.globalState({ blockTag: blockNumber }), pool.liquidity({ blockTag: blockNumber })]);
+          return { gs, liq };
+        }, { timeoutMs: 2000, hedge: true }),
   ]);
   const uniSqrtP  = uniRes.result.s0[0];
   const camSqrtP  = camRes.result.gs[0];
-  const camFeeRaw = Number(camRes.result.gs[2]);
+  // For Algebra: gs[2] = dynamic fee. For UniV3-type (Ramses): fee is static — use CAMELOT_FEE_FRAC.
+  const camFeeRaw = CAMELOT_TYPE === 'univ3' ? 0 : Number(camRes.result.gs[2]);
   return {
     uniPrice   : sqrtPriceToUSDC(uniSqrtP),
     camPrice   : sqrtPriceToUSDC(camSqrtP),
@@ -561,7 +680,41 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
     };
     console.log(`\n  [thresholds] Static map  nearestHighTick=${thresholds.nearestHighTick}  nearestHighPrice=$${thresholds.nearestHighPrice}  ARM: tickDist<=${ARM_TICK_DISTANCE} OR bps<=${ARM_PRICE_DISTANCE_BPS}`);
   } else {
-    thresholds = await deriveThresholdsFromTickMap(rpc);
+    // Tick-map derivation at startup — retry with backoff on RPC failure.
+    // A single hedged failure should not kill the process before the loop even starts.
+    // Boss ruling 2026-04-07: up to 3 startup retries, 5s/10s/20s backoff.
+    let startupAttempt = 0;
+    const STARTUP_RETRIES = 3;
+    while (true) {
+      startupAttempt++;
+      try {
+        thresholds = await deriveThresholdsFromTickMap(rpc);
+        break;  // success
+      } catch (e) {
+        const backoffSec = Math.pow(2, startupAttempt) * 2.5;  // 5s, 10s, 20s
+        process.stderr.write(
+          `  ✗ [tick-map] startup attempt ${startupAttempt}/${STARTUP_RETRIES} failed: ${e.message.slice(0,80)}\n`
+        );
+        if (startupAttempt >= STARTUP_RETRIES) {
+          process.stderr.write(`  ✗ [tick-map] all ${STARTUP_RETRIES} attempts exhausted — aborting startup\n`);
+          process.exit(2);
+        }
+        process.stderr.write(`  ⏳ [tick-map] retrying in ${backoffSec.toFixed(0)}s...\n`);
+        await sleep(backoffSec * 1000);
+        // Rebuild provider before retry — RPC may have rotated
+        const newRpc = createProvider('arbitrum');
+        try {
+          await withTimeout(
+            newRpc.getBlockNumber('startup.retry.sanity', { timeoutMs: 5000, hedge: true }),
+            10_000, 'startup.retry.sanity'
+          );
+          rpc = newRpc;
+          process.stderr.write(`  ✓ [tick-map] provider rebuilt for retry ${startupAttempt + 1}\n`);
+        } catch (_) {
+          process.stderr.write(`  ✗ [tick-map] provider rebuild failed, using existing\n`);
+        }
+      }
+    }
   }
   let tickMapRefreshAt = Date.now() + TICK_MAP_REFRESH_MS;
 
@@ -576,8 +729,124 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
 
   // Window segmentation tracking (Boss ruling 2026-04-03)
   let windowId        = 0;    // monotonic window counter for log correlation
+  let windowKey       = null; // restart-safe time-bucket key (Boss ruling 2026-04-05)
   let windowStartTs   = null; // ISO timestamp when current ARMED window opened
   let windowStartDepth= null; // depthMin at window open — regime classification anchor
+
+  // Spread stability tracking (Boss ruling 2026-04-05: entry optimization)
+  // Ring buffer of recent spread% values while ARMED — used for stability gate.
+  const STABILITY_WINDOW_N   = 5;    // samples to track for stability check
+  const STABILITY_MAX_STD    = 0.008; // max spread stddev (pct) to allow sim — tune via recommender
+  const STABILITY_MIN_SAMPLES= 4;    // min samples before stability gate applies
+  let spreadSamples = [];   // ring buffer of recent spread values while ARMED
+
+  // ── REGIME-BASED PROFILE SELECTOR STATE ────────────────────────────────────
+  // Boss directive 2026-04-05: runtime selects among SAFE/BALANCED/AGGRESSIVE.
+  // Offline learning (recommender) populates ENTRY_PROFILES.
+  // Runtime mutation of thresholds is FORBIDDEN.
+  let activeProfile         = 'SAFE';   // current profile — starts conservative
+  let profileCandidateLabel = 'SAFE';   // profile we want to upgrade/downgrade to
+  let profileCandidateTicks = 0;        // consecutive ticks in candidate state
+  let lastProfileSwitchTs   = null;     // ISO ts of last profile switch (audit)
+  let lastProfileSwitchReason = null;
+
+  // Economic mix tracker: ring buffer of recent sim signal classifications
+  // Used by selector to assess signal quality trend
+  const ECO_RING_SIZE = 50;
+  const ecoRingBuffer = [];  // {ts, classification: 'GOOD'|'MID'|'BAD'}
+
+  function recordEco(classification) {
+    ecoRingBuffer.push({ ts: Date.now(), classification });
+    if (ecoRingBuffer.length > ECO_RING_SIZE) ecoRingBuffer.shift();
+  }
+
+  function recentEcoMix() {
+    const n = ecoRingBuffer.length;
+    if (n === 0) return { good: 0, mid: 0, bad: 0, total: 0, viableRate: 0 };
+    const good = ecoRingBuffer.filter(r => r.classification === 'GOOD').length;
+    const mid  = ecoRingBuffer.filter(r => r.classification === 'MID').length;
+    const bad  = ecoRingBuffer.filter(r => r.classification === 'BAD').length;
+    return { good, mid, bad, total: n, viableRate: good / n };
+  }
+
+  // Profile selector: decides target profile from measurable conditions.
+  // Uses ONLY regime label, spread stability, depth regime, and recent eco mix.
+  // Returns { targetLabel, reason } — does NOT mutate activeProfile directly.
+  function selectTargetProfile(regime, currentDepth, spreadStd, samplesArmed, ecoMix) {
+    // Safety first — if depth below ARM floor, force SAFE regardless
+    if (currentDepth < ARM_MIN_DEPTH_USD) {
+      return { targetLabel: 'SAFE', reason: 'depth_below_arm_floor' };
+    }
+
+    const isPersistentDepth = (regime === 'persistent_depth_regime');
+    const isStableSpread    = (spreadStd <= ENTRY_PROFILES.AGGRESSIVE.maxSpreadStdDev);
+    const isDeepSurge       = (currentDepth >= ENTRY_PROFILES.SAFE.minDepthUsd);  // $200k
+    const goodEco           = ecoMix.total >= 10 ? ecoMix.viableRate >= 0.35 : true; // relax if little history
+
+    // AGGRESSIVE: all conditions must be strong
+    if (isPersistentDepth && isStableSpread && isDeepSurge && goodEco) {
+      return { targetLabel: 'AGGRESSIVE', reason: 'persistent_depth+stable+deep+goodEco' };
+    }
+
+    // BALANCED: persistent depth + basic stability
+    if (isPersistentDepth && currentDepth >= ENTRY_PROFILES.BALANCED.minDepthUsd && isStableSpread) {
+      return { targetLabel: 'BALANCED', reason: 'persistent_depth+stable' };
+    }
+
+    // SAFE: default
+    const safeReason = !isPersistentDepth ? 'regime_not_persistent'
+      : currentDepth < ENTRY_PROFILES.BALANCED.minDepthUsd ? 'depth_below_balanced_floor'
+      : !isStableSpread ? 'spread_unstable'
+      : 'default_safe';
+    return { targetLabel: 'SAFE', reason: safeReason };
+  }
+
+  // Apply hysteresis: only switch profile if candidate has held for enough ticks.
+  // Returns the active profile label after hysteresis logic.
+  function applyHysteresis(targetLabel, currentDepth) {
+    // Safety downgrade: bypass hysteresis — immediate
+    if (currentDepth < ARM_MIN_DEPTH_USD && activeProfile !== 'SAFE') {
+      const prev = activeProfile;
+      activeProfile         = 'SAFE';
+      profileCandidateTicks = 0;
+      lastProfileSwitchTs   = new Date().toISOString();
+      lastProfileSwitchReason = 'safety_depth_floor';
+      return { switched: true, prev, reason: 'safety_depth_floor' };
+    }
+
+    const profileOrder = ['SAFE', 'BALANCED', 'AGGRESSIVE'];
+    const currentIdx   = profileOrder.indexOf(activeProfile);
+    const targetIdx    = profileOrder.indexOf(targetLabel);
+    const isUpgrade    = targetIdx > currentIdx;
+    const isDowngrade  = targetIdx < currentIdx;
+    const minTicks     = isUpgrade ? PROFILE_HYSTERESIS.upgradeMinTicks : PROFILE_HYSTERESIS.downgradeMinTicks;
+
+    if (targetLabel === activeProfile) {
+      profileCandidateTicks = 0;  // reset when target matches current
+      profileCandidateLabel = activeProfile;
+      return { switched: false };
+    }
+
+    if (targetLabel !== profileCandidateLabel) {
+      // New candidate — reset counter
+      profileCandidateLabel = targetLabel;
+      profileCandidateTicks = 1;
+      return { switched: false };
+    }
+
+    profileCandidateTicks++;
+    if (profileCandidateTicks >= minTicks) {
+      const prev = activeProfile;
+      activeProfile         = targetLabel;
+      profileCandidateTicks = 0;
+      profileCandidateLabel = targetLabel;
+      lastProfileSwitchTs   = new Date().toISOString();
+      lastProfileSwitchReason = isUpgrade ? `upgrade_after_${minTicks}_ticks` : `downgrade_after_${minTicks}_ticks`;
+      return { switched: true, prev, reason: lastProfileSwitchReason };
+    }
+
+    return { switched: false };
+  }
 
   // Persistent depth regime tracking (Boss ruling 2026-04-04)
   // Surge depth (>$100k) that holds for >2 hours = 'persistent_depth_regime'
@@ -593,10 +862,18 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
   async function rebuildProvider(logPath, state) {
     providerRebuilds++;
     const msg = `provider rebuild #${providerRebuilds}`;
-    process.stderr.write(`\n  ⚠ [recover] ${msg} — attempting createProvider('arbitrum')\n`);
+
+    // Exponential backoff — 2s * 2^(attempt-1), capped at 30s (Boss ruling 2026-04-06)
+    const backoffMs = Math.min(
+      REBUILD_BACKOFF_BASE_MS * Math.pow(2, providerRebuilds - 1),
+      REBUILD_BACKOFF_CAP_MS
+    );
+    process.stderr.write(`\n  ⚠ [recover] ${msg} — backoff ${backoffMs}ms then createProvider('arbitrum')\n`);
+    await sleep(backoffMs);
+
     appendLog(logPath, {
       ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
-      type: 'provider_rebuild', attempt: providerRebuilds, state,
+      type: 'provider_rebuild', attempt: providerRebuilds, state, backoffMs,
     });
 
     if (providerRebuilds > MAX_PROVIDER_REBUILDS) {
@@ -607,6 +884,25 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
         type: 'fatal_exit', reason: fatal, providerRebuilds,
       });
       process.exit(2);  // non-zero so supervisor can restart
+    }
+
+    // Degraded mode: after REBUILD_DEGRADED_AFTER rebuilds, force SAFE profile (Boss ruling 2026-04-06)
+    // SAFE profile is more tolerant of reduced data quality — avoids false positives under RPC instability.
+    if (providerRebuilds >= REBUILD_DEGRADED_AFTER && activeProfile !== 'SAFE') {
+      const prev = activeProfile;
+      activeProfile = 'SAFE';
+      profileCandidateTicks = 0;
+      profileCandidateLabel = 'SAFE';
+      lastProfileSwitchTs     = new Date().toISOString();
+      lastProfileSwitchReason = 'rpc_degraded_mode';
+      process.stderr.write(`  ⚠ [degraded] forcing SAFE profile (was ${prev}) — rebuild #${providerRebuilds} >= ${REBUILD_DEGRADED_AFTER}\n`);
+      appendLog(logPath, {
+        ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
+        type: 'profile_switch',
+        previousProfile: prev, selectedProfile: 'SAFE',
+        selectorReason: 'rpc_degraded_mode', hysteresisReason: 'forced_degraded',
+        providerRebuilds,
+      });
     }
 
     try {
@@ -850,6 +1146,11 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
       stats.armedCount++;
       windowId++;
       windowStartTs    = new Date().toISOString();
+      // Restart-safe window key: time-bucketed to 5-min boundaries.
+      // Survives process restarts — same window produces same key regardless of
+      // how many times the activator was restarted during that window.
+      // Format: "ETH/USDC-RAMSES:1743800400000" (pair + 5min epoch bucket)
+      const windowKey = `${LOG_PAIR}:${Math.floor(Date.now() / 300_000) * 300_000}`;
       windowStartDepth = +depthMin.toFixed(0);
       const armedReason = tickDistance <= ARM_TICK_DISTANCE ? 'proximity_tick' : 'proximity_price';
       const regime = activeRegime;
@@ -858,7 +1159,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
       appendLog(logPath, {
         ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
         type: 'state_transition', from: 'PASSIVE', to: 'ARMED', block: blockNumber,
-        windowId, windowStartTs,
+        windowId, windowKey, windowStartTs,
         uniPrice: +snap.uniPrice.toFixed(6), tickDistance, priceDistanceBps: +priceDistanceBps.toFixed(1),
         depthMin: +depthMin.toFixed(0), netSpreadFrac: +netSpreadFrac.toFixed(6),
         scannerTier, armedReason, regime,
@@ -869,6 +1170,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
       stats.disarmedCount++;
       readyCheckCount = 0;
       readyCheckAt    = null;
+      spreadSamples   = [];  // clear on window close
       const blockedReason = !isProximate          ? 'too_far_from_liquidity_zone'
                           : netSpreadFrac <= 0    ? 'negative_net'
                           : depthMin < ARM_MIN_DEPTH_USD ? 'depth_below_arm_floor'
@@ -882,7 +1184,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
       appendLog(logPath, {
         ts: windowEndTs, source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
         type: 'state_transition', from: 'ARMED', to: 'PASSIVE', block: blockNumber,
-        windowId, windowStartTs, windowEndTs, windowDurationMs: windowDurMs,
+        windowId, windowKey, windowStartTs, windowEndTs, windowDurationMs: windowDurMs,
         uniPrice: +snap.uniPrice.toFixed(6), tickDistance, priceDistanceBps: +priceDistanceBps.toFixed(1),
         depthMin: +depthMin.toFixed(0), netSpreadFrac: +netSpreadFrac.toFixed(6),
         blockedReason, regime,
@@ -951,6 +1253,11 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
         persistentDepth    : persistentDepth,
         readyCheckCount,
         windowId           : state === 'ARMED' ? windowId : null,
+        windowKey          : state === 'ARMED' ? windowKey : null,
+        activeProfile,
+        profileCandidate   : profileCandidateLabel !== activeProfile ? profileCandidateLabel : null,
+        profileCandidateTicks: profileCandidateLabel !== activeProfile ? profileCandidateTicks : 0,
+        recentEcoMix       : recentEcoMix(),
       };
       console.log(`  ── heartbeat  ${uptimeMin}min  ticks=${stats.ticks}  errors=${stats.errors}  state=${state}  armed=${stats.armedCount}  ready=${stats.readySignals} ──`);
       appendLog(logPath, hbRecord);
@@ -974,33 +1281,141 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
       lastPrintKey = printKey;
     }
 
-    // ── ARMED: check for executable conditions ───────────────────────────────
-    if (state === 'ARMED' && isExecDepth && isAboveSpread) {
-      stats.simRuns++;
-      console.log(`\n  → ★ ARMED + depth + spread all pass. Running simulation  block=${blockNumber}`);
+    // ── ARMED: accumulate spread history + run profile selector ─────────────
+    if (state === 'ARMED') {
+      spreadSamples.push(spread);
+      if (spreadSamples.length > STABILITY_WINDOW_N) spreadSamples.shift();
 
-      try {
-        const simResult  = await runSimulation(snap, rpc, gm);
-        const anyGate    = Object.values(simResult.gates).some(g => g.passed);
-        const profitable = simResult.all.filter(r => r.status !== 'LOST');
+      // Run profile selector every tick while ARMED
+      const spreadStdNow = spreadSamples.length >= 2 ? (() => {
+        const n = spreadSamples.length;
+        const m = spreadSamples.reduce((a,b)=>a+b,0)/n;
+        return Math.sqrt(spreadSamples.map(s=>(s-m)**2).reduce((a,b)=>a+b,0)/n);
+      })() : 0;
 
-        const signalType = anyGate       ? 'EXECUTION_READY'
-                         : profitable.length > 0 ? 'SIMULATION_MARGINAL'
-                         :                          'SIMULATION_LOST';
+      const ecoMix = recentEcoMix();
+      const { targetLabel, reason: selectorReason } = selectTargetProfile(
+        activeRegime, depthMin, spreadStdNow, spreadSamples.length, ecoMix
+      );
+      const hysteresisResult = applyHysteresis(targetLabel, depthMin);
 
-        const signal = emitSignal(signalType, snap, simResult, gm, thresholds, activeRegime);
-        if (signalType === 'EXECUTION_READY') stats.readySignals++;
-
-        // Log signal with full sim detail and window correlation
-        appendLog(logPath, { ...signal, windowId, simResults: simResult.all, gates: simResult.gates });
-
-      } catch (e) {
-        console.error(`  [sim] ERROR: ${e.message}`);
+      if (hysteresisResult.switched) {
+        const ecoRing = recentEcoMix();
+        const profileRecord = {
+          ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
+          type: 'profile_switch',
+          previousProfile: hysteresisResult.prev,
+          selectedProfile: activeProfile,
+          selectorReason, hysteresisReason: hysteresisResult.reason,
+          regimeLabel: activeRegime,
+          spreadStdDev: +spreadStdNow.toFixed(6),
+          samplesAboveThreshold: spreadSamples.length,
+          depthNow: +depthMin.toFixed(0),
+          recentEcoMix: ecoRing,
+          windowId, windowKey,
+          // v4 audit fields (Boss directive 2026-04-07)
+          viabilityFloorFrac: MIN_VIABLE_SPREAD_FRAC,
+          rpcDegraded: providerRebuilds >= REBUILD_DEGRADED_AFTER,
+          providerRebuilds,
+          ecoBufferMean: ecoRing.total > 0 ? +(ecoRing.viableRate).toFixed(4) : null,
+        };
+        appendLog(logPath, profileRecord);
+        console.log(`\n  [PROFILE] ${hysteresisResult.prev} → ${activeProfile}  reason=${hysteresisResult.reason}  regime=${activeRegime}  depth=$${depthMin.toFixed(0)}\n`);
       }
-
-      cooldownUntil = Date.now() + COOLDOWN_AFTER_SIM_MS;
-      console.log(`  → Cooldown ${COOLDOWN_AFTER_SIM_MS / 1000}s\n`);
     }
+
+    // Get active profile gates for this tick
+    const profile     = ENTRY_PROFILES[activeProfile];
+    const profileStdGate = profile.maxSpreadStdDev;
+    const profileSpreadGate = profile.minEntrySpread;
+    const profileDepthGate  = profile.minDepthUsd;
+    const profileSampGate   = profile.minStableSamples;
+
+    // Spread stability check using active profile thresholds
+    function isSpreadStable() {
+      if (spreadSamples.length < profileSampGate) return false;
+      const n = spreadSamples.length;
+      const mean = spreadSamples.reduce((a,b) => a+b, 0) / n;
+      const variance = spreadSamples.map(s => (s-mean)**2).reduce((a,b) => a+b, 0) / n;
+      return Math.sqrt(variance) <= profileStdGate;
+    }
+
+    // ── ARMED: check for executable conditions using active profile gates ────
+    const profileSpreadPass = spread >= profileSpreadGate;
+    const profileDepthPass  = depthMin >= profileDepthGate;
+    if (state === 'ARMED' && isExecDepth && isAboveSpread && profileSpreadPass && profileDepthPass) {
+      const stable = isSpreadStable();
+      if (!stable && spreadSamples.length >= profileSampGate) {
+        // Spread too volatile for current profile — log skip (throttled)
+        const std = (() => {
+          const n = spreadSamples.length;
+          const mean = spreadSamples.reduce((a,b) => a+b, 0) / n;
+          return Math.sqrt(spreadSamples.map(s => (s-mean)**2).reduce((a,b) => a+b, 0) / n);
+        })();
+        if (stats.ticks % 10 === 0) {
+          process.stdout.write(`  [stability/${activeProfile}] spread unstable — std=${(std*100).toFixed(5)}% > max=${(profileStdGate*100).toFixed(5)}%  samples=${spreadSamples.length}\n`);
+        }
+      } else if (stable || spreadSamples.length < profileSampGate) {
+        stats.simRuns++;
+        console.log(`\n  → ★ ARMED + depth + spread + stable [${activeProfile}]. Running simulation  block=${blockNumber}  spreadSamples=${spreadSamples.length}`);
+
+        try {
+          const simResult  = await runSimulation(snap, rpc, gm);
+          const anyGate    = Object.values(simResult.gates).some(g => g.passed);
+          const profitable = simResult.all.filter(r => r.status !== 'LOST');
+
+          const signalType = anyGate       ? 'EXECUTION_READY'
+                           : profitable.length > 0 ? 'SIMULATION_MARGINAL'
+                           :                          'SIMULATION_LOST';
+
+          // Profile readiness class — appended for traceability
+          // EXECUTION_READY_SAFE | EXECUTION_READY_BALANCED | EXECUTION_READY_AGGRESSIVE
+          const readinessClass = signalType === 'EXECUTION_READY'
+            ? `EXECUTION_READY_${activeProfile}`
+            : signalType;
+
+          const signal = emitSignal(signalType, snap, simResult, gm, thresholds, activeRegime);
+          if (signalType === 'EXECUTION_READY') stats.readySignals++;
+
+          // Record eco outcome into ring buffer for selector feedback
+          const ecoClass = signal.economicStatus === 'economically_viable'   ? 'GOOD'
+                         : signal.economicStatus === 'economically_marginal'  ? 'MID'
+                         : 'BAD';
+          recordEco(ecoClass);
+
+          // Edge bucket — classified against surface law (MIN_VIABLE_SPREAD_FRAC = 0.13%)
+          // All profiles now share this floor. Bucket labels reflect viability, not profile tier.
+          const spreadPctNow = signal.spread ?? 0;  // already in pct form (e.g. 0.158 = 0.158%)
+          const edgeBucket   = spreadPctNow >= 0.18  ? 'premium'         // ≥ 0.18% — clear premium signal
+                             : spreadPctNow >= 0.13  ? 'viable_zone'     // 0.13–0.18% — above floor, viable
+                             : spreadPctNow >= 0.10  ? 'sub_floor'       // 0.10–0.13% — below viability floor
+                             :                         'dead_zone';      // < 0.10% — structural noise
+
+          // Log signal with full sim detail, window correlation, v4 profile metadata
+          // Boss directive 2026-04-07: add viability floor compliance + selector rationale
+          const aboveViabilityFloor = spreadPctNow >= MIN_VIABLE_SPREAD_PCT;
+          appendLog(logPath, {
+            ...signal,
+            windowId, windowKey,
+            // v4 audit fields
+            readinessClass, activeProfile, edgeBucket,
+            viabilityFloorFrac: MIN_VIABLE_SPREAD_FRAC,
+            aboveViabilityFloor,
+            rpcDegraded: providerRebuilds >= REBUILD_DEGRADED_AFTER,
+            providerRebuilds,
+            // profile gate values applied at this signal
+            profileSpreadGate, profileDepthGate, profileStdGate, profileSampGate,
+            simResults: simResult.all, gates: simResult.gates,
+          });
+
+        } catch (e) {
+          console.error(`  [sim] ERROR: ${e.message}`);
+        }
+
+        cooldownUntil = Date.now() + COOLDOWN_AFTER_SIM_MS;
+        console.log(`  → Cooldown ${COOLDOWN_AFTER_SIM_MS / 1000}s\n`);
+      }  // end stability gate
+    }  // end ARMED + exec check
 
     const elapsed = Date.now() - loopStart;
     await sleep(Math.max(0, (state === 'ARMED' ? POLL_ARMED_MS : POLL_PASSIVE_MS) - elapsed));
@@ -1177,6 +1592,7 @@ async function main() {
   UNIV3_FEE_FRAC   = pairCfg.univ3FeeFrac;
   CAMELOT_POOL     = pairCfg.camelotPool;
   CAMELOT_FEE_FRAC = pairCfg.camelotFeeFrac;
+  CAMELOT_TYPE     = pairCfg.camelotType || 'algebra';  // default Algebra; 'univ3' for Ramses
   TICK_SPACING     = pairCfg.tickSpacing;
   DEC0             = pairCfg.dec0;
   DEC1             = pairCfg.dec1;

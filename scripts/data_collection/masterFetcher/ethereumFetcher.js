@@ -233,12 +233,52 @@ const UNISWAP_V3_POOLS = [
 ];
 
 // ─── SUSHISWAP V3 POOLS (Ethereum mainnet) ─────────────────────────────────────
-// PENDING: SushiSwap V3 factory on Ethereum not yet confirmed.
-// Factory candidate 0xbACEB8eC... returned RPC exhausted on all calls (2026-04-04).
-// Pools will be added once factory address is confirmed via sushi_eth_factory_probe.js.
-// SushiSwap will be wired in the next patch after factory confirmation.
+// Factory: 0xbACEB8eC6b9355Dfc0269C18bac9d6E2Bdc29C4F (confirmed 2026-04-04)
+// getPool(address,address,uint24) works — earlier probe failure was dynamic dispatch.
+// All pools confirmed via direct factory.getPool() + depth probe (2026-04-04).
+// Fee tiers probed: 100, 500, 3000, 10000.
+//
+// Depth results at block 24808058:
+//   ETH/USDC 0.05% (0x35644Fb6): $0.4k   — thin, excluded
+//   ETH/USDC 0.30% (0x763d3b72): $8.2M   — CANDIDATE ✅
+//   ETH/USDT 0.05% (0x72c2178E): $0.0k   — thin, excluded
+//   ETH/USDT 0.30% (0x6a11ED98): $4.3M   — CANDIDATE ✅
+//   ETH/USDC 0.01% (0x60aCb47a): not yet depth-probed — added pending
 const SUSHISWAP_V3_POOLS = [
-  // PLACEHOLDER — empty until factory confirmed. Fetcher runs cleanly without Sushi.
+
+  // ETH/USDC 0.30% — $8.2M depth confirmed
+  // token0=USDC(6dec 0xA0b8), token1=WETH(18dec) → priceMode='invert'
+  {
+    outputPair:     'ETH/USDC',
+    pool:           '0x763d3b7296e7C9718AD5B058aC2692A19E5b3638',
+    decimals0:      6,
+    decimals1:      18,
+    fee:            3000,
+    priceMode:      'invert',
+    sanityMin:      500,
+    sanityMax:      20000,
+    venue:          'sushiswap_v3',
+    source:         'sushiswap_v3_ethereum_onchain',
+    expectedToken0: USDC,
+    expectedToken1: WETH,
+  },
+
+  // ETH/USDT 0.30% — $4.3M depth confirmed
+  // token0=WETH(18dec 0xC02a), token1=USDT(6dec) → priceMode='direct'
+  {
+    outputPair:     'ETH/USDT',
+    pool:           '0x6a11ED98B1a3ac36A768ebbbbA36DED101Da5a3f',
+    decimals0:      18,
+    decimals1:      6,
+    fee:            3000,
+    priceMode:      'direct',
+    sanityMin:      500,
+    sanityMax:      20000,
+    venue:          'sushiswap_v3',
+    source:         'sushiswap_v3_ethereum_onchain',
+    expectedToken0: WETH,
+    expectedToken1: USDT,
+  },
 ];
 
 // ─── HELPERS ───────────────────────────────────────────────────────────────────

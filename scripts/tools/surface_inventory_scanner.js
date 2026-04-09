@@ -27,6 +27,7 @@
 //  USAGE
 //  ─────
 //  node -r dotenv/config scripts/tools/surface_inventory_scanner.js
+//  node -r dotenv/config scripts/tools/surface_inventory_scanner.js --chain ethereum
 //  node -r dotenv/config scripts/tools/surface_inventory_scanner.js --json
 //  node -r dotenv/config scripts/tools/surface_inventory_scanner.js --verbose
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -40,9 +41,28 @@ const Redis = require('ioredis');
 
 const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 
-const FETCHER_KEYS = [
-  'fetcher:arbitrumFetcher',
-];
+// ─── CHAIN SELECTION ──────────────────────────────────────────────────────────
+// --chain arbitrum (default) | --chain ethereum
+// Selects which fetcher Redis keys to read and which POOL_META to use.
+
+const CHAIN_ARG = (() => {
+  const i = process.argv.indexOf('--chain');
+  if (i !== -1 && process.argv[i + 1]) return process.argv[i + 1].toLowerCase();
+  const eq = process.argv.find(a => a.startsWith('--chain='));
+  return eq ? eq.split('=')[1].toLowerCase() : 'arbitrum';
+})();
+
+const FETCHER_KEYS_BY_CHAIN = {
+  arbitrum: [
+    'fetcher:arbitrumFetcher',
+  ],
+  ethereum: [
+    'fetcher:ethereumFetcher',
+    'fetcher:curveFetcherEthereum',
+  ],
+};
+
+const FETCHER_KEYS = FETCHER_KEYS_BY_CHAIN[CHAIN_ARG] || FETCHER_KEYS_BY_CHAIN.arbitrum;
 
 // ─── POOL METADATA ────────────────────────────────────────────────────────────
 //  dec0/dec1 required for active-tick depth computation.
@@ -51,7 +71,7 @@ const FETCHER_KEYS = [
 //  Source: arbitrumFetcher.js configs + session 2026-03-19 confirmed values.
 //  Add new addresses here when adding pools to arbitrumFetcher.js.
 
-const POOL_META = {
+const POOL_META_ARBITRUM = {
   // ── UniV3 pools ─────────────────────────────────────────────────────────────
   '0xc6962004f452be9203591991d15f6b388e09e8d0': { pair: 'ETH/USDC',   dec0: 18, dec1: 6,  quoteToken: 'USDC'  },
   '0x641c00a822e8b671738d32a431a4fb6074e5c79d': { pair: 'ETH/USDT',   dec0: 18, dec1: 6,  quoteToken: 'USDT'  },
@@ -105,7 +125,62 @@ const POOL_META = {
   // Factory 0xAA2cd7...edF8 confirmed. Depth probe: only 1 pool viable.
   // Active tiers: 250/500/3000/10000. Ghost pools excluded (stale sqrtPrice).
   '0x30afbcf9458c3131a6d051c621e307e6278e4110': { pair: 'ETH/USDC',   dec0: 18, dec1: 6,  quoteToken: 'USDC'  },  // Ramses 0.05% $225.8k
+  // ── Camelot V3 DAI/USDC (Boss ruling 2026-04-04) ─────────────────────────
+  // $808M active-tick depth, 0.005% fee — system record on both dimensions.
+  // token0=USDC(6dec), token1=DAI(18dec). quoteToken='DAI' (~$1 stable).
+  '0x45fae8d0d2ace73544baab452f9020925afccc75': { pair: 'DAI/USDC',   dec0: 6,  dec1: 18, quoteToken: 'DAI'   },  // Camelot V3 0.005%
 };
+
+// ─── ETHEREUM MAINNET POOL_META (Boss directive 2026-04-04) ──────────────────
+//  Used when --chain ethereum is passed.
+//  Token ordering for Ethereum mainnet (different sort order than Arbitrum):
+//    USDC(0xA0b8) < WETH(0xC02a) → token0=USDC, token1=WETH → dec0=6,dec1=18
+//    WBTC(0x2260) < USDC(0xA0b8) → token0=WBTC, token1=USDC → dec0=8,dec1=6
+//    DAI(0x6B17)  < USDC(0xA0b8) → token0=DAI,  token1=USDC → dec0=18,dec1=6
+//    WETH(0xC02a) < USDT(0xdAC1) → token0=WETH, token1=USDT → dec0=18,dec1=6
+//  Curve pools use depthUSD directly (not L×sqrtP) — flagged with curve:true.
+
+const POOL_META_ETHEREUM = {
+  // ── UniV3 ETH/USDC ───────────────────────────────────────────────────────────
+  // token0=USDC(6dec), token1=WETH(18dec) — USDC sorts lower on Ethereum
+  '0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640': { pair: 'ETH/USDC',  dec0: 6,  dec1: 18, quoteToken: 'USDC', invertPrice: true  },  // UniV3 0.05%
+  '0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8': { pair: 'ETH/USDC',  dec0: 6,  dec1: 18, quoteToken: 'USDC', invertPrice: true  },  // UniV3 0.30%
+  '0xe0554a476a092703abdb3ef35c80e0d76d32939f': { pair: 'ETH/USDC',  dec0: 6,  dec1: 18, quoteToken: 'USDC', invertPrice: true  },  // UniV3 0.01%
+
+  // ── UniV3 ETH/USDT ───────────────────────────────────────────────────────────
+  // token0=WETH(18dec), token1=USDT(6dec)
+  '0x11b815efb8f581194ae79006d24e0d814b7697f6': { pair: 'ETH/USDT',  dec0: 18, dec1: 6,  quoteToken: 'USDT' },  // UniV3 0.05%
+  '0x4e68ccd3e89f51c3074ca5072bbac773960dfa36': { pair: 'ETH/USDT',  dec0: 18, dec1: 6,  quoteToken: 'USDT' },  // UniV3 0.30%
+
+  // ── UniV3 WBTC/USDC ──────────────────────────────────────────────────────────
+  // token0=WBTC(8dec), token1=USDC(6dec)
+  '0x99ac8ca7087fa4a2a1fb6357269965a2014abc35': { pair: 'WBTC/USDC', dec0: 8,  dec1: 6,  quoteToken: 'USDC' },  // UniV3 0.30%
+  '0x9a772018fbd77fcd2d25657e5c547baff3fd7d16': { pair: 'WBTC/USDC', dec0: 8,  dec1: 6,  quoteToken: 'USDC' },  // UniV3 0.05%
+
+  // ── UniV3 WBTC/ETH ───────────────────────────────────────────────────────────
+  // token0=WBTC(8dec), token1=WETH(18dec) → quoteToken='WETH' (needs ETH ref for USD)
+  '0xcbcdf9626bc03e24f779434178a73a0b4bad62ed': { pair: 'WBTC/ETH',  dec0: 8,  dec1: 18, quoteToken: 'WETH' },  // UniV3 0.30%
+
+  // ── UniV3 DAI/USDC ───────────────────────────────────────────────────────────
+  // token0=DAI(18dec), token1=USDC(6dec)
+  '0x5777d92f208679db4b9778590fa3cab3ac9e2168': { pair: 'DAI/USDC',  dec0: 18, dec1: 6,  quoteToken: 'USDC' },  // UniV3 0.01% ← LEAD SURFACE
+  '0x6c6bc977e13df9b0de53b251522280bb72383700': { pair: 'DAI/USDC',  dec0: 18, dec1: 6,  quoteToken: 'USDC' },  // UniV3 0.05%
+
+  // ── SushiSwap V3 (Ethereum) ──────────────────────────────────────────────────
+  // Confirmed depth >$1k, 2026-04-04
+  '0x763d3b7296e7c9718ad5b058ac2692a19e5b3638': { pair: 'ETH/USDC',  dec0: 6,  dec1: 18, quoteToken: 'USDC', invertPrice: true  },  // Sushi 0.30% $8.2M
+  '0x6a11ed98b1a3ac36a768ebbbba36ded101da5a3f': { pair: 'ETH/USDT',  dec0: 18, dec1: 6,  quoteToken: 'USDT' },  // Sushi 0.30% $4.3M
+
+  // ── Curve (Ethereum) — depth from depthUSD field, not L×sqrtP ───────────────
+  // curve:true instructs scanner to use p.depthUSD directly (no L×sqrtP calc).
+  '0xbebc44782c7db0a1a60cb6fe97d0b483032ff1c7_usdc_usdt': { pair: 'USDC/USDT', dec0: 6,  dec1: 6,  quoteToken: 'USDT', curve: true },  // 3pool USDC/USDT
+  '0xbebc44782c7db0a1a60cb6fe97d0b483032ff1c7_dai_usdc':  { pair: 'DAI/USDC',  dec0: 18, dec1: 6,  quoteToken: 'USDC', curve: true },  // 3pool DAI/USDC ← LEAD SURFACE
+  '0xd51a44d3fae010294c616388b506acda1bfaae46_eth_usdt':  { pair: 'ETH/USDT',  dec0: 18, dec1: 6,  quoteToken: 'USDT', curve: true },  // tricrypto2 ETH/USDT
+  '0xd51a44d3fae010294c616388b506acda1bfaae46_wbtc_usdt': { pair: 'WBTC/USDT', dec0: 8,  dec1: 6,  quoteToken: 'USDT', curve: true },  // tricrypto2 WBTC/USDT
+};
+
+// Active POOL_META — selected by chain flag
+const POOL_META = CHAIN_ARG === 'ethereum' ? POOL_META_ETHEREUM : POOL_META_ARBITRUM;
 
 // ─── THRESHOLDS ───────────────────────────────────────────────────────────────
 //  Aligned with breakeven_engine.js confirmed session values (2026-03-19).
@@ -294,10 +369,16 @@ function extractRows(payloads) {
     if (!Array.isArray(prices)) continue;
     for (const p of prices) {
       if (!p || !p.price || !isFinite(p.price) || p.price <= 0) continue;
+      // Curve pools use a composite pool key (address_pair) — build it for POOL_META lookup
+      const poolLower = (p.pool || '').toLowerCase();
+      const curveKey  = p.venue === 'curve' && p.pair
+        ? `${poolLower}_${p.pair.toLowerCase().replace('/', '_')}`
+        : null;
       rows.push({
         fetcherKey  : key,
         pair        : p.pair,
-        pool        : (p.pool || '').toLowerCase(),
+        pool        : poolLower,
+        curveKey,           // non-null for Curve pools — used for POOL_META lookup
         venue       : p.venue || 'unknown',
         price       : p.price,
         liquidity   : p.liquidity,
@@ -306,6 +387,8 @@ function extractRows(payloads) {
         tick        : p.tick,
         blockNumber : p.blockNumber,
         reserveUSD  : p.reserveUSD || null,   // V2 only
+        depthUSD    : p.depthUSD   || null,   // Curve: pre-computed depth
+        tvlUSD      : p.tvlUSD     || null,   // Curve: TVL
         source      : p.source || key,
       });
     }
@@ -361,8 +444,9 @@ function formSurfaces(rows) {
                            (a.blockNumber !== b.blockNumber);
 
         // Active-tick depth
-        const metaA = POOL_META[a.pool];
-        const metaB = POOL_META[b.pool];
+        // Curve pools use composite key (address_pair) and pre-computed depthUSD.
+        const metaA = POOL_META[a.curveKey || a.pool];
+        const metaB = POOL_META[b.curveKey || b.pool];
 
         let depthA = null;
         let depthB = null;
@@ -372,6 +456,10 @@ function formSurfaces(rows) {
         if (!metaA) {
           incomplete = true;
           incompleteReason = `no POOL_META: ${a.pool.slice(0, 10)} (${a.venue})`;
+        } else if (metaA.curve) {
+          // Curve: use pre-computed depthUSD from fetcher (TVL-based, conservative)
+          depthA = a.depthUSD ?? a.tvlUSD ?? null;
+          if (depthA == null) { incomplete = true; incompleteReason = 'Curve depthUSD missing'; }
         } else if (metaA.v2) {
           depthA = a.reserveUSD != null ? a.reserveUSD / 2 : null;
           if (depthA == null) { incomplete = true; incompleteReason = 'V2 reserveUSD missing'; }
@@ -383,6 +471,9 @@ function formSurfaces(rows) {
         if (!metaB) {
           incomplete = true;
           incompleteReason += (incompleteReason ? '; ' : '') + `no POOL_META: ${b.pool.slice(0, 10)} (${b.venue})`;
+        } else if (metaB.curve) {
+          depthB = b.depthUSD ?? b.tvlUSD ?? null;
+          if (depthB == null) { incomplete = true; incompleteReason += '; Curve depthUSD missing'; }
         } else if (metaB.v2) {
           depthB = b.reserveUSD != null ? b.reserveUSD / 2 : null;
           if (depthB == null) { incomplete = true; incompleteReason += '; V2 reserveUSD missing'; }
@@ -571,8 +662,10 @@ async function main() {
   if (useVerbose) {
     console.log(`[scanner] rows: ${rows.length}  ETH: ${ETH_PRICE_USD ? '$' + ETH_PRICE_USD.toFixed(2) : 'n/a'}`);
     for (const r of rows) {
-      const dep = POOL_META[r.pool]
-        ? computeActiveTickUSD(r.liquidityRaw, r.price, POOL_META[r.pool].dec0, POOL_META[r.pool].dec1, POOL_META[r.pool].quoteToken)
+      const dep = POOL_META[r.curveKey || r.pool]
+        ? (POOL_META[r.curveKey || r.pool].curve
+            ? (r.depthUSD ?? r.tvlUSD)
+            : computeActiveTickUSD(r.liquidityRaw, r.price, POOL_META[r.curveKey || r.pool].dec0, POOL_META[r.curveKey || r.pool].dec1, POOL_META[r.curveKey || r.pool].quoteToken))
         : null;
       console.log(
         `  ${r.venue.padEnd(14)} ${r.pair.padEnd(12)} ` +

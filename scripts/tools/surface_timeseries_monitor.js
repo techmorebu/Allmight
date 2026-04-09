@@ -57,6 +57,9 @@ function argVal(flag, def) {
 
 const INTERVAL_SEC          = Number(argVal('--interval', 30));   // seconds between scans
 const WATCH_PAIR            = argVal('--pair', 'ARB/USDC');
+const WATCH_VENUE_A         = argVal('--venue-a', null);           // explicit venue lock (Boss ruling 2026-04-04)
+const WATCH_VENUE_B         = argVal('--venue-b', null);           // explicit venue lock
+const CHAIN_ARG             = argVal('--chain', 'arbitrum');       // arbitrum | ethereum
 const CONFIRM_SCANS_REQUIRED = Number(argVal('--confirm', 3));    // consecutive scans to confirm promotion
 const QUIET                 = ARGS.includes('--quiet');
 
@@ -64,7 +67,8 @@ const LOG_DIR  = path.resolve(process.cwd(), 'logs');
 // Log filename derived from watch pair — avoids cross-contamination between surfaces.
 // ETH/USDC → surface_timeseries_eth.jsonl  |  ARB/USDC → surface_timeseries_arb.jsonl
 const PAIR_SLUG = WATCH_PAIR.split('/')[0].toLowerCase();
-const LOG_FILE  = path.join(LOG_DIR, `surface_timeseries_${PAIR_SLUG}.jsonl`);
+const CHAIN_SLUG = CHAIN_ARG === 'ethereum' ? '_eth_chain' : '';
+const LOG_FILE  = path.join(LOG_DIR, `surface_timeseries_${PAIR_SLUG}${CHAIN_SLUG}.jsonl`);
 
 const NODE_BIN     = process.execPath;
 const FETCHER_PATH = path.resolve(process.cwd(), 'scripts/master-fetcher.js');
@@ -117,7 +121,7 @@ async function runFetcher() {
 async function runScanner() {
   const { stdout } = await execFileAsync(
     NODE_BIN,
-    ['-r', 'dotenv/config', SCANNER_PATH, '--json'],
+    ['-r', 'dotenv/config', SCANNER_PATH, '--json', `--chain=${CHAIN_ARG}`],
     {
       cwd    : process.cwd(),
       timeout: 10_000,
@@ -131,10 +135,36 @@ async function runScanner() {
 
 function findWatchSurface(scanResult) {
   if (!Array.isArray(scanResult.surfaces)) return null;
-  // Find the highest-scored surface for the watch pair
-  return scanResult.surfaces
-    .filter(s => s.pair === WATCH_PAIR)
-    .sort((a, b) => (b.score || 0) - (a.score || 0))[0] || null;
+  const candidates = scanResult.surfaces.filter(s => s.pair === WATCH_PAIR);
+
+  // If --venue-a and --venue-b are both specified: LOCK to exact surface.
+  // venueA/venueB order is normalised — check both directions.
+  // Boss ruling 2026-04-04: implicit score-based selection broke with multi-venue.
+  // Explicit targeting is now mandatory for any multi-venue pair.
+  if (WATCH_VENUE_A && WATCH_VENUE_B) {
+    const locked = candidates.find(s =>
+      (s.venueA === WATCH_VENUE_A && s.venueB === WATCH_VENUE_B) ||
+      (s.venueA === WATCH_VENUE_B && s.venueB === WATCH_VENUE_A)
+    );
+    if (!locked && candidates.length > 0) {
+      process.stderr.write(
+        `[monitor] WARNING: --venue-a=${WATCH_VENUE_A} --venue-b=${WATCH_VENUE_B} ` +
+        `not found in scanner output for ${WATCH_PAIR}. ` +
+        `Available: ${candidates.map(s => `${s.venueA}↔${s.venueB}`).join(', ')}\n`
+      );
+    }
+    return locked || null;
+  }
+
+  // No venue lock: warn if multiple surfaces exist (implicit selection is unreliable).
+  if (candidates.length > 1) {
+    process.stderr.write(
+      `[monitor] WARNING: ${candidates.length} surfaces found for ${WATCH_PAIR} ` +
+      `but no --venue-a/--venue-b specified. ` +
+      `Tracking highest score — add --venue-a and --venue-b for deterministic targeting.\n`
+    );
+  }
+  return candidates.sort((a, b) => (b.score || 0) - (a.score || 0))[0] || null;
 }
 
 // ─── DISPLAY ──────────────────────────────────────────────────────────────────
@@ -196,8 +226,12 @@ function printPromotion(surface) {
 
 function printHeader() {
   console.log('\n' + '═'.repeat(80));
-  console.log('  AllMight — Surface Time-Series Monitor  v1.0');
-  console.log(`  Watching: ${WATCH_PAIR}  |  interval: ${INTERVAL_SEC}s  |  confirm: ${CONFIRM_SCANS_REQUIRED} scans`);
+  console.log('  AllMight — Surface Time-Series Monitor  v1.1');
+  const venueLabel = (WATCH_VENUE_A && WATCH_VENUE_B)
+    ? `${WATCH_VENUE_A} ↔ ${WATCH_VENUE_B}  [LOCKED]`
+    : 'auto (warn: add --venue-a/--venue-b)';
+  console.log(`  Watching: ${WATCH_PAIR}  |  venues: ${venueLabel}`);
+  console.log(`  Chain: ${CHAIN_ARG}  |  interval: ${INTERVAL_SEC}s  |  confirm: ${CONFIRM_SCANS_REQUIRED} scans`);
   console.log(`  Log: ${LOG_FILE}`);
   console.log(`  Promotion threshold: depth_min ≥ $${DEPTH_CANDIDATE.toLocaleString()} AND net > 0`);
   console.log(`  Stop: Ctrl+C`);
