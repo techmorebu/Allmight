@@ -39,10 +39,12 @@ const FETCHER_PATH = path.resolve(process.cwd(), 'scripts/master-fetcher.js');
 
 // Run master-fetcher subprocess to populate Redis before each scan.
 // Non-fatal — base/optimism chain errors are expected and silently ignored.
+// Timeout raised to 90s (was 20s) — arbitrumFetcher serial RPC reads take
+// 30–60s on real hardware. 20s was too short and caused silent kills.
 async function runFetcher() {
   try {
     await execFileAsync(NODE_BIN, ['-r', 'dotenv/config', FETCHER_PATH], {
-      cwd: process.cwd(), timeout: 20_000, env: process.env,
+      cwd: process.cwd(), timeout: 90_000, env: process.env,
     });
   } catch (_) {}
 }
