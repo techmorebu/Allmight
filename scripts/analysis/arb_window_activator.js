@@ -658,7 +658,7 @@ function appendLog(logPath, record) {
 // ─────────────────────────────────────────────────────────────────────────────
 // MAIN ACTIVATION LOOP
 // ─────────────────────────────────────────────────────────────────────────────
-async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
+async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, heatLogPath) {
   // rpc is reassignable for provider rebuild recovery
   rpc = rpc;
   const endMs = Date.now() + durationS * 1000;
@@ -726,6 +726,11 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
   let readyCheckCount = 0;   // consecutive ARMED scans above READY_MIN_DEPTH_USD
   let readyCheckAt    = null; // ISO timestamp when readyCheckCount first hit 1
   let snap            = null; // last successful pool read — available to heartbeat
+
+  // Heat context cache — advisory only, refreshed every HEAT_REFRESH_MS (Boss ruling 2026-04-09)
+  // HEAT IS ADVISORY ONLY: never changes arm/execute eligibility — annotation only.
+  let heatCtx         = HEAT_NEUTRAL;
+  let heatRefreshedAt = 0;   // 0 forces an immediate read on first tick
 
   // Window segmentation tracking (Boss ruling 2026-04-03)
   let windowId        = 0;    // monotonic window counter for log correlation
@@ -1007,6 +1012,15 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
       if (!healthy) stats.unhealthyEvents++;
     }
 
+    // Periodic heat context refresh — advisory only, no effect on gate logic
+    if (Date.now() - heatRefreshedAt >= HEAT_REFRESH_MS) {
+      heatCtx         = readLatestHeatContext(LOG_PAIR, heatLogPath);
+      heatRefreshedAt = Date.now();
+      if (heatCtx.priorityNote && heatCtx.heatClass !== 'UNKNOWN') {
+        process.stdout.write(`  [heat] ${heatCtx.priorityNote}\n`);
+      }
+    }
+
     // Cooldown
     if (Date.now() < cooldownUntil) {
       await sleep(POLL_PASSIVE_MS);
@@ -1163,6 +1177,8 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
         uniPrice: +snap.uniPrice.toFixed(6), tickDistance, priceDistanceBps: +priceDistanceBps.toFixed(1),
         depthMin: +depthMin.toFixed(0), netSpreadFrac: +netSpreadFrac.toFixed(6),
         scannerTier, armedReason, regime,
+        // Heat context annotation — ADVISORY ONLY
+        heatScore: heatCtx.heatScore, heatClass: heatCtx.heatClass, heatRank: heatCtx.heatRank,
       });
     }
     else if (state === 'ARMED' && !shouldArm) {
@@ -1258,6 +1274,10 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
         profileCandidate   : profileCandidateLabel !== activeProfile ? profileCandidateLabel : null,
         profileCandidateTicks: profileCandidateLabel !== activeProfile ? profileCandidateTicks : 0,
         recentEcoMix       : recentEcoMix(),
+        // Heat context annotation — ADVISORY ONLY. Never changes gate logic.
+        heatScore          : heatCtx.heatScore,
+        heatClass          : heatCtx.heatClass,
+        heatRank           : heatCtx.heatRank,
       };
       console.log(`  ── heartbeat  ${uptimeMin}min  ticks=${stats.ticks}  errors=${stats.errors}  state=${state}  armed=${stats.armedCount}  ready=${stats.readySignals} ──`);
       appendLog(logPath, hbRecord);
@@ -1396,6 +1416,11 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
           const aboveViabilityFloor = spreadPctNow >= MIN_VIABLE_SPREAD_PCT;
           appendLog(logPath, {
             ...signal,
+            // Envelope fields — required for heat_correlation_check.js pair matching (Boss ruling 2026-04-09)
+            source: LOG_SOURCE,
+            chain:  LOG_CHAIN,
+            pair:   LOG_PAIR,
+            type:   'signal',
             windowId, windowKey,
             // v4 audit fields
             readinessClass, activeProfile, edgeBucket,
@@ -1440,6 +1465,101 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg) {
 // ─────────────────────────────────────────────────────────────────────────────
 function fmtTime() { return new Date().toISOString().slice(11, 19); }
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// HEAT CONTEXT — read-only advisory intake  (Boss ruling 2026-04-09)
+// ─────────────────────────────────────────────────────────────────────────────
+//
+// HEAT IS ADVISORY ONLY.
+// It must never change arm/execute eligibility.
+// It may only annotate logs, status, and priority context.
+//
+// Safe-mode integration rules (immutable):
+//   ✓ May enrich log records with heatScore / heatClass / heatRank
+//   ✓ May add a priorityNote string to console / audit
+//   ✓ May be used for operator-facing ordering and attention routing
+//   ✗ Must never change shouldArm
+//   ✗ Must never satisfy spread/depth/profile gates
+//   ✗ Must never trigger simulation or execution
+//   ✗ Must never override Boss gate
+//   ✗ Must degrade silently to neutral if log is missing, malformed, or stale
+//
+// Staleness: heat records older than HEAT_STALE_MS are treated as absent.
+// Refresh: re-read every HEAT_REFRESH_MS (default 60s) — not every tick.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const HEAT_STALE_MS   = 5 * 60 * 1000;  // 5 min — heat record older than this = stale
+const HEAT_REFRESH_MS = 60 * 1000;       // re-read heat log every 60s
+
+/** Neutral heat context — returned when log is absent, malformed, or stale. */
+const HEAT_NEUTRAL = Object.freeze({
+  heatScore : null,
+  heatClass : 'UNKNOWN',
+  heatRank  : null,
+  priorityNote: null,
+});
+
+/**
+ * Read the latest heat context for a given pair from the heat JSONL log.
+ * Matches on `pair` field — returns the highest-ranked surface for that pair.
+ *
+ * Fails silently: returns HEAT_NEUTRAL on any error so the activator is
+ * completely unaffected when the heat log is absent or the report runner
+ * has not started yet.
+ *
+ * @param {string} pair        Activator pair string, e.g. "ETH/USDC-RAMSES".
+ * @param {string} heatLogPath File path to logs/volatility_timeseries.jsonl.
+ * @returns {object}  { heatScore, heatClass, heatRank, priorityNote }
+ */
+function readLatestHeatContext(pair, heatLogPath) {
+  if (!heatLogPath) return HEAT_NEUTRAL;
+  try {
+    if (!fs.existsSync(heatLogPath)) return HEAT_NEUTRAL;
+
+    // Read last non-empty line only — avoid loading the entire file
+    const content = fs.readFileSync(heatLogPath, 'utf8');
+    const lines   = content.split('\n').filter(Boolean);
+    if (!lines.length) return HEAT_NEUTRAL;
+
+    const latest = JSON.parse(lines[lines.length - 1]);
+
+    // Staleness check — heat older than HEAT_STALE_MS is treated as absent
+    if (latest.ts) {
+      const ageMs = Date.now() - new Date(latest.ts).getTime();
+      if (ageMs > HEAT_STALE_MS) return HEAT_NEUTRAL;
+    }
+
+    if (!Array.isArray(latest.surfaces) || !latest.surfaces.length) return HEAT_NEUTRAL;
+
+    // Match on pair — strip trailing venue-specific suffix for fuzzy match
+    // ETH/USDC-RAMSES → ETH/USDC  |  ETH/USDC → ETH/USDC  |  ARB/USDC → ARB/USDC
+    const basePair = pair.split('-')[0];
+    const matches  = latest.surfaces.filter(s =>
+      s.pair === pair || s.pair === basePair ||
+      (s.surfaceId && s.surfaceId.startsWith(pair + ':')) ||
+      (s.surfaceId && s.surfaceId.startsWith(basePair + ':'))
+    );
+
+    if (!matches.length) return HEAT_NEUTRAL;
+
+    // Take highest-ranked match (lowest heatRank = best)
+    matches.sort((a, b) => (a.heatRank ?? 999) - (b.heatRank ?? 999));
+    const best = matches[0];
+
+    const heatScore  = typeof best.heatScore === 'number' ? best.heatScore : null;
+    const heatClass  = typeof best.heatClass === 'string' ? best.heatClass : 'UNKNOWN';
+    const heatRank   = typeof best.heatRank  === 'number' ? best.heatRank  : null;
+
+    // Derive operator-facing priority note — advisory text ONLY, not a gate
+    let priorityNote = null;
+    if (heatClass === 'EXTREME') priorityNote = `EXTREME heat (score=${heatScore?.toFixed(3)}): monitor closely — no gate changes`;
+    else if (heatClass === 'HOT') priorityNote = `HOT heat (score=${heatScore?.toFixed(3)}): elevated attention — advisory only`;
+
+    return { heatScore, heatClass, heatRank, priorityNote };
+  } catch (_) {
+    return HEAT_NEUTRAL;
+  }
+}
 
 /** Classify depth into regime for logging and analysis. */
 function regimeLabel(depthUsd) {
@@ -1540,8 +1660,8 @@ function printHelp() {
     '    --log=PATH      Output JSONL log file path',
     '    --gas=live|manual  Gas price source (simulators)',
     '    --out=PATH      Write JSON summary to file (analyzers)',
-    '    --pair=PAIR     Surface pair: ARB/USDC (default) | ETH/USDC | ETH/USDT',
-    '    --remap-ticks   Force fresh tick-map scan on startup (required for ETH/USDC, ETH/USDT)',
+    '    --pair=PAIR     Surface pair: ARB/USDC (default) | ETH/USDC | ETH/USDT | ETH/USDC-RAMSES',
+    '    --remap-ticks   Force fresh tick-map scan on startup (required for ETH/USDC, ETH/USDT, ETH/USDC-RAMSES)',
     '',
   ].join('\n'));
 }
@@ -1564,11 +1684,12 @@ function parseArgs() {
     return (i !== -1 && args[i + 1] && !args[i + 1].startsWith('--')) ? Number(args[i + 1]) : d;
   };
   return {
-    gasMode:    getS('--gas',      'live'),
-    duration:   getN('--duration', 28800),   // default 8 hours
-    logPath:    getS('--log',      null),
+    gasMode:    getS('--gas',       'live'),
+    duration:   getN('--duration',  28800),   // default 8 hours
+    logPath:    getS('--log',       null),
+    heatLogPath:getS('--heat-log',  'logs/volatility_timeseries.jsonl'),
     remapTicks: args.includes('--remap-ticks'),
-    pair:       getS('--pair',     'ARB/USDC'),
+    pair:       getS('--pair',      'ARB/USDC'),
   };
 }
 
@@ -1576,7 +1697,7 @@ function parseArgs() {
 // MAIN
 // ─────────────────────────────────────────────────────────────────────────────
 async function main() {
-  const { gasMode, duration, logPath, remapTicks, pair } = parseArgs();
+  const { gasMode, duration, logPath, heatLogPath, remapTicks, pair } = parseArgs();
 
   // ── Pair resolution ────────────────────────────────────────────────────────
   const pairCfg = PAIR_CONFIGS[pair];
@@ -1620,7 +1741,7 @@ async function main() {
     console.log(`${gm.gasPriceGwei.toFixed(6)} gwei | $${calcGasUSD(gm).toFixed(6)}/tx`);
   }
 
-  await activatorLoop(rpc, gm, duration, logPath, remapTicks, pairCfg);
+  await activatorLoop(rpc, gm, duration, logPath, remapTicks, pairCfg, heatLogPath);
 }
 
 main().catch(err => {
