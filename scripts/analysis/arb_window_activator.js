@@ -350,6 +350,9 @@ const LOG_SOURCE = 'arb_window_activator';
 const LOG_CHAIN  = 'arbitrum';
 let   LOG_PAIR   = 'ARB/USDC';  // overridden by --pair flag in main()
 
+// Blueprint sequence counter — monotonic per process, used for blueprintId
+let _bpSeq = 0;
+
 async function fetchLiveGasModel(rpc) {
   try {
     const res = await rpc.callDetailed('act.gas', async (p) => p.getFeeData(), { timeoutMs: 3000, hedge: true });
@@ -1423,42 +1426,122 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
             stats.readySignals++;
 
             // ── TRADE BLUEPRINT (Execution Design Layer — Boss ruling 2026-04-10) ──
-            // Build a deterministic execution plan from this signal.
-            // NO execution: pure computation + log only.
+            // Computed inline using activator's local state — no external require()
+            // needed for computation, eliminating all circular dependency risk.
+            // Blueprint logger is lazy-required (fs+path only, no cycle possible).
+            // NO execution: pure computation + append-only log.
             try {
-              // Lazy-load blueprint modules here (not at top of file) to avoid
-              // Node.js circular dependency warning during module graph init.
-              // require() cache means these are only evaluated once per process.
-              const { buildTradeBlueprint } = require('../execution/trade_blueprint_engine');
-              const { logBlueprint }        = require('../execution/blueprint_logger');
-
               // ── Heat size adjustment (Boss ruling 2026-04-10, safe mode) ──────
-              // HOT or EXTREME heat = surface is volatile, reduce blueprint size by 25%.
-              // This does NOT change the EXECUTION_READY trigger — sim already ran.
-              // Adjustment is blueprint-only: controls what the plan targets, not gate logic.
-              const originalSizeUsd    = signal.bestSize;
-              const heatIsElevated     = heatCtx.heatClass === 'HOT' || heatCtx.heatClass === 'EXTREME';
-              const adjustedSizeUsd    = heatIsElevated
+              // HOT or EXTREME heat → reduce blueprint size by 25%.
+              // Does NOT affect EXECUTION_READY trigger — sim already ran.
+              const heatIsElevated  = heatCtx.heatClass === 'HOT' || heatCtx.heatClass === 'EXTREME';
+              const originalSizeUsd = signal.bestSize ?? 200;
+              const adjustedSizeUsd = heatIsElevated
                 ? +(originalSizeUsd * 0.75).toFixed(2)
                 : originalSizeUsd;
 
-              const blueprint = buildTradeBlueprint({
-                ...signal,
-                bestSize          : adjustedSizeUsd,       // heat-adjusted size
-                pair              : LOG_PAIR,
-                activeProfile,
-                edgeBucket        : signal.spread >= 0.18  ? 'premium'
-                                   : signal.spread >= 0.13  ? 'viable_zone'
-                                   : signal.spread >= 0.10  ? 'sub_floor'
-                                   :                          'dead_zone',
-                readinessClass    : `EXECUTION_READY_${activeProfile}`,
-                windowId, windowKey,
-                heatClass         : heatCtx.heatClass,
-                heatScore         : heatCtx.heatScore,
-                // Audit fields — carried into blueprint _context
-                _heatSizeAdjusted : heatIsElevated,
-                _originalSizeUsd  : originalSizeUsd,
-              });
+              // ── Direction: lower-priced venue = buy side ──────────────────────
+              const buyOnUni  = snap.uniPrice <= snap.camPrice;
+              const buyPrice  = buyOnUni ? snap.uniPrice   : snap.camPrice;
+              const sellPrice = buyOnUni ? snap.camPrice   : snap.uniPrice;
+              const buyVenue  = buyOnUni ? 'uniswap_v3'   : 'ramses_v2';
+              const sellVenue = buyOnUni ? 'ramses_v2'    : 'uniswap_v3';
+              const buyPool   = buyOnUni ? UNIV3_POOL     : CAMELOT_POOL;
+              const sellPool  = buyOnUni ? CAMELOT_POOL   : UNIV3_POOL;
+              const buyFee    = buyOnUni ? UNIV3_FEE_FRAC : CAMELOT_FEE_FRAC;
+              const sellFee   = buyOnUni ? CAMELOT_FEE_FRAC : UNIV3_FEE_FRAC;
+
+              // ── Token math v1 (linear, no multi-hop) ─────────────────────────
+              const baseAmt      = buyPrice > 0 ? (adjustedSizeUsd / buyPrice) * (1 - buyFee) : null;
+              const tokenOutAmt  = baseAmt != null ? baseAmt * sellPrice * (1 - sellFee) : null;
+              const gasUsd       = gm.estimatedUnits * gm.gasPriceGwei * 1e-9 * 2000;
+              const netProfit    = tokenOutAmt != null ? +((tokenOutAmt - adjustedSizeUsd) - gasUsd).toFixed(2) : null;
+
+              // ── Slippage v1 (linear approximation) ───────────────────────────
+              const slipFrac = snap.uniDepth > 0 ? adjustedSizeUsd / (2 * snap.uniDepth) : 0.005;
+              const slipBps  = +(slipFrac * 10_000).toFixed(2);
+              const slipBuf  = Math.min(slipFrac * 1.5, 0.05);
+              const minOutEntry = baseAmt != null     ? +(baseAmt    * (1 - slipBuf)).toFixed(6) : null;
+              const minOutExit  = tokenOutAmt != null ? +(tokenOutAmt * (1 - slipBuf)).toFixed(6) : null;
+
+              // ── Confidence score (deterministic weighted) ─────────────────────
+              const sSpread = Math.min(Math.max((signal.spread - 0.13) / 0.17, 0), 1);
+              const sDepth  = Math.min(snap.uniDepth / 200_000, 1);
+              const sProf   = activeProfile === 'BALANCED' ? 1.0 : activeProfile === 'SAFE' ? 0.8 : 0.6;
+              const sPrem   = signal.spread >= 0.18 ? 1.0 : 0;
+              const confidenceScore = +(0.35*sSpread + 0.30*sDepth + 0.20*sProf + 0.15*sPrem).toFixed(4);
+
+              const blueprint = {
+                blueprintId    : `BP-${Date.now().toString(36).toUpperCase()}-${String(++_bpSeq).padStart(6,'0')}`,
+                ts             : new Date().toISOString(),
+                signalTs       : signal.ts,
+                signalBlock    : signal.block ?? null,
+                pair           : LOG_PAIR,
+                direction      : buyOnUni ? 'BUY_UNISWAP_V3_SELL_RAMSES_V2' : 'BUY_RAMSES_V2_SELL_UNISWAP_V3',
+                venues: {
+                  entry: { venue: buyVenue,  pool: buyPool,  tokenIn: 'USDC', tokenOut: 'WETH',
+                           expectedPrice: +buyPrice.toFixed(6),  feePct: buyFee },
+                  exit:  { venue: sellVenue, pool: sellPool, tokenIn: 'WETH', tokenOut: 'USDC',
+                           expectedPrice: +sellPrice.toFixed(6), feePct: sellFee },
+                },
+                sizing: {
+                  targetUsd        : adjustedSizeUsd,
+                  tokenInAmount    : +adjustedSizeUsd.toFixed(6),
+                  tokenInSymbol    : 'USDC',
+                  baseTokenAmount  : baseAmt     != null ? +baseAmt.toFixed(6)     : null,
+                  baseTokenSymbol  : 'WETH',
+                  tokenOutExpected : tokenOutAmt != null ? +tokenOutAmt.toFixed(6) : null,
+                  tokenOutSymbol   : 'USDC',
+                },
+                executionPlan: {
+                  route  : [`${buyVenue.toUpperCase()}_SWAP`, `${sellVenue.toUpperCase()}_SWAP`],
+                  atomic : true,
+                  chain  : 'arbitrum',
+                },
+                economics: {
+                  spreadPct      : +signal.spread.toFixed(4),
+                  expectedEdgePct: +signal.finalEdge.toFixed(6),
+                  gasCostUsd     : +gasUsd.toFixed(6),
+                  gasPriceGwei   : +gm.gasPriceGwei.toFixed(6),
+                  gasUnits       : gm.estimatedUnits,
+                  netProfitUsd   : netProfit,
+                  feeBurden      : +((buyFee + sellFee) * 100).toFixed(6),
+                  slippageBps    : slipBps,
+                },
+                safety: {
+                  minOutEntry          : minOutEntry,
+                  minOutEntrySymbol    : 'WETH',
+                  minOutExit           : minOutExit,
+                  minOutExitSymbol     : 'USDC',
+                  slippageToleranceBps : slipBps,
+                  maxGasUsd            : +(gasUsd * 2).toFixed(6),
+                },
+                viability: {
+                  spreadAboveFloor    : signal.spread >= 0.13,
+                  premiumZone         : signal.spread >= 0.18,
+                  depthAboveExecFloor : snap.uniDepth >= DEPTH_EXECUTION,
+                  economicStatus      : signal.economicStatus ?? null,
+                  confidenceScore,
+                },
+                _context: {
+                  regime           : signal.regime     ?? null,
+                  activeProfile,
+                  edgeBucket       : signal.spread >= 0.18 ? 'premium'
+                                   : signal.spread >= 0.13 ? 'viable_zone'
+                                   : signal.spread >= 0.10 ? 'sub_floor'
+                                   :                         'dead_zone',
+                  readinessClass   : `EXECUTION_READY_${activeProfile}`,
+                  windowId, windowKey,
+                  heatClass        : heatCtx.heatClass,
+                  heatScore        : heatCtx.heatScore,
+                  heatPenalty      : heatIsElevated ? 0.1 : 0,
+                  heatSizeAdjusted : heatIsElevated,
+                  originalSizeUsd,
+                },
+              };
+
+              // Lazy-require logger only (fs+path, no circular dep possible)
+              const { logBlueprint } = require('../execution/blueprint_logger');
               logBlueprint(blueprint);
             } catch (bpErr) {
               process.stderr.write(`  [blueprint] build error: ${bpErr.message}\n`);
