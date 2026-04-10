@@ -67,6 +67,16 @@ fi
 # ── Ensure logs dir exists ────────────────────────────────────────────────────
 mkdir -p "$(dirname "$LOG_PATH")"
 
+# ── Kill any stale activator process before starting ──────────────────────────
+# Prevents two-instance collisions when supervisor is restarted while
+# a previous activator is still running (causes circular dependency warnings).
+STALE=$(pgrep -f "arb_window_activator.js" 2>/dev/null)
+if [[ -n "$STALE" ]]; then
+  echo "[supervisor] Stopping stale activator process(es): $STALE"
+  kill $STALE 2>/dev/null
+  sleep 2
+fi
+
 # ── Run loop ──────────────────────────────────────────────────────────────────
 echo "[supervisor] AllMight Activator Supervisor v1.0"
 echo "[supervisor] pair=${PAIR}  gas-profile=${GAS_PROFILE}"
