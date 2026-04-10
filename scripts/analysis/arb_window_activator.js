@@ -63,10 +63,10 @@ const { ethers }     = require('ethers');
 const { createProvider } = require('../../utils/provider_factory');
 
 // ── Blueprint engine (Execution Design Layer — Boss ruling 2026-04-10) ─────────
-// Read-only import: buildTradeBlueprint is pure computation, no side effects.
-// logBlueprint is the only I/O call — append-only, fail-silent.
-const { buildTradeBlueprint } = require('../execution/trade_blueprint_engine');
-const { logBlueprint }        = require('../execution/blueprint_logger');
+// Lazy-loaded inside the blueprint try/catch block to avoid circular dependency
+// warnings when Node.js initialises the module graph. The require cache means
+// each module is still only loaded once — deferring until first call is safe.
+// See: scripts/execution/trade_blueprint_engine.js + blueprint_logger.js
 
 // ─────────────────────────────────────────────────────────────────────────────
 // POOL CONSTANTS
@@ -1426,6 +1426,12 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
             // Build a deterministic execution plan from this signal.
             // NO execution: pure computation + log only.
             try {
+              // Lazy-load blueprint modules here (not at top of file) to avoid
+              // Node.js circular dependency warning during module graph init.
+              // require() cache means these are only evaluated once per process.
+              const { buildTradeBlueprint } = require('../execution/trade_blueprint_engine');
+              const { logBlueprint }        = require('../execution/blueprint_logger');
+
               // ── Heat size adjustment (Boss ruling 2026-04-10, safe mode) ──────
               // HOT or EXTREME heat = surface is volatile, reduce blueprint size by 25%.
               // This does NOT change the EXECUTION_READY trigger — sim already ran.
