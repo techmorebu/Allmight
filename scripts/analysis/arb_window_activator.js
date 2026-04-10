@@ -243,6 +243,32 @@ const SIM_SIZE_RANGE     = [25, 50, 100, 200, 500];   // full sweep — reveals 
 const SIM_DELAY_RANGE    = [0, 1, 2];
 
 // ─────────────────────────────────────────────────────────────────────────────
+// EXECUTION SIZE POLICY (Boss ruling 2026-04-10)
+// ─────────────────────────────────────────────────────────────────────────────
+// Separates two distinct quantities:
+//   bestSizeObserved      = what the activator sim found as optimal (analytics)
+//   targetExecutionSizeUsd = what the blueprint is built for (policy)
+//
+// These are NOT the same thing.
+//   bestSize is a sim statistic. It reflects the cheapest notional that passes
+//   the Boss gate within the existing sim sweep — often $100.
+//   targetExecutionSizeUsd is a policy decision based on filter/simulation data.
+//   For ETH/USDC-RAMSES: $200 is the execution-simulation-validated notional
+//   (Boss ruling 2026-04-10, data: spread≥0.22%+$200 → 100% SIM_PASS).
+//
+// Blueprint engine uses targetExecutionSizeUsd when present.
+// Both values are logged for audit. bestSizeObserved is never overwritten.
+
+const EXECUTION_SIZE_POLICY = Object.freeze({
+  // surface pair → Boss-approved target execution notional in USD
+  'ETH/USDC-RAMSES' : 200,   // Boss ruling 2026-04-10: $200 confirmed by simulation data
+  'ETH/USDC'        : 200,   // same family — apply same policy
+  'ETH/USDT'        : 200,   // same family
+  'ARB/USDC'        : 100,   // different liquidity profile — revisit after validation
+  // Default for unlisted pairs: null (blueprint uses bestSizeObserved)
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
 // REGIME CLASSIFICATION THRESHOLD (Boss ruling 2026-04-03)
 // Separates base-depth regime ($18k) from LP-surge regime ($1M+).
 // Label added to all state_transition, heartbeat, and signal records.
@@ -1431,14 +1457,21 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
             // Blueprint logger is lazy-required (fs+path only, no cycle possible).
             // NO execution: pure computation + append-only log.
             try {
-              // ── Heat size adjustment (Boss ruling 2026-04-10, safe mode) ──────
-              // HOT or EXTREME heat → reduce blueprint size by 25%.
-              // Does NOT affect EXECUTION_READY trigger — sim already ran.
-              const heatIsElevated  = heatCtx.heatClass === 'HOT' || heatCtx.heatClass === 'EXTREME';
-              const originalSizeUsd = signal.bestSize ?? 200;
-              const adjustedSizeUsd = heatIsElevated
-                ? +(originalSizeUsd * 0.75).toFixed(2)
-                : originalSizeUsd;
+              // ── Execution size policy (Boss ruling 2026-04-10) ────────────
+              // bestSizeObserved = what the activator sim found (analytics).
+              // targetExecutionSizeUsd = policy-driven notional for blueprint.
+              // Blueprint engine uses target when present; observed is logged.
+              const bestSizeObserved       = signal.bestSize ?? null;
+              const policySize             = EXECUTION_SIZE_POLICY[LOG_PAIR] ?? null;
+
+              // ── Heat size adjustment (Boss ruling 2026-04-10, safe mode) ──
+              // Applied to the POLICY size (not bestSizeObserved).
+              // HOT or EXTREME heat → reduce by 25%.
+              const heatIsElevated         = heatCtx.heatClass === 'HOT' || heatCtx.heatClass === 'EXTREME';
+              const baseSizeForBlueprint   = policySize ?? bestSizeObserved ?? 200;
+              const targetExecutionSizeUsd = heatIsElevated
+                ? +(baseSizeForBlueprint * 0.75).toFixed(2)
+                : baseSizeForBlueprint;
 
               // ── Direction: lower-priced venue = buy side ──────────────────────
               const buyOnUni  = snap.uniPrice <= snap.camPrice;
@@ -1451,14 +1484,14 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
               const buyFee    = buyOnUni ? UNIV3_FEE_FRAC : CAMELOT_FEE_FRAC;
               const sellFee   = buyOnUni ? CAMELOT_FEE_FRAC : UNIV3_FEE_FRAC;
 
-              // ── Token math v1 (linear, no multi-hop) ─────────────────────────
-              const baseAmt      = buyPrice > 0 ? (adjustedSizeUsd / buyPrice) * (1 - buyFee) : null;
+              // ── Token math v1 (linear, no multi-hop) ─────────────────────
+              const baseAmt      = buyPrice > 0 ? (targetExecutionSizeUsd / buyPrice) * (1 - buyFee) : null;
               const tokenOutAmt  = baseAmt != null ? baseAmt * sellPrice * (1 - sellFee) : null;
               const gasUsd       = gm.estimatedUnits * gm.gasPriceGwei * 1e-9 * 2000;
-              const netProfit    = tokenOutAmt != null ? +((tokenOutAmt - adjustedSizeUsd) - gasUsd).toFixed(2) : null;
+              const netProfit    = tokenOutAmt != null ? +((tokenOutAmt - targetExecutionSizeUsd) - gasUsd).toFixed(2) : null;
 
-              // ── Slippage v1 (linear approximation) ───────────────────────────
-              const slipFrac = snap.uniDepth > 0 ? adjustedSizeUsd / (2 * snap.uniDepth) : 0.005;
+              // ── Slippage v1 (linear approximation) ───────────────────────
+              const slipFrac = snap.uniDepth > 0 ? targetExecutionSizeUsd / (2 * snap.uniDepth) : 0.005;
               const slipBps  = +(slipFrac * 10_000).toFixed(2);
               const slipBuf  = Math.min(slipFrac * 1.5, 0.05);
               const minOutEntry = baseAmt != null     ? +(baseAmt    * (1 - slipBuf)).toFixed(6) : null;
@@ -1485,13 +1518,13 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
                            expectedPrice: +sellPrice.toFixed(6), feePct: sellFee },
                 },
                 sizing: {
-                  targetUsd        : adjustedSizeUsd,
-                  tokenInAmount    : +adjustedSizeUsd.toFixed(6),
-                  tokenInSymbol    : 'USDC',
-                  baseTokenAmount  : baseAmt     != null ? +baseAmt.toFixed(6)     : null,
-                  baseTokenSymbol  : 'WETH',
-                  tokenOutExpected : tokenOutAmt != null ? +tokenOutAmt.toFixed(6) : null,
-                  tokenOutSymbol   : 'USDC',
+                  targetUsd             : targetExecutionSizeUsd,
+                  tokenInAmount         : +targetExecutionSizeUsd.toFixed(6),
+                  tokenInSymbol         : 'USDC',
+                  baseTokenAmount       : baseAmt     != null ? +baseAmt.toFixed(6)     : null,
+                  baseTokenSymbol       : 'WETH',
+                  tokenOutExpected      : tokenOutAmt != null ? +tokenOutAmt.toFixed(6) : null,
+                  tokenOutSymbol        : 'USDC',
                 },
                 executionPlan: {
                   route  : [`${buyVenue.toUpperCase()}_SWAP`, `${sellVenue.toUpperCase()}_SWAP`],
@@ -1524,19 +1557,22 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
                   confidenceScore,
                 },
                 _context: {
-                  regime           : signal.regime     ?? null,
+                  regime                : signal.regime     ?? null,
                   activeProfile,
-                  edgeBucket       : signal.spread >= 0.18 ? 'premium'
-                                   : signal.spread >= 0.13 ? 'viable_zone'
-                                   : signal.spread >= 0.10 ? 'sub_floor'
-                                   :                         'dead_zone',
-                  readinessClass   : `EXECUTION_READY_${activeProfile}`,
+                  edgeBucket            : signal.spread >= 0.18 ? 'premium'
+                                        : signal.spread >= 0.13 ? 'viable_zone'
+                                        : signal.spread >= 0.10 ? 'sub_floor'
+                                        :                         'dead_zone',
+                  readinessClass        : `EXECUTION_READY_${activeProfile}`,
                   windowId, windowKey,
-                  heatClass        : heatCtx.heatClass,
-                  heatScore        : heatCtx.heatScore,
-                  heatPenalty      : heatIsElevated ? 0.1 : 0,
-                  heatSizeAdjusted : heatIsElevated,
-                  originalSizeUsd,
+                  heatClass             : heatCtx.heatClass,
+                  heatScore             : heatCtx.heatScore,
+                  heatPenalty           : heatIsElevated ? 0.1 : 0,
+                  heatSizeAdjusted      : heatIsElevated,
+                  // Audit: both sizes preserved — Boss ruling 2026-04-10
+                  bestSizeObserved      : bestSizeObserved,   // analytics: activator sim result
+                  policySize            : policySize,          // policy: EXECUTION_SIZE_POLICY entry
+                  targetExecutionSizeUsd,                      // final: policy × heat adjustment
                 },
               };
 
