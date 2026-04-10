@@ -62,6 +62,12 @@ const path           = require('path');
 const { ethers }     = require('ethers');
 const { createProvider } = require('../../utils/provider_factory');
 
+// ── Blueprint engine (Execution Design Layer — Boss ruling 2026-04-10) ─────────
+// Read-only import: buildTradeBlueprint is pure computation, no side effects.
+// logBlueprint is the only I/O call — append-only, fail-silent.
+const { buildTradeBlueprint } = require('../execution/trade_blueprint_engine');
+const { logBlueprint }        = require('../execution/blueprint_logger');
+
 // ─────────────────────────────────────────────────────────────────────────────
 // POOL CONSTANTS
 // ─────────────────────────────────────────────────────────────────────────────
@@ -220,7 +226,7 @@ const HEARTBEAT_TICKS           =  200;        // confirmed_default: emit heartb
 const READ_TIMEOUT_MS           =  8_000;   // confirmed_default: outer hard timeout per loop read
 const CONSECUTIVE_FAIL_WARN     =  3;       // confirmed_default: log warning at this many consecutive failures
 const CONSECUTIVE_FAIL_REBUILD  =  5;       // confirmed_default: rebuild provider after this many
-const MAX_PROVIDER_REBUILDS     =  5;       // Boss ruling 2026-04-06: increased from 3 → 5 for longer runs
+const MAX_PROVIDER_REBUILDS     =  8;       // Boss ruling 2026-04-10: increased 5→8. Condition: rebuild duration+reason+endpoint must be logged.
 // Exponential backoff between rebuild attempts (Boss ruling 2026-04-06)
 // 1st: 2s, 2nd: 4s, 3rd: 8s, 4th: 16s, 5th: 30s (capped)
 const REBUILD_BACKOFF_BASE_MS   = 2_000;
@@ -864,8 +870,9 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
   const blockFail = new ConsecutiveFailTracker('getBlockNumber');
   const poolFail  = new ConsecutiveFailTracker('readBothPools');
 
-  async function rebuildProvider(logPath, state) {
+  async function rebuildProvider(logPath, state, reason) {
     providerRebuilds++;
+    const rebuildStartMs = Date.now();
     const msg = `provider rebuild #${providerRebuilds}`;
 
     // Exponential backoff — 2s * 2^(attempt-1), capped at 30s (Boss ruling 2026-04-06)
@@ -876,9 +883,13 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
     process.stderr.write(`\n  ⚠ [recover] ${msg} — backoff ${backoffMs}ms then createProvider('arbitrum')\n`);
     await sleep(backoffMs);
 
+    // Boss ruling 2026-04-10: log rebuild duration + reason + endpoint
+    // Required condition for MAX_PROVIDER_REBUILDS increase (5→8).
     appendLog(logPath, {
       ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
       type: 'provider_rebuild', attempt: providerRebuilds, state, backoffMs,
+      rebuildReason: reason || 'unspecified',
+      urls: rpc.urls || [],   // which endpoints were in the pool at time of rebuild
     });
 
     if (providerRebuilds > MAX_PROVIDER_REBUILDS) {
@@ -917,12 +928,25 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
         newRpc.getBlockNumber('recover.sanity', { timeoutMs: 5000, hedge: true }),
         10_000, 'rebuild.sanity'
       );
-      process.stderr.write(`  ✓ [recover] provider rebuild #${providerRebuilds} succeeded\n`);
+      const rebuildDurationMs = Date.now() - rebuildStartMs;
+      process.stderr.write(`  ✓ [recover] provider rebuild #${providerRebuilds} succeeded (${rebuildDurationMs}ms)\n`);
+      appendLog(logPath, {
+        ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
+        type: 'provider_rebuild_success', attempt: providerRebuilds,
+        rebuildDurationMs, rebuildReason: reason || 'unspecified',
+      });
       blockFail.success();
       poolFail.success();
       return newRpc;
     } catch (e) {
+      const rebuildDurationMs = Date.now() - rebuildStartMs;
       process.stderr.write(`  ✗ [recover] provider rebuild #${providerRebuilds} failed: ${e.message}\n`);
+      appendLog(logPath, {
+        ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
+        type: 'provider_rebuild_failed', attempt: providerRebuilds,
+        rebuildDurationMs, rebuildReason: reason || 'unspecified',
+        error: e.message?.slice(0, 120),
+      });
       return null;  // caller will retry or escalate
     }
   }
@@ -1046,7 +1070,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
           type: 'STATE_UNHEALTHY', reasons: [`block_read_failed_${count}x:${e.message.slice(0,60)}`], state,
         });
         health.currentlyUnhealthy = true;
-        const newRpc = await rebuildProvider(logPath, state);
+        const newRpc = await rebuildProvider(logPath, state, `getBlockNumber_failed_${count}x`);
         if (newRpc) rpc = newRpc;
       }
       await sleep(POLL_PASSIVE_MS);
@@ -1080,7 +1104,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
           type: 'STATE_UNHEALTHY', reasons: [`pool_read_failed_${count}x:${e.message.slice(0,60)}`], state,
         });
         health.currentlyUnhealthy = true;
-        const newRpc = await rebuildProvider(logPath, state);
+        const newRpc = await rebuildProvider(logPath, state, `readBothPools_failed_${count}x`);
         if (newRpc) rpc = newRpc;
       }
       await sleep(POLL_PASSIVE_MS);
@@ -1395,7 +1419,45 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
             : signalType;
 
           const signal = emitSignal(signalType, snap, simResult, gm, thresholds, activeRegime);
-          if (signalType === 'EXECUTION_READY') stats.readySignals++;
+          if (signalType === 'EXECUTION_READY') {
+            stats.readySignals++;
+
+            // ── TRADE BLUEPRINT (Execution Design Layer — Boss ruling 2026-04-10) ──
+            // Build a deterministic execution plan from this signal.
+            // NO execution: pure computation + log only.
+            try {
+              // ── Heat size adjustment (Boss ruling 2026-04-10, safe mode) ──────
+              // HOT or EXTREME heat = surface is volatile, reduce blueprint size by 25%.
+              // This does NOT change the EXECUTION_READY trigger — sim already ran.
+              // Adjustment is blueprint-only: controls what the plan targets, not gate logic.
+              const originalSizeUsd    = signal.bestSize;
+              const heatIsElevated     = heatCtx.heatClass === 'HOT' || heatCtx.heatClass === 'EXTREME';
+              const adjustedSizeUsd    = heatIsElevated
+                ? +(originalSizeUsd * 0.75).toFixed(2)
+                : originalSizeUsd;
+
+              const blueprint = buildTradeBlueprint({
+                ...signal,
+                bestSize          : adjustedSizeUsd,       // heat-adjusted size
+                pair              : LOG_PAIR,
+                activeProfile,
+                edgeBucket        : signal.spread >= 0.18  ? 'premium'
+                                   : signal.spread >= 0.13  ? 'viable_zone'
+                                   : signal.spread >= 0.10  ? 'sub_floor'
+                                   :                          'dead_zone',
+                readinessClass    : `EXECUTION_READY_${activeProfile}`,
+                windowId, windowKey,
+                heatClass         : heatCtx.heatClass,
+                heatScore         : heatCtx.heatScore,
+                // Audit fields — carried into blueprint _context
+                _heatSizeAdjusted : heatIsElevated,
+                _originalSizeUsd  : originalSizeUsd,
+              });
+              logBlueprint(blueprint);
+            } catch (bpErr) {
+              process.stderr.write(`  [blueprint] build error: ${bpErr.message}\n`);
+            }
+          }
 
           // Record eco outcome into ring buffer for selector feedback
           const ecoClass = signal.economicStatus === 'economically_viable'   ? 'GOOD'
