@@ -1,11 +1,11 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════════════════════════════════
-#  AllMight — Unified Launcher  v1.0
+#  AllMight — Unified Launcher  v1.1
 # ───────────────────────────────────────────────────────────────────────────────
 #  PLACEMENT : scripts/tools/start_all.sh
 #
 #  Runs all AllMight processes from a single terminal.
-#  All output goes to logs/. No extra windows needed.
+#  Each run gets a timestamped session ID — logs are clearly named.
 #
 #  USAGE
 #  ─────
@@ -13,13 +13,18 @@
 #  bash scripts/tools/start_all.sh status   # check what's running
 #  bash scripts/tools/start_all.sh stop     # stop everything
 #  bash scripts/tools/start_all.sh logs     # tail all logs live
+#  bash scripts/tools/start_all.sh upload   # show which files to upload to CPT
 #
-#  PROCESSES STARTED
-#  ─────────────────
-#  1. master-fetcher      — feeds Redis every 120s
-#  2. volatility-monitor  — reads Redis, writes volatility_arbitrum.jsonl
-#  3. heat-report         — reads monitor log, writes volatility_timeseries.jsonl
-#  4. activator           — supervised, auto-restarts on fatal exit
+#  LOG NAMING
+#  ──────────
+#  Each run stamps all logs with a session ID: YYYYMMDD_HHMM
+#  Example: session 20260411_0930 produces:
+#    logs/session_20260411_0930/activator.jsonl
+#    logs/session_20260411_0930/blueprints.jsonl
+#    logs/session_20260411_0930/volatility.jsonl
+#    logs/session_20260411_0930/heat.jsonl
+#    logs/session_20260411_0930/fetcher.log
+#    logs/session_20260411_0930/monitor.log
 #
 #  All PIDs saved to logs/allmight.pid for clean stop.
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -29,6 +34,7 @@ cd "$(dirname "$0")/../.." || exit 1   # always run from repo root
 
 LOGS="./logs"
 PID_FILE="$LOGS/allmight.pid"
+SESSION_FILE="$LOGS/allmight.session"
 mkdir -p "$LOGS"
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -39,11 +45,40 @@ die()  { echo "[start_all] ERROR: $*" >&2; exit 1; }
 [[ -f "scripts/analysis/arb_window_activator.js" ]] || \
   die "Run from repo root (~/Allmight)"
 
+# ── UPLOAD HELPER ─────────────────────────────────────────────────────────────
+if [[ "$1" == "upload" ]]; then
+  if [[ ! -f "$SESSION_FILE" ]]; then
+    echo "No active or recent session found."
+    exit 1
+  fi
+  SESSION=$(cat "$SESSION_FILE")
+  SESSION_DIR="$LOGS/session_${SESSION}"
+  echo ""
+  echo "  Upload these files to CPT for analysis:"
+  echo "  ─────────────────────────────────────────────────────"
+  for f in activator.jsonl blueprints.jsonl heat.jsonl volatility.jsonl; do
+    target="$SESSION_DIR/$f"
+    if [[ -f "$target" ]]; then
+      lines=$(wc -l < "$target")
+      size=$(du -sh "$target" | cut -f1)
+      echo "  ✓  $target  ($lines lines, $size)"
+    else
+      echo "  ✗  $target  (not found)"
+    fi
+  done
+  echo ""
+  echo "  Session: $SESSION"
+  echo ""
+  exit 0
+fi
+
 # ── STATUS ────────────────────────────────────────────────────────────────────
 if [[ "$1" == "status" ]]; then
+  SESSION=$( [[ -f "$SESSION_FILE" ]] && cat "$SESSION_FILE" || echo "none" )
+  SESSION_DIR="$LOGS/session_${SESSION}"
   echo ""
-  echo "  AllMight process status:"
-  echo "  ─────────────────────────────────"
+  echo "  AllMight status  (session: $SESSION)"
+  echo "  ─────────────────────────────────────────────"
   for name in fetcher monitor heat activator; do
     pid=$(grep "^${name}=" "$PID_FILE" 2>/dev/null | cut -d= -f2)
     if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
@@ -53,8 +88,16 @@ if [[ "$1" == "status" ]]; then
     fi
   done
   echo ""
-  echo "  Blueprint count: $(wc -l < "$LOGS/trade_blueprints.jsonl" 2>/dev/null || echo 0)"
-  echo "  Activator log:   $(wc -l < "$LOGS/activator_supervised.jsonl" 2>/dev/null || echo 0) lines"
+  if [[ -d "$SESSION_DIR" ]]; then
+    echo "  Log files this session:"
+    for f in activator.jsonl blueprints.jsonl heat.jsonl volatility.jsonl; do
+      target="$SESSION_DIR/$f"
+      [[ -f "$target" ]] && echo "    $(wc -l < "$target") lines  $target" \
+                         || echo "    —  $target (not yet created)"
+    done
+  fi
+  echo ""
+  echo "  Run 'bash scripts/tools/start_all.sh upload' to see what to send CPT."
   echo ""
   exit 0
 fi
@@ -70,35 +113,38 @@ if [[ "$1" == "stop" ]]; then
     done < "$PID_FILE"
     rm -f "$PID_FILE"
   fi
-  # Catch any stragglers
-  pkill -f "arb_window_activator.js" 2>/dev/null || true
-  pkill -f "arb_volatility_monitor.js" 2>/dev/null || true
+  pkill -f "arb_window_activator.js"        2>/dev/null || true
+  pkill -f "arb_volatility_monitor.js"      2>/dev/null || true
   pkill -f "volatility_divergence_report.js" 2>/dev/null || true
+  SESSION=$( [[ -f "$SESSION_FILE" ]] && cat "$SESSION_FILE" || echo "" )
   log "Done."
+  [[ -n "$SESSION" ]] && log "Session logs: logs/session_${SESSION}/"
+  log "Run 'bash scripts/tools/start_all.sh upload' to see what to send CPT."
   exit 0
 fi
 
 # ── LOGS (live tail) ──────────────────────────────────────────────────────────
 if [[ "$1" == "logs" ]]; then
+  SESSION=$( [[ -f "$SESSION_FILE" ]] && cat "$SESSION_FILE" || echo "" )
+  SESSION_DIR="$LOGS/session_${SESSION}"
   echo ""
-  echo "  Tailing all AllMight logs. Ctrl+C to stop watching."
-  echo "  ─────────────────────────────────────────────────────"
+  echo "  Tailing all AllMight logs (session: $SESSION). Ctrl+C to stop."
+  echo "  ─────────────────────────────────────────────────────────────────"
   tail -f \
-    "$LOGS/fetcher.log" \
-    "$LOGS/monitor.log" \
-    "$LOGS/heat.log" \
-    "$LOGS/activator_supervised.jsonl" \
+    "$SESSION_DIR/fetcher.log" \
+    "$SESSION_DIR/monitor.log" \
+    "$SESSION_DIR/heat.log" \
+    "$SESSION_DIR/activator.jsonl" \
     2>/dev/null
   exit 0
 fi
 
 # ── START ─────────────────────────────────────────────────────────────────────
 if [[ -f "$PID_FILE" ]]; then
-  # Check if processes are already running
   RUNNING=0
   while IFS='=' read -r name pid; do
     kill -0 "$pid" 2>/dev/null && RUNNING=$((RUNNING+1))
-  done < "$PID_FILE"
+  done < "$PID_FILE" 2>/dev/null || true
   if [[ $RUNNING -gt 0 ]]; then
     log "Already running ($RUNNING processes). Use 'stop' first or 'status' to check."
     exit 1
@@ -106,28 +152,33 @@ if [[ -f "$PID_FILE" ]]; then
   rm -f "$PID_FILE"
 fi
 
-# Kill any stale processes from previous runs
-pkill -f "arb_window_activator.js"   2>/dev/null || true
-pkill -f "arb_volatility_monitor.js" 2>/dev/null || true
+# ── Session ID — stamped at launch time ───────────────────────────────────────
+SESSION=$(date -u '+%Y%m%d_%H%M')
+SESSION_DIR="$LOGS/session_${SESSION}"
+mkdir -p "$SESSION_DIR"
+echo "$SESSION" > "$SESSION_FILE"
+
+# Kill any stale processes
+pkill -f "arb_window_activator.js"        2>/dev/null || true
+pkill -f "arb_volatility_monitor.js"      2>/dev/null || true
 pkill -f "volatility_divergence_report.js" 2>/dev/null || true
 sleep 1
 
-log "Starting AllMight..."
+log "Starting AllMight — session: $SESSION"
+log "All logs → $SESSION_DIR/"
 echo ""
 
 # ── Process 1: Fetcher loop ───────────────────────────────────────────────────
-# Runs master-fetcher every 120s to keep Redis fresh.
 (
   while true; do
-    node -r dotenv/config scripts/master-fetcher.js >> "$LOGS/fetcher.log" 2>&1
+    node -r dotenv/config scripts/master-fetcher.js >> "$SESSION_DIR/fetcher.log" 2>&1
     sleep 120
   done
 ) &
 FETCHER_PID=$!
 echo "fetcher=$FETCHER_PID" >> "$PID_FILE"
-log "✓ Fetcher loop started (pid $FETCHER_PID) → logs/fetcher.log"
+log "✓ Fetcher loop     (pid $FETCHER_PID) → session_${SESSION}/fetcher.log"
 
-# Wait for first fetch to complete before starting dependent processes
 log "  Waiting 15s for initial Redis population..."
 sleep 15
 
@@ -135,24 +186,23 @@ sleep 15
 node -r dotenv/config scripts/analysis/arb_volatility_monitor.js \
   --chain arbitrum \
   --interval 120 \
-  --log "$LOGS/volatility_arbitrum.jsonl" \
-  >> "$LOGS/monitor.log" 2>&1 &
+  --log "$SESSION_DIR/volatility.jsonl" \
+  >> "$SESSION_DIR/monitor.log" 2>&1 &
 MONITOR_PID=$!
 echo "monitor=$MONITOR_PID" >> "$PID_FILE"
-log "✓ Volatility monitor started (pid $MONITOR_PID) → logs/monitor.log"
+log "✓ Volatility monitor (pid $MONITOR_PID) → session_${SESSION}/volatility.jsonl"
 
-# Wait for monitor to produce first scan before heat report starts
 sleep 5
 
 # ── Process 3: Heat report runner ────────────────────────────────────────────
 node scripts/tools/volatility_divergence_report.js \
-  --log "$LOGS/volatility_arbitrum.jsonl" \
-  --out "$LOGS/volatility_timeseries.jsonl" \
+  --log "$SESSION_DIR/volatility.jsonl" \
+  --out "$SESSION_DIR/heat.jsonl" \
   --interval 30 \
-  >> "$LOGS/heat.log" 2>&1 &
+  >> "$SESSION_DIR/monitor.log" 2>&1 &
 HEAT_PID=$!
 echo "heat=$HEAT_PID" >> "$PID_FILE"
-log "✓ Heat report started (pid $HEAT_PID) → logs/heat.log"
+log "✓ Heat report      (pid $HEAT_PID) → session_${SESSION}/heat.jsonl"
 
 # ── Process 4: Activator (supervised) ────────────────────────────────────────
 (
@@ -160,37 +210,36 @@ log "✓ Heat report started (pid $HEAT_PID) → logs/heat.log"
   while true; do
     RESTART_COUNT=$((RESTART_COUNT+1))
     echo "[supervisor] Start #${RESTART_COUNT} $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
-      >> "$LOGS/activator_supervised.jsonl"
+      >> "$SESSION_DIR/activator.jsonl"
 
     node -r dotenv/config scripts/analysis/arb_window_activator.js \
       --pair ETH/USDC-RAMSES \
       --remap-ticks \
       --gas-profile atomic_optimistic \
-      --log "$LOGS/activator_supervised.jsonl" \
-      --heat-log "$LOGS/volatility_timeseries.jsonl"
+      --log "$SESSION_DIR/activator.jsonl" \
+      --heat-log "$SESSION_DIR/heat.jsonl"
 
     EXIT=$?
     echo "[supervisor] Exited code $EXIT — restarting in 5s" \
-      >> "$LOGS/activator_supervised.jsonl"
+      >> "$SESSION_DIR/activator.jsonl"
     [[ $EXIT -eq 0 ]] && break
     sleep 5
   done
 ) &
 ACTIVATOR_PID=$!
 echo "activator=$ACTIVATOR_PID" >> "$PID_FILE"
-log "✓ Activator (supervised) started (pid $ACTIVATOR_PID) → logs/activator_supervised.jsonl"
+# Blueprint log path is set by the activator's default (logs/trade_blueprints.jsonl)
+# Override via BLUEPRINT_LOG_PATH env var so it lands in the session folder
+export BLUEPRINT_LOG_PATH="$SESSION_DIR/blueprints.jsonl"
+log "✓ Activator        (pid $ACTIVATOR_PID) → session_${SESSION}/activator.jsonl"
+log "✓ Blueprints                            → session_${SESSION}/blueprints.jsonl"
 
 echo ""
-log "All processes running. PIDs saved to logs/allmight.pid"
+log "Session $SESSION running. PIDs: fetcher=$FETCHER_PID monitor=$MONITOR_PID heat=$HEAT_PID activator=$ACTIVATOR_PID"
 echo ""
-echo "  Commands:"
-echo "    bash scripts/tools/start_all.sh status   — check health"
-echo "    bash scripts/tools/start_all.sh logs      — watch live output"
-echo "    bash scripts/tools/start_all.sh stop      — stop everything"
+echo "  bash scripts/tools/start_all.sh status   — check health"
+echo "  bash scripts/tools/start_all.sh logs      — watch live output"
+echo "  bash scripts/tools/start_all.sh stop      — stop + see what to upload"
+echo "  bash scripts/tools/start_all.sh upload    — show files to send CPT"
 echo ""
-echo "  Blueprint output:"
-echo "    tail -f logs/trade_blueprints.jsonl"
-echo ""
-echo "  EXECUTION_READY signals:"
-echo "    grep EXECUTION_READY logs/activator_supervised.jsonl | tail -5"
-echo ""
+
