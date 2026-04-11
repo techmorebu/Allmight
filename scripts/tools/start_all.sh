@@ -56,7 +56,7 @@ if [[ "$1" == "upload" ]]; then
   echo ""
   echo "  Upload these files to CPT for analysis:"
   echo "  ─────────────────────────────────────────────────────"
-  for f in activator.jsonl blueprints.jsonl heat.jsonl volatility.jsonl; do
+  for f in activator.jsonl blueprints.jsonl heat.jsonl volatility.jsonl simulations.jsonl filter_results.jsonl; do
     target="$SESSION_DIR/$f"
     if [[ -f "$target" ]]; then
       lines=$(wc -l < "$target")
@@ -90,7 +90,7 @@ if [[ "$1" == "status" ]]; then
   echo ""
   if [[ -d "$SESSION_DIR" ]]; then
     echo "  Log files this session:"
-    for f in activator.jsonl blueprints.jsonl heat.jsonl volatility.jsonl; do
+    for f in activator.jsonl blueprints.jsonl heat.jsonl volatility.jsonl simulations.jsonl filter_results.jsonl; do
       target="$SESSION_DIR/$f"
       [[ -f "$target" ]] && echo "    $(wc -l < "$target") lines  $target" \
                          || echo "    —  $target (not yet created)"
@@ -205,6 +205,12 @@ echo "heat=$HEAT_PID" >> "$PID_FILE"
 log "✓ Heat report      (pid $HEAT_PID) → session_${SESSION}/heat.jsonl"
 
 # ── Process 4: Activator (supervised) ────────────────────────────────────────
+# BLUEPRINT_LOG_PATH must be exported BEFORE the subshell launches so the
+# child process inherits it. blueprint_logger.js reads this env var on load.
+export BLUEPRINT_LOG_PATH="$SESSION_DIR/blueprints.jsonl"
+export SIM_LOG_PATH="$SESSION_DIR/simulations.jsonl"
+export FILTER_LOG_PATH="$SESSION_DIR/filter_results.jsonl"
+
 (
   RESTART_COUNT=0
   while true; do
@@ -228,9 +234,6 @@ log "✓ Heat report      (pid $HEAT_PID) → session_${SESSION}/heat.jsonl"
 ) &
 ACTIVATOR_PID=$!
 echo "activator=$ACTIVATOR_PID" >> "$PID_FILE"
-# Blueprint log path is set by the activator's default (logs/trade_blueprints.jsonl)
-# Override via BLUEPRINT_LOG_PATH env var so it lands in the session folder
-export BLUEPRINT_LOG_PATH="$SESSION_DIR/blueprints.jsonl"
 log "✓ Activator        (pid $ACTIVATOR_PID) → session_${SESSION}/activator.jsonl"
 log "✓ Blueprints                            → session_${SESSION}/blueprints.jsonl"
 
