@@ -1457,21 +1457,24 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
             // Blueprint logger is lazy-required (fs+path only, no cycle possible).
             // NO execution: pure computation + append-only log.
             try {
-              // ── Execution size policy (Boss ruling 2026-04-10) ────────────
-              // bestSizeObserved = what the activator sim found (analytics).
-              // targetExecutionSizeUsd = policy-driven notional for blueprint.
-              // Blueprint engine uses target when present; observed is logged.
+              // ── Execution size policy (Boss ruling 2026-04-10, updated 2026-04-11) ──
+              // bestSizeObserved      = activator sim result (analytics — do not modify)
+              // targetExecutionSizeUsd = policy size — HEAT MUST NOT OVERRIDE THIS.
+              //
+              // Boss ruling 2026-04-11: heat is advisory only.
+              // It describes risk context. It does not reduce blueprint notional.
+              // The execution filter requires $200 for ETH/USDC-RAMSES.
+              // Reducing to $150 blocks execution candidates — that is a policy override.
+              // Heat fields are preserved in _context.heatAdvisory for operator awareness.
               const bestSizeObserved       = signal.bestSize ?? null;
               const policySize             = EXECUTION_SIZE_POLICY[LOG_PAIR] ?? null;
+              const targetExecutionSizeUsd = policySize ?? bestSizeObserved ?? 200;
 
-              // ── Heat size adjustment (Boss ruling 2026-04-10, safe mode) ──
-              // Applied to the POLICY size (not bestSizeObserved).
-              // HOT or EXTREME heat → reduce by 25%.
+              // Advisory-only: record what heat would have reduced to, without acting on it
               const heatIsElevated         = heatCtx.heatClass === 'HOT' || heatCtx.heatClass === 'EXTREME';
-              const baseSizeForBlueprint   = policySize ?? bestSizeObserved ?? 200;
-              const targetExecutionSizeUsd = heatIsElevated
-                ? +(baseSizeForBlueprint * 0.75).toFixed(2)
-                : baseSizeForBlueprint;
+              const wouldHaveReducedToUsd  = heatIsElevated
+                ? +((policySize ?? bestSizeObserved ?? 200) * 0.75).toFixed(2)
+                : null;
 
               // ── Direction: lower-priced venue = buy side ──────────────────────
               const buyOnUni  = snap.uniPrice <= snap.camPrice;
@@ -1568,7 +1571,13 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
                   heatClass             : heatCtx.heatClass,
                   heatScore             : heatCtx.heatScore,
                   heatPenalty           : heatIsElevated ? 0.1 : 0,
-                  heatSizeAdjusted      : heatIsElevated,
+                  heatSizeAdjusted      : false,   // Boss ruling 2026-04-11: heat never reduces size
+                  // Heat advisory — context only, no policy effect
+                  heatAdvisory          : heatIsElevated ? {
+                    heatClass            : heatCtx.heatClass,
+                    heatScore            : heatCtx.heatScore,
+                    wouldHaveReducedToUsd,           // what old behavior would have done
+                  } : null,
                   // Audit: both sizes preserved — Boss ruling 2026-04-10
                   bestSizeObserved      : bestSizeObserved,   // analytics: activator sim result
                   policySize            : policySize,          // policy: EXECUTION_SIZE_POLICY entry
