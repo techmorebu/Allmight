@@ -56,7 +56,7 @@ if [[ "$1" == "upload" ]]; then
   echo ""
   echo "  Upload these files to CPT for analysis:"
   echo "  ─────────────────────────────────────────────────────"
-  for f in activator.jsonl blueprints.jsonl heat.jsonl volatility.jsonl simulations.jsonl filter_results.jsonl; do
+  for f in activator.jsonl blueprints.jsonl heat.jsonl volatility.jsonl execution_candidate_audit.jsonl near_miss_analysis.json threshold_edge.json; do
     target="$SESSION_DIR/$f"
     if [[ -f "$target" ]]; then
       lines=$(wc -l < "$target")
@@ -90,7 +90,7 @@ if [[ "$1" == "status" ]]; then
   echo ""
   if [[ -d "$SESSION_DIR" ]]; then
     echo "  Log files this session:"
-    for f in activator.jsonl blueprints.jsonl heat.jsonl volatility.jsonl simulations.jsonl filter_results.jsonl; do
+    for f in activator.jsonl blueprints.jsonl heat.jsonl volatility.jsonl execution_candidate_audit.jsonl near_miss_analysis.json threshold_edge.json; do
       target="$SESSION_DIR/$f"
       [[ -f "$target" ]] && echo "    $(wc -l < "$target") lines  $target" \
                          || echo "    —  $target (not yet created)"
@@ -116,8 +116,71 @@ if [[ "$1" == "stop" ]]; then
   pkill -f "arb_window_activator.js"        2>/dev/null || true
   pkill -f "arb_volatility_monitor.js"      2>/dev/null || true
   pkill -f "volatility_divergence_report.js" 2>/dev/null || true
+
   SESSION=$( [[ -f "$SESSION_FILE" ]] && cat "$SESSION_FILE" || echo "" )
+  SESSION_DIR="$LOGS/session_${SESSION}"
   log "Done."
+
+  # ── Post-run analysis pipeline ───────────────────────────────────────────────
+  # Runs automatically on stop if blueprints.jsonl exists in the session folder.
+  # All outputs land in the session folder alongside activator/heat/volatility logs.
+  # Skip silently if blueprints are missing (session had no signals).
+
+  if [[ -n "$SESSION" && -f "$SESSION_DIR/blueprints.jsonl" ]]; then
+    BP_COUNT=$(wc -l < "$SESSION_DIR/blueprints.jsonl")
+    log "Running post-run analysis on $BP_COUNT blueprints..."
+
+    # 1. Candidate audit — produces execution_candidate_audit.jsonl
+    node scripts/tools/candidate_audit_report.js \
+      --blueprints "$SESSION_DIR/blueprints.jsonl" \
+      --out        "$SESSION_DIR/execution_candidate_audit.jsonl" \
+      2>> "$SESSION_DIR/analysis.log" \
+      && log "  ✓ candidate_audit_report     → session_${SESSION}/execution_candidate_audit.jsonl" \
+      || log "  ✗ candidate_audit_report failed (see session_${SESSION}/analysis.log)"
+
+    # 2. Near-miss analysis — reads audit log
+    if [[ -f "$SESSION_DIR/execution_candidate_audit.jsonl" ]]; then
+      node scripts/tools/near_miss_analysis_report.js \
+        --audit "$SESSION_DIR/execution_candidate_audit.jsonl" \
+        --json  > "$SESSION_DIR/near_miss_analysis.json" \
+        2>> "$SESSION_DIR/analysis.log" \
+        && log "  ✓ near_miss_analysis_report  → session_${SESSION}/near_miss_analysis.json" \
+        || log "  ✗ near_miss_analysis_report failed"
+
+      # 3. Threshold-edge tracker — reads same audit log
+      node scripts/tools/threshold_edge_report.js \
+        --audit "$SESSION_DIR/execution_candidate_audit.jsonl" \
+        --json  > "$SESSION_DIR/threshold_edge.json" \
+        2>> "$SESSION_DIR/analysis.log" \
+        && log "  ✓ threshold_edge_report      → session_${SESSION}/threshold_edge.json" \
+        || log "  ✗ threshold_edge_report failed"
+    fi
+
+    # 4. Quick summary to console
+    if [[ -f "$SESSION_DIR/execution_candidate_audit.jsonl" ]]; then
+      CONFIRMED=$(grep -c '"auditVerdict":"CANDIDATE_CONFIRMED"' "$SESSION_DIR/execution_candidate_audit.jsonl" 2>/dev/null || echo 0)
+      NEAR_MISS=$(grep -c '"auditVerdict":"CANDIDATE_NEAR_MISS"' "$SESSION_DIR/execution_candidate_audit.jsonl" 2>/dev/null || echo 0)
+      EDGE_COUNT=$(python3 -c "
+import json, sys
+recs = [json.loads(l) for l in open('$SESSION_DIR/execution_candidate_audit.jsonl') if l.strip()]
+edge = [r for r in recs if r.get('nearMissType')=='near_miss_spread'
+        and r.get('simulationVerdict')=='SIM_PASS'
+        and (r.get('executionConfidence') or 0) >= 0.65]
+print(len(edge))
+" 2>/dev/null || echo "?")
+      echo ""
+      echo "  ┌─────────────────────────────────────────────────┐"
+      echo "  │  Session $SESSION analysis summary              │"
+      echo "  │  CONFIRMED candidates:      $CONFIRMED"
+      echo "  │  Near-miss:                 $NEAR_MISS"
+      echo "  │  Threshold-edge (tracked):  $EDGE_COUNT"
+      echo "  └─────────────────────────────────────────────────┘"
+      echo ""
+    fi
+  else
+    [[ -n "$SESSION" ]] && log "No blueprints found — skipping post-run analysis."
+  fi
+
   [[ -n "$SESSION" ]] && log "Session logs: logs/session_${SESSION}/"
   log "Run 'bash scripts/tools/start_all.sh upload' to see what to send CPT."
   exit 0
@@ -245,4 +308,3 @@ echo "  bash scripts/tools/start_all.sh logs      — watch live output"
 echo "  bash scripts/tools/start_all.sh stop      — stop + see what to upload"
 echo "  bash scripts/tools/start_all.sh upload    — show files to send CPT"
 echo ""
-
