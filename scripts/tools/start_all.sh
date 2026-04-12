@@ -56,7 +56,7 @@ if [[ "$1" == "upload" ]]; then
   echo ""
   echo "  Upload these files to CPT for analysis:"
   echo "  ─────────────────────────────────────────────────────"
-  for f in activator.jsonl blueprints.jsonl heat.jsonl volatility.jsonl execution_candidate_audit.jsonl near_miss_analysis.json threshold_edge.json; do
+  for f in activator.jsonl blueprints.jsonl heat.jsonl volatility.jsonl execution_candidate_audit.jsonl near_miss_analysis.json threshold_edge.json threshold_edge_accumulator.json; do
     target="$SESSION_DIR/$f"
     if [[ -f "$target" ]]; then
       lines=$(wc -l < "$target")
@@ -90,7 +90,7 @@ if [[ "$1" == "status" ]]; then
   echo ""
   if [[ -d "$SESSION_DIR" ]]; then
     echo "  Log files this session:"
-    for f in activator.jsonl blueprints.jsonl heat.jsonl volatility.jsonl execution_candidate_audit.jsonl near_miss_analysis.json threshold_edge.json; do
+    for f in activator.jsonl blueprints.jsonl heat.jsonl volatility.jsonl execution_candidate_audit.jsonl near_miss_analysis.json threshold_edge.json threshold_edge_accumulator.json; do
       target="$SESSION_DIR/$f"
       [[ -f "$target" ]] && echo "    $(wc -l < "$target") lines  $target" \
                          || echo "    —  $target (not yet created)"
@@ -154,9 +154,30 @@ if [[ "$1" == "stop" ]]; then
         2>> "$SESSION_DIR/analysis.log" \
         && log "  ✓ threshold_edge_report      → session_${SESSION}/threshold_edge.json" \
         || log "  ✗ threshold_edge_report failed"
+
+      # 4. Cross-session threshold-edge accumulator
+      # Finds all previous session audit logs and runs accumulation across them
+      PREV_SESSIONS=$(find "$LOGS" -name "execution_candidate_audit.jsonl" \
+        -not -path "$SESSION_DIR/*" 2>/dev/null \
+        | sed 's|/execution_candidate_audit.jsonl||' | sort)
+      ALL_SESSIONS="$PREV_SESSIONS $SESSION_DIR"
+      SESSION_ARGS=""
+      for s in $ALL_SESSIONS; do
+        [[ -f "$s/execution_candidate_audit.jsonl" ]] && SESSION_ARGS="$SESSION_ARGS $s"
+      done
+      SESSION_COUNT=$(echo $SESSION_ARGS | wc -w)
+
+      if [[ $SESSION_COUNT -ge 1 ]]; then
+        node scripts/tools/threshold_edge_accumulator_report.js \
+          --sessions $SESSION_ARGS \
+          --json > "$SESSION_DIR/threshold_edge_accumulator.json" \
+          2>> "$SESSION_DIR/analysis.log" \
+          && log "  ✓ threshold_edge_accumulator → session_${SESSION}/threshold_edge_accumulator.json  (${SESSION_COUNT} session(s))" \
+          || log "  ✗ threshold_edge_accumulator failed"
+      fi
     fi
 
-    # 4. Quick summary to console
+    # 5. Quick summary to console
     if [[ -f "$SESSION_DIR/execution_candidate_audit.jsonl" ]]; then
       CONFIRMED=$(grep -c '"auditVerdict":"CANDIDATE_CONFIRMED"' "$SESSION_DIR/execution_candidate_audit.jsonl" 2>/dev/null || echo 0)
       NEAR_MISS=$(grep -c '"auditVerdict":"CANDIDATE_NEAR_MISS"' "$SESSION_DIR/execution_candidate_audit.jsonl" 2>/dev/null || echo 0)
@@ -168,13 +189,21 @@ edge = [r for r in recs if r.get('nearMissType')=='near_miss_spread'
         and (r.get('executionConfidence') or 0) >= 0.65]
 print(len(edge))
 " 2>/dev/null || echo "?")
+      ACCUM_VERDICT=$(python3 -c "
+import json
+try:
+  d = json.load(open('$SESSION_DIR/threshold_edge_accumulator.json'))
+  print(d.get('recurrenceVerdict','?') + ' (' + d.get('q1_sessionCoverage','?') + ')')
+except: print('not run')
+" 2>/dev/null || echo "?")
       echo ""
-      echo "  ┌─────────────────────────────────────────────────┐"
-      echo "  │  Session $SESSION analysis summary              │"
+      echo "  ┌─────────────────────────────────────────────────────┐"
+      echo "  │  Session $SESSION analysis summary                  │"
       echo "  │  CONFIRMED candidates:      $CONFIRMED"
       echo "  │  Near-miss:                 $NEAR_MISS"
       echo "  │  Threshold-edge (tracked):  $EDGE_COUNT"
-      echo "  └─────────────────────────────────────────────────┘"
+      echo "  │  Accumulator verdict:       $ACCUM_VERDICT"
+      echo "  └─────────────────────────────────────────────────────┘"
       echo ""
     fi
   else
