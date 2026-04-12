@@ -1,6 +1,6 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════════════════════════════════
-#  AllMight — Unified Launcher  v1.1
+#  AllMight — Unified Launcher  v1.2
 # ───────────────────────────────────────────────────────────────────────────────
 #  PLACEMENT : scripts/tools/start_all.sh
 #
@@ -11,7 +11,7 @@
 #  ─────
 #  bash scripts/tools/start_all.sh          # start everything
 #  bash scripts/tools/start_all.sh status   # check what's running
-#  bash scripts/tools/start_all.sh stop     # stop everything
+#  bash scripts/tools/start_all.sh stop     # stop everything + run analysis
 #  bash scripts/tools/start_all.sh logs     # tail all logs live
 #  bash scripts/tools/start_all.sh upload   # show which files to upload to CPT
 #
@@ -29,7 +29,7 @@
 #  All PIDs saved to logs/allmight.pid for clean stop.
 # ═══════════════════════════════════════════════════════════════════════════════
 
-set -e
+set -uo pipefail
 cd "$(dirname "$0")/../.." || exit 1   # always run from repo root
 
 LOGS="./logs"
@@ -45,8 +45,41 @@ die()  { echo "[start_all] ERROR: $*" >&2; exit 1; }
 [[ -f "scripts/analysis/arb_window_activator.js" ]] || \
   die "Run from repo root (~/Allmight)"
 
+# wait_for_nonempty_file FILE [MAX_WAIT_SEC] [POLL_SEC]
+# Polls until FILE exists and has at least one line.
+# Continues with a warning on timeout — never hard-fails startup.
+wait_for_nonempty_file() {
+  local file="$1"
+  local max="${2:-60}"
+  local poll="${3:-2}"
+  local waited=0
+  while [[ $waited -lt $max ]]; do
+    if [[ -f "$file" ]] && [[ $(wc -l < "$file" 2>/dev/null || echo 0) -gt 0 ]]; then
+      return 0
+    fi
+    sleep "$poll"
+    waited=$((waited + poll))
+  done
+  log "  ⚠ timeout waiting for $file after ${max}s — continuing anyway"
+  return 1
+}
+
+# count_jsonl_matches FILE PATTERN
+# Counts lines matching a grep pattern. Returns 0 on missing file.
+count_jsonl_matches() {
+  local file="$1"
+  local pattern="$2"
+  [[ -f "$file" ]] && grep -c "$pattern" "$file" 2>/dev/null || echo 0
+}
+
+# ── WATCHDOG ──────────────────────────────────────────────────────────────────
+if [[ "${1:-}" == "watchdog" ]]; then
+  shift
+  exec bash scripts/tools/allmight_watchdog.sh "$@"
+fi
+
 # ── UPLOAD HELPER ─────────────────────────────────────────────────────────────
-if [[ "$1" == "upload" ]]; then
+if [[ "${1:-}" == "upload" ]]; then
   if [[ ! -f "$SESSION_FILE" ]]; then
     echo "No active or recent session found."
     exit 1
@@ -73,14 +106,14 @@ if [[ "$1" == "upload" ]]; then
 fi
 
 # ── STATUS ────────────────────────────────────────────────────────────────────
-if [[ "$1" == "status" ]]; then
+if [[ "${1:-}" == "status" ]]; then
   SESSION=$( [[ -f "$SESSION_FILE" ]] && cat "$SESSION_FILE" || echo "none" )
   SESSION_DIR="$LOGS/session_${SESSION}"
   echo ""
   echo "  AllMight status  (session: $SESSION)"
   echo "  ─────────────────────────────────────────────"
   for name in fetcher monitor heat activator; do
-    pid=$(grep "^${name}=" "$PID_FILE" 2>/dev/null | cut -d= -f2)
+    pid=$(grep "^${name}=" "$PID_FILE" 2>/dev/null | cut -d= -f2 || true)
     if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
       echo "  ✓ $name  (pid $pid)  RUNNING"
     else
@@ -103,7 +136,7 @@ if [[ "$1" == "status" ]]; then
 fi
 
 # ── STOP ──────────────────────────────────────────────────────────────────────
-if [[ "$1" == "stop" ]]; then
+if [[ "${1:-}" == "stop" ]]; then
   log "Stopping all AllMight processes..."
   if [[ -f "$PID_FILE" ]]; then
     while IFS='=' read -r name pid; do
@@ -123,22 +156,21 @@ if [[ "$1" == "stop" ]]; then
 
   # ── Post-run analysis pipeline ───────────────────────────────────────────────
   # Runs automatically on stop if blueprints.jsonl exists in the session folder.
-  # All outputs land in the session folder alongside activator/heat/volatility logs.
-  # Skip silently if blueprints are missing (session had no signals).
+  # All outputs land in the session folder. Skip if no signals were recorded.
 
   if [[ -n "$SESSION" && -f "$SESSION_DIR/blueprints.jsonl" ]]; then
     BP_COUNT=$(wc -l < "$SESSION_DIR/blueprints.jsonl")
     log "Running post-run analysis on $BP_COUNT blueprints..."
 
-    # 1. Candidate audit — produces execution_candidate_audit.jsonl
+    # 1. Candidate audit
     node scripts/tools/candidate_audit_report.js \
       --blueprints "$SESSION_DIR/blueprints.jsonl" \
       --out        "$SESSION_DIR/execution_candidate_audit.jsonl" \
       2>> "$SESSION_DIR/analysis.log" \
       && log "  ✓ candidate_audit_report     → session_${SESSION}/execution_candidate_audit.jsonl" \
-      || log "  ✗ candidate_audit_report failed (see session_${SESSION}/analysis.log)"
+      || log "  ✗ candidate_audit_report failed (see analysis.log)"
 
-    # 2. Near-miss analysis — reads audit log
+    # 2. Near-miss analysis
     if [[ -f "$SESSION_DIR/execution_candidate_audit.jsonl" ]]; then
       node scripts/tools/near_miss_analysis_report.js \
         --audit "$SESSION_DIR/execution_candidate_audit.jsonl" \
@@ -147,7 +179,7 @@ if [[ "$1" == "stop" ]]; then
         && log "  ✓ near_miss_analysis_report  → session_${SESSION}/near_miss_analysis.json" \
         || log "  ✗ near_miss_analysis_report failed"
 
-      # 3. Threshold-edge tracker — reads same audit log
+      # 3. Threshold-edge tracker
       node scripts/tools/threshold_edge_report.js \
         --audit "$SESSION_DIR/execution_candidate_audit.jsonl" \
         --json  > "$SESSION_DIR/threshold_edge.json" \
@@ -155,19 +187,15 @@ if [[ "$1" == "stop" ]]; then
         && log "  ✓ threshold_edge_report      → session_${SESSION}/threshold_edge.json" \
         || log "  ✗ threshold_edge_report failed"
 
-      # 4. Cross-session threshold-edge accumulator
-      # Finds all previous session audit logs and runs accumulation across them
-      PREV_SESSIONS=$(find "$LOGS" -name "execution_candidate_audit.jsonl" \
-        -not -path "$SESSION_DIR/*" 2>/dev/null \
-        | sed 's|/execution_candidate_audit.jsonl||' | sort)
-      ALL_SESSIONS="$PREV_SESSIONS $SESSION_DIR"
+      # 4. Cross-session accumulator — auto-discovers all previous session audit logs
       SESSION_ARGS=""
-      for s in $ALL_SESSIONS; do
-        [[ -f "$s/execution_candidate_audit.jsonl" ]] && SESSION_ARGS="$SESSION_ARGS $s"
-      done
+      while IFS= read -r -d '' sdir; do
+        [[ -f "$sdir/execution_candidate_audit.jsonl" ]] && SESSION_ARGS="$SESSION_ARGS $sdir"
+      done < <(find "$LOGS" -maxdepth 1 -name "session_*" -type d -print0 | sort -z)
       SESSION_COUNT=$(echo $SESSION_ARGS | wc -w)
 
       if [[ $SESSION_COUNT -ge 1 ]]; then
+        # shellcheck disable=SC2086
         node scripts/tools/threshold_edge_accumulator_report.js \
           --sessions $SESSION_ARGS \
           --json > "$SESSION_DIR/threshold_edge_accumulator.json" \
@@ -177,35 +205,48 @@ if [[ "$1" == "stop" ]]; then
       fi
     fi
 
-    # 5. Quick summary to console
-    if [[ -f "$SESSION_DIR/execution_candidate_audit.jsonl" ]]; then
-      CONFIRMED=$(grep -c '"auditVerdict":"CANDIDATE_CONFIRMED"' "$SESSION_DIR/execution_candidate_audit.jsonl" 2>/dev/null || echo 0)
-      NEAR_MISS=$(grep -c '"auditVerdict":"CANDIDATE_NEAR_MISS"' "$SESSION_DIR/execution_candidate_audit.jsonl" 2>/dev/null || echo 0)
-      EDGE_COUNT=$(python3 -c "
-import json, sys
-recs = [json.loads(l) for l in open('$SESSION_DIR/execution_candidate_audit.jsonl') if l.strip()]
-edge = [r for r in recs if r.get('nearMissType')=='near_miss_spread'
-        and r.get('simulationVerdict')=='SIM_PASS'
-        and (r.get('executionConfidence') or 0) >= 0.65]
-print(len(edge))
+    # 5. Session health summary
+    ACT_LOG="$SESSION_DIR/activator.jsonl"
+    AUDIT_LOG="$SESSION_DIR/execution_candidate_audit.jsonl"
+
+    CONFIRMED=$(count_jsonl_matches "$AUDIT_LOG" '"auditVerdict":"CANDIDATE_CONFIRMED"')
+    NEAR_MISS=$(count_jsonl_matches "$AUDIT_LOG" '"auditVerdict":"CANDIDATE_NEAR_MISS"')
+    EDGE_COUNT=$(python3 -c "
+import json
+try:
+  d = json.load(open('$SESSION_DIR/threshold_edge.json'))
+  print(d.get('edgeCount', 0))
+except: print('?')
 " 2>/dev/null || echo "?")
-      ACCUM_VERDICT=$(python3 -c "
+    RB_OK=$(count_jsonl_matches "$ACT_LOG" '"type":"provider_rebuild_success"')
+    RB_FAIL=$(count_jsonl_matches "$ACT_LOG" '"type":"provider_rebuild_failed"')
+    RB_TOTAL=$(count_jsonl_matches "$ACT_LOG" '"type":"provider_rebuild"')
+    UNKNOWN_HEAT=$(count_jsonl_matches "$ACT_LOG" '"heatClass":"UNKNOWN"')
+    SIGNALS=$(count_jsonl_matches "$ACT_LOG" '"signal":"EXECUTION_READY"')
+    ACCUM_VERDICT=$(python3 -c "
 import json
 try:
   d = json.load(open('$SESSION_DIR/threshold_edge_accumulator.json'))
   print(d.get('recurrenceVerdict','?') + ' (' + d.get('q1_sessionCoverage','?') + ')')
 except: print('not run')
 " 2>/dev/null || echo "?")
-      echo ""
-      echo "  ┌─────────────────────────────────────────────────────┐"
-      echo "  │  Session $SESSION analysis summary                  │"
-      echo "  │  CONFIRMED candidates:      $CONFIRMED"
-      echo "  │  Near-miss:                 $NEAR_MISS"
-      echo "  │  Threshold-edge (tracked):  $EDGE_COUNT"
-      echo "  │  Accumulator verdict:       $ACCUM_VERDICT"
-      echo "  └─────────────────────────────────────────────────────┘"
-      echo ""
-    fi
+
+    echo ""
+    echo "  ╔═══════════════════════════════════════════════════════╗"
+    echo "  ║  Session $SESSION — health summary          ║"
+    echo "  ╠═══════════════════════════════════════════════════════╣"
+    echo "  ║  Signals (EXECUTION_READY):    $SIGNALS"
+    echo "  ║  Blueprints:                   $BP_COUNT"
+    echo "  ║  CONFIRMED candidates:         $CONFIRMED"
+    echo "  ║  Near-miss:                    $NEAR_MISS"
+    echo "  ║  Threshold-edge tracked:       $EDGE_COUNT"
+    echo "  ║  Accumulator verdict:          $ACCUM_VERDICT"
+    echo "  ╠═══════════════════════════════════════════════════════╣"
+    echo "  ║  Provider rebuilds:            $RB_TOTAL  (ok=$RB_OK  fail=$RB_FAIL)"
+    echo "  ║  Heat UNKNOWN at signal:       $UNKNOWN_HEAT"
+    echo "  ╚═══════════════════════════════════════════════════════╝"
+    echo ""
+
   else
     [[ -n "$SESSION" ]] && log "No blueprints found — skipping post-run analysis."
   fi
@@ -216,7 +257,7 @@ except: print('not run')
 fi
 
 # ── LOGS (live tail) ──────────────────────────────────────────────────────────
-if [[ "$1" == "logs" ]]; then
+if [[ "${1:-}" == "logs" ]]; then
   SESSION=$( [[ -f "$SESSION_FILE" ]] && cat "$SESSION_FILE" || echo "" )
   SESSION_DIR="$LOGS/session_${SESSION}"
   echo ""
@@ -225,7 +266,7 @@ if [[ "$1" == "logs" ]]; then
   tail -f \
     "$SESSION_DIR/fetcher.log" \
     "$SESSION_DIR/monitor.log" \
-    "$SESSION_DIR/heat.log" \
+    "$SESSION_DIR/heat.jsonl" \
     "$SESSION_DIR/activator.jsonl" \
     2>/dev/null
   exit 0
@@ -261,6 +302,10 @@ log "All logs → $SESSION_DIR/"
 echo ""
 
 # ── Process 1: Fetcher loop ───────────────────────────────────────────────────
+# TODO: unsupported-chain noise (base/optimism "Unknown chain" errors) comes from
+# fetcher modules loading all chain configs regardless of what is active.
+# Fix belongs in master-fetcher.js / chain config, not here.
+# Tracked as hygiene debt — does not affect arbitrum pipeline.
 (
   while true; do
     node -r dotenv/config scripts/master-fetcher.js >> "$SESSION_DIR/fetcher.log" 2>&1
@@ -271,8 +316,10 @@ FETCHER_PID=$!
 echo "fetcher=$FETCHER_PID" >> "$PID_FILE"
 log "✓ Fetcher loop     (pid $FETCHER_PID) → session_${SESSION}/fetcher.log"
 
-log "  Waiting 15s for initial Redis population..."
-sleep 15
+# Wait for fetcher to produce output before starting the monitor.
+# A non-empty fetcher.log means at least one fetch cycle completed.
+log "  Waiting for fetcher output (max 60s)..."
+wait_for_nonempty_file "$SESSION_DIR/fetcher.log" 60 2
 
 # ── Process 2: Volatility monitor ────────────────────────────────────────────
 node -r dotenv/config scripts/analysis/arb_volatility_monitor.js \
@@ -284,7 +331,10 @@ MONITOR_PID=$!
 echo "monitor=$MONITOR_PID" >> "$PID_FILE"
 log "✓ Volatility monitor (pid $MONITOR_PID) → session_${SESSION}/volatility.jsonl"
 
-sleep 5
+# Wait for the volatility log to contain at least one scan record before
+# starting the heat runner, which reads from that file.
+log "  Waiting for first volatility scan (max 60s)..."
+wait_for_nonempty_file "$SESSION_DIR/volatility.jsonl" 60 2
 
 # ── Process 3: Heat report runner ────────────────────────────────────────────
 node scripts/tools/volatility_divergence_report.js \
@@ -295,6 +345,11 @@ node scripts/tools/volatility_divergence_report.js \
 HEAT_PID=$!
 echo "heat=$HEAT_PID" >> "$PID_FILE"
 log "✓ Heat report      (pid $HEAT_PID) → session_${SESSION}/heat.jsonl"
+
+# Wait for the heat output file to exist before starting the activator,
+# which reads heat.jsonl on each refresh cycle.
+log "  Waiting for first heat report (max 60s)..."
+wait_for_nonempty_file "$SESSION_DIR/heat.jsonl" 60 2
 
 # ── Process 4: Activator (supervised) ────────────────────────────────────────
 # BLUEPRINT_LOG_PATH must be exported BEFORE the subshell launches so the
@@ -334,6 +389,6 @@ log "Session $SESSION running. PIDs: fetcher=$FETCHER_PID monitor=$MONITOR_PID h
 echo ""
 echo "  bash scripts/tools/start_all.sh status   — check health"
 echo "  bash scripts/tools/start_all.sh logs      — watch live output"
-echo "  bash scripts/tools/start_all.sh stop      — stop + see what to upload"
+echo "  bash scripts/tools/start_all.sh stop      — stop + run analysis"
 echo "  bash scripts/tools/start_all.sh upload    — show files to send CPT"
 echo ""
