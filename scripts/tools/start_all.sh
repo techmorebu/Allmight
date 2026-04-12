@@ -253,6 +253,13 @@ except: print('not run')
 
   [[ -n "$SESSION" ]] && log "Session logs: logs/session_${SESSION}/"
   log "Run 'bash scripts/tools/start_all.sh upload' to see what to send CPT."
+
+  # ── Discord stop summary notification (non-blocking, fail-silent) ──────────
+  if [[ -n "$SESSION" && -d "$SESSION_DIR" ]]; then
+    node -r dotenv/config scripts/monitoring/notification_router.js \
+      --stop-summary "$SESSION_DIR" >> "$SESSION_DIR/analysis.log" 2>&1 &
+  fi
+
   exit 0
 fi
 
@@ -392,3 +399,7 @@ echo "  bash scripts/tools/start_all.sh logs      — watch live output"
 echo "  bash scripts/tools/start_all.sh stop      — stop + run analysis"
 echo "  bash scripts/tools/start_all.sh upload    — show files to send CPT"
 echo ""
+
+# ── Discord startup notification (non-blocking, fail-silent) ──────────────────
+node -r dotenv/config scripts/monitoring/notification_router.js \
+  --startup >> "$SESSION_DIR/analysis.log" 2>&1 &

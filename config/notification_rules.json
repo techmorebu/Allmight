@@ -1,0 +1,69 @@
+{
+  "_comment": "AllMight notification rules — v1.0. Boss ruling 2026-04-12.",
+
+  "enabled": true,
+
+  "channels": {
+    "ops":       "DISCORD_OPS_WEBHOOK_URL env var",
+    "candidate": "DISCORD_CANDIDATE_WEBHOOK_URL env var",
+    "summary":   "DISCORD_SUMMARY_WEBHOOK_URL env var"
+  },
+
+  "rules": {
+    "startup": {
+      "send_to": "ops",
+      "enabled": true,
+      "description": "Sent when start_all.sh launches the stack"
+    },
+
+    "watchdog_degraded": {
+      "send_to": "ops",
+      "enabled": true,
+      "cooldown_sec": 300,
+      "description": "Sent when watchdog reports DEGRADED — one alert per cooldown window"
+    },
+
+    "watchdog_failed": {
+      "send_to": "ops",
+      "enabled": true,
+      "cooldown_sec": 300,
+      "description": "Sent when watchdog reports FAILED — highest urgency"
+    },
+
+    "watchdog_recovery": {
+      "send_to": "ops",
+      "enabled": true,
+      "description": "Sent once when watchdog returns to HEALTHY after DEGRADED/FAILED"
+    },
+
+    "first_candidate": {
+      "send_to": "candidate",
+      "enabled": true,
+      "min_confidence": 0.65,
+      "description": "Sent on first CANDIDATE_CONFIRMED in a session above confidence threshold"
+    },
+
+    "candidate_count_threshold": {
+      "send_to": "ops",
+      "enabled": true,
+      "threshold": 10,
+      "description": "Sent every time confirmed candidate count crosses a multiple of threshold"
+    },
+
+    "stop_summary": {
+      "send_to": "summary",
+      "enabled": true,
+      "description": "Sent by start_all.sh stop — session metrics digest"
+    }
+  },
+
+  "suppressed_events": [
+    "every EXECUTION_READY signal",
+    "every blueprint",
+    "every simulation result",
+    "every near-miss",
+    "every heat class change"
+  ],
+
+  "_suppression_reason": "These events fire too frequently for push notifications. Session summaries and post-stop analysis cover them."
+}
