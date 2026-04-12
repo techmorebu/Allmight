@@ -85,10 +85,20 @@ async function sendEmbed(channel, embed) {
   _lastSent[channel] = Date.now();
 
   try {
+    // Discord requires either `content` (plain text) or `embeds` to show anything.
+    // Adding `content` as a one-line summary ensures the message is never blank
+    // even if the embed fails to render on some clients. Matches the working
+    // pattern from utils/discord_notifier.js and scripts/test_discord.py.
+    const contentLine = embed.title ? `**${embed.title}**` : 'AllMight notification';
+
     const res = await fetch(url, {
       method  : 'POST',
       headers : { 'Content-Type': 'application/json' },
-      body    : JSON.stringify({ embeds: [embed] }),
+      body    : JSON.stringify({
+        username  : 'AllMight',
+        content   : contentLine,   // ensures message is never blank
+        embeds    : [embed],
+      }),
     });
 
     if (!res.ok) {
