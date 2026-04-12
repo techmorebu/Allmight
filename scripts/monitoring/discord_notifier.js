@@ -123,65 +123,121 @@ function _sleep(ms) {
 // ─── TYPED SENDERS ────────────────────────────────────────────────────────────
 
 /**
- * Send an ops alert (health/watchdog events).
+ * OPS ALERT — system health, watchdog, stale pipeline.
  *
- * @param {{ title, description, status, fields, footer }} opts
+ * Boss format:
+ *   ⚠️ SYSTEM DEGRADED
+ *   Component: activator
+ *   Issue: stale output (45s)
+ *   Rebuilds: 2
+ *   Status: DEGRADED
+ *
+ * @param {{ title, description, status, component, issue, rebuilds, fields, footer }} opts
  */
-async function sendOpsNotification({ title, description, status = 'INFO', fields = [], footer }) {
+async function sendOpsNotification({
+  title,
+  description,
+  status    = 'INFO',
+  component = null,
+  issue     = null,
+  rebuilds  = null,
+  fields    = [],
+  footer,
+}) {
   const colour = COLOURS[status] ?? COLOURS.INFO;
+
+  // Build body text in Boss format — clean line-by-line block
+  const lines = [];
+  if (component) lines.push(`**Component:** ${component}`);
+  if (issue)     lines.push(`**Issue:** ${issue}`);
+  if (rebuilds != null) lines.push(`**Rebuilds:** ${rebuilds}`);
+  lines.push(`**Status:** ${status}`);
+  if (description) lines.push('', description);
+
+  const body = lines.join('\n');
+
+  // Extra fields appended below the text block (stale components, dead PIDs, warnings)
+  const embedFields = fields.length
+    ? fields.map(f => ({ name: f.name, value: String(f.value), inline: f.inline ?? false }))
+    : [];
+
   return sendEmbed('ops', {
     title,
-    description,
-    color  : colour,
-    fields : fields.map(f => ({ name: f.name, value: String(f.value), inline: f.inline ?? true })),
-    footer : footer ? { text: footer } : { text: `AllMight  •  ${new Date().toUTCString()}` },
-    timestamp: new Date().toISOString(),
+    description: body,
+    color      : colour,
+    fields     : embedFields,
+    footer     : footer ? { text: footer } : { text: `AllMight  •  ${new Date().toUTCString()}` },
+    timestamp  : new Date().toISOString(),
   });
 }
 
 /**
- * Send a candidate alert (confirmed execution candidate).
+ * CANDIDATE ALERT — confirmed execution candidate.
  *
- * @param {{ pair, spreadPct, executionConfidence, baseNetProfitUsd,
- *           profile, heatClass, regime, direction, sessionId, extra }} opts
+ * Boss format:
+ *   🔥 EXECUTION CANDIDATE
+ *   Pair: ETH/USDC
+ *   Spread: 0.142%
+ *   Net Edge: 0.031%
+ *   Depth: $185,000
+ *   Confidence: 0.78
+ *   Status: READY
+ *
+ * @param {{ pair, spreadPct, expectedEdgePct, executionConfidence,
+ *           baseNetProfitUsd, profile, heatClass, regime,
+ *           direction, sessionId, extra }} opts
  */
 async function sendCandidateNotification(opts) {
   const {
-    pair                = 'ETH/USDC-RAMSES',
+    pair              = 'ETH/USDC-RAMSES',
     spreadPct,
+    expectedEdgePct,
     executionConfidence,
     baseNetProfitUsd,
-    profile             = '?',
-    heatClass           = '?',
-    regime              = '?',
-    direction           = '?',
-    sessionId           = '?',
-    extra               = '',
+    profile           = '?',
+    heatClass         = '?',
+    regime            = '?',
+    direction         = '?',
+    sessionId         = '?',
+    extra             = '',
   } = opts;
 
-  const fields = [
-    { name: 'Spread',      value: spreadPct != null           ? `${spreadPct.toFixed(4)}%`         : '?' },
-    { name: 'Confidence',  value: executionConfidence != null ? executionConfidence.toFixed(3)      : '?' },
-    { name: 'Net Profit',  value: baseNetProfitUsd != null    ? `$${baseNetProfitUsd.toFixed(2)}`   : '?' },
-    { name: 'Profile',     value: profile },
-    { name: 'Heat',        value: heatClass },
-    { name: 'Regime',      value: regime.replace('_regime', '').replace('_', ' ') },
-    { name: 'Direction',   value: direction.replace(/_/g, '/').toLowerCase().slice(0, 30) },
-    { name: 'Session',     value: sessionId },
+  // Boss-specified line format — clean named block
+  const lines = [
+    `**Pair:** ${pair}`,
+    `**Spread:** ${spreadPct     != null ? spreadPct.toFixed(4) + '%'          : '?'}`,
+    `**Net Edge:** ${expectedEdgePct != null ? expectedEdgePct.toFixed(4) + '%' : '?'}`,
+    `**Net Profit:** ${baseNetProfitUsd != null ? '$' + baseNetProfitUsd.toFixed(2) : '?'}`,
+    `**Confidence:** ${executionConfidence != null ? executionConfidence.toFixed(3) : '?'}`,
+    `**Status:** READY`,
+    '',
+    `Profile: ${profile}  •  Heat: ${heatClass}  •  Regime: ${regime.replace('persistent_depth_regime','persistent').replace('_',' ')}`,
+    `Direction: ${direction.replace(/_/g,' ').toLowerCase()}`,
+    `Session: ${sessionId}`,
   ];
+  if (extra) lines.push('', extra);
 
   return sendEmbed('candidate', {
     title      : `🔥  EXECUTION CANDIDATE — ${pair}`,
-    description: extra || 'A blueprint passed all three filter gates.',
+    description: lines.join('\n'),
     color      : COLOURS.CANDIDATE,
-    fields     : fields.map(f => ({ name: f.name, value: f.value, inline: true })),
     timestamp  : new Date().toISOString(),
     footer     : { text: 'AllMight  •  Candidate Audit Layer' },
   });
 }
 
 /**
- * Send a session summary (stop/periodic digest).
+ * SESSION SUMMARY — stop digest or periodic rollup.
+ *
+ * Boss format:
+ *   📊 SESSION SUMMARY
+ *   Duration: 6h
+ *   Signals: 1,245
+ *   Ready: 87
+ *   Candidates: 6
+ *   Near Miss: 22
+ *   Threshold Edge: 14
+ *   Verdict: ACTIVE SURFACE
  *
  * @param {{ sessionId, durationH, signals, blueprints, confirmed,
  *           nearMiss, thresholdEdge, accumVerdict, rebuilds,
@@ -202,25 +258,29 @@ async function sendSummaryNotification(opts) {
     overallStatus  = 'INFO',
   } = opts;
 
-  const icon = confirmed > 0 ? '📊' : '📋';
-  const colour = confirmed > 0 ? COLOURS.CANDIDATE : COLOURS.SUMMARY;
+  const verdict = confirmed > 0 ? 'ACTIVE SURFACE' : 'NO CANDIDATES';
+  const icon    = confirmed > 0 ? '📊' : '📋';
+  const colour  = confirmed > 0 ? COLOURS.CANDIDATE : COLOURS.SUMMARY;
+  const durStr  = typeof durationH === 'number' ? `${parseFloat(durationH).toFixed(1)}h` : String(durationH);
 
-  const fields = [
-    { name: 'Duration',        value: typeof durationH === 'number' ? `${durationH.toFixed(1)}h` : String(durationH) },
-    { name: 'Signals',         value: String(signals) },
-    { name: 'Blueprints',      value: String(blueprints) },
-    { name: 'CONFIRMED',       value: `**${confirmed}**` },
-    { name: 'Near-miss',       value: String(nearMiss) },
-    { name: 'Threshold-edge',  value: String(thresholdEdge) },
-    { name: 'Accum verdict',   value: accumVerdict },
-    { name: 'Rebuilds',        value: String(rebuilds) },
-    { name: 'UNKNOWN heat',    value: String(unknownHeat) },
+  // Boss-specified summary format — clean line-by-line block
+  const lines = [
+    `**Duration:** ${durStr}`,
+    `**Signals:** ${signals.toLocaleString()}`,
+    `**Blueprints:** ${blueprints.toLocaleString()}`,
+    `**Candidates:** ${confirmed}`,
+    `**Near Miss:** ${nearMiss}`,
+    `**Threshold Edge:** ${thresholdEdge}`,
+    `**Verdict:** ${verdict}`,
+    '',
+    `Rebuilds: ${rebuilds}  •  UNKNOWN heat: ${unknownHeat}`,
+    `Accumulator: ${accumVerdict}`,
   ];
 
   return sendEmbed('summary', {
     title      : `${icon}  SESSION SUMMARY — ${sessionId}`,
+    description: lines.join('\n'),
     color      : colour,
-    fields     : fields.map(f => ({ name: f.name, value: f.value, inline: true })),
     timestamp  : new Date().toISOString(),
     footer     : { text: `AllMight  •  ${overallStatus}` },
   });

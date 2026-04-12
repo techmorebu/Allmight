@@ -171,23 +171,23 @@ async function checkWatchdog() {
       const warnings= (rec.warningFlags      || []).join(', ') || 'none';
       const icon    = status === 'FAILED' ? '🚨' : '⚠️';
 
-      const fields = [
-        { name: 'Stale components', value: stale   || 'none', inline: false },
-        { name: 'Dead PIDs',        value: dead    || 'none', inline: false },
-        { name: 'Rebuilds',         value: `${rec.rebuildSuccessCount ?? 0} ok / ${rec.rebuildFailCount ?? 0} fail` },
-        { name: 'UNKNOWN heat',     value: String(rec.unknownHeatCount ?? 0) },
-        { name: 'Recent signals',   value: String(rec.recentSignals ?? 0) },
-        { name: 'Warnings',         value: warnings, inline: false },
-      ];
+      // Derive primary component and issue for Boss format
+      const primaryStale = (rec.staleComponents || [])[0]?.split(':')[0] || 'pipeline';
+      const primaryIssue = stale !== 'none' ? `stale output (${stale})` : dead !== 'none' ? `process not found (${dead})` : warnings;
+
+      const extraFields = [];
+      if (dead !== 'none') extraFields.push({ name: 'Dead PIDs',   value: dead   });
+      if (warnings !== 'none') extraFields.push({ name: 'Warnings', value: warnings });
 
       log(`Sending watchdog ${status} alert`);
       await maybeSend('ops', sendOpsNotification, {
-        title      : `${icon}  SYSTEM ${status} — ${_state.sessionId}`,
-        description: status === 'FAILED'
-          ? 'Critical component failure detected. Manual check may be required.'
-          : 'One or more pipeline components are showing degraded health.',
+        title    : `${icon}  SYSTEM ${status} — ${_state.sessionId}`,
         status,
-        fields,
+        component: primaryStale,
+        issue    : primaryIssue,
+        rebuilds : `${rec.rebuildSuccessCount ?? 0} ok / ${rec.rebuildFailCount ?? 0} fail`,
+        description: status === 'FAILED' ? 'Manual intervention may be required.' : null,
+        fields   : extraFields,
       });
 
       _state.lastWatchdogAlert  = Date.now();
@@ -227,6 +227,7 @@ async function checkCandidates() {
       await maybeSend('candidate', sendCandidateNotification, {
         pair               : rec.pair,
         spreadPct          : rec.spreadPct,
+        expectedEdgePct    : rec.expectedEdgePct ?? rec.finalEdge,
         executionConfidence: rec.executionConfidence,
         baseNetProfitUsd   : rec.baseNetProfitUsd,
         profile            : rec.profile,
