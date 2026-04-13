@@ -52,6 +52,12 @@ HEAT_FAILED_SEC=${HEAT_FAILED_SEC:-600}               # 10 min failed  (was 360s
 ACTIVATOR_STALE_SEC=${ACTIVATOR_STALE_SEC:-180}       # 3 min degraded (unchanged)
 ACTIVATOR_FAILED_SEC=${ACTIVATOR_FAILED_SEC:-600}     # 10 min failed  (was 360s)
 
+# Recovery grace period: after a provider rebuild, suppress activator-only FAILED
+# verdicts for this many seconds. Real failures (dead PID, multi-component stale)
+# still escalate immediately. Only activator freshness staleness is buffered.
+# Root cause: rebuild burst → temporary cadence disruption → false FAILED.
+RECOVERY_GRACE_SEC=${RECOVERY_GRACE_SEC:-600}         # 10 min grace after rebuild
+
 # Error pattern alert thresholds — per watchdog check window
 UNKNOWN_HEAT_ALERT=${UNKNOWN_HEAT_ALERT:-50}    # >50 UNKNOWN heatClass records = warning
 LOCK_HELD_ALERT=${LOCK_HELD_ALERT:-20}          # >20 "lock held" lines = warning
@@ -212,6 +218,72 @@ run_check() {
     [[ "$OVERALL" == "HEALTHY" ]] && OVERALL="DEGRADED"
   fi
 
+  # ── E. Recovery grace — rebuild-aware FAILED suppression ──────────────────
+  # Boss ruling 2026-04-13: after a provider rebuild burst, the activator's
+  # write cadence can slow temporarily, causing false FAILED verdicts even
+  # when the system is healthy and producing candidates.
+  #
+  # Grace applies ONLY when ALL of these are true:
+  #   1. Provisional verdict is FAILED
+  #   2. The ONLY stale component is activator (no dead PIDs, no multi-component failure)
+  #   3. A provider rebuild occurred recently (within RECOVERY_GRACE_SEC)
+  #
+  # Does NOT apply if:
+  #   - Activator PID is dead
+  #   - Fetcher / volatility / heat are also stale or missing
+  #   - No rebuild activity detected
+
+  local RECOVERY_GRACE_ACTIVE=false
+  local RECENT_REBUILD_COUNT=0
+
+  if [[ "$OVERALL" == "FAILED" && ${#DEAD_PIDS[@]} -eq 0 ]]; then
+    # Count stale/missing components that are NOT activator
+    local NON_ACT_STALE=0
+    for comp in "${STALE_COMPONENTS[@]+"${STALE_COMPONENTS[@]}"}"; do
+      [[ -n "$comp" && "$comp" != activator* ]] && NON_ACT_STALE=$((NON_ACT_STALE+1))
+    done
+
+    # Only apply grace if activator is the sole failed component
+    if [[ $NON_ACT_STALE -eq 0 ]]; then
+      # Detect recent rebuild in last 500 lines of activator log.
+      # Uses awk for timestamp comparison: rebuild record ts must be within
+      # RECOVERY_GRACE_SEC of now. Falls back to simple count if ts unavailable.
+      local ACT_LOG="$SESSION_DIR/activator.jsonl"
+      if [[ -f "$ACT_LOG" ]]; then
+        local NOW_SEC
+        NOW_SEC=$(date +%s)
+        # mawk-compatible rebuild detection: extract ts with grep+sed, compare age
+        RECENT_REBUILD_COUNT=$(tail -n 500 "$ACT_LOG" 2>/dev/null | grep '"type":"provider_rebuild"' | \
+          while IFS= read -r rebuild_line; do
+            ts=$(echo "$rebuild_line" | sed -n 's/.*"ts":"\([^"]*\)".*/\1/p')
+            if [[ -n "$ts" ]]; then
+              epoch=$(date -d "$ts" +%s 2>/dev/null || echo 0)
+              [[ $((NOW_SEC - epoch)) -le $RECOVERY_GRACE_SEC ]] && echo "recent"
+            else
+              echo "recent"  # no ts — treat as recent (conservative)
+            fi
+          done | wc -l | tr -d ' '
+        )
+      fi
+
+      if [[ $RECENT_REBUILD_COUNT -gt 0 ]]; then
+        RECOVERY_GRACE_ACTIVE=true
+        OVERALL="DEGRADED"
+        WARNING_FLAGS+=("recovery_grace_active")
+        # Replace activator stale component tag with RECOVERING annotation
+        local NEW_STALE=()
+        for comp in "${STALE_COMPONENTS[@]+"${STALE_COMPONENTS[@]}"}"; do
+          if [[ "$comp" == activator* ]]; then
+            NEW_STALE+=("activator:RECOVERING_${RECOVERY_GRACE_SEC}s")
+          else
+            NEW_STALE+=("$comp")
+          fi
+        done
+        STALE_COMPONENTS=("${NEW_STALE[@]+"${NEW_STALE[@]}"}")
+      fi
+    fi
+  fi
+
   # ── Human-readable snapshot ───────────────────────────────────────────────
 
   if [[ "$QUIET" == false ]]; then
@@ -265,6 +337,11 @@ run_check() {
         printf "  ║    ⚠ %-53s ║\n" "$w"
       done
     fi
+    if [[ "$RECOVERY_GRACE_ACTIVE" == true ]]; then
+      echo "  ╠══════════════════════════════════════════════════════════╣"
+      printf "  ║  ⚡ recovery_grace_active: rebuild detected (%-14s ║\n" "${RECENT_REBUILD_COUNT} recent)"
+      printf "  ║    FAILED → DEGRADED for activator freshness only     ║\n"
+    fi
     if [[ ${#DEAD_PIDS[@]} -gt 0 ]]; then
       echo "  ╠══════════════════════════════════════════════════════════╣"
       echo "  ║  Dead processes:"
@@ -286,14 +363,16 @@ run_check() {
   local WARN_JSON
   WARN_JSON=$(printf '"%s",' "${WARNING_FLAGS[@]+"${WARNING_FLAGS[@]}"}" | sed 's/,$//')
 
-  printf '{"ts":"%s","session":"%s","overallStatus":"%s","staleComponents":[%s],"deadPids":[%s],"rebuildSuccessCount":%s,"rebuildFailCount":%s,"rebuildTotalCount":%s,"unknownHeatCount":%s,"confirmedCount":%s,"nearMissCount":%s,"recentSignals":%s,"recentBlueprints":%s,"lockHeldCount":%s,"chainErrorCount":%s,"fetchFailCount":%s,"warningFlags":[%s]}\n' \
+  printf '{"ts":"%s","session":"%s","overallStatus":"%s","staleComponents":[%s],"deadPids":[%s],"rebuildSuccessCount":%s,"rebuildFailCount":%s,"rebuildTotalCount":%s,"unknownHeatCount":%s,"confirmedCount":%s,"nearMissCount":%s,"recentSignals":%s,"recentBlueprints":%s,"lockHeldCount":%s,"chainErrorCount":%s,"fetchFailCount":%s,"warningFlags":[%s],"recoveryGraceActive":%s,"recentRebuildCount":%s}\n' \
     "$TS" "$SESSION" "$OVERALL" \
     "$STALE_JSON" "$DEAD_JSON" \
     "$RB_SUCCESS" "$RB_FAILED" "$RB_TOTAL" \
     "$UNKNOWN_HEAT" "$CONFIRMED" "$NEAR_MISS" \
     "$RECENT_SIGNALS" "$RECENT_BLUEPRINTS" \
     "$LOCK_HELD" "$CHAIN_ERRORS" "$FETCH_FAILS" \
-    "$WARN_JSON" >> "$WATCHDOG_LOG"
+    "$WARN_JSON" \
+    "$([[ "$RECOVERY_GRACE_ACTIVE" == true ]] && echo true || echo false)" \
+    "$RECENT_REBUILD_COUNT" >> "$WATCHDOG_LOG"
 
   # Return exit code matching verdict
   case "$OVERALL" in

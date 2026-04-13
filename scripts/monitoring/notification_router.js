@@ -315,16 +315,21 @@ async function sendStopSummary(sessionDir) {
     } catch { /* skip */ }
   }
 
-  // Session duration from activator log first/last ts
+  // Session duration from activator log first/last ts.
+  // Lines[0] is often a raw "[supervisor]" text line (not JSON) — scan for
+  // the first and last parseable record that carries a ts field.
   let durationH = '?';
   const actPath = path.join(sessionDir, 'activator.jsonl');
   if (fs.existsSync(actPath)) {
     try {
       const lines = fs.readFileSync(actPath, 'utf8').split('\n').filter(Boolean);
-      const first = JSON.parse(lines[0]);
-      const last  = JSON.parse(lines[lines.length - 1]);
-      if (first.ts && last.ts) {
-        durationH = ((new Date(last.ts) - new Date(first.ts)) / 3_600_000).toFixed(1);
+      let firstTs = null, lastTs = null;
+      for (const line of lines) {
+        try { const r = JSON.parse(line); if (r.ts) { if (!firstTs) firstTs = r.ts; lastTs = r.ts; } }
+        catch { /* skip non-JSON supervisor lines */ }
+      }
+      if (firstTs && lastTs) {
+        durationH = ((new Date(lastTs) - new Date(firstTs)) / 3_600_000).toFixed(1);
       }
     } catch { /* skip */ }
   }
