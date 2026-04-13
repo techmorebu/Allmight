@@ -75,9 +75,9 @@ wait_for_min_lines() {
   local poll="${4:-2}"
   local waited=0
   while [[ $waited -lt $max ]]; do
-    local lines
-    lines=$(wc -l < "$file" 2>/dev/null || echo 0)
-    if [[ -f "$file" ]] && [[ $lines -ge $min ]]; then
+    local lines=0
+    [[ -f "$file" ]] && lines=$(wc -l < "$file" 2>/dev/null || echo 0)
+    if [[ $lines -ge $min ]]; then
       return 0
     fi
     sleep "$poll"

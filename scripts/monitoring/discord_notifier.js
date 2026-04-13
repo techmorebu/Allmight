@@ -71,47 +71,37 @@ async function sendEmbed(channel, embed) {
   if (!NOTIFY_ENABLED) return false;
 
   const url = CHANNELS[channel];
-  if (!url) {
-    // Channel not configured — silent skip, not an error
-    return false;
-  }
+  if (!url) return false;
 
-  // Soft rate-limit — ensure min gap between sends on same channel
+  // Soft rate-limit
   const now = Date.now();
   const gap  = now - (_lastSent[channel] || 0);
-  if (gap < MIN_SEND_GAP_MS) {
-    await _sleep(MIN_SEND_GAP_MS - gap);
-  }
+  if (gap < MIN_SEND_GAP_MS) await _sleep(MIN_SEND_GAP_MS - gap);
   _lastSent[channel] = Date.now();
 
-  try {
-    // Discord requires either `content` (plain text) or `embeds` to show anything.
-    // Adding `content` as a one-line summary ensures the message is never blank
-    // even if the embed fails to render on some clients. Matches the working
-    // pattern from utils/discord_notifier.js and scripts/test_discord.py.
-    const contentLine = embed.title ? `**${embed.title}**` : 'AllMight notification';
+  // Plain text only — embeds caused silent render failures on this setup.
+  // Build a single readable content string from title + description.
+  const title = embed.title ? `**${embed.title}**` : 'AllMight';
+  const body  = typeof embed.description === 'string' && embed.description.trim()
+    ? embed.description.trim()
+    : '';
+  const text  = body ? `${title}\n\n${body}` : title;
 
+  try {
     const res = await fetch(url, {
       method  : 'POST',
       headers : { 'Content-Type': 'application/json' },
-      body    : JSON.stringify({
-        username  : 'AllMight',
-        content   : contentLine,   // ensures message is never blank
-        embeds    : [embed],
-      }),
+      body    : JSON.stringify({ username: 'AllMight', content: text }),
     });
 
     if (!res.ok) {
-      process.stderr.write(
-        `[discord_notifier] ${channel} send failed: HTTP ${res.status}\n`
-      );
+      const rb = await res.text().catch(() => '');
+      process.stderr.write(`[discord_notifier] ${channel} failed: HTTP ${res.status} ${rb.slice(0,120)}\n`);
       return false;
     }
     return true;
   } catch (err) {
-    process.stderr.write(
-      `[discord_notifier] ${channel} send error: ${err.message}\n`
-    );
+    process.stderr.write(`[discord_notifier] ${channel} error: ${err.message}\n`);
     return false;
   }
 }
@@ -154,7 +144,7 @@ async function sendOpsNotification({
   lines.push(`**Status:** ${status}`);
   if (description) lines.push('', description);
 
-  const body = lines.join('\n');
+  const body = lines.join('\n') || `Status: ${status}`;  // always a non-empty string
 
   // Extra fields appended below the text block (stale components, dead PIDs, warnings)
   const embedFields = fields.length
