@@ -55,7 +55,11 @@ ACTIVATOR_FAILED_SEC=${ACTIVATOR_FAILED_SEC:-600}     # 10 min failed  (was 360s
 # Error pattern alert thresholds — per watchdog check window
 UNKNOWN_HEAT_ALERT=${UNKNOWN_HEAT_ALERT:-50}    # >50 UNKNOWN heatClass records = warning
 LOCK_HELD_ALERT=${LOCK_HELD_ALERT:-20}          # >20 "lock held" lines = warning
-CHAIN_ERROR_ALERT=${CHAIN_ERROR_ALERT:-30}      # >30 "Unknown chain" lines = warning
+# Chain errors: raised from 30 → 200 to suppress known "Unknown chain: optimism/base"
+# fetcher noise. This hygiene debt lives in master-fetcher.js (see TODO in start_all.sh).
+# At 30 the watchdog fired DEGRADED on 83% of checks despite a healthy pipeline.
+# Real chain-error problems will still alert at sustained volumes above 200.
+CHAIN_ERROR_ALERT=${CHAIN_ERROR_ALERT:-200}     # >200 "Unknown chain" lines = warning
 
 # ═══════════════════════════════════════════════════════════════════════════════
 
