@@ -64,6 +64,48 @@ wait_for_nonempty_file() {
   return 1
 }
 
+# wait_for_min_lines FILE MIN_LINES [MAX_WAIT_SEC] [POLL_SEC]
+# Polls until FILE has at least MIN_LINES lines.
+# Stronger than wait_for_nonempty_file — required for heat.jsonl warmup.
+# Continues with a warning on timeout — never hard-fails startup.
+wait_for_min_lines() {
+  local file="$1"
+  local min="${2:-3}"
+  local max="${3:-90}"
+  local poll="${4:-2}"
+  local waited=0
+  while [[ $waited -lt $max ]]; do
+    local lines
+    lines=$(wc -l < "$file" 2>/dev/null || echo 0)
+    if [[ -f "$file" ]] && [[ $lines -ge $min ]]; then
+      return 0
+    fi
+    sleep "$poll"
+    waited=$((waited + poll))
+  done
+  log "  ⚠ timeout waiting for $file to reach $min lines after ${max}s — continuing anyway"
+  return 1
+}
+
+# redis_ready — check if Redis is responding before launching the stack.
+# Returns 0 if PONG received, 1 otherwise.
+# Uses redis-cli if available, falls back to a node one-liner.
+redis_ready() {
+  if command -v redis-cli &>/dev/null; then
+    [[ "$(redis-cli ping 2>/dev/null)" == "PONG" ]] && return 0
+    return 1
+  fi
+  # Fallback: node-based ping (node-fetch not needed — uses net module)
+  node -e "
+const net=require('net');
+const c=net.connect(6379,'127.0.0.1',()=>{c.write('*1\r\n\$4\r\nPING\r\n');});
+c.on('data',d=>{process.exit(d.toString().includes('PONG')?0:1);});
+c.on('error',()=>process.exit(1));
+setTimeout(()=>process.exit(1),2000);
+" 2>/dev/null
+  return $?
+}
+
 # count_jsonl_matches FILE PATTERN
 # Counts lines matching a grep pattern. Returns 0 on missing file.
 count_jsonl_matches() {
@@ -149,6 +191,8 @@ if [[ "${1:-}" == "stop" ]]; then
   pkill -f "arb_window_activator.js"        2>/dev/null || true
   pkill -f "arb_volatility_monitor.js"      2>/dev/null || true
   pkill -f "volatility_divergence_report.js" 2>/dev/null || true
+  pkill -f "allmight_watchdog.sh"           2>/dev/null || true
+  pkill -f "notification_router.js"         2>/dev/null || true
 
   SESSION=$( [[ -f "$SESSION_FILE" ]] && cat "$SESSION_FILE" || echo "" )
   SESSION_DIR="$LOGS/session_${SESSION}"
@@ -292,6 +336,17 @@ if [[ -f "$PID_FILE" ]]; then
   rm -f "$PID_FILE"
 fi
 
+# ── REDIS PRE-FLIGHT ──────────────────────────────────────────────────────────
+# Root cause of DEAD_ON_START pattern: Redis ECONNREFUSED causes volatility
+# monitor to fail silently → no heat data → activator exits immediately.
+# Abort startup if Redis is not reachable — clear error beats silent failure.
+log "Checking Redis connectivity..."
+if redis_ready; then
+  log "✓ Redis reachable"
+else
+  die "Redis is not responding. Start Redis before launching AllMight.\n  Try: redis-server --daemonize yes\n  Or:  sudo systemctl start redis"
+fi
+
 # ── Session ID — stamped at launch time ───────────────────────────────────────
 SESSION=$(date -u '+%Y%m%d_%H%M')
 SESSION_DIR="$LOGS/session_${SESSION}"
@@ -302,6 +357,8 @@ echo "$SESSION" > "$SESSION_FILE"
 pkill -f "arb_window_activator.js"        2>/dev/null || true
 pkill -f "arb_volatility_monitor.js"      2>/dev/null || true
 pkill -f "volatility_divergence_report.js" 2>/dev/null || true
+pkill -f "allmight_watchdog.sh"           2>/dev/null || true
+pkill -f "notification_router.js"         2>/dev/null || true
 sleep 1
 
 log "Starting AllMight — session: $SESSION"
@@ -313,50 +370,58 @@ echo ""
 # fetcher modules loading all chain configs regardless of what is active.
 # Fix belongs in master-fetcher.js / chain config, not here.
 # Tracked as hygiene debt — does not affect arbitrum pipeline.
-(
+#
+# nohup + disown: protects the stack from terminal close (SIGHUP).
+# Root cause of session_20260412_2102 abrupt stop — whole group killed on
+# terminal close. Using nohup ensures background jobs survive detachment.
+nohup bash -c "
   while true; do
-    node -r dotenv/config scripts/master-fetcher.js >> "$SESSION_DIR/fetcher.log" 2>&1
+    node -r dotenv/config scripts/master-fetcher.js >> '$SESSION_DIR/fetcher.log' 2>&1
     sleep 120
   done
-) &
+" >> "$SESSION_DIR/fetcher.log" 2>&1 &
 FETCHER_PID=$!
+disown $FETCHER_PID 2>/dev/null || true
 echo "fetcher=$FETCHER_PID" >> "$PID_FILE"
 log "✓ Fetcher loop     (pid $FETCHER_PID) → session_${SESSION}/fetcher.log"
 
 # Wait for fetcher to produce output before starting the monitor.
-# A non-empty fetcher.log means at least one fetch cycle completed.
 log "  Waiting for fetcher output (max 60s)..."
 wait_for_nonempty_file "$SESSION_DIR/fetcher.log" 60 2
 
 # ── Process 2: Volatility monitor ────────────────────────────────────────────
-node -r dotenv/config scripts/analysis/arb_volatility_monitor.js \
+nohup node -r dotenv/config scripts/analysis/arb_volatility_monitor.js \
   --chain arbitrum \
   --interval 120 \
   --log "$SESSION_DIR/volatility.jsonl" \
   >> "$SESSION_DIR/monitor.log" 2>&1 &
 MONITOR_PID=$!
+disown $MONITOR_PID 2>/dev/null || true
 echo "monitor=$MONITOR_PID" >> "$PID_FILE"
 log "✓ Volatility monitor (pid $MONITOR_PID) → session_${SESSION}/volatility.jsonl"
 
-# Wait for the volatility log to contain at least one scan record before
-# starting the heat runner, which reads from that file.
-log "  Waiting for first volatility scan (max 60s)..."
-wait_for_nonempty_file "$SESSION_DIR/volatility.jsonl" 60 2
+# Wait for at least 2 volatility scan records before starting the heat runner.
+# One record is insufficient — heat runner needs a stable data window.
+log "  Waiting for volatility data (≥2 records, max 90s)..."
+wait_for_min_lines "$SESSION_DIR/volatility.jsonl" 2 90 2
 
 # ── Process 3: Heat report runner ────────────────────────────────────────────
-node scripts/tools/volatility_divergence_report.js \
+nohup node scripts/tools/volatility_divergence_report.js \
   --log "$SESSION_DIR/volatility.jsonl" \
   --out "$SESSION_DIR/heat.jsonl" \
   --interval 30 \
   >> "$SESSION_DIR/monitor.log" 2>&1 &
 HEAT_PID=$!
+disown $HEAT_PID 2>/dev/null || true
 echo "heat=$HEAT_PID" >> "$PID_FILE"
 log "✓ Heat report      (pid $HEAT_PID) → session_${SESSION}/heat.jsonl"
 
-# Wait for the heat output file to exist before starting the activator,
-# which reads heat.jsonl on each refresh cycle.
-log "  Waiting for first heat report (max 60s)..."
-wait_for_nonempty_file "$SESSION_DIR/heat.jsonl" 60 2
+# Wait for at least 3 heat records before launching the activator.
+# Root cause of DEAD_ON_START in sessions 0955 and 0516: activator launched
+# with only 1 heat record, got insufficient data, and exited immediately.
+# 3 records = ~90s of warmup, giving the activator a stable regime read.
+log "  Waiting for heat warmup (≥3 records, max 120s)..."
+wait_for_min_lines "$SESSION_DIR/heat.jsonl" 3 120 2
 
 # ── Process 4: Activator (supervised) ────────────────────────────────────────
 # BLUEPRINT_LOG_PATH must be exported BEFORE the subshell launches so the
@@ -365,28 +430,29 @@ export BLUEPRINT_LOG_PATH="$SESSION_DIR/blueprints.jsonl"
 export SIM_LOG_PATH="$SESSION_DIR/simulations.jsonl"
 export FILTER_LOG_PATH="$SESSION_DIR/filter_results.jsonl"
 
-(
+nohup bash -c "
   RESTART_COUNT=0
   while true; do
-    RESTART_COUNT=$((RESTART_COUNT+1))
-    echo "[supervisor] Start #${RESTART_COUNT} $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
-      >> "$SESSION_DIR/activator.jsonl"
+    RESTART_COUNT=\$((RESTART_COUNT+1))
+    echo \"[supervisor] Start #\${RESTART_COUNT} \$(date -u '+%Y-%m-%dT%H:%M:%SZ')\" \
+      >> '$SESSION_DIR/activator.jsonl'
 
     node -r dotenv/config scripts/analysis/arb_window_activator.js \
       --pair ETH/USDC-RAMSES \
       --remap-ticks \
       --gas-profile atomic_optimistic \
-      --log "$SESSION_DIR/activator.jsonl" \
-      --heat-log "$SESSION_DIR/heat.jsonl"
+      --log '$SESSION_DIR/activator.jsonl' \
+      --heat-log '$SESSION_DIR/heat.jsonl'
 
-    EXIT=$?
-    echo "[supervisor] Exited code $EXIT — restarting in 5s" \
-      >> "$SESSION_DIR/activator.jsonl"
-    [[ $EXIT -eq 0 ]] && break
+    EXIT=\$?
+    echo \"[supervisor] Exited code \$EXIT — restarting in 5s\" \
+      >> '$SESSION_DIR/activator.jsonl'
+    [[ \$EXIT -eq 0 ]] && break
     sleep 5
   done
-) &
+" >> "$SESSION_DIR/activator.jsonl" 2>&1 &
 ACTIVATOR_PID=$!
+disown $ACTIVATOR_PID 2>/dev/null || true
 echo "activator=$ACTIVATOR_PID" >> "$PID_FILE"
 log "✓ Activator        (pid $ACTIVATOR_PID) → session_${SESSION}/activator.jsonl"
 log "✓ Blueprints                            → session_${SESSION}/blueprints.jsonl"

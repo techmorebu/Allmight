@@ -42,10 +42,15 @@ FETCHER_STALE_SEC=${FETCHER_STALE_SEC:-300}          # 5 min degraded
 FETCHER_FAILED_SEC=${FETCHER_FAILED_SEC:-600}         # 10 min failed
 VOLATILITY_STALE_SEC=${VOLATILITY_STALE_SEC:-300}     # 5 min degraded
 VOLATILITY_FAILED_SEC=${VOLATILITY_FAILED_SEC:-600}   # 10 min failed
-HEAT_STALE_SEC=${HEAT_STALE_SEC:-180}                 # 3 min degraded
-HEAT_FAILED_SEC=${HEAT_FAILED_SEC:-360}               # 6 min failed
-ACTIVATOR_STALE_SEC=${ACTIVATOR_STALE_SEC:-180}       # 3 min degraded
-ACTIVATOR_FAILED_SEC=${ACTIVATOR_FAILED_SEC:-360}     # 6 min failed
+# Heat and activator: DEGRADED threshold unchanged (3 min = correct sensitivity).
+# FAILED threshold raised from 360s → 600s after burn-in showed false-positive
+# FAILED verdicts in session_20260412_2102 where activator was still alive.
+# Heat runner emits every ~30s; a 6-min FAILED window fired during normal
+# inter-cycle gaps. 10-min FAILED gives a fairer signal for true death.
+HEAT_STALE_SEC=${HEAT_STALE_SEC:-180}                 # 3 min degraded (unchanged)
+HEAT_FAILED_SEC=${HEAT_FAILED_SEC:-600}               # 10 min failed  (was 360s)
+ACTIVATOR_STALE_SEC=${ACTIVATOR_STALE_SEC:-180}       # 3 min degraded (unchanged)
+ACTIVATOR_FAILED_SEC=${ACTIVATOR_FAILED_SEC:-600}     # 10 min failed  (was 360s)
 
 # Error pattern alert thresholds — per watchdog check window
 UNKNOWN_HEAT_ALERT=${UNKNOWN_HEAT_ALERT:-50}    # >50 UNKNOWN heatClass records = warning
