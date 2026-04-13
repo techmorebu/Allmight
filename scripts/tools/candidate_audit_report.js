@@ -26,7 +26,7 @@
 const fs   = require('fs');
 const path = require('path');
 
-const { auditCandidate, auditBatch, NEAR_MISS_SPREAD_GAP_PCT } = require('../execution/candidate_audit');
+const { auditCandidate, auditBatch, isEdgeExecutionCandidate, NEAR_MISS_SPREAD_GAP_PCT } = require('../execution/candidate_audit');
 const { logAuditRecord, inspectAuditLog }                       = require('../execution/candidate_audit_logger');
 const { applyFilter }                                            = require('../execution/execution_filter');
 const { simulateBlueprint }                                      = require('../execution/execution_simulator');
@@ -252,6 +252,7 @@ function printReport(records) {
   const confirmed = records.filter(r => r.auditVerdict === 'CANDIDATE_CONFIRMED');
   const nearMiss  = records.filter(r => r.auditVerdict === 'CANDIDATE_NEAR_MISS');
   const rejected  = records.filter(r => r.auditVerdict === 'CANDIDATE_REJECTED');
+  const edge      = records.filter(r => r.edgeExecutionCandidate === true);
 
   console.log('\n' + EQ);
   console.log('  AllMight — Candidate Audit Report  v1.0');
@@ -260,7 +261,8 @@ function printReport(records) {
 
   console.log(`\n  ${CLR.CANDIDATE_CONFIRMED}CONFIRMED: ${confirmed.length}${RST}   ` +
               `${CLR.CANDIDATE_NEAR_MISS}NEAR-MISS: ${nearMiss.length}${RST}   ` +
-              `REJECTED: ${rejected.length}`);
+              `REJECTED: ${rejected.length}   ` +
+              `\x1b[33mEDGE_CANDIDATES: ${edge.length}\x1b[0m`);
 
   // CONFIRMED detail
   if (confirmed.length) {
@@ -351,15 +353,18 @@ function main() {
 
   const confirmed = auditRecords.filter(r => r.auditVerdict === 'CANDIDATE_CONFIRMED');
   const nearMiss  = auditRecords.filter(r => r.auditVerdict === 'CANDIDATE_NEAR_MISS');
+  const edge      = auditRecords.filter(r => r.edgeExecutionCandidate === true);
 
   if (FLAG_JSON) {
     console.log(JSON.stringify({
-      total    : auditRecords.length,
-      confirmed: confirmed.length,
-      nearMiss : nearMiss.length,
-      rejected : auditRecords.length - confirmed.length - nearMiss.length,
-      candidates: confirmed,
-      nearMisses: nearMiss.slice(0, 20),
+      total         : auditRecords.length,
+      confirmed     : confirmed.length,
+      nearMiss      : nearMiss.length,
+      rejected      : auditRecords.length - confirmed.length - nearMiss.length,
+      edgeCandidates: edge.length,
+      candidates    : confirmed,
+      nearMisses    : nearMiss.slice(0, 20),
+      edgeRecords   : edge,
     }, null, 2));
   } else {
     printReport(FLAG_CONFIRMED_ONLY ? confirmed : auditRecords);

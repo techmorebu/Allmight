@@ -234,6 +234,12 @@ function trackThresholdEdge(auditRecords) {
     confidenceStats     : stats(confs),
     netProfitStats      : stats(netProfits),
 
+    // EDGE_EXECUTION_CANDIDATE breakout (Boss ruling 2026-04-13)
+    // All threshold-edge records that also carry the SAFE profile requirement.
+    // The tracker already requires SIM_PASS + conf≥0.65 + near_miss_spread,
+    // so SAFE is the only additional gate needed here.
+    edgeExecutionCandidateCount: canonicalRecords.filter(r => r.profile === 'SAFE').length,
+
     // Constants for report formatting
     edgeConfidenceThreshold : EDGE_CONFIDENCE_THRESHOLD,
     edgeNearMissType        : EDGE_NEAR_MISS_TYPE,
@@ -262,6 +268,7 @@ function _emptySummary(totalAuditRecords) {
     spreadStats       : null,
     confidenceStats   : null,
     netProfitStats    : null,
+    edgeExecutionCandidateCount: 0,
     edgeConfidenceThreshold : EDGE_CONFIDENCE_THRESHOLD,
     edgeNearMissType        : EDGE_NEAR_MISS_TYPE,
     edgeSimVerdict          : EDGE_SIM_VERDICT,

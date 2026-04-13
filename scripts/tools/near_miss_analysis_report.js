@@ -247,6 +247,10 @@ function printReport(summary, auditPath) {
     }
   }
 
+  // EDGE_EXECUTION_CANDIDATE summary line (Boss ruling 2026-04-13)
+  const edgeCount = summary.edgeCandidateCount ?? 0;
+  console.log(`\n  EDGE_EXECUTION_CANDIDATE: ${edgeCount} (${pct(edgeCount, nm)} of near-miss pool)  [tracking only — not admission]`);
+
   // Spread band
   console.log(`\n  Spread band distribution:`);
   for (const b of SPREAD_BANDS) {

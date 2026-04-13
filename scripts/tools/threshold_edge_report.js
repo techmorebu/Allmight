@@ -245,6 +245,9 @@ function printReport(summary) {
 
   // Q1: count
   console.log(`\n  Q1. Count: ${n} threshold-edge candidates`);
+  // EDGE_EXECUTION_CANDIDATE breakout — subset qualifying under Boss ruling 2026-04-13
+  const eec = summary.edgeExecutionCandidateCount ?? 0;
+  console.log(`      EDGE_EXECUTION_CANDIDATE: ${eec}/${n} (${n ? ((100*eec/n).toFixed(1)) : 0}% of threshold-edge pool)  [SAFE profile — tracking only]`);
 
   // Q2: gap range
   const g = summary.gapStats;

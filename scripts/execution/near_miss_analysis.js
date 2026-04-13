@@ -181,6 +181,17 @@ function analyseNearMisses(records) {
   const primaryDriver   = simMarginalCount >= spreadNearCount ? 'SIM_MARGINAL' : 'SPREAD_BELOW';
 
   // ── Assemble summary ───────────────────────────────────────────────────────
+  // EDGE_EXECUTION_CANDIDATE count — subset of near_miss_spread records that
+  // also carry the edgeExecutionCandidate tag from candidate_audit.js.
+  // Read directly from the tag if present; fall back to counting manually.
+  const edgeCandidateCount = nearMisses.filter(r =>
+    r.edgeExecutionCandidate === true ||
+    (r.nearMissType === 'near_miss_spread' &&
+     r.simulationVerdict === 'SIM_PASS' &&
+     (r.executionConfidence ?? 0) >= HIGH_CONFIDENCE_THRESHOLD &&
+     r.profile === 'SAFE')
+  ).length;
+
   return {
     // Population overview
     totalRecords    : total,
@@ -220,6 +231,9 @@ function analyseNearMisses(records) {
     highConfidenceCount     : highConfRecords.length,
     highConfidenceRecords   : highConfRecords.slice(0, 20),  // top 20
 
+    // EDGE_EXECUTION_CANDIDATE count (Boss ruling 2026-04-13)
+    edgeCandidateCount,
+
     // Dimensional breakdowns
     byRegime,
     bySpreadBand,
@@ -247,6 +261,7 @@ function _emptySummary(total, confirmed) {
     multiNearMissCount: 0,
     highConfidenceThreshold: HIGH_CONFIDENCE_THRESHOLD,
     highConfidenceCount: 0, highConfidenceRecords: [],
+    edgeCandidateCount: 0,
     byRegime: {}, bySpreadBand: {}, byConfBand: {},
     spreadStats: null, confStats: null,
   };

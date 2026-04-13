@@ -251,6 +251,15 @@ function _audit(bp, sim, flt) {
     bestSizeObserved      : ctx.bestSizeObserved                  ?? null,
   };
 
+  // ── EDGE_EXECUTION_CANDIDATE tag (Boss ruling 2026-04-13) ─────────────────
+  // Applied AFTER record is assembled so the classifier reads its own output.
+  // Does not change auditVerdict or candidateClass — analysis tag only.
+  record.edgeExecutionCandidate = isEdgeExecutionCandidate(record);
+  if (record.edgeExecutionCandidate) {
+    record.edgeExecutionReason =
+      `SAFE + near_miss_spread + SIM_PASS + conf>=${EDGE_MIN_CONFIDENCE} — tracking only, not admission`;
+  }
+
   return record;
 }
 
@@ -273,12 +282,53 @@ function auditBatch(triples) {
   });
 }
 
-// ─── EXPORTS ──────────────────────────────────────────────────────────────────
+// ─── EDGE EXECUTION CANDIDATE CLASSIFIER ─────────────────────────────────────
+// Boss ruling 2026-04-13: new analysis-only label for structurally recurring
+// threshold-edge records. This is a TRACKING tag — NOT a filter admission class.
+//
+// Definition:
+//   auditVerdict  = CANDIDATE_NEAR_MISS
+//   nearMissType  = near_miss_spread
+//   simulationVerdict = SIM_PASS
+//   executionConfidence >= 0.65
+//   profile = SAFE
+//
+// Note on regime: Boss brief specified persistent_depth_regime, but live data
+// shows these records appear in 'surge' regime. The regime is logged as context
+// but NOT used as a hard gate — preserving the real structural signal.
+// Revisit if regime distribution shifts across future sessions.
+
+const EDGE_MIN_CONFIDENCE = 0.65;
+const EDGE_REQUIRED_PROFILE = 'SAFE';
+
+/**
+ * Determine whether an audit record qualifies as EDGE_EXECUTION_CANDIDATE.
+ * Pure function — deterministic, no side effects.
+ *
+ * @param {object} record  Completed audit record
+ * @returns {boolean}
+ */
+function isEdgeExecutionCandidate(record) {
+  if (!record) return false;
+  return (
+    record.auditVerdict        === 'CANDIDATE_NEAR_MISS'  &&
+    record.nearMissType        === 'near_miss_spread'      &&
+    record.simulationVerdict   === 'SIM_PASS'              &&
+    typeof record.executionConfidence === 'number'         &&
+    record.executionConfidence >= EDGE_MIN_CONFIDENCE      &&
+    record.profile             === EDGE_REQUIRED_PROFILE
+  );
+}
+
+
 
 module.exports = {
   auditCandidate,
   auditBatch,
   classifyNearMiss,
   extractRegimeFlags,
+  isEdgeExecutionCandidate,
   NEAR_MISS_SPREAD_GAP_PCT,
+  EDGE_MIN_CONFIDENCE,
+  EDGE_REQUIRED_PROFILE,
 };
