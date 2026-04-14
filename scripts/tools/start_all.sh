@@ -147,6 +147,119 @@ if [[ "${1:-}" == "upload" ]]; then
   exit 0
 fi
 
+# ── RESTART-ACTIVATOR ─────────────────────────────────────────────────────────
+# Same-session activator restart — kills only the activator/supervisor,
+# leaves fetcher/monitor/heat running, relaunches into the same session files.
+# Use when: activator PID is dead but upstream pipeline is still healthy.
+if [[ "${1:-}" == "restart-activator" ]]; then
+  if [[ ! -f "$SESSION_FILE" ]]; then
+    die "No active session found. Start the stack first."
+  fi
+  SESSION=$(cat "$SESSION_FILE")
+  SESSION_DIR="$LOGS/session_${SESSION}"
+  log "Restarting activator for session $SESSION..."
+
+  # ── Kill existing activator/supervisor only ──────────────────────────────────
+  OLD_PID=$(grep "^activator=" "$PID_FILE" 2>/dev/null | cut -d= -f2 || true)
+  if [[ -n "$OLD_PID" ]] && kill -0 "$OLD_PID" 2>/dev/null; then
+    kill "$OLD_PID" 2>/dev/null && log "  Killed activator supervisor (pid $OLD_PID)"
+    sleep 2
+  fi
+  pkill -f "arb_window_activator.js" 2>/dev/null || true
+  sleep 1
+
+  # ── Verify upstream pipeline is healthy before relaunch ─────────────────────
+  log "  Checking upstream pipeline health..."
+  HEAT_OK=false
+  HEAT_LINES=0
+  [[ -f "$SESSION_DIR/heat.jsonl" ]] && HEAT_LINES=$(wc -l < "$SESSION_DIR/heat.jsonl" 2>/dev/null || echo 0)
+  [[ $HEAT_LINES -ge 3 ]] && HEAT_OK=true
+
+  HEAT_AGE=99999
+  [[ -f "$SESSION_DIR/heat.jsonl" ]] && \
+    HEAT_AGE=$(( $(date +%s) - $(date -r "$SESSION_DIR/heat.jsonl" +%s 2>/dev/null || echo 0) ))
+
+  if [[ "$HEAT_OK" == false ]] || [[ $HEAT_AGE -gt 300 ]]; then
+    log "  ⚠ Heat pipeline not ready (lines=$HEAT_LINES age=${HEAT_AGE}s) — waiting up to 90s..."
+    WAITED=0
+    while [[ $WAITED -lt 90 ]]; do
+      sleep 5; WAITED=$((WAITED+5))
+      HEAT_LINES=0
+      [[ -f "$SESSION_DIR/heat.jsonl" ]] && HEAT_LINES=$(wc -l < "$SESSION_DIR/heat.jsonl" 2>/dev/null || echo 0)
+      HEAT_AGE=$(( $(date +%s) - $(date -r "$SESSION_DIR/heat.jsonl" +%s 2>/dev/null || echo 0) ))
+      if [[ $HEAT_LINES -ge 3 && $HEAT_AGE -le 300 ]]; then
+        log "  ✓ Heat ready (${HEAT_LINES} lines, ${HEAT_AGE}s old)"
+        HEAT_OK=true; break
+      fi
+    done
+    if [[ "$HEAT_OK" == false ]]; then
+      log "  ⚠ Heat still not ready after 90s — restarting activator anyway (supervisor will retry)"
+    fi
+  else
+    log "  ✓ Heat pipeline healthy (${HEAT_LINES} lines, ${HEAT_AGE}s old)"
+  fi
+
+  # ── Relaunch activator into same session ─────────────────────────────────────
+  export BLUEPRINT_LOG_PATH="$SESSION_DIR/blueprints.jsonl"
+  export SIM_LOG_PATH="$SESSION_DIR/simulations.jsonl"
+  export FILTER_LOG_PATH="$SESSION_DIR/filter_results.jsonl"
+  export RPC_FRESHNESS_LOG_PATH="$SESSION_DIR/rpc_freshness.jsonl"
+
+  echo "[restart-activator] $(date -u '+%Y-%m-%dT%H:%M:%SZ')" >> "$SESSION_DIR/activator.jsonl"
+
+  nohup bash -c "
+    RESTART_COUNT=0
+    while true; do
+      RESTART_COUNT=\$((RESTART_COUNT+1))
+      echo \"[supervisor] Start #\${RESTART_COUNT} \$(date -u '+%Y-%m-%dT%H:%M:%SZ')\" \
+        >> '$SESSION_DIR/activator.jsonl'
+
+      node -r dotenv/config scripts/analysis/arb_window_activator.js \
+        --pair ETH/USDC-RAMSES \
+        --remap-ticks \
+        --gas-profile atomic_optimistic \
+        --log '$SESSION_DIR/activator.jsonl' \
+        --heat-log '$SESSION_DIR/heat.jsonl'
+
+      EXIT=\$?
+      echo \"[supervisor] Exited code \$EXIT — restarting in 5s\" \
+        >> '$SESSION_DIR/activator.jsonl'
+      [[ \$EXIT -eq 0 ]] && break
+
+      HEAT_WAIT=0
+      echo \"[supervisor] checking heat readiness before restart...\" \
+        >> '$SESSION_DIR/activator.jsonl'
+      while [[ \$HEAT_WAIT -lt 120 ]]; do
+        HEAT_LINES=0
+        [[ -f '$SESSION_DIR/heat.jsonl' ]] && HEAT_LINES=\$(wc -l < '$SESSION_DIR/heat.jsonl' 2>/dev/null || echo 0)
+        if [[ \$HEAT_LINES -ge 3 ]]; then
+          echo \"[supervisor] heat ready (\${HEAT_LINES} lines) — restarting activator\" \
+            >> '$SESSION_DIR/activator.jsonl'
+          break
+        fi
+        sleep 5; HEAT_WAIT=\$((HEAT_WAIT+5))
+      done
+      [[ \$HEAT_WAIT -ge 120 ]] && echo \"[supervisor] heat timeout — restarting anyway\" \
+        >> '$SESSION_DIR/activator.jsonl'
+      sleep 5
+    done
+  " >> "$SESSION_DIR/activator.jsonl" 2>&1 &
+  NEW_PID=$!
+  disown $NEW_PID 2>/dev/null || true
+
+  # Update PID file — activator line only
+  if [[ -f "$PID_FILE" ]]; then
+    TMP_PID=$(mktemp)
+    grep -v "^activator=" "$PID_FILE" > "$TMP_PID" && mv "$TMP_PID" "$PID_FILE"
+  fi
+  echo "activator=$NEW_PID" >> "$PID_FILE"
+
+  log "✓ Activator restarted (pid $NEW_PID) → same session $SESSION"
+  log "  Logs continuing in: $SESSION_DIR/activator.jsonl"
+  log "  Blueprints:         $SESSION_DIR/blueprints.jsonl"
+  exit 0
+fi
+
 # ── STATUS ────────────────────────────────────────────────────────────────────
 if [[ "${1:-}" == "status" ]]; then
   SESSION=$( [[ -f "$SESSION_FILE" ]] && cat "$SESSION_FILE" || echo "none" )
@@ -488,10 +601,15 @@ log "✓ Blueprints                            → session_${SESSION}/blueprints
 echo ""
 log "Session $SESSION running. PIDs: fetcher=$FETCHER_PID monitor=$MONITOR_PID heat=$HEAT_PID activator=$ACTIVATOR_PID"
 echo ""
-echo "  bash scripts/tools/start_all.sh status   — check health"
-echo "  bash scripts/tools/start_all.sh logs      — watch live output"
-echo "  bash scripts/tools/start_all.sh stop      — stop + run analysis"
-echo "  bash scripts/tools/start_all.sh upload    — show files to send CPT"
+echo "  bash scripts/tools/start_all.sh status             — check health"
+echo "  bash scripts/tools/start_all.sh logs               — watch live output"
+echo "  bash scripts/tools/start_all.sh stop               — stop + run analysis"
+echo "  bash scripts/tools/start_all.sh upload             — show files to send CPT"
+echo "  bash scripts/tools/start_all.sh restart-activator  — restart activator only (same session)"
+echo ""
+echo "  For 72h unattended run — terminal-safe launch:"
+echo "    nohup bash scripts/tools/start_all.sh > logs/launch.log 2>&1 &"
+echo "    disown; echo 'AllMight running detached'"
 echo ""
 
 # ── Discord startup notification (non-blocking, fail-silent) ──────────────────
