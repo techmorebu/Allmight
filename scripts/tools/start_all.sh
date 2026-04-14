@@ -451,6 +451,31 @@ nohup bash -c "
     echo \"[supervisor] Exited code \$EXIT — restarting in 5s\" \
       >> '$SESSION_DIR/activator.jsonl'
     [[ \$EXIT -eq 0 ]] && break
+
+    # ── Restart readiness check (Boss ruling 2026-04-14) ──────────────────────
+    # Before relaunching after a non-zero exit, verify the heat pipeline is warm.
+    # A DEAD_ON_START can occur if heat.jsonl is stale or insufficient after an
+    # RPC outage that also froze the upstream pipeline.
+    # Poll up to 120s for heat file to have ≥3 fresh lines before restarting.
+    HEAT_WAIT=0
+    echo \"[supervisor] checking heat readiness before restart...\" \
+      >> '$SESSION_DIR/activator.jsonl'
+    while [[ \$HEAT_WAIT -lt 120 ]]; do
+      HEAT_LINES=0
+      [[ -f '$SESSION_DIR/heat.jsonl' ]] && HEAT_LINES=\$(wc -l < '$SESSION_DIR/heat.jsonl' 2>/dev/null || echo 0)
+      if [[ \$HEAT_LINES -ge 3 ]]; then
+        echo \"[supervisor] heat ready (\${HEAT_LINES} lines) — restarting activator\" \
+          >> '$SESSION_DIR/activator.jsonl'
+        break
+      fi
+      sleep 5
+      HEAT_WAIT=\$((HEAT_WAIT+5))
+    done
+    if [[ \$HEAT_WAIT -ge 120 ]]; then
+      echo \"[supervisor] heat readiness timeout after 120s — restarting anyway\" \
+        >> '$SESSION_DIR/activator.jsonl'
+    fi
+
     sleep 5
   done
 " >> "$SESSION_DIR/activator.jsonl" 2>&1 &

@@ -213,6 +213,11 @@ const HEALTH_POOL_STALE_MS     =  30_000;   // pool read silent for > 30s → un
 const HEALTH_BLOCK_FROZEN_MS   =  60_000;   // block number unchanged for > 60s → frozen
 const HEALTH_TICKMAP_STALE_MS  =  35 * 60 * 1000;  // tick map not refreshed in > 35 min
 const HEALTH_CHECK_INTERVAL_MS =  60_000;   // run health check every 60s
+// Boss ruling 2026-04-14: exit cleanly after prolonged pool stale so supervisor
+// can restart with a fresh provider. Previously implicit (11+ min observed in session
+// 20260413_2012). Now explicit at 7 minutes — fast enough to detect true read
+// starvation, slow enough to survive brief provider turbulence.
+const HEALTH_POOL_STALE_EXIT_MS = 7 * 60 * 1000;  // 7 min prolonged stale → clean exit
 const HEARTBEAT_TICKS           =  200;        // confirmed_default: emit heartbeat every N ticks
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -226,7 +231,7 @@ const HEARTBEAT_TICKS           =  200;        // confirmed_default: emit heartb
 const READ_TIMEOUT_MS           =  8_000;   // confirmed_default: outer hard timeout per loop read
 const CONSECUTIVE_FAIL_WARN     =  3;       // confirmed_default: log warning at this many consecutive failures
 const CONSECUTIVE_FAIL_REBUILD  =  5;       // confirmed_default: rebuild provider after this many
-const MAX_PROVIDER_REBUILDS     =  8;       // Boss ruling 2026-04-10: increased 5→8. Condition: rebuild duration+reason+endpoint must be logged.
+const MAX_PROVIDER_REBUILDS     =  12;      // Boss ruling 2026-04-14: increased 8→12 for 72h burn-in tolerance. Ceiling preserved — 12 gives room for clustered provider turbulence without enabling infinite churn.
 // Exponential backoff between rebuild attempts (Boss ruling 2026-04-06)
 // 1st: 2s, 2nd: 4s, 3rd: 8s, 4th: 16s, 5th: 30s (capped)
 const REBUILD_BACKOFF_BASE_MS   = 2_000;
@@ -992,6 +997,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
     lastHealthCheckMs:  Date.now(),
     currentlyUnhealthy: false,
     unhealthyReasons:   [],
+    unhealthySinceMs:   null,   // set when currentlyUnhealthy becomes true
   };
 
   function checkHealth() {
@@ -1007,6 +1013,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
       // Transition into unhealthy
       health.currentlyUnhealthy = true;
       health.unhealthyReasons   = reasons;
+      health.unhealthySinceMs   = Date.now();
       const record = { ts: new Date().toISOString(), type: 'STATE_UNHEALTHY', reasons, state };
       process.stderr.write(`\n  ⚠ STATE_UNHEALTHY: ${reasons.join(', ')}\n`);
       appendLog(logPath, record);
@@ -1014,9 +1021,28 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
       // Recovered
       health.currentlyUnhealthy = false;
       health.unhealthyReasons   = [];
+      health.unhealthySinceMs   = null;
       const record = { ts: new Date().toISOString(), type: 'STATE_HEALTHY', state };
       console.log(`\n  ✓ STATE_HEALTHY — recovered\n`);
       appendLog(logPath, record);
+    }
+
+    // Prolonged pool stale exit — Boss ruling 2026-04-14
+    // If pool read has been stale for > HEALTH_POOL_STALE_EXIT_MS, exit cleanly
+    // so the supervisor can restart with a fresh provider. This is preferable to
+    // running indefinitely in a data-starved state.
+    if (health.currentlyUnhealthy && health.unhealthySinceMs) {
+      const staleDurationMs = Date.now() - health.unhealthySinceMs;
+      if (staleDurationMs > HEALTH_POOL_STALE_EXIT_MS) {
+        const staleMinutes = (staleDurationMs / 60000).toFixed(1);
+        process.stderr.write(`\n  ⚠ [health] prolonged stale (${staleMinutes}min > ${HEALTH_POOL_STALE_EXIT_MS/60000}min threshold) — exiting for supervisor restart\n`);
+        appendLog(logPath, {
+          ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
+          type: 'stale_exit', staleDurationMs, thresholdMs: HEALTH_POOL_STALE_EXIT_MS,
+          reasons: health.unhealthyReasons,
+        });
+        process.exit(1);  // non-zero so supervisor restarts
+      }
     }
 
     health.lastHealthCheckMs = now;
