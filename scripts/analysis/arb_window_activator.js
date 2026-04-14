@@ -975,6 +975,10 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
         type: 'provider_rebuild_failed', attempt: providerRebuilds,
         rebuildDurationMs, rebuildReason: reason || 'unspecified',
         error: e.message?.slice(0, 120),
+        // Extract failing endpoint label from error message for traceability
+        // Error format: "RPC hedged failure (arbitrum:label)" or "RPC exhausted (arbitrum:label)"
+        failingLabel: e.message?.match(/\(arbitrum:([^)]+)\)/)?.[1] ?? null,
+        urlsAtRebuild: rpc?.urls?.map(u => u.replace(/[?&]apiKey=[^&]*/g, '?apiKey=***')) ?? [],
       });
       return null;  // caller will retry or escalate
     }

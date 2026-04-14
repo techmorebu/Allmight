@@ -131,7 +131,7 @@ if [[ "${1:-}" == "upload" ]]; then
   echo ""
   echo "  Upload these files to CPT for analysis:"
   echo "  ─────────────────────────────────────────────────────"
-  for f in activator.jsonl blueprints.jsonl heat.jsonl volatility.jsonl execution_candidate_audit.jsonl near_miss_analysis.json threshold_edge.json threshold_edge_accumulator.json; do
+  for f in activator.jsonl blueprints.jsonl heat.jsonl volatility.jsonl execution_candidate_audit.jsonl near_miss_analysis.json threshold_edge.json threshold_edge_accumulator.json rpc_freshness.jsonl; do
     target="$SESSION_DIR/$f"
     if [[ -f "$target" ]]; then
       lines=$(wc -l < "$target")
@@ -165,7 +165,7 @@ if [[ "${1:-}" == "status" ]]; then
   echo ""
   if [[ -d "$SESSION_DIR" ]]; then
     echo "  Log files this session:"
-    for f in activator.jsonl blueprints.jsonl heat.jsonl volatility.jsonl execution_candidate_audit.jsonl near_miss_analysis.json threshold_edge.json threshold_edge_accumulator.json; do
+    for f in activator.jsonl blueprints.jsonl heat.jsonl volatility.jsonl execution_candidate_audit.jsonl near_miss_analysis.json threshold_edge.json threshold_edge_accumulator.json rpc_freshness.jsonl; do
       target="$SESSION_DIR/$f"
       [[ -f "$target" ]] && echo "    $(wc -l < "$target") lines  $target" \
                          || echo "    —  $target (not yet created)"
@@ -429,6 +429,9 @@ wait_for_min_lines "$SESSION_DIR/heat.jsonl" 3 120 2
 export BLUEPRINT_LOG_PATH="$SESSION_DIR/blueprints.jsonl"
 export SIM_LOG_PATH="$SESSION_DIR/simulations.jsonl"
 export FILTER_LOG_PATH="$SESSION_DIR/filter_results.jsonl"
+# Route provider factory telemetry into the session folder so RPC failure
+# URLs are captured per-session and visible in watchdog/analysis.
+export RPC_FRESHNESS_LOG_PATH="$SESSION_DIR/rpc_freshness.jsonl"
 
 nohup bash -c "
   RESTART_COUNT=0

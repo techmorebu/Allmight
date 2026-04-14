@@ -197,6 +197,23 @@ run_check() {
   local RECENT_BLUEPRINTS
   RECENT_BLUEPRINTS=$(tail_count "$SESSION_DIR/blueprints.jsonl" '"blueprintId"' 500)
 
+  # RPC exhaustion events — read from provider factory telemetry log
+  # Shows which specific endpoints are failing during rebuild windows
+  local RPC_EXHAUSTED_RECENT=0 RPC_FAILING_URLS=""
+  local FRESHNESS_LOG="$SESSION_DIR/rpc_freshness.jsonl"
+  if [[ -f "$FRESHNESS_LOG" ]]; then
+    RPC_EXHAUSTED_RECENT=$(tail_count "$FRESHNESS_LOG" '"ev":"rpc_exhausted"' 200)
+    # Extract unique failing URL patterns from last 200 lines (redacted)
+    RPC_FAILING_URLS=$(tail -n 200 "$FRESHNESS_LOG" 2>/dev/null | \
+      grep '"ev":"rpc_exhausted"' | \
+      sed -n 's/.*"urls":\[\([^]]*\)\].*/\1/p' | \
+      tr -d '"' | tr ',' '\n' | sort -u | tr '\n' ',' | sed 's/,$//' | cut -c1-80)
+  fi
+  if [[ $RPC_EXHAUSTED_RECENT -gt 0 ]]; then
+    WARNING_FLAGS+=("rpc_exhausted:${RPC_EXHAUSTED_RECENT}")
+    [[ "$OVERALL" == "HEALTHY" ]] && OVERALL="DEGRADED"
+  fi
+
   # ── D. Error pattern checks (last 200 lines of each log) ──────────────────
 
   local LOCK_HELD CHAIN_ERRORS FETCH_FAILS
@@ -325,6 +342,10 @@ run_check() {
     printf "  ║    Near-miss candidates:   %-29s ║\n" "$NEAR_MISS"
     printf "  ║    Rebuilds (tot/ok/fail): %-29s ║\n" "${RB_TOTAL}/${RB_SUCCESS}/${RB_FAILED}"
     printf "  ║    UNKNOWN heat (recent):  %-29s ║\n" "$UNKNOWN_HEAT"
+    printf "  ║    RPC exhausted (recent): %-29s ║\n" "$RPC_EXHAUSTED_RECENT"
+    if [[ -n "$RPC_FAILING_URLS" ]]; then
+      printf "  ║    Failing URLs:           %-29s ║\n" "${RPC_FAILING_URLS:0:29}"
+    fi
     echo "  ╠══════════════════════════════════════════════════════════╣"
     echo "  ║  Error patterns (last 200 lines):"
     printf "  ║    Lock contention:        %-29s ║\n" "$LOCK_HELD"
@@ -363,13 +384,14 @@ run_check() {
   local WARN_JSON
   WARN_JSON=$(printf '"%s",' "${WARNING_FLAGS[@]+"${WARNING_FLAGS[@]}"}" | sed 's/,$//')
 
-  printf '{"ts":"%s","session":"%s","overallStatus":"%s","staleComponents":[%s],"deadPids":[%s],"rebuildSuccessCount":%s,"rebuildFailCount":%s,"rebuildTotalCount":%s,"unknownHeatCount":%s,"confirmedCount":%s,"nearMissCount":%s,"recentSignals":%s,"recentBlueprints":%s,"lockHeldCount":%s,"chainErrorCount":%s,"fetchFailCount":%s,"warningFlags":[%s],"recoveryGraceActive":%s,"recentRebuildCount":%s}\n' \
+  printf '{"ts":"%s","session":"%s","overallStatus":"%s","staleComponents":[%s],"deadPids":[%s],"rebuildSuccessCount":%s,"rebuildFailCount":%s,"rebuildTotalCount":%s,"unknownHeatCount":%s,"confirmedCount":%s,"nearMissCount":%s,"recentSignals":%s,"recentBlueprints":%s,"lockHeldCount":%s,"chainErrorCount":%s,"fetchFailCount":%s,"rpcExhaustedCount":%s,"warningFlags":[%s],"recoveryGraceActive":%s,"recentRebuildCount":%s}\n' \
     "$TS" "$SESSION" "$OVERALL" \
     "$STALE_JSON" "$DEAD_JSON" \
     "$RB_SUCCESS" "$RB_FAILED" "$RB_TOTAL" \
     "$UNKNOWN_HEAT" "$CONFIRMED" "$NEAR_MISS" \
     "$RECENT_SIGNALS" "$RECENT_BLUEPRINTS" \
     "$LOCK_HELD" "$CHAIN_ERRORS" "$FETCH_FAILS" \
+    "$RPC_EXHAUSTED_RECENT" \
     "$WARN_JSON" \
     "$([[ "$RECOVERY_GRACE_ACTIVE" == true ]] && echo true || echo false)" \
     "$RECENT_REBUILD_COUNT" >> "$WATCHDOG_LOG"
