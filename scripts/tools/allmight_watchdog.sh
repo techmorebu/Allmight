@@ -407,10 +407,49 @@ run_check() {
 
 # ── Main loop ─────────────────────────────────────────────────────────────────
 
+# State transition tracking — notifier is called only when status changes.
+# Previous status is persisted across loop iterations via a small temp file
+# so it survives subshell boundaries inside run_check.
+WATCHDOG_STATE_FILE="${LOGS}/.watchdog_prev_status"
+PREV_STATUS=""
+[[ -f "$WATCHDOG_STATE_FILE" ]] && PREV_STATUS=$(cat "$WATCHDOG_STATE_FILE" 2>/dev/null || echo "")
+
 if [[ $LOOP_SEC -gt 0 ]]; then
   [[ "$QUIET" == false ]] && echo "[watchdog] Running every ${LOOP_SEC}s. Ctrl+C to stop."
   while true; do
+    # Capture the JSONL record written in this check by tailing watchdog.jsonl after run_check
+    SESSION=$( [[ -f "$SESSION_FILE" ]] && cat "$SESSION_FILE" || echo "none" )
+    SESSION_DIR="$LOGS/session_${SESSION}"
+    WD_LOG="$SESSION_DIR/watchdog.jsonl"
+    LINES_BEFORE=0
+    [[ -f "$WD_LOG" ]] && LINES_BEFORE=$(wc -l < "$WD_LOG" 2>/dev/null || echo 0)
+
     run_check || true   # never exit the loop on non-zero
+
+    # Read the record just appended by run_check
+    CURR_STATUS=""
+    WD_RECORD=""
+    if [[ -f "$WD_LOG" ]]; then
+      LINES_AFTER=$(wc -l < "$WD_LOG" 2>/dev/null || echo 0)
+      if [[ $LINES_AFTER -gt $LINES_BEFORE ]]; then
+        WD_RECORD=$(tail -1 "$WD_LOG" 2>/dev/null || echo "")
+        CURR_STATUS=$(echo "$WD_RECORD" | grep -o '"overallStatus":"[^"]*"' | cut -d'"' -f4)
+      fi
+    fi
+
+    # Call notifier if status changed or dead PIDs detected — fail-silent
+    if [[ -n "$WD_RECORD" && -n "$CURR_STATUS" ]]; then
+      HAS_DEAD=$(echo "$WD_RECORD" | grep -c '"deadPids":\["[^"]' || true)
+      if [[ "$CURR_STATUS" != "$PREV_STATUS" || $HAS_DEAD -gt 0 ]]; then
+        echo "$WD_RECORD" | \
+          node scripts/monitoring/watchdog_notifier.js --prev "$PREV_STATUS" \
+          >> "$SESSION_DIR/analysis.log" 2>&1 &
+        disown $! 2>/dev/null || true
+      fi
+      echo "$CURR_STATUS" > "$WATCHDOG_STATE_FILE"
+      PREV_STATUS="$CURR_STATUS"
+    fi
+
     sleep "$LOOP_SEC"
   done
 else
