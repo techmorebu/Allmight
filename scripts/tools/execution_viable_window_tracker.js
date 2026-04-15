@@ -353,8 +353,8 @@ function printReport(result) {
       `${(h.viableRate+'%').padStart(7)} ` +
       `${String(h.sessionsCovering).padStart(4)} ` +
       `${String(h.sessionsWithViable).padStart(4)} ` +
-      `${'$'+(h.avgCoreNet||0).toFixed(4)}.padStart(9)} ` +
-      `${'$'+(h.avgWorstCase||0).toFixed(4)}.padStart(10)}  ` +
+      `${'$'+(h.avgCoreNet||0).toFixed(4)}`.padStart(9) + ' ' +
+      `${'$'+(h.avgWorstCase||0).toFixed(4)}`.padStart(10) + '  ' +
       `${topP}/${topR}  ${bar}`
     );
   }
