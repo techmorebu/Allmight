@@ -703,6 +703,19 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
   rpc = rpc;
   const endMs = Date.now() + durationS * 1000;
 
+  // ── Tick logger: derive replay log path from activator log path ──────────────
+  // Boss ruling 2026-04-15: append venue-side price rows on every successful
+  // pool read so the sandbox has sub-second density instead of signal-only (~12s).
+  // Path: same session folder, separate file → no activator.jsonl pollution.
+  // Fail-silent — a replay write failure must never affect gating decisions.
+  const replayLogPath = logPath
+    ? logPath.replace(/activator\.jsonl$/, 'price_replay.jsonl')
+    : null;
+  // Derive sessionId from the session folder name (e.g. "20260414_0728")
+  const replaySessionId = logPath
+    ? (logPath.match(/session_(\d{8}_\d{4})/) || [])[1] ?? 'unknown'
+    : 'unknown';
+
   // Initial tick map scan
   let thresholds;
   if (!forceRemap) {
@@ -1153,6 +1166,45 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
       snap = snapRead;   // update outer-scoped snap for heartbeat access
       health.lastPoolReadMs = Date.now();
       poolFail.success();
+
+      // ── Tick logger — append two replay rows (one per venue) ────────────────
+      // Runs on EVERY successful pool read regardless of signal/state/gate.
+      // Fail-silent: must never affect arm/execute decisions.
+      if (replayLogPath) {
+        const tickTs = new Date().toISOString();
+        const replayBase = {
+          sessionId          : replaySessionId,
+          pair               : LOG_PAIR,
+          chain              : LOG_CHAIN,
+          blockNumber        : blockNumber,
+          sourceType         : 'activator_tick',
+          sourceRef          : 'activator.jsonl',
+          profile            : activeProfile,
+          regime             : activeRegime,   // market regime ('surge','persistent_depth_regime', etc.)
+          state              : state,           // activator arm state ('ARMED'/'PASSIVE') — separate field
+          heatClass          : null,   // heat not available at this call depth
+          heatScore          : null,
+        };
+        try {
+          const uniRow = JSON.stringify({ ts: tickTs, ...replayBase,
+            venue      : 'uniswap_v3',
+            price      : snap.uniPrice,
+            feeBps     : Math.round(UNIV3_FEE_FRAC * 10000),
+            liquidityUsd   : snap.uniDepth,
+            depthMinUsd    : snap.uniDepth,
+            spreadPctObserved: null,
+          });
+          const camRow = JSON.stringify({ ts: tickTs, ...replayBase,
+            venue      : 'ramses_v2',
+            price      : snap.camPrice,
+            feeBps     : Math.round(snap.camFee * 10000),
+            liquidityUsd   : null,
+            depthMinUsd    : null,
+            spreadPctObserved: null,
+          });
+          fs.appendFileSync(replayLogPath, uniRow + '\n' + camRow + '\n');
+        } catch { /* fail-silent — never affects gating */ }
+      }
     } catch (e) {
       stats.errors++;
       const { count, level } = poolFail.failure(e);
