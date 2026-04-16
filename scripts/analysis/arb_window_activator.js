@@ -61,6 +61,7 @@ const fs             = require('fs');
 const path           = require('path');
 const { ethers }     = require('ethers');
 const { createProvider } = require('../../utils/provider_factory');
+const { INTENT, getIntentCounters, estimateCreditCost } = require('../../utils/provider_factory');
 
 // ── Blueprint engine (Execution Design Layer — Boss ruling 2026-04-10) ─────────
 // Lazy-loaded inside the blueprint try/catch block to avoid circular dependency
@@ -386,7 +387,7 @@ let _bpSeq = 0;
 
 async function fetchLiveGasModel(rpc) {
   try {
-    const res = await rpc.callDetailed('act.gas', async (p) => p.getFeeData(), { timeoutMs: 3000, hedge: true });
+    const res = await rpc.callDetailed('act.gas', async (p) => p.getFeeData(), { timeoutMs: 3000, hedge: true, intent: INTENT.CHEAP_READ });
     const fd  = res.result;
     const wei = fd.gasPrice ?? fd.maxFeePerGas ?? fd.lastBaseFeePerGas;
     if (!wei) throw new Error('no gasPrice');
@@ -437,7 +438,7 @@ async function readBothPools(blockNumber, rpc) {
       const pool = new ethers.Contract(UNIV3_POOL, UNIV3_ABI, p);
       const [s0, liq] = await Promise.all([pool.slot0({ blockTag: blockNumber }), pool.liquidity({ blockTag: blockNumber })]);
       return { s0, liq };
-    }, { timeoutMs: 2000, hedge: true }),
+    }, { timeoutMs: 2000, hedge: true, intent: INTENT.CRITICAL_READ }),
     // Pool B dispatch: Algebra venues use globalState(), UniV3-compatible venues (Ramses) use slot0().
     // CAMELOT_TYPE is set from pairCfg.camelotType in main() — default 'algebra'.
     CAMELOT_TYPE === 'univ3'
@@ -446,12 +447,12 @@ async function readBothPools(blockNumber, rpc) {
           const [s0, liq] = await Promise.all([pool.slot0({ blockTag: blockNumber }), pool.liquidity({ blockTag: blockNumber })]);
           // Map slot0 result to gs shape: [sqrtPriceX96, tick, fee=0 (use static), ...]
           return { gs: s0, liq };
-        }, { timeoutMs: 2000, hedge: true })
+        }, { timeoutMs: 2000, hedge: true, intent: INTENT.CRITICAL_READ })
       : rpc.callDetailed(`act.camelot.${blockNumber}`, async (p) => {
           const pool = new ethers.Contract(CAMELOT_POOL, ALGEBRA_ABI, p);
           const [gs, liq] = await Promise.all([pool.globalState({ blockTag: blockNumber }), pool.liquidity({ blockTag: blockNumber })]);
           return { gs, liq };
-        }, { timeoutMs: 2000, hedge: true }),
+        }, { timeoutMs: 2000, hedge: true, intent: INTENT.CRITICAL_READ }),
   ]);
   const uniSqrtP  = uniRes.result.s0[0];
   const camSqrtP  = camRes.result.gs[0];
@@ -478,7 +479,7 @@ async function deriveThresholdsFromTickMap(rpc) {
     const pool = new ethers.Contract(UNIV3_POOL, UNIV3_ABI, p);
     const [s0, liq] = await Promise.all([pool.slot0(), pool.liquidity()]);
     return { s0, liq };
-  }, { timeoutMs: 5000, hedge: true });
+  }, { timeoutMs: 5000, hedge: true, intent: INTENT.TICKMAP_SCAN });
 
   const sqrtP96    = stateRes.result.s0[0];
   const currentTick = Number(stateRes.result.s0[1]);
@@ -497,7 +498,7 @@ async function deriveThresholdsFromTickMap(rpc) {
       const res = await rpc.callDetailed(`act.bitmap.${w}`, async (p) => {
         const pool = new ethers.Contract(UNIV3_POOL, UNIV3_ABI, p);
         return pool.tickBitmap(w);
-      }, { timeoutMs: 3000, hedge: true });
+      }, { timeoutMs: 3000, hedge: true, intent: INTENT.TICKMAP_SCAN });
       const bm = BigInt(res.result.toString());
       if (bm === 0n) { await sleep(50); continue; }
       for (let bit = 0; bit < 256; bit++) {
@@ -517,7 +518,7 @@ async function deriveThresholdsFromTickMap(rpc) {
       const res = await rpc.callDetailed(`act.tickdata.${tick}`, async (p) => {
         const pool = new ethers.Contract(UNIV3_POOL, UNIV3_ABI, p);
         return pool.ticks(tick);
-      }, { timeoutMs: 3000, hedge: true });
+      }, { timeoutMs: 3000, hedge: true, intent: INTENT.TICKMAP_SCAN });
       const d = res.result;
       if (d[7]) tickData[tick] = { liquidityNet: BigInt(d[1].toString()), liquidityGross: BigInt(d[0].toString()) };
     } catch { /* skip */ }
@@ -716,6 +717,42 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
     ? (logPath.match(/session_(\d{8}_\d{4})/) || [])[1] ?? 'unknown'
     : 'unknown';
 
+  // ── Hot-path budget audit (Boss ruling 2026-04-15) ───────────────────────────
+  // Measures per-stage loop timing without affecting gate semantics.
+  // Fail-silent: timing errors must never alter activator behavior.
+  // Stages: block_read, pool_read, replay_log_append, gate_logic,
+  //         simulation, blueprint, append_log, loop_total
+  const _TIMING_STAGES = [
+    'block_read','pool_read','replay_log_append','gate_logic',
+    'simulation','blueprint','append_log','loop_total',
+  ];
+  const _timing = {};
+  for (const s of _TIMING_STAGES) _timing[s] = { count:0, totalMs:0, maxMs:0 };
+
+  function _tStart() { return performance.now(); }
+  function _tRecord(stage, startT) {
+    try {
+      const ms = performance.now() - startT;
+      const t  = _timing[stage];
+      if (!t) return;
+      t.count++;
+      t.totalMs += ms;
+      if (ms > t.maxMs) t.maxMs = ms;
+    } catch { /* fail-silent */ }
+  }
+  function _timingSnapshot() {
+    const snap = {};
+    for (const [s, t] of Object.entries(_timing)) {
+      snap[s] = {
+        count  : t.count,
+        totalMs: +t.totalMs.toFixed(2),
+        avgMs  : t.count ? +(t.totalMs / t.count).toFixed(2) : 0,
+        maxMs  : +t.maxMs.toFixed(2),
+      };
+    }
+    return snap;
+  }
+
   // Initial tick map scan
   let thresholds;
   if (!forceRemap) {
@@ -758,7 +795,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
         const newRpc = createProvider('arbitrum');
         try {
           await withTimeout(
-            newRpc.getBlockNumber('startup.retry.sanity', { timeoutMs: 5000, hedge: true }),
+            newRpc.getBlockNumber('startup.retry.sanity', { timeoutMs: 5000, hedge: true, intent: INTENT.REBUILD_SANITY }),
             10_000, 'startup.retry.sanity'
           );
           rpc = newRpc;
@@ -972,7 +1009,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
       const newRpc = createProvider('arbitrum');
       // Quick sanity check — if this hangs too, we catch it
       await withTimeout(
-        newRpc.getBlockNumber('recover.sanity', { timeoutMs: 5000, hedge: true }),
+        newRpc.getBlockNumber('recover.sanity', { timeoutMs: 5000, hedge: true, intent: INTENT.REBUILD_SANITY }),
         10_000, 'rebuild.sanity'
       );
       const rebuildDurationMs = Date.now() - rebuildStartMs;
@@ -1088,6 +1125,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
 
   while (Date.now() < endMs) {
     const loopStart = Date.now();
+    const _t0_loop  = _tStart();   // high-res timer for loop_total stage
 
     // Periodic tick map refresh
     if (Date.now() >= tickMapRefreshAt) {
@@ -1126,12 +1164,14 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
     // ── BLOCK READ (Level 1/2/3 recovery) ────────────────────────────────────
     let blockNumber;
     try {
+      const _t0_block = _tStart();
       const b = await withTimeout(
-        rpc.getBlockNumber('act.block', { timeoutMs: 1200, hedge: true }),
+        rpc.getBlockNumber('act.block', { timeoutMs: 1200, hedge: true, intent: INTENT.CHEAP_READ }),
         READ_TIMEOUT_MS, 'getBlockNumber'
       );
       blockNumber = b.blockNumber;
       blockFail.success();
+      _tRecord('block_read', _t0_block);
     } catch (e) {
       stats.errors++;
       const { count, level } = blockFail.failure(e);
@@ -1159,6 +1199,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
     // ── POOL READ (Level 1/2/3 recovery) ─────────────────────────────────────
     let snapRead;
     try {
+      const _t0_pool = _tStart();
       snapRead = await withTimeout(
         readBothPools(blockNumber, rpc),
         READ_TIMEOUT_MS, 'readBothPools'
@@ -1166,6 +1207,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
       snap = snapRead;   // update outer-scoped snap for heartbeat access
       health.lastPoolReadMs = Date.now();
       poolFail.success();
+      _tRecord('pool_read', _t0_pool);
 
       // ── Tick logger — append two replay rows (one per venue) ────────────────
       // Runs on EVERY successful pool read regardless of signal/state/gate.
@@ -1186,6 +1228,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
           heatScore          : null,
         };
         try {
+          const _t0_replay = _tStart();
           const uniRow = JSON.stringify({ ts: tickTs, ...replayBase,
             venue      : 'uniswap_v3',
             price      : snap.uniPrice,
@@ -1203,6 +1246,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
             spreadPctObserved: null,
           });
           fs.appendFileSync(replayLogPath, uniRow + '\n' + camRow + '\n');
+          _tRecord('replay_log_append', _t0_replay);
         } catch { /* fail-silent — never affects gating */ }
       }
     } catch (e) {
@@ -1225,6 +1269,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
 
     stats.ticks++;
 
+    const _t0_gate = _tStart();
     const spread        = spreadPct(snap.uniPrice, snap.camPrice);
     const feeBurden     = (UNIV3_FEE_FRAC + snap.camFee) * 100;
     const slip          = slippagePct(TRIGGER_SIZE_USD, snap.uniDepth);
@@ -1288,6 +1333,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
                        && depthMin >= ARM_MIN_DEPTH_USD;
 
     const shouldArm = isProximate && isQualified;
+    _tRecord('gate_logic', _t0_gate);
 
     // ── STATE TRANSITIONS ────────────────────────────────────────────────────
     if (state === 'PASSIVE' && shouldArm) {
@@ -1515,7 +1561,9 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
         console.log(`\n  → ★ ARMED + depth + spread + stable [${activeProfile}]. Running simulation  block=${blockNumber}  spreadSamples=${spreadSamples.length}`);
 
         try {
+          const _t0_sim = _tStart();
           const simResult  = await runSimulation(snap, rpc, gm);
+          _tRecord('simulation', _t0_sim);
           const anyGate    = Object.values(simResult.gates).some(g => g.passed);
           const profitable = simResult.all.filter(r => r.status !== 'LOST');
 
@@ -1668,8 +1716,10 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
               };
 
               // Lazy-require logger only (fs+path, no circular dep possible)
+              const _t0_bp = _tStart();
               const { logBlueprint } = require('../execution/blueprint_logger');
               logBlueprint(blueprint);
+              _tRecord('blueprint', _t0_bp);
             } catch (bpErr) {
               process.stderr.write(`  [blueprint] build error: ${bpErr.message}\n`);
             }
@@ -1692,6 +1742,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
           // Log signal with full sim detail, window correlation, v4 profile metadata
           // Boss directive 2026-04-07: add viability floor compliance + selector rationale
           const aboveViabilityFloor = spreadPctNow >= MIN_VIABLE_SPREAD_PCT;
+          const _t0_append = _tStart();
           appendLog(logPath, {
             ...signal,
             // Envelope fields — required for heat_correlation_check.js pair matching (Boss ruling 2026-04-09)
@@ -1710,6 +1761,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
             profileSpreadGate, profileDepthGate, profileStdGate, profileSampGate,
             simResults: simResult.all, gates: simResult.gates,
           });
+          _tRecord('append_log', _t0_append);
 
         } catch (e) {
           console.error(`  [sim] ERROR: ${e.message}`);
@@ -1721,6 +1773,19 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
     }  // end ARMED + exec check
 
     const elapsed = Date.now() - loopStart;
+    _tRecord('loop_total', _t0_loop);   // _t0_loop = performance.now() at top of iteration
+
+    // Timing heartbeat — same cadence as regular heartbeat
+    if (stats.ticks > 0 && stats.ticks % HEARTBEAT_TICKS === 0) {
+      try {
+        appendLog(logPath, {
+          ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
+          type: 'timing_heartbeat', ticks: stats.ticks,
+          timing: _timingSnapshot(),
+        });
+      } catch { /* fail-silent */ }
+    }
+
     await sleep(Math.max(0, (state === 'ARMED' ? POLL_ARMED_MS : POLL_PASSIVE_MS) - elapsed));
   }
 
@@ -1735,6 +1800,81 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
   console.log(`  Tick map refreshes: ${stats.tickMapRefreshes}`);
   console.log(`  Unhealthy events:   ${stats.unhealthyEvents}`);
   if (logPath) console.log(`  Log: ${logPath}`);
+
+  // ── RPC USAGE SUMMARY ─────────────────────────────────────────────────────
+  try {
+    const counters = getIntentCounters();
+    const credits  = estimateCreditCost(counters);
+    const totalPremium = Object.values(counters).reduce((a,v)=>a+(v.premiumHits||0),0);
+    const totalCheap   = Object.values(counters).reduce((a,v)=>a+(v.cheapHits||0),0);
+    const totalAttempts= Object.values(counters).reduce((a,v)=>a+(v.attempts||0),0);
+
+    console.log('\n  ── RPC Credit Usage ─────────────────────────────────────');
+    console.log(`  ${'intent'.padEnd(18)} ${'attempts'.padStart(9)} ${'premium'.padStart(9)} ${'cheap'.padStart(7)} ${'failures'.padStart(9)}`);
+    console.log('  ' + '─'.repeat(56));
+    for (const [intent, v] of Object.entries(counters)) {
+      if (!v.attempts) continue;
+      console.log(
+        `  ${intent.padEnd(18)} ${String(v.attempts).padStart(9)} ` +
+        `${String(v.premiumHits).padStart(9)} ${String(v.cheapHits).padStart(7)} ` +
+        `${String(v.failures).padStart(9)}`
+      );
+    }
+    console.log('  ' + '─'.repeat(56));
+    console.log(`  ${'TOTAL'.padEnd(18)} ${String(totalAttempts).padStart(9)} ${String(totalPremium).padStart(9)} ${String(totalCheap).padStart(7)}`);
+    console.log(`  Est. Infura credits: ~${credits.total} (block:${credits.blockCredits} pool:${credits.poolCredits} rebuild:${credits.rebuildCredits} tickmap:${credits.tickmapCredits})`);
+
+    appendLog(logPath, {
+      ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
+      type: 'rpc_usage_summary',
+      sessionDurationS: Number(elapsed),
+      ticks: stats.ticks,
+      intentCounters: counters,
+      creditEstimate: credits,
+      totalPremiumHits: totalPremium,
+      totalCheapHits: totalCheap,
+      totalAttempts,
+      premiumSavingsEstimate: counters.cheap_read?.cheapHits ?? 0,
+    });
+  } catch { /* fail-silent */ }
+  try {
+    const ts_now = new Date().toISOString();
+    const snap   = _timingSnapshot();
+
+    // Identify hottest stages
+    const byTotal = Object.entries(snap)
+      .filter(([,v]) => v.totalMs > 0)
+      .sort(([,a],[,b]) => b.totalMs - a.totalMs);
+    const loopTotal = snap.loop_total?.totalMs || 1;
+
+    console.log('\n  ── Hot-Path Budget ──────────────────────────────────');
+    console.log(`  ${'stage'.padEnd(22)} ${'count'.padStart(7)} ${'avgMs'.padStart(8)} ${'maxMs'.padStart(9)} ${'%loop'.padStart(7)}`);
+    console.log('  ' + '─'.repeat(58));
+    for (const [stage, v] of byTotal) {
+      const pct = stage === 'loop_total' ? '100.0%'
+        : v.totalMs > 0 ? (100 * v.totalMs / loopTotal).toFixed(1) + '%' : '  0.0%';
+      console.log(
+        `  ${stage.padEnd(22)} ${String(v.count).padStart(7)} ` +
+        `${v.avgMs.toFixed(2).padStart(8)} ${v.maxMs.toFixed(2).padStart(9)} ${pct.padStart(7)}`
+      );
+    }
+    console.log('  ' + '─'.repeat(58));
+
+    // Log machine-readable timing_summary record
+    appendLog(logPath, {
+      ts: ts_now, source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
+      type: 'timing_summary',
+      ticks: stats.ticks,
+      sessionDurationS: Number(elapsed),
+      timing: snap,
+      hotStagesByTotal: byTotal.slice(0, 3).map(([s]) => s),
+      hotStagesByAvg  : Object.entries(snap)
+        .filter(([,v]) => v.count > 0)
+        .sort(([,a],[,b]) => b.avgMs - a.avgMs)
+        .slice(0, 3).map(([s]) => s),
+    });
+  } catch { /* fail-silent */ }
+
   console.log(EQ + '\n');
 }
 

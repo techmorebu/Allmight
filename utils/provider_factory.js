@@ -413,6 +413,85 @@ function classifyRpcError(err) {
   return 'rpc_error';
 }
 
+// ─── RPC INTENT ROUTER (Boss ruling 2026-04-15) ──────────────────────────────
+//
+// Intent classes define what kind of read is being performed so the router can
+// direct cheap reads away from premium endpoints, reducing credit burn.
+//
+//   cheap_read      — block polling, low-value status checks
+//   critical_read   — pool state reads (slot0/globalState/liquidity)
+//   rebuild_sanity  — provider sanity check after rebuild
+//   tickmap_scan    — tick-map derivation (spatially critical)
+//
+// Routing rule:
+//   critical_read / rebuild_sanity / tickmap_scan → full pool, premium-first (unchanged)
+//   cheap_read → prefer non-premium endpoints (arb1, ankr) over Infura/Alchemy
+//
+// "Premium" is identified by URL pattern: infura.io or alchemyapi.io/g.alchemy.com
+// "Standard" = everything else (Ankr, arb1, etc.)
+//
+// This does NOT change any gating, timeout, or hedge behaviour.
+// It only affects candidate ordering for cheap_read intents.
+
+const INTENT = Object.freeze({
+  CHEAP_READ     : 'cheap_read',
+  CRITICAL_READ  : 'critical_read',
+  REBUILD_SANITY : 'rebuild_sanity',
+  TICKMAP_SCAN   : 'tickmap_scan',
+});
+
+function _isPremiumUrl(url) {
+  return /infura\.io|alchemyapi\.io|g\.alchemy\.com/i.test(url);
+}
+
+// ─── SESSION REQUEST COUNTERS ─────────────────────────────────────────────────
+// In-process counters reset per process lifetime. Emitted in rpc_usage_summary.
+
+const _intentCounters = {
+  cheap_read     : { attempts: 0, failures: 0, premiumHits: 0, cheapHits: 0 },
+  critical_read  : { attempts: 0, failures: 0, premiumHits: 0, cheapHits: 0 },
+  rebuild_sanity : { attempts: 0, failures: 0, premiumHits: 0, cheapHits: 0 },
+  tickmap_scan   : { attempts: 0, failures: 0, premiumHits: 0, cheapHits: 0 },
+  unclassified   : { attempts: 0, failures: 0, premiumHits: 0, cheapHits: 0 },
+};
+
+function _intentKey(intent) {
+  return _intentCounters[intent] ? intent : 'unclassified';
+}
+
+function _countAttempt(intent, url, success) {
+  const k = _intentKey(intent);
+  _intentCounters[k].attempts++;
+  if (!success) _intentCounters[k].failures++;
+  if (_isPremiumUrl(url)) _intentCounters[k].premiumHits++;
+  else                    _intentCounters[k].cheapHits++;
+}
+
+/**
+ * Get a snapshot of intent-level request counters.
+ * Used by activator to emit rpc_usage_summary at session end.
+ */
+function getIntentCounters() {
+  const snap = {};
+  for (const [k, v] of Object.entries(_intentCounters)) {
+    snap[k] = { ...v };
+  }
+  return snap;
+}
+
+// Estimate Infura credit cost: 1 credit per call for eth_blockNumber,
+// 2 credits for eth_call (pool reads). Rough heuristic only.
+function estimateCreditCost(counters) {
+  const blockCredits  = (counters.cheap_read?.premiumHits     ?? 0) * 1;
+  const poolCredits   = (counters.critical_read?.premiumHits  ?? 0) * 2;
+  const rebuildCredits= (counters.rebuild_sanity?.premiumHits ?? 0) * 2;
+  const tickmapCredits= (counters.tickmap_scan?.premiumHits   ?? 0) * 2;
+  return { blockCredits, poolCredits, rebuildCredits, tickmapCredits,
+           total: blockCredits + poolCredits + rebuildCredits + tickmapCredits };
+}
+
+// ─── END INTENT ROUTER CONSTANTS ─────────────────────────────────────────────
+
 function createProvider(chain) {
   const chainKey = String(chain).toLowerCase();
   const urls = getChainRpcUrls(chainKey);
@@ -424,11 +503,25 @@ function createProvider(chain) {
   async function callDetailed(label, fn, opts = {}) {
     const timeoutMs = opts.timeoutMs || RPC_CALL_TIMEOUT_MS;
     const hedge = Boolean(opts.hedge);
+    const intent = opts.intent || INTENT.CRITICAL_READ;   // default: treat as critical
 
     let candidates = urls.filter(u => _health.isAvailable(u));
 
     if (candidates.length === 0) {
       candidates = urls.slice();
+    }
+
+    // ── Intent-based candidate reordering ───────────────────────────────────
+    // For cheap_read: prefer non-premium endpoints to reduce Infura credit burn.
+    // For all other intents: use normal freshness-tier ordering (premium first).
+    if (intent === INTENT.CHEAP_READ && candidates.length > 1) {
+      const cheap   = candidates.filter(u => !_isPremiumUrl(u));
+      const premium = candidates.filter(u =>  _isPremiumUrl(u));
+      // Non-premium first, premium as fallback — but only if cheap pool is non-empty
+      if (cheap.length > 0) {
+        candidates = [...cheap, ...premium];
+      }
+      // If all endpoints are premium (e.g. Infura-only setup), fall through unchanged
     }
 
     // Trigger background freshness probe if cache is stale (non-blocking).
@@ -493,6 +586,7 @@ function createProvider(chain) {
 
         const duration = Date.now() - startedAt;
         _health.recordSuccess(url, duration);
+        _countAttempt(intent, url, true);   // intent counter — success
 
         // Emit selection event — records which endpoint was actually used.
         const _fe = _freshness.get(url);
@@ -519,6 +613,7 @@ function createProvider(chain) {
         };
       } catch (err) {
         _health.recordFailure(url);
+        _countAttempt(intent, url, false);   // intent counter — failure
         // Emit per-attempt failure — records which endpoint failed and why.
         _logEvent({
           ev:        'rpc_attempt_fail',
@@ -589,7 +684,7 @@ function createProvider(chain) {
     const r = await callDetailed(
       label,
       provider => provider.getBlockNumber(),
-      opts
+      { intent: INTENT.CHEAP_READ, ...opts }   // block polling = cheap_read by default
     );
 
     return {
@@ -611,4 +706,7 @@ module.exports = {
   getChainRpcUrls,
   getFreshnessPenalty,   // exposed for diagnostics / telemetry
   _freshness,            // exposed for diagnostics (read-only intent)
+  INTENT,
+  getIntentCounters,
+  estimateCreditCost,
 };
