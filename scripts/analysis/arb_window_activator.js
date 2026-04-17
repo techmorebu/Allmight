@@ -840,6 +840,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
   // Offline learning (recommender) populates ENTRY_PROFILES.
   // Runtime mutation of thresholds is FORBIDDEN.
   let activeProfile         = 'SAFE';   // current profile — starts conservative
+  let activeRegime          = null;     // current market regime — set each tick after gate logic
   let profileCandidateLabel = 'SAFE';   // profile we want to upgrade/downgrade to
   let profileCandidateTicks = 0;        // consecutive ticks in candidate state
   let lastProfileSwitchTs   = null;     // ISO ts of last profile switch (audit)
@@ -1323,7 +1324,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
         persistentDepth = false;
       }
     }
-    const activeRegime = persistentDepth ? 'persistent_depth_regime' : regimeLabel(depthMin);
+    activeRegime = persistentDepth ? 'persistent_depth_regime' : regimeLabel(depthMin);
     const isQualified   = (
                             scannerTier === 'candidate'      ||
                             scannerTier === 'near_threshold' ||
