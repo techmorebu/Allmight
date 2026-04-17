@@ -331,40 +331,105 @@ function getChainRpcUrls(chain) {
   //
   // Arbitrum: Infura primary only. No healthy backup in tested set.
   // Procurement target: Chainstack or dRPC before scaling Arbitrum load.
+  // ── PROVIDER SLOT POLICY (Boss ruling 2026-04-17) ──────────────────────────
+  //
+  // Slot ordering determines fallback priority when freshness scores are equal.
+  // Runtime freshness layer overrides static order for lagging endpoints.
+  //
+  // Intent routing (cheap_read vs critical_read) governs WHICH slots are
+  // tried first — premium endpoints are avoided for cheap_read calls.
+  //
+  // TIER STRUCTURE per chain:
+  //   slot 0: Premium-A  — QuickNode (paid, lowest latency target)
+  //   slot 1: Premium-B  — Chainstack or Infura (paid, stable backup)
+  //   slot 2: Standard   — dRPC or Ankr (free/cheap, acceptable latency)
+  //   slot 3: Fallback   — Public RPC (last resort, may lag or rate-limit)
+  //
+  // _isPremiumUrl() classifies slot 0+1 as premium — cheap_read skips them.
+  // dRPC and public RPCs are non-premium — cheap_read hits them first.
+  //
+  // .env var naming convention:
+  //   <CHAIN>_MAINNET_RPC_URL      = slot 0 (primary premium — QuickNode)
+  //   <CHAIN>_MAINNET_RPC_URL_1    = slot 1 (secondary premium — Chainstack/Infura)
+  //   <CHAIN>_MAINNET_RPC_URL_2    = slot 2 (standard — dRPC/Ankr)
+  //   <CHAIN>_MAINNET_RPC_URL_3    = slot 3 (fallback — public RPC)
+  //
+  // NOTE: *_RPC_URLS comma-lists are NOT read here — only these fixed slots.
+  //       ETH_RPC_URL is a legacy alias for ethereum slot 0.
+  //
   const RPCS = {
-    // Ethereum: Alchemy → Infura → Ankr (benchmark order)
+
+    // ── ETHEREUM MAINNET ──────────────────────────────────────────────────────
+    // Active surface: DAI/USDC (UniV3 vs Curve) — watchlist only
     ethereum: cleanRpcList([
-      process.env.ETH_RPC_URL,                    // slot 0: Alchemy (benchmark primary)
-      process.env.ETHEREUM_MAINNET_RPC_URL_1,      // slot 1: Infura  (benchmark backup)
-      process.env.ETHEREUM_MAINNET_RPC_URL_2,      // slot 2: Ankr    (benchmark tertiary)
-      process.env.ETHEREUM_MAINNET_RPC_URL,        // slot 3: legacy alias
+      process.env.ETH_RPC_URL                  ||  // slot 0: primary premium (QuickNode / legacy alias)
+      process.env.ETHEREUM_MAINNET_RPC_URL,
+      process.env.ETHEREUM_MAINNET_RPC_URL_1,       // slot 1: secondary premium (Chainstack / Infura)
+      process.env.ETHEREUM_MAINNET_RPC_URL_2,       // slot 2: standard (dRPC)
+      process.env.ETHEREUM_MAINNET_RPC_URL_3,       // slot 3: standard (Ankr)
+      process.env.ETHEREUM_MAINNET_RPC_URL_4,       // slot 4: secondary premium B (Alchemy)
+      process.env.ETHEREUM_MAINNET_RPC_URL_5,       // slot 5: premium C (Infura)
+      process.env.ETHEREUM_MAINNET_RPC_URL_6,       // slot 6: public fallback
     ]),
-    // Arbitrum endpoint ordering — telemetry-derived (March 2026)
-    // Runtime freshness layer governs actual selection. Static slot order
-    // is fallback priority only — freshest endpoint wins at runtime.
-    // arb1 moved to slot 3: telemetry showed it oscillates 3-6 blocks consistently.
-    // Infura/Alchemy recover to lag=0 more often and are preferred primary candidates.
-    // See APPX_RPC_MESH_POLICY_V1 + rpc_freshness.jsonl for evidence.
+
+    // ── ARBITRUM MAINNET ──────────────────────────────────────────────────────
+    // PRIMARY active chain: ETH/USDC-RAMSES (UniV3 0.01% vs Ramses V2 0.05%)
+    //
+    // Slot mapping (intent routing: cheap_read avoids premium slots):
+    //   0  ARBITRUM_MAINNET_RPC_URL    → QuickNode   (premium-A — critical reads)
+    //   1  ARBITRUM_MAINNET_RPC_URL_1  → Chainstack  (premium-B — paid backup)
+    //   2  ARBITRUM_MAINNET_RPC_URL_2  → dRPC        (standard  — cheap_read primary target)
+    //   3  ARBITRUM_MAINNET_RPC_URL_3  → arb1        (fallback  — cheap_read secondary)
+    //   4  ARBITRUM_MAINNET_RPC_URL_4  → Ankr        (standard  — cheap_read tertiary)
+    //   5  ARBITRUM_MAINNET_RPC_URL_5  → Alchemy     (premium-C — freshness-routed)
+    //   6  ARBITRUM_MAINNET_RPC_URL_6  → Infura      (premium-D — freshness-routed)
+    //
+    // cheap_read: dRPC → arb1 → Ankr first, then QN/Chainstack/Alchemy/Infura as fallback
+    // critical_read / rebuild_sanity / tickmap_scan: full pool, freshness governs order
     arbitrum: cleanRpcList([
-      process.env.ARBITRUM_MAINNET_RPC_URL,        // slot 0: Infura  (telemetry primary — recovers to lag=0)
-      process.env.ARBITRUM_MAINNET_RPC_URL_1,      // slot 1: Alchemy (telemetry backup)
-      process.env.ARBITRUM_MAINNET_RPC_URL_2,      // slot 2: Ankr    (tertiary)
-      process.env.ARBITRUM_MAINNET_RPC_URL_3,      // slot 3: arb1    (fallback — oscillates 3-6 blocks)
+      process.env.ARBITRUM_MAINNET_RPC_URL,         // slot 0: QuickNode
+      process.env.ARBITRUM_MAINNET_RPC_URL_1,       // slot 1: Chainstack
+      process.env.ARBITRUM_MAINNET_RPC_URL_2,       // slot 2: dRPC
+      process.env.ARBITRUM_MAINNET_RPC_URL_3,       // slot 3: arb1 (public)
+      process.env.ARBITRUM_MAINNET_RPC_URL_4,       // slot 4: Ankr
+      process.env.ARBITRUM_MAINNET_RPC_URL_5,       // slot 5: Alchemy
+      process.env.ARBITRUM_MAINNET_RPC_URL_6,       // slot 6: Infura
     ]),
-    // Optimism: Alchemy → Infura (benchmark order)
+
+    // ── OPTIMISM MAINNET ──────────────────────────────────────────────────────
+    // Not currently active — provider slots reserved for future surfaces
     optimism: cleanRpcList([
-      process.env.OPTIMISM_MAINNET_RPC_URL_1,      // slot 0: Alchemy (benchmark primary)
-      process.env.OPTIMISM_MAINNET_RPC_URL,        // slot 1: Infura  (benchmark backup)
+      process.env.OPTIMISM_MAINNET_RPC_URL,         // slot 0: primary premium
+      process.env.OPTIMISM_MAINNET_RPC_URL_1,       // slot 1: secondary premium
+      process.env.OPTIMISM_MAINNET_RPC_URL_2,       // slot 2: standard
+      process.env.OPTIMISM_MAINNET_RPC_URL_3,       // slot 3: public fallback
+      process.env.OPTIMISM_MAINNET_RPC_URL_4,       // slot 4: reserved
+      process.env.OPTIMISM_MAINNET_RPC_URL_5,       // slot 5: reserved
+      process.env.OPTIMISM_MAINNET_RPC_URL_6,       // slot 6: reserved
     ]),
-    // Base: Infura → Alchemy (benchmark order)
+
+    // ── BASE MAINNET ──────────────────────────────────────────────────────────
+    // Not currently active — provider slots reserved for future surfaces
     base: cleanRpcList([
-      process.env.BASE_MAINNET_RPC_URL_1,          // slot 0: Infura  (benchmark primary)
-      process.env.BASE_MAINNET_RPC_URL,            // slot 1: Alchemy (benchmark backup)
+      process.env.BASE_MAINNET_RPC_URL,             // slot 0: primary premium
+      process.env.BASE_MAINNET_RPC_URL_1,           // slot 1: secondary premium
+      process.env.BASE_MAINNET_RPC_URL_2,           // slot 2: standard
+      process.env.BASE_MAINNET_RPC_URL_3,           // slot 3: public fallback
+      process.env.BASE_MAINNET_RPC_URL_4,           // slot 4: reserved
+      process.env.BASE_MAINNET_RPC_URL_5,           // slot 5: reserved
+      process.env.BASE_MAINNET_RPC_URL_6,           // slot 6: reserved
     ]),
-    // Unichain: Infura only (Alchemy lag confirmed)
+
+    // ── UNICHAIN MAINNET ──────────────────────────────────────────────────────
+    // Not currently active — Infura only confirmed; Alchemy lag confirmed
     unichain: cleanRpcList([
-      process.env.UNICHAIN_MAINNET_RPC_URL_1,      // slot 0: Infura  (benchmark primary)
-      process.env.UNICHAIN_MAINNET_RPC_URL,        // slot 1: legacy alias
+      process.env.UNICHAIN_MAINNET_RPC_URL,         // slot 0: Infura (only confirmed provider)
+      process.env.UNICHAIN_MAINNET_RPC_URL_1,       // slot 1: reserved
+      process.env.UNICHAIN_MAINNET_RPC_URL_2,       // slot 2: reserved
+      process.env.UNICHAIN_MAINNET_RPC_URL_3,       // slot 3: reserved
+      process.env.UNICHAIN_MAINNET_RPC_URL_4,       // slot 4: reserved
+      process.env.UNICHAIN_MAINNET_RPC_URL_5,       // slot 5: reserved
+      process.env.UNICHAIN_MAINNET_RPC_URL_6,       // slot 6: reserved
     ]),
   };
 
@@ -441,7 +506,10 @@ const INTENT = Object.freeze({
 });
 
 function _isPremiumUrl(url) {
-  return /infura\.io|alchemyapi\.io|g\.alchemy\.com/i.test(url);
+  // Premium = paid authenticated endpoints that should be reserved for critical reads.
+  // cheap_read routing avoids these; critical_read / rebuild_sanity / tickmap_scan use them.
+  // Boss ruling 2026-04-17: add QuickNode and Chainstack — they are paid tier, not free fallbacks.
+  return /infura\.io|alchemyapi\.io|g\.alchemy\.com|quiknode\.pro|chainstack\.com|p2pify\.com/i.test(url);
 }
 
 // ─── SESSION REQUEST COUNTERS ─────────────────────────────────────────────────
