@@ -417,6 +417,72 @@ except: print('not run')
       --stop-summary "$SESSION_DIR" >> "$SESSION_DIR/analysis.log" 2>&1 &
   fi
 
+  # ── Auto-compress session folder ───────────────────────────────────────────
+  # Compresses the completed session into a single zip for easy upload and storage.
+  # Skips rpc_freshness.jsonl (large, low-value for CPT analysis) to save space.
+  # Output: logs/session_<ID>.zip (beside the session folder, not inside it).
+  if [[ -n "$SESSION" && -d "$SESSION_DIR" ]]; then
+    ZIP_PATH="$LOGS/session_${SESSION}.zip"
+    ZIP_TMP="$LOGS/.session_${SESSION}_zipping"
+
+    # Guard: skip if zip already exists
+    if [[ -f "$ZIP_PATH" ]]; then
+      log "  ↩ session zip already exists: session_${SESSION}.zip"
+    else
+      log "  Compressing session_${SESSION}/ → session_${SESSION}.zip ..."
+      touch "$ZIP_TMP"   # flag file so we can detect interrupted zips
+
+      # Files to include in upload zip (omit rpc_freshness.jsonl — 20-40MB, low CPT value)
+      # Include price_replay.jsonl only if ≤ 25MB (sandbox analysis)
+      INCLUDE_REPLAY=true
+      if [[ -f "$SESSION_DIR/price_replay.jsonl" ]]; then
+        REPLAY_MB=$(du -m "$SESSION_DIR/price_replay.jsonl" 2>/dev/null | cut -f1)
+        [[ "${REPLAY_MB:-0}" -gt 25 ]] && INCLUDE_REPLAY=false
+      fi
+
+      ZIP_FILES=(
+        activator.jsonl
+        blueprints.jsonl
+        execution_candidate_audit.jsonl
+        near_miss_analysis.json
+        threshold_edge.json
+        threshold_edge_accumulator.json
+        heat.jsonl
+        volatility.jsonl
+        watchdog.jsonl
+        analysis.log
+        rpc_freshness.jsonl
+      )
+      [[ "$INCLUDE_REPLAY" == true ]] && ZIP_FILES+=(price_replay.jsonl)
+
+      # Build the zip from the session directory
+      (
+        cd "$LOGS"
+        TARGETS=()
+        for f in "${ZIP_FILES[@]}"; do
+          [[ -f "session_${SESSION}/$f" ]] && TARGETS+=("session_${SESSION}/$f")
+        done
+        if [[ ${#TARGETS[@]} -gt 0 ]]; then
+          zip -q "session_${SESSION}.zip" "${TARGETS[@]}"
+        fi
+      )
+
+      rm -f "$ZIP_TMP"
+
+      if [[ -f "$ZIP_PATH" ]]; then
+        ZIP_MB=$(du -m "$ZIP_PATH" 2>/dev/null | cut -f1 || echo "?")
+        RAW_MB=$(du -sm "$SESSION_DIR" 2>/dev/null | cut -f1 || echo "?")
+        log "  ✓ Compressed: session_${SESSION}.zip (${ZIP_MB}MB, was ${RAW_MB}MB raw)"
+        log "    Upload: logs/session_${SESSION}.zip"
+        if [[ "$INCLUDE_REPLAY" == false ]]; then
+          log "    Note: price_replay.jsonl excluded (>25MB) — run sandbox locally if needed"
+        fi
+      else
+        log "  ✗ Compression failed — session folder still intact"
+      fi
+    fi
+  fi
+
   exit 0
 fi
 
