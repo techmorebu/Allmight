@@ -254,6 +254,11 @@ function printReport(records) {
   const rejected  = records.filter(r => r.auditVerdict === 'CANDIDATE_REJECTED');
   const edge      = records.filter(r => r.edgeExecutionCandidate === true);
 
+  // Threshold tier slices (Boss ruling 2026-04-19)
+  const tierStrict  = records.filter(r => r.thresholdTier === 'CONFIRMED_STRICT');
+  const tierBuffer  = records.filter(r => r.thresholdTier === 'ADAPTIVE_BUFFER');
+  const tierBelow   = records.filter(r => r.thresholdTier === 'BELOW_BUFFER');
+
   console.log('\n' + EQ);
   console.log('  AllMight — Candidate Audit Report  v1.0');
   console.log(`  ${new Date().toISOString()}  |  Blueprints: ${records.length}`);
@@ -263,6 +268,70 @@ function printReport(records) {
               `${CLR.CANDIDATE_NEAR_MISS}NEAR-MISS: ${nearMiss.length}${RST}   ` +
               `REJECTED: ${rejected.length}   ` +
               `\x1b[33mEDGE_CANDIDATES: ${edge.length}\x1b[0m`);
+
+  // ── THRESHOLD TIER BREAKDOWN (Boss ruling 2026-04-19) ─────────────────────
+  function tierStats(recs) {
+    if (!recs.length) return { count: 0, avgSpread: null, avgConf: null, avgNet: null, avgWorst: null, simPassRate: null };
+    const spreads = recs.map(r => r.spreadPct).filter(n => n != null);
+    const confs   = recs.map(r => r.executionConfidence).filter(n => n != null);
+    const nets    = recs.map(r => r.baseNetProfitUsd).filter(n => n != null);
+    const worsts  = recs.map(r => r.worstCaseNetUsd).filter(n => n != null);
+    const simPass = recs.filter(r => r.simulationVerdict === 'SIM_PASS').length;
+    const avg = arr => arr.length ? arr.reduce((a,b) => a+b, 0) / arr.length : null;
+    return {
+      count      : recs.length,
+      avgSpread  : avg(spreads),
+      avgConf    : avg(confs),
+      avgNet     : avg(nets),
+      minNet     : nets.length ? Math.min(...nets) : null,
+      maxNet     : nets.length ? Math.max(...nets) : null,
+      avgWorst   : avg(worsts),
+      worstPos   : worsts.filter(w => w > 0).length,
+      simPassRate: recs.length ? simPass / recs.length : null,
+    };
+  }
+
+  {
+    const s  = tierStats(tierStrict);
+    const b  = tierStats(tierBuffer);
+    const bw = tierStats(tierBelow);
+    console.log(`\n  ${'═'.repeat(W-2)}`);
+    console.log(`  THRESHOLD TIER BREAKDOWN (Boss ruling 2026-04-19)`);
+    console.log(`  ${'─'.repeat(W-2)}`);
+    console.log(`  ${'tier'.padEnd(18)} ${'count'.padStart(7)} ${'avgSpread'.padStart(10)} ${'avgConf'.padStart(8)} ${'avgNet$'.padStart(8)} ${'minNet$'.padStart(8)} ${'maxNet$'.padStart(8)} ${'worst>0'.padStart(8)} ${'simPass%'.padStart(9)}`);
+    console.log(`  ${'─'.repeat(W-2)}`);
+    for (const [label, st, clr] of [
+      ['CONFIRMED_STRICT', s,  '\x1b[1;32m'],
+      ['ADAPTIVE_BUFFER',  b,  '\x1b[33m'],
+      ['BELOW_BUFFER',     bw, '\x1b[90m'],
+    ]) {
+      if (!st.count) { console.log(`  ${clr}${label.padEnd(18)}\x1b[0m ${'0'.padStart(7)}`); continue; }
+      const worstPct = st.worstPos != null ? `${((st.worstPos / st.count)*100).toFixed(0)}%` : '?';
+      const simPct   = st.simPassRate != null ? `${(st.simPassRate*100).toFixed(1)}%` : '?';
+      console.log(
+        `  ${clr}${label.padEnd(18)}\x1b[0m` +
+        ` ${String(st.count).padStart(7)}` +
+        ` ${(st.avgSpread != null ? st.avgSpread.toFixed(4)+'%' : '?').padStart(10)}` +
+        ` ${(st.avgConf   != null ? st.avgConf.toFixed(3)       : '?').padStart(8)}` +
+        ` ${(st.avgNet    != null ? '$'+st.avgNet.toFixed(4)     : '?').padStart(8)}` +
+        ` ${(st.minNet    != null ? '$'+st.minNet.toFixed(4)     : '?').padStart(8)}` +
+        ` ${(st.maxNet    != null ? '$'+st.maxNet.toFixed(4)     : '?').padStart(8)}` +
+        ` ${worstPct.padStart(8)}` +
+        ` ${simPct.padStart(9)}`
+      );
+    }
+    // Adaptive buffer safety gate detail
+    if (tierBuffer.length) {
+      const bySafe   = tierBuffer.filter(r => r.profile === 'SAFE').length;
+      const byRegime = tierBuffer.reduce((acc, r) => { acc[r.regime??'?'] = (acc[r.regime??'?']||0)+1; return acc; }, {});
+      console.log(`\n  Adaptive buffer detail: profile=SAFE ${bySafe}/${tierBuffer.length}  regimes=${JSON.stringify(byRegime)}`);
+    }
+    // Near-miss spread records just below adaptive buffer (0.2185%) — watching zone
+    const belowBufferNearMiss = tierBelow.filter(r => r.spreadPct != null && r.spreadPct >= 0.215 && r.nearMissType === 'near_miss_spread');
+    if (belowBufferNearMiss.length) {
+      console.log(`  Below-buffer near-miss (spread 0.215-0.2185%): ${belowBufferNearMiss.length} records — watching zone`);
+    }
+  }
 
   // CONFIRMED detail
   if (confirmed.length) {

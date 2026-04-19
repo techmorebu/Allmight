@@ -260,6 +260,11 @@ function _audit(bp, sim, flt) {
       `SAFE + near_miss_spread + SIM_PASS + conf>=${EDGE_MIN_CONFIDENCE} — tracking only, not admission`;
   }
 
+  // ── THRESHOLD TIER tag (Boss ruling 2026-04-19) ────────────────────────────
+  // 3-band policy: CONFIRMED_STRICT / ADAPTIVE_BUFFER / BELOW_BUFFER.
+  // Analysis tag only — does not change auditVerdict or filterDecision.
+  record.thresholdTier = classifyThresholdTier(record);
+
   return record;
 }
 
@@ -322,13 +327,83 @@ function isEdgeExecutionCandidate(record) {
 
 
 
+// ─── THRESHOLD TIER CLASSIFIER ───────────────────────────────────────────────
+// Boss ruling 2026-04-19: 3-band threshold policy for ETH/USDC-RAMSES.
+//
+// Band definitions:
+//   CONFIRMED_STRICT  — spread >= 0.2200%  (hard confirmed floor, unchanged)
+//   ADAPTIVE_BUFFER   — 0.2185% <= spread < 0.2200%  AND safety conditions pass
+//   BELOW_BUFFER      — everything else (spread < 0.2185% OR buffer conditions fail)
+//
+// Adaptive buffer safety conditions (ALL must pass):
+//   1. profile = SAFE
+//   2. executionConfidence >= 0.70  (higher bar than edge — 0.65 < buffer <= confirmed)
+//   3. simulationVerdict = SIM_PASS
+//   4. worstCaseNetUsd > 0         (positive worst-case realism)
+//   5. regime in ('surge', 'persistent_depth_regime')  (strong regime only)
+//
+// This tag is ANALYSIS ONLY — it does not change auditVerdict, candidateClass,
+// or filterDecision. It enables per-tier reporting and future size policy work.
+//
+// Size policy (for future execution tiering, not yet active):
+//   CONFIRMED_STRICT : baseline notional + scale candidates
+//   ADAPTIVE_BUFFER  : smaller notional — same as baseline, not scaled
+//   BELOW_BUFFER     : no execution, analytics only
+
+const TIER_CONFIRMED_SPREAD   = 0.22;    // confirmed floor (unchanged)
+const TIER_ADAPTIVE_SPREAD_LO = 0.2185;  // adaptive buffer lower bound
+const TIER_ADAPTIVE_MIN_CONF  = 0.70;    // higher confidence bar for buffer tier
+const TIER_ADAPTIVE_REGIMES   = new Set(['surge', 'persistent_depth_regime']);
+
+/**
+ * Classify an audit record into a threshold tier.
+ * Pure function — deterministic, no side effects.
+ *
+ * @param {object} record  Completed audit record
+ * @returns {'CONFIRMED_STRICT'|'ADAPTIVE_BUFFER'|'BELOW_BUFFER'}
+ */
+function classifyThresholdTier(record) {
+  if (!record) return 'BELOW_BUFFER';
+
+  const spread    = record.spreadPct          ?? 0;
+  const conf      = record.executionConfidence ?? 0;
+  const simVerdict= record.simulationVerdict   ?? '';
+  const profile   = record.profile             ?? '';
+  const regime    = record.regime              ?? '';
+  const worstCase = record.worstCaseNetUsd     ?? null;
+
+  // Band 1 — Confirmed strict: spread at or above confirmed floor
+  if (spread >= TIER_CONFIRMED_SPREAD) return 'CONFIRMED_STRICT';
+
+  // Band 2 — Adaptive buffer: spread in buffer zone AND all safety conditions pass
+  if (
+    spread >= TIER_ADAPTIVE_SPREAD_LO  &&
+    spread <  TIER_CONFIRMED_SPREAD    &&
+    profile      === 'SAFE'            &&
+    conf         >= TIER_ADAPTIVE_MIN_CONF &&
+    simVerdict   === 'SIM_PASS'        &&
+    typeof worstCase === 'number'      &&
+    worstCase    >  0                  &&
+    TIER_ADAPTIVE_REGIMES.has(regime)
+  ) {
+    return 'ADAPTIVE_BUFFER';
+  }
+
+  // Band 3 — Below buffer: everything else
+  return 'BELOW_BUFFER';
+}
+
 module.exports = {
   auditCandidate,
   auditBatch,
   classifyNearMiss,
   extractRegimeFlags,
   isEdgeExecutionCandidate,
+  classifyThresholdTier,
   NEAR_MISS_SPREAD_GAP_PCT,
   EDGE_MIN_CONFIDENCE,
   EDGE_REQUIRED_PROFILE,
+  TIER_CONFIRMED_SPREAD,
+  TIER_ADAPTIVE_SPREAD_LO,
+  TIER_ADAPTIVE_MIN_CONF,
 };
