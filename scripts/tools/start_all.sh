@@ -1,30 +1,70 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════════════════════════════════
-#  AllMight — Unified Launcher  v1.2
+#  AllMight — Unified Launcher  v1.3
 # ───────────────────────────────────────────────────────────────────────────────
 #  PLACEMENT : scripts/tools/start_all.sh
 #
 #  Runs all AllMight processes from a single terminal.
 #  Each run gets a timestamped session ID — logs are clearly named.
 #
-#  USAGE
-#  ─────
+#  SUBCOMMANDS
+#  ───────────
 #  bash scripts/tools/start_all.sh          # start everything
 #  bash scripts/tools/start_all.sh status   # check what's running
-#  bash scripts/tools/start_all.sh stop     # stop everything + run analysis
+#  bash scripts/tools/start_all.sh stop     # stop + run analysis + compress session
 #  bash scripts/tools/start_all.sh logs     # tail all logs live
-#  bash scripts/tools/start_all.sh upload   # show which files to upload to CPT
+#  bash scripts/tools/start_all.sh upload   # show zip path + file inventory
 #
-#  LOG NAMING
-#  ──────────
-#  Each run stamps all logs with a session ID: YYYYMMDD_HHMM
-#  Example: session 20260411_0930 produces:
-#    logs/session_20260411_0930/activator.jsonl
-#    logs/session_20260411_0930/blueprints.jsonl
-#    logs/session_20260411_0930/volatility.jsonl
-#    logs/session_20260411_0930/heat.jsonl
-#    logs/session_20260411_0930/fetcher.log
-#    logs/session_20260411_0930/monitor.log
+#  ╔══════════════════════════════════════════════════════════════════════════╗
+#  ║  CANONICAL UNATTENDED STARTUP — USE THESE EXACT COMMANDS EVERY TIME    ║
+#  ╠══════════════════════════════════════════════════════════════════════════╣
+#  ║                                                                          ║
+#  ║  # 1. Verify Redis is alive                                              ║
+#  ║  redis-cli ping                                                           ║
+#  ║                                                                          ║
+#  ║  # 2. Pull latest code                                                   ║
+#  ║  cd ~/Allmight && git pull                                                ║
+#  ║                                                                          ║
+#  ║  # 3. Start the main stack (detached, survives terminal close)           ║
+#  ║  nohup bash scripts/tools/start_all.sh > logs/launch.log 2>&1 &         ║
+#  ║  disown                                                                   ║
+#  ║                                                                          ║
+#  ║  # 4. Start the watchdog loop (detached, survives terminal close)        ║
+#  ║  nohup bash scripts/tools/allmight_watchdog.sh --loop 300 \              ║
+#  ║    >> logs/watchdog_loop.log 2>&1 &                                      ║
+#  ║  disown                                                                   ║
+#  ║                                                                          ║
+#  ║  # 5. Verify after ~3 minutes                                            ║
+#  ║  bash scripts/tools/start_all.sh status                                  ║
+#  ║                                                                          ║
+#  ╠══════════════════════════════════════════════════════════════════════════╣
+#  ║  CANONICAL STOP + COMPRESS + UPLOAD                                      ║
+#  ╠══════════════════════════════════════════════════════════════════════════╣
+#  ║                                                                          ║
+#  ║  bash scripts/tools/start_all.sh stop    # stops + zips session auto    ║
+#  ║  bash scripts/tools/start_all.sh upload  # shows zip path               ║
+#  ║                                                                          ║
+#  ╚══════════════════════════════════════════════════════════════════════════╝
+#
+#  SESSION LOG FILES (all zipped automatically on stop)
+#  ────────────────────────────────────────────────────
+#  activator.jsonl               — tick-level price + signal log
+#  blueprints.jsonl              — trade blueprints
+#  execution_candidate_audit.jsonl — candidate audit records
+#  near_miss_analysis.json       — near-miss breakdown
+#  threshold_edge.json           — edge tracker
+#  threshold_edge_accumulator.json — cross-session edge accumulator
+#  tier_breakdown.json           — threshold tier stats (CONFIRMED/ADAPTIVE/BELOW)
+#  price_replay.jsonl            — tick-density price replay
+#  heat.jsonl                    — market heat log
+#  volatility.jsonl              — volatility monitor log
+#  watchdog.jsonl                — watchdog health records
+#  rpc_freshness.jsonl           — RPC intent + freshness telemetry
+#  simulations.jsonl             — simulation detail records (if present)
+#  filter_results.jsonl          — filter decision records (if present)
+#  fetcher.log                   — master fetcher log
+#  monitor.log                   — volatility monitor output
+#  analysis.log                  — post-run analysis pipeline output
 #
 #  All PIDs saved to logs/allmight.pid for clean stop.
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -138,11 +178,16 @@ if [[ "${1:-}" == "upload" ]]; then
     near_miss_analysis.json \
     threshold_edge.json \
     threshold_edge_accumulator.json \
+    tier_breakdown.json \
     price_replay.jsonl \
     heat.jsonl \
     volatility.jsonl \
     watchdog.jsonl \
     rpc_freshness.jsonl \
+    simulations.jsonl \
+    filter_results.jsonl \
+    fetcher.log \
+    monitor.log \
     analysis.log; do
     target="$SESSION_DIR/$f"
     if [[ -f "$target" ]]; then
@@ -299,7 +344,7 @@ if [[ "${1:-}" == "status" ]]; then
   echo ""
   if [[ -d "$SESSION_DIR" ]]; then
     echo "  Log files this session:"
-    for f in activator.jsonl blueprints.jsonl execution_candidate_audit.jsonl near_miss_analysis.json threshold_edge.json threshold_edge_accumulator.json price_replay.jsonl heat.jsonl volatility.jsonl watchdog.jsonl rpc_freshness.jsonl analysis.log; do
+    for f in activator.jsonl blueprints.jsonl execution_candidate_audit.jsonl near_miss_analysis.json threshold_edge.json threshold_edge_accumulator.json tier_breakdown.json price_replay.jsonl heat.jsonl volatility.jsonl watchdog.jsonl rpc_freshness.jsonl simulations.jsonl filter_results.jsonl fetcher.log monitor.log analysis.log; do
       target="$SESSION_DIR/$f"
       [[ -f "$target" ]] && echo "    $(wc -l < "$target" 2>/dev/null || echo "?") lines  $f" \
                          || echo "    —  $f (not yet created)"
@@ -364,6 +409,49 @@ if [[ "${1:-}" == "stop" ]]; then
         2>> "$SESSION_DIR/analysis.log" \
         && log "  ✓ threshold_edge_report      → session_${SESSION}/threshold_edge.json" \
         || log "  ✗ threshold_edge_report failed"
+
+      # 3b. Threshold tier breakdown (Boss ruling 2026-04-19)
+      # Reads execution_candidate_audit.jsonl and emits per-tier stats JSON:
+      #   CONFIRMED_STRICT / ADAPTIVE_BUFFER / BELOW_BUFFER counts, avg PnL, pass rates.
+      node -e "
+'use strict';
+const fs = require('fs');
+const path = require('path');
+const auditPath = process.argv[1];
+if (!fs.existsSync(auditPath)) process.exit(0);
+const records = fs.readFileSync(auditPath,'utf8').split('\n').filter(Boolean).reduce((acc,l)=>{
+  try{acc.push(JSON.parse(l));}catch{}return acc;
+},[]);
+const tiers = ['CONFIRMED_STRICT','ADAPTIVE_BUFFER','BELOW_BUFFER'];
+const result = { generatedAt: new Date().toISOString(), totalRecords: records.length, tiers: {} };
+for (const tier of tiers) {
+  const recs = records.filter(r => r.thresholdTier === tier);
+  const nets   = recs.map(r=>r.baseNetProfitUsd).filter(n=>n!=null);
+  const confs  = recs.map(r=>r.executionConfidence).filter(n=>n!=null);
+  const spreads= recs.map(r=>r.spreadPct).filter(n=>n!=null);
+  const worsts = recs.map(r=>r.worstCaseNetUsd).filter(n=>n!=null);
+  const avg = arr => arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : null;
+  const simPass = recs.filter(r=>r.simulationVerdict==='SIM_PASS').length;
+  result.tiers[tier] = {
+    count       : recs.length,
+    avgSpreadPct: avg(spreads),
+    avgConf     : avg(confs),
+    avgNetUsd   : avg(nets),
+    minNetUsd   : nets.length ? Math.min(...nets) : null,
+    maxNetUsd   : nets.length ? Math.max(...nets) : null,
+    worstCasePositiveCount: worsts.filter(w=>w>0).length,
+    simPassCount: simPass,
+    simPassRate : recs.length ? simPass/recs.length : null,
+    bySafeProfile: recs.filter(r=>r.profile==='SAFE').length,
+    byRegime    : recs.reduce((acc,r)=>{const k=r.regime||'?';acc[k]=(acc[k]||0)+1;return acc;},{}),
+  };
+}
+fs.writeFileSync(process.argv[2], JSON.stringify(result, null, 2));
+" "$SESSION_DIR/execution_candidate_audit.jsonl" \
+        "$SESSION_DIR/tier_breakdown.json" \
+        2>> "$SESSION_DIR/analysis.log" \
+        && log "  ✓ tier_breakdown             → session_${SESSION}/tier_breakdown.json" \
+        || log "  ✗ tier_breakdown failed"
 
       # 4. Cross-session accumulator — auto-discovers all previous session audit logs
       SESSION_ARGS=""
@@ -463,11 +551,16 @@ except: print('not run')
         near_miss_analysis.json
         threshold_edge.json
         threshold_edge_accumulator.json
+        tier_breakdown.json
         price_replay.jsonl
         heat.jsonl
         volatility.jsonl
         watchdog.jsonl
         rpc_freshness.jsonl
+        simulations.jsonl
+        filter_results.jsonl
+        fetcher.log
+        monitor.log
         analysis.log
       )
 
