@@ -56,6 +56,7 @@
 #  threshold_edge_accumulator.json — cross-session edge accumulator
 #  tier_breakdown.json           — threshold tier stats (CONFIRMED/ADAPTIVE/BELOW)
 #  size_ladder.json              — size ladder analysis by threshold tier
+#  size_ladder_accumulator.json  — cross-session size ladder consistency verdicts
 #  price_replay.jsonl            — tick-density price replay
 #  heat.jsonl                    — market heat log
 #  volatility.jsonl              — volatility monitor log
@@ -181,6 +182,7 @@ if [[ "${1:-}" == "upload" ]]; then
     threshold_edge_accumulator.json \
     tier_breakdown.json \
     size_ladder.json \
+    size_ladder_accumulator.json \
     price_replay.jsonl \
     heat.jsonl \
     volatility.jsonl \
@@ -346,7 +348,7 @@ if [[ "${1:-}" == "status" ]]; then
   echo ""
   if [[ -d "$SESSION_DIR" ]]; then
     echo "  Log files this session:"
-    for f in activator.jsonl blueprints.jsonl execution_candidate_audit.jsonl near_miss_analysis.json threshold_edge.json threshold_edge_accumulator.json tier_breakdown.json size_ladder.json price_replay.jsonl heat.jsonl volatility.jsonl watchdog.jsonl rpc_freshness.jsonl simulations.jsonl filter_results.jsonl fetcher.log monitor.log analysis.log; do
+    for f in activator.jsonl blueprints.jsonl execution_candidate_audit.jsonl near_miss_analysis.json threshold_edge.json threshold_edge_accumulator.json tier_breakdown.json size_ladder.json size_ladder_accumulator.json price_replay.jsonl heat.jsonl volatility.jsonl watchdog.jsonl rpc_freshness.jsonl simulations.jsonl filter_results.jsonl fetcher.log monitor.log analysis.log; do
       target="$SESSION_DIR/$f"
       [[ -f "$target" ]] && echo "    $(wc -l < "$target" 2>/dev/null || echo "?") lines  $f" \
                          || echo "    —  $f (not yet created)"
@@ -483,6 +485,18 @@ fs.writeFileSync(process.argv[2], JSON.stringify(result, null, 2));
           2>> "$SESSION_DIR/analysis.log" \
           && log "  ✓ threshold_edge_accumulator → session_${SESSION}/threshold_edge_accumulator.json  (${SESSION_COUNT} session(s))" \
           || log "  ✗ threshold_edge_accumulator failed"
+
+        # 4b. Cross-session size ladder accumulator (Boss ruling 2026-04-19)
+        # Aggregates size ladder results across all sessions — issues CONSISTENT /
+        # CONSISTENT_STRONG / DEVELOPING / INSUFFICIENT_DATA verdicts per size step.
+        # Requires >= 3 sessions for CONSISTENT, >= 5 for CONSISTENT_STRONG.
+        # shellcheck disable=SC2086
+        node scripts/tools/size_ladder_accumulator_report.js \
+          --sessions $SESSION_ARGS \
+          --json > "$SESSION_DIR/size_ladder_accumulator.json" \
+          2>> "$SESSION_DIR/analysis.log" \
+          && log "  ✓ size_ladder_accumulator    → session_${SESSION}/size_ladder_accumulator.json  (${SESSION_COUNT} session(s))" \
+          || log "  ✗ size_ladder_accumulator failed"
       fi
     fi
 
@@ -568,6 +582,7 @@ except: print('not run')
         threshold_edge_accumulator.json
         tier_breakdown.json
         size_ladder.json
+        size_ladder_accumulator.json
         price_replay.jsonl
         heat.jsonl
         volatility.jsonl
