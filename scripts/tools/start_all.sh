@@ -55,6 +55,7 @@
 #  threshold_edge.json           — edge tracker
 #  threshold_edge_accumulator.json — cross-session edge accumulator
 #  tier_breakdown.json           — threshold tier stats (CONFIRMED/ADAPTIVE/BELOW)
+#  size_ladder.json              — size ladder analysis by threshold tier
 #  price_replay.jsonl            — tick-density price replay
 #  heat.jsonl                    — market heat log
 #  volatility.jsonl              — volatility monitor log
@@ -179,6 +180,7 @@ if [[ "${1:-}" == "upload" ]]; then
     threshold_edge.json \
     threshold_edge_accumulator.json \
     tier_breakdown.json \
+    size_ladder.json \
     price_replay.jsonl \
     heat.jsonl \
     volatility.jsonl \
@@ -344,7 +346,7 @@ if [[ "${1:-}" == "status" ]]; then
   echo ""
   if [[ -d "$SESSION_DIR" ]]; then
     echo "  Log files this session:"
-    for f in activator.jsonl blueprints.jsonl execution_candidate_audit.jsonl near_miss_analysis.json threshold_edge.json threshold_edge_accumulator.json tier_breakdown.json price_replay.jsonl heat.jsonl volatility.jsonl watchdog.jsonl rpc_freshness.jsonl simulations.jsonl filter_results.jsonl fetcher.log monitor.log analysis.log; do
+    for f in activator.jsonl blueprints.jsonl execution_candidate_audit.jsonl near_miss_analysis.json threshold_edge.json threshold_edge_accumulator.json tier_breakdown.json size_ladder.json price_replay.jsonl heat.jsonl volatility.jsonl watchdog.jsonl rpc_freshness.jsonl simulations.jsonl filter_results.jsonl fetcher.log monitor.log analysis.log; do
       target="$SESSION_DIR/$f"
       [[ -f "$target" ]] && echo "    $(wc -l < "$target" 2>/dev/null || echo "?") lines  $f" \
                          || echo "    —  $f (not yet created)"
@@ -453,6 +455,19 @@ fs.writeFileSync(process.argv[2], JSON.stringify(result, null, 2));
         && log "  ✓ tier_breakdown             → session_${SESSION}/tier_breakdown.json" \
         || log "  ✗ tier_breakdown failed"
 
+      # 3c. Size ladder analysis by threshold tier (Boss ruling 2026-04-19)
+      # Runs realism simulator across $200→$1000 for CONFIRMED_STRICT
+      # and $200→$300 for ADAPTIVE_BUFFER. Emits per-tier viable rate,
+      # avg net, worst-case positivity, fail rate, and Band B recommendation.
+      if [[ -f "$SESSION_DIR/blueprints.jsonl" ]]; then
+        node scripts/tools/size_ladder_report.js \
+          --blueprints "$SESSION_DIR/blueprints.jsonl" \
+          --json > "$SESSION_DIR/size_ladder.json" \
+          2>> "$SESSION_DIR/analysis.log" \
+          && log "  ✓ size_ladder_report         → session_${SESSION}/size_ladder.json" \
+          || log "  ✗ size_ladder_report failed"
+      fi
+
       # 4. Cross-session accumulator — auto-discovers all previous session audit logs
       SESSION_ARGS=""
       while IFS= read -r -d '' sdir; do
@@ -552,6 +567,7 @@ except: print('not run')
         threshold_edge.json
         threshold_edge_accumulator.json
         tier_breakdown.json
+        size_ladder.json
         price_replay.jsonl
         heat.jsonl
         volatility.jsonl
