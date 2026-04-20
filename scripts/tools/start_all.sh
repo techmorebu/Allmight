@@ -57,6 +57,9 @@
 #  tier_breakdown.json           — threshold tier stats (CONFIRMED/ADAPTIVE/BELOW)
 #  size_ladder.json              — size ladder analysis by threshold tier
 #  size_ladder_accumulator.json  — cross-session size ladder consistency verdicts
+#  flash_loan_readiness.json     — Aave V3 flash overhead analysis by size (Band A)
+#  sandbox_results.json          — per-session execution sandbox (0/500/1000ms delay)
+#  sandbox_accumulator.json      — cross-session delay survivability (CONSISTENT verdicts)
 #  price_replay.jsonl            — tick-density price replay
 #  heat.jsonl                    — market heat log
 #  volatility.jsonl              — volatility monitor log
@@ -183,6 +186,9 @@ if [[ "${1:-}" == "upload" ]]; then
     tier_breakdown.json \
     size_ladder.json \
     size_ladder_accumulator.json \
+    flash_loan_readiness.json \
+    sandbox_results.json \
+    sandbox_accumulator.json \
     price_replay.jsonl \
     heat.jsonl \
     volatility.jsonl \
@@ -348,7 +354,7 @@ if [[ "${1:-}" == "status" ]]; then
   echo ""
   if [[ -d "$SESSION_DIR" ]]; then
     echo "  Log files this session:"
-    for f in activator.jsonl blueprints.jsonl execution_candidate_audit.jsonl near_miss_analysis.json threshold_edge.json threshold_edge_accumulator.json tier_breakdown.json size_ladder.json size_ladder_accumulator.json price_replay.jsonl heat.jsonl volatility.jsonl watchdog.jsonl rpc_freshness.jsonl simulations.jsonl filter_results.jsonl fetcher.log monitor.log analysis.log; do
+    for f in activator.jsonl blueprints.jsonl execution_candidate_audit.jsonl near_miss_analysis.json threshold_edge.json threshold_edge_accumulator.json tier_breakdown.json size_ladder.json size_ladder_accumulator.json flash_loan_readiness.json sandbox_results.json sandbox_accumulator.json price_replay.jsonl heat.jsonl volatility.jsonl watchdog.jsonl rpc_freshness.jsonl simulations.jsonl filter_results.jsonl fetcher.log monitor.log analysis.log; do
       target="$SESSION_DIR/$f"
       [[ -f "$target" ]] && echo "    $(wc -l < "$target" 2>/dev/null || echo "?") lines  $f" \
                          || echo "    —  $f (not yet created)"
@@ -470,6 +476,33 @@ fs.writeFileSync(process.argv[2], JSON.stringify(result, null, 2));
           || log "  ✗ size_ladder_report failed"
       fi
 
+      # 3d. Flash-loan readiness analysis — Band A only (Boss ruling 2026-04-19)
+      # Models Aave V3 flash overhead (0.05% fee + atomic gas + MEV complexity)
+      # across the approved $200→$1000 size ladder. Requires audit + blueprints.
+      if [[ -f "$SESSION_DIR/blueprints.jsonl" && -f "$SESSION_DIR/execution_candidate_audit.jsonl" ]]; then
+        node scripts/tools/flash_loan_readiness_report.js \
+          --blueprints "$SESSION_DIR/blueprints.jsonl" \
+          --audit      "$SESSION_DIR/execution_candidate_audit.jsonl" \
+          --json > "$SESSION_DIR/flash_loan_readiness.json" \
+          2>> "$SESSION_DIR/analysis.log" \
+          && log "  ✓ flash_loan_readiness       → session_${SESSION}/flash_loan_readiness.json" \
+          || log "  ✗ flash_loan_readiness failed"
+      fi
+
+      # 3e. Per-session execution sandbox (Execution Timing Model phase)
+      # Simulates each blueprint at 0ms / 500ms / 1000ms delay using replay data.
+      # Requires both blueprints.jsonl and price_replay.jsonl — skipped if either missing.
+      if [[ -f "$SESSION_DIR/blueprints.jsonl" && -f "$SESSION_DIR/price_replay.jsonl" ]]; then
+        node scripts/tools/execution_sandbox_report.js \
+          --blueprints "$SESSION_DIR/blueprints.jsonl" \
+          --replay     "$SESSION_DIR/price_replay.jsonl" \
+          --delays     0,500,1000 \
+          --out        "$SESSION_DIR/sandbox_results.json" \
+          2>> "$SESSION_DIR/analysis.log" \
+          && log "  ✓ execution_sandbox_report   → session_${SESSION}/sandbox_results.json" \
+          || log "  ✗ execution_sandbox_report failed"
+      fi
+
       # 4. Cross-session accumulator — auto-discovers all previous session audit logs
       SESSION_ARGS=""
       while IFS= read -r -d '' sdir; do
@@ -497,8 +530,28 @@ fs.writeFileSync(process.argv[2], JSON.stringify(result, null, 2));
           2>> "$SESSION_DIR/analysis.log" \
           && log "  ✓ size_ladder_accumulator    → session_${SESSION}/size_ladder_accumulator.json  (${SESSION_COUNT} session(s))" \
           || log "  ✗ size_ladder_accumulator failed"
+
+        # 4c. Cross-session execution sandbox accumulator (Execution Timing Model phase)
+        # Aggregates delay survivability across sessions — CONSISTENT / DEVELOPING verdicts
+        # per delay tier (0ms / 500ms / 1000ms). Requires both blueprints.jsonl +
+        # price_replay.jsonl per session. Sessions missing either file are skipped cleanly.
+        SANDBOX_SESSION_ARGS=""
+        while IFS= read -r -d '' sdir; do
+          [[ -f "$sdir/blueprints.jsonl" && -f "$sdir/price_replay.jsonl" ]] && \
+            SANDBOX_SESSION_ARGS="$SANDBOX_SESSION_ARGS $sdir"
+        done < <(find "$LOGS" -maxdepth 1 -name "session_*" -type d -print0 | sort -z)
+        SANDBOX_COUNT=$(echo $SANDBOX_SESSION_ARGS | wc -w)
+
+        if [[ $SANDBOX_COUNT -ge 1 ]]; then
+          # shellcheck disable=SC2086
+          node scripts/tools/execution_sandbox_accumulator_report.js \
+            --sessions $SANDBOX_SESSION_ARGS \
+            --json > "$SESSION_DIR/sandbox_accumulator.json" \
+            2>> "$SESSION_DIR/analysis.log" \
+            && log "  ✓ sandbox_accumulator        → session_${SESSION}/sandbox_accumulator.json  (${SANDBOX_COUNT} session(s))" \
+            || log "  ✗ sandbox_accumulator failed"
+        fi
       fi
-    fi
 
     # 5. Session health summary
     ACT_LOG="$SESSION_DIR/activator.jsonl"
@@ -583,6 +636,9 @@ except: print('not run')
         tier_breakdown.json
         size_ladder.json
         size_ladder_accumulator.json
+        flash_loan_readiness.json
+        sandbox_results.json
+        sandbox_accumulator.json
         price_replay.jsonl
         heat.jsonl
         volatility.jsonl
