@@ -552,6 +552,7 @@ fs.writeFileSync(process.argv[2], JSON.stringify(result, null, 2));
             || log "  ✗ sandbox_accumulator failed"
         fi
       fi
+    fi
 
     # 5. Session health summary
     ACT_LOG="$SESSION_DIR/activator.jsonl"
