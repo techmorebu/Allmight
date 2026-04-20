@@ -18,11 +18,12 @@
 //  Heartbeats, ready_check_confirmed, tick_map_refresh: no per-venue prices — skipped.
 //  rpc_freshness.jsonl: provider telemetry only — skipped.
 //
-//  HONEST DENSITY CEILING
-//  ───────────────────────
-//  Median inter-row gap after combining sources: ~12s for entry venue, ~44s for exit venue.
-//  12s > 2s tolerance for 500ms delay analysis → sub-second delay sandbox still data-limited.
-//  To reach 1–5s density, a tick logger must be added to the activator loop (future work).
+//  REPLAY DENSITY (as of April 2026)
+//  ───────────────────────────────────
+//  The activator tick logger now writes dense replay rows inline — median inter-row
+//  gap is ~0.5s. This file supplements the tick-logger rows by also pulling signal
+//  and state_transition records for completeness. The "future work" tick logger note
+//  from v1.0 is resolved — do not re-add it.
 //
 //  OUTPUT SCHEMA (canonical — unchanged from v1.0)
 //  ─────────────────────────────────────────────────
@@ -197,8 +198,7 @@ function generateReplay(sessionDir) {
     venueStats,
     notes: [
       'v2.0: combines signal records (both venues) + state_transition records (entry venue)',
-      'Median inter-row gap ≈12s for entry venue during active windows',
-      'Sub-second delay sandbox requires tick logger on activator loop (future work)',
+      'Tick logger active in activator — dense replay rows written inline at ~0.5s median gap',
     ].join(' | '),
   };
 

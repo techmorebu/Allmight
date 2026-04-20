@@ -1,24 +1,47 @@
 # HANDOFF INDEX
 
-<!-- STATUS: HANDOFF | Last Reviewed: 2026-03-27 -->
+Status: CURRENT
 
-## Active Handoffs (govern current work)
+---
 
-| File | Date | Phase | Notes |
-|---|---|---|---|
-| session_handoff_2026-03-19.md (repo root) | 2026-03-19 | Surface Discovery | PRIMARY -- governs all current work |
+## ACTIVE HANDOFF (AUTHORITATIVE)
 
-## Archived Handoffs
-See docs/archive/superseded_handoffs/ for handoffs describing
-execution or prior phases as active.
+### April 19 — Execution Scaling & Infra Optimization
 
-## Handoff Protocol
-Each session wrap-up produces: HANDOFF_YYYY-MM-DD_<topic>.md
+This is the ONLY active handoff.
 
-Required fields:
+Defines:
 - current phase
-- in-scope / out-of-scope
-- hard rules learned this session
-- next session directive (Boss-approved)
-- health check commands
-- key addresses / file map
+- priorities
+- constraints
+- system boundaries
+
+---
+
+## SUPERSEDED HANDOFFS (REFERENCE ONLY)
+
+### March — Surface Discovery & Classification
+- Project Allmight Handoff.txt
+- Allmight Handoff Review.txt
+- Surface Inventory Framework.txt
+
+These are historical:
+- useful for understanding evolution
+- NOT valid for current decisions
+
+---
+
+## RULE
+
+If a handoff conflicts with the April 19 version:
+
+→ April 19 wins
+
+---
+
+## PURPOSE
+
+This file prevents:
+- phase drift
+- instruction conflicts
+- rework of completed stages
