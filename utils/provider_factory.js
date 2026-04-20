@@ -375,17 +375,25 @@ function getChainRpcUrls(chain) {
     // ── ARBITRUM MAINNET ──────────────────────────────────────────────────────
     // PRIMARY active chain: ETH/USDC-RAMSES (UniV3 0.01% vs Ramses V2 0.05%)
     //
-    // Slot mapping (intent routing: cheap_read avoids premium slots):
-    //   0  ARBITRUM_MAINNET_RPC_URL    → QuickNode   (premium-A — critical reads)
-    //   1  ARBITRUM_MAINNET_RPC_URL_1  → Chainstack  (premium-B — paid backup)
-    //   2  ARBITRUM_MAINNET_RPC_URL_2  → dRPC        (standard  — cheap_read primary target)
-    //   3  ARBITRUM_MAINNET_RPC_URL_3  → arb1        (fallback  — cheap_read secondary)
-    //   4  ARBITRUM_MAINNET_RPC_URL_4  → Ankr        (standard  — cheap_read tertiary)
-    //   5  ARBITRUM_MAINNET_RPC_URL_5  → Alchemy     (premium-C — freshness-routed)
-    //   6  ARBITRUM_MAINNET_RPC_URL_6  → Infura      (premium-D — freshness-routed)
+    // Provider state (Boss ruling 2026-04-20 — RPC benchmark verdict):
+    //   Infura = sole approved primary (score 123, lag 0, 100% success)
+    //   QuickNode = REJECTED (154 block lag — backend freshness issue, not auth)
+    //   Alchemy = REJECTED (stale)
+    //   Ankr = REJECTED (stale)
+    //   arb1 = REJECTED (stale — block-number sanity only if needed)
+    //   Chainstack = REJECTED (stale)
+    //   dRPC = REJECTED (stale + 80% eth_call failure)
     //
-    // cheap_read: dRPC → arb1 → Ankr first, then QN/Chainstack/Alchemy/Infura as fallback
-    // critical_read / rebuild_sanity / tickmap_scan: full pool, freshness governs order
+    // Slot mapping (intent routing: cheap_read avoids premium slots):
+    //   0  ARBITRUM_MAINNET_RPC_URL    → Infura (sole primary — critical + cheap reads)
+    //   1–6: EMPTY until a second clean endpoint is benchmarked and approved
+    //
+    // cheap_read: falls through to Infura (only available) — no non-premium pool
+    // critical_read / rebuild_sanity / tickmap_scan: Infura only
+    //
+    // NOTE: Two identical Infura URLs in slots 0+1 share one provider cache instance
+    //       (same URL → same cache key) and would waste credits on hedged calls.
+    //       Keep slot 1 empty until a distinct second endpoint is approved.
     arbitrum: cleanRpcList([
       process.env.ARBITRUM_MAINNET_RPC_URL,         // slot 0: QuickNode
       process.env.ARBITRUM_MAINNET_RPC_URL_1,       // slot 1: Chainstack
