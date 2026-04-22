@@ -1,6 +1,6 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════════════════════════════════
-#  AllMight — Unified Launcher  v1.3
+#  AllMight — Unified Launcher  v1.4
 # ───────────────────────────────────────────────────────────────────────────────
 #  PLACEMENT : scripts/tools/start_all.sh
 #
@@ -25,16 +25,11 @@
 #  ║  # 2. Pull latest code                                                   ║
 #  ║  cd ~/Allmight && git pull                                                ║
 #  ║                                                                          ║
-#  ║  # 3. Start the main stack (detached, survives terminal close)           ║
+#  ║  # 3. Start the full stack incl. watchdog (detached, survives terminal)   ║
 #  ║  nohup bash scripts/tools/start_all.sh > logs/launch.log 2>&1 &         ║
 #  ║  disown                                                                   ║
 #  ║                                                                          ║
-#  ║  # 4. Start the watchdog loop (detached, survives terminal close)        ║
-#  ║  nohup bash scripts/tools/allmight_watchdog.sh --loop 300 \              ║
-#  ║    >> logs/watchdog_loop.log 2>&1 &                                      ║
-#  ║  disown                                                                   ║
-#  ║                                                                          ║
-#  ║  # 5. Verify after ~3 minutes                                            ║
+#  ║  # 4. Verify after ~3 minutes                                            ║
 #  ║  bash scripts/tools/start_all.sh status                                  ║
 #  ║                                                                          ║
 #  ╠══════════════════════════════════════════════════════════════════════════╣
@@ -858,8 +853,19 @@ echo "activator=$ACTIVATOR_PID" >> "$PID_FILE"
 log "✓ Activator        (pid $ACTIVATOR_PID) → session_${SESSION}/activator.jsonl"
 log "✓ Blueprints                            → session_${SESSION}/blueprints.jsonl"
 
+# ── Process 5: Watchdog loop ──────────────────────────────────────────────────
+# Monitors all components for staleness, dead PIDs, and error accumulation.
+# Writes watchdog.jsonl per check. Triggers Discord alerts on DEGRADED/FAILED.
+# Runs every 300s (5 min). Integrated here so it always launches with the stack.
+nohup bash scripts/tools/allmight_watchdog.sh --loop 300 \
+  >> "$SESSION_DIR/watchdog_loop.log" 2>&1 &
+WATCHDOG_PID=$!
+disown $WATCHDOG_PID 2>/dev/null || true
+echo "watchdog=$WATCHDOG_PID" >> "$PID_FILE"
+log "✓ Watchdog loop    (pid $WATCHDOG_PID) → session_${SESSION}/watchdog.jsonl (every 300s)"
+
 echo ""
-log "Session $SESSION running. PIDs: fetcher=$FETCHER_PID monitor=$MONITOR_PID heat=$HEAT_PID activator=$ACTIVATOR_PID"
+log "Session $SESSION running. PIDs: fetcher=$FETCHER_PID monitor=$MONITOR_PID heat=$HEAT_PID activator=$ACTIVATOR_PID watchdog=$WATCHDOG_PID"
 echo ""
 echo "  bash scripts/tools/start_all.sh status             — check health"
 echo "  bash scripts/tools/start_all.sh logs               — watch live output"
