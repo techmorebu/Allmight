@@ -349,6 +349,52 @@ async function sendStopSummary(sessionDir) {
   });
 }
 
+// ─── RULE 3 — ACTIVATOR HEARTBEAT CHECK ──────────────────────────────────────
+//
+// Detect when the activator has gone silent — i.e., no heartbeat record written
+// to activator.jsonl for longer than ACTIVATOR_SILENCE_SEC.
+//
+// This fires even if the watchdog is not running, providing a safety net for the
+// case where the activator exits cleanly but nobody is watching.
+//
+// Alert fires at most once per COOLDOWN_SEC to prevent spam after recovery.
+
+const ACTIVATOR_SILENCE_SEC = parseInt(
+  process.env.ACTIVATOR_HEARTBEAT_SILENCE_SEC || '600', 10  // 10 min default
+);
+
+async function checkActivatorHeartbeat() {
+  if (!_state.sessionDir) return;
+  const actPath = path.join(_state.sessionDir, 'activator.jsonl');
+  if (!fs.existsSync(actPath)) return;
+
+  try {
+    const stat = fs.statSync(actPath);
+    const ageSec = (Date.now() - stat.mtimeMs) / 1000;
+
+    if (ageSec > ACTIVATOR_SILENCE_SEC) {
+      if (!cooldownExpired(_state.lastWatchdogAlert)) return;  // respect cooldown
+
+      const ageMin = (ageSec / 60).toFixed(1);
+      log(`Activator silent for ${ageMin} min — sending alert`);
+      await maybeSend('ops', sendOpsNotification, {
+        title      : `💀  ACTIVATOR SILENT — ${_state.sessionId}`,
+        status     : 'FAILED',
+        component  : 'activator',
+        issue      : `No output for ${ageMin} minutes (threshold ${ACTIVATOR_SILENCE_SEC / 60}m)`,
+        rebuilds   : 'unknown — activator not writing',
+        description: 'Activator may have exited. Check process status and restart if needed.',
+        fields     : [
+          { name: 'Session',    value: _state.sessionId },
+          { name: 'Last write', value: `${ageMin} minutes ago` },
+          { name: 'Action',     value: 'bash scripts/tools/start_all.sh restart-activator' },
+        ],
+      });
+      _state.lastWatchdogAlert = Date.now();
+    }
+  } catch { /* fail-silent */ }
+}
+
 // ─── MAIN LOOP ────────────────────────────────────────────────────────────────
 
 async function runOnce() {
@@ -357,6 +403,7 @@ async function runOnce() {
     return;
   }
   await checkWatchdog();
+  await checkActivatorHeartbeat();
   await checkCandidates();
 }
 

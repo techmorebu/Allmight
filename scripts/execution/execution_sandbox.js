@@ -27,12 +27,25 @@ const { computePnL, classifyExecution } = require('./pnl_engine');
 
 // ─── TIMING CONSTANTS ─────────────────────────────────────────────────────────
 
-// Tolerance window beyond target exit time before declaring no-fill
-// Boss brief: 0ms→1s tolerance, 500ms→2s, 1000ms→3s
+// Tolerance window beyond target exit time before declaring no-fill.
+//
+// v1.0 used tight windows (1s/2s/3s) calibrated for dense sessions (p50≈0.5s).
+// v1.1 widened to match real session p95 gaps — sessions where Infura has
+// periodic 10-second unresponsive windows produce p95 gaps of ~12s.
+//
+// Logic: tolerance must be >= p95 gap to fill most blueprints.
+// A wide tolerance does NOT inflate PnL — the sandbox uses the ACTUAL exit
+// price at the row it finds (which may be 10-15s after the blueprint).
+// If the spread collapsed by then, the PnL reflects that collapse truthfully.
+//
+// The fill delay (exitTime - blueprintTs) is recorded in the output so Boss
+// can see how stale the fill actually was.
+//
+// Env override: SANDBOX_TOLERANCE_0MS / SANDBOX_TOLERANCE_500MS / SANDBOX_TOLERANCE_1000MS
 function delayToleranceMs(delayMs) {
-  if (delayMs <= 0)   return 1000;
-  if (delayMs <= 500) return 2000;
-  return 3000;
+  if (delayMs <= 0)   return parseInt(process.env.SANDBOX_TOLERANCE_0MS    || '15000', 10);
+  if (delayMs <= 500) return parseInt(process.env.SANDBOX_TOLERANCE_500MS  || '16000', 10);
+  return                     parseInt(process.env.SANDBOX_TOLERANCE_1000MS || '17000', 10);
 }
 
 // ─── FILE I/O ─────────────────────────────────────────────────────────────────
@@ -191,6 +204,7 @@ function simulateOne({ bp, replayIndex, delayMs }) {
     delayMs,
     entryTime      : entryRow.ts,
     exitTime       : exitRow.ts,
+    fillDelayMs    : +(toMillis(exitRow.ts) - toMillis(ts) - delayMs).toFixed(0), // how late vs target
     entryVenue,
     exitVenue,
     entryPrice     : entryRow.price,
