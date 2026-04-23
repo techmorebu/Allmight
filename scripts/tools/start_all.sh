@@ -1,6 +1,6 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════════════════════════════════
-#  AllMight — Unified Launcher  v1.5
+#  AllMight — Unified Launcher  v1.6
 # ───────────────────────────────────────────────────────────────────────────────
 #  PLACEMENT : scripts/tools/start_all.sh
 #
@@ -12,6 +12,7 @@
 #  bash scripts/tools/start_all.sh          # start everything
 #  bash scripts/tools/start_all.sh status   # check what's running
 #  bash scripts/tools/start_all.sh stop     # stop + run analysis + compress session
+#  bash scripts/tools/start_all.sh abort    # emergency stop — kills all, discards session
 #  bash scripts/tools/start_all.sh logs     # tail all logs live
 #  bash scripts/tools/start_all.sh upload   # show zip path + file inventory
 #
@@ -364,6 +365,56 @@ if [[ "${1:-}" == "status" ]]; then
   fi
   echo ""
   echo "  Run 'bash scripts/tools/start_all.sh upload' to see what to send CPT."
+  echo ""
+  exit 0
+fi
+
+# ── ABORT (emergency stop) ────────────────────────────────────────────────────
+# Kills all processes immediately. No analysis pipeline. No zip. No session file.
+# The session folder is moved to logs/aborted/ so it's out of the way but not
+# permanently deleted — you can inspect or manually delete it afterward.
+#
+# Use this when:
+#   - You need to make a quick edit and restart clean
+#   - A session started in the wrong state and should not count
+#   - Something is broken and you just need everything stopped NOW
+#
+# The session will NOT appear in dryrun_confidence_log results.
+if [[ "${1:-}" == "abort" ]]; then
+  log "ABORT — killing all AllMight processes immediately..."
+
+  # Kill by PID file first (clean), then pkill as fallback
+  if [[ -f "$PID_FILE" ]]; then
+    while IFS='=' read -r name pid; do
+      if kill -0 "$pid" 2>/dev/null; then
+        kill -9 "$pid" 2>/dev/null && echo "  killed $name (pid $pid)"
+      fi
+    done < "$PID_FILE"
+    rm -f "$PID_FILE"
+  fi
+  pkill -9 -f "arb_window_activator.js"         2>/dev/null || true
+  pkill -9 -f "arb_volatility_monitor.js"       2>/dev/null || true
+  pkill -9 -f "volatility_divergence_report.js" 2>/dev/null || true
+  pkill -9 -f "allmight_watchdog.sh"            2>/dev/null || true
+  pkill -9 -f "notification_router.js"          2>/dev/null || true
+  pkill -9 -f "master-fetcher.js"              2>/dev/null || true
+
+  SESSION=$( [[ -f "$SESSION_FILE" ]] && cat "$SESSION_FILE" || echo "" )
+  SESSION_DIR="$SESSIONS_DIR/session_${SESSION}"
+
+  # Remove session ID file so this session is invisible to all tools
+  rm -f "$SESSION_FILE"
+
+  if [[ -n "$SESSION" && -d "$SESSION_DIR" ]]; then
+    ABORTED_DIR="$LOGS/aborted"
+    mkdir -p "$ABORTED_DIR"
+    DEST="$ABORTED_DIR/session_${SESSION}"
+    mv "$SESSION_DIR" "$DEST" 2>/dev/null       && log "Session folder moved → logs/aborted/session_${SESSION}/ (safe to delete)"       || log "Could not move session folder — remove $SESSION_DIR manually if needed"
+  fi
+
+  echo ""
+  log "Abort complete. No analysis run. No zip created. Session does not count."
+  log "Edit your files, then restart with: nohup bash scripts/tools/start_all.sh > logs/launch.log 2>&1 &"
   echo ""
   exit 0
 fi
