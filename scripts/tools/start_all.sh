@@ -1,6 +1,6 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════════════════════════════════
-#  AllMight — Unified Launcher  v1.4
+#  AllMight — Unified Launcher  v1.5
 # ───────────────────────────────────────────────────────────────────────────────
 #  PLACEMENT : scripts/tools/start_all.sh
 #
@@ -41,7 +41,12 @@
 #  ║                                                                          ║
 #  ╚══════════════════════════════════════════════════════════════════════════╝
 #
-#  SESSION LOG FILES (all zipped automatically on stop)
+#  SESSION LOG FILES
+#  Raw session files: logs/sessions/session_YYYYMMDD_HHMM/  (temp — safe to delete after zip)
+#  Compressed zips:   logs/archive/session_YYYYMMDD_HHMM.zip  (long-term storage)
+#  Runtime state:     logs/allmight.pid  logs/allmight.session  (unchanged)
+#
+#  All session files zipped automatically on stop
 #  ────────────────────────────────────────────────────
 #  activator.jsonl               — tick-level price + signal log
 #  blueprints.jsonl              — trade blueprints
@@ -73,9 +78,11 @@ set -uo pipefail
 cd "$(dirname "$0")/../.." || exit 1   # always run from repo root
 
 LOGS="./logs"
+SESSIONS_DIR="$LOGS/sessions"   # raw session folders (temp — clean up after reviewing)
+ARCHIVE_DIR="$LOGS/archive"     # compressed zips   (long-term storage)
 PID_FILE="$LOGS/allmight.pid"
 SESSION_FILE="$LOGS/allmight.session"
-mkdir -p "$LOGS"
+mkdir -p "$LOGS" "$SESSIONS_DIR" "$ARCHIVE_DIR"
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -167,7 +174,7 @@ if [[ "${1:-}" == "upload" ]]; then
     exit 1
   fi
   SESSION=$(cat "$SESSION_FILE")
-  SESSION_DIR="$LOGS/session_${SESSION}"
+  SESSION_DIR="$SESSIONS_DIR/session_${SESSION}"
   echo ""
   echo "  Upload these files to CPT for analysis:"
   echo "  ─────────────────────────────────────────────────────"
@@ -205,10 +212,10 @@ if [[ "${1:-}" == "upload" ]]; then
   done
   echo ""
   # If zip already exists, point directly to it
-  ZIP_PATH="$LOGS/session_${SESSION}.zip"
+  ZIP_PATH="$ARCHIVE_DIR/session_${SESSION}.zip"
   if [[ -f "$ZIP_PATH" ]]; then
     ZIP_MB=$(du -sh "$ZIP_PATH" 2>/dev/null | cut -f1 || echo "?")
-    echo "  ✅  Zip ready: logs/session_${SESSION}.zip  ($ZIP_MB) — upload this file"
+    echo "  ✅  Zip ready: logs/archive/session_${SESSION}.zip  ($ZIP_MB) — upload this file"
   else
     echo "  ℹ  Run 'bash scripts/tools/start_all.sh stop' first to generate the zip."
   fi
@@ -227,7 +234,7 @@ if [[ "${1:-}" == "restart-activator" ]]; then
     die "No active session found. Start the stack first."
   fi
   SESSION=$(cat "$SESSION_FILE")
-  SESSION_DIR="$LOGS/session_${SESSION}"
+  SESSION_DIR="$SESSIONS_DIR/session_${SESSION}"
   log "Restarting activator for session $SESSION..."
 
   # ── Kill existing activator/supervisor only ──────────────────────────────────
@@ -334,7 +341,7 @@ fi
 # ── STATUS ────────────────────────────────────────────────────────────────────
 if [[ "${1:-}" == "status" ]]; then
   SESSION=$( [[ -f "$SESSION_FILE" ]] && cat "$SESSION_FILE" || echo "none" )
-  SESSION_DIR="$LOGS/session_${SESSION}"
+  SESSION_DIR="$SESSIONS_DIR/session_${SESSION}"
   echo ""
   echo "  AllMight status  (session: $SESSION)"
   echo "  ─────────────────────────────────────────────"
@@ -379,7 +386,7 @@ if [[ "${1:-}" == "stop" ]]; then
   pkill -f "notification_router.js"         2>/dev/null || true
 
   SESSION=$( [[ -f "$SESSION_FILE" ]] && cat "$SESSION_FILE" || echo "" )
-  SESSION_DIR="$LOGS/session_${SESSION}"
+  SESSION_DIR="$SESSIONS_DIR/session_${SESSION}"
   log "Done."
 
   # ── Post-run analysis pipeline ───────────────────────────────────────────────
@@ -549,6 +556,24 @@ fs.writeFileSync(process.argv[2], JSON.stringify(result, null, 2));
       fi
     fi
 
+      # 5a. Dry-run confidence log (Boss ruling 2026-04-22)
+      # Evaluates the current session (and all prior sessions) against the
+      # Boss-valid controlled dry-run criteria from LIVE_READINESS_GATE.md.
+      # Produces a confidence verdict: FULLY_VALID / VALID / PARTIAL / INVALID.
+      # Output shown in console — not saved to session folder (cross-session tool).
+      log "  Running dry-run confidence check..."
+      # Run twice: once for human-readable console output, once for JSON artifact
+      node scripts/tools/dryrun_confidence_log.js \
+        --logs "$LOGS" \
+        2>> "$SESSION_DIR/analysis.log" \
+        && log "  ✓ dryrun_confidence_log      → console + session_${SESSION}/dryrun_confidence.json" \
+        || log "  ✗ dryrun_confidence_log failed"
+      node scripts/tools/dryrun_confidence_log.js \
+        --logs "$LOGS" \
+        --json > "$SESSION_DIR/dryrun_confidence.json" \
+        2>> "$SESSION_DIR/analysis.log" \
+        || log "  ✗ dryrun_confidence_log --json failed"
+
     # 5. Session health summary
     ACT_LOG="$SESSION_DIR/activator.jsonl"
     AUDIT_LOG="$SESSION_DIR/execution_candidate_audit.jsonl"
@@ -595,7 +620,7 @@ except: print('not run')
     [[ -n "$SESSION" ]] && log "No blueprints found — skipping post-run analysis."
   fi
 
-  [[ -n "$SESSION" ]] && log "Session logs: logs/session_${SESSION}/"
+  [[ -n "$SESSION" ]] && log "Session logs: logs/sessions/session_${SESSION}/"
   log "Run 'bash scripts/tools/start_all.sh upload' to see what to send CPT."
 
   # ── Discord stop summary notification (non-blocking, fail-silent) ──────────
@@ -607,10 +632,10 @@ except: print('not run')
   # ── Auto-compress session folder ───────────────────────────────────────────
   # Compresses the completed session into a single zip for easy upload and storage.
   # Skips rpc_freshness.jsonl (large, low-value for CPT analysis) to save space.
-  # Output: logs/session_<ID>.zip (beside the session folder, not inside it).
+  # Output: logs/archive/session_<ID>.zip (long-term archive directory).
   if [[ -n "$SESSION" && -d "$SESSION_DIR" ]]; then
-    ZIP_PATH="$LOGS/session_${SESSION}.zip"
-    ZIP_TMP="$LOGS/.session_${SESSION}_zipping"
+    ZIP_PATH="$ARCHIVE_DIR/session_${SESSION}.zip"
+    ZIP_TMP="$ARCHIVE_DIR/.session_${SESSION}_zipping"
 
     # Guard: skip if zip already exists
     if [[ -f "$ZIP_PATH" ]]; then
@@ -645,6 +670,7 @@ except: print('not run')
         fetcher.log
         monitor.log
         analysis.log
+        dryrun_confidence.json
       )
 
       # Build the zip from the session directory
@@ -652,10 +678,10 @@ except: print('not run')
         cd "$LOGS"
         TARGETS=()
         for f in "${ZIP_FILES[@]}"; do
-          [[ -f "session_${SESSION}/$f" ]] && TARGETS+=("session_${SESSION}/$f")
+          [[ -f "sessions/session_${SESSION}/$f" ]] && TARGETS+=("sessions/session_${SESSION}/$f")
         done
         if [[ ${#TARGETS[@]} -gt 0 ]]; then
-          zip -q "session_${SESSION}.zip" "${TARGETS[@]}"
+          zip -q "archive/session_${SESSION}.zip" "${TARGETS[@]}"
         fi
       )
 
@@ -665,7 +691,7 @@ except: print('not run')
         ZIP_MB=$(du -m "$ZIP_PATH" 2>/dev/null | cut -f1 || echo "?")
         RAW_MB=$(du -sm "$SESSION_DIR" 2>/dev/null | cut -f1 || echo "?")
         log "  ✓ Compressed: session_${SESSION}.zip (${ZIP_MB}MB, was ${RAW_MB}MB raw)"
-        log "    Upload: logs/session_${SESSION}.zip"
+        log "    Upload: logs/archive/session_${SESSION}.zip"
       else
         log "  ✗ Compression failed — session folder still intact"
       fi
@@ -678,7 +704,7 @@ fi
 # ── LOGS (live tail) ──────────────────────────────────────────────────────────
 if [[ "${1:-}" == "logs" ]]; then
   SESSION=$( [[ -f "$SESSION_FILE" ]] && cat "$SESSION_FILE" || echo "" )
-  SESSION_DIR="$LOGS/session_${SESSION}"
+  SESSION_DIR="$SESSIONS_DIR/session_${SESSION}"
   echo ""
   echo "  Tailing all AllMight logs (session: $SESSION). Ctrl+C to stop."
   echo "  ─────────────────────────────────────────────────────────────────"
@@ -717,7 +743,7 @@ fi
 
 # ── Session ID — stamped at launch time ───────────────────────────────────────
 SESSION=$(date -u '+%Y%m%d_%H%M')
-SESSION_DIR="$LOGS/session_${SESSION}"
+SESSION_DIR="$SESSIONS_DIR/session_${SESSION}"
 mkdir -p "$SESSION_DIR"
 echo "$SESSION" > "$SESSION_FILE"
 
