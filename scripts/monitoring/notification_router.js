@@ -1,6 +1,6 @@
 'use strict';
 // ═══════════════════════════════════════════════════════════════════════════════
-//  AllMight — Notification Router  v1.0
+//  AllMight — Notification Router  v2.0
 // ───────────────────────────────────────────────────────────────────────────────
 //  PLACEMENT : scripts/monitoring/notification_router.js
 //
@@ -30,21 +30,29 @@
 //  node -r dotenv/config scripts/monitoring/notification_router.js \
 //    --stop-summary logs/session_20260412_0800
 //
-//  WHAT TRIGGERS NOTIFICATIONS
-//  ────────────────────────────
-//  V1 (this build) sends alerts on:
-//    1. System startup (--startup flag)
-//    2. Watchdog DEGRADED (from watchdog.jsonl)
-//    3. Watchdog FAILED (from watchdog.jsonl)
-//    4. First CANDIDATE_CONFIRMED in a session (from audit log)
-//    5. Candidate count crossing threshold (default 10)
-//    6. System stop summary (--stop-summary flag)
+//  3-TIER NOTIFICATION SYSTEM (v2.0)
+//  ────────────────────────────────────
+//  TIER 1 — HEARTBEAT (every HEARTBEAT_SEC, default 300s)
+//    Session snapshot: runtime, signals, confirmed, capture rate,
+//    estimated value, value/hour, mode, infra status.
+//    Sent to: summary channel.
 //
-//  NOT triggered in V1 (spam prevention):
-//    - Every EXECUTION_READY
+//  TIER 2 — EVENT ALERTS (only when meaningful)
+//    A. Operating mode change (STANDARD ↔ CONSERVATIVE ↔ PAUSE)
+//    B. Activator silence > 10 min
+//    C. Watchdog DEGRADED or FAILED
+//    D. High-value burst (5+ confirmed trades in last 10 min)
+//    Sent to: ops channel.
+//
+//  TIER 3 — SESSION SUMMARY (on --stop-summary)
+//    Full session digest: duration, candidates, capture, value, anomalies.
+//    Sent to: summary channel.
+//
+//  NEVER SENT (spam prevention):
+//    - Every EXECUTION_READY signal
 //    - Every blueprint
 //    - Every near-miss
-//    - Every heat change
+//    - Every raw RPC event
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const fs   = require('fs');
@@ -73,6 +81,15 @@ const FIRST_CAND_ONLY  = process.env.DISCORD_NOTIFY_FIRST_CANDIDATE_ONLY !== 'fa
 const COOLDOWN_SEC     = parseInt(process.env.DISCORD_NOTIFY_COOLDOWN_SEC        || '300', 10);
 const CAND_COUNT_ALERT = parseInt(process.env.DISCORD_NOTIFY_CANDIDATE_COUNT     || '10',  10);
 
+// ── TIER 1 — HEARTBEAT CONFIG ────────────────────────────────────────────────
+// Default 300s (5 min). Set DISCORD_HEARTBEAT_SEC=600 for 10-min heartbeat.
+const HEARTBEAT_SEC = parseInt(process.env.DISCORD_HEARTBEAT_SEC || '300', 10);
+
+// ── TIER 2 — EVENT ALERT CONFIG ──────────────────────────────────────────────
+// High-value burst: fire if >= N confirmed candidates in last BURST_WINDOW_SEC
+const BURST_COUNT_THRESHOLD = parseInt(process.env.DISCORD_BURST_COUNT   || '5',   10);
+const BURST_WINDOW_SEC      = parseInt(process.env.DISCORD_BURST_WINDOW  || '600', 10);
+
 const LOGS_DIR        = path.resolve(process.cwd(), 'logs');
 const SESSION_FILE    = path.join(LOGS_DIR, 'allmight.session');
 
@@ -89,6 +106,12 @@ const _state = {
   lastWatchdogAlert      : 0,          // timestamp of last watchdog alert
   lastWatchdogLine       : 0,          // byte offset in watchdog.jsonl
   lastAuditLine          : 0,          // byte offset in audit jsonl
+  // v2 additions
+  lastHeartbeatSent      : 0,          // timestamp of last heartbeat message
+  lastKnownMode          : null,       // for mode-change detection
+  lastBurstAlert         : 0,          // timestamp of last burst alert
+  sessionStartMs         : null,       // when session was first seen
+  recentConfirmedTs      : [],         // timestamps of recent confirmed records (for burst)
 };
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
@@ -147,6 +170,12 @@ function refreshSession() {
     _state.lastWatchdogAlert     = 0;
     _state.lastWatchdogLine      = 0;
     _state.lastAuditLine         = 0;
+    // v2 additions
+    _state.lastHeartbeatSent     = 0;
+    _state.lastKnownMode         = null;
+    _state.lastBurstAlert        = 0;
+    _state.sessionStartMs        = Date.now();
+    _state.recentConfirmedTs     = [];
   }
   return true;
 }
@@ -210,13 +239,16 @@ async function checkWatchdog() {
 // ─── RULE 2 — CANDIDATE ALERTS ────────────────────────────────────────────────
 
 async function checkCandidates() {
-  if (!_state.sessionDir) return;
+  if (!_state.sessionDir) return [];
   const auditPath = path.join(_state.sessionDir, 'execution_candidate_audit.jsonl');
   const { records, nextByte } = readJsonl(auditPath, _state.lastAuditLine);
   _state.lastAuditLine = nextByte;
 
+  const newConfirmedRecs = [];
+
   for (const rec of records) {
     if (rec.auditVerdict !== 'CANDIDATE_CONFIRMED') continue;
+    newConfirmedRecs.push(rec);
     if ((rec.executionConfidence ?? 0) < MIN_CONFIDENCE) continue;
 
     _state.candidateCount++;
@@ -395,6 +427,202 @@ async function checkActivatorHeartbeat() {
   } catch { /* fail-silent */ }
 }
 
+
+// ─── TIER 1 — SESSION HEARTBEAT ───────────────────────────────────────────────
+//
+// Sends a clean session snapshot every HEARTBEAT_SEC.
+// Reads live session files — reads everything from scratch each time (not incremental)
+// so the snapshot always reflects current totals, not just recent deltas.
+
+async function sendHeartbeat() {
+  if (!_state.sessionDir || !_state.sessionId) return;
+
+  const now = Date.now();
+  if ((now - _state.lastHeartbeatSent) < HEARTBEAT_SEC * 1000) return;
+
+  try {
+    const actPath   = path.join(_state.sessionDir, 'activator.jsonl');
+    const auditPath = path.join(_state.sessionDir, 'execution_candidate_audit.jsonl');
+    if (!fs.existsSync(actPath)) return;
+
+    // Session runtime
+    const actLines = fs.readFileSync(actPath, 'utf8').split('\n').filter(Boolean);
+    let firstTs = null, lastTs = null;
+    let signals = 0;
+    for (const line of actLines) {
+      try {
+        const r = JSON.parse(line);
+        if (r.ts) { if (!firstTs) firstTs = r.ts; lastTs = r.ts; }
+        if (r.type === 'signal') signals++;
+      } catch { /* skip */ }
+    }
+    const runtimeH = (firstTs && lastTs)
+      ? ((new Date(lastTs) - new Date(firstTs)) / 3_600_000).toFixed(1)
+      : '?';
+
+    // Candidate count + capture estimate
+    let confirmed = 0;
+    if (fs.existsSync(auditPath)) {
+      const auditContent = fs.readFileSync(auditPath, 'utf8');
+      confirmed = (auditContent.match(/"CANDIDATE_CONFIRMED"/g) || []).length;
+    }
+
+    // Adaptive capture rate: confirmed as % of blueprints (rough estimate)
+    // Blueprint count = signals (each signal → blueprint)
+    const captureRatePct = signals > 0 ? (confirmed / signals * 100).toFixed(1) : '?';
+
+    // Estimated session value: confirmed × $0.15 avg (from cross-session data)
+    const estValue    = (confirmed * 0.15).toFixed(2);
+    const runtimeNum  = parseFloat(runtimeH) || 1;
+    const valuePerHr  = runtimeNum > 0 ? (confirmed * 0.15 / runtimeNum).toFixed(2) : '?';
+
+    // Current policy mode
+    let modeStr = 'UNKNOWN';
+    try {
+      const { evaluatePolicy, measureSession } = require('../tools/session_policy_check');
+      const metrics = measureSession(_state.sessionDir);
+      const policy  = evaluatePolicy(metrics);
+      modeStr = policy.mode;
+    } catch {
+      // session_policy_check not importable — read infra grade from watchdog
+      const wdPath = path.join(_state.sessionDir, 'watchdog.jsonl');
+      if (fs.existsSync(wdPath)) {
+        const wdLines = fs.readFileSync(wdPath, 'utf8').split('\n').filter(Boolean);
+        if (wdLines.length) {
+          try { modeStr = JSON.parse(wdLines[wdLines.length-1]).overallStatus ?? 'UNKNOWN'; }
+          catch { /* skip */ }
+        }
+      }
+    }
+
+    // Infra status from watchdog last record
+    let infraStr = 'UNKNOWN';
+    const wdPath = path.join(_state.sessionDir, 'watchdog.jsonl');
+    if (fs.existsSync(wdPath)) {
+      try {
+        const wdLines = fs.readFileSync(wdPath, 'utf8').split('\n').filter(Boolean);
+        if (wdLines.length) infraStr = JSON.parse(wdLines[wdLines.length-1]).overallStatus ?? 'UNKNOWN';
+      } catch { /* skip */ }
+    }
+
+    const body = [
+      `Runtime: ${runtimeH}h`,
+      `Signals: ${signals.toLocaleString()}`,
+      `Confirmed: ${confirmed}`,
+      `Capture: ${captureRatePct}%`,
+      ``,
+      `Est. Value: $${estValue}`,
+      `Value/hr: $${valuePerHr}`,
+      ``,
+      `Mode: ${modeStr} ($500 max)`,
+      `Infra: ${infraStr}`,
+    ].join('\n');
+
+    log(`Sending heartbeat (${runtimeH}h runtime, ${confirmed} confirmed)`);
+    await maybeSend('summary', (opts) =>
+      require('./discord_notifier').sendEmbed('summary', {
+        title      : `📡  SESSION STATUS — ${_state.sessionId}`,
+        description: body,
+        color      : 0x5DADE2,
+      }), {});
+
+    _state.lastHeartbeatSent = Date.now();
+  } catch (err) {
+    // fail-silent
+    process.stderr.write(`[notification_router] heartbeat error: ${err.message}\n`);
+  }
+}
+
+// ─── TIER 2 — MODE CHANGE ALERT ───────────────────────────────────────────────
+
+async function checkModeChange() {
+  if (!_state.sessionDir) return;
+
+  let currentMode = null;
+  try {
+    // Try to get mode from session_policy_check module
+    const { evaluatePolicy, measureSession } = require('../tools/session_policy_check');
+    const metrics = measureSession(_state.sessionDir);
+    currentMode = evaluatePolicy(metrics).mode;
+  } catch {
+    return;  // module not available — skip silently
+  }
+
+  if (!currentMode) return;
+
+  const prev = _state.lastKnownMode;
+  _state.lastKnownMode = currentMode;
+
+  // No alert on first poll or no change
+  if (!prev || prev === currentMode) return;
+
+  const icon = currentMode === 'PAUSE' ? '🛑' : currentMode === 'CONSERVATIVE' ? '⬇️' : '⬆️';
+  const direction = `${prev} → ${currentMode}`;
+
+  log(`Mode change detected: ${direction}`);
+  await maybeSend('ops', (opts) =>
+    require('./discord_notifier').sendEmbed('ops', {
+      title      : `${icon}  MODE CHANGE — ${_state.sessionId}`,
+      description: [
+        `**${direction}**`,
+        ``,
+        currentMode === 'PAUSE'        ? 'Operation suspended. Investigate immediately.' :
+        currentMode === 'CONSERVATIVE' ? 'Reduced to $300 max. Infrastructure or warmup issue.' :
+        currentMode === 'STANDARD'     ? 'Restored to $500 max operating mode.' :
+                                         `Now in ${currentMode} mode.`,
+        ``,
+        `Run: node scripts/tools/session_policy_check.js`,
+      ].join('\n'),
+      color: currentMode === 'PAUSE' ? 0xED4245 : currentMode === 'STANDARD' ? 0x57F287 : 0xFEE75C,
+    }), {});
+}
+
+// ─── TIER 2 — HIGH-VALUE BURST ALERT ─────────────────────────────────────────
+//
+// Fire when >= BURST_COUNT_THRESHOLD confirmed candidates arrive in BURST_WINDOW_SEC.
+// Reads recent confirmed records from audit log.
+
+async function checkBurst(newConfirmed) {
+  if (!newConfirmed.length) return;
+
+  const now = Date.now();
+
+  // Add new confirmed timestamps
+  for (const rec of newConfirmed) {
+    const ts = rec.ts ? new Date(rec.ts).getTime() : now;
+    _state.recentConfirmedTs.push(ts);
+  }
+
+  // Trim to burst window
+  const windowStart = now - BURST_WINDOW_SEC * 1000;
+  _state.recentConfirmedTs = _state.recentConfirmedTs.filter(t => t >= windowStart);
+
+  if (_state.recentConfirmedTs.length < BURST_COUNT_THRESHOLD) return;
+  if ((now - _state.lastBurstAlert) < BURST_WINDOW_SEC * 1000) return;  // cooldown
+
+  const nets = newConfirmed
+    .filter(r => r.baseNetProfitUsd != null)
+    .map(r => r.baseNetProfitUsd);
+  const avgNet = nets.length ? (nets.reduce((a,b)=>a+b,0)/nets.length).toFixed(3) : '?';
+  const totalVal = nets.length ? nets.reduce((a,b)=>a+b,0).toFixed(2) : '?';
+
+  log(`High-value burst detected: ${_state.recentConfirmedTs.length} trades in ${BURST_WINDOW_SEC}s`);
+  await maybeSend('candidate', (opts) =>
+    require('./discord_notifier').sendEmbed('candidate', {
+      title      : `🔥  HIGH-VALUE BURST — ${_state.sessionId}`,
+      description: [
+        `**${_state.recentConfirmedTs.length} confirmed trades** in last ${BURST_WINDOW_SEC/60}min`,
+        `Avg net: $${avgNet}`,
+        `Total value: $${totalVal}`,
+        ``,
+        `Surface is highly active.`,
+      ].join('\n'),
+      color: 0x57F287,
+    }), {});
+
+  _state.lastBurstAlert = now;
+}
+
 // ─── MAIN LOOP ────────────────────────────────────────────────────────────────
 
 async function runOnce() {
@@ -404,7 +632,10 @@ async function runOnce() {
   }
   await checkWatchdog();
   await checkActivatorHeartbeat();
-  await checkCandidates();
+  const newConfirmed = await checkCandidates();
+  await checkBurst(newConfirmed || []);
+  await checkModeChange();
+  await sendHeartbeat();
 }
 
 async function main() {

@@ -468,4 +468,5 @@ function main() {
 
 module.exports = { evaluatePolicy, shouldDowngrade, measureSession, THRESHOLDS };
 
-main();
+// Only run main() when executed directly, not when required as a module
+if (require.main === module) main();
