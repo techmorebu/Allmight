@@ -177,15 +177,15 @@ case "$cmd" in
 
   # ── RPC — endpoint health check ───────────────────────────────────────────
   rpc)
-    header "RPC Health Check"
-    if [[ -f "rpc_healthcheck.py" ]]; then
-      python3 rpc_healthcheck.py \
-        --prefix ARBITRUM_MAINNET \
-        --expected-chain-id 42161 \
-        --timeout 5
-    else
-      err "rpc_healthcheck.py not found in repo root"
-    fi
+    header "RPC Benchmark"
+    node -r dotenv/config scripts/tools/rpc_benchmark.js \
+      --chain arbitrum --samples 20
+    ;;
+
+  rpc-full)
+    header "RPC Benchmark — Full (all chains, burst test)"
+    node -r dotenv/config scripts/tools/rpc_benchmark.js \
+      --all --samples 20
     ;;
 
   # ── LOGS — tail launch log live ───────────────────────────────────────────
@@ -227,7 +227,8 @@ case "$cmd" in
     echo "  remote_ctl abort        Emergency kill — session discarded, no zip"
     echo "  remote_ctl restart      Stop then start clean"
     echo "  remote_ctl policy       Current operating mode only"
-    echo "  remote_ctl rpc          RPC endpoint health check"
+    echo "  remote_ctl rpc          RPC benchmark — Arbitrum (20 samples, scored)
+  remote_ctl rpc-full     RPC benchmark — all chains + burst test"
     echo "  remote_ctl logs         Tail launch.log live  (Ctrl+C to exit)"
     echo "  remote_ctl confidence   Dry-run confidence log across all sessions"
     echo "  remote_ctl discord      Fire test notifications to Discord"
