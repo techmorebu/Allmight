@@ -675,10 +675,14 @@ except: print('not run')
   [[ -n "$SESSION" ]] && log "Session logs: logs/sessions/session_${SESSION}/"
   log "Run 'bash scripts/tools/start_all.sh upload' to see what to send CPT."
 
-  # ── Discord stop summary notification (non-blocking, fail-silent) ──────────
+  # ── Discord stop summary notification (blocking — must complete before zip) ──
+  # Run synchronously so the stop summary is captured in analysis.log and the
+  # log entry exists inside the zip. The & was causing a race where the zip
+  # completed before the notification wrote to analysis.log (C8 failure).
+  # Timeout: 15s max — fail-silent, never blocks the zip.
   if [[ -n "$SESSION" && -d "$SESSION_DIR" ]]; then
-    node -r dotenv/config scripts/monitoring/notification_router.js \
-      --stop-summary "$SESSION_DIR" >> "$SESSION_DIR/analysis.log" 2>&1 &
+    timeout 15 node -r dotenv/config scripts/monitoring/notification_router.js \
+      --stop-summary "$SESSION_DIR" >> "$SESSION_DIR/analysis.log" 2>&1 || true
   fi
 
   # ── Auto-compress session folder ───────────────────────────────────────────
