@@ -184,7 +184,7 @@ async function runAll() {
   }));
 
   // 5. Heartbeat (Tier 1)
-  await fire('heartbeat', () => sendEmbed('summary', {
+  await fire('heartbeat', () => sendEmbed('ops', {
     title      : `📡  SESSION STATUS — ${SESSION_ID}`,
     description: [
       'Runtime: 2.4h',

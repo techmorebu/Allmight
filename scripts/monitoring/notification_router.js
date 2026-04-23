@@ -519,8 +519,8 @@ async function sendHeartbeat() {
     ].join('\n');
 
     log(`Sending heartbeat (${runtimeH}h runtime, ${confirmed} confirmed)`);
-    await maybeSend('summary', (opts) =>
-      require('./discord_notifier').sendEmbed('summary', {
+    await maybeSend('ops', (opts) =>
+      require('./discord_notifier').sendEmbed('ops', {
         title      : `📡  SESSION STATUS — ${_state.sessionId}`,
         description: body,
         color      : 0x5DADE2,
