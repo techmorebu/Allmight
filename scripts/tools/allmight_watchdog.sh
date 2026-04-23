@@ -72,6 +72,7 @@ CHAIN_ERROR_ALERT=${CHAIN_ERROR_ALERT:-200}     # >200 "Unknown chain" lines = w
 cd "$(dirname "$0")/../.." || exit 1
 
 LOGS="./logs"
+SESSIONS_DIR="$LOGS/sessions"   # must match start_all.sh v1.6+
 PID_FILE="$LOGS/allmight.pid"
 SESSION_FILE="$LOGS/allmight.session"
 
@@ -118,7 +119,7 @@ run_check() {
   fi
   local SESSION
   SESSION=$(cat "$SESSION_FILE")
-  local SESSION_DIR="$LOGS/session_${SESSION}"
+  local SESSION_DIR="$SESSIONS_DIR/session_${SESSION}"
 
   # ── A. Freshness checks ───────────────────────────────────────────────────
   # check_freshness is called directly (not in a subshell) so that mutations

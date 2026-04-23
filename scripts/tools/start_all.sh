@@ -201,7 +201,8 @@ if [[ "${1:-}" == "upload" ]]; then
     filter_results.jsonl \
     fetcher.log \
     monitor.log \
-    analysis.log; do
+    analysis.log \
+    dryrun_confidence.json; do
     target="$SESSION_DIR/$f"
     if [[ -f "$target" ]]; then
       lines=$(wc -l < "$target" 2>/dev/null || echo "?")
@@ -346,7 +347,7 @@ if [[ "${1:-}" == "status" ]]; then
   echo ""
   echo "  AllMight status  (session: $SESSION)"
   echo "  ─────────────────────────────────────────────"
-  for name in fetcher monitor heat activator; do
+  for name in fetcher monitor heat activator watchdog notifier; do
     pid=$(grep "^${name}=" "$PID_FILE" 2>/dev/null | cut -d= -f2 || true)
     if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
       echo "  ✓ $name  (pid $pid)  RUNNING"
@@ -357,7 +358,7 @@ if [[ "${1:-}" == "status" ]]; then
   echo ""
   if [[ -d "$SESSION_DIR" ]]; then
     echo "  Log files this session:"
-    for f in activator.jsonl blueprints.jsonl execution_candidate_audit.jsonl near_miss_analysis.json threshold_edge.json threshold_edge_accumulator.json tier_breakdown.json size_ladder.json size_ladder_accumulator.json flash_loan_readiness.json sandbox_results.json sandbox_accumulator.json price_replay.jsonl heat.jsonl volatility.jsonl watchdog.jsonl rpc_freshness.jsonl simulations.jsonl filter_results.jsonl fetcher.log monitor.log analysis.log; do
+    for f in activator.jsonl blueprints.jsonl execution_candidate_audit.jsonl near_miss_analysis.json threshold_edge.json threshold_edge_accumulator.json tier_breakdown.json size_ladder.json size_ladder_accumulator.json flash_loan_readiness.json sandbox_results.json sandbox_accumulator.json price_replay.jsonl heat.jsonl volatility.jsonl watchdog.jsonl rpc_freshness.jsonl simulations.jsonl filter_results.jsonl fetcher.log monitor.log analysis.log dryrun_confidence.json watchdog_loop.log; do
       target="$SESSION_DIR/$f"
       [[ -f "$target" ]] && echo "    $(wc -l < "$target" 2>/dev/null || echo "?") lines  $f" \
                          || echo "    —  $f (not yet created)"
@@ -804,6 +805,7 @@ pkill -f "arb_volatility_monitor.js"      2>/dev/null || true
 pkill -f "volatility_divergence_report.js" 2>/dev/null || true
 pkill -f "allmight_watchdog.sh"           2>/dev/null || true
 pkill -f "notification_router.js"         2>/dev/null || true
+pkill -f "master-fetcher.js"              2>/dev/null || true
 sleep 1
 
 log "Starting AllMight — session: $SESSION"
