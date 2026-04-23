@@ -44,6 +44,7 @@ const SESSION_IDX  = ARGS.indexOf('--session');
 const SESSION_OVERRIDE = SESSION_IDX !== -1 ? ARGS[SESSION_IDX + 1] : null;
 
 const LOGS_DIR     = path.resolve(process.cwd(), 'logs');
+const SESSIONS_DIR = path.join(LOGS_DIR, 'sessions');   // v1.5+ layout
 const SESSION_FILE = path.join(LOGS_DIR, 'allmight.session');
 
 // ─── POLICY THRESHOLDS ────────────────────────────────────────────────────────
@@ -90,7 +91,11 @@ function getSessionDir() {
   if (SESSION_OVERRIDE) return SESSION_OVERRIDE;
   if (!fs.existsSync(SESSION_FILE)) return null;
   const id = fs.readFileSync(SESSION_FILE, 'utf8').trim();
-  return id ? path.join(LOGS_DIR, `session_${id}`) : null;
+  // v1.5+ layout: sessions live in logs/sessions/ — fall back to flat if not found
+  const newPath = path.join(SESSIONS_DIR, `session_${id}`);
+  const oldPath = path.join(LOGS_DIR, `session_${id}`);
+  if (id) return require('fs').existsSync(newPath) ? newPath : oldPath;
+  return null;
 }
 
 function readJsonl(filePath) {

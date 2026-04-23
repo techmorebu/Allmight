@@ -58,10 +58,23 @@ case "$cmd" in
     header "Status Check"
     echo "  [Processes]"
     bash scripts/tools/start_all.sh status
-    echo ""
     sep
     echo "  [Policy]"
-    node scripts/tools/session_policy_check.js
+    # Pass the active session dir directly so the checker never has a path miss
+    SESSION_ID=""
+    [[ -f logs/allmight.session ]] && SESSION_ID=$(cat logs/allmight.session)
+    if [[ -n "$SESSION_ID" ]]; then
+      # Try new layout first, fall back to old flat layout
+      if [[ -d "logs/sessions/session_${SESSION_ID}" ]]; then
+        node scripts/tools/session_policy_check.js           --session "logs/sessions/session_${SESSION_ID}"
+      elif [[ -d "logs/session_${SESSION_ID}" ]]; then
+        node scripts/tools/session_policy_check.js           --session "logs/session_${SESSION_ID}"
+      else
+        node scripts/tools/session_policy_check.js
+      fi
+    else
+      echo "  No active session — stack is not running"
+    fi
     ;;
 
   # ── START — launch full stack unattended ───────────────────────────────────
