@@ -91,6 +91,7 @@ const BURST_COUNT_THRESHOLD = parseInt(process.env.DISCORD_BURST_COUNT   || '5',
 const BURST_WINDOW_SEC      = parseInt(process.env.DISCORD_BURST_WINDOW  || '600', 10);
 
 const LOGS_DIR        = path.resolve(process.cwd(), 'logs');
+const SESSIONS_DIR    = path.join(LOGS_DIR, 'sessions');   // v1.5+ layout
 const SESSION_FILE    = path.join(LOGS_DIR, 'allmight.session');
 
 // ─── STATE (in-memory, reset on restart) ──────────────────────────────────────
@@ -162,7 +163,7 @@ function refreshSession() {
   if (newId !== _state.sessionId) {
     log(`Session changed: ${_state.sessionId ?? 'none'} → ${newId}`);
     _state.sessionId             = newId;
-    _state.sessionDir            = path.join(LOGS_DIR, `session_${newId}`);
+    _state.sessionDir            = path.join(SESSIONS_DIR, `session_${newId}`);
     _state.firstCandidateSent    = false;
     _state.candidateCount        = 0;
     _state.candidateCountAlerted = 0;

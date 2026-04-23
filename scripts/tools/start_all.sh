@@ -616,12 +616,12 @@ fs.writeFileSync(process.argv[2], JSON.stringify(result, null, 2));
       log "  Running dry-run confidence check..."
       # Run twice: once for human-readable console output, once for JSON artifact
       node scripts/tools/dryrun_confidence_log.js \
-        --logs "$LOGS" \
+        --logs "$SESSIONS_DIR" \
         2>> "$SESSION_DIR/analysis.log" \
         && log "  ✓ dryrun_confidence_log      → console + session_${SESSION}/dryrun_confidence.json" \
         || log "  ✗ dryrun_confidence_log failed"
       node scripts/tools/dryrun_confidence_log.js \
-        --logs "$LOGS" \
+        --logs "$SESSIONS_DIR" \
         --json > "$SESSION_DIR/dryrun_confidence.json" \
         2>> "$SESSION_DIR/analysis.log" \
         || log "  ✗ dryrun_confidence_log --json failed"

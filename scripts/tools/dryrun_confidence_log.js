@@ -221,9 +221,14 @@ function evaluateSession(sessionDir, c9State) {
 
 function discoverSessions(logsDir) {
   if (!fs.existsSync(logsDir)) return [];
-  return fs.readdirSync(logsDir)
+  // v1.5+ layout: sessions live in logs/sessions/ subfolder
+  // Support both: if a sessions/ subfolder exists, search there;
+  // otherwise fall back to searching logsDir directly (legacy layout).
+  const sessionsSubdir = path.join(logsDir, 'sessions');
+  const searchDir = fs.existsSync(sessionsSubdir) ? sessionsSubdir : logsDir;
+  return fs.readdirSync(searchDir)
     .filter(d => d.startsWith('session_'))
-    .map(d => path.join(logsDir, d))
+    .map(d => path.join(searchDir, d))
     .filter(d => fs.statSync(d).isDirectory())
     .sort();
 }
