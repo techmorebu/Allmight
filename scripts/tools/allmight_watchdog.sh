@@ -420,7 +420,7 @@ if [[ $LOOP_SEC -gt 0 ]]; then
   while true; do
     # Capture the JSONL record written in this check by tailing watchdog.jsonl after run_check
     SESSION=$( [[ -f "$SESSION_FILE" ]] && cat "$SESSION_FILE" || echo "none" )
-    SESSION_DIR="$LOGS/session_${SESSION}"
+    SESSION_DIR="$SESSIONS_DIR/session_${SESSION}"
     WD_LOG="$SESSION_DIR/watchdog.jsonl"
     LINES_BEFORE=0
     [[ -f "$WD_LOG" ]] && LINES_BEFORE=$(wc -l < "$WD_LOG" 2>/dev/null || echo 0)
