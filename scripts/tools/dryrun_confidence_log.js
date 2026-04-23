@@ -146,6 +146,9 @@ function evaluateSession(sessionDir, c9State) {
     if (fs.existsSync(sbPath)) {
       const sb = JSON.parse(fs.readFileSync(sbPath, 'utf8'));
       sbViable = sb?.summary?.viableRate ?? sb?.summary?.viable ?? null;
+      // viableRate is stored as a percentage (e.g. 42.6), not a fraction (0.426)
+      // Normalise to fraction for consistent internal use
+      if (sbViable !== null && sbViable > 1) sbViable = sbViable / 100;
       // Detect pre-fix sandbox (0% due to old tolerances)
       const total   = sb?.summary?.total ?? 0;
       const noFill  = sb?.summary?.noFill ?? 0;
