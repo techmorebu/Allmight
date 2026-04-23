@@ -890,8 +890,21 @@ disown $WATCHDOG_PID 2>/dev/null || true
 echo "watchdog=$WATCHDOG_PID" >> "$PID_FILE"
 log "✓ Watchdog loop    (pid $WATCHDOG_PID) → session_${SESSION}/watchdog.jsonl (every 300s)"
 
+# ── Process 6: Notification router loop ──────────────────────────────────────
+# Polls session logs every 300s and sends:
+#   Tier 1 — heartbeat snapshot to Discord summary channel
+#   Tier 2 — mode-change, activator-silence, and burst alerts to ops channel
+# Must run in --loop mode so Tier 1/2 alerts actually fire.
+nohup node -r dotenv/config scripts/monitoring/notification_router.js \
+  --loop 300 \
+  >> "$SESSION_DIR/analysis.log" 2>&1 &
+NOTIFIER_PID=$!
+disown $NOTIFIER_PID 2>/dev/null || true
+echo "notifier=$NOTIFIER_PID" >> "$PID_FILE"
+log "✓ Notification router (pid $NOTIFIER_PID) → heartbeat every 300s, event alerts on trigger"
+
 echo ""
-log "Session $SESSION running. PIDs: fetcher=$FETCHER_PID monitor=$MONITOR_PID heat=$HEAT_PID activator=$ACTIVATOR_PID watchdog=$WATCHDOG_PID"
+log "Session $SESSION running. PIDs: fetcher=$FETCHER_PID monitor=$MONITOR_PID heat=$HEAT_PID activator=$ACTIVATOR_PID watchdog=$WATCHDOG_PID notifier=$NOTIFIER_PID"
 echo ""
 echo "  bash scripts/tools/start_all.sh status             — check health"
 echo "  bash scripts/tools/start_all.sh logs               — watch live output"
@@ -905,5 +918,6 @@ echo "    disown; echo 'AllMight running detached'"
 echo ""
 
 # ── Discord startup notification (non-blocking, fail-silent) ──────────────────
+# Sent as a one-shot before the loop polls so startup fires immediately.
 node -r dotenv/config scripts/monitoring/notification_router.js \
   --startup >> "$SESSION_DIR/analysis.log" 2>&1 &
