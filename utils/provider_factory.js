@@ -865,6 +865,57 @@ function createProvider(chain) {
   };
 }
 
+// ─── PER-ENDPOINT HEALTH SNAPSHOT ────────────────────────────────────────────
+// Returns live health metrics for every URL configured for a given chain.
+// Generic — works for any number of endpoints, any provider.
+// Used by activator heartbeat and notification router to monitor all endpoints
+// equally, not just the primary. Add any endpoint to .env and it appears here.
+//
+// Fields per endpoint:
+//   url        — redacted (host only, no API key)
+//   role       — 'primary' | 'failover' (based on freshness-sorted rank)
+//   lagBlocks  — block lag vs best seen endpoint (0 = at chain head)
+//   penalty    — current freshness penalty score (0 = clean)
+//   inCooldown — true if consecutive-fail cooldown is active
+//   consecFails— number of consecutive failures before last success
+//   fails      — raw fail count from health manager (resets on success)
+//   demoted    — true if health manager has demoted this endpoint
+//   lastChecked— ms since last freshness probe (null if never probed)
+function getEndpointHealth(chainKey) {
+  const urls = getChainRpcUrls(String(chainKey).toLowerCase());
+  if (!urls.length) return [];
+
+  const now = Date.now();
+
+  // Sort by freshness penalty to determine primary/failover role
+  const sorted = urls.slice().sort((a, b) => {
+    const aP = getFreshnessPenalty(a) + (isInConsecCooldown(a) ? CONSEC_FAIL_PENALTY * 2 : 0);
+    const bP = getFreshnessPenalty(b) + (isInConsecCooldown(b) ? CONSEC_FAIL_PENALTY * 2 : 0);
+    return aP - bP;
+  });
+
+  return sorted.map((url, idx) => {
+    const fe   = _freshness.get(url) || {};
+    const he   = _health.map.get(url) || { fails: 0, demoted: false };
+    const cf   = _consecFail.get(url) || { count: 0, coolUntil: 0 };
+    const inCd = cf.coolUntil > now;
+
+    return {
+      url        : redactUrl(url),
+      role       : idx === 0 ? 'primary' : 'failover',
+      lagBlocks  : fe.lagBlocks    ?? null,
+      penalty    : fe.penaltyScore ?? 0,
+      inCooldown : inCd,
+      consecFails: cf.count,
+      cooldownMs : inCd ? Math.max(0, cf.coolUntil - now) : 0,
+      fails      : he.fails,
+      demoted    : he.demoted,
+      lastChecked: fe.lastCheckedAt ? Math.round((now - fe.lastCheckedAt) / 1000) + 's ago' : null,
+      lastBlock  : fe.lastBlock ?? null,
+    };
+  });
+}
+
 module.exports = {
   createProvider,
   getChainRpcUrls,
@@ -873,4 +924,5 @@ module.exports = {
   INTENT,
   getIntentCounters,
   estimateCreditCost,
+  getEndpointHealth,
 };

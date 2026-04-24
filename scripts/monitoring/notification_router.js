@@ -503,6 +503,25 @@ async function sendHeartbeat() {
     const liveTicks      = latestHB ? (latestHB.ticks            ?? '?')  : '?';
     const liveRegime     = latestHB ? (latestHB.regime           ?? '?')  : '?';
 
+    // Per-endpoint health — built generically from endpointHealth array
+    // Works for any number of endpoints, any provider name
+    const endpointLines = [];
+    if (latestHB && Array.isArray(latestHB.endpointHealth)) {
+      for (const ep of latestHB.endpointHealth) {
+        const roleTag  = ep.role === 'primary' ? '🟢' : '🔵';
+        const coolTag  = ep.inCooldown ? ` ⏸${Math.round(ep.cooldownMs/60000)}m` : '';
+        const lagTag   = ep.lagBlocks != null ? ` lag=${ep.lagBlocks}blk` : '';
+        const failTag  = ep.demoted ? ' DEMOTED' : ep.fails > 0 ? ` fails=${ep.fails}` : '';
+        const checkedTag = ep.lastChecked ? ` checked=${ep.lastChecked}` : '';
+        endpointLines.push(
+          `${roleTag} ${ep.url}${lagTag}${coolTag}${failTag}${checkedTag}`
+        );
+      }
+    }
+    const endpointBlock = endpointLines.length
+      ? '\n' + endpointLines.join('\n')
+      : '';
+
     // Current policy mode
     let modeStr = 'UNKNOWN';
     try {
@@ -547,6 +566,7 @@ async function sendHeartbeat() {
       ``,
       `Mode: ${modeStr} ($500 max)`,
       `Infra: ${infraStr}`,
+      `Endpoints:${endpointBlock}`,
     ].join('\n');
 
     log(`Sending heartbeat (${runtimeH}h runtime, ${confirmedLabel} confirmed [${confirmedSource}])`);

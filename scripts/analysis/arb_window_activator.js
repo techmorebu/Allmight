@@ -61,7 +61,7 @@ const fs             = require('fs');
 const path           = require('path');
 const { ethers }     = require('ethers');
 const { createProvider } = require('../../utils/provider_factory');
-const { INTENT, getIntentCounters, estimateCreditCost } = require('../../utils/provider_factory');
+const { INTENT, getIntentCounters, estimateCreditCost, getEndpointHealth } = require('../../utils/provider_factory');
 
 // ── Blueprint engine (Execution Design Layer — Boss ruling 2026-04-10) ─────────
 // Lazy-loaded inside the blueprint try/catch block to avoid circular dependency
@@ -1480,6 +1480,9 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
         heatScore          : heatCtx.heatScore,
         heatClass          : heatCtx.heatClass,
         heatRank           : heatCtx.heatRank,
+        // Per-endpoint health — all configured endpoints, not just primary
+        // Generic: any endpoint added to .env appears here automatically
+        endpointHealth     : getEndpointHealth('arbitrum'),
       };
       console.log(`  ── heartbeat  ${uptimeMin}min  ticks=${stats.ticks}  errors=${stats.errors}  state=${state}  armed=${stats.armedCount}  ready=${stats.readySignals} ──`);
       appendLog(logPath, hbRecord);
