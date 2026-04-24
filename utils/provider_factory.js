@@ -256,7 +256,7 @@ async function _probeFreshnessForChain(chainKey, urls) {
       // Fix B: skip probe if this endpoint was checked too recently
       const _fe = _freshnessEntry(url);
       if (Date.now() - (_fe.lastCheckedAt || 0) < MIN_PROBE_INTERVAL_MS) {
-        return { url, block: _fe.lastBlock || 0, skipped: true };
+        return { url, skipped: true };  // Fix B: exclude from bestBlock calc
       }
       const provider = getOrCreateProvider(chainKey, url);
       const block    = await withTimeout(
@@ -268,7 +268,7 @@ async function _probeFreshnessForChain(chainKey, urls) {
     }));
 
     const succeeded = probes
-      .filter(r => r.status === 'fulfilled')
+      .filter(r => r.status === 'fulfilled' && !r.value.skipped)
       .map(r => r.value);
 
     // Emit per-endpoint probe failure for every rejected result.
