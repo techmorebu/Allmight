@@ -291,6 +291,7 @@ async function checkCandidates() {
       _state.candidateCountAlerted = _state.candidateCount;
     }
   }
+  return newConfirmedRecs;
 }
 
 // ─── STARTUP NOTIFICATION ─────────────────────────────────────────────────────

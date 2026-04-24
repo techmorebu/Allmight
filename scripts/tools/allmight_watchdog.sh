@@ -495,8 +495,11 @@ if [[ $LOOP_SEC -gt 0 ]]; then
 
         echo "[watchdog] Activator restarted — new pid=$NEW_PID (restart ${_RESTART_COUNT}/${WATCHDOG_MAX_RESTARTS})"           | tee -a "$ANALYSIS_LOG" 2>/dev/null || true
 
-        # Fire Discord alert via notifier
-        echo "{"ts":"$(date -u +%Y-%m-%dT%H:%M:%SZ)","overallStatus":"RESTARTING","restartCount":${_RESTART_COUNT},"maxRestarts":${WATCHDOG_MAX_RESTARTS},"newPid":${NEW_PID}}" |           node scripts/monitoring/watchdog_notifier.js --prev "$PREV_STATUS"           >> "$ANALYSIS_LOG" 2>&1 &
+        # Fire Discord alert via notifier — use printf for safe JSON quoting
+        printf '{"ts":"%s","overallStatus":"RESTARTING","restartCount":%s,"maxRestarts":%s,"newPid":%s}\n' \
+          "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$_RESTART_COUNT" "$WATCHDOG_MAX_RESTARTS" "$NEW_PID" | \
+          node scripts/monitoring/watchdog_notifier.js --prev "$PREV_STATUS" \
+          >> "$ANALYSIS_LOG" 2>&1 &
         disown $! 2>/dev/null || true
 
       elif [[ $IS_ACTIVATOR_DEAD -gt 0 && $_RESTART_COUNT -ge $WATCHDOG_MAX_RESTARTS ]]; then
