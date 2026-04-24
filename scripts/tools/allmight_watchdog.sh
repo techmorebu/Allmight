@@ -406,6 +406,16 @@ run_check() {
   esac
 }
 
+# ── Auto-restart config ───────────────────────────────────────────────────────
+# Watchdog will attempt to restart a dead activator automatically.
+# Guarded by MAX_RESTARTS to prevent runaway loops.
+# Set WATCHDOG_AUTO_RESTART=false in .env to disable.
+WATCHDOG_AUTO_RESTART="${WATCHDOG_AUTO_RESTART:-true}"
+WATCHDOG_MAX_RESTARTS="${WATCHDOG_MAX_RESTARTS:-5}"   # per session — prevents runaway
+WATCHDOG_RESTART_COOLDOWN="${WATCHDOG_RESTART_COOLDOWN:-120}"  # seconds between restarts
+_RESTART_COUNT=0
+_LAST_RESTART_TS=0
+
 # ── Main loop ─────────────────────────────────────────────────────────────────
 
 # State transition tracking — notifier is called only when status changes.
@@ -449,6 +459,51 @@ if [[ $LOOP_SEC -gt 0 ]]; then
       fi
       echo "$CURR_STATUS" > "$WATCHDOG_STATE_FILE"
       PREV_STATUS="$CURR_STATUS"
+    fi
+
+    # ── Auto-restart dead activator ─────────────────────────────────────────────
+    # Fires if: watchdog auto-restart is enabled, activator PID is dead,
+    # restart count is below cap, and cooldown period has elapsed.
+    # Only restarts the activator — never other processes.
+    if [[ "$WATCHDOG_AUTO_RESTART" == "true" && -n "$WD_RECORD" ]]; then
+      IS_ACTIVATOR_DEAD=$(echo "$WD_RECORD" | grep -c '"activator:' || true)
+      NOW_TS=$(date +%s)
+      COOLDOWN_ELAPSED=$(( NOW_TS - _LAST_RESTART_TS ))
+
+      if [[ $IS_ACTIVATOR_DEAD -gt 0             && $_RESTART_COUNT -lt $WATCHDOG_MAX_RESTARTS             && $COOLDOWN_ELAPSED -ge $WATCHDOG_RESTART_COOLDOWN ]]; then
+
+        _RESTART_COUNT=$(( _RESTART_COUNT + 1 ))
+        _LAST_RESTART_TS=$NOW_TS
+        SESSION_NOW=$( [[ -f "$SESSION_FILE" ]] && cat "$SESSION_FILE" || echo "none" )
+        SESSION_DIR_NOW="$SESSIONS_DIR/session_${SESSION_NOW}"
+        ANALYSIS_LOG="$SESSION_DIR_NOW/analysis.log"
+
+        echo "[watchdog] ACTIVATOR DEAD — auto-restart attempt ${_RESTART_COUNT}/${WATCHDOG_MAX_RESTARTS}"           | tee -a "$ANALYSIS_LOG" 2>/dev/null || true
+
+        # Launch activator — same flags as start_all.sh
+        nohup node -r dotenv/config scripts/analysis/arb_window_activator.js           >> "$SESSION_DIR_NOW/activator_restart_${_RESTART_COUNT}.log" 2>&1 &
+        NEW_PID=$!
+        disown $NEW_PID 2>/dev/null || true
+
+        # Update PID file with new activator PID
+        if [[ -f "$PID_FILE" ]]; then
+          # Remove old activator line, add new one
+          grep -v "^activator=" "$PID_FILE" > "${PID_FILE}.tmp" 2>/dev/null || true
+          echo "activator=$NEW_PID" >> "${PID_FILE}.tmp"
+          mv "${PID_FILE}.tmp" "$PID_FILE"
+        fi
+
+        echo "[watchdog] Activator restarted — new pid=$NEW_PID (restart ${_RESTART_COUNT}/${WATCHDOG_MAX_RESTARTS})"           | tee -a "$ANALYSIS_LOG" 2>/dev/null || true
+
+        # Fire Discord alert via notifier
+        echo "{"ts":"$(date -u +%Y-%m-%dT%H:%M:%SZ)","overallStatus":"RESTARTING","restartCount":${_RESTART_COUNT},"maxRestarts":${WATCHDOG_MAX_RESTARTS},"newPid":${NEW_PID}}" |           node scripts/monitoring/watchdog_notifier.js --prev "$PREV_STATUS"           >> "$ANALYSIS_LOG" 2>&1 &
+        disown $! 2>/dev/null || true
+
+      elif [[ $IS_ACTIVATOR_DEAD -gt 0 && $_RESTART_COUNT -ge $WATCHDOG_MAX_RESTARTS ]]; then
+        SESSION_NOW=$( [[ -f "$SESSION_FILE" ]] && cat "$SESSION_FILE" || echo "none" )
+        SESSION_DIR_NOW="$SESSIONS_DIR/session_${SESSION_NOW}"
+        echo "[watchdog] ACTIVATOR DEAD — restart cap reached (${_RESTART_COUNT}/${WATCHDOG_MAX_RESTARTS}). Manual intervention required."           | tee -a "$SESSION_DIR_NOW/analysis.log" 2>/dev/null || true
+      fi
     fi
 
     sleep "$LOOP_SEC"

@@ -446,36 +446,61 @@ async function sendHeartbeat() {
     const auditPath = path.join(_state.sessionDir, 'execution_candidate_audit.jsonl');
     if (!fs.existsSync(actPath)) return;
 
-    // Session runtime
+    // ── Fix 2: Read activator.jsonl using correct field names ─────────────────
+    // The activator heartbeat uses readySignals/simRuns/ticks — not signal/confirmed.
+    // We scan all lines for:
+    //   - firstTs/lastTs  : session runtime bounds
+    //   - signals         : count of type==='signal' records (EXECUTION_READY events)
+    //   - latestHB        : most recent heartbeat record (for live surface stats)
     const actLines = fs.readFileSync(actPath, 'utf8').split('\n').filter(Boolean);
     let firstTs = null, lastTs = null;
     let signals = 0;
+    let latestHB = null;  // most recent activator heartbeat record
     for (const line of actLines) {
       try {
         const r = JSON.parse(line);
         if (r.ts) { if (!firstTs) firstTs = r.ts; lastTs = r.ts; }
         if (r.type === 'signal') signals++;
+        // Capture latest heartbeat for live surface metrics
+        if (r.type === 'heartbeat') latestHB = r;
       } catch { /* skip */ }
     }
+
+    // Fix 4: Real-time candidate count ─────────────────────────────────────────
+    // execution_candidate_audit.jsonl only exists after the stop pipeline runs.
+    // During a live session use readySignals from the latest activator heartbeat
+    // as a real-time proxy. Switch to audit count once the file exists.
+    let confirmed = 0;
+    let confirmedSource = 'live';
+    if (fs.existsSync(auditPath)) {
+      // Stop pipeline has run — use the definitive audit count
+      const auditContent = fs.readFileSync(auditPath, 'utf8');
+      confirmed = (auditContent.match(/"CANDIDATE_CONFIRMED"/g) || []).length;
+      confirmedSource = 'audit';
+    } else if (latestHB) {
+      // Live session — use readySignals from the latest activator heartbeat
+      // readySignals = signals that passed the ready-check gate (best live proxy)
+      confirmed = latestHB.readySignals ?? latestHB.simRuns ?? 0;
+      confirmedSource = 'live';
+    }
+
     const runtimeH = (firstTs && lastTs)
       ? ((new Date(lastTs) - new Date(firstTs)) / 3_600_000).toFixed(1)
       : '?';
 
-    // Candidate count + capture estimate
-    let confirmed = 0;
-    if (fs.existsSync(auditPath)) {
-      const auditContent = fs.readFileSync(auditPath, 'utf8');
-      confirmed = (auditContent.match(/"CANDIDATE_CONFIRMED"/g) || []).length;
-    }
-
-    // Adaptive capture rate: confirmed as % of blueprints (rough estimate)
-    // Blueprint count = signals (each signal → blueprint)
-    const captureRatePct = signals > 0 ? (confirmed / signals * 100).toFixed(1) : '?';
+    // Adaptive capture rate
+    const captureRatePct = signals > 0 ? (confirmed / signals * 100).toFixed(1) : '0.0';
 
     // Estimated session value: confirmed × $0.15 avg (from cross-session data)
     const estValue    = (confirmed * 0.15).toFixed(2);
     const runtimeNum  = parseFloat(runtimeH) || 1;
-    const valuePerHr  = runtimeNum > 0 ? (confirmed * 0.15 / runtimeNum).toFixed(2) : '?';
+    const valuePerHr  = runtimeNum > 0 ? (confirmed * 0.15 / runtimeNum).toFixed(2) : '0.00';
+
+    // Live surface stats from latest activator heartbeat (Fix 2)
+    const liveSpreadBps  = latestHB ? (latestHB.netSpreadFrac  ? (latestHB.netSpreadFrac  * 10000).toFixed(1) : '?') : '?';
+    const liveHeatClass  = latestHB ? (latestHB.heatClass       ?? '?')  : '?';
+    const liveTicks      = latestHB ? (latestHB.ticks            ?? '?')  : '?';
+    const liveRegime     = latestHB ? (latestHB.regime           ?? '?')  : '?';
 
     // Current policy mode
     let modeStr = 'UNKNOWN';
@@ -506,20 +531,24 @@ async function sendHeartbeat() {
       } catch { /* skip */ }
     }
 
+    const confirmedLabel = confirmedSource === 'live' ? `${confirmed} (live)` : `${confirmed}`;
     const body = [
       `Runtime: ${runtimeH}h`,
       `Signals: ${signals.toLocaleString()}`,
-      `Confirmed: ${confirmed}`,
+      `Confirmed: ${confirmedLabel}`,
       `Capture: ${captureRatePct}%`,
       ``,
       `Est. Value: $${estValue}`,
       `Value/hr: $${valuePerHr}`,
       ``,
+      `Spread: ${liveSpreadBps}bps  Heat: ${liveHeatClass}`,
+      `Ticks: ${liveTicks}  Regime: ${liveRegime}`,
+      ``,
       `Mode: ${modeStr} ($500 max)`,
       `Infra: ${infraStr}`,
     ].join('\n');
 
-    log(`Sending heartbeat (${runtimeH}h runtime, ${confirmed} confirmed)`);
+    log(`Sending heartbeat (${runtimeH}h runtime, ${confirmedLabel} confirmed [${confirmedSource}])`);
     await maybeSend('ops', (opts) =>
       require('./discord_notifier').sendEmbed('ops', {
         title      : `📡  SESSION STATUS — ${_state.sessionId}`,

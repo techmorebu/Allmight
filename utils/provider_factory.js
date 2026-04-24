@@ -85,6 +85,45 @@ const FRESHNESS_WARNING_PENALTY = Number(process.env.RPC_FRESHNESS_WARNING_PENAL
 const FRESHNESS_STALE_PENALTY   = Number(process.env.RPC_FRESHNESS_STALE_PENALTY    || 1000);
 const FRESHNESS_SEVERE_PENALTY  = Number(process.env.RPC_FRESHNESS_SEVERE_PENALTY   || 3000);
 
+// ── Fix 3: Consecutive-failure hard demotion (Infura rate-limit protection) ───
+// When an endpoint accumulates N consecutive call failures (quota/freeze/timeout),
+// apply a long cooldown so it stays at the back of rotation until it recovers.
+// Env vars (all optional — safe defaults shown):
+//   RPC_CONSECUTIVE_FAIL_THRESHOLD=3      failures before hard demotion
+//   RPC_CONSECUTIVE_FAIL_COOLDOWN_MS=900000  cooldown duration (default 15 min)
+//   RPC_CONSECUTIVE_FAIL_PENALTY=10000    score penalty during cooldown
+const CONSEC_FAIL_THRESHOLD   = Number(process.env.RPC_CONSECUTIVE_FAIL_THRESHOLD    || 3);
+const CONSEC_FAIL_COOLDOWN_MS = Number(process.env.RPC_CONSECUTIVE_FAIL_COOLDOWN_MS  || 900000);
+const CONSEC_FAIL_PENALTY     = Number(process.env.RPC_CONSECUTIVE_FAIL_PENALTY      || 10000);
+
+// Per-URL consecutive failure state: { count, coolUntil }
+const _consecFail = new Map();
+
+function recordConsecFail(url) {
+  const e = _consecFail.get(url) || { count: 0, coolUntil: 0 };
+  e.count++;
+  if (e.count >= CONSEC_FAIL_THRESHOLD) {
+    e.coolUntil = Date.now() + CONSEC_FAIL_COOLDOWN_MS;
+    // Push the freshness penalty forward so the endpoint sorts to the back
+    const fe = _freshness.get(url);
+    if (fe) {
+      fe.penaltyScore = Math.max(fe.penaltyScore || 0, CONSEC_FAIL_PENALTY);
+      fe.penaltyUntil = Math.max(fe.penaltyUntil || 0, e.coolUntil);
+    }
+  }
+  _consecFail.set(url, e);
+}
+
+function recordConsecSuccess(url) {
+  const e = _consecFail.get(url);
+  if (e) { e.count = 0; _consecFail.set(url, e); }
+}
+
+function isInConsecCooldown(url) {
+  const e = _consecFail.get(url);
+  return !!(e && e.coolUntil > Date.now());
+}
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -618,7 +657,8 @@ function createProvider(chain) {
       // Group candidates by penalty score
       const groups = new Map();   // penaltyScore → url[]
       for (const url of candidates) {
-        const p = getFreshnessPenalty(url);
+        // Fix 3: add consecutive-fail penalty on top of freshness penalty
+        const p = getFreshnessPenalty(url) + (isInConsecCooldown(url) ? CONSEC_FAIL_PENALTY * 2 : 0);
         if (!groups.has(p)) groups.set(p, []);
         groups.get(p).push(url);
       }
@@ -663,6 +703,7 @@ function createProvider(chain) {
         const duration = Date.now() - startedAt;
         _health.recordSuccess(url, duration);
         _countAttempt(intent, url, true);   // intent counter — success
+        recordConsecSuccess(url);           // Fix 3: reset consecutive fail counter
 
         // Emit selection event — records which endpoint was actually used.
         const _fe = _freshness.get(url);
@@ -690,6 +731,7 @@ function createProvider(chain) {
       } catch (err) {
         _health.recordFailure(url);
         _countAttempt(intent, url, false);   // intent counter — failure
+        recordConsecFail(url);              // Fix 3: track consecutive failures → long demotion
         // Emit per-attempt failure — records which endpoint failed and why.
         _logEvent({
           ev:        'rpc_attempt_fail',
