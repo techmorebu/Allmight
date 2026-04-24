@@ -1157,7 +1157,37 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
         stats.tickMapRefreshes++;
         appendLog(logPath, { ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR, type: 'tick_map_refresh', thresholds });
       } catch (e) {
-        process.stderr.write(`  [tick-map refresh] ${e.message}\n`);
+        // E3: Fail-soft — tick-map refresh failure must NOT kill the activator.
+        // Keep existing thresholds unchanged.
+        //
+        // Bug that caused 30-min deaths:
+        //   tickMapRefreshAt was NOT reset on failure, so every subsequent loop
+        //   iteration (every ~2s) immediately retried the refresh — each hanging
+        //   for HARD_TIMEOUT_MS (8s) before failing again. This drained all
+        //   retries and killed the activator within minutes of the first failure.
+        //
+        // Fix:
+        //   - Reschedule to retry in 15 min (TICK_MAP_REFRESH_MS / 2) not immediately
+        //   - Log tick_map_refresh_failed to JSONL so it shows in analysis tools
+        //   - Write to stderr for operator visibility
+        //   - Continue loop — existing thresholds remain in effect
+        const retryMs = Math.round(TICK_MAP_REFRESH_MS / 2);
+        tickMapRefreshAt = Date.now() + retryMs;
+        process.stderr.write(
+          `  [tick-map refresh] FAILED — ${e.message} — keeping existing thresholds, retry in ${retryMs/60000}min\n`
+        );
+        appendLog(logPath, {
+          ts     : new Date().toISOString(),
+          source : LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
+          type   : 'tick_map_refresh_failed',
+          error  : e.message,
+          code   : e.code || null,
+          retryIn: retryMs,
+          thresholdsKept: {
+            armedPrice      : thresholds.armedPrice,
+            nearestHighPrice: thresholds.nearestHighPrice,
+          },
+        });
       }
     }
 
