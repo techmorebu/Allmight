@@ -211,8 +211,12 @@ const ARMED_BUFFER_TICKS    = 80;       // confirmed_default: ticks below HIGH z
 // ─────────────────────────────────────────────────────────────────────────────
 // POLLING
 // ─────────────────────────────────────────────────────────────────────────────
-const POLL_PASSIVE_MS       = 1_500;
-const POLL_ARMED_MS         =   500;
+const POLL_PASSIVE_MS       = 1_500;   // confirmed_default: PASSIVE base interval
+const POLL_ARMED_MS         =   500;   // confirmed_default: ARMED interval — unchanged
+// Call-save 2: heat-aware passive polling
+// When state=PASSIVE AND heat is COLD/WARM, slow poll to POLL_PASSIVE_COLD_MS.
+// Saves ~66% of dead-period calls. ARMED and HOT/EXTREME intervals unchanged.
+const POLL_PASSIVE_COLD_MS  = Number(process.env.POLL_PASSIVE_COLD_MS || 5_000);
 const COOLDOWN_AFTER_SIM_MS = 10_000;
 const TICK_MAP_REFRESH_MS   = 30 * 60 * 1000;  // confirmed_default: 30-min refresh interval  // re-run tick map every 30 min
 
@@ -1149,7 +1153,26 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
     const _t0_loop  = _tStart();   // high-res timer for loop_total stage
 
     // Periodic tick map refresh
-    if (Date.now() >= tickMapRefreshAt) {
+    // Call-save 3: Condition-gated tick-map refresh
+    // Always refresh if overdue (Date.now() >= tickMapRefreshAt).
+    // BUT if heat is COLD/WARM and price is far from zone, skip and reschedule
+    // to avoid burning critical-read RPC calls during dead periods.
+    // Override via TICK_MAP_ALWAYS_REFRESH=true.
+    const _tickMapDue       = Date.now() >= tickMapRefreshAt;
+    const _heatElevatedNow  = heatCtx.heatClass === 'HOT' || heatCtx.heatClass === 'EXTREME';
+    const _nearZone         = snap && thresholds.nearestHighPrice > 0
+      ? Math.abs(snap.uniPrice - thresholds.nearestHighPrice) / snap.uniPrice < 0.005  // within 0.5%
+      : true;  // no snap yet → always allow refresh
+    const _tickMapForce     = process.env.TICK_MAP_ALWAYS_REFRESH === 'true';
+    const _shouldRefresh    = _tickMapDue && (_tickMapForce || _heatElevatedNow || _nearZone || state === 'ARMED');
+    if (_tickMapDue && !_shouldRefresh) {
+      // Defer: reschedule by TICK_MAP_REFRESH_MS/4 (7.5min) then reassess
+      tickMapRefreshAt = Date.now() + Math.round(TICK_MAP_REFRESH_MS / 4);
+      appendLog(logPath, { ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
+        type: 'tick_map_refresh_deferred', reason: 'heat_not_elevated_and_not_near_zone',
+        heatClass: heatCtx.heatClass, nextRefreshIn: Math.round(TICK_MAP_REFRESH_MS / 4 / 1000) + 's' });
+    }
+    if (_shouldRefresh) {
       try {
         thresholds = await deriveThresholdsFromTickMap(rpc);
         tickMapRefreshAt = Date.now() + TICK_MAP_REFRESH_MS;
@@ -1189,7 +1212,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
           },
         });
       }
-    }
+    } // end _shouldRefresh
 
     // Periodic health check
     if (Date.now() - health.lastHealthCheckMs >= HEALTH_CHECK_INTERVAL_MS) {
@@ -1240,8 +1263,13 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
       continue;
     }
 
+    // Call-save 4: Same-block snapshot cache
+    // If the block hasn't advanced, skip the pool read entirely — the on-chain
+    // state is unchanged and re-reading would waste a critical-read RPC call.
+    // Already implemented: this continue skips readBothPools for same-block ticks.
     if (blockNumber === lastBlock) {
-      await sleep(state === 'ARMED' ? POLL_ARMED_MS : POLL_PASSIVE_MS);
+      const _heatEl2 = heatCtx.heatClass === 'HOT' || heatCtx.heatClass === 'EXTREME' || heatCtx.heatClass === 'UNKNOWN';
+      await sleep(state === 'ARMED' ? POLL_ARMED_MS : (_heatEl2 ? POLL_PASSIVE_MS : POLL_PASSIVE_COLD_MS));
       continue;
     }
     lastBlock = blockNumber;
@@ -1840,7 +1868,13 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
       } catch { /* fail-silent */ }
     }
 
-    await sleep(Math.max(0, (state === 'ARMED' ? POLL_ARMED_MS : POLL_PASSIVE_MS) - elapsed));
+    // Call-save 2: heat-aware interval
+    // ARMED always fast. PASSIVE slows when heat is COLD or WARM.
+    const _heatIsElevated = heatCtx.heatClass === 'HOT' || heatCtx.heatClass === 'EXTREME' || heatCtx.heatClass === 'UNKNOWN';
+    const _pollMs = state === 'ARMED'
+      ? POLL_ARMED_MS
+      : (_heatIsElevated ? POLL_PASSIVE_MS : POLL_PASSIVE_COLD_MS);
+    await sleep(Math.max(0, _pollMs - elapsed));
   }
 
   // ── FINAL SUMMARY ────────────────────────────────────────────────────────
