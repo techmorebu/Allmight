@@ -72,6 +72,26 @@ const { INTENT, getIntentCounters, estimateCreditCost } = require('../../utils/p
 // ─────────────────────────────────────────────────────────────────────────────
 // POOL CONSTANTS
 // ─────────────────────────────────────────────────────────────────────────────
+// ── Fix A: Hard-timeout kill-switch ──────────────────────────────────────────
+// Every RPC call in the activator is wrapped with withHardTimeout().
+// KILL-SWITCH only — not a retry. If a call hangs past ACTIVATOR_HARD_TIMEOUT_MS
+// it rejects immediately, the main loop catches it, and the process stays alive.
+// DO NOT modify provider_factory.js timeout — that is a separate soft-timeout layer.
+const HARD_TIMEOUT_MS = Number(process.env.ACTIVATOR_HARD_TIMEOUT_MS || 8000);
+
+function withHardTimeout(promise, label) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => {
+        const err = new Error(`HARD_TIMEOUT after ${HARD_TIMEOUT_MS}ms${label ? ' [' + label + ']' : ''}`);
+        err.code = 'HARD_TIMEOUT';
+        reject(err);
+      }, HARD_TIMEOUT_MS)
+    )
+  ]);
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // PAIR CONFIG MAP — one entry per supported surface.
 // Swaps pool addresses, fees, decimals, and tick spacing by --pair flag.
@@ -387,7 +407,7 @@ let _bpSeq = 0;
 
 async function fetchLiveGasModel(rpc) {
   try {
-    const res = await rpc.callDetailed('act.gas', async (p) => p.getFeeData(), { timeoutMs: 3000, hedge: true, intent: INTENT.CHEAP_READ });
+    const res = await withHardTimeout(rpc.callDetailed('act.gas', async (p) => p.getFeeData(), { timeoutMs: 3000, hedge: true, intent: INTENT.CHEAP_READ }), 'act.gas');
     const fd  = res.result;
     const wei = fd.gasPrice ?? fd.maxFeePerGas ?? fd.lastBaseFeePerGas;
     if (!wei) throw new Error('no gasPrice');
@@ -434,25 +454,25 @@ const ALGEBRA_ABI = [
 // ─────────────────────────────────────────────────────────────────────────────
 async function readBothPools(blockNumber, rpc) {
   const [uniRes, camRes] = await Promise.all([
-    rpc.callDetailed(`act.univ3.${blockNumber}`, async (p) => {
+    withHardTimeout(rpc.callDetailed(`act.univ3.${blockNumber}`, async (p) => {
       const pool = new ethers.Contract(UNIV3_POOL, UNIV3_ABI, p);
       const [s0, liq] = await Promise.all([pool.slot0({ blockTag: blockNumber }), pool.liquidity({ blockTag: blockNumber })]);
       return { s0, liq };
-    }, { timeoutMs: 2000, hedge: true, intent: INTENT.CRITICAL_READ }),
+    }, { timeoutMs: 2000, hedge: true, intent: INTENT.CRITICAL_READ }), 'act.univ3'),
     // Pool B dispatch: Algebra venues use globalState(), UniV3-compatible venues (Ramses) use slot0().
     // CAMELOT_TYPE is set from pairCfg.camelotType in main() — default 'algebra'.
     CAMELOT_TYPE === 'univ3'
-      ? rpc.callDetailed(`act.camuniv3.${blockNumber}`, async (p) => {
+      ? withHardTimeout(rpc.callDetailed(`act.camuniv3.${blockNumber}`, async (p) => {
           const pool = new ethers.Contract(CAMELOT_POOL, UNIV3_ABI, p);
           const [s0, liq] = await Promise.all([pool.slot0({ blockTag: blockNumber }), pool.liquidity({ blockTag: blockNumber })]);
           // Map slot0 result to gs shape: [sqrtPriceX96, tick, fee=0 (use static), ...]
           return { gs: s0, liq };
-        }, { timeoutMs: 2000, hedge: true, intent: INTENT.CRITICAL_READ })
-      : rpc.callDetailed(`act.camelot.${blockNumber}`, async (p) => {
+        }, { timeoutMs: 2000, hedge: true, intent: INTENT.CRITICAL_READ }), 'act.camuniv3')
+      : withHardTimeout(rpc.callDetailed(`act.camelot.${blockNumber}`, async (p) => {
           const pool = new ethers.Contract(CAMELOT_POOL, ALGEBRA_ABI, p);
           const [gs, liq] = await Promise.all([pool.globalState({ blockTag: blockNumber }), pool.liquidity({ blockTag: blockNumber })]);
           return { gs, liq };
-        }, { timeoutMs: 2000, hedge: true, intent: INTENT.CRITICAL_READ }),
+        }, { timeoutMs: 2000, hedge: true, intent: INTENT.CRITICAL_READ }), 'act.camelot'),
   ]);
   const uniSqrtP  = uniRes.result.s0[0];
   const camSqrtP  = camRes.result.gs[0];
@@ -475,11 +495,11 @@ async function deriveThresholdsFromTickMap(rpc) {
   console.log('\n  [tick-map] Running threshold derivation...');
 
   // Get current state
-  const stateRes = await rpc.callDetailed('act.tickmap.slot0', async (p) => {
+  const stateRes = await withHardTimeout(rpc.callDetailed('act.tickmap.slot0', async (p) => {
     const pool = new ethers.Contract(UNIV3_POOL, UNIV3_ABI, p);
     const [s0, liq] = await Promise.all([pool.slot0(), pool.liquidity()]);
     return { s0, liq };
-  }, { timeoutMs: 5000, hedge: true, intent: INTENT.TICKMAP_SCAN });
+  }, { timeoutMs: 5000, hedge: true, intent: INTENT.TICKMAP_SCAN }), 'act.tickmap.slot0');
 
   const sqrtP96    = stateRes.result.s0[0];
   const currentTick = Number(stateRes.result.s0[1]);
@@ -495,10 +515,10 @@ async function deriveThresholdsFromTickMap(rpc) {
   const initTicks = [];
   for (let w = minWord; w <= maxWord; w++) {
     try {
-      const res = await rpc.callDetailed(`act.bitmap.${w}`, async (p) => {
+      const res = await withHardTimeout(rpc.callDetailed(`act.bitmap.${w}`, async (p) => {
         const pool = new ethers.Contract(UNIV3_POOL, UNIV3_ABI, p);
         return pool.tickBitmap(w);
-      }, { timeoutMs: 3000, hedge: true, intent: INTENT.TICKMAP_SCAN });
+      }, { timeoutMs: 3000, hedge: true, intent: INTENT.TICKMAP_SCAN }), 'act.bitmap');
       const bm = BigInt(res.result.toString());
       if (bm === 0n) { await sleep(50); continue; }
       for (let bit = 0; bit < 256; bit++) {
@@ -515,10 +535,10 @@ async function deriveThresholdsFromTickMap(rpc) {
   const tickData = {};
   for (const tick of initTicks) {
     try {
-      const res = await rpc.callDetailed(`act.tickdata.${tick}`, async (p) => {
+      const res = await withHardTimeout(rpc.callDetailed(`act.tickdata.${tick}`, async (p) => {
         const pool = new ethers.Contract(UNIV3_POOL, UNIV3_ABI, p);
         return pool.ticks(tick);
-      }, { timeoutMs: 3000, hedge: true, intent: INTENT.TICKMAP_SCAN });
+      }, { timeoutMs: 3000, hedge: true, intent: INTENT.TICKMAP_SCAN }), 'act.tickdata');
       const d = res.result;
       if (d[7]) tickData[tick] = { liquidityNet: BigInt(d[1].toString()), liquidityGross: BigInt(d[0].toString()) };
     } catch { /* skip */ }

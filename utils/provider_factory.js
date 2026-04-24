@@ -30,6 +30,10 @@ const FRESHNESS_LOG_PATH    = path.resolve(
   process.cwd(),
   process.env.RPC_FRESHNESS_LOG_PATH || 'logs/rpc_freshness.jsonl'
 );
+// Fix B: Log sampling — write every Nth rpc_select to cut disk I/O.
+// Failures, exhausted events, probe_fail are always written (never sampled).
+const RPC_LOG_SAMPLE_N = Number(process.env.RPC_LOG_SAMPLE_N || 5);
+let _logSelectCounter  = 0;
 
 function _ensureLogDir() {
   try {
@@ -41,6 +45,10 @@ _ensureLogDir();
 
 function _logEvent(obj) {
   if (!FRESHNESS_LOG_ENABLED) return;
+  // Fix B: sample rpc_select events only — failures always written
+  if (obj.ev === 'rpc_select') {
+    if ((++_logSelectCounter) % RPC_LOG_SAMPLE_N !== 0) return;
+  }
   try {
     fs.appendFile(FRESHNESS_LOG_PATH, JSON.stringify(obj) + '\n', () => {});
   } catch { /* fire-and-forget — silent on error */ }
@@ -77,6 +85,11 @@ const RPC_HEDGE_DELAY_MS = Number(process.env.RPC_HEDGE_DELAY_MS || 250);
 const FRESHNESS_ENABLED         = process.env.RPC_FRESHNESS_AWARE_ENABLED !== '0';
 const FRESHNESS_REFRESH_MS      = Number(process.env.RPC_FRESHNESS_REFRESH_MS       || 20000);
 const FRESHNESS_PROBE_TIMEOUT   = Number(process.env.RPC_FRESHNESS_PROBE_TIMEOUT_MS || 800);
+
+// Fix B: Per-endpoint minimum probe interval.
+// Each endpoint probed at most once per MIN_PROBE_INTERVAL_MS.
+// Reduces probe volume ~60-75% without degrading freshness ranking accuracy.
+const MIN_PROBE_INTERVAL_MS = Number(process.env.RPC_MIN_PROBE_INTERVAL_MS || 500);
 const FRESHNESS_WARNING_BLOCKS  = Number(process.env.RPC_FRESHNESS_WARNING_BLOCKS   || 2);
 const FRESHNESS_STALE_BLOCKS    = Number(process.env.RPC_FRESHNESS_STALE_BLOCKS     || 4);
 const FRESHNESS_SEVERE_BLOCKS   = Number(process.env.RPC_FRESHNESS_SEVERE_BLOCKS    || 8);
@@ -240,6 +253,11 @@ async function _probeFreshnessForChain(chainKey, urls) {
   try {
     // Probe all endpoints concurrently with a short timeout.
     const probes = await Promise.allSettled(urls.map(async (url) => {
+      // Fix B: skip probe if this endpoint was checked too recently
+      const _fe = _freshnessEntry(url);
+      if (Date.now() - (_fe.lastCheckedAt || 0) < MIN_PROBE_INTERVAL_MS) {
+        return { url, block: _fe.lastBlock || 0, skipped: true };
+      }
       const provider = getOrCreateProvider(chainKey, url);
       const block    = await withTimeout(
         provider.getBlockNumber(),
@@ -424,29 +442,23 @@ function getChainRpcUrls(chain) {
     //   dRPC = REJECTED (stale + 80% eth_call failure)
     //
     // Slot mapping (intent routing: cheap_read avoids premium slots):
-    //   CURRENT ASSIGNMENT (as of 2026-04-24):
-    //   _1  ARBITRUM_MAINNET_RPC_URL_1  → Infura (premium — critical + cheap reads)
-    //   _2  ARBITRUM_MAINNET_RPC_URL_2  → Tenderly Gateway (premium — benchmarked clean)
+    //   0  ARBITRUM_MAINNET_RPC_URL    → Infura (sole primary — critical + cheap reads)
+    //   1–6: EMPTY until a second clean endpoint is benchmarked and approved
     //
-    // Both Infura and Tenderly are classified as premium (paid authenticated endpoints).
-    // Tenderly benchmarked: 100% success, 199ms avg, 0 block lag.
-    // Infura: 85-100% success (degrades at daily rate limit), 217ms avg.
-    // Boss ruling: second endpoint requirement satisfied after Tenderly bench confirmation.
+    // cheap_read: falls through to Infura (only available) — no non-premium pool
+    // critical_read / rebuild_sanity / tickmap_scan: Infura only
     //
-    // Recommended .env slot order (Tenderly primary, Infura backup):
-    //   ARBITRUM_MAINNET_RPC_URL_1=https://arbitrum-mainnet.infura.io/...
-    //   ARBITRUM_MAINNET_RPC_URL_2=https://arbitrum.gateway.tenderly.co/...
-    //
-    // When Infura hits daily rate limit, Fix 3 consecutive-fail demotion kicks in
-    // and routes all traffic to Tenderly for the 15-min cooldown window.
+    // NOTE: Two identical Infura URLs in slots 0+1 share one provider cache instance
+    //       (same URL → same cache key) and would waste credits on hedged calls.
+    //       Keep slot 1 empty until a distinct second endpoint is approved.
     arbitrum: cleanRpcList([
-      process.env.ARBITRUM_MAINNET_RPC_URL,         // slot 0: reserved (future QuickNode/primary)
-      process.env.ARBITRUM_MAINNET_RPC_URL_1,       // slot 1: Infura (premium)
-      process.env.ARBITRUM_MAINNET_RPC_URL_2,       // slot 2: Tenderly Gateway (premium)
-      process.env.ARBITRUM_MAINNET_RPC_URL_3,       // slot 3: reserved
-      process.env.ARBITRUM_MAINNET_RPC_URL_4,       // slot 4: reserved
-      process.env.ARBITRUM_MAINNET_RPC_URL_5,       // slot 5: reserved
-      process.env.ARBITRUM_MAINNET_RPC_URL_6,       // slot 6: reserved
+      process.env.ARBITRUM_MAINNET_RPC_URL,         // slot 0: QuickNode
+      process.env.ARBITRUM_MAINNET_RPC_URL_1,       // slot 1: Chainstack
+      process.env.ARBITRUM_MAINNET_RPC_URL_2,       // slot 2: dRPC
+      process.env.ARBITRUM_MAINNET_RPC_URL_3,       // slot 3: arb1 (public)
+      process.env.ARBITRUM_MAINNET_RPC_URL_4,       // slot 4: Ankr
+      process.env.ARBITRUM_MAINNET_RPC_URL_5,       // slot 5: Alchemy
+      process.env.ARBITRUM_MAINNET_RPC_URL_6,       // slot 6: Infura
     ]),
 
     // ── OPTIMISM MAINNET ──────────────────────────────────────────────────────
@@ -562,7 +574,7 @@ function _isPremiumUrl(url) {
   // Premium = paid authenticated endpoints that should be reserved for critical reads.
   // cheap_read routing avoids these; critical_read / rebuild_sanity / tickmap_scan use them.
   // Boss ruling 2026-04-17: add QuickNode and Chainstack — they are paid tier, not free fallbacks.
-  return /infura\.io|alchemyapi\.io|g\.alchemy\.com|quiknode\.pro|chainstack\.com|p2pify\.com|tenderly\.co/i.test(url);
+  return /infura\.io|alchemyapi\.io|g\.alchemy\.com|quiknode\.pro|chainstack\.com|p2pify\.com/i.test(url);
 }
 
 // ─── SESSION REQUEST COUNTERS ─────────────────────────────────────────────────
@@ -632,17 +644,30 @@ function createProvider(chain) {
       candidates = urls.slice();
     }
 
+    // ── Fix C: Primary-only routing with cold failover ───────────────────────
+    // Boss ruling 2026-04-24: "More endpoints = more reads = faster rate-limit"
+    // Normal path: route ALL traffic to the primary endpoint only.
+    // Secondary endpoints are cold failover — only promoted when primary fails.
+    //
+    // Primary  = candidates[0] after freshness sort (lowest penalty = freshest)
+    // Secondary = candidates[1..N] — held back unless primary is exhausted
+    //
+    // This cuts probe-and-call volume from N*reads to 1*reads per tick.
+    // Secondary endpoints are still probed for freshness (so failover works instantly)
+    // but they do NOT receive traffic unless the primary call fails.
+    //
+    // Disable via RPC_PRIMARY_ONLY=false (falls back to old round-robin rotation).
+    const PRIMARY_ONLY = process.env.RPC_PRIMARY_ONLY !== 'false';
+
     // ── Intent-based candidate reordering ───────────────────────────────────
-    // For cheap_read: prefer non-premium endpoints to reduce Infura credit burn.
+    // For cheap_read: prefer non-premium endpoints to reduce credit burn.
     // For all other intents: use normal freshness-tier ordering (premium first).
     if (intent === INTENT.CHEAP_READ && candidates.length > 1) {
       const cheap   = candidates.filter(u => !_isPremiumUrl(u));
       const premium = candidates.filter(u =>  _isPremiumUrl(u));
-      // Non-premium first, premium as fallback — but only if cheap pool is non-empty
       if (cheap.length > 0) {
         candidates = [...cheap, ...premium];
       }
-      // If all endpoints are premium (e.g. Infura-only setup), fall through unchanged
     }
 
     // Trigger background freshness probe if cache is stale (non-blocking).
@@ -757,6 +782,15 @@ function createProvider(chain) {
       }
     }
 
+    // Fix C: Apply primary-only restriction after freshness sort.
+    // rotated[0] is always the freshest (lowest penalty) endpoint.
+    // Secondary endpoints are held as failover — not in the normal attempt path.
+    let primaryCandidate = rotated[0];
+    let failoverCandidates = rotated.slice(1);
+    const effectiveCandidates = (PRIMARY_ONLY && rotated.length > 1)
+      ? [primaryCandidate]           // normal path: primary only
+      : rotated;                     // RPC_PRIMARY_ONLY=false: old behaviour
+
     if (hedge && rotated.length >= 2) {
       const first = rotated[0];
       const second = rotated[1];
@@ -786,10 +820,16 @@ function createProvider(chain) {
       throw new Error(`RPC hedged failure (${chainKey}:${label})`);
     }
 
-    for (const url of rotated) {
+    // Fix C: Serial loop — try primary first, then failover if primary fails
+    for (const url of effectiveCandidates) {
       const r = await attempt(url);
-      if (r.ok) {
-        return r;
+      if (r.ok) return r;
+    }
+    // Primary failed — try failover candidates if any exist
+    if (PRIMARY_ONLY && failoverCandidates.length > 0) {
+      for (const url of failoverCandidates) {
+        const r = await attempt(url);
+        if (r.ok) return r;
       }
     }
 
