@@ -424,23 +424,29 @@ function getChainRpcUrls(chain) {
     //   dRPC = REJECTED (stale + 80% eth_call failure)
     //
     // Slot mapping (intent routing: cheap_read avoids premium slots):
-    //   0  ARBITRUM_MAINNET_RPC_URL    → Infura (sole primary — critical + cheap reads)
-    //   1–6: EMPTY until a second clean endpoint is benchmarked and approved
+    //   CURRENT ASSIGNMENT (as of 2026-04-24):
+    //   _1  ARBITRUM_MAINNET_RPC_URL_1  → Infura (premium — critical + cheap reads)
+    //   _2  ARBITRUM_MAINNET_RPC_URL_2  → Tenderly Gateway (premium — benchmarked clean)
     //
-    // cheap_read: falls through to Infura (only available) — no non-premium pool
-    // critical_read / rebuild_sanity / tickmap_scan: Infura only
+    // Both Infura and Tenderly are classified as premium (paid authenticated endpoints).
+    // Tenderly benchmarked: 100% success, 199ms avg, 0 block lag.
+    // Infura: 85-100% success (degrades at daily rate limit), 217ms avg.
+    // Boss ruling: second endpoint requirement satisfied after Tenderly bench confirmation.
     //
-    // NOTE: Two identical Infura URLs in slots 0+1 share one provider cache instance
-    //       (same URL → same cache key) and would waste credits on hedged calls.
-    //       Keep slot 1 empty until a distinct second endpoint is approved.
+    // Recommended .env slot order (Tenderly primary, Infura backup):
+    //   ARBITRUM_MAINNET_RPC_URL_1=https://arbitrum-mainnet.infura.io/...
+    //   ARBITRUM_MAINNET_RPC_URL_2=https://arbitrum.gateway.tenderly.co/...
+    //
+    // When Infura hits daily rate limit, Fix 3 consecutive-fail demotion kicks in
+    // and routes all traffic to Tenderly for the 15-min cooldown window.
     arbitrum: cleanRpcList([
-      process.env.ARBITRUM_MAINNET_RPC_URL,         // slot 0: QuickNode
-      process.env.ARBITRUM_MAINNET_RPC_URL_1,       // slot 1: Chainstack
-      process.env.ARBITRUM_MAINNET_RPC_URL_2,       // slot 2: dRPC
-      process.env.ARBITRUM_MAINNET_RPC_URL_3,       // slot 3: arb1 (public)
-      process.env.ARBITRUM_MAINNET_RPC_URL_4,       // slot 4: Ankr
-      process.env.ARBITRUM_MAINNET_RPC_URL_5,       // slot 5: Alchemy
-      process.env.ARBITRUM_MAINNET_RPC_URL_6,       // slot 6: Infura
+      process.env.ARBITRUM_MAINNET_RPC_URL,         // slot 0: reserved (future QuickNode/primary)
+      process.env.ARBITRUM_MAINNET_RPC_URL_1,       // slot 1: Infura (premium)
+      process.env.ARBITRUM_MAINNET_RPC_URL_2,       // slot 2: Tenderly Gateway (premium)
+      process.env.ARBITRUM_MAINNET_RPC_URL_3,       // slot 3: reserved
+      process.env.ARBITRUM_MAINNET_RPC_URL_4,       // slot 4: reserved
+      process.env.ARBITRUM_MAINNET_RPC_URL_5,       // slot 5: reserved
+      process.env.ARBITRUM_MAINNET_RPC_URL_6,       // slot 6: reserved
     ]),
 
     // ── OPTIMISM MAINNET ──────────────────────────────────────────────────────
@@ -556,7 +562,7 @@ function _isPremiumUrl(url) {
   // Premium = paid authenticated endpoints that should be reserved for critical reads.
   // cheap_read routing avoids these; critical_read / rebuild_sanity / tickmap_scan use them.
   // Boss ruling 2026-04-17: add QuickNode and Chainstack — they are paid tier, not free fallbacks.
-  return /infura\.io|alchemyapi\.io|g\.alchemy\.com|quiknode\.pro|chainstack\.com|p2pify\.com/i.test(url);
+  return /infura\.io|alchemyapi\.io|g\.alchemy\.com|quiknode\.pro|chainstack\.com|p2pify\.com|tenderly\.co/i.test(url);
 }
 
 // ─── SESSION REQUEST COUNTERS ─────────────────────────────────────────────────
