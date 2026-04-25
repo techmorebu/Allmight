@@ -561,6 +561,10 @@ fs.writeFileSync(process.argv[2], JSON.stringify(result, null, 2));
       SESSION_ARGS=""
       while IFS= read -r -d '' sdir; do
         [[ -f "$sdir/execution_candidate_audit.jsonl" ]] && SESSION_ARGS="$SESSION_ARGS $sdir"
+      done < <(find "$SESSIONS_DIR" -maxdepth 1 -name "session_*" -type d -print0 | sort -z)
+      # Also scan legacy flat layout (pre-v1.5 sessions in $LOGS/session_*)
+      while IFS= read -r -d '' sdir; do
+        [[ -f "$sdir/execution_candidate_audit.jsonl" ]] && SESSION_ARGS="$SESSION_ARGS $sdir"
       done < <(find "$LOGS" -maxdepth 1 -name "session_*" -type d -print0 | sort -z)
       SESSION_COUNT=$(echo $SESSION_ARGS | wc -w)
 
