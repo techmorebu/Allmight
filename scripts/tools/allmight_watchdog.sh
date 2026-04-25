@@ -406,15 +406,20 @@ run_check() {
   esac
 }
 
-# ── Auto-restart config ───────────────────────────────────────────────────────
-# Watchdog will attempt to restart a dead activator automatically.
-# Guarded by MAX_RESTARTS to prevent runaway loops.
-# Set WATCHDOG_AUTO_RESTART=false in .env to disable.
+# ── Critical-process watchdog restart config ──────────────────────────────────
+# Covers: fetcher, monitor (volatility), heat, activator, notifier
+# Each process tracked independently: restart count + last restart timestamp.
+# Set WATCHDOG_AUTO_RESTART=false in .env to disable all auto-restart.
 WATCHDOG_AUTO_RESTART="${WATCHDOG_AUTO_RESTART:-true}"
-WATCHDOG_MAX_RESTARTS="${WATCHDOG_MAX_RESTARTS:-5}"   # per session — prevents runaway
-WATCHDOG_RESTART_COOLDOWN="${WATCHDOG_RESTART_COOLDOWN:-120}"  # seconds between restarts
-_RESTART_COUNT=0
-_LAST_RESTART_TS=0
+WATCHDOG_MAX_RESTARTS="${WATCHDOG_MAX_RESTARTS:-5}"      # per process per session
+WATCHDOG_RESTART_COOLDOWN="${WATCHDOG_RESTART_COOLDOWN:-120}"  # seconds between restarts per process
+
+# Per-process restart counters and last-restart timestamps
+_RC_fetcher=0;  _LR_fetcher=0
+_RC_monitor=0;  _LR_monitor=0
+_RC_heat=0;     _LR_heat=0
+_RC_activator=0; _LR_activator=0
+_RC_notifier=0; _LR_notifier=0
 
 # ── Main loop ─────────────────────────────────────────────────────────────────
 
@@ -461,52 +466,116 @@ if [[ $LOOP_SEC -gt 0 ]]; then
       PREV_STATUS="$CURR_STATUS"
     fi
 
-    # ── Auto-restart dead activator ─────────────────────────────────────────────
-    # Fires if: watchdog auto-restart is enabled, activator PID is dead,
-    # restart count is below cap, and cooldown period has elapsed.
-    # Only restarts the activator — never other processes.
+    # ── Critical-process auto-restart ────────────────────────────────────────────
+    # Boss ruling 2026-04-24: all critical processes must be covered.
+    # Each process restarted independently. Cap: 5/process/session. Cooldown: 120s.
+    # If 2+ dead simultaneously → STACK_DEGRADED escalation alert.
     if [[ "$WATCHDOG_AUTO_RESTART" == "true" && -n "$WD_RECORD" ]]; then
-      IS_ACTIVATOR_DEAD=$(echo "$WD_RECORD" | grep -c '"activator:' || true)
+
+      SESSION_NOW=$( [[ -f "$SESSION_FILE" ]] && cat "$SESSION_FILE" || echo "none" )
+      SESSION_DIR_NOW="$SESSIONS_DIR/session_${SESSION_NOW}"
+      ANALYSIS_LOG="$SESSION_DIR_NOW/analysis.log"
       NOW_TS=$(date +%s)
-      COOLDOWN_ELAPSED=$(( NOW_TS - _LAST_RESTART_TS ))
 
-      if [[ $IS_ACTIVATOR_DEAD -gt 0             && $_RESTART_COUNT -lt $WATCHDOG_MAX_RESTARTS             && $COOLDOWN_ELAPSED -ge $WATCHDOG_RESTART_COOLDOWN ]]; then
+      # Build list of dead process names from DEAD_PIDS in the watchdog record
+      # Record format: "deadPids":["name:PID","name:PID"]
+      DEAD_NAMES=$(echo "$WD_RECORD" | grep -oP '"deadPids":\["[^]]*'         | grep -oP '"[a-z]+:\d+"' | grep -oP '[a-z]+' || echo "")
 
-        _RESTART_COUNT=$(( _RESTART_COUNT + 1 ))
-        _LAST_RESTART_TS=$NOW_TS
-        SESSION_NOW=$( [[ -f "$SESSION_FILE" ]] && cat "$SESSION_FILE" || echo "none" )
-        SESSION_DIR_NOW="$SESSIONS_DIR/session_${SESSION_NOW}"
-        ANALYSIS_LOG="$SESSION_DIR_NOW/analysis.log"
+      DEAD_COUNT=$(echo "$DEAD_NAMES" | grep -c '[a-z]' 2>/dev/null || echo 0)
 
-        echo "[watchdog] ACTIVATOR DEAD — auto-restart attempt ${_RESTART_COUNT}/${WATCHDOG_MAX_RESTARTS}"           | tee -a "$ANALYSIS_LOG" 2>/dev/null || true
+      # ── STACK DEGRADED escalation if 2+ critical processes dead ──────────────
+      if [[ $DEAD_COUNT -ge 2 ]]; then
+        echo "[watchdog] STACK_DEGRADED — ${DEAD_COUNT} processes dead: $(echo $DEAD_NAMES | tr '
+' ' ')"           | tee -a "$ANALYSIS_LOG" 2>/dev/null || true
+        printf '{"ts":"%s","overallStatus":"STACK_DEGRADED","deadCount":%s,"deadProcesses":"%s","session":"%s"}
+'           "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$DEAD_COUNT"           "$(echo $DEAD_NAMES | tr '
+' ' ')" "$SESSION_NOW" |           node scripts/monitoring/watchdog_notifier.js --prev "$PREV_STATUS"           >> "$ANALYSIS_LOG" 2>&1 &
+        disown $! 2>/dev/null || true
+      fi
 
-        # Launch activator — same flags as start_all.sh
-        nohup node -r dotenv/config scripts/analysis/arb_window_activator.js           >> "$SESSION_DIR_NOW/activator_restart_${_RESTART_COUNT}.log" 2>&1 &
-        NEW_PID=$!
+      # ── Per-process restart function ──────────────────────────────────────────
+      _try_restart() {
+        local PROC="$1"
+        local CMD="$2"
+        local LOG_SUFFIX="${3:-$PROC}"
+
+        eval local RC="\$_RC_${PROC}"
+        eval local LR="\$_LR_${PROC}"
+        local ELAPSED=$(( NOW_TS - LR ))
+
+        if [[ $RC -ge $WATCHDOG_MAX_RESTARTS ]]; then
+          echo "[watchdog] $PROC — restart cap reached ($RC/${WATCHDOG_MAX_RESTARTS}). Manual intervention required."             | tee -a "$ANALYSIS_LOG" 2>/dev/null || true
+          return
+        fi
+
+        if [[ $ELAPSED -lt $WATCHDOG_RESTART_COOLDOWN ]]; then
+          return  # still in cooldown
+        fi
+
+        eval "_RC_${PROC}=\$(( RC + 1 ))"
+        eval "_LR_${PROC}=$NOW_TS"
+        eval local NEW_RC="\$_RC_${PROC}"
+
+        echo "[watchdog] $PROC DEAD — auto-restart attempt ${NEW_RC}/${WATCHDOG_MAX_RESTARTS}"           | tee -a "$ANALYSIS_LOG" 2>/dev/null || true
+
+        # Launch process
+        eval "nohup $CMD >> "$SESSION_DIR_NOW/${LOG_SUFFIX}_restart_${NEW_RC}.log" 2>&1 &"
+        local NEW_PID=$!
         disown $NEW_PID 2>/dev/null || true
 
-        # Update PID file with new activator PID
+        # Update PID file
         if [[ -f "$PID_FILE" ]]; then
-          # Remove old activator line, add new one
-          grep -v "^activator=" "$PID_FILE" > "${PID_FILE}.tmp" 2>/dev/null || true
-          echo "activator=$NEW_PID" >> "${PID_FILE}.tmp"
+          grep -v "^${PROC}=" "$PID_FILE" > "${PID_FILE}.tmp" 2>/dev/null || true
+          echo "${PROC}=${NEW_PID}" >> "${PID_FILE}.tmp"
           mv "${PID_FILE}.tmp" "$PID_FILE"
         fi
 
-        echo "[watchdog] Activator restarted — new pid=$NEW_PID (restart ${_RESTART_COUNT}/${WATCHDOG_MAX_RESTARTS})"           | tee -a "$ANALYSIS_LOG" 2>/dev/null || true
+        echo "[watchdog] $PROC restarted — new pid=$NEW_PID (restart ${NEW_RC}/${WATCHDOG_MAX_RESTARTS})"           | tee -a "$ANALYSIS_LOG" 2>/dev/null || true
 
-        # Fire Discord alert via notifier — use printf for safe JSON quoting
-        printf '{"ts":"%s","overallStatus":"RESTARTING","restartCount":%s,"maxRestarts":%s,"newPid":%s}\n' \
-          "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$_RESTART_COUNT" "$WATCHDOG_MAX_RESTARTS" "$NEW_PID" | \
-          node scripts/monitoring/watchdog_notifier.js --prev "$PREV_STATUS" \
-          >> "$ANALYSIS_LOG" 2>&1 &
+        # Discord alert
+        printf '{"ts":"%s","overallStatus":"PROCESS_RESTARTED","process":"%s","restartCount":%s,"maxRestarts":%s,"newPid":%s,"session":"%s"}
+'           "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$PROC" "$NEW_RC" "$WATCHDOG_MAX_RESTARTS"           "$NEW_PID" "$SESSION_NOW" |           node scripts/monitoring/watchdog_notifier.js --prev "$PREV_STATUS"           >> "$ANALYSIS_LOG" 2>&1 &
         disown $! 2>/dev/null || true
+      }
 
-      elif [[ $IS_ACTIVATOR_DEAD -gt 0 && $_RESTART_COUNT -ge $WATCHDOG_MAX_RESTARTS ]]; then
-        SESSION_NOW=$( [[ -f "$SESSION_FILE" ]] && cat "$SESSION_FILE" || echo "none" )
-        SESSION_DIR_NOW="$SESSIONS_DIR/session_${SESSION_NOW}"
-        echo "[watchdog] ACTIVATOR DEAD — restart cap reached (${_RESTART_COUNT}/${WATCHDOG_MAX_RESTARTS}). Manual intervention required."           | tee -a "$SESSION_DIR_NOW/analysis.log" 2>/dev/null || true
-      fi
+      # ── Check and restart each critical process ───────────────────────────────────────────
+      for DEAD_PROC in $DEAD_NAMES; do
+        case "$DEAD_PROC" in
+
+          fetcher)
+            # Supervisor loop for fetcher — use temp script to avoid quote nesting
+            _FTMP=$(mktemp /tmp/wd_fetch_XXXX.sh)
+            printf '#!/usr/bin/env bash\nwhile true; do\n  node -r dotenv/config scripts/master-fetcher.js\n  sleep 120\ndone\n' > "$_FTMP"
+            chmod +x "$_FTMP"
+            _try_restart "fetcher" "bash $_FTMP"
+            ;;
+
+          monitor)
+            _try_restart "monitor" \
+              "node -r dotenv/config scripts/analysis/arb_volatility_monitor.js --chain arbitrum --interval 120 --log $SESSION_DIR_NOW/volatility.jsonl" \
+              "monitor"
+            ;;
+
+          heat)
+            _try_restart "heat" \
+              "node scripts/tools/volatility_divergence_report.js --log $SESSION_DIR_NOW/volatility.jsonl --out $SESSION_DIR_NOW/heat.jsonl --interval 30" \
+              "heat"
+            ;;
+
+          activator)
+            _try_restart "activator" \
+              "node -r dotenv/config scripts/analysis/arb_window_activator.js --pair ETH/USDC-RAMSES --remap-ticks --gas-profile atomic_optimistic --log $SESSION_DIR_NOW/activator.jsonl --heat-log $SESSION_DIR_NOW/heat.jsonl"
+            ;;
+
+          notifier)
+            _try_restart "notifier" \
+              "node -r dotenv/config scripts/monitoring/notification_router.js --loop 300" \
+              "notifier"
+            ;;
+
+        esac
+      done
+
     fi
 
     sleep "$LOOP_SEC"
