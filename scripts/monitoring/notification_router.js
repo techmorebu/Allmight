@@ -616,6 +616,16 @@ async function sendHeartbeat() {
       activityNote = `Strong capture \u2014 ${captureRatePct}% of signals confirmed`;
     }
 
+    // P1: Cross-restart cumulative block — shown only when restarts have occurred
+    const st = latestHB?.sessionTotals ?? null;
+    const cumulBlock = (st && st.restartCount > 0) ? [
+      `── Cumulative (${st.restartCount} auto-restart${st.restartCount !== 1 ? 's' : ''}) ──`,
+      `Total confirmed: ${Number(st.totalConfirmed).toLocaleString()}`,
+      `Total value:     $${Number(st.totalEstValueUsd).toFixed(2)}`,
+      `True runtime:    ${(st.totalRuntimeMs / 3_600_000).toFixed(1)}h`,
+      `Value/true-hr:   $${st.totalRuntimeMs > 0 ? (st.totalEstValueUsd / (st.totalRuntimeMs / 3_600_000)).toFixed(2) : '0.00'}/h`,
+    ].join('\n') : null;
+
     const confirmedLabel = confirmedSource === 'live' ? `${confirmed} (live)` : `${confirmed}`;
     const body = [
       `Runtime: ${runtimeH}h`,
@@ -623,6 +633,7 @@ async function sendHeartbeat() {
       `Confirmed: ${confirmedLabel}`,
       `Capture: ${captureRatePct}%`,
       activityNote ? `Note: ${activityNote}` : null,
+      cumulBlock,
       ``,
       `Est. Value: $${estValue}`,
       `Value/hr: $${valuePerHr}`,

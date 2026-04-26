@@ -348,11 +348,23 @@ async function _probeFreshnessForChain(chainKey, urls) {
 
   try {
     // Probe all endpoints concurrently with a short timeout.
-    const probes = await Promise.allSettled(urls.map(async (url) => {
+    // P2: Determine which endpoint is primary (lowest current penalty).
+  // Non-primary endpoints (e.g. Infura when Tenderly is healthy) are probed
+  // at a much lower frequency to conserve their daily quota.
+  // Primary endpoint is always probed normally.
+  const _sortedForProbe = urls.slice().sort((a, b) =>
+    getFreshnessPenalty(a) - getFreshnessPenalty(b)
+  );
+  const _primaryProbeUrl = _sortedForProbe[0] ?? null;
+  const P2_SECONDARY_PROBE_INTERVAL = Number(process.env.RPC_SECONDARY_PROBE_INTERVAL_MS || 30000); // 30s for non-primary
+
+  const probes = await Promise.allSettled(urls.map(async (url) => {
       // Fix B: skip probe if this endpoint was checked too recently
       const _fe = _freshnessEntry(url);
-      if (Date.now() - (_fe.lastCheckedAt || 0) < MIN_PROBE_INTERVAL_MS) {
-        return { url, skipped: true };  // Fix B: exclude from bestBlock calc
+      const isPrimary = url === _primaryProbeUrl;
+      const probeInterval = isPrimary ? MIN_PROBE_INTERVAL_MS : P2_SECONDARY_PROBE_INTERVAL;
+      if (Date.now() - (_fe.lastCheckedAt || 0) < probeInterval) {
+        return { url, skipped: true };  // P2: non-primary probed much less often
       }
       const provider = getOrCreateProvider(chainKey, url);
       const block    = await withTimeout(
@@ -888,14 +900,24 @@ function createProvider(chain) {
       }
     }
 
-    // Fix C: Apply primary-only restriction after freshness sort.
-    // rotated[0] is always the freshest (lowest penalty) endpoint.
-    // Secondary endpoints are held as failover — not in the normal attempt path.
+    // P2 (Boss ruling 2026-04-26): Strict primary-only routing.
+    // Tenderly = PRIMARY (100% of normal traffic).
+    // Infura   = COLD FAILOVER ONLY — never in normal rotation.
+    //
+    // Failover activates ONLY when:
+    //   a) primary call times out or errors (attempt() failure path below)
+    //   b) primary is in consecutive-fail cooldown
+    // Infura is NEVER used for:
+    //   - freshness probing (P2_SECONDARY_PROBE_INTERVAL handles this above)
+    //   - parallel reads (hedge is failure-gated via CS1)
+    //   - normal rotation
+    //
+    // rotated[0] = freshest endpoint (Tenderly when healthy).
     let primaryCandidate = rotated[0];
     let failoverCandidates = rotated.slice(1);
     const effectiveCandidates = (PRIMARY_ONLY && rotated.length > 1)
-      ? [primaryCandidate]           // normal path: primary only
-      : rotated;                     // RPC_PRIMARY_ONLY=false: old behaviour
+      ? [primaryCandidate]           // P2: primary only — Infura held as cold reserve
+      : rotated;                     // RPC_PRIMARY_ONLY=false: override for debugging
 
     // Call-save 1: Failure-gated hedging
     // Hedge only when the primary endpoint shows recent distress:

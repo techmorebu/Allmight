@@ -93,6 +93,62 @@ function withHardTimeout(promise, label) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// P1: CROSS-RESTART SESSION ACCUMULATOR
+// Writes session_totals.json to the session directory on every EXECUTION_READY
+// signal. File persists across auto-restarts (watchdog restart = same session).
+// Resets ONLY on: abort / remote_ctl restart / stop (external session lifecycle).
+//
+// Tracks:
+//   totalSignals       — all EXECUTION_READY events across all run segments
+//   totalConfirmed     — same (readySignals accumulates here)
+//   totalEstValueUsd   — cumulative net profit estimate in USD
+//   totalRuntimeMs     — logical session time (first start → now, not per-segment)
+//   restartCount       — how many times activator restarted inside this session
+//   valueByHour        — { 'YYYY-MM-DDTHH': valueUsd } for correlation analysis
+//   sessionStart       — ISO timestamp of session first start
+//   lastUpdated        — ISO timestamp of last write
+//
+// Used by notification_router.js for heartbeat cumulative display.
+// ─────────────────────────────────────────────────────────────────────────────
+
+function loadSessionTotals(totalsPath) {
+  try {
+    if (fs.existsSync(totalsPath)) {
+      const raw = JSON.parse(fs.readFileSync(totalsPath, 'utf8'));
+      return {
+        totalSignals     : raw.totalSignals     ?? 0,
+        totalConfirmed   : raw.totalConfirmed   ?? 0,
+        totalEstValueUsd : raw.totalEstValueUsd ?? 0,
+        sessionStart     : raw.sessionStart     ?? new Date().toISOString(),
+        restartCount     : (raw.restartCount    ?? 0) + 1,  // increment on load = new run segment
+        valueByHour      : raw.valueByHour      ?? {},
+      };
+    }
+  } catch { /* corrupt or missing — start fresh */ }
+  return {
+    totalSignals    : 0,
+    totalConfirmed  : 0,
+    totalEstValueUsd: 0,
+    sessionStart    : new Date().toISOString(),
+    restartCount    : 0,
+    valueByHour     : {},
+  };
+}
+
+function writeSessionTotals(totalsPath, totals) {
+  try {
+    const dir = path.dirname(totalsPath);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    const out = {
+      ...totals,
+      totalRuntimeMs: Date.now() - new Date(totals.sessionStart).getTime(),
+      lastUpdated   : new Date().toISOString(),
+    };
+    fs.writeFileSync(totalsPath, JSON.stringify(out, null, 2));
+  } catch { /* fire-and-forget */ }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // PAIR CONFIG MAP — one entry per supported surface.
 // Swaps pool addresses, fees, decimals, and tick spacing by --pair flag.
 // All depth/arm/ready thresholds are universal — unchanged per pair.
@@ -217,6 +273,11 @@ const POLL_ARMED_MS         =   500;   // confirmed_default: ARMED interval — 
 // When state=PASSIVE AND heat is COLD/WARM, slow poll to POLL_PASSIVE_COLD_MS.
 // Saves ~66% of dead-period calls. ARMED and HOT/EXTREME intervals unchanged.
 const POLL_PASSIVE_COLD_MS  = Number(process.env.POLL_PASSIVE_COLD_MS || 5_000);
+// P3: DEEP IDLE — activates when COLD/WARM + spread flat + no state change for X min.
+// During deep idle: poll 10-15s, block check slow, tick-map disabled.
+// Exit: any heat increase OR spread movement → instant wake.
+const POLL_DEEP_IDLE_MS     = Number(process.env.POLL_DEEP_IDLE_MS     || 12_000);  // 12s deep-idle interval
+const DEEP_IDLE_ENTRY_MIN   = Number(process.env.DEEP_IDLE_ENTRY_MIN   || 10);      // minutes flat before deep idle
 const COOLDOWN_AFTER_SIM_MS = 10_000;
 const TICK_MAP_REFRESH_MS   = 30 * 60 * 1000;  // confirmed_default: 30-min refresh interval  // re-run tick map every 30 min
 
@@ -1124,6 +1185,29 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
     return !isUnhealthy;
   }
 
+  // ── P1: Load cross-restart session totals ─────────────────────────────────
+  // totalsPath lives in the session dir alongside activator.jsonl.
+  // On first launch restartCount=0. On watchdog restart restartCount increments.
+  const totalsPath = logPath
+    ? logPath.replace(/activator\.jsonl$/, 'session_totals.json')
+    : null;
+  const sessionTotals = totalsPath ? loadSessionTotals(totalsPath) : null;
+
+  // ── Session Continuity Integrity: restore prior context after restart ───────
+  // If this is a restart (restartCount > 0) and we have prior totals, log the
+  // resumption so analysis tools can see the segment boundary.
+  if (sessionTotals && sessionTotals.restartCount > 0 && logPath) {
+    appendLog(logPath, {
+      ts         : new Date().toISOString(),
+      source     : LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
+      type       : 'session_resumed',
+      restartCount: sessionTotals.restartCount,
+      priorConfirmed: sessionTotals.totalConfirmed,
+      priorValueUsd : sessionTotals.totalEstValueUsd,
+      sessionStart  : sessionTotals.sessionStart,
+    });
+  }
+
   const stats = {
     ticks: 0, errors: 0,
     armedCount: 0, disarmedCount: 0,
@@ -1131,6 +1215,12 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
     tickMapRefreshes: 0, unhealthyEvents: 0, heartbeats: 0,
     startMs: Date.now(),
   };
+
+  // P3: Deep-idle state tracking
+  let _deepIdleActive  = false;
+  let _lastSpreadFrac  = null;   // last seen netSpreadFrac — movement detection
+  let _lastStateChange = Date.now();  // last time state changed (ARMED/PASSIVE flip)
+  let _flatSinceMs     = Date.now();  // since when spread+state have been flat
 
   const W   = 100;
   const EQ  = '═'.repeat(W);
@@ -1269,7 +1359,11 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
     // Already implemented: this continue skips readBothPools for same-block ticks.
     if (blockNumber === lastBlock) {
       const _heatEl2 = heatCtx.heatClass === 'HOT' || heatCtx.heatClass === 'EXTREME' || heatCtx.heatClass === 'UNKNOWN';
-      await sleep(state === 'ARMED' ? POLL_ARMED_MS : (_heatEl2 ? POLL_PASSIVE_MS : POLL_PASSIVE_COLD_MS));
+      const _sbPoll = state === 'ARMED' ? POLL_ARMED_MS
+        : _deepIdleActive               ? POLL_DEEP_IDLE_MS
+        : _heatEl2                      ? POLL_PASSIVE_MS
+        :                                 POLL_PASSIVE_COLD_MS;
+      await sleep(_sbPoll);
       continue;
     }
     lastBlock = blockNumber;
@@ -1541,6 +1635,15 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
         // Per-endpoint health — all configured endpoints, not just primary
         // Generic: any endpoint added to .env appears here automatically
         endpointHealth     : getEndpointHealth('arbitrum'),
+        // P1: cross-restart cumulative totals — persists across auto-restarts
+        sessionTotals      : sessionTotals ? {
+          totalConfirmed   : sessionTotals.totalConfirmed,
+          totalEstValueUsd : sessionTotals.totalEstValueUsd,
+          sessionStart     : sessionTotals.sessionStart,
+          restartCount     : sessionTotals.restartCount,
+          totalRuntimeMs   : Date.now() - new Date(sessionTotals.sessionStart).getTime(),
+          valueByHour      : sessionTotals.valueByHour,
+        } : null,
       };
       console.log(`  ── heartbeat  ${uptimeMin}min  ticks=${stats.ticks}  errors=${stats.errors}  state=${state}  armed=${stats.armedCount}  ready=${stats.readySignals} ──`);
       appendLog(logPath, hbRecord);
@@ -1662,6 +1765,12 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
           const signal = emitSignal(signalType, snap, simResult, gm, thresholds, activeRegime);
           if (signalType === 'EXECUTION_READY') {
             stats.readySignals++;
+            // P1: update cross-restart accumulator
+            if (sessionTotals && totalsPath) {
+              sessionTotals.totalSignals++;
+              sessionTotals.totalConfirmed++;
+              // netProfit computed below — written after blueprint block
+            }
 
             // ── TRADE BLUEPRINT (Execution Design Layer — Boss ruling 2026-04-10) ──
             // Computed inline using activator's local state — no external require()
@@ -1802,6 +1911,13 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
               const { logBlueprint } = require('../execution/blueprint_logger');
               logBlueprint(blueprint);
               _tRecord('blueprint', _t0_bp);
+            // P1: accumulate value after netProfit is known
+              if (sessionTotals && totalsPath && netProfit != null) {
+                sessionTotals.totalEstValueUsd = +(sessionTotals.totalEstValueUsd + Math.max(0, netProfit)).toFixed(4);
+                const hourKey = new Date().toISOString().slice(0, 13);
+                sessionTotals.valueByHour[hourKey] = +((sessionTotals.valueByHour[hourKey] ?? 0) + Math.max(0, netProfit)).toFixed(4);
+                writeSessionTotals(totalsPath, sessionTotals);
+              }
             } catch (bpErr) {
               process.stderr.write(`  [blueprint] build error: ${bpErr.message}\n`);
             }
@@ -1868,12 +1984,35 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
       } catch { /* fail-silent */ }
     }
 
-    // Call-save 2: heat-aware interval
-    // ARMED always fast. PASSIVE slows when heat is COLD or WARM.
+    // P3 + CS2: Deep-idle + heat-aware interval
+    // Priority: ARMED → fast. EXTREME/HOT PASSIVE → normal. COLD/WARM PASSIVE → slow.
+    // DEEP IDLE: COLD/WARM + spread flat + no state change for DEEP_IDLE_ENTRY_MIN → 12s.
+    // Exit deep idle instantly on: heat rise, spread movement, state change.
     const _heatIsElevated = heatCtx.heatClass === 'HOT' || heatCtx.heatClass === 'EXTREME' || heatCtx.heatClass === 'UNKNOWN';
-    const _pollMs = state === 'ARMED'
-      ? POLL_ARMED_MS
-      : (_heatIsElevated ? POLL_PASSIVE_MS : POLL_PASSIVE_COLD_MS);
+    const _spreadNow      = snap ? snap.netSpreadFrac : null;
+    const _spreadMoved    = _lastSpreadFrac != null && _spreadNow != null
+                            && Math.abs(_spreadNow - _lastSpreadFrac) > 0.00005; // >0.5bps movement
+
+    if (_spreadMoved || _heatIsElevated || state === 'ARMED') {
+      // Any activity → wake up + reset flat timer
+      _flatSinceMs    = Date.now();
+      _deepIdleActive = false;
+    }
+    if (_spreadNow != null) _lastSpreadFrac = _spreadNow;
+
+    // Enter deep idle if conditions have been flat for DEEP_IDLE_ENTRY_MIN
+    if (!_deepIdleActive && state === 'PASSIVE' && !_heatIsElevated) {
+      const flatMin = (Date.now() - _flatSinceMs) / 60000;
+      if (flatMin >= DEEP_IDLE_ENTRY_MIN) {
+        _deepIdleActive = true;
+      }
+    }
+
+    const _pollMs = state === 'ARMED'   ? POLL_ARMED_MS
+      : _deepIdleActive                 ? POLL_DEEP_IDLE_MS
+      : _heatIsElevated                 ? POLL_PASSIVE_MS
+      :                                   POLL_PASSIVE_COLD_MS;
+
     await sleep(Math.max(0, _pollMs - elapsed));
   }
 
