@@ -541,14 +541,72 @@ async function sendHeartbeat() {
       }
     }
 
-    // Infra status from watchdog last record
-    let infraStr = 'UNKNOWN';
+    // ── Infra status from watchdog ────────────────────────────────────────────
+    let infraRaw = 'UNKNOWN';
     const wdPath = path.join(_state.sessionDir, 'watchdog.jsonl');
     if (fs.existsSync(wdPath)) {
       try {
         const wdLines = fs.readFileSync(wdPath, 'utf8').split('\n').filter(Boolean);
-        if (wdLines.length) infraStr = JSON.parse(wdLines[wdLines.length-1]).overallStatus ?? 'UNKNOWN';
+        if (wdLines.length) infraRaw = JSON.parse(wdLines[wdLines.length-1]).overallStatus ?? 'UNKNOWN';
       } catch { /* skip */ }
+    }
+
+    // ── Context-aware label engine ────────────────────────────────────────────
+    // Replaces raw DEGRADED/FAILED/HEALTHY with plain-English descriptions.
+    // Reflects what is ACTUALLY happening, not just the watchdog verdict.
+
+    const spreadNum  = parseFloat(liveSpreadBps) || 0;
+    const epList     = (latestHB && Array.isArray(latestHB.endpointHealth)) ? latestHB.endpointHealth : [];
+    const allCooling = epList.length > 0 && epList.every(ep => ep.inCooldown);
+    const allDemoted = epList.length > 0 && epList.every(ep => ep.demoted);
+    const primaryDemoted = epList.length > 0 && epList[0] && epList[0].demoted;
+
+    // Market state
+    let marketLabel;
+    if (spreadNum < 0) {
+      marketLabel = '\u{1F504} SPREAD INVERTED \u2014 venues temporarily misaligned';
+    } else if (spreadNum < 3 && (liveHeatClass === 'COLD' || liveHeatClass === 'WARM')) {
+      marketLabel = '\u{1F4A4} QUIET MARKET \u2014 spread below threshold, monitoring';
+    } else if (spreadNum < 3 && (liveHeatClass === 'HOT' || liveHeatClass === 'EXTREME')) {
+      marketLabel = '\u{1F4CA} PRICE STAGNANT \u2014 active heat but spread compressed';
+    } else if (spreadNum >= 3 && spreadNum < 10) {
+      marketLabel = '\u{1F440} WATCHING \u2014 spread building toward viable zone';
+    } else if (spreadNum >= 10 && (liveHeatClass === 'HOT' || liveHeatClass === 'EXTREME')) {
+      marketLabel = '\u{1F525} ACTIVE SURFACE \u2014 spread viable, edge present';
+    } else {
+      marketLabel = `\u{1F4E1} MONITORING \u2014 spread ${liveSpreadBps}bps`;
+    }
+
+    // Endpoint/infra state
+    let infraLabel;
+    if (allCooling || allDemoted) {
+      const minCoolMs  = Math.min(...epList.map(ep => ep.cooldownMs || 0));
+      const minCoolMin = Math.round(minCoolMs / 60000);
+      infraLabel = minCoolMin > 0
+        ? `\u23F8 BOTH ENDPOINTS IN COOLDOWN \u2014 auto-recovering in ~${minCoolMin}m`
+        : '\u23F8 BOTH ENDPOINTS DEMOTED \u2014 least-bad routing active';
+    } else if (primaryDemoted && epList.length >= 2) {
+      const backup = epList[1] ? epList[1].url : 'backup';
+      infraLabel = `\u{1F500} PRIMARY DEMOTED \u2014 routing via ${backup}`;
+    } else if (infraRaw === 'DEGRADED') {
+      infraLabel = '\u26A0\uFE0F DEGRADED \u2014 some components stale, auto-recovering';
+    } else if (infraRaw === 'FAILED') {
+      infraLabel = '\u{1F6A8} INFRA FAILED \u2014 check activator and watchdog logs';
+    } else if (infraRaw === 'HEALTHY') {
+      infraLabel = '\u2705 HEALTHY';
+    } else {
+      infraLabel = `\u2139\uFE0F ${infraRaw}`;
+    }
+
+    // Session activity note
+    let activityNote = null;
+    const confirmedNum = Number(confirmed) || 0;
+    if (signals > 0 && confirmedNum === 0) {
+      activityNote = 'Signals seen \u2014 none cleared audit gate yet';
+    } else if (confirmedNum > 0 && captureRatePct === '0.0') {
+      activityNote = 'Post-restart counter reset \u2014 cumulative total may be higher';
+    } else if (confirmedNum > 50 && parseFloat(captureRatePct) > 70) {
+      activityNote = `Strong capture \u2014 ${captureRatePct}% of signals confirmed`;
     }
 
     const confirmedLabel = confirmedSource === 'live' ? `${confirmed} (live)` : `${confirmed}`;
@@ -557,17 +615,19 @@ async function sendHeartbeat() {
       `Signals: ${signals.toLocaleString()}`,
       `Confirmed: ${confirmedLabel}`,
       `Capture: ${captureRatePct}%`,
+      activityNote ? `Note: ${activityNote}` : null,
       ``,
       `Est. Value: $${estValue}`,
       `Value/hr: $${valuePerHr}`,
       ``,
-      `Spread: ${liveSpreadBps}bps  Heat: ${liveHeatClass}`,
-      `Ticks: ${liveTicks}  Regime: ${liveRegime}`,
+      marketLabel,
+      `Spread: ${liveSpreadBps}bps  Heat: ${liveHeatClass}  Regime: ${liveRegime}`,
+      `Ticks: ${liveTicks}`,
       ``,
       `Mode: ${modeStr} ($500 max)`,
-      `Infra: ${infraStr}`,
+      infraLabel,
       `Endpoints:${endpointBlock}`,
-    ].join('\n');
+    ].filter(l => l !== null).join('\n');
 
     log(`Sending heartbeat (${runtimeH}h runtime, ${confirmedLabel} confirmed [${confirmedSource}])`);
     await maybeSend('ops', (opts) =>
