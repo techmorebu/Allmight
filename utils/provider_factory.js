@@ -137,6 +137,91 @@ function isInConsecCooldown(url) {
   return !!(e && e.coolUntil > Date.now());
 }
 
+// ─── DAILY QUOTA SELF-TRACKER ─────────────────────────────────────────────────
+// Tracks call count per URL per UTC day. Resets automatically at midnight UTC.
+// No additional RPC calls — piggybacks on the attempt() success path which
+// already fires for every real call. Zero extra usage cost.
+//
+// Daily limits configured in .env (all optional — safe defaults):
+//   RPC_DAILY_LIMIT=100000          default for all endpoints
+//   RPC_DAILY_LIMIT_infura=100000   override for infura.io endpoints
+//   RPC_DAILY_LIMIT_tenderly=100000 override for tenderly.co endpoints
+//   (key = last two hostname segments, lowercased, dot replaced with underscore)
+//
+// Access via getEndpointHealth() → quota field on each endpoint entry.
+// Also written to rpc_freshness.jsonl as ev='quota_snapshot' every N calls.
+
+const _DEFAULT_DAILY_LIMIT = Number(process.env.RPC_DAILY_LIMIT || 100000);
+const _QUOTA_LOG_EVERY     = Number(process.env.RPC_QUOTA_LOG_EVERY || 100); // log every N calls
+
+// Per-URL quota state: { date: 'YYYY-MM-DD', total: 0, session: 0 }
+const _quotaTracker = new Map();
+
+function _utcDate() {
+  return new Date().toISOString().slice(0, 10); // 'YYYY-MM-DD'
+}
+
+function _getDailyLimit(url) {
+  // Look for per-provider override: RPC_DAILY_LIMIT_infura, RPC_DAILY_LIMIT_tenderly etc.
+  try {
+    const parts = new URL(url).hostname.split('.');
+    const slug  = parts.slice(-2).join('_').replace(/[^a-z0-9_]/gi, '_').toLowerCase();
+    const envKey = `RPC_DAILY_LIMIT_${slug}`;
+    if (process.env[envKey]) return Number(process.env[envKey]);
+  } catch { /* use default */ }
+  return _DEFAULT_DAILY_LIMIT;
+}
+
+function trackQuotaCall(url) {
+  const today = _utcDate();
+  const e = _quotaTracker.get(url) || { date: today, total: 0, session: 0 };
+
+  // Reset daily counter at UTC midnight
+  if (e.date !== today) {
+    e.date  = today;
+    e.total = 0;
+    // session counter persists across days (counts for this process lifetime)
+  }
+
+  e.total++;
+  e.session++;
+  _quotaTracker.set(url, e);
+
+  // Periodic quota snapshot log for correlation analysis
+  if (e.total % _QUOTA_LOG_EVERY === 0) {
+    const limit     = _getDailyLimit(url);
+    const remaining = Math.max(0, limit - e.total);
+    const pctUsed   = ((e.total / limit) * 100).toFixed(1);
+    _logEvent({
+      ev         : 'quota_snapshot',
+      ts         : new Date().toISOString(),
+      url        : redactUrl(url),
+      date       : today,
+      callsToday : e.total,
+      callsSession: e.session,
+      dailyLimit : limit,
+      remaining  : remaining,
+      pctUsed    : pctUsed,
+      resetAt    : today + 'T00:00:00Z (next UTC midnight)',
+    });
+  }
+}
+
+function getQuota(url) {
+  const today = _utcDate();
+  const e     = _quotaTracker.get(url);
+  if (!e || e.date !== today) return { callsToday: 0, callsSession: e?.session ?? 0, remaining: _getDailyLimit(url), pctUsed: '0.0', dailyLimit: _getDailyLimit(url) };
+  const limit     = _getDailyLimit(url);
+  const remaining = Math.max(0, limit - e.total);
+  return {
+    callsToday  : e.total,
+    callsSession: e.session,
+    remaining,
+    pctUsed     : ((e.total / limit) * 100).toFixed(1),
+    dailyLimit  : limit,
+  };
+}
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -755,6 +840,7 @@ function createProvider(chain) {
         _health.recordSuccess(url, duration);
         _countAttempt(intent, url, true);   // intent counter — success
         recordConsecSuccess(url);           // Fix 3: reset consecutive fail counter
+        trackQuotaCall(url);               // Quota: count this call toward daily total
 
         // Emit selection event — records which endpoint was actually used.
         const _fe = _freshness.get(url);
@@ -932,18 +1018,28 @@ function getEndpointHealth(chainKey) {
     const cf   = _consecFail.get(url) || { count: 0, coolUntil: 0 };
     const inCd = cf.coolUntil > now;
 
+    const quota = getQuota(url);
     return {
-      url        : redactUrl(url),
-      role       : idx === 0 ? 'primary' : 'failover',
-      lagBlocks  : fe.lagBlocks    ?? null,
-      penalty    : fe.penaltyScore ?? 0,
-      inCooldown : inCd,
-      consecFails: cf.count,
-      cooldownMs : inCd ? Math.max(0, cf.coolUntil - now) : 0,
-      fails      : he.fails,
-      demoted    : he.demoted,
-      lastChecked: fe.lastCheckedAt ? Math.round((now - fe.lastCheckedAt) / 1000) + 's ago' : null,
-      lastBlock  : fe.lastBlock ?? null,
+      url         : redactUrl(url),
+      role        : idx === 0 ? 'primary' : 'failover',
+      lagBlocks   : fe.lagBlocks    ?? null,
+      penalty     : fe.penaltyScore ?? 0,
+      inCooldown  : inCd,
+      consecFails : cf.count,
+      cooldownMs  : inCd ? Math.max(0, cf.coolUntil - now) : 0,
+      fails       : he.fails,
+      demoted     : he.demoted,
+      lastChecked : fe.lastCheckedAt ? Math.round((now - fe.lastCheckedAt) / 1000) + 's ago' : null,
+      lastBlock   : fe.lastBlock ?? null,
+      // Quota self-tracking — piggybacks on existing calls, zero extra cost
+      quota       : {
+        callsToday  : quota.callsToday,
+        callsSession: quota.callsSession,
+        remaining   : quota.remaining,
+        pctUsed     : quota.pctUsed,
+        dailyLimit  : quota.dailyLimit,
+        nearLimit   : quota.remaining < (quota.dailyLimit * 0.1), // true when <10% remains
+      },
     };
   });
 }

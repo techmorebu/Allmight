@@ -508,13 +508,20 @@ async function sendHeartbeat() {
     const endpointLines = [];
     if (latestHB && Array.isArray(latestHB.endpointHealth)) {
       for (const ep of latestHB.endpointHealth) {
-        const roleTag  = ep.role === 'primary' ? '🟢' : '🔵';
-        const coolTag  = ep.inCooldown ? ` ⏸${Math.round(ep.cooldownMs/60000)}m` : '';
-        const lagTag   = ep.lagBlocks != null ? ` lag=${ep.lagBlocks}blk` : '';
-        const failTag  = ep.demoted ? ' DEMOTED' : ep.fails > 0 ? ` fails=${ep.fails}` : '';
+        const roleTag    = ep.role === 'primary' ? '🟢' : '🔵';
+        const coolTag    = ep.inCooldown ? ` ⏸${Math.round(ep.cooldownMs/60000)}m` : '';
+        const lagTag     = ep.lagBlocks != null ? ` lag=${ep.lagBlocks}blk` : '';
+        const failTag    = ep.demoted ? ' DEMOTED' : ep.fails > 0 ? ` fails=${ep.fails}` : '';
         const checkedTag = ep.lastChecked ? ` checked=${ep.lastChecked}` : '';
+        // Quota line — shows usage and warns when near limit
+        let quotaTag = '';
+        if (ep.quota) {
+          const q = ep.quota;
+          const bar = q.nearLimit ? ' ⚠️ NEAR LIMIT' : '';
+          quotaTag = `  📊 ${q.callsToday.toLocaleString()}/${q.dailyLimit.toLocaleString()} today (${q.pctUsed}% used, ${q.remaining.toLocaleString()} left)${bar}`;
+        }
         endpointLines.push(
-          `${roleTag} ${ep.url}${lagTag}${coolTag}${failTag}${checkedTag}`
+          `${roleTag} ${ep.url}${lagTag}${coolTag}${failTag}${checkedTag}${quotaTag}`
         );
       }
     }
