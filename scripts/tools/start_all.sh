@@ -283,6 +283,9 @@ if [[ "${1:-}" == "restart-activator" ]]; then
   export BLUEPRINT_LOG_PATH="$SESSION_DIR/blueprints.jsonl"
   export SIM_LOG_PATH="$SESSION_DIR/simulations.jsonl"
   export FILTER_LOG_PATH="$SESSION_DIR/filter_results.jsonl"
+  # Export RPC_FRESHNESS_LOG_PATH early — before ANY process that loads
+  # provider_factory.js (fetcher, activator, etc.) so no records fall back
+  # to the default logs/rpc_freshness.jsonl path.
   export RPC_FRESHNESS_LOG_PATH="$SESSION_DIR/rpc_freshness.jsonl"
 
   echo "[restart-activator] $(date -u '+%Y-%m-%dT%H:%M:%SZ')" >> "$SESSION_DIR/activator.jsonl"
@@ -829,6 +832,16 @@ echo ""
 # nohup + disown: protects the stack from terminal close (SIGHUP).
 # Root cause of session_20260412_2102 abrupt stop — whole group killed on
 # terminal close. Using nohup ensures background jobs survive detachment.
+
+# ── CRITICAL: Export env vars BEFORE any process that loads provider_factory ──
+# provider_factory.js reads RPC_FRESHNESS_LOG_PATH at module load time.
+# If not exported before the fetcher/activator start, records fall back to
+# logs/rpc_freshness.jsonl (root) instead of the session folder.
+export BLUEPRINT_LOG_PATH="$SESSION_DIR/blueprints.jsonl"
+export SIM_LOG_PATH="$SESSION_DIR/simulations.jsonl"
+export FILTER_LOG_PATH="$SESSION_DIR/filter_results.jsonl"
+export RPC_FRESHNESS_LOG_PATH="$SESSION_DIR/rpc_freshness.jsonl"
+
 nohup bash -c "
   while true; do
     node -r dotenv/config scripts/master-fetcher.js >> '$SESSION_DIR/fetcher.log' 2>&1
