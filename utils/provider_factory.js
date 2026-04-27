@@ -161,6 +161,51 @@ function _utcDate() {
   return new Date().toISOString().slice(0, 10); // 'YYYY-MM-DD'
 }
 
+// ── Quota seed from rpc_freshness.jsonl ───────────────────────────────────────
+// Called once at module load. Scans today's rpc_freshness records to reconstruct
+// call counts that would otherwise be lost on process restart.
+// Zero extra network calls — reads the local JSONL log only.
+// Only counts rpc_select events (actual calls) not probes or failures.
+function _seedQuotaFromLog() {
+  const today = _utcDate();
+  try {
+    if (!fs.existsSync(FRESHNESS_LOG_PATH)) return;
+    const lines = fs.readFileSync(FRESHNESS_LOG_PATH, 'utf8')
+      .split('\n').filter(Boolean);
+    const countByUrl = new Map();
+    for (const line of lines) {
+      try {
+        const r = JSON.parse(line);
+        // Only count rpc_select events from today
+        if (r.ev !== 'rpc_select') continue;
+        if (!r.ts || !r.ts.startsWith(today)) continue;
+        // r.url is already redacted (hostname only) — use as key
+        const key = r.url ?? 'unknown';
+        countByUrl.set(key, (countByUrl.get(key) ?? 0) + 1);
+      } catch { /* skip malformed */ }
+    }
+    // Seed _quotaTracker using the same redacted URL key that trackQuotaCall uses.
+    // When trackQuotaCall fires, it reads from this seeded entry and increments it,
+    // so counts survive restarts transparently.
+    for (const [redactedUrl, count] of countByUrl) {
+      const existing = _quotaTracker.get(redactedUrl);
+      if (!existing || existing.date !== today) {
+        _quotaTracker.set(redactedUrl, { date: today, total: count, session: 0 });
+      } else {
+        // Already has some counts (shouldn't happen on fresh load, but be safe)
+        existing.total = Math.max(existing.total, count);
+      }
+    }
+    const total = [...countByUrl.values()].reduce((a,b)=>a+b,0);
+    if (total > 0) {
+      process.stderr.write(
+        `[provider_factory] Quota seeded from log: ${total} calls today` +
+        ` across ${countByUrl.size} endpoint(s)\n`
+      );
+    }
+  } catch { /* seed is best-effort — never crash on failure */ }
+}
+
 function _getDailyLimit(url) {
   // Look for per-provider override: RPC_DAILY_LIMIT_infura, RPC_DAILY_LIMIT_tenderly etc.
   try {
@@ -173,8 +218,12 @@ function _getDailyLimit(url) {
 }
 
 function trackQuotaCall(url) {
-  const today = _utcDate();
-  const e = _quotaTracker.get(url) || { date: today, total: 0, session: 0 };
+  const today    = _utcDate();
+  // Use redacted URL (hostname only) as the canonical quota key.
+  // This matches what rpc_freshness.jsonl stores, so seeding from log works
+  // correctly across process restarts without any un-redaction needed.
+  const quotaKey = redactUrl(url);
+  const e = _quotaTracker.get(quotaKey) || { date: today, total: 0, session: 0 };
 
   // Reset daily counter at UTC midnight
   if (e.date !== today) {
@@ -185,7 +234,7 @@ function trackQuotaCall(url) {
 
   e.total++;
   e.session++;
-  _quotaTracker.set(url, e);
+  _quotaTracker.set(quotaKey, e);
 
   // Periodic quota snapshot log for correlation analysis
   if (e.total % _QUOTA_LOG_EVERY === 0) {
@@ -208,9 +257,14 @@ function trackQuotaCall(url) {
 }
 
 function getQuota(url) {
-  const today = _utcDate();
-  const e     = _quotaTracker.get(url);
-  if (!e || e.date !== today) return { callsToday: 0, callsSession: e?.session ?? 0, remaining: _getDailyLimit(url), pctUsed: '0.0', dailyLimit: _getDailyLimit(url) };
+  const today    = _utcDate();
+  const quotaKey = redactUrl(url);
+  const e        = _quotaTracker.get(quotaKey)
+                ?? _quotaTracker.get('__seeded__' + quotaKey); // also check seed key
+  if (!e || e.date !== today) return {
+    callsToday: 0, callsSession: e?.session ?? 0,
+    remaining: _getDailyLimit(url), pctUsed: '0.0', dailyLimit: _getDailyLimit(url)
+  };
   const limit     = _getDailyLimit(url);
   const remaining = Math.max(0, limit - e.total);
   return {
@@ -1004,6 +1058,10 @@ function createProvider(chain) {
     chain: chainKey
   };
 }
+
+// ── Seed quota tracker from today's log on startup ───────────────────────────
+// Reconstructs call counts lost to process restart. Best-effort, never crashes.
+_seedQuotaFromLog();
 
 // ─── PER-ENDPOINT HEALTH SNAPSHOT ────────────────────────────────────────────
 // Returns live health metrics for every URL configured for a given chain.
