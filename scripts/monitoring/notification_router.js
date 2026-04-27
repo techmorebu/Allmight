@@ -492,10 +492,21 @@ async function sendHeartbeat() {
     // Adaptive capture rate
     const captureRatePct = signals > 0 ? (confirmed / signals * 100).toFixed(1) : '0.0';
 
-    // Estimated session value: confirmed × $0.15 avg (from cross-session data)
-    const estValue    = (confirmed * 0.15).toFixed(2);
-    const runtimeNum  = parseFloat(runtimeH) || 1;
-    const valuePerHr  = runtimeNum > 0 ? (confirmed * 0.15 / runtimeNum).toFixed(2) : '0.00';
+    // Estimated session value — use P1 cumulative totals when available.
+    // After a restart the segment confirmed count resets to ~0 which makes
+    // Est. Value appear near-zero even though the session is healthy.
+    // sessionTotals persists across auto-restarts so it always reflects the
+    // full session. Segment fallback used only when P1 is not yet active.
+    const st_early   = latestHB?.sessionTotals ?? null;
+    const estValue   = st_early && st_early.totalEstValueUsd > 0
+      ? Number(st_early.totalEstValueUsd).toFixed(2)
+      : (confirmed * 0.15).toFixed(2);
+    const runtimeNum = st_early && st_early.totalRuntimeMs > 0
+      ? st_early.totalRuntimeMs / 3_600_000
+      : (parseFloat(runtimeH) || 1);
+    const valuePerHr = runtimeNum > 0
+      ? (Number(estValue) / runtimeNum).toFixed(2)
+      : '0.00';
 
     // Live surface stats from latest activator heartbeat (Fix 2)
     const liveSpreadBps  = latestHB ? (latestHB.netSpreadFrac  ? (latestHB.netSpreadFrac  * 10000).toFixed(1) : '?') : '?';
@@ -617,13 +628,14 @@ async function sendHeartbeat() {
     }
 
     // P1: Cross-restart cumulative block — shown only when restarts have occurred
-    const st = latestHB?.sessionTotals ?? null;
+    // Cumulative block — shown only after auto-restarts.
+    // Est. Value and Value/hr already show cumulative totals (from st_early above).
+    // This block adds context: restart count + confirmed across all segments.
+    const st = st_early;
     const cumulBlock = (st && st.restartCount > 0) ? [
       `── Cumulative (${st.restartCount} auto-restart${st.restartCount !== 1 ? 's' : ''}) ──`,
       `Total confirmed: ${Number(st.totalConfirmed).toLocaleString()}`,
-      `Total value:     $${Number(st.totalEstValueUsd).toFixed(2)}`,
       `True runtime:    ${(st.totalRuntimeMs / 3_600_000).toFixed(1)}h`,
-      `Value/true-hr:   $${st.totalRuntimeMs > 0 ? (st.totalEstValueUsd / (st.totalRuntimeMs / 3_600_000)).toFixed(2) : '0.00'}/h`,
     ].join('\n') : null;
 
     const confirmedLabel = confirmedSource === 'live' ? `${confirmed} (live)` : `${confirmed}`;
