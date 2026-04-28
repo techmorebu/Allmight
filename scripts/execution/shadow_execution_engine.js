@@ -1,0 +1,392 @@
+// scripts/execution/shadow_execution_engine.js
+// ════════════════════════════════════════════════════════════════════════════
+// AllMight — Shadow Execution Engine (ANALYTICS ONLY)
+//
+// Classifies each EXECUTION_READY signal through the execution gate and
+// capital policy. Writes shadow_execution_ledger.jsonl and
+// shadow_execution_totals.json to the session directory.
+//
+// NO live execution. NO private key. MODE 0 (PAPER) enforced.
+//
+// Consumed by:
+//   execution_gate_score.js
+//   capital_policy.js
+//   notification_router.js  (heartbeat + stop summary)
+//   project_metrics_tracker.js  (lifetime totals)
+//
+// Usage:
+//   node scripts/execution/shadow_execution_engine.js
+//   node scripts/execution/shadow_execution_engine.js --session logs/sessions/session_20260426_2209
+// ════════════════════════════════════════════════════════════════════════════
+
+'use strict';
+
+const fs   = require('fs');
+const path = require('path');
+
+// ─── GATE THRESHOLDS (from EXECUTION_GATING_POLICY.md) ───────────────────────
+const GATE_THRESHOLDS = { PAPER: 75, DRY_WALLET: 85, MICRO_ELIGIBLE: 92 };
+const APPROVED_MODE   = 0;   // MODE 0 — PAPER. $0 live capital. Never change here.
+
+// ─── SCORING FUNCTIONS ────────────────────────────────────────────────────────
+
+function spreadScore(spreadPct) {
+  const bps = (spreadPct || 0) * 100;
+  if (bps >= 26.0) return 100;
+  if (bps >= 24.0) return 85;
+  if (bps >= 23.0) return 65;
+  if (bps >= 22.0) return 40;
+  return 0;
+}
+
+function heatScore(heatClass) {
+  return { EXTREME: 100, HOT: 75, WARM: 20, COLD: 0 }[heatClass] ?? 0;
+}
+
+function timingScore() {
+  const h = new Date().getUTCHours();
+  if ([10,11,12,21,22,23,2,3,4].includes(h)) return 100;
+  if ([8,9,14,15,16,17].includes(h))          return 70;
+  return 40;
+}
+
+function infraScore(watchdogStatus, activatorFresh, rpcExhausted) {
+  if (watchdogStatus === 'HEALTHY' && activatorFresh && !rpcExhausted) return 100;
+  if (watchdogStatus === 'DEGRADED' || !activatorFresh || rpcExhausted)  return 60;
+  if (watchdogStatus === 'FAILED')                                         return 25;
+  return 0;
+}
+
+function simulationScore(viableRate) {
+  if (viableRate == null) return 0;
+  if (viableRate >= 70) return 100;
+  if (viableRate >= 50) return 80;
+  if (viableRate >= 35) return 60;
+  if (viableRate >= 20) return 35;
+  return 0;
+}
+
+function confidenceScore(bossValidCount) {
+  if (bossValidCount >= 10) return 100;
+  if (bossValidCount >= 8)  return 95;
+  if (bossValidCount >= 6)  return 85;
+  if (bossValidCount >= 5)  return 75;
+  if (bossValidCount >= 3)  return 50;
+  if (bossValidCount >= 1)  return 25;
+  return 0;
+}
+
+function computeExecutionScore(components) {
+  return (
+    0.30 * components.spread     +
+    0.20 * components.heat       +
+    0.20 * components.timing     +
+    0.15 * components.infra      +
+    0.10 * components.simulation +
+    0.05 * components.confidence
+  );
+}
+
+function gateVerdict(score, hardBlockers) {
+  if (hardBlockers.length > 0)           return 'BLOCK';
+  if (score >= GATE_THRESHOLDS.MICRO_ELIGIBLE) return 'MICRO_LIVE_ELIGIBLE';
+  if (score >= GATE_THRESHOLDS.DRY_WALLET)     return 'DRY_WALLET_ONLY';
+  if (score >= GATE_THRESHOLDS.PAPER)          return 'PAPER_ONLY';
+  return 'BLOCK';
+}
+
+// ─── SHADOW PnL ESTIMATE ──────────────────────────────────────────────────────
+
+function estimateShadowPnL(signal, shadowSize) {
+  // Uses signal's finalEdge (net edge fraction after fees/gas) × shadowSize
+  const finalEdge = signal.finalEdge ?? signal.netEdge ?? 0;
+  const gasUsd    = (signal.gasUnits ?? 700000) * (signal.gasPriceGwei ?? 0.02) * 1e-9 *
+                    (signal.ethPrice ?? 2300);
+  const grossProfit = shadowSize * Math.abs(finalEdge) / 100;
+  const aaveFee     = shadowSize * 0.0005;               // 0.05% Aave fee
+  const feeCost     = shadowSize * 0.0006;               // 0.06% swap fees
+  const net         = grossProfit - gasUsd - aaveFee - feeCost;
+  return {
+    estimatedGrossUsd  : Math.max(0, grossProfit),
+    estimatedGasUsd    : gasUsd,
+    estimatedAaveFeeUsd: aaveFee,
+    estimatedFeeCostUsd: feeCost,
+    estimatedNetUsd    : net,
+  };
+}
+
+// ─── HARD BLOCKER CHECK ───────────────────────────────────────────────────────
+
+function getHardBlockers(signal, sbViableRate, sbVerdict) {
+  const blockers = [];
+  const spread = signal.spread ?? signal.netSpreadPct ?? 0;
+
+  if (process.env.LIVE_DEPLOY_APPROVED !== 'true')
+    blockers.push('LIVE_DEPLOY_APPROVED != true');
+  if (spread < 0.22)
+    blockers.push(`spread ${(spread*100).toFixed(1)}bps < 22bps floor`);
+  if (sbVerdict === 'FLASH_NOT_READY')
+    blockers.push('flash_loan NOT_READY');
+  if (signal.economicStatus && signal.economicStatus !== 'economically_viable')
+    blockers.push(`economicStatus=${signal.economicStatus}`);
+
+  return blockers;
+}
+
+// ─── SESSION CONTEXT LOADER ───────────────────────────────────────────────────
+
+function loadSessionContext(sessionDir) {
+  const rj = (f) => {
+    try { return JSON.parse(fs.readFileSync(path.join(sessionDir, f), 'utf8')); } catch { return null; }
+  };
+  const rl = (f, n = 200) => {
+    try {
+      const lines = fs.readFileSync(path.join(sessionDir, f), 'utf8').split('\n').filter(Boolean);
+      return lines.slice(-n).map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
+    } catch { return []; }
+  };
+
+  const sb   = rj('sandbox_results.json');
+  const fl   = rj('flash_loan_readiness.json');
+  const conf = rj('dryrun_confidence.json');
+  const wd   = rl('watchdog.jsonl');
+  const act  = rl('activator.jsonl', 500);
+
+  // Watchdog status
+  let wdStatus = 'UNKNOWN';
+  for (let i = wd.length - 1; i >= 0; i--) {
+    if (wd[i]?.overallStatus) { wdStatus = wd[i].overallStatus; break; }
+  }
+
+  // Activator freshness (10 min)
+  const tenMinAgo = Date.now() - 10 * 60 * 1000;
+  const actFresh  = act.some(r => r?.ts && new Date(r.ts).getTime() > tenMinAgo);
+
+  // RPC exhausted count
+  const rpcExhausted = rl('rpc_freshness.jsonl', 100).some(r => r.ev === 'rpc_exhausted');
+
+  return {
+    sbViableRate  : sb?.summary?.viableRate ?? null,
+    sbVerdict     : fl?.verdict ?? null,
+    bossValid     : conf?.summary?.bossValidTotal ?? 0,
+    wdStatus,
+    actFresh,
+    rpcExhausted,
+    approvedLadder: fl?.approvedLadder ?? [],
+  };
+}
+
+// ─── PER-SIGNAL CLASSIFIER ────────────────────────────────────────────────────
+
+function classifySignal(signal, ctx, sessionId) {
+  const spread    = signal.spread ?? signal.netSpreadPct ?? 0;
+  const heatClass = signal.heatClass ?? signal.heat ?? 'UNKNOWN';
+  const conf      = signal.confidence ?? 0.7;
+
+  const components = {
+    spread    : spreadScore(spread),
+    heat      : heatScore(heatClass),
+    timing    : timingScore(),
+    infra     : infraScore(ctx.wdStatus, ctx.actFresh, ctx.rpcExhausted),
+    simulation: simulationScore(ctx.sbViableRate),
+    confidence: confidenceScore(ctx.bossValid),
+  };
+
+  const executionScore  = computeExecutionScore(components);
+  const hardBlockers    = getHardBlockers(signal, ctx.sbViableRate, ctx.sbVerdict);
+  const verdict         = gateVerdict(executionScore, hardBlockers);
+
+  // Shadow size = what would be allocated if MODE 1+ were approved
+  // Based on confidence, capped at liquidity-safe size
+  const theoreticalSize = conf >= 0.98 ? 500 : conf >= 0.90 ? 200 :
+                          conf >= 0.80 ? 100 : conf >= 0.70 ? 50 : 25;
+  const modeMax         = APPROVED_MODE === 0 ? 0 : 25; // MODE 0 = $0
+  const shadowSize      = Math.max(0, Math.min(theoreticalSize, modeMax));
+
+  const pnl = estimateShadowPnL(signal, theoreticalSize); // show what WOULD have been
+
+  const wouldTrade = verdict === 'MICRO_LIVE_ELIGIBLE' &&
+                     hardBlockers.length === 0 &&
+                     signal.economicStatus === 'economically_viable' &&
+                     spread >= 0.22;
+
+  return {
+    ts                 : signal.ts ?? new Date().toISOString(),
+    sessionId,
+    signalId           : signal.signalId ?? `${sessionId}-${signal.block ?? Date.now()}`,
+    pair               : signal.pair ?? 'ETH/USDC-RAMSES',
+    spreadPct          : spread,
+    spreadBps          : +(spread * 100).toFixed(2),
+    heatClass,
+    regime             : signal.regime ?? null,
+    executionScore     : +executionScore.toFixed(1),
+    scoreComponents    : Object.fromEntries(Object.entries(components).map(([k,v]) => [k, +v.toFixed(1)])),
+    gateVerdict        : verdict,
+    capitalMode        : APPROVED_MODE,
+    approvedMode       : APPROVED_MODE,
+    wouldTrade,
+    blockedReasons     : [...hardBlockers, ...(verdict === 'BLOCK' && hardBlockers.length === 0 ? [`score ${executionScore.toFixed(1)} < ${GATE_THRESHOLDS.PAPER}`] : [])],
+    theoreticalSizeUsd : theoreticalSize,
+    shadowSizeUsd      : shadowSize,
+    estimatedGrossUsd  : +pnl.estimatedGrossUsd.toFixed(4),
+    estimatedNetUsd    : +pnl.estimatedNetUsd.toFixed(4),
+    estimatedGasUsd    : +pnl.estimatedGasUsd.toFixed(4),
+    amountOutMinReady  : (signal.sizeSweep?.length ?? 0) > 0,
+    liveBlockedBy      : hardBlockers[0] ?? null,
+  };
+}
+
+// ─── SESSION PROCESSOR ────────────────────────────────────────────────────────
+
+function processSession(sessionDir, sessionId) {
+  const ctx       = loadSessionContext(sessionDir);
+  const ledgerPath = path.join(sessionDir, 'shadow_execution_ledger.jsonl');
+  const totalsPath = path.join(sessionDir, 'shadow_execution_totals.json');
+
+  // Load all signal records from activator.jsonl
+  let signals = [];
+  try {
+    const lines = fs.readFileSync(path.join(sessionDir, 'activator.jsonl'), 'utf8').split('\n').filter(Boolean);
+    for (const l of lines) {
+      try {
+        const r = JSON.parse(l);
+        if (r.type === 'signal' && r.signal === 'EXECUTION_READY') signals.push(r);
+      } catch { /* skip */ }
+    }
+  } catch { /* file missing */ }
+
+  if (signals.length === 0) {
+    return { sessionId, processed: 0, totals: null };
+  }
+
+  // Classify each signal
+  const classified = signals.map(s => classifySignal(s, ctx, sessionId));
+
+  // Write ledger (append-mode — idempotent via overwrite on full rerun)
+  fs.writeFileSync(
+    ledgerPath,
+    classified.map(r => JSON.stringify(r)).join('\n') + '\n'
+  );
+
+  // Build totals
+  const blocked       = classified.filter(r => r.gateVerdict === 'BLOCK').length;
+  const paperOnly     = classified.filter(r => r.gateVerdict === 'PAPER_ONLY').length;
+  const dryWallet     = classified.filter(r => r.gateVerdict === 'DRY_WALLET_ONLY').length;
+  const microEligible = classified.filter(r => r.gateVerdict === 'MICRO_LIVE_ELIGIBLE').length;
+  const wouldTrade    = classified.filter(r => r.wouldTrade).length;
+  const shadowProfit  = classified.reduce((s, r) => s + Math.max(0, r.estimatedNetUsd), 0);
+  const scores        = classified.map(r => r.executionScore);
+  const maxScore      = scores.length ? Math.max(...scores) : 0;
+  const avgScore      = scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
+  const bestSignal    = classified.reduce((best, r) => r.estimatedNetUsd > (best?.estimatedNetUsd ?? -Infinity) ? r : best, null);
+
+  // Block reason frequency
+  const blockReasonCounts = {};
+  for (const r of classified) {
+    for (const b of r.blockedReasons) {
+      blockReasonCounts[b] = (blockReasonCounts[b] ?? 0) + 1;
+    }
+  }
+  const topBlockedReason = Object.entries(blockReasonCounts)
+    .sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+
+  // Runtime hours for value/hr
+  let runtimeH = 0;
+  try {
+    const ts = classified.map(r => new Date(r.ts).getTime()).filter(Boolean);
+    if (ts.length >= 2) runtimeH = (Math.max(...ts) - Math.min(...ts)) / 3_600_000;
+  } catch { /* skip */ }
+
+  const totals = {
+    generatedAt            : new Date().toISOString(),
+    sessionId,
+    totalSignals           : classified.length,
+    blocked,
+    paperOnly,
+    dryWalletEligible      : dryWallet,
+    microLiveEligible      : microEligible,
+    wouldTradeIfLive       : wouldTrade,
+    shadowEstimatedProfitUsd: +shadowProfit.toFixed(4),
+    shadowEstimatedValuePerHour: runtimeH > 0 ? +(shadowProfit / runtimeH).toFixed(4) : null,
+    bestSignalSpreadPct    : bestSignal?.spreadPct ?? null,
+    bestSignalProfitUsd    : bestSignal?.estimatedNetUsd ?? null,
+    avgExecutionScore      : +avgScore.toFixed(1),
+    maxExecutionScore      : +maxScore.toFixed(1),
+    topBlockedReason,
+    blockReasonCounts,
+    currentLiveBlockers    : [
+      process.env.LIVE_DEPLOY_APPROVED !== 'true' ? 'LIVE_DEPLOY_APPROVED != true' : null,
+      ctx.sbVerdict === 'FLASH_NOT_READY' ? 'flash_loan NOT_READY' : null,
+    ].filter(Boolean),
+    crossedPaper      : classified.some(r => r.executionScore >= 75),
+    crossedDryWallet  : classified.some(r => r.executionScore >= 85),
+    crossedMicro      : classified.some(r => r.executionScore >= 92),
+    sessionCtx        : {
+      sbViableRate  : ctx.sbViableRate,
+      bossValid     : ctx.bossValid,
+      wdStatus      : ctx.wdStatus,
+      sbVerdict     : ctx.sbVerdict,
+    },
+  };
+
+  fs.writeFileSync(totalsPath, JSON.stringify(totals, null, 2));
+  return { sessionId, processed: classified.length, totals };
+}
+
+// ─── EXPORTS ─────────────────────────────────────────────────────────────────
+
+module.exports = {
+  classifySignal,
+  processSession,
+  loadSessionContext,
+  computeExecutionScore,
+  spreadScore, heatScore, timingScore, infraScore, simulationScore, confidenceScore,
+  gateVerdict,
+  GATE_THRESHOLDS,
+  APPROVED_MODE,
+};
+
+// ─── CLI ENTRYPOINT ──────────────────────────────────────────────────────────
+
+if (require.main === module) {
+  const args       = process.argv.slice(2);
+  const sessionIdx = args.indexOf('--session');
+  const jsonMode   = args.includes('--json');
+
+  const LOGS_DIR     = path.resolve(process.cwd(), 'logs');
+  const SESSION_FILE = path.join(LOGS_DIR, 'allmight.session');
+
+  let sessionDir = sessionIdx !== -1 ? args[sessionIdx + 1] : null;
+  if (!sessionDir && fs.existsSync(SESSION_FILE)) {
+    const sid = fs.readFileSync(SESSION_FILE, 'utf8').trim();
+    sessionDir = path.join(LOGS_DIR, 'sessions', `session_${sid}`);
+  }
+
+  if (!sessionDir || !fs.existsSync(sessionDir)) {
+    console.error('ERROR: Session directory not found. Use --session <path>');
+    process.exit(1);
+  }
+
+  const sessionId = path.basename(sessionDir).replace('session_', '');
+  const result    = processSession(sessionDir, sessionId);
+
+  if (jsonMode) {
+    console.log(JSON.stringify(result, null, 2));
+  } else {
+    const t = result.totals;
+    if (!t) { console.log('No signals to process.'); process.exit(0); }
+    console.log('═══════════════════════════════════════════════════════');
+    console.log(`  Shadow Execution — ${sessionId}`);
+    console.log(`  Signals processed: ${result.processed}`);
+    console.log('───────────────────────────────────────────────────────');
+    console.log(`  Would trade if live: ${t.wouldTradeIfLive}`);
+    console.log(`  Shadow PnL:          $${t.shadowEstimatedProfitUsd.toFixed(3)}`);
+    console.log(`  Value/hr:            $${t.shadowEstimatedValuePerHour?.toFixed(3) ?? 'N/A'}/h`);
+    console.log(`  Best score:          ${t.maxExecutionScore}`);
+    console.log(`  Avg score:           ${t.avgExecutionScore}`);
+    console.log(`  Gate:                ${t.crossedMicro ? '🟢 MICRO' : t.crossedDryWallet ? '🟠 DRY_WALLET' : t.crossedPaper ? '🟡 PAPER' : '🔴 BLOCK'}`);
+    console.log(`  Main blocker:        ${t.topBlockedReason ?? 'none'}`);
+    console.log(`  Breakdown:           blocked=${t.blocked} paper=${t.paperOnly} dry=${t.dryWalletEligible} micro=${t.microLiveEligible}`);
+    console.log('═══════════════════════════════════════════════════════');
+  }
+}
