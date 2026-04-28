@@ -206,12 +206,13 @@ function scoreConfidence() {
   const bossValid = conf.summary?.bossValidTotal ?? 0;
 
   let score;
-  if      (bossValid >= 8) score = 100;
-  else if (bossValid >= 6) score = 90;
-  else if (bossValid >= 5) score = 75;
-  else if (bossValid >= 3) score = 50;
-  else if (bossValid >= 1) score = 25;
-  else                      score = 0;
+  if      (bossValid >= 10) score = 100;
+  else if (bossValid >=  8) score = 95;
+  else if (bossValid >=  6) score = 85;  // current level
+  else if (bossValid >=  5) score = 75;
+  else if (bossValid >=  3) score = 50;
+  else if (bossValid >=  1) score = 25;
+  else                       score = 0;
 
   return {
     score,
@@ -343,8 +344,7 @@ function main() {
   console.log(`  ${icon} Verdict:     ${verdict}`);
   console.log('───────────────────────────────────────────────────────');
   console.log('  Components:');
-  for (const [key, { score, detail }] of Object.entries(components)) {
-    const weight = WEIGHTS[key] ?? 0;
+  for (const [key, { weight, score, detail }] of Object.entries(components)) {
     const wt     = `${(weight * 100).toFixed(0)}%`.padEnd(5);
     const sc     = score.toString().padStart(3);
     const wscore = (score * weight).toFixed(1).padStart(5);
