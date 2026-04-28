@@ -20,7 +20,7 @@ Derived from session_20260426_2209 and preceding valid sessions:
 
 | Metric | Value | Source |
 |---|---|---|
-| Boss-valid sessions | 5/39 | confidence log |
+| Boss-valid sessions | 6/39 | confidence log |
 | Sandbox viable rate (valid sessions) | 33.9–46.5%, avg 40.6% | sandbox_results.json |
 | Confirmed candidates/session (valid) | 33–47 | activator.jsonl |
 | Spread range (CONFIRMED_STRICT) | 0.207–0.220% (mean 0.214%) | tier_breakdown.json |
@@ -130,7 +130,8 @@ sbViableRate ≥ 70%   → 100   (strong — exceeds observed range)
 Boss-valid sessions (C1–C8 pass):
   ≥ 8 valid   → 100  (not yet reached)
   6–7 valid   → 90
-  5 valid     → 75   (current level)
+  5 valid     → 75
+  6 valid     → 85   (current level — 6 Boss-valid sessions as of 2026-04-28)
   3–4 valid   → 50
   1–2 valid   → 25
   0 valid     → 0
@@ -149,8 +150,8 @@ Using session_20260426_2209 metrics:
 | TimingScore | varies by hour | 70 (mid estimate) | 14.0 |
 | InfraScore | STANDARD + watchdog runs | 100 | 15.0 |
 | SimulationScore | 40.4% viable | 60 | 6.0 |
-| ConfidenceScore | 5 valid sessions | 75 | 3.75 |
-| **TOTAL** | | | **~70.75** |
+| ConfidenceScore | 6 valid sessions | 85 | 4.25 |
+| **TOTAL** | | | **~71.25** |
 
 **Result: BLOCK** — below 75 threshold. Primary gap: SpreadScore (spread sits at lower edge of confirmed band).
 
@@ -221,7 +222,7 @@ size = min(
 
 ## 9. Path to Score ≥ 92
 
-To reach MICRO_LIVE_ELIGIBLE from current ~70.75:
+To reach MICRO_LIVE_ELIGIBLE from current ~71.25:
 
 | Improvement | Score gain |
 |---|---|
