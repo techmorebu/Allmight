@@ -314,6 +314,51 @@ function processSession(sessionDir, sessionId) {
   const avgScore      = scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
   const bestSignal    = classified.reduce((best, r) => r.estimatedNetUsd > (best?.estimatedNetUsd ?? -Infinity) ? r : best, null);
 
+  // Blocked opportunity: positive-net signals that gate prevented from executing
+  const shadowBlockedOpportunityUsd = classified
+    .filter(r => !r.wouldTrade && r.estimatedNetUsd > 0)
+    .reduce((s, r) => s + r.estimatedNetUsd, 0);
+
+  // Accuracy diagnostics — join to sandbox results where available
+  // Sandbox viable rate comes from session context (sbViableRate = aggregate)
+  // Per-signal sandbox join requires blueprints + sandbox_results — done here if present
+  let joinedToSandbox = 0, directionMatch = 0, falsePositive = 0, falseNegative = 0;
+  const sbViableRate = ctx.sbViableRate; // aggregate rate from sandbox_results.json
+  // Per-signal sandbox join (best-effort — no crash if files missing)
+  try {
+    const bpPath = path.join(sessionDir, 'blueprints.jsonl');
+    const sbPath = path.join(sessionDir, 'sandbox_results.json');
+    if (fs.existsSync(bpPath) && fs.existsSync(sbPath)) {
+      const bpLines = fs.readFileSync(bpPath, 'utf8').split('\n').filter(Boolean);
+      const bpByBlock = {};
+      for (const l of bpLines) {
+        try { const r = JSON.parse(l); bpByBlock[String(r.signalBlock ?? '')] = r.blueprintId; } catch {}
+      }
+      const sbResults = JSON.parse(fs.readFileSync(sbPath, 'utf8')).results ?? [];
+      const sbByBp = {};
+      for (const r of sbResults) {
+        if (!sbByBp[r.blueprintId]) sbByBp[r.blueprintId] = [];
+        sbByBp[r.blueprintId].push(r);
+      }
+      for (const rec of classified) {
+        const block = String(rec.signalId ?? '').split('-').pop();
+        const bpId  = bpByBlock[block];
+        const sbRes = bpId ? (sbByBp[bpId] ?? []) : [];
+        if (sbRes.length === 0) continue;
+        joinedToSandbox++;
+        const sbViable = sbRes.some(r => r.executionClass === 'EXECUTION_VIABLE');
+        const shadowPositive = rec.estimatedNetUsd > 0;
+        if (shadowPositive === sbViable) directionMatch++;
+        if (shadowPositive && !sbViable)  falsePositive++;
+        if (!shadowPositive && sbViable)  falseNegative++;
+      }
+    }
+  } catch { /* fail-silent — accuracy diagnostics are best-effort */ }
+
+  const avgShadowNetUsd = classified.length > 0
+    ? +(classified.reduce((s, r) => s + r.estimatedNetUsd, 0) / classified.length).toFixed(4)
+    : null;
+
   // Block reason frequency
   const blockReasonCounts = {};
   for (const r of classified) {
@@ -342,7 +387,16 @@ function processSession(sessionDir, sessionId) {
     wouldTradeIfLive       : wouldTrade,
     shadowEstimatedProfitUsd    : +shadowProfit.toFixed(4),        // executable only (gate cleared)
     shadowTheoreticalPnLUsd     : +shadowTheoreticalPnL.toFixed(4), // all viable signals (gate ignored)
+    shadowBlockedOpportunityUsd : +shadowBlockedOpportunityUsd.toFixed(4), // positive-net signals gate-blocked
     shadowEstimatedValuePerHour: runtimeH > 0 ? +(shadowProfit / runtimeH).toFixed(4) : null,
+    // Accuracy diagnostics (best-effort — requires blueprints.jsonl + sandbox_results.json)
+    avgShadowNetUsd       : avgShadowNetUsd,
+    avgSandboxViableRate  : sbViableRate,
+    joinedToSandbox       : joinedToSandbox,
+    directionAccuracyPct  : joinedToSandbox > 0
+      ? +(directionMatch / joinedToSandbox * 100).toFixed(1) : null,
+    falsePositiveCount    : falsePositive,
+    falseNegativeCount    : falseNegative,
     bestSignalSpreadPct    : bestSignal?.spreadPct ?? null,
     bestSignalProfitUsd    : bestSignal?.estimatedNetUsd ?? null,
     avgExecutionScore      : +avgScore.toFixed(1),
