@@ -83,9 +83,17 @@ function aggregateLifetime(all) {
 
   const lifetimeDurationH       = all.reduce((a, s) => a + (s.durationH ?? 0), 0);
   const lifetimeSignals         = all.reduce((a, s) => a + (s.signals ?? 0), 0);
-  const lifetimeShadowProfitUsd = ws.reduce((a, s) => a + (s.shadow.shadowProfitUsd ?? 0), 0);
-  const lifetimeWouldTradeCount = ws.reduce((a, s) => a + (s.shadow.wouldTradeIfLive ?? 0), 0);
-  const avgShadowValuePerHour   = lifetimeDurationH > 0 ? lifetimeShadowProfitUsd / lifetimeDurationH : null;
+  const lifetimeShadowProfitUsd   = ws.reduce((a, s) => a + (s.shadow.shadowProfitUsd ?? 0), 0);
+  const lifetimeOpportunityUsd    = ws.reduce((a, s) => a + (s.shadow.shadowOpportunityUsd ?? 0), 0);
+  const lifetimeRealisticUsd      = ws.reduce((a, s) => a + (s.shadow.shadowRealisticUsd ?? 0), 0);
+  const lifetimeCalibratedUsd     = ws.reduce((a, s) => a + (s.shadow.shadowCalibratedUsd ?? 0), 0);
+  const lifetimeWouldTradeCount   = ws.reduce((a, s) => a + (s.shadow.wouldTradeIfLive ?? 0), 0);
+  const totalRealisticSurvivors   = ws.reduce((a, s) => a + (s.shadow.realisticSurvivors ?? 0), 0);
+  const avgShadowValuePerHour     = lifetimeDurationH > 0 ? lifetimeShadowProfitUsd / lifetimeDurationH : null;
+  const avgRealisticPerHour       = lifetimeDurationH > 0 ? lifetimeRealisticUsd / lifetimeDurationH : null;
+  const v2Sessions                = ws.filter(s => s.shadow.v2DirectionAccuracy != null);
+  const avgDirectionAccuracyV2    = v2Sessions.length > 0
+    ? v2Sessions.reduce((a, s) => a + (s.shadow.v2DirectionAccuracy ?? 0), 0) / v2Sessions.length : null;
 
   const bestShadowSession = ws.reduce((b, s) =>
     (s.shadow.shadowProfitUsd ?? 0) > (b?.shadow?.shadowProfitUsd ?? 0) ? s : b, null);
@@ -124,8 +132,14 @@ function aggregateLifetime(all) {
     lifetimeDurationH: +lifetimeDurationH.toFixed(1),
     lifetimeSignals,
     lifetimeShadowProfitUsd: +lifetimeShadowProfitUsd.toFixed(4),
+    lifetimeOpportunityUsd : +lifetimeOpportunityUsd.toFixed(4),
+    lifetimeRealisticUsd   : +lifetimeRealisticUsd.toFixed(4),
+    lifetimeCalibratedUsd  : +lifetimeCalibratedUsd.toFixed(4),
     lifetimeWouldTradeCount,
-    avgShadowValuePerHour: avgShadowValuePerHour != null ? +avgShadowValuePerHour.toFixed(4) : null,
+    totalRealisticSurvivors,
+    avgShadowValuePerHour : avgShadowValuePerHour != null ? +avgShadowValuePerHour.toFixed(4) : null,
+    avgRealisticPerHour   : avgRealisticPerHour != null ? +avgRealisticPerHour.toFixed(4) : null,
+    avgDirectionAccuracyV2: avgDirectionAccuracyV2 != null ? +avgDirectionAccuracyV2.toFixed(1) : null,
     bestShadowSession: bestShadowSession ? {
       sessionId: bestShadowSession.sessionId,
       shadowPnl: bestShadowSession.shadow.shadowProfitUsd,
@@ -170,9 +184,12 @@ function main() {
   console.log(`  Lifetime runtime: ${lifetime.lifetimeDurationH}h  ${lifetime.lifetimeSignals.toLocaleString()} signals`);
   console.log('───────────────────────────────────────────────────────');
   console.log('  Shadow Execution (lifetime):');
-  console.log(`    Total PnL:      $${lifetime.lifetimeShadowProfitUsd.toFixed(3)}`);
-  console.log(`    Would Trade:    ${lifetime.lifetimeWouldTradeCount}`);
-  console.log(`    PnL/hr:         $${lifetime.avgShadowValuePerHour?.toFixed(3) ?? 'N/A'}/h`);
+  console.log(`    Opportunity:    $${lifetime.lifetimeOpportunityUsd.toFixed(3)}   (v1 upper bound)`);
+  console.log(`    Realistic:      $${lifetime.lifetimeRealisticUsd.toFixed(3)}   (v2 5bps friction)`);
+  console.log(`    Calibrated:     $${lifetime.lifetimeCalibratedUsd.toFixed(3)}   (×sandbox rate)`);
+  console.log(`    PnL/hr (real):  $${lifetime.avgRealisticPerHour?.toFixed(3) ?? 'N/A'}/h`);
+  console.log(`    Survivors:      ${lifetime.totalRealisticSurvivors ?? 'N/A'}`);
+  console.log(`    Direction v2:   ${lifetime.avgDirectionAccuracyV2?.toFixed(1) ?? 'N/A'}%`);
   console.log(`    Max score:      ${lifetime.maxLifetimeExecutionScore}`);
   if (bs) console.log(`    Best session:   ${bs.sessionId} ($${bs.shadowPnl?.toFixed(3)} score=${bs.maxScore})`);
   console.log('───────────────────────────────────────────────────────');

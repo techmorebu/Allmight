@@ -279,19 +279,26 @@ async function sendHeartbeat() {
                      : watchdogStatus === 'DEGRADED'  ? '🟡'
                      : watchdogStatus === 'FAILED'    ? '🔴' : '⚪';
 
-    // ── Shadow execution section ─────────────────────────────────────────────
+    // ── Shadow execution section (v1 opportunity + v2 realistic) ───────────────
     let shadowBlock = null;
     try {
-      const shadowTotalsPath = path.join(_state.sessionDir, 'shadow_execution_totals.json');
-      if (fs.existsSync(shadowTotalsPath)) {
-        const st2 = JSON.parse(fs.readFileSync(shadowTotalsPath, 'utf8'));
-        const gateIcon = st2.crossedMicro ? '🟢' : st2.crossedDryWallet ? '🟠' : st2.crossedPaper ? '🟡' : '🔴';
+      const v1Path = path.join(_state.sessionDir, 'shadow_execution_totals.json');
+      const v2Path = path.join(_state.sessionDir, 'shadow_execution_totals_v2.json');
+      if (fs.existsSync(v1Path)) {
+        const v1 = JSON.parse(fs.readFileSync(v1Path, 'utf8'));
+        const v2 = fs.existsSync(v2Path)
+          ? JSON.parse(fs.readFileSync(v2Path, 'utf8'))
+          : null;
+        const gateIcon = v1.crossedMicro ? '🟢' : v1.crossedDryWallet ? '🟠' : v1.crossedPaper ? '🟡' : '🔴';
+        const oppty    = `$${(v1.shadowTheoreticalPnLUsd || 0).toFixed(2)}`;
+        const realistic = v2 ? `$${(v2.shadowRealisticTheoreticalUsd || 0).toFixed(2)}` : 'pending';
+        const calibrated = v2 ? `$${(v2.shadowCalibratedEstimateUsd || 0).toFixed(2)}` : '?';
+        const survivors  = v2 ? `${v2.realisticPositiveCount}/${v2.totalSignals}` : '?';
         shadowBlock = [
           `─── Shadow Execution ────────`,
-          `Would Trade:  ${st2.wouldTradeIfLive}`,
-          `Shadow PnL:   $${(st2.shadowEstimatedProfitUsd || 0).toFixed(3)}`,
-          `Best Score:   ${st2.maxExecutionScore}  Gate: ${gateIcon} ${st2.topBlockedReason ? st2.topBlockedReason.slice(0,30) : 'none'}`,
-          `Signals:      ${st2.microLiveEligible} micro / ${st2.dryWalletEligible} dry / ${st2.paperOnly} paper`,
+          `Opportunity:  ${oppty}   Realistic: ${realistic}`,
+          `Calibrated:   ${calibrated}   Friction: 5bps`,
+          `Survivors:    ${survivors}  Gate: ${gateIcon} ${v1.topBlockedReason?.slice(0,25) ?? 'none'}`,
         ].join('\n');
       }
     } catch { /* fail-silent */ }
@@ -490,24 +497,33 @@ async function sendStopSummary(sessionDir) {
     ? (confirmed / signals * 100).toFixed(1)
     : '?';
 
-  // Shadow execution summary
+  // Shadow execution summary — v1 (opportunity) + v2 (realistic)
   let shadowStopLines = [];
   try {
-    const shadowTotalsPath = path.join(sessionDir, 'shadow_execution_totals.json');
-    if (fs.existsSync(shadowTotalsPath)) {
-      const st2 = JSON.parse(fs.readFileSync(shadowTotalsPath, 'utf8'));
-      const gateIcon = st2.crossedMicro ? '🟢' : st2.crossedDryWallet ? '🟠' : st2.crossedPaper ? '🟡' : '🔴';
-      const shadowVhr = st2.shadowEstimatedValuePerHour != null ? `$${st2.shadowEstimatedValuePerHour.toFixed(3)}/h` : '?';
+    const v1Path = path.join(sessionDir, 'shadow_execution_totals.json');
+    const v2Path = path.join(sessionDir, 'shadow_execution_totals_v2.json');
+    if (fs.existsSync(v1Path)) {
+      const v1 = JSON.parse(fs.readFileSync(v1Path, 'utf8'));
+      const v2 = fs.existsSync(v2Path)
+        ? JSON.parse(fs.readFileSync(v2Path, 'utf8'))
+        : null;
+      const gateIcon = v1.crossedMicro ? '🟢' : v1.crossedDryWallet ? '🟠' : v1.crossedPaper ? '🟡' : '🔴';
+      const vhr = v1.shadowEstimatedValuePerHour != null
+        ? `$${v1.shadowEstimatedValuePerHour.toFixed(3)}/h` : '?';
       shadowStopLines = [
         ``,
-        `─── Shadow Execution ────────────`,
-        `Would Trade:    ${st2.wouldTradeIfLive}`,
-        `Shadow PnL:     $${(st2.shadowEstimatedProfitUsd||0).toFixed(3)}`,
-        `Shadow PnL/hr:  ${shadowVhr}`,
-        `Best Score:     ${st2.maxExecutionScore}  Avg: ${st2.avgExecutionScore}`,
-        `Gate Peak:      ${gateIcon} ${st2.crossedMicro ? 'MICRO' : st2.crossedDryWallet ? 'DRY_WALLET' : st2.crossedPaper ? 'PAPER' : 'BLOCK'}`,
-        `Main Blocker:   ${st2.topBlockedReason?.slice(0,40) ?? 'none'}`,
-        `Signals:        ${st2.microLiveEligible} micro / ${st2.dryWalletEligible} dry / ${st2.paperOnly} paper / ${st2.blocked} blocked`,
+        `─── Shadow Execution ──────────────────`,
+        `Opportunity:      $${(v1.shadowTheoreticalPnLUsd||0).toFixed(3)}   (all viable, gate ignored)`,
+        `Realistic:        ${v2 ? `$${(v2.shadowRealisticTheoreticalUsd||0).toFixed(3)}` : 'pending'}   (5bps friction applied)`,
+        `Calibrated:       ${v2 ? `$${(v2.shadowCalibratedEstimateUsd||0).toFixed(3)}` : '?'}   (×sandbox rate)`,
+        `Survivors:        ${v2 ? `${v2.realisticPositiveCount}/${v2.totalSignals} (${v2.realisticSurvivalRate}%)` : '?'}`,
+        `Gate Peak:        ${gateIcon} ${v1.crossedMicro ? 'MICRO' : v1.crossedDryWallet ? 'DRY_WALLET' : v1.crossedPaper ? 'PAPER' : 'BLOCK'}`,
+        `Best Score:       ${v1.maxExecutionScore}  Avg: ${v1.avgExecutionScore}`,
+        `Main Blocker:     ${v1.topBlockedReason?.slice(0,38) ?? 'none'}`,
+        ...(v2 ? [
+          `Direction (v2):   ${v2.v2DirectionAccuracyPct}%  FP: ${v2.v2FalsePositive}  FN: ${v2.v2FalseNegative}`,
+          `FP reduction:     ${v2.falsePositiveReduction}%  (${v2.v1FalsePositive} → ${v2.v2FalsePositive})`,
+        ] : []),
       ];
     }
   } catch { /* fail-silent */ }
