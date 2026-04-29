@@ -271,26 +271,52 @@ function emitVerdict(crossSession, sessionCount, controlViableRates) {
   const spreadMono = checkMonotonic(spreads);
   const viableMono = checkMonotonic(viables);
 
+  // CALIBRATED requires ALL three conditions (Boss ruling 2026-04-29):
+  //   1. Higher score buckets improve outcomes (monotonic spread + viable rate)
+  //   2. Spread-only control does NOT outperform score buckets
+  //   3. At least one threshold bucket (>=75) has data
+  const avgControlRate = avgControl.length > 0
+    ? avgControl.reduce((a,b) => a+b,0) / avgControl.length : null;
+  const controlOutperforms = avgControlRate != null && highBucketViable != null
+    && avgControlRate >= highBucketViable;
+  const thresholdBucketsEmpty = !BUCKETS.slice(3).some(b => (crossSession[b.label]?.count ?? 0) > 0);
+
   let verdict, reason, recommendation;
 
-  if (spreadAloneExplains && sessionCount < 3) {
+  if (controlOutperforms) {
+    // Spread-only control beats composite score — score not adding value beyond spread
     verdict = 'DIRECTIONAL_ONLY';
-    reason  = 'Spread alone appears to predict viability as well as the composite score. ' +
-              'Score components beyond spread (timing, infra, confidence) may not add signal. ' +
-              `Control group viable rate (${avgControl[0]?.toFixed(1)}%) >= high-bucket rate (${highBucketViable?.toFixed(1)}%).`;
-    recommendation = ['collect_more_data', 'consider_reducing_weight_on_timing', 'spread_weight_may_need_increase'];
-  } else if (spreadMono && viableMono) {
-    verdict = 'CALIBRATED';
-    reason  = 'Higher score buckets show monotonically increasing spread and viable rate. Score is directionally correct.';
-    recommendation = ['keep_weights', 'validate_thresholds_with_more_data'];
-  } else if (spreadMono && !viableMono) {
-    verdict = 'DIRECTIONAL_ONLY';
-    reason  = 'Spread increases with score (good) but sandbox viability does not track cleanly. Non-spread components may be adding noise.';
-    recommendation = ['collect_more_data', 'review_non_spread_component_weights'];
-  } else {
+    reason  = `Spread alone outperforms the composite score. ` +
+              `Low-score signals with spread >22bps have ${avgControlRate?.toFixed(1)}% viable rate ` +
+              `vs ${highBucketViable?.toFixed(1)}% for the 50-64 score bucket. ` +
+              `Score is directionally useful (50-64 clearly better than full 0-49 pool) ` +
+              `but spread is the primary predictor. Non-spread components (timing, infra, confidence) ` +
+              `may not be adding independent signal.`;
+    recommendation = [
+      'increase_spread_weight',
+      'validate_timing_weight_independently',
+      'collect_more_high_score_data',
+    ];
+  } else if (!spreadMono || !viableMono) {
     verdict = 'MISALIGNED';
     reason  = 'Higher score buckets do not consistently produce better outcomes. Weights need recalibration.';
     recommendation = ['review_all_weights', 'collect_more_data_before_adjusting'];
+  } else if (thresholdBucketsEmpty) {
+    // Monotonic improvement confirmed but execution threshold buckets are empty
+    verdict = 'DIRECTIONAL_ONLY';
+    reason  = `Score buckets improve monotonically (good) but no signals have reached threshold ` +
+              `buckets (75+). Cannot validate whether 75/85/92 thresholds are meaningful. ` +
+              `Score is directionally correct within observed range.`;
+    recommendation = [
+      'collect_more_data',
+      'validate_thresholds_when_high_spread_sessions_accumulate',
+    ];
+  } else {
+    // All three conditions met
+    verdict = 'CALIBRATED';
+    reason  = 'Higher score buckets improve monotonically, spread-only control does not outperform, ' +
+              'and threshold buckets have data. Score is calibrated.';
+    recommendation = ['keep_weights', 'run_live_shadow_comparison'];
   }
 
   // Threshold assessment
