@@ -61,3 +61,5 @@ sushi_eth_factory_probe.js
 venue_factory_diagnostic.js
 scripts/analysis/arb_window_activator.js.bak
 secret
+cache/
+artifacts/
