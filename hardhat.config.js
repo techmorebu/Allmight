@@ -14,12 +14,16 @@ module.exports = {
   },
   networks: {
     // Arbitrum mainnet fork -- used for all local testing
+    // NOTE: chainId is intentionally left as default (31337).
+    // Setting chainId: 42161 causes EDR to look up Arbitrum's hardfork
+    // history which it doesn't have, producing "No known hardfork" errors.
+    // The fork still uses Arbitrum RPC and all contract state is correct.
     hardhat: {
       forking: {
         url: process.env.ARBITRUM_MAINNET_RPC_URL_1,
         enabled: true,
+        blockNumber: 457129857,
       },
-      chainId: 42161,
     },
     arbitrum: {
       url: process.env.ARBITRUM_MAINNET_RPC_URL_1,
