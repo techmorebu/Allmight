@@ -97,21 +97,37 @@ function gateVerdict(score, hardBlockers) {
 
 // ─── SHADOW PnL ESTIMATE ──────────────────────────────────────────────────────
 
-function estimateShadowPnL(signal, shadowSize) {
-  // Uses signal's finalEdge (net edge fraction after fees/gas) × shadowSize
-  const finalEdge = signal.finalEdge ?? signal.netEdge ?? 0;
-  const gasUsd    = (signal.gasUnits ?? 700000) * (signal.gasPriceGwei ?? 0.02) * 1e-9 *
-                    (signal.ethPrice ?? 2300);
-  const grossProfit = shadowSize * Math.abs(finalEdge) / 100;
-  const aaveFee     = shadowSize * 0.0005;               // 0.05% Aave fee
-  const feeCost     = shadowSize * 0.0006;               // 0.06% swap fees
-  const net         = grossProfit - gasUsd - aaveFee - feeCost;
+function estimateShadowPnL(signal, theoreticalSize) {
+  // FORMULA AUDIT 2026-04-28:
+  // spreadPct (e.g. 0.1574) = gross spread in PERCENT form = 0.1574%
+  // finalEdge (e.g. 0.06346) = net edge in PERCENT form, ALREADY deducts
+  //   swap fees, slippage, and gas — it is NOT gross profit.
+  //   Using finalEdge as gross and also subtracting fees = double-counting.
+  //
+  // Correct approach: use spreadPct as gross, deduct all costs once.
+  // This matches blueprint netProfitUsd and sandbox methodology.
+  //
+  // Verified: size=200, spread=0.1574%, gas=$0.028, swapFee=0.06%×2=$0.12,
+  //   aaveFee=0.05%=$0.10 → net=$0.167 ≈ blueprint $0.17 ✓
+
+  const spread    = signal.spread ?? signal.netSpreadPct ?? 0; // percent form
+  const gasUnits  = signal.gasUnits ?? 700000;
+  const gasGwei   = signal.gasPriceGwei ?? 0.02;
+  const ethPrice  = signal.uniPrice ?? signal.ethPrice ?? 2300;
+
+  const grossUsd    = theoreticalSize * spread / 100;          // spread% × size
+  const gasUsd      = gasUnits * gasGwei * 1e-9 * ethPrice;   // on-chain gas
+  const swapFeeUsd  = theoreticalSize * 0.0006;               // 0.06% × 2 legs (3bps each)
+  const aaveFeeUsd  = theoreticalSize * 0.0005;               // 0.05% Aave flash fee
+
+  const netUsd = grossUsd - gasUsd - swapFeeUsd - aaveFeeUsd;
+
   return {
-    estimatedGrossUsd  : Math.max(0, grossProfit),
-    estimatedGasUsd    : gasUsd,
-    estimatedAaveFeeUsd: aaveFee,
-    estimatedFeeCostUsd: feeCost,
-    estimatedNetUsd    : net,
+    estimatedGrossUsd   : +Math.max(0, grossUsd).toFixed(4),
+    estimatedGasUsd     : +gasUsd.toFixed(4),
+    estimatedSwapFeeUsd : +swapFeeUsd.toFixed(4),
+    estimatedAaveFeeUsd : +aaveFeeUsd.toFixed(4),
+    estimatedNetUsd     : +netUsd.toFixed(4),
   };
 }
 
@@ -196,10 +212,12 @@ function classifySignal(signal, ctx, sessionId) {
   const hardBlockers    = getHardBlockers(signal, ctx.sbViableRate, ctx.sbVerdict);
   const verdict         = gateVerdict(executionScore, hardBlockers);
 
-  // Shadow size = what would be allocated if MODE 1+ were approved
-  // Based on confidence, capped at liquidity-safe size
-  const theoreticalSize = conf >= 0.98 ? 500 : conf >= 0.90 ? 200 :
-                          conf >= 0.80 ? 100 : conf >= 0.70 ? 50 : 25;
+  // Theoretical size = activator's own validated size (bestSize field)
+  // The activator already computed viability at this size via sizeSweep.
+  // Fallback chain: bestSize → confidence tier → $200 default.
+  // Do NOT use confidence alone — activator signals don't emit a confidence field.
+  const theoreticalSize = signal.bestSize
+    ?? (conf >= 0.98 ? 500 : conf >= 0.90 ? 200 : conf >= 0.80 ? 100 : conf >= 0.70 ? 200 : 200);
   const modeMax         = APPROVED_MODE === 0 ? 0 : 25; // MODE 0 = $0
   const shadowSize      = Math.max(0, Math.min(theoreticalSize, modeMax));
 
@@ -228,9 +246,17 @@ function classifySignal(signal, ctx, sessionId) {
     blockedReasons     : [...hardBlockers, ...(verdict === 'BLOCK' && hardBlockers.length === 0 ? [`score ${executionScore.toFixed(1)} < ${GATE_THRESHOLDS.PAPER}`] : [])],
     theoreticalSizeUsd : theoreticalSize,
     shadowSizeUsd      : shadowSize,
-    estimatedGrossUsd  : +pnl.estimatedGrossUsd.toFixed(4),
-    estimatedNetUsd    : +pnl.estimatedNetUsd.toFixed(4),
-    estimatedGasUsd    : +pnl.estimatedGasUsd.toFixed(4),
+    // Opportunity value: what trade WOULD have been worth if live and gate cleared
+    // NOT profit — blocked signals show opportunity value, not realised PnL
+    opportunityGrossUsd  : pnl.estimatedGrossUsd,
+    opportunityNetUsd    : pnl.estimatedNetUsd,     // positive = profitable, negative = unviable
+    opportunityGasUsd    : pnl.estimatedGasUsd,
+    opportunitySwapFeeUsd: pnl.estimatedSwapFeeUsd,
+    opportunityAaveFeeUsd: pnl.estimatedAaveFeeUsd,
+    // Backwards-compat aliases (used by notification_router, project_metrics_tracker)
+    estimatedGrossUsd    : pnl.estimatedGrossUsd,
+    estimatedNetUsd      : pnl.estimatedNetUsd,
+    estimatedGasUsd      : pnl.estimatedGasUsd,
     amountOutMinReady  : (signal.sizeSweep?.length ?? 0) > 0,
     liveBlockedBy      : hardBlockers[0] ?? null,
   };
@@ -274,7 +300,15 @@ function processSession(sessionDir, sessionId) {
   const dryWallet     = classified.filter(r => r.gateVerdict === 'DRY_WALLET_ONLY').length;
   const microEligible = classified.filter(r => r.gateVerdict === 'MICRO_LIVE_ELIGIBLE').length;
   const wouldTrade    = classified.filter(r => r.wouldTrade).length;
-  const shadowProfit  = classified.reduce((s, r) => s + Math.max(0, r.estimatedNetUsd), 0);
+  // shadowExecutablePnL: only signals that would have traded if live (gate + economic)
+  // shadowTheoreticalPnL: all signals, regardless of gate status
+  const shadowExecutablePnL   = classified
+    .filter(r => r.wouldTrade && r.estimatedNetUsd > 0)
+    .reduce((s, r) => s + r.estimatedNetUsd, 0);
+  const shadowTheoreticalPnL  = classified
+    .filter(r => r.estimatedNetUsd > 0)
+    .reduce((s, r) => s + r.estimatedNetUsd, 0);
+  const shadowProfit = shadowExecutablePnL; // primary metric = executable only
   const scores        = classified.map(r => r.executionScore);
   const maxScore      = scores.length ? Math.max(...scores) : 0;
   const avgScore      = scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
@@ -306,7 +340,8 @@ function processSession(sessionDir, sessionId) {
     dryWalletEligible      : dryWallet,
     microLiveEligible      : microEligible,
     wouldTradeIfLive       : wouldTrade,
-    shadowEstimatedProfitUsd: +shadowProfit.toFixed(4),
+    shadowEstimatedProfitUsd    : +shadowProfit.toFixed(4),        // executable only (gate cleared)
+    shadowTheoreticalPnLUsd     : +shadowTheoreticalPnL.toFixed(4), // all viable signals (gate ignored)
     shadowEstimatedValuePerHour: runtimeH > 0 ? +(shadowProfit / runtimeH).toFixed(4) : null,
     bestSignalSpreadPct    : bestSignal?.spreadPct ?? null,
     bestSignalProfitUsd    : bestSignal?.estimatedNetUsd ?? null,
