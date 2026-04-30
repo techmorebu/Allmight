@@ -143,6 +143,8 @@ async function main() {
     await executor.waitForDeployment();
     const execAddr = await executor.getAddress();
     console.log(`  Executor deployed: ${execAddr}`);
+    // keep ref as _executor for initial signal; loop will re-deploy per block
+    var _executor = executor;
   } catch (e) {
     writeUnavailable(totalsPath, sessionId,
       `deploy failed: ${e.message?.slice(0, 80)}`, survivors.length);
@@ -172,12 +174,44 @@ async function main() {
   const revertCounts = {};
   let gasValues      = [];
 
+  executor = _executor; // reset to initial deploy before loop starts
+
   for (const signal of survivors) {
     const block     = String(signal.signalId ?? '').split('-').pop();
     const bp        = bpByBlock[block] ?? null;
     const safety    = bp?.safety ?? {};
     const sizing    = bp?.sizing ?? {};
     const realisticNet = signal.realisticNetUsd ?? 0;
+
+    // ── Reset fork to signal's block ──────────────────────────────────────
+    // Critical: spread exists at SIGNAL block, not at the pinned fork block.
+    // Without reset, callStatic sees no spread → 100% INSUFFICIENT_PROFIT.
+    if (block && !isNaN(parseInt(block))) {
+      try {
+        const rpcUrl = process.env.ARBITRUM_MAINNET_RPC_URL_2
+                    ?? process.env.ARBITRUM_MAINNET_RPC_URL_1;
+        await hre.network.provider.request({
+          method: 'hardhat_reset',
+          params: [{ forking: { jsonRpcUrl: rpcUrl, blockNumber: parseInt(block) } }],
+        });
+        const F2 = await ethers.getContractFactory('AllMightRamsesExecutor');
+        executor = await F2.deploy(
+          ADDR.aavePool, ADDR.uniV3Router, ADDR.ramsesPool,
+          ADDR.WETH, ADDR.USDC, deployerAddr
+        );
+        await executor.waitForDeployment();
+      } catch (resetErr) {
+        results.push({
+          ts: new Date().toISOString(), signalId: signal.signalId,
+          spreadBps: signal.spreadBps, v2RealisticNetUsd: realisticNet,
+          wouldExecute: false, revertReason: 'FORK_RESET_FAILED',
+          gasEstimate: null, gasCostUsd: null, expectedNetUsd: 0,
+          passesDryRun: false, params: {},
+        });
+        revertCounts['FORK_RESET_FAILED'] = (revertCounts['FORK_RESET_FAILED'] ?? 0) + 1;
+        continue;
+      }
+    }
 
     // amountOutMin — 5% slippage from blueprint safety fields
     const amountOutMinA = safety.minOutEntry
