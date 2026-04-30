@@ -48,24 +48,39 @@ const OPS_WEBHOOK     = process.env.DISCORD_OPS_WEBHOOK_URL       || '';
 const CANDIDATE_WEBHOOK = process.env.DISCORD_CANDIDATE_WEBHOOK_URL || '';
 const SUMMARY_WEBHOOK = process.env.DISCORD_SUMMARY_WEBHOOK_URL   || '';
 
-async function _send(webhookUrl, text) {
+async function _send(webhookUrl, text, retries = 3) {
   if (!NOTIFY_ENABLED) return;
   const url = String(webhookUrl || '').trim();
   if (!url || url.includes('YOUR_')) return;
-  try {
-    // node-fetch or global fetch (Node 18+)
-    const fetchFn = typeof fetch !== 'undefined' ? fetch
-      : require('node-fetch');
-    const res = await fetchFn(url, {
-      method  : 'POST',
-      headers : { 'Content-Type': 'application/json' },
-      body    : JSON.stringify({ content: text }),
-    });
-    if (!res.ok) {
-      log(`Discord send failed: HTTP ${res.status}`);
+  const fetchFn = typeof fetch !== 'undefined' ? fetch : require('node-fetch');
+
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const res = await fetchFn(url, {
+        method  : 'POST',
+        headers : { 'Content-Type': 'application/json' },
+        body    : JSON.stringify({ content: text }),
+        signal  : AbortSignal.timeout(8000), // 8s hard timeout per attempt
+      });
+      if (res.ok) return; // success
+      // 429 = rate limit — wait longer; 5xx = Discord outage — retry
+      const retryable = res.status === 429 || res.status >= 500;
+      if (!retryable || attempt === retries) {
+        log(`Discord send failed: HTTP ${res.status} (attempt ${attempt}/${retries})`);
+        return;
+      }
+      const delay = res.status === 429 ? 5000 : 2000 * attempt;
+      log(`Discord HTTP ${res.status} — retrying in ${delay}ms (attempt ${attempt}/${retries})`);
+      await new Promise(r => setTimeout(r, delay));
+    } catch (e) {
+      if (attempt === retries) {
+        log(`Discord send error after ${retries} attempts: ${e.message?.slice(0,60)}`);
+        return;
+      }
+      const delay = 2000 * attempt; // 2s, 4s backoff
+      log(`Discord error — retrying in ${delay}ms (attempt ${attempt}/${retries}): ${e.message?.slice(0,40)}`);
+      await new Promise(r => setTimeout(r, delay));
     }
-  } catch (e) {
-    log(`Discord send error: ${e.message}`);
   }
 }
 
