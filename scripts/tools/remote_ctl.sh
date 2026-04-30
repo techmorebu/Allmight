@@ -47,6 +47,7 @@ header() { echo ""; echo "$EQ"; echo "  AllMight — $*"; echo "$DIV"; echo ""; 
 ok()     { echo "  ✅ $*"; }
 warn()   { echo "  ⚠️  $*"; }
 err()    { echo "  ❌ $*"; }
+log()    { echo "[$(date -u '+%H:%M:%SZ')] $*"; }
 
 # ── COMMAND ROUTER ────────────────────────────────────────────────────────────
 case "$cmd" in
@@ -88,10 +89,102 @@ case "$cmd" in
     ;;
 
   # ── STOP ───────────────────────────────────────────────────────────────────
-  # Delegates to start_all.sh stop — which runs shadow metrics + Discord summary
+  # Full stop pipeline: kill processes → shadow v1+v2 → dry run → accuracy →
+  # backtest → spread dominance → project metrics → Discord stop → zip session
   stop)
     header "Stopping AllMight"
-    bash scripts/tools/start_all.sh stop
+
+    SESSION_POINTER="logs/allmight.session"
+    PID_FILE="logs/allmight.pid"
+    SESSION=""
+    [[ -f "$SESSION_POINTER" ]] && SESSION=$(cat "$SESSION_POINTER")
+    SESSION_DIR="logs/sessions/session_${SESSION}"
+
+    # ── 1. Kill all processes via PID file ──────────────────────────────────
+    if [[ -f "$PID_FILE" ]]; then
+      while IFS='=' read -r name pid; do
+        [[ -z "$name" || -z "$pid" ]] && continue
+        if kill -0 "$pid" 2>/dev/null; then
+          kill "$pid" 2>/dev/null && log "  Stopped $name (PID $pid)" || true
+        else
+          log "  $name (PID $pid) already stopped"
+        fi
+      done < "$PID_FILE"
+      rm -f "$PID_FILE"
+    fi
+    pkill -f "arb_window_activator.js"         2>/dev/null || true
+    pkill -f "arb_volatility_monitor.js"        2>/dev/null || true
+    pkill -f "volatility_divergence_report.js"  2>/dev/null || true
+    pkill -f "allmight_watchdog.sh"             2>/dev/null || true
+    pkill -f "notification_router.js"           2>/dev/null || true
+    pkill -f "shadow_execution_engine.js"       2>/dev/null || true
+
+    if [[ -z "$SESSION" || ! -d "$SESSION_DIR" ]]; then
+      warn "No active session found — skipping analytics"
+    else
+      echo ""
+      log "Session: $SESSION  Dir: $SESSION_DIR"
+
+      # ── 2. Shadow v1 (opportunity model) ──────────────────────────────────
+      echo "  [1/6] Shadow v1 (opportunity)..."
+      node scripts/execution/shadow_execution_engine.js         --session "$SESSION_DIR" 2>/dev/null || echo "  (v1: unavailable)"
+
+      # ── 3. Shadow v2 (realistic model) ────────────────────────────────────
+      echo "  [2/6] Shadow v2 (realistic, 5bps friction)..."
+      node scripts/execution/shadow_execution_engine_v2.js         --session "$SESSION_DIR" 2>/dev/null || echo "  (v2: unavailable)"
+
+      # ── 4. Dry execution engine ────────────────────────────────────────────
+      echo "  [3/6] Dry execution engine (callStatic)..."
+      node -r dotenv/config scripts/execution/dry_execution_engine.js         --session "$SESSION_DIR" 2>/dev/null || echo "  (dry run: unavailable)"
+
+      # ── 5. Shadow accuracy report ──────────────────────────────────────────
+      echo "  [4/6] Shadow accuracy report..."
+      node scripts/tools/shadow_accuracy_report.js         --session "$SESSION_DIR" 2>/dev/null || echo "  (accuracy: unavailable)"
+
+      # ── 6. Gate score backtest + spread dominance ──────────────────────────
+      echo "  [5/6] Gate score backtest + spread dominance..."
+      node scripts/tools/gate_score_backtest.js --all 2>/dev/null || true
+      node scripts/tools/spread_dominance_report.js --all 2>/dev/null || true
+
+      # ── 7. Lifetime project metrics ────────────────────────────────────────
+      echo "  [6/6] Lifetime project metrics..."
+      node scripts/tools/project_metrics_tracker.js --summary 2>/dev/null || echo "  (metrics: unavailable)"
+
+      # ── 8. Discord stop summary ────────────────────────────────────────────
+      echo ""
+      echo "  Sending Discord stop summary..."
+      node -r dotenv/config scripts/monitoring/notification_router.js         --stop-summary "$SESSION_DIR" 2>/dev/null || echo "  (Discord: unavailable)"
+
+      # ── 9. Zip session ─────────────────────────────────────────────────────
+      echo ""
+      echo "  Zipping session..."
+      ZIP_FILE="logs/sessions/session_${SESSION}.zip"
+      INCLUDE_FILES=(
+        activator.jsonl blueprints.jsonl watchdog.jsonl
+        sandbox_results.json dryrun_confidence.json
+        flash_loan_readiness.json size_ladder.json
+        threshold_edge.json tier_breakdown.json near_miss_analysis.json
+        shadow_execution_totals.json shadow_execution_totals_v2.json
+        shadow_execution_ledger.jsonl shadow_execution_ledger_v2.jsonl
+        shadow_dryrun_totals.json shadow_accuracy_report.json
+        analysis.log session_totals.json
+      )
+      EXISTING=()
+      for f in "${INCLUDE_FILES[@]}"; do
+        [[ -f "$SESSION_DIR/$f" ]] && EXISTING+=("$f")
+      done
+      if [[ ${#EXISTING[@]} -gt 0 ]]; then
+        (cd "$SESSION_DIR" && zip -q "../session_${SESSION}.zip" "${EXISTING[@]}" 2>/dev/null)
+        ok "Session zip: $ZIP_FILE"
+      else
+        warn "No files to zip"
+      fi
+    fi
+
+    echo ""
+    echo "  Mark C9 after Boss summary:"
+    echo "    node scripts/tools/dryrun_confidence_log.js --mark-c9 $SESSION_DIR"
+    echo "======================================================="
     ;;
 
   # ── ABORT — emergency kill, no analysis ────────────────────────────────────
