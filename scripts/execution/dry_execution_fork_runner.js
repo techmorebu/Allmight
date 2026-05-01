@@ -30,6 +30,9 @@
 
 const fs   = require('fs');
 const path = require('path');
+// Load .env before reading any env vars — 'npx hardhat run' does not auto-load dotenv.
+// This ensures ARBITRUM_MAINNET_RPC_URL_* are available even without shell export.
+try { require('dotenv').config(); } catch { /* dotenv optional — shell exports work too */ }
 const hre = require('hardhat');
 const { ethers } = hre;
 
@@ -120,9 +123,22 @@ const BORROW_USDC     = BigInt(200e6);   // $200 USDC (6 dec)
 // Infura is cheap but has tight archive rate limits — use it as last fallback.
 const ETH_USD = Number(process.env.ETH_USD || 2300);
 const FORK_RPC_URL =
-  process.env.HARDHAT_FORK_RPC_URL       // highest priority — set to Tenderly
+  process.env.HARDHAT_FORK_RPC_URL           // highest priority — set to Tenderly
   ?? process.env.ARBITRUM_MAINNET_RPC_URL_1  // Tenderly (primary slot)
-  ?? process.env.ARBITRUM_MAINNET_RPC_URL_2; // Infura (last resort — rate-limited)
+  ?? process.env.ARBITRUM_MAINNET_RPC_URL_2  // Infura (last resort — rate-limited)
+  ?? '';
+
+// Guard: fail immediately if no RPC URL — ethers throws "relative URL without a base"
+// without this check, all 5 signals fail silently with FORK_RESET_FAILED
+if (!FORK_RPC_URL) {
+  console.error('');
+  console.error('  ❌ ERROR: No RPC URL configured.');
+  console.error('  Set one of:');
+  console.error('    export HARDHAT_FORK_RPC_URL=<your-tenderly-or-alchemy-url>');
+  console.error('    or ensure ARBITRUM_MAINNET_RPC_URL_1 is set in .env');
+  console.error('');
+  process.exit(1);
+}
 const DIRECTION       = 0;               // DIRECTION_RAMSES_FIRST (confirmed profitable)
 const MIN_PROFIT_WEI  = 1n;             // minimal — mechanics check not profit gate
 const SLIPPAGE_BUFFER = 0.95;           // 5% below blueprint expected output
