@@ -122,6 +122,10 @@ const BORROW_USDC     = BigInt(200e6);   // $200 USDC (6 dec)
 // Set HARDHAT_FORK_RPC_URL to Tenderly/Alchemy to avoid Infura 429 rate limits.
 // Infura is cheap but has tight archive rate limits — use it as last fallback.
 const ETH_USD = Number(process.env.ETH_USD || 2300);
+// GAS_PRICE_GWEI: use live network estimate, NOT getFeeData() on historical fork.
+// Historical fork baseFee (~1 gwei at April 2026 Arbitrum blocks) inflates cost 50x.
+// Live Arbitrum: ~0.02 gwei. Conservative buffer: 0.05 gwei.
+const GAS_PRICE_GWEI = Number(process.env.GAS_PRICE_GWEI || 0.05);
 const FORK_RPC_URL =
   process.env.HARDHAT_FORK_RPC_URL           // highest priority — set to Tenderly
   ?? process.env.ARBITRUM_MAINNET_RPC_URL_1  // Tenderly (primary slot)
@@ -376,10 +380,13 @@ async function main() {
           amountOutMinA, amountOutMinB, DIRECTION, deadline
         );
         gasEstimate = Number(gas);
-        const feeData    = await ethers.provider.getFeeData();
-        // feeData.gasPrice is in WEI — divide by 1e18 to get ETH, then × ETH_USD
-        const gasPriceWei = Number(feeData.gasPrice ?? 20_000_000n); // ~0.02 gwei on Arbitrum
-        gasCostUsd        = gasEstimate * gasPriceWei / 1e18 * ETH_USD;
+        // Use configured gas price — NOT getFeeData() on historical fork.
+        // getFeeData() on a forked block returns that block's historical baseFee (~1 gwei
+        // on Arbitrum circa April 2026), not what live execution would pay (~0.02 gwei).
+        // GAS_PRICE_GWEI env var allows tuning; default 0.05 gwei (conservative buffer
+        // above typical 0.02 gwei Arbitrum live price).
+        const GAS_PRICE_WEI = BigInt(Math.round(GAS_PRICE_GWEI * 1e9));
+        gasCostUsd = gasEstimate * Number(GAS_PRICE_WEI) / 1e18 * ETH_USD;
         gasValues.push(gasCostUsd);
       } catch { /* gas estimation is best-effort */ }
 
