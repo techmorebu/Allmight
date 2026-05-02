@@ -344,7 +344,10 @@ function main() {
   console.log(`  ${icon} Verdict:     ${verdict}`);
   console.log('───────────────────────────────────────────────────────');
   console.log('  Components:');
-  for (const [key, { weight, score, detail }] of Object.entries(components)) {
+  for (const [key, comp] of Object.entries(components)) {
+  const weight = WEIGHTS[key] ?? 0;
+  const score  = Number(comp.score  ?? 0);
+  const detail = comp.detail ?? '';
     const wt     = `${(weight * 100).toFixed(0)}%`.padEnd(5);
     const sc     = score.toString().padStart(3);
     const wscore = (score * weight).toFixed(1).padStart(5);

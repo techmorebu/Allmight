@@ -1,265 +1,224 @@
 #!/usr/bin/env bash
-# ═══════════════════════════════════════════════════════════════════════════════
-#  AllMight — Unified Launcher  v1.7
-#  PLACEMENT: scripts/tools/start_all.sh
-#
-#  Processes:
-#    1. Master fetcher loop  (Redis → price data)
-#    2. Volatility monitor   (arb_volatility_monitor.js)
-#    3. Heat report runner   (volatility_divergence_report.js)
-#    4. Activator            (arb_window_activator.js — supervised restart loop)
-#    5. Watchdog             (allmight_watchdog.sh --loop 300)
-#    6. Notification router  (Discord heartbeat --loop 300)
-#    7. Shadow engine        (analytics loop — gate score + shadow PnL every 5m)
-#
-#  Usage:
-#    bash scripts/tools/start_all.sh
-#    bash scripts/tools/start_all.sh status
-#    bash scripts/tools/start_all.sh stop
-#    bash scripts/tools/start_all.sh logs
-#    bash scripts/tools/start_all.sh restart-activator
-#    nohup bash scripts/tools/start_all.sh > logs/launch.log 2>&1 & disown
-# ═══════════════════════════════════════════════════════════════════════════════
+# start_all.sh — AllMight Session Launcher v2
+# Usage:
+#   bash start_all.sh           — start session
+#   bash start_all.sh --stop    — stop + final metrics + Discord stop summary
+#   bash start_all.sh --status  — check running processes
+#   bash start_all.sh --metrics — show shadow PnL + gate score + lifetime totals
 
 set -euo pipefail
 
-REPO="$(cd "$(dirname "$0")/../.." && pwd)"
+REPO="$(cd "$(dirname "$0")" && pwd)"
 LOG_DIR="$REPO/logs"
-PID_FILE="$LOG_DIR/allmight.pid"
-SESSION_POINTER="$LOG_DIR/allmight.session"
-INTERVAL=60
+PID_FILE="$LOG_DIR/pids.txt"
+SESSION_FILE="$LOG_DIR/allmight.session"
 
-log() { echo "[$(date -u '+%H:%M:%SZ')] $*"; }
-
-mkdir -p "$LOG_DIR"
-
-# ── STATUS ────────────────────────────────────────────────────────────────────
-if [[ "${1:-}" == "status" ]]; then
-  if [[ ! -f "$PID_FILE" ]]; then echo "No PID file — not running"; exit 0; fi
+# ─── STOP (canonical full pipeline) ─────────────────────────────────────────
+# Accepts both: bash start_all.sh --stop   AND   bash start_all.sh stop
+if [[ "${1:-}" == "--stop" || "${1:-}" == "stop" ]]; then
+  TS() { date -u '+%H:%M:%SZ'; }
   echo ""
-  echo "═══════════════════════════════════"
-  echo "  AllMight Process Status"
-  echo "═══════════════════════════════════"
-  while IFS='=' read -r name pid; do
-    [[ -z "$name" || -z "$pid" ]] && continue
-    if kill -0 "$pid" 2>/dev/null; then
-      echo "  [OK]   $name  (PID $pid)"
-    else
-      echo "  [DEAD] $name  (PID $pid)"
-    fi
-  done < "$PID_FILE"
-  [[ -f "$SESSION_POINTER" ]] && echo "  Session: $(cat "$SESSION_POINTER")"
-  echo "═══════════════════════════════════"
-  exit 0
-fi
+  echo "═══════════════════════════════════════════════════════"
+  echo "  AllMight — Stop + Analytics Pipeline"
+  SESSION_ID=""
+  SESSION_DIR=""
+  [[ -f "$SESSION_FILE" ]] && SESSION_ID=$(cat "$SESSION_FILE")
+  [[ -n "$SESSION_ID" ]] && SESSION_DIR="$LOG_DIR/sessions/session_${SESSION_ID}"
+  [[ -n "$SESSION_ID" ]] && echo "  Session: $SESSION_ID"
 
-# ── LOGS ──────────────────────────────────────────────────────────────────────
-if [[ "${1:-}" == "logs" ]]; then
-  SESSION=""
-  [[ -f "$SESSION_POINTER" ]] && SESSION=$(cat "$SESSION_POINTER")
-  SESSION_DIR="$LOG_DIR/sessions/session_${SESSION}"
-  echo "Tailing activator + monitor logs. Ctrl-C to stop."
-  tail -f "$SESSION_DIR/activator.jsonl" "$SESSION_DIR/monitor.log" 2>/dev/null
-  exit 0
-fi
-
-# ── RESTART-ACTIVATOR ─────────────────────────────────────────────────────────
-if [[ "${1:-}" == "restart-activator" ]]; then
-  log "Restarting activator (same session)..."
-  pkill -f "arb_window_activator.js" 2>/dev/null || true
-  sleep 2
-  SESSION=$(cat "$SESSION_POINTER" 2>/dev/null || echo "unknown")
-  SESSION_DIR="$LOG_DIR/sessions/session_${SESSION}"
-  export RPC_FRESHNESS_LOG_PATH="$SESSION_DIR/rpc_freshness.jsonl"
-  export BLUEPRINT_LOG_PATH="$SESSION_DIR/blueprints.jsonl"
-  (
-    RESTART_COUNT=0
-    while true; do
-      RESTART_COUNT=$((RESTART_COUNT+1))
-      echo "[supervisor] Start #${RESTART_COUNT} $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
-        >> "$SESSION_DIR/activator.jsonl"
-      node -r dotenv/config "$REPO/scripts/analysis/arb_window_activator.js" \
-        --pair ETH/USDC-RAMSES \
-        --remap-ticks \
-        --gas-profile atomic_optimistic \
-        --log "$SESSION_DIR/activator.jsonl" \
-        --heat-log "$SESSION_DIR/heat.jsonl" 2>&1
-      EXIT=$?
-      echo "[supervisor] Exited code $EXIT — restarting in 5s" >> "$SESSION_DIR/activator.jsonl"
-      [[ $EXIT -eq 0 ]] && break
-      sleep 5
-    done
-  ) &
-  NEW_PID=$!
-  disown $NEW_PID 2>/dev/null || true
-  log "Activator restarted (PID $NEW_PID)"
-  sed -i "/^activator=/d" "$PID_FILE" 2>/dev/null || true
-  echo "activator=$NEW_PID" >> "$PID_FILE"
-  exit 0
-fi
-
-# ── STOP ──────────────────────────────────────────────────────────────────────
-if [[ "${1:-}" == "stop" ]]; then
-  log "Stopping AllMight session..."
-
-  SESSION=""
-  [[ -f "$SESSION_POINTER" ]] && SESSION=$(cat "$SESSION_POINTER")
-  SESSION_DIR="$LOG_DIR/sessions/session_${SESSION}"
-
-  # Kill via PID file
+  # ── 1. Kill all processes ──────────────────────────────────────────────────
+  echo "[$(TS)] Stopping processes..."
   if [[ -f "$PID_FILE" ]]; then
     while IFS='=' read -r name pid; do
       [[ -z "$name" || -z "$pid" ]] && continue
-      if kill -0 "$pid" 2>/dev/null; then
-        kill "$pid" 2>/dev/null && log "  Stopped $name (PID $pid)" || true
-      else
-        log "  $name (PID $pid) already stopped"
-      fi
+      kill -0 "$pid" 2>/dev/null && kill "$pid" 2>/dev/null && echo "  Stopped $name (PID $pid)" || echo "  $name already stopped"
     done < "$PID_FILE"
     rm -f "$PID_FILE"
   fi
+  pkill -f "arb_window_activator.js"        2>/dev/null || true
+  pkill -f "arb_volatility_monitor.js"       2>/dev/null || true
+  pkill -f "volatility_divergence_report.js" 2>/dev/null || true
+  pkill -f "allmight_watchdog.sh"            2>/dev/null || true
+  pkill -f "notification_router.js"          2>/dev/null || true
+  pkill -f "shadow_execution_engine.js"      2>/dev/null || true
 
-  # Belt-and-suspenders pkill cleanup
-  pkill -f "arb_window_activator.js"          2>/dev/null || true
-  pkill -f "arb_volatility_monitor.js"        2>/dev/null || true
-  pkill -f "volatility_divergence_report.js"  2>/dev/null || true
-  pkill -f "allmight_watchdog.sh"             2>/dev/null || true
-  pkill -f "notification_router.js"           2>/dev/null || true
-  pkill -f "shadow_execution_engine.js"       2>/dev/null || true
-
-  # ── Final shadow execution metrics ──────────────────────────────────────────
-  if [[ -n "$SESSION" ]]; then
-    log "Computing final shadow execution metrics..."
+  if [[ -z "$SESSION_ID" || ! -d "$SESSION_DIR" ]]; then
+    echo "  No active session found — skipping analytics"
+  else
+    # ── 2. Shadow v1 (opportunity) ──────────────────────────────────────────
+    echo "[$(TS)] [1/6] Shadow v1 (opportunity)..."
     node "$REPO/scripts/execution/shadow_execution_engine.js" \
+      --session "$SESSION_DIR" 2>/dev/null || echo "  (v1: unavailable)"
+
+    # ── 3. Shadow v2 (realistic) ────────────────────────────────────────────
+    echo "[$(TS)] [2/6] Shadow v2 (realistic, 5bps friction)..."
+    node "$REPO/scripts/execution/shadow_execution_engine_v2.js" \
+      --session "$SESSION_DIR" 2>/dev/null || echo "  (v2: unavailable)"
+
+    # ── 4. Dry execution (optional — set RUN_DRY_EXECUTION=true) ────────────
+    echo "[$(TS)] [3/6] Dry execution..."
+    if [[ "${RUN_DRY_EXECUTION:-false}" == "true" ]]; then
+      SESSION_ID="$SESSION_ID" GAS_PRICE_GWEI="${GAS_PRICE_GWEI:-0.05}" \
+        npx hardhat run "$REPO/scripts/execution/dry_execution_fork_runner.js" \
+          --network hardhat 2>/dev/null || echo "  (fork runner: unavailable)"
+    else
+      node -r dotenv/config "$REPO/scripts/execution/dry_execution_engine.js" \
+        --session "$SESSION_DIR" 2>/dev/null || echo "  (dry run: unavailable)"
+    fi
+
+    # ── 5. Shadow accuracy report ────────────────────────────────────────────
+    echo "[$(TS)] [4/6] Shadow accuracy + backtest..."
+    node "$REPO/scripts/tools/shadow_accuracy_report.js" \
       --session "$SESSION_DIR" 2>/dev/null || true
+    node "$REPO/scripts/tools/gate_score_backtest.js" --all 2>/dev/null || true
+    node "$REPO/scripts/tools/spread_dominance_report.js" --all 2>/dev/null || true
 
-    log "Updating lifetime project metrics..."
-    node "$REPO/scripts/tools/project_metrics_tracker.js" --summary 2>/dev/null || true
+    # ── 6. Lifetime metrics ──────────────────────────────────────────────────
+    echo "[$(TS)] [5/6] Lifetime project metrics..."
+    node "$REPO/scripts/tools/project_metrics_tracker.js" --summary 2>/dev/null || echo "  (metrics: unavailable)"
 
-    # Discord stop summary (non-blocking, fail-silent)
+    # ── 7. Discord stop summary ──────────────────────────────────────────────
+    echo "[$(TS)] [6/6] Discord stop summary..."
     node -r dotenv/config "$REPO/scripts/monitoring/notification_router.js" \
-      --stop-summary "$SESSION_DIR" >> "$SESSION_DIR/analysis.log" 2>&1 || true
+      --stop-summary "$SESSION_DIR" 2>/dev/null || echo "  (Discord: unavailable)"
 
-    log ""
-    log "Session files in: $SESSION_DIR"
-    log "Upload to CPT: activator.jsonl blueprints.jsonl watchdog.jsonl sandbox_results.json"
-    log "               shadow_execution_totals.json dryrun_confidence.json"
-    log ""
-    log "Mark C9 after Boss summary:"
-    log "  node scripts/tools/dryrun_confidence_log.js --mark-c9 $SESSION_DIR"
+    # ── 8. Zip session ───────────────────────────────────────────────────────
+    echo "[$(TS)] Zipping session..."
+    ZIP_OUT="$LOG_DIR/sessions/session_${SESSION_ID}.zip"
+    INCLUDE_FILES=(
+      activator.jsonl blueprints.jsonl watchdog.jsonl volatility.jsonl heat.jsonl
+      sandbox_results.json dryrun_confidence.json execution_candidate_audit.jsonl
+      flash_loan_readiness.json size_ladder.json threshold_edge.json
+      tier_breakdown.json near_miss_analysis.json session_totals.json
+      shadow_execution_totals.json shadow_execution_totals_v2.json
+      shadow_execution_ledger.jsonl shadow_execution_ledger_v2.jsonl
+      shadow_dryrun_totals.json shadow_accuracy_report.json
+    )
+    EXISTING=()
+    for f in "${INCLUDE_FILES[@]}"; do
+      [[ -f "$SESSION_DIR/$f" ]] && EXISTING+=("$f")
+    done
+    if [[ ${#EXISTING[@]} -gt 0 ]]; then
+      (cd "$SESSION_DIR" && zip -q "../session_${SESSION_ID}.zip" "${EXISTING[@]}" 2>/dev/null)
+      echo "  ✅ Session zip: $ZIP_OUT (${#EXISTING[@]} files)"
+    else
+      echo "  ⚠️  No files to zip"
+    fi
   fi
 
-  log "AllMight stopped."
+  echo ""
+  echo "  Mark C9 after Boss summary:"
+  echo "    node scripts/tools/dryrun_confidence_log.js --mark-c9 ${SESSION_DIR:-logs/sessions/session_XXXX}"
+  echo "═══════════════════════════════════════════════════════"
   exit 0
 fi
 
-# ── GUARD: already running ────────────────────────────────────────────────────
+# ─── STATUS ──────────────────────────────────────────────────────────────────
+if [[ "${1:-}" == "--status" ]]; then
+  echo ""
+  echo "======================================================="
+  echo "  AllMight -- Process Status"
+  if [[ -f "$PID_FILE" ]]; then
+    while IFS='=' read -r name pid; do
+      kill -0 "$pid" 2>/dev/null && echo "  [OK]   $name (PID $pid)" || echo "  [DEAD] $name (PID $pid)"
+    done < "$PID_FILE"
+  else
+    echo "  No PID file"
+  fi
+  [[ -f "$SESSION_FILE" ]] && echo "  Session: $(cat "$SESSION_FILE")"
+  echo "======================================================="
+  exit 0
+fi
+
+# ─── METRICS ONLY ────────────────────────────────────────────────────────────
+if [[ "${1:-}" == "--metrics" ]]; then
+  cd "$REPO"
+  echo ""
+  echo "-- Gate Score --"
+  node scripts/execution/execution_gate_score.js 2>/dev/null || echo "(unavailable)"
+  echo ""
+  echo "-- Capital Policy --"
+  node scripts/execution/capital_policy.js 2>/dev/null || echo "(unavailable)"
+  echo ""
+  if [[ -f "$SESSION_FILE" ]]; then
+    SESSION_DIR="$LOG_DIR/sessions/session_$(cat "$SESSION_FILE")"
+    echo "-- Shadow Execution (current session) --"
+    node scripts/execution/shadow_execution_engine.js --session "$SESSION_DIR" 2>/dev/null || echo "(no data)"
+    echo ""
+  fi
+  echo "-- Lifetime Metrics --"
+  node scripts/tools/project_metrics_tracker.js --summary 2>/dev/null || echo "(unavailable)"
+  exit 0
+fi
+
+# ─── GUARD: already running ──────────────────────────────────────────────────
 if [[ -f "$PID_FILE" ]]; then
-  echo "WARNING: PID file exists — may already be running"
-  echo "  bash scripts/tools/start_all.sh status"
-  echo "  bash scripts/tools/start_all.sh stop"
+  echo "WARNING: PID file exists -- session may already be running"
+  echo "  bash start_all.sh --status"
+  echo "  bash start_all.sh --stop"
   exit 1
 fi
 
-# ── LOAD ENV ─────────────────────────────────────────────────────────────────
+# ─── LOAD ENV ────────────────────────────────────────────────────────────────
 cd "$REPO"
 set -a && source .env && set +a
 
-# ── SESSION ID ───────────────────────────────────────────────────────────────
-SESSION=$(date +%Y%m%d_%H%M)
-SESSION_DIR="$LOG_DIR/sessions/session_${SESSION}"
-mkdir -p "$SESSION_DIR"
-echo "$SESSION" > "$SESSION_POINTER"
+# ─── SESSION ID ──────────────────────────────────────────────────────────────
+SESSION_ID=$(date +%Y%m%d_%H%M)
+SESSION_DIR="$LOG_DIR/sessions/session_${SESSION_ID}"
+mkdir -p "$SESSION_DIR" "$LOG_DIR"
+echo "$SESSION_ID" > "$SESSION_FILE"
 
-log "═══════════════════════════════════════════════════════"
-log "  AllMight Session: $SESSION"
-log "  Target: 4h min (C4) | 6-8h optimal | 24h strong"
-log "═══════════════════════════════════════════════════════"
+echo ""
+echo "======================================================="
+echo "  AllMight -- Starting Session"
+echo "  Session: $SESSION_ID"
+echo "  Target:  4h minimum (C4) | 6-8h optimal | 24h strong"
+echo "======================================================="
 
-# ── REDIS PREFLIGHT ──────────────────────────────────────────────────────────
-log "Redis preflight..."
+# ─── REDIS PREFLIGHT ─────────────────────────────────────────────────────────
+echo ""
+echo "-- Redis preflight --"
 for i in $(seq 1 10); do
-  redis-cli ping > /dev/null 2>&1 && break
+  if redis-cli ping > /dev/null 2>&1; then echo "  Redis OK"; break; fi
   if [[ $i -eq 10 ]]; then
-    log "ERROR: Redis not responding. Run: sudo systemctl start redis"
+    echo "  ERROR: Redis not responding. Run: sudo systemctl start redis"
     exit 1
   fi
-  log "  Redis not ready ($i/10)..."
-  sleep 3
+  echo "  Redis waiting ($i/10)..."
+  sleep 2
 done
 redis-cli --scan --pattern "fetcher:*" | xargs -r redis-cli del > /dev/null 2>&1 || true
-log "Redis OK — stale keys cleared"
+echo "  Stale keys cleared"
 
-# ── EXPORTS (before any process launch) ─────────────────────────────────────
-export RPC_FRESHNESS_LOG_PATH="$SESSION_DIR/rpc_freshness.jsonl"
-export BLUEPRINT_LOG_PATH="$SESSION_DIR/blueprints.jsonl"
-export SESSION_DIR
+# ─── PROTOCOL PREFLIGHT ──────────────────────────────────────────────────────
+echo ""
+echo "-- Protocol preflight --"
+node "$REPO/scripts/execution/preflight_ramses_executor.js" 2>/dev/null \
+  && echo "  Preflight passed" || echo "  Preflight skipped (non-blocking)"
 
-# ── READINESS HELPER ─────────────────────────────────────────────────────────
-wait_for_min_lines() {
-  local file="$1" min_lines="$2" max_secs="$3"
-  local elapsed=0
-  while [[ $elapsed -lt $max_secs ]]; do
-    if [[ -f "$file" ]] && [[ $(wc -l < "$file") -ge $min_lines ]]; then
-      return 0
-    fi
-    sleep 2
-    elapsed=$((elapsed + 2))
-  done
-  log "WARNING: $file did not reach $min_lines lines in ${max_secs}s — continuing anyway"
-  return 0
-}
-
-# ── PROCESS 1: Master fetcher loop ───────────────────────────────────────────
-log "Starting Process 1: Master fetcher..."
-nohup bash -c "
-  while true; do
-    node '$REPO/scripts/master-fetcher.js' once 2>&1
-    sleep $INTERVAL
-  done
-" >> "$SESSION_DIR/fetcher.log" 2>&1 &
+# ─── 1. MASTER FETCHER ───────────────────────────────────────────────────────
+echo ""
+echo "-- 1. Master fetcher --"
+(while true; do
+  node "$REPO/scripts/master-fetcher.js" once 2>&1
+  sleep 60
+done) >> "$SESSION_DIR/fetcher.log" 2>&1 &
 FETCHER_PID=$!
-disown $FETCHER_PID 2>/dev/null || true
 echo "fetcher=$FETCHER_PID" >> "$PID_FILE"
-log "✓ Fetcher loop     (PID $FETCHER_PID)"
+echo "  PID $FETCHER_PID"
 
-log "  Waiting 15s for initial Redis population..."
-sleep 15
+echo "  Waiting 35s for Redis population..."
+sleep 35
 
-# ── PROCESS 2: Volatility monitor ────────────────────────────────────────────
-log "Starting Process 2: Volatility monitor..."
-nohup node -r dotenv/config "$REPO/scripts/analysis/arb_volatility_monitor.js" \
-  --chain arbitrum \
-  --interval 120 \
-  --log "$SESSION_DIR/volatility.jsonl" \
-  >> "$SESSION_DIR/monitor.log" 2>&1 &
-MONITOR_PID=$!
-disown $MONITOR_PID 2>/dev/null || true
-echo "monitor=$MONITOR_PID" >> "$PID_FILE"
-log "✓ Volatility monitor (PID $MONITOR_PID)"
-
-sleep 5
-
-# ── PROCESS 3: Heat report runner ────────────────────────────────────────────
-log "Starting Process 3: Heat report runner..."
-nohup node "$REPO/scripts/tools/volatility_divergence_report.js" \
-  --log "$SESSION_DIR/volatility.jsonl" \
-  --out "$SESSION_DIR/heat.jsonl" \
-  --interval 30 \
-  >> "$SESSION_DIR/monitor.log" 2>&1 &
-HEAT_PID=$!
-disown $HEAT_PID 2>/dev/null || true
-echo "heat=$HEAT_PID" >> "$PID_FILE"
-log "✓ Heat report      (PID $HEAT_PID)"
-
-log "  Waiting for volatility data (≥2 lines, max 60s)..."
-wait_for_min_lines "$SESSION_DIR/volatility.jsonl" 2 60
-
-log "  Waiting for heat data (≥3 lines, max 120s)..."
-wait_for_min_lines "$SESSION_DIR/heat.jsonl" 3 120
-
-# ── PROCESS 4: Activator (supervised restart loop) ───────────────────────────
-log "Starting Process 4: Activator (supervised)..."
+# ─── 2. ARB WINDOW ACTIVATOR (supervised restart loop) ───────────────────────
+# Exit code 0  = activator detected RPC exhaustion and exited cleanly.
+#               Wait 15 minutes before restarting (cooldown for provider quotas).
+#               Without this, code-0 exits cause a rapid restart storm that keeps
+#               all providers in cooldown and burns quota until the session fails.
+# Exit code !0 = crash/error — restart after 5s as before.
+echo ""
+echo "-- 2. Arb window activator (supervised) --"
 (
   RESTART_COUNT=0
   while true; do
@@ -267,23 +226,19 @@ log "Starting Process 4: Activator (supervised)..."
     echo "[supervisor] Start #${RESTART_COUNT} $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
       >> "$SESSION_DIR/activator.jsonl"
 
-    node -r dotenv/config "$REPO/scripts/analysis/arb_window_activator.js" \
-      --pair ETH/USDC-RAMSES \
-      --remap-ticks \
-      --gas-profile atomic_optimistic \
-      --log "$SESSION_DIR/activator.jsonl" \
-      --heat-log "$SESSION_DIR/heat.jsonl" 2>&1
+    node "$REPO/scripts/arb_window_activator.js" \
+      >> "$SESSION_DIR/activator.jsonl" 2>&1
 
     EXIT=$?
-    echo "[supervisor] Exited code $EXIT — restarting in 5s" \
-      >> "$SESSION_DIR/activator.jsonl"
+
     if [[ $EXIT -eq 0 ]]; then
-      # Clean exit = RPC exhaustion. Wait 15 min for quota cooldown.
-      echo "[supervisor] Exited code 0 (RPC cooldown) -- waiting 15m before restart $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
+      # Clean exit = RPC exhaustion. Wait 15 min for quota cooldown then retry.
+      echo "[supervisor] Exited code 0 (RPC cooldown) — waiting 15m before restart $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
         >> "$SESSION_DIR/activator.jsonl"
       sleep 900
     else
-      echo "[supervisor] Exited code $EXIT -- restarting in 5s $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
+      # Crash/error — short delay then restart
+      echo "[supervisor] Exited code $EXIT — restarting in 5s $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
         >> "$SESSION_DIR/activator.jsonl"
       sleep 5
     fi
@@ -292,65 +247,88 @@ log "Starting Process 4: Activator (supervised)..."
 ACTIVATOR_PID=$!
 disown $ACTIVATOR_PID 2>/dev/null || true
 echo "activator=$ACTIVATOR_PID" >> "$PID_FILE"
-log "✓ Activator        (PID $ACTIVATOR_PID)"
+echo "  PID $ACTIVATOR_PID (supervised, 15m cooldown on RPC exhaustion)"
 
-# ── PROCESS 5: Watchdog ──────────────────────────────────────────────────────
-log "Starting Process 5: Watchdog..."
-nohup bash "$REPO/scripts/tools/allmight_watchdog.sh" --loop 300 \
-  >> "$SESSION_DIR/watchdog_loop.log" 2>&1 &
+# ─── 3. VOLATILITY MONITOR ───────────────────────────────────────────────────
+echo ""
+echo "-- 3. Volatility monitor --"
+if [[ -f "$REPO/scripts/arb_volatility_monitor.js" ]]; then
+  node "$REPO/scripts/arb_volatility_monitor.js" \
+    >> "$SESSION_DIR/volatility.jsonl" 2>&1 &
+  VOLATILITY_PID=$!
+  echo "volatility=$VOLATILITY_PID" >> "$PID_FILE"
+  echo "  PID $VOLATILITY_PID"
+else
+  echo "  Skipped (arb_volatility_monitor.js not found)"
+fi
+
+# ─── 4. SPREAD MONITOR ───────────────────────────────────────────────────────
+echo ""
+echo "-- 4. Spread monitor --"
+python3 "$REPO/scripts/spread_monitor.py" \
+  --chain all --interval 60 \
+  >> "$SESSION_DIR/monitor.log" 2>&1 &
+MONITOR_PID=$!
+echo "monitor=$MONITOR_PID" >> "$PID_FILE"
+echo "  PID $MONITOR_PID"
+
+# ─── 5. WATCHDOG ─────────────────────────────────────────────────────────────
+echo ""
+echo "-- 5. Watchdog --"
+if [[ -f "$REPO/scripts/allmight_watchdog.sh" ]]; then
+  bash "$REPO/scripts/allmight_watchdog.sh" \
+    >> "$SESSION_DIR/watchdog.jsonl" 2>&1 &
+else
+  node "$REPO/scripts/arb_window_activator.js" --watchdog 2>/dev/null \
+    >> "$SESSION_DIR/watchdog.jsonl" 2>&1 &
+fi
 WATCHDOG_PID=$!
-disown $WATCHDOG_PID 2>/dev/null || true
 echo "watchdog=$WATCHDOG_PID" >> "$PID_FILE"
-log "✓ Watchdog loop    (PID $WATCHDOG_PID, every 300s)"
+echo "  PID $WATCHDOG_PID"
 
-# ── PROCESS 6: Notification router (Discord heartbeat) ───────────────────────
-log "Starting Process 6: Notification router..."
+# ─── 6. NOTIFICATION ROUTER ──────────────────────────────────────────────────
+echo ""
+echo "-- 6. Notification router --"
 node -r dotenv/config "$REPO/scripts/monitoring/notification_router.js" \
-  --startup >> "$SESSION_DIR/analysis.log" 2>&1 &
-
-nohup node -r dotenv/config "$REPO/scripts/monitoring/notification_router.js" \
-  --loop 300 >> "$SESSION_DIR/analysis.log" 2>&1 &
+  --startup --loop 300 \
+  >> "$LOG_DIR/notification_router.log" 2>&1 &
 NOTIF_PID=$!
-disown $NOTIF_PID 2>/dev/null || true
 echo "notification_router=$NOTIF_PID" >> "$PID_FILE"
-log "✓ Notification router (PID $NOTIF_PID, heartbeat every 300s)"
+echo "  PID $NOTIF_PID (heartbeat every 5m)"
 
-# ── PROCESS 7: Shadow execution engine (analytics loop) ──────────────────────
-# Classifies each signal through gate/capital policy every 5 minutes.
-# Writes shadow_execution_ledger.jsonl + shadow_execution_totals.json
-# MODE 0 PAPER enforced — $0 live capital. Analytics only.
-log "Starting Process 7: Shadow execution engine..."
-(
-  while true; do
-    sleep 300
-    node "$REPO/scripts/execution/shadow_execution_engine.js" \
-      --session "$SESSION_DIR" 2>/dev/null || true
-  done
-) >> "$LOG_DIR/shadow_engine.log" 2>&1 &
+# ─── 7. SHADOW EXECUTION ENGINE ──────────────────────────────────────────────
+echo ""
+echo "-- 7. Shadow execution engine (polls every 5m) --"
+(while true; do
+  sleep 300
+  node "$REPO/scripts/execution/shadow_execution_engine.js" \
+    --session "$SESSION_DIR" 2>/dev/null || true
+done) >> "$LOG_DIR/shadow_engine.log" 2>&1 &
 SHADOW_PID=$!
-disown $SHADOW_PID 2>/dev/null || true
 echo "shadow_engine=$SHADOW_PID" >> "$PID_FILE"
-log "✓ Shadow engine    (PID $SHADOW_PID, every 300s)"
+echo "  PID $SHADOW_PID"
 
-# ── STARTUP SUMMARY ──────────────────────────────────────────────────────────
+# ─── SHOW PRIOR LIFETIME METRICS AT STARTUP ──────────────────────────────────
 echo ""
-log "Session $SESSION running."
-log "PIDs: fetcher=$FETCHER_PID monitor=$MONITOR_PID heat=$HEAT_PID activator=$ACTIVATOR_PID"
-log "      watchdog=$WATCHDOG_PID notif=$NOTIF_PID shadow=$SHADOW_PID"
+echo "-- Prior lifetime metrics --"
+node "$REPO/scripts/tools/project_metrics_tracker.js" --summary 2>/dev/null || echo "  (no prior data)"
+
+# ─── STARTUP SUMMARY ─────────────────────────────────────────────────────────
 echo ""
-echo "  bash scripts/tools/start_all.sh status             — check health"
-echo "  bash scripts/tools/start_all.sh logs               — watch live output"
-echo "  bash scripts/tools/start_all.sh stop               — stop + final metrics"
-echo "  bash scripts/tools/start_all.sh restart-activator  — restart activator only"
+echo "======================================================="
+echo "  AllMight -- Session Active"
+echo "  Session:  $SESSION_ID"
+echo "  Logs:     $SESSION_DIR/"
+echo "======================================================="
 echo ""
-echo "  For unattended run:"
-echo "    nohup bash scripts/tools/start_all.sh > logs/launch.log 2>&1 & disown"
+echo "  Live monitoring:"
+echo "    bash start_all.sh --status"
+echo "    bash start_all.sh --metrics"
+echo "    node scripts/execution/execution_gate_score.js"
 echo ""
-echo "  Mark C9 after stop (Boss summary):"
+echo "  Stop + final report:"
+echo "    bash start_all.sh --stop"
+echo ""
+echo "  Mark C9 after stop (required for Boss-valid):"
 echo "    node scripts/tools/dryrun_confidence_log.js --mark-c9 $SESSION_DIR"
-echo ""
-
-# ── Show prior lifetime metrics ───────────────────────────────────────────────
-echo "── Prior lifetime metrics ──"
-node "$REPO/scripts/tools/project_metrics_tracker.js" --summary 2>/dev/null || true
-echo ""
+echo "======================================================="
