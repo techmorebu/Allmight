@@ -263,7 +263,6 @@ echo "-- 2. Arb window activator (supervised) --"
       >> "$SESSION_DIR/activator.jsonl"
 
     node "$REPO/scripts/analysis/arb_window_activator.js" \
-      --log "$SESSION_DIR/activator.jsonl" \
       >> "$SESSION_DIR/activator.jsonl" 2>&1
 
     EXIT=$?
@@ -312,6 +311,21 @@ else
   echo "  Skipped (arb_volatility_monitor.js not found)"
 fi
 
+# ─── 3b. HEAT REPORTER (volatility_divergence_report.js → heat.jsonl) ─────────
+# Writes heat.jsonl every 30s — required by watchdog for health checks
+echo ""
+echo "-- 3b. Heat reporter --"
+if [[ -f "$REPO/scripts/tools/volatility_divergence_report.js" ]]; then
+  node "$REPO/scripts/tools/volatility_divergence_report.js" \
+    --interval 30 \
+    >> "$SESSION_DIR/heat.jsonl" 2>&1 &
+  HEAT_PID=$!
+  echo "heat=$HEAT_PID" >> "$PID_FILE"
+  echo "  PID $HEAT_PID"
+else
+  echo "  Skipped (volatility_divergence_report.js not found)"
+fi
+
 # ─── 4. SPREAD MONITOR (optional — requires python3 redis module) ────────────
 echo ""
 echo "-- 4. Spread monitor --"
@@ -334,7 +348,7 @@ echo "-- 5. Watchdog (starting in 20s) --"
 sleep 20
 echo "-- 5. Watchdog --"
 if [[ -f "$REPO/scripts/tools/allmight_watchdog.sh" ]]; then
-  bash "$REPO/scripts/tools/allmight_watchdog.sh" \
+  bash "$REPO/scripts/tools/allmight_watchdog.sh" --loop 60 \
     >> "$SESSION_DIR/watchdog.jsonl" 2>&1 &
 else
   node "$REPO/scripts/analysis/arb_window_activator.js" --watchdog 2>/dev/null \
