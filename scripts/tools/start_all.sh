@@ -236,7 +236,7 @@ node "$REPO/scripts/execution/preflight_ramses_executor.js" 2>/dev/null \
 # ─── 1. MASTER FETCHER ───────────────────────────────────────────────────────
 echo ""
 echo "-- 1. Master fetcher --"
-(while true; do
+(set +e; while true; do
   node "$REPO/scripts/master-fetcher.js" once 2>&1
   sleep 60
 done) >> "$SESSION_DIR/fetcher.log" 2>&1 &
@@ -256,6 +256,7 @@ sleep 35
 echo ""
 echo "-- 2. Arb window activator (supervised) --"
 (
+  set +e  # CRITICAL: disable set -e inside supervisor — node exits non-zero on crash/exhaustion
   RESTART_COUNT=0
   while true; do
     RESTART_COUNT=$((RESTART_COUNT+1))
@@ -292,6 +293,7 @@ if [[ -f "$REPO/scripts/analysis/arb_volatility_monitor.js" ]]; then
   # Wrap in retry loop — volatility exits if Redis has no fetcher data yet.
   # Retries every 30s until fetcher data is available (max 5 attempts).
   (
+    set +e  # disable set -e so volatility exit codes don't kill the wrapper
     for attempt in 1 2 3 4 5; do
       node "$REPO/scripts/analysis/arb_volatility_monitor.js" \
         >> "$SESSION_DIR/volatility.jsonl" 2>&1
@@ -356,7 +358,7 @@ echo "  PID $NOTIF_PID (heartbeat every 5m)"
 # ─── 7. SHADOW EXECUTION ENGINE ──────────────────────────────────────────────
 echo ""
 echo "-- 7. Shadow execution engine (polls every 5m) --"
-(while true; do
+(set +e; while true; do
   sleep 300
   node "$REPO/scripts/execution/shadow_execution_engine.js" \
     --session "$SESSION_DIR" 2>/dev/null || true
