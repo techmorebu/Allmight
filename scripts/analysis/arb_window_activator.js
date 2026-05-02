@@ -267,12 +267,18 @@ const ARMED_BUFFER_TICKS    = 80;       // confirmed_default: ticks below HIGH z
 // ─────────────────────────────────────────────────────────────────────────────
 // POLLING
 // ─────────────────────────────────────────────────────────────────────────────
-const POLL_PASSIVE_MS       = 1_500;   // confirmed_default: PASSIVE base interval
-const POLL_ARMED_MS         =   500;   // confirmed_default: ARMED interval — unchanged
+// LOW_SIGNAL_SLOWDOWN (Fix 3 — Boss ruling 2026-05-02)
+// Master switch: when false, always use PASSIVE_NORMAL_POLL_MS regardless of heat.
+// When true (default): COLD/WARM PASSIVE = slow, HOT/EXTREME/ARMED = full speed.
+// NEVER slows ARMED or HOT/EXTREME — safety rule enforced in poll logic below.
+const LOW_SIGNAL_SLOWDOWN_ENABLED = process.env.LOW_SIGNAL_SLOWDOWN_ENABLED !== 'false';
+const POLL_PASSIVE_MS       = Number(process.env.PASSIVE_NORMAL_POLL_MS || 1_500);  // HOT/EXTREME/UNKNOWN passive interval
+const POLL_ARMED_MS         = Number(process.env.ARMED_POLL_MS          ||   500);  // ARMED interval — never slowed
 // Call-save 2: heat-aware passive polling
-// When state=PASSIVE AND heat is COLD/WARM, slow poll to POLL_PASSIVE_COLD_MS.
-// Saves ~66% of dead-period calls. ARMED and HOT/EXTREME intervals unchanged.
-const POLL_PASSIVE_COLD_MS  = Number(process.env.POLL_PASSIVE_COLD_MS || 5_000);
+// When state=PASSIVE AND heat is COLD/WARM AND LOW_SIGNAL_SLOWDOWN_ENABLED:
+//   slow poll to POLL_PASSIVE_COLD_MS (default 5s).
+// ARMED and HOT/EXTREME intervals unchanged regardless of this flag.
+const POLL_PASSIVE_COLD_MS  = Number(process.env.PASSIVE_COLD_POLL_MS || process.env.POLL_PASSIVE_COLD_MS || 5_000);
 // P3: DEEP IDLE — activates when COLD/WARM + spread flat + no state change for X min.
 // During deep idle: poll 10-15s, block check slow, tick-map disabled.
 // Exit: any heat increase OR spread movement → instant wake.
@@ -1218,6 +1224,7 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
 
   // P3: Deep-idle state tracking
   let _deepIdleActive  = false;
+  let _lastPollMs       = POLL_PASSIVE_MS;  // last chosen poll interval — for heartbeat telemetry
   let _lastSpreadFrac  = null;   // last seen netSpreadFrac — movement detection
   let _lastStateChange = Date.now();  // last time state changed (ARMED/PASSIVE flip)
   let _flatSinceMs     = Date.now();  // since when spread+state have been flat
@@ -1359,10 +1366,13 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
     // Already implemented: this continue skips readBothPools for same-block ticks.
     if (blockNumber === lastBlock) {
       const _heatEl2 = heatCtx.heatClass === 'HOT' || heatCtx.heatClass === 'EXTREME' || heatCtx.heatClass === 'UNKNOWN';
-      const _sbPoll = state === 'ARMED' ? POLL_ARMED_MS
-        : _deepIdleActive               ? POLL_DEEP_IDLE_MS
-        : _heatEl2                      ? POLL_PASSIVE_MS
-        :                                 POLL_PASSIVE_COLD_MS;
+      // LOW_SIGNAL_SLOWDOWN: when disabled, all PASSIVE ticks use normal interval
+      // Safety: ARMED is always fast — master switch cannot slow ARMED
+      const _sbPoll = state === 'ARMED'           ? POLL_ARMED_MS       // always fast
+        : !LOW_SIGNAL_SLOWDOWN_ENABLED            ? POLL_PASSIVE_MS     // slowdown disabled
+        : _deepIdleActive                         ? POLL_DEEP_IDLE_MS   // deep idle (12s)
+        : _heatEl2                                ? POLL_PASSIVE_MS     // HOT/EXTREME/UNKNOWN
+        :                                           POLL_PASSIVE_COLD_MS; // COLD/WARM (5s)
       await sleep(_sbPoll);
       continue;
     }
@@ -1635,6 +1645,9 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
         // Per-endpoint health — all configured endpoints, not just primary
         // Generic: any endpoint added to .env appears here automatically
         endpointHealth     : getEndpointHealth('arbitrum'),
+        // Poll interval telemetry — shows which polling tier is active
+        pollIntervalMs     : _lastPollMs,
+        pollSlowdownEnabled: LOW_SIGNAL_SLOWDOWN_ENABLED,
         // P1: cross-restart cumulative totals — persists across auto-restarts
         sessionTotals      : sessionTotals ? {
           totalConfirmed   : sessionTotals.totalConfirmed,
@@ -2008,10 +2021,15 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
       }
     }
 
-    const _pollMs = state === 'ARMED'   ? POLL_ARMED_MS
-      : _deepIdleActive                 ? POLL_DEEP_IDLE_MS
-      : _heatIsElevated                 ? POLL_PASSIVE_MS
-      :                                   POLL_PASSIVE_COLD_MS;
+    // LOW_SIGNAL_SLOWDOWN: safety-first poll selection.
+    // ARMED is always fast. HOT/EXTREME/UNKNOWN are always normal speed.
+    // Only COLD/WARM PASSIVE can be slowed — and only when the flag is enabled.
+    const _pollMs = state === 'ARMED'           ? POLL_ARMED_MS       // always fast
+      : !LOW_SIGNAL_SLOWDOWN_ENABLED            ? POLL_PASSIVE_MS     // slowdown disabled
+      : _deepIdleActive                         ? POLL_DEEP_IDLE_MS   // deep idle (12s)
+      : _heatIsElevated                         ? POLL_PASSIVE_MS     // HOT/EXTREME/UNKNOWN
+      :                                           POLL_PASSIVE_COLD_MS; // COLD/WARM (5s)
+    _lastPollMs = _pollMs;   // captured for heartbeat telemetry
 
     await sleep(Math.max(0, _pollMs - elapsed));
   }
