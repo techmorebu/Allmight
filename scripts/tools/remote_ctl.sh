@@ -147,7 +147,14 @@ case "$cmd" in
     echo "  Starting new session..."
     nohup bash scripts/tools/start_all.sh > logs/launch.log 2>&1 &
     disown $! 2>/dev/null || true
-    sleep 5
+    echo ""
+    echo "  Stack launching in background..."
+    echo "  Startup takes ~75s (35s Redis + 20s volatility + 20s watchdog delay)"
+    echo "  Logs: logs/launch.log"
+    echo ""
+    echo "  Waiting 80s for full startup before health check..."
+    sleep 80
+    echo ""
     bash scripts/tools/start_all.sh --status
     ;;
 

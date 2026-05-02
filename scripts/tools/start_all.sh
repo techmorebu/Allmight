@@ -289,11 +289,24 @@ echo "  PID $ACTIVATOR_PID (supervised, 15m cooldown on RPC exhaustion)"
 echo ""
 echo "-- 3. Volatility monitor --"
 if [[ -f "$REPO/scripts/analysis/arb_volatility_monitor.js" ]]; then
-  node "$REPO/scripts/analysis/arb_volatility_monitor.js" \
-    >> "$SESSION_DIR/volatility.jsonl" 2>&1 &
+  # Wrap in retry loop — volatility exits if Redis has no fetcher data yet.
+  # Retries every 30s until fetcher data is available (max 5 attempts).
+  (
+    for attempt in 1 2 3 4 5; do
+      node "$REPO/scripts/analysis/arb_volatility_monitor.js" \
+        >> "$SESSION_DIR/volatility.jsonl" 2>&1
+      EXIT=$?
+      # Exit 0 = normal process end (not a crash) — retry after 30s
+      # Exit non-0 = crash — retry after 10s
+      DELAY=$([[ $EXIT -eq 0 ]] && echo 30 || echo 10)
+      echo "[volatility-wrapper] Exit $EXIT attempt $attempt — retry in ${DELAY}s $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
+        >> "$SESSION_DIR/volatility.jsonl"
+      sleep $DELAY
+    done
+  ) &
   VOLATILITY_PID=$!
   echo "volatility=$VOLATILITY_PID" >> "$PID_FILE"
-  echo "  PID $VOLATILITY_PID"
+  echo "  PID $VOLATILITY_PID (with retry wrapper)"
 else
   echo "  Skipped (arb_volatility_monitor.js not found)"
 fi
@@ -314,7 +327,10 @@ else
 fi
 
 # ─── 5. WATCHDOG ─────────────────────────────────────────────────────────────
+# Delay: give volatility 20s to write its first record before watchdog checks it
 echo ""
+echo "-- 5. Watchdog (starting in 20s) --"
+sleep 20
 echo "-- 5. Watchdog --"
 if [[ -f "$REPO/scripts/tools/allmight_watchdog.sh" ]]; then
   bash "$REPO/scripts/tools/allmight_watchdog.sh" \
@@ -356,22 +372,42 @@ echo ""
 echo "-- Prior lifetime metrics --"
 node "$REPO/scripts/tools/project_metrics_tracker.js" --summary 2>/dev/null || echo "  (no prior data)"
 
-# ─── STARTUP SUMMARY ─────────────────────────────────────────────────────────
+# ─── STARTUP HEALTH CHECK ───────────────────────────────────────────────────
+# Wait for all processes to settle after watchdog delay, then show real status
 echo ""
-echo "======================================================="
-echo "  AllMight -- Session Active"
-echo "  Session:  $SESSION_ID"
-echo "  Logs:     $SESSION_DIR/"
-echo "======================================================="
+echo "  Checking process health..."
+sleep 5
+
 echo ""
-echo "  Live monitoring:"
-echo "    bash start_all.sh --status"
-echo "    bash start_all.sh --metrics"
-echo "    node scripts/execution/execution_gate_score.js"
+echo "═══════════════════════════════════════════════════════"
+echo "  AllMight — Session Started"
+echo "  Session: $SESSION_ID"
+echo "═══════════════════════════════════════════════════════"
+HEALTHY=0; DEAD=0; DEAD_NAMES=""
+while IFS='=' read -r _name _pid; do
+  [[ -z "$_name" || -z "$_pid" ]] && continue
+  [[ "$_pid" =~ ^[0-9]+$ ]] || continue
+  if kill -0 "$_pid" 2>/dev/null; then
+    echo "  [OK]   $_name (PID $_pid)"
+    HEALTHY=$((HEALTHY+1))
+  else
+    echo "  [DEAD] $_name (PID $_pid)"
+    DEAD=$((DEAD+1))
+    DEAD_NAMES="$DEAD_NAMES $_name"
+  fi
+done < "$PID_FILE"
 echo ""
-echo "  Stop + final report:"
-echo "    bash start_all.sh --stop"
+if [[ $DEAD -eq 0 ]]; then
+  echo "  ✅ All $HEALTHY processes running cleanly"
+else
+  echo "  ⚠️  $HEALTHY OK · $DEAD dead:$DEAD_NAMES"
+  echo "  Note: volatility may take 1-2 restarts (needs Redis data)"
+  echo "  Note: watchdog/spread_monitor non-critical"
+fi
 echo ""
-echo "  Mark C9 after stop (required for Boss-valid):"
-echo "    node scripts/tools/dryrun_confidence_log.js --mark-c9 $SESSION_DIR"
-echo "======================================================="
+echo "  Logs:      $SESSION_DIR/"
+echo "  Monitor:   remote_ctl status"
+echo "  Stop:      remote_ctl stop"
+echo "  Discord:   first heartbeat in ~5 min"
+echo "  Policy:    PAUSE clears after first activator heartbeat (~5 min)"
+echo "═══════════════════════════════════════════════════════"
