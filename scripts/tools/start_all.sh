@@ -303,6 +303,8 @@ echo "-- 7. Shadow execution engine (polls every 5m) --"
   sleep 300
   node "$REPO/scripts/execution/shadow_execution_engine.js" \
     --session "$SESSION_DIR" 2>/dev/null || true
+  node "$REPO/scripts/execution/shadow_execution_engine_v2.js" \
+    --session "$SESSION_DIR" 2>/dev/null || true
 done) >> "$LOG_DIR/shadow_engine.log" 2>&1 &
 SHADOW_PID=$!
 echo "shadow_engine=$SHADOW_PID" >> "$PID_FILE"
