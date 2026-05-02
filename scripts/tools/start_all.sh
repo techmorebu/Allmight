@@ -262,7 +262,7 @@ echo "-- 2. Arb window activator (supervised) --"
     echo "[supervisor] Start #${RESTART_COUNT} $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
       >> "$SESSION_DIR/activator.jsonl"
 
-    node "$REPO/scripts/arb_window_activator.js" \
+    node "$REPO/scripts/analysis/arb_window_activator.js" \
       >> "$SESSION_DIR/activator.jsonl" 2>&1
 
     EXIT=$?
@@ -288,8 +288,8 @@ echo "  PID $ACTIVATOR_PID (supervised, 15m cooldown on RPC exhaustion)"
 # ─── 3. VOLATILITY MONITOR ───────────────────────────────────────────────────
 echo ""
 echo "-- 3. Volatility monitor --"
-if [[ -f "$REPO/scripts/arb_volatility_monitor.js" ]]; then
-  node "$REPO/scripts/arb_volatility_monitor.js" \
+if [[ -f "$REPO/scripts/analysis/arb_volatility_monitor.js" ]]; then
+  node "$REPO/scripts/analysis/arb_volatility_monitor.js" \
     >> "$SESSION_DIR/volatility.jsonl" 2>&1 &
   VOLATILITY_PID=$!
   echo "volatility=$VOLATILITY_PID" >> "$PID_FILE"
@@ -311,11 +311,11 @@ echo "  PID $MONITOR_PID"
 # ─── 5. WATCHDOG ─────────────────────────────────────────────────────────────
 echo ""
 echo "-- 5. Watchdog --"
-if [[ -f "$REPO/scripts/allmight_watchdog.sh" ]]; then
-  bash "$REPO/scripts/allmight_watchdog.sh" \
+if [[ -f "$REPO/scripts/tools/allmight_watchdog.sh" ]]; then
+  bash "$REPO/scripts/tools/allmight_watchdog.sh" \
     >> "$SESSION_DIR/watchdog.jsonl" 2>&1 &
 else
-  node "$REPO/scripts/arb_window_activator.js" --watchdog 2>/dev/null \
+  node "$REPO/scripts/analysis/arb_window_activator.js" --watchdog 2>/dev/null \
     >> "$SESSION_DIR/watchdog.jsonl" 2>&1 &
 fi
 WATCHDOG_PID=$!
