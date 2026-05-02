@@ -48,7 +48,10 @@ function extractSessionMetrics(sessionDir) {
   if (shadow) {
     m.shadow = {
       wouldTradeIfLive    : shadow.wouldTradeIfLive ?? 0,
-      shadowProfitUsd     : shadow.shadowEstimatedProfitUsd ?? 0,
+      shadowProfitUsd     : shadow.shadowTheoreticalPnLUsd     // v1 opportunity (fixed engine)
+                          ?? shadow.shadowEstimatedProfitUsd        // v1 compat (old engine)
+                          ?? 0,
+      shadowOpportunityUsd: shadow.shadowTheoreticalPnLUsd ?? 0,
       shadowValuePerHour  : shadow.shadowEstimatedValuePerHour ?? null,
       maxExecutionScore   : shadow.maxExecutionScore ?? 0,
       avgExecutionScore   : shadow.avgExecutionScore ?? 0,
@@ -63,6 +66,18 @@ function extractSessionMetrics(sessionDir) {
       bestSignalProfitUsd : shadow.bestSignalProfitUsd ?? null,
       bestSignalSpreadPct : shadow.bestSignalSpreadPct ?? null,
     };
+  }
+
+  // v2 realistic engine fields
+  const shadowV2 = readJson(path.join(sessionDir, 'shadow_execution_totals_v2.json'));
+  if (shadowV2 && m.shadow) {
+    m.shadow.shadowRealisticUsd    = shadowV2.shadowRealisticTheoreticalUsd ?? null;
+    m.shadow.shadowCalibratedUsd   = shadowV2.shadowCalibratedEstimateUsd   ?? null;
+    m.shadow.realisticSurvivors    = shadowV2.realisticPositiveCount         ?? null;
+    m.shadow.realisticSurvivalRate = shadowV2.realisticSurvivalRate          ?? null;
+    m.shadow.v2DirectionAccuracy   = shadowV2.v2DirectionAccuracyPct         ?? null;
+    m.shadow.v2FalsePositive       = shadowV2.v2FalsePositive                ?? null;
+    m.shadow.v2FalseNegative       = shadowV2.v2FalseNegative                ?? null;
   }
 
   const conf = readJson(path.join(sessionDir, 'dryrun_confidence.json'));
@@ -84,7 +99,7 @@ function aggregateLifetime(all) {
   const lifetimeDurationH       = all.reduce((a, s) => a + (s.durationH ?? 0), 0);
   const lifetimeSignals         = all.reduce((a, s) => a + (s.signals ?? 0), 0);
   const lifetimeShadowProfitUsd   = ws.reduce((a, s) => a + (s.shadow.shadowProfitUsd ?? 0), 0);
-  const lifetimeOpportunityUsd    = ws.reduce((a, s) => a + (s.shadow.shadowOpportunityUsd ?? 0), 0);
+  const lifetimeOpportunityUsd    = ws.reduce((a, s) => a + (s.shadow.shadowOpportunityUsd ?? s.shadow.shadowProfitUsd ?? 0), 0);
   const lifetimeRealisticUsd      = ws.reduce((a, s) => a + (s.shadow.shadowRealisticUsd ?? 0), 0);
   const lifetimeCalibratedUsd     = ws.reduce((a, s) => a + (s.shadow.shadowCalibratedUsd ?? 0), 0);
   const lifetimeWouldTradeCount   = ws.reduce((a, s) => a + (s.shadow.wouldTradeIfLive ?? 0), 0);
