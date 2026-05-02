@@ -298,15 +298,20 @@ else
   echo "  Skipped (arb_volatility_monitor.js not found)"
 fi
 
-# ─── 4. SPREAD MONITOR ───────────────────────────────────────────────────────
+# ─── 4. SPREAD MONITOR (optional — requires python3 redis module) ────────────
 echo ""
 echo "-- 4. Spread monitor --"
-python3 "$REPO/scripts/spread_monitor.py" \
-  --chain all --interval 60 \
-  >> "$SESSION_DIR/monitor.log" 2>&1 &
-MONITOR_PID=$!
-echo "monitor=$MONITOR_PID" >> "$PID_FILE"
-echo "  PID $MONITOR_PID"
+if python3 -c "import redis" 2>/dev/null; then
+  python3 "$REPO/scripts/spread_monitor.py" \
+    --chain all --interval 60 \
+    >> "$SESSION_DIR/monitor.log" 2>&1 &
+  MONITOR_PID=$!
+  echo "monitor=$MONITOR_PID" >> "$PID_FILE"
+  echo "  PID $MONITOR_PID"
+else
+  echo "  Skipped (python3 redis not installed)"
+  echo "  Fix: sudo apt install python3-pip && pip3 install redis --break-system-packages"
+fi
 
 # ─── 5. WATCHDOG ─────────────────────────────────────────────────────────────
 echo ""
