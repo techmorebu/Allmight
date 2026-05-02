@@ -151,13 +151,33 @@ if [[ "${1:-}" == "--metrics" ]]; then
   exit 0
 fi
 
-# ─── GUARD: already running ──────────────────────────────────────────────────
+# ─── PRE-LAUNCH CLEANUP ─────────────────────────────────────────────────────
+# Auto-clears orphaned state from: abort, crash, incomplete stop, bad restart.
+# Blocks only if processes are genuinely still running.
+echo ""
+echo "-- Pre-launch cleanup --"
+
 if [[ -f "$PID_FILE" ]]; then
-  echo "WARNING: PID file exists -- session may already be running"
-  echo "  bash start_all.sh --status"
-  echo "  bash start_all.sh --stop"
-  exit 1
+  ALIVE=0
+  while IFS='=' read -r name pid; do
+    [[ -z "$pid" ]] && continue
+    kill -0 "$pid" 2>/dev/null && ALIVE=$((ALIVE+1))
+  done < "$PID_FILE"
+
+  if [[ $ALIVE -gt 0 ]]; then
+    echo "  ERROR: $ALIVE process(es) still running -- stop first:"
+    echo "     bash scripts/tools/start_all.sh --stop"
+    exit 1
+  else
+    echo "  Stale PID file cleared ($ALIVE live processes)"
+    rm -f "$PID_FILE"
+  fi
 fi
+
+# Clear stale session pointer
+[[ -f "$SESSION_FILE" ]] && echo "  Stale session cleared ($(cat "$SESSION_FILE"))" && rm -f "$SESSION_FILE"
+
+echo "  Pre-launch state clean" 
 
 # ─── LOAD ENV ────────────────────────────────────────────────────────────────
 cd "$REPO"
@@ -189,7 +209,8 @@ for i in $(seq 1 10); do
   sleep 2
 done
 redis-cli --scan --pattern "fetcher:*" | xargs -r redis-cli del > /dev/null 2>&1 || true
-echo "  Stale keys cleared"
+redis-cli --scan --pattern "allmight:*" | xargs -r redis-cli del > /dev/null 2>&1 || true
+echo "  Redis keys cleared"
 
 # ─── PROTOCOL PREFLIGHT ──────────────────────────────────────────────────────
 echo ""
