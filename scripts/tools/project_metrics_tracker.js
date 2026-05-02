@@ -200,6 +200,17 @@ function main() {
   console.log(`    Top blocker:    ${lifetime.topLifetimeBlocker ?? 'none'}`);
   console.log('───────────────────────────────────────────────────────');
   console.log(`  Recent 5 sessions: PnL=$${lifetime.recent5.shadowPnl.toFixed(3)} avgScore=${lifetime.recent5.avgScore}`);
+  if (lifetime.dryRunSuccessRate != null) {
+    console.log('───────────────────────────────────────────────────────');
+    console.log('  Dry Execution (lifetime):');
+    console.log(`    Signals tested:  ${lifetime.lifetimeDryRunSignals}`);
+    console.log(`    Executable:      ${lifetime.lifetimeDryRunExecutable} (${lifetime.dryRunSuccessRate}%)`);
+    console.log(`    Executable PnL:  $${lifetime.dryRunExecutablePnL.toFixed(3)}`);
+    if (lifetime.bestDryRunSession) {
+      const bdr = lifetime.bestDryRunSession;
+      console.log(`    Best session:    ${bdr.sessionId} (${bdr.executionSuccessRate}% success)`);
+    }
+  }
   console.log(`  Metrics file: ${METRICS_FILE}`);
   console.log('═══════════════════════════════════════════════════════');
 }

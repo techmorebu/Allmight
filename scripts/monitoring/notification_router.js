@@ -543,6 +543,32 @@ async function sendStopSummary(sessionDir) {
     }
   } catch { /* fail-silent */ }
 
+  // Dry run section — fail-soft if file missing (fork runner not always run)
+  let dryRunLines = [];
+  try {
+    const drPath = path.join(sessionDir, 'shadow_dryrun_totals.json');
+    if (fs.existsSync(drPath)) {
+      const dr = JSON.parse(fs.readFileSync(drPath, 'utf8'));
+      if (dr.available) {
+        const sr   = dr.executionSuccessRate != null ? `${dr.executionSuccessRate}%` : '?';
+        const pnl  = dr.expectedExecutablePnL != null ? `$${dr.expectedExecutablePnL.toFixed(3)}` : '?';
+        const gas  = dr.avgGasCostUsd != null ? `$${dr.avgGasCostUsd.toFixed(4)}` : '?';
+        const fund = dr.fundingStatus ?? '?';
+        dryRunLines = [
+          ``,
+          `─── Dry Execution (callStatic fork) ────`,
+          `Executable:   ${dr.wouldExecuteCount}/${dr.attempted}  (${sr})`,
+          `ExecutablePnL:${pnl}   AvgGas: ${gas}`,
+          `Funding:      ${fund}   ForkResets: ${dr.forkResetFailedCount ?? 0} failed`,
+          `Readiness:    ${(dr.readinessAssessment ?? '?').slice(0, 45)}`,
+        ];
+      } else if (dr.unavailableReason) {
+        dryRunLines = [``, `─── Dry Execution ──────────────────────`,
+          `Status: pending — ${dr.unavailableReason.slice(0, 50)}`];
+      }
+    }
+  } catch { /* fail-silent */ }
+
   const text = [
     `🛑 **Session Stop** | ${sessionId}`,
     `\`\`\``,
@@ -555,6 +581,7 @@ async function sendStopSummary(sessionDir) {
     `Est. Value:  $${totalValue.toFixed(2)}`,
     `Value/hr:    $${valueHr}/h`,
     ...shadowStopLines,
+    ...dryRunLines,
     `\`\`\``,
   ].join('\n');
 

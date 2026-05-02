@@ -133,9 +133,20 @@ case "$cmd" in
       echo "  [2/6] Shadow v2 (realistic, 5bps friction)..."
       node scripts/execution/shadow_execution_engine_v2.js         --session "$SESSION_DIR" 2>/dev/null || echo "  (v2: unavailable)"
 
-      # ── 4. Dry execution engine ────────────────────────────────────────────
-      echo "  [3/6] Dry execution engine (callStatic)..."
-      node -r dotenv/config scripts/execution/dry_execution_engine.js         --session "$SESSION_DIR" 2>/dev/null || echo "  (dry run: unavailable)"
+      # ── 4. Dry execution (optional fork runner — expensive) ────────────────
+      # Default: run the fail-soft mainnet callStatic (quick, no fork needed)
+      # Set RUN_DRY_EXECUTION=true to run full Hardhat fork runner (20-40 min)
+      echo "  [3/6] Dry execution engine..."
+      if [[ "${RUN_DRY_EXECUTION:-false}" == "true" ]]; then
+        echo "        Fork runner mode (RUN_DRY_EXECUTION=true — may take 20-40 min)..."
+        SESSION_ID="$SESSION" GAS_PRICE_GWEI="${GAS_PRICE_GWEI:-0.05}" \
+          npx hardhat run scripts/execution/dry_execution_fork_runner.js \
+            --network hardhat 2>/dev/null \
+          || echo "  (dry execution fork runner: unavailable)"
+      else
+        node -r dotenv/config scripts/execution/dry_execution_engine.js \
+          --session "$SESSION_DIR" 2>/dev/null || echo "  (dry run: unavailable)"
+      fi
 
       # ── 5. Shadow accuracy report ──────────────────────────────────────────
       echo "  [4/6] Shadow accuracy report..."
