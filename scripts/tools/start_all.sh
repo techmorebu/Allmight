@@ -277,8 +277,16 @@ log "Starting Process 4: Activator (supervised)..."
     EXIT=$?
     echo "[supervisor] Exited code $EXIT — restarting in 5s" \
       >> "$SESSION_DIR/activator.jsonl"
-    [[ $EXIT -eq 0 ]] && break
-    sleep 5
+    if [[ $EXIT -eq 0 ]]; then
+      # Clean exit = RPC exhaustion. Wait 15 min for quota cooldown.
+      echo "[supervisor] Exited code 0 (RPC cooldown) -- waiting 15m before restart $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
+        >> "$SESSION_DIR/activator.jsonl"
+      sleep 900
+    else
+      echo "[supervisor] Exited code $EXIT -- restarting in 5s $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
+        >> "$SESSION_DIR/activator.jsonl"
+      sleep 5
+    fi
   done
 ) &
 ACTIVATOR_PID=$!
