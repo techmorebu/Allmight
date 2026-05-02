@@ -8,7 +8,15 @@
 
 set -euo pipefail
 
-REPO="$(cd "$(dirname "$0")" && pwd)"
+# Resolve repo root regardless of how this script is called
+# dirname($0) breaks when called as "bash scripts/tools/start_all.sh" from repo root
+REPO="$(git -C "$(dirname "$(realpath "$0")")" rev-parse --show-toplevel 2>/dev/null)" \
+  || REPO="$(cd "$(dirname "$(realpath "$0")")/../.." && pwd)"
+# Validate: REPO must contain .env and scripts/
+if [[ ! -f "$REPO/.env" || ! -d "$REPO/scripts" ]]; then
+  # Last resort: assume we're running from repo root
+  REPO="$(pwd)"
+fi
 LOG_DIR="$REPO/logs"
 PID_FILE="$LOG_DIR/allmight.pid"  # unified with remote_ctl.sh
 SESSION_FILE="$LOG_DIR/allmight.session"
