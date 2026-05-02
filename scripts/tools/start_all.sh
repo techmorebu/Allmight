@@ -256,25 +256,52 @@ sleep 35
 echo ""
 echo "-- 2. Arb window activator (supervised) --"
 (
+  set +e  # CRITICAL: disable set -e — supervisor must handle all node exit codes
   RESTART_COUNT=0
+  CONSEC_CONTROLLED=0  # consecutive controlled exits — drives exponential backoff
+
   while true; do
     RESTART_COUNT=$((RESTART_COUNT+1))
-    echo "[supervisor] Start #${RESTART_COUNT} $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
+    echo "[supervisor] Start #${RESTART_COUNT} $(date -u '+%Y-%m-%dT%H:%M:%SZ') consec_controlled=${CONSEC_CONTROLLED}" \
       >> "$SESSION_DIR/activator.jsonl"
 
     node "$REPO/scripts/analysis/arb_window_activator.js" \
+      --log "$SESSION_DIR/activator.jsonl" \
       >> "$SESSION_DIR/activator.jsonl" 2>&1
 
     EXIT=$?
 
-    if [[ $EXIT -eq 0 ]]; then
-      # Clean exit = RPC exhaustion. Wait 15 min for quota cooldown then retry.
-      echo "[supervisor] Exited code 0 (RPC cooldown) — waiting 15m before restart $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
+    # ── Exit code routing (Boss ruling 2026-05-02) ─────────────────────────
+    # Controlled exits = expected condition, apply exponential cooldown
+    #   0  = RPC_EXHAUSTION (quota hit)
+    #   10 = PROLONGED_STALE (data starvation → wait for RPC recovery)
+    #   11 = RPC_DEGRADED (rebuild limit exceeded)
+    # Any other exit = crash → reset backoff, restart in 5s
+
+    if [[ $EXIT -eq 0 || $EXIT -eq 10 || $EXIT -eq 11 ]]; then
+      CONSEC_CONTROLLED=$((CONSEC_CONTROLLED+1))
+
+      # Exponential backoff: 5min → 10min → 15min cap
+      if   [[ $CONSEC_CONTROLLED -eq 1 ]]; then DELAY=300
+      elif [[ $CONSEC_CONTROLLED -eq 2 ]]; then DELAY=600
+      else                                       DELAY=900
+      fi
+
+      case $EXIT in
+        0)  REASON="RPC_EXHAUSTION"  ;;
+        10) REASON="PROLONGED_STALE" ;;
+        11) REASON="RPC_DEGRADED"    ;;
+        *)  REASON="CONTROLLED"      ;;
+      esac
+
+      echo "[supervisor] Controlled exit $EXIT ($REASON) — cooldown ${DELAY}s attempt=$CONSEC_CONTROLLED $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
         >> "$SESSION_DIR/activator.jsonl"
-      sleep 900
+      sleep $DELAY
+
     else
-      # Crash/error — short delay then restart
-      echo "[supervisor] Exited code $EXIT — restarting in 5s $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
+      # True crash — reset backoff counter, restart fast
+      CONSEC_CONTROLLED=0
+      echo "[supervisor] Crash exit $EXIT — restarting in 5s $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
         >> "$SESSION_DIR/activator.jsonl"
       sleep 5
     fi
@@ -283,7 +310,7 @@ echo "-- 2. Arb window activator (supervised) --"
 ACTIVATOR_PID=$!
 disown $ACTIVATOR_PID 2>/dev/null || true
 echo "activator=$ACTIVATOR_PID" >> "$PID_FILE"
-echo "  PID $ACTIVATOR_PID (supervised, 15m cooldown on RPC exhaustion)"
+echo "  PID $ACTIVATOR_PID (supervised, exponential cooldown: 5m/10m/15m on controlled exits)"
 
 # ─── 3. VOLATILITY MONITOR ───────────────────────────────────────────────────
 echo ""
@@ -311,21 +338,6 @@ else
   echo "  Skipped (arb_volatility_monitor.js not found)"
 fi
 
-# ─── 3b. HEAT REPORTER (volatility_divergence_report.js → heat.jsonl) ─────────
-# Writes heat.jsonl every 30s — required by watchdog for health checks
-echo ""
-echo "-- 3b. Heat reporter --"
-if [[ -f "$REPO/scripts/tools/volatility_divergence_report.js" ]]; then
-  node "$REPO/scripts/tools/volatility_divergence_report.js" \
-    --interval 30 \
-    >> "$SESSION_DIR/heat.jsonl" 2>&1 &
-  HEAT_PID=$!
-  echo "heat=$HEAT_PID" >> "$PID_FILE"
-  echo "  PID $HEAT_PID"
-else
-  echo "  Skipped (volatility_divergence_report.js not found)"
-fi
-
 # ─── 4. SPREAD MONITOR (optional — requires python3 redis module) ────────────
 echo ""
 echo "-- 4. Spread monitor --"
@@ -348,7 +360,7 @@ echo "-- 5. Watchdog (starting in 20s) --"
 sleep 20
 echo "-- 5. Watchdog --"
 if [[ -f "$REPO/scripts/tools/allmight_watchdog.sh" ]]; then
-  bash "$REPO/scripts/tools/allmight_watchdog.sh" --loop 60 \
+  bash "$REPO/scripts/tools/allmight_watchdog.sh" \
     >> "$SESSION_DIR/watchdog.jsonl" 2>&1 &
 else
   node "$REPO/scripts/analysis/arb_window_activator.js" --watchdog 2>/dev/null \

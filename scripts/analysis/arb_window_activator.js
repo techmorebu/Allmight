@@ -306,10 +306,11 @@ const HEALTH_BLOCK_FROZEN_MS   =  60_000;   // block number unchanged for > 60s 
 const HEALTH_TICKMAP_STALE_MS  =  35 * 60 * 1000;  // tick map not refreshed in > 35 min
 const HEALTH_CHECK_INTERVAL_MS =  60_000;   // run health check every 60s
 // Boss ruling 2026-04-14: exit cleanly after prolonged pool stale so supervisor
-// can restart with a fresh provider. Previously implicit (11+ min observed in session
-// 20260413_2012). Now explicit at 7 minutes — fast enough to detect true read
-// starvation, slow enough to survive brief provider turbulence.
-const HEALTH_POOL_STALE_EXIT_MS = 7 * 60 * 1000;  // 7 min prolonged stale → clean exit
+// can restart with a fresh provider.
+// Boss ruling 2026-05-02: raised 7min → 11min — real-world RPC variability caused
+// false-positive stale exits every 7min, creating restart thrash and sparse heartbeats.
+// 11min is tight enough to catch true read starvation, wide enough for RPC turbulence.
+const HEALTH_POOL_STALE_EXIT_MS = 11 * 60 * 1000;  // 11 min prolonged stale → clean exit
 const HEARTBEAT_TICKS           =  200;        // confirmed_default: emit heartbeat every N ticks
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1073,9 +1074,9 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
       process.stderr.write(`\n  ${fatal}\n`);
       appendLog(logPath, {
         ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
-        type: 'fatal_exit', reason: fatal, providerRebuilds,
+        type: 'rpc_degraded_exit', exitCode: 11, reason: fatal, providerRebuilds,
       });
-      process.exit(2);  // non-zero so supervisor can restart
+      process.exit(11);  // RPC_DEGRADED controlled exit → supervisor applies cooldown
     }
 
     // Degraded mode: after REBUILD_DEGRADED_AFTER rebuilds, force SAFE profile (Boss ruling 2026-04-06)
@@ -1177,13 +1178,14 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
       const staleDurationMs = Date.now() - health.unhealthySinceMs;
       if (staleDurationMs > HEALTH_POOL_STALE_EXIT_MS) {
         const staleMinutes = (staleDurationMs / 60000).toFixed(1);
-        process.stderr.write(`\n  ⚠ [health] prolonged stale (${staleMinutes}min > ${HEALTH_POOL_STALE_EXIT_MS/60000}min threshold) — exiting for supervisor restart\n`);
+        process.stderr.write(`\n  ⚠ [health] prolonged stale (${staleMinutes}min > ${HEALTH_POOL_STALE_EXIT_MS/60000}min threshold) — controlled exit (code 10)\n`);
         appendLog(logPath, {
           ts: new Date().toISOString(), source: LOG_SOURCE, chain: LOG_CHAIN, pair: LOG_PAIR,
-          type: 'stale_exit', staleDurationMs, thresholdMs: HEALTH_POOL_STALE_EXIT_MS,
+          type: 'stale_exit', exitCode: 10, staleDurationMs,
+          thresholdMs: HEALTH_POOL_STALE_EXIT_MS,
           reasons: health.unhealthyReasons,
         });
-        process.exit(1);  // non-zero so supervisor restarts
+        process.exit(10);  // PROLONGED_STALE controlled exit → supervisor applies 10-15min cooldown
       }
     }
 
