@@ -236,7 +236,7 @@ node "$REPO/scripts/execution/preflight_ramses_executor.js" 2>/dev/null \
 # ─── 1. MASTER FETCHER ───────────────────────────────────────────────────────
 echo ""
 echo "-- 1. Master fetcher --"
-(set +e; while true; do
+(while true; do
   node "$REPO/scripts/master-fetcher.js" once 2>&1
   sleep 60
 done) >> "$SESSION_DIR/fetcher.log" 2>&1 &
@@ -256,7 +256,6 @@ sleep 35
 echo ""
 echo "-- 2. Arb window activator (supervised) --"
 (
-  set +e  # CRITICAL: disable set -e inside supervisor — node exits non-zero on crash/exhaustion
   RESTART_COUNT=0
   while true; do
     RESTART_COUNT=$((RESTART_COUNT+1))
@@ -289,26 +288,28 @@ echo "  PID $ACTIVATOR_PID (supervised, 15m cooldown on RPC exhaustion)"
 # ─── 3. VOLATILITY MONITOR ───────────────────────────────────────────────────
 echo ""
 echo "-- 3. Volatility monitor --"
+# 45s wait: fetcher needs 35s startup + time to complete first Redis write
+echo "  Waiting 45s for fetcher data in Redis..."
+sleep 45
 if [[ -f "$REPO/scripts/analysis/arb_volatility_monitor.js" ]]; then
-  # Wrap in retry loop — volatility exits if Redis has no fetcher data yet.
-  # Retries every 30s until fetcher data is available (max 5 attempts).
+  # Infinite retry loop — exits cleanly when no Redis data, retries every 30s
   (
-    set +e  # disable set -e so volatility exit codes don't kill the wrapper
-    for attempt in 1 2 3 4 5; do
+    set +e
+    ATTEMPT=0
+    while true; do
+      ATTEMPT=$((ATTEMPT+1))
       node "$REPO/scripts/analysis/arb_volatility_monitor.js" \
         >> "$SESSION_DIR/volatility.jsonl" 2>&1
       EXIT=$?
-      # Exit 0 = normal process end (not a crash) — retry after 30s
-      # Exit non-0 = crash — retry after 10s
-      DELAY=$([[ $EXIT -eq 0 ]] && echo 30 || echo 10)
-      echo "[volatility-wrapper] Exit $EXIT attempt $attempt — retry in ${DELAY}s $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
+      DELAY=$([[ $EXIT -eq 0 ]] && echo 30 || echo 15)
+      echo "[volatility-wrapper] Exit $EXIT attempt $ATTEMPT — retry in ${DELAY}s $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
         >> "$SESSION_DIR/volatility.jsonl"
       sleep $DELAY
     done
   ) &
   VOLATILITY_PID=$!
   echo "volatility=$VOLATILITY_PID" >> "$PID_FILE"
-  echo "  PID $VOLATILITY_PID (with retry wrapper)"
+  echo "  PID $VOLATILITY_PID (infinite retry)"
 else
   echo "  Skipped (arb_volatility_monitor.js not found)"
 fi
@@ -329,10 +330,10 @@ else
 fi
 
 # ─── 5. WATCHDOG ─────────────────────────────────────────────────────────────
-# Delay: give volatility 20s to write its first record before watchdog checks it
+# Delay: 60s total for volatility to succeed (45s vol delay + 15s buffer)
 echo ""
-echo "-- 5. Watchdog (starting in 20s) --"
-sleep 20
+echo "-- 5. Watchdog (starting in 60s — waiting for volatility) --"
+sleep 60
 echo "-- 5. Watchdog --"
 if [[ -f "$REPO/scripts/tools/allmight_watchdog.sh" ]]; then
   bash "$REPO/scripts/tools/allmight_watchdog.sh" \
@@ -358,7 +359,7 @@ echo "  PID $NOTIF_PID (heartbeat every 5m)"
 # ─── 7. SHADOW EXECUTION ENGINE ──────────────────────────────────────────────
 echo ""
 echo "-- 7. Shadow execution engine (polls every 5m) --"
-(set +e; while true; do
+(while true; do
   sleep 300
   node "$REPO/scripts/execution/shadow_execution_engine.js" \
     --session "$SESSION_DIR" 2>/dev/null || true
