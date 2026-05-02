@@ -8,13 +8,16 @@
 
 set -euo pipefail
 
-# Resolve repo root regardless of how this script is called
-# dirname($0) breaks when called as "bash scripts/tools/start_all.sh" from repo root
-REPO="$(git -C "$(dirname "$(realpath "$0")")" rev-parse --show-toplevel 2>/dev/null)" \
-  || REPO="$(cd "$(dirname "$(realpath "$0")")/../.." && pwd)"
-# Validate: REPO must contain .env and scripts/
-if [[ ! -f "$REPO/.env" || ! -d "$REPO/scripts" ]]; then
-  # Last resort: assume we're running from repo root
+# Resolve repo root — works regardless of how this script is called
+# Method 1: git rev-parse (most reliable)
+# Method 2: two levels up from scripts/tools/ (structural)
+# Method 3: current working directory (last resort)
+_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if git -C "$_SCRIPT_DIR" rev-parse --show-toplevel > /dev/null 2>&1; then
+  REPO="$(git -C "$_SCRIPT_DIR" rev-parse --show-toplevel)"
+elif [[ -f "$_SCRIPT_DIR/../../.env" ]]; then
+  REPO="$(cd "$_SCRIPT_DIR/../.." && pwd)"
+else
   REPO="$(pwd)"
 fi
 LOG_DIR="$REPO/logs"
