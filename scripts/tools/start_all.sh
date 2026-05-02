@@ -10,7 +10,7 @@ set -euo pipefail
 
 REPO="$(cd "$(dirname "$0")" && pwd)"
 LOG_DIR="$REPO/logs"
-PID_FILE="$LOG_DIR/pids.txt"
+PID_FILE="$LOG_DIR/allmight.pid"  # unified with remote_ctl.sh
 SESSION_FILE="$LOG_DIR/allmight.session"
 
 # ─── STOP (canonical full pipeline) ─────────────────────────────────────────
@@ -157,22 +157,26 @@ fi
 echo ""
 echo "-- Pre-launch cleanup --"
 
-if [[ -f "$PID_FILE" ]]; then
+# Check both PID file locations (belt-and-suspenders)
+for _pf in "$PID_FILE" "$LOG_DIR/pids.txt" "$LOG_DIR/allmight.pid"; do
+  [[ -f "$_pf" ]] || continue
   ALIVE=0
   while IFS='=' read -r name pid; do
-    [[ -z "$pid" ]] && continue
+    [[ -z "$pid" || -z "$name" ]] && continue
+    # Skip lines that are not name=number format
+    [[ "$pid" =~ ^[0-9]+$ ]] || continue
     kill -0 "$pid" 2>/dev/null && ALIVE=$((ALIVE+1))
-  done < "$PID_FILE"
+  done < "$_pf"
 
   if [[ $ALIVE -gt 0 ]]; then
     echo "  ERROR: $ALIVE process(es) still running -- stop first:"
     echo "     bash scripts/tools/start_all.sh --stop"
     exit 1
   else
-    echo "  Stale PID file cleared ($ALIVE live processes)"
-    rm -f "$PID_FILE"
+    echo "  Stale PID file cleared: $_pf ($ALIVE live processes)"
+    rm -f "$_pf"
   fi
-fi
+done
 
 # Clear stale session pointer
 [[ -f "$SESSION_FILE" ]] && echo "  Stale session cleared ($(cat "$SESSION_FILE"))" && rm -f "$SESSION_FILE"
