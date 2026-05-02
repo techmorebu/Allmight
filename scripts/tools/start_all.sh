@@ -294,14 +294,15 @@ if [[ -f "$REPO/scripts/analysis/arb_volatility_monitor.js" ]]; then
   # Wrap in retry loop — volatility exits if Redis has no fetcher data yet.
   # Retries every 30s until fetcher data is available (max 5 attempts).
   (
-    for attempt in 1 2 3 4 5; do
+    set +e  # must disable — node exits non-zero, set -e would kill the wrapper
+    ATTEMPT=0
+    while true; do
+      ATTEMPT=$((ATTEMPT+1))
       node "$REPO/scripts/analysis/arb_volatility_monitor.js" \
         >> "$SESSION_DIR/volatility.jsonl" 2>&1
       EXIT=$?
-      # Exit 0 = normal process end (not a crash) — retry after 30s
-      # Exit non-0 = crash — retry after 10s
-      DELAY=$([[ $EXIT -eq 0 ]] && echo 30 || echo 10)
-      echo "[volatility-wrapper] Exit $EXIT attempt $attempt — retry in ${DELAY}s $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
+      DELAY=$([[ $EXIT -eq 0 ]] && echo 30 || echo 15)
+      echo "[volatility-wrapper] Exit $EXIT attempt $ATTEMPT — retry in ${DELAY}s $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
         >> "$SESSION_DIR/volatility.jsonl"
       sleep $DELAY
     done
