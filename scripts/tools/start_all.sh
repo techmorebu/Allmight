@@ -263,6 +263,7 @@ echo "-- 2. Arb window activator (supervised) --"
       >> "$SESSION_DIR/activator.jsonl"
 
     node "$REPO/scripts/analysis/arb_window_activator.js" \
+      --log "$SESSION_DIR/activator.jsonl" \
       >> "$SESSION_DIR/activator.jsonl" 2>&1
 
     EXIT=$?
@@ -288,28 +289,25 @@ echo "  PID $ACTIVATOR_PID (supervised, 15m cooldown on RPC exhaustion)"
 # ─── 3. VOLATILITY MONITOR ───────────────────────────────────────────────────
 echo ""
 echo "-- 3. Volatility monitor --"
-# 45s wait: fetcher needs 35s startup + time to complete first Redis write
-echo "  Waiting 45s for fetcher data in Redis..."
-sleep 45
 if [[ -f "$REPO/scripts/analysis/arb_volatility_monitor.js" ]]; then
-  # Infinite retry loop — exits cleanly when no Redis data, retries every 30s
+  # Wrap in retry loop — volatility exits if Redis has no fetcher data yet.
+  # Retries every 30s until fetcher data is available (max 5 attempts).
   (
-    set +e
-    ATTEMPT=0
-    while true; do
-      ATTEMPT=$((ATTEMPT+1))
+    for attempt in 1 2 3 4 5; do
       node "$REPO/scripts/analysis/arb_volatility_monitor.js" \
         >> "$SESSION_DIR/volatility.jsonl" 2>&1
       EXIT=$?
-      DELAY=$([[ $EXIT -eq 0 ]] && echo 30 || echo 15)
-      echo "[volatility-wrapper] Exit $EXIT attempt $ATTEMPT — retry in ${DELAY}s $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
+      # Exit 0 = normal process end (not a crash) — retry after 30s
+      # Exit non-0 = crash — retry after 10s
+      DELAY=$([[ $EXIT -eq 0 ]] && echo 30 || echo 10)
+      echo "[volatility-wrapper] Exit $EXIT attempt $attempt — retry in ${DELAY}s $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
         >> "$SESSION_DIR/volatility.jsonl"
       sleep $DELAY
     done
   ) &
   VOLATILITY_PID=$!
   echo "volatility=$VOLATILITY_PID" >> "$PID_FILE"
-  echo "  PID $VOLATILITY_PID (infinite retry)"
+  echo "  PID $VOLATILITY_PID (with retry wrapper)"
 else
   echo "  Skipped (arb_volatility_monitor.js not found)"
 fi
@@ -330,10 +328,10 @@ else
 fi
 
 # ─── 5. WATCHDOG ─────────────────────────────────────────────────────────────
-# Delay: 60s total for volatility to succeed (45s vol delay + 15s buffer)
+# Delay: give volatility 20s to write its first record before watchdog checks it
 echo ""
-echo "-- 5. Watchdog (starting in 60s — waiting for volatility) --"
-sleep 60
+echo "-- 5. Watchdog (starting in 20s) --"
+sleep 20
 echo "-- 5. Watchdog --"
 if [[ -f "$REPO/scripts/tools/allmight_watchdog.sh" ]]; then
   bash "$REPO/scripts/tools/allmight_watchdog.sh" \
