@@ -145,6 +145,10 @@ function isInConsecCooldown(url) {
 // Daily limits configured in .env (all optional — safe defaults):
 //   RPC_DAILY_LIMIT=100000          default for all endpoints
 //   RPC_DAILY_LIMIT_infura=100000   override for infura.io endpoints
+//   RPC_DESIGNATED_PRIMARY_URL=<url> sticky primary — always slot 0 when healthy.
+//     Set to your Tenderly URL to prevent Infura being round-robined into slot 0.
+//     Without this, when Tenderly+Infura both have penalty=0 (both fresh),
+//     Infura reaches slot 0 ~50% of the time despite PRIMARY_ONLY=true.
 //   RPC_DAILY_LIMIT_tenderly=100000 override for tenderly.co endpoints
 //   (key = last two hostname segments, lowercased, dot replaced with underscore)
 //
@@ -868,11 +872,28 @@ function createProvider(chain) {
       // Sort groups ascending by penalty (freshest tier first)
       const sortedTiers = [...groups.entries()].sort((a, b) => a[0] - b[0]);
 
-      // Round-robin within the best tier only; append worse tiers as-is
+      // Round-robin within the best tier only; append worse tiers as-is.
+      // STICKY PRIMARY: if a designated primary URL exists and is in the best
+      // tier, always put it at slot 0 — prevents round-robin from rotating
+      // Infura into slot 0 when Tenderly is equally fresh (both penalty=0).
       const [, bestTier] = sortedTiers[0];
-      const start = _rrStart[chainKey] || 0;
-      const rotatedBest = bestTier.map((_, i) => bestTier[(start + i) % bestTier.length]);
-      _rrStart[chainKey] = (start + 1) % bestTier.length;
+      const DESIGNATED_PRIMARY = process.env.RPC_DESIGNATED_PRIMARY_URL || '';
+      const dpInBest = DESIGNATED_PRIMARY && bestTier.includes(DESIGNATED_PRIMARY);
+
+      let rotatedBest;
+      if (dpInBest) {
+        // Sticky: designated primary always slot 0, others fill remaining slots
+        const others = bestTier.filter(u => u !== DESIGNATED_PRIMARY);
+        const start = _rrStart[chainKey] || 0;
+        const rotatedOthers = others.map((_, i) => others[(start + i) % others.length]);
+        if (others.length > 0) _rrStart[chainKey] = (start + 1) % others.length;
+        rotatedBest = [DESIGNATED_PRIMARY, ...rotatedOthers];
+      } else {
+        // Normal round-robin within best tier (no designated primary configured)
+        const start = _rrStart[chainKey] || 0;
+        rotatedBest = bestTier.map((_, i) => bestTier[(start + i) % bestTier.length]);
+        _rrStart[chainKey] = (start + 1) % bestTier.length;
+      }
 
       const worseTiers = sortedTiers.slice(1).flatMap(([, tier]) => tier);
       rotated = [...rotatedBest, ...worseTiers];
