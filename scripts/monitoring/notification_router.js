@@ -619,7 +619,12 @@ async function main() {
   }
 
   // Continuous polling mode
-  await runOnce();
+  // If --startup flag was set, skip the immediate first runOnce() —
+  // the startup message already served as the launch notification.
+  // This prevents the double-message on session start.
+  if (!STARTUP_FLAG) {
+    await runOnce();
+  }
   setInterval(runOnce, LOOP_SECS * 1000);
 }
 

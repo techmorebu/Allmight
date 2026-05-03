@@ -260,6 +260,7 @@ echo "-- 2. Arb window activator (supervised) --"
   RESTART_COUNT=0; CONSEC_CONTROLLED=0
   while true; do
     RESTART_COUNT=$((RESTART_COUNT+1))
+    _LOOP_START=$(date +%s)
     echo "[supervisor] Start #${RESTART_COUNT} $(date -u '+%Y-%m-%dT%H:%M:%SZ') consec=${CONSEC_CONTROLLED}" \
       >> "$SESSION_DIR/activator.jsonl"
     node "$REPO/scripts/analysis/arb_window_activator.js" \
@@ -267,12 +268,20 @@ echo "-- 2. Arb window activator (supervised) --"
       >> "$SESSION_DIR/activator.jsonl" 2>&1
     EXIT=$?
     if [[ $EXIT -eq 0 || $EXIT -eq 10 || $EXIT -eq 11 ]]; then
-      CONSEC_CONTROLLED=$((CONSEC_CONTROLLED+1))
-      if   [[ $CONSEC_CONTROLLED -eq 1 ]]; then DELAY=300
+      # Reset backoff if activator ran >30min — long healthy run ending in stale
+      # is normal RPC rotation, not degradation. Use minimum 5min delay.
+      # Rapid stale (<30min) = genuine degradation → escalate cooldown.
+      _RUN_SEC=$(( $(date +%s) - _LOOP_START ))
+      if [[ $_RUN_SEC -gt 1800 ]]; then
+        CONSEC_CONTROLLED=1  # reset to min delay
+      else
+        CONSEC_CONTROLLED=$((CONSEC_CONTROLLED+1))
+      fi
+      if   [[ $CONSEC_CONTROLLED -le 1 ]]; then DELAY=300
       elif [[ $CONSEC_CONTROLLED -eq 2 ]]; then DELAY=600
       else                                       DELAY=900; fi
       case $EXIT in 0) R="RPC_EXHAUSTION";; 10) R="PROLONGED_STALE";; 11) R="RPC_DEGRADED";; *) R="CONTROLLED";; esac
-      echo "[supervisor] Controlled $EXIT ($R) cooldown ${DELAY}s attempt=$CONSEC_CONTROLLED $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
+      echo "[supervisor] Controlled $EXIT ($R) cooldown ${DELAY}s consec=$CONSEC_CONTROLLED run=${_RUN_SEC}s $(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
         >> "$SESSION_DIR/activator.jsonl"
       sleep $DELAY
     else
