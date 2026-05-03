@@ -93,25 +93,13 @@ if [[ "${1:-}" == "--stop" || "${1:-}" == "stop" ]]; then
     node -r dotenv/config "$REPO/scripts/monitoring/notification_router.js" \
       --stop-summary "$SESSION_DIR" 2>/dev/null || echo "  (Discord: unavailable)"
 
-    # ── 8. Zip session ───────────────────────────────────────────────────────
+    # ── 8. Zip session (all files — no whitelist) ─────────────────────────────
     echo "[$(TS)] Zipping session..."
     ZIP_OUT="$LOG_DIR/sessions/session_${SESSION_ID}.zip"
-    INCLUDE_FILES=(
-      activator.jsonl blueprints.jsonl watchdog.jsonl volatility.jsonl heat.jsonl
-      sandbox_results.json dryrun_confidence.json execution_candidate_audit.jsonl
-      flash_loan_readiness.json size_ladder.json threshold_edge.json
-      tier_breakdown.json near_miss_analysis.json session_totals.json
-      shadow_execution_totals.json shadow_execution_totals_v2.json
-      shadow_execution_ledger.jsonl shadow_execution_ledger_v2.jsonl
-      shadow_dryrun_totals.json shadow_accuracy_report.json
-    )
-    EXISTING=()
-    for f in "${INCLUDE_FILES[@]}"; do
-      [[ -f "$SESSION_DIR/$f" ]] && EXISTING+=("$f")
-    done
-    if [[ ${#EXISTING[@]} -gt 0 ]]; then
-      (cd "$SESSION_DIR" && zip -q "../session_${SESSION_ID}.zip" "${EXISTING[@]}" 2>/dev/null)
-      echo "  ✅ Session zip: $ZIP_OUT (${#EXISTING[@]} files)"
+    FILE_COUNT=$(find "$SESSION_DIR" -maxdepth 1 -type f | wc -l)
+    if [[ $FILE_COUNT -gt 0 ]]; then
+      (cd "$SESSION_DIR" && zip -q "../session_${SESSION_ID}.zip" * 2>/dev/null)
+      echo "  ✅ Session zip: $ZIP_OUT ($FILE_COUNT files)"
     else
       echo "  ⚠️  No files to zip"
     fi
@@ -268,12 +256,14 @@ echo "-- 2. Arb window activator (supervised) --"
       >> "$SESSION_DIR/activator.jsonl" 2>&1
     EXIT=$?
     if [[ $EXIT -eq 0 || $EXIT -eq 10 || $EXIT -eq 11 ]]; then
-      # Reset backoff if activator ran >30min — long healthy run ending in stale
-      # is normal RPC rotation, not degradation. Use minimum 5min delay.
-      # Rapid stale (<30min) = genuine degradation → escalate cooldown.
+      # Boss ruling 2026-05-03: reset CONSEC if ran > STALE_THRESHOLD * 3
+      # Long healthy run that ended in stale = normal RPC rotation (not degradation)
+      # Rapid stale (<33min) = genuine degradation → escalate cooldown
+      # STALE_THRESHOLD_SEC = 660 (11min) → reset threshold = 1980s (33min)
       _RUN_SEC=$(( $(date +%s) - _LOOP_START ))
-      if [[ $_RUN_SEC -gt 1800 ]]; then
-        CONSEC_CONTROLLED=1  # reset to min delay
+      _STALE_THRESH=660  # 11min — matches HEALTH_POOL_STALE_EXIT_MS in activator
+      if [[ $_RUN_SEC -gt $(( _STALE_THRESH * 3 )) ]]; then
+        CONSEC_CONTROLLED=1  # reset to min delay — long run, normal rotation
       else
         CONSEC_CONTROLLED=$((CONSEC_CONTROLLED+1))
       fi
