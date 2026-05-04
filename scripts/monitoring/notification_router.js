@@ -295,7 +295,8 @@ async function sendHeartbeat() {
                      : watchdogStatus === 'FAILED'    ? '🔴' : '⚪';
 
     // ── Shadow execution section (v1 opportunity + v2 realistic) ───────────────
-    let shadowBlock = null;
+    // Shadow execution block — always shown, shows pending if files not yet written
+    let shadowBlock;
     try {
       const v1Path = path.join(_state.sessionDir, 'shadow_execution_totals.json');
       const v2Path = path.join(_state.sessionDir, 'shadow_execution_totals_v2.json');
@@ -304,19 +305,29 @@ async function sendHeartbeat() {
         const v2 = fs.existsSync(v2Path)
           ? JSON.parse(fs.readFileSync(v2Path, 'utf8'))
           : null;
-        const gateIcon = v1.crossedMicro ? '🟢' : v1.crossedDryWallet ? '🟠' : v1.crossedPaper ? '🟡' : '🔴';
-        const oppty    = `$${(v1.shadowTheoreticalPnLUsd || 0).toFixed(2)}`;
-        const realistic = v2 ? `$${(v2.shadowRealisticTheoreticalUsd || 0).toFixed(2)}` : 'pending';
-        const calibrated = v2 ? `$${(v2.shadowCalibratedEstimateUsd || 0).toFixed(2)}` : '?';
-        const survivors  = v2 ? `${v2.realisticPositiveCount}/${v2.totalSignals}` : '?';
+        const gateIcon   = v1.crossedMicro ? '🟢' : v1.crossedDryWallet ? '🟠' : v1.crossedPaper ? '🟡' : '🔴';
+        const oppty      = `$${(v1.shadowTheoreticalPnLUsd  || 0).toFixed(3)}`;
+        const realistic  = v2  ? `$${(v2.shadowRealisticTheoreticalUsd || 0).toFixed(3)}` : 'pending';
+        const calibrated = v2  ? `$${(v2.shadowCalibratedEstimateUsd   || 0).toFixed(3)}` : '?';
+        const survivors  = v2  ? `${v2.realisticPositiveCount}/${v2.totalSignals} (${v2.realisticSurvivalRate?.toFixed(1)}%)` : '?';
+        const bestSpread = v1.bestSignalSpreadPct ? `${(v1.bestSignalSpreadPct*100).toFixed(2)}bps` : '?';
+        const blocker    = (v1.topBlockedReason ?? 'none').replace('LIVE_DEPLOY_APPROVED != true', 'DEPLOY_LOCKED');
         shadowBlock = [
-          `─── Shadow Execution ────────`,
-          `Opportunity:  ${oppty}   Realistic: ${realistic}`,
-          `Calibrated:   ${calibrated}   Friction: 5bps`,
-          `Survivors:    ${survivors}  Gate: ${gateIcon} ${v1.topBlockedReason?.slice(0,25) ?? 'none'}`,
+          `─── Shadow Execution ─────────────`,
+          `Opportunity:  ${oppty}  Realistic: ${realistic}`,
+          `Calibrated:   ${calibrated}  Friction: 5bps`,
+          `Survivors:    ${survivors}`,
+          `Best spread:  ${bestSpread}  Gate: ${gateIcon} ${blocker.slice(0,22)}`,
+        ].join('\n');
+      } else {
+        // File not yet written — shadow engine runs every 5min, show pending
+        shadowBlock = [
+          `─── Shadow Execution ─────────────`,
+          `Opportunity:  pending   Realistic: pending`,
+          `(shadow engine runs every 5min)`,
         ].join('\n');
       }
-    } catch { /* fail-silent */ }
+    } catch { shadowBlock = '─── Shadow Execution ─────────────\n  (read error)'; }
 
     const lines = [
       `${statusIcon} **AllMight Heartbeat** | ${_state.sessionId}`,
