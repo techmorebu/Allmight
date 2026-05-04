@@ -93,16 +93,25 @@ if [[ "${1:-}" == "--stop" || "${1:-}" == "stop" ]]; then
     node -r dotenv/config "$REPO/scripts/monitoring/notification_router.js" \
       --stop-summary "$SESSION_DIR" 2>/dev/null || echo "  (Discord: unavailable)"
 
-    # ── 8. Zip session (all files — no whitelist) ─────────────────────────────
-    echo "[$(TS)] Zipping session..."
-    ZIP_OUT="$LOG_DIR/sessions/session_${SESSION_ID}.zip"
+    # ── 8. Zip session → logs/archive/ (raw session stays in logs/sessions/) ────
+    # logs/sessions/session_XXXX/ = raw files (readable, for active analysis)
+    # logs/archive/session_XXXX.zip = compressed archive (for long-term storage)
+    echo "[$(TS)] Zipping session to archive..."
+    ARCHIVE_DIR="$LOG_DIR/archive"
+    mkdir -p "$ARCHIVE_DIR"
+    ZIP_OUT="$ARCHIVE_DIR/session_${SESSION_ID}.zip"
     FILE_COUNT=$(find "$SESSION_DIR" -maxdepth 1 -type f | wc -l)
     if [[ $FILE_COUNT -gt 0 ]]; then
-      (cd "$SESSION_DIR" && zip -q "../session_${SESSION_ID}.zip" * 2>/dev/null)
-      echo "  ✅ Session zip: $ZIP_OUT ($FILE_COUNT files)"
+      (cd "$SESSION_DIR" && zip -q "$ZIP_OUT" * 2>/dev/null)
+      ZIP_SIZE=$(du -sh "$ZIP_OUT" 2>/dev/null | cut -f1)
+      echo "  ✅ Archive: $ZIP_OUT ($FILE_COUNT files, ${ZIP_SIZE})"
+      echo "  Raw session kept: $SESSION_DIR/"
     else
       echo "  ⚠️  No files to zip"
     fi
+
+    # Run log_retention_manager to enforce archive limits and clean old raw sessions
+    [[ -f "$REPO/scripts/tools/log_retention_manager.js" ]] &&       node "$REPO/scripts/tools/log_retention_manager.js" --archive         >> "$SESSION_DIR/analysis.log" 2>/dev/null || true
   fi
 
   echo ""
