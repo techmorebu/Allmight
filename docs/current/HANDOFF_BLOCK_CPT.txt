@@ -1,0 +1,88 @@
+PROJECT: ALLMIGHT
+OPERATOR: Cornelius
+BOSS: ChatGPT (architectural authority)
+CPT: Claude (implementation, validation, reporting)
+
+═══════════════════════════════════════════════════════════════════════════════
+YOU ARE CONTINUING AN IN-PROGRESS SYSTEM. DO NOT REDESIGN ANYTHING.
+═══════════════════════════════════════════════════════════════════════════════
+
+MANDATORY FIRST STEP:
+Read these files before doing ANYTHING else:
+  docs/current/PROJECT_STATE_CURRENT.md   ← what is proven and what is not
+  docs/current/NEXT_ACTIONS.md            ← ordered task queue
+  docs/current/SYSTEM_GUARDRAILS.md       ← rules you cannot break
+
+═══════════════════════════════════════════════════════════════════════════════
+
+CURRENT PHASE:
+  Execution Truth + Stability Validation (Single Surface)
+
+═══════════════════════════════════════════════════════════════════════════════
+
+WHAT IS PROVEN:
+  ✅ 641/641 dry-run WOULD_EXECUTE (100% success on real blocks)
+  ✅ ≥22bps = 95% net-positive, avg $0.063/signal
+  ✅ Gas confirmed: 524k–700k units, ~$0.069 at 0.05 gwei
+  ✅ Shadow v2 calibrated: 5bps friction, 81.3% direction accuracy
+  ✅ Sticky primary RPC deployed (Tenderly stays slot-0)
+  ✅ 8-process stack stable: fetcher→activator→volatility→heat→monitor→watchdog→notif→shadow
+  ✅ Supervisor: exit codes 10/11 → exponential cooldown (5/10/15min)
+  ✅ Discord: market regime heartbeat live
+
+WHAT IS PENDING:
+  ⏳ 24h clean run (currently running — check logs/allmight.session)
+  ⏳ C9 marking on sessions 20260428_2329 and 20260428_0817
+  ⏳ surface_regime_report.js first run after 24h
+  ⏳ Confirm 60-min stale cycle broken by sticky primary fix
+
+WHAT IS LOCKED (Boss approval required):
+  ❌ Live execution (LIVE_DEPLOY_APPROVED=false — do not change)
+  ❌ Multi-surface expansion
+  ❌ Gate weight changes (spread 0.30→0.40 is candidate, not approved)
+  ❌ Contract modification
+
+═══════════════════════════════════════════════════════════════════════════════
+
+SYSTEM STATE:
+  Chain:       Arbitrum mainnet (primary)
+  Surface:     ETH/USDC Ramses V2 (pool 0x30AFBcF9458c...)
+  Mode:        MODE 0 PAPER (no capital deployed)
+  Capital:     $0 live
+
+  Min viable spread:   20bps (practical)
+  Preferred spread:    22bps+
+  Elite spread:        24bps+
+
+  Lifetime shadow:
+    Opportunity:  $1,551  (v1)
+    Realistic:    $310    (v2, 5bps friction)
+    Calibrated:   $124    (×sandbox rate)
+    PnL/hr:       $0.98/h
+
+═══════════════════════════════════════════════════════════════════════════════
+
+OPERATOR COMMANDS:
+  remote_ctl start    → launch 8-process stack
+  remote_ctl stop     → stop + full analytics + zip
+  remote_ctl restart  → stop + git pull + relaunch
+  remote_ctl status   → process health + policy
+  remote_ctl abort    → emergency kill (no analytics)
+
+NEXT TASK FOR CPT:
+  → Check NEXT_ACTIONS.md Priority 1
+  → Confirm 24h session clean at the 24h mark
+  → Run surface_regime_report.js --all after 24h
+
+═══════════════════════════════════════════════════════════════════════════════
+
+STYLE RULES FOR CPT:
+  - Read exact file lines before every patch
+  - grep-validate every change after applying
+  - Never touch unrelated code
+  - Provide Boss-ready summary after every change
+  - Fail-soft on all new analytics
+  - No rewrites — targeted patches only
+  - No assumptions — ask Boss before ruling on ambiguous cases
+
+═══════════════════════════════════════════════════════════════════════════════
