@@ -329,6 +329,69 @@ async function sendHeartbeat() {
       }
     } catch { shadowBlock = '─── Shadow Execution ─────────────\n  (read error)'; }
 
+    // ── Market Regime (Boss ruling 2026-05-03) ────────────────────────────────
+    // Fail-soft: if v2 file or activator data missing → regime = UNKNOWN
+    let marketBlock = null;
+    try {
+      const v2Path = path.join(_state.sessionDir, 'shadow_execution_totals_v2.json');
+      const hbPath = path.join(_state.sessionDir, 'activator.jsonl');
+
+      // Best spread from last activator heartbeat record
+      let latestSpreadBps = null;
+      let latestHeat = null;
+      if (fs.existsSync(hbPath)) {
+        const hbLines = fs.readFileSync(hbPath, 'utf8').split('\n').filter(Boolean);
+        for (let i = hbLines.length - 1; i >= 0; i--) {
+          try {
+            const r = JSON.parse(hbLines[i]);
+            if (r.type === 'heartbeat') {
+              // spread stored as fraction (e.g. 0.00216) → convert to bps
+              if (r.spreadPct != null)   latestSpreadBps = +(r.spreadPct * 100).toFixed(2);
+              if (r.spread    != null)   latestSpreadBps = +(r.spread    * 100).toFixed(2);
+              if (r.heatClass != null)   latestHeat      = r.heatClass;
+              break;
+            }
+          } catch { /* skip */ }
+        }
+      }
+
+      // Survivor rate from v2
+      let survivalRate = null;
+      let v2SurvivorsStr = '?';
+      if (fs.existsSync(v2Path)) {
+        const v2r = JSON.parse(fs.readFileSync(v2Path, 'utf8'));
+        survivalRate  = v2r.realisticSurvivalRate ?? null;
+        v2SurvivorsStr = survivalRate != null ? `${survivalRate.toFixed(1)}%` : '?';
+      }
+
+      // Regime classification (Boss spec 2026-05-03)
+      const sp = latestSpreadBps ?? 0;
+      const sr = survivalRate    ?? 0;
+      let regime, regimeEmoji, action;
+      if (sp >= 24 || sp >= 24) {
+        regime = 'ELITE';    regimeEmoji = '⚡'; action = 'candidate watch';
+      } else if (sp >= 22) {
+        regime = 'PRIME';    regimeEmoji = '🔥'; action = 'dry-run eligible';
+      } else if (sp >= 20 || sr >= 25) {
+        regime = 'ACTIVE';   regimeEmoji = '📈'; action = 'monitor closely';
+      } else if (sp >= 18 || latestHeat === 'HOT' || latestHeat === 'EXTREME') {
+        regime = 'BUILDING'; regimeEmoji = '🌡️'; action = 'watch for breakout';
+      } else {
+        regime = 'QUIET';    regimeEmoji = '💤'; action = 'observe only';
+      }
+
+      const spreadStr = latestSpreadBps != null ? `${latestSpreadBps}bps` : '?';
+      const heatStr   = latestHeat ?? 'unknown';
+
+      marketBlock = [
+        `─── Market Regime ─────────────────`,
+        `Market:   ${regimeEmoji} ${regime}`,
+        `Spread:   ${spreadStr}  Heat: ${heatStr}`,
+        `Survivors: ${v2SurvivorsStr}`,
+        `Action:   ${action}`,
+      ].join('\n');
+    } catch { marketBlock = '─── Market Regime ─────────────────\nMarket:   ❓ unknown'; }
+
     const lines = [
       `${statusIcon} **AllMight Heartbeat** | ${_state.sessionId}`,
       `\`\`\``,
@@ -341,6 +404,7 @@ async function sendHeartbeat() {
       `Est. Value:  $${estValue}`,
       `Value/hr:    $${valuePerHr}/h`,
       `Watchdog:    ${watchdogStatus}`,
+      marketBlock,
       shadowBlock || null,
       `\`\`\``,
     ].filter(l => l !== null);
