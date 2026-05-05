@@ -1,0 +1,47 @@
+{
+  "_comment": "Surface registry — AllMight Phase 2 architecture. Locked surfaces require Boss unlock.",
+  "version": "2.0",
+  "updatedAt": "2026-05-05",
+  "promotionLadder": [
+    "WATCHLIST",
+    "SHADOW_ONLY",
+    "V2_VALIDATED",
+    "DRY_RUN_ELIGIBLE",
+    "EXECUTOR_REQUIRED",
+    "MICRO_ELIGIBLE"
+  ],
+  "surfaces": [
+    {
+      "surfaceId": "eth_usdc_ramses",
+      "file": "eth_usdc_ramses.json",
+      "enabled": true,
+      "promotionStatus": "DRY_RUN_ELIGIBLE",
+      "chain": "arbitrum",
+      "displayName": "ETH/USDC — Ramses V2 (PRIMARY)"
+    },
+    {
+      "surfaceId": "arb_usdc_candidate",
+      "file": "arb_usdc_candidate.json",
+      "enabled": false,
+      "promotionStatus": "WATCHLIST",
+      "chain": "arbitrum",
+      "displayName": "ARB/USDC — Candidate"
+    },
+    {
+      "surfaceId": "eth_usdt_candidate",
+      "file": "eth_usdt_candidate.json",
+      "enabled": false,
+      "promotionStatus": "WATCHLIST",
+      "chain": "arbitrum",
+      "displayName": "ETH/USDT — Candidate"
+    },
+    {
+      "surfaceId": "dai_usdc_candidate",
+      "file": "dai_usdc_candidate.json",
+      "enabled": false,
+      "promotionStatus": "WATCHLIST",
+      "chain": "arbitrum",
+      "displayName": "DAI/USDC — Candidate"
+    }
+  ]
+}

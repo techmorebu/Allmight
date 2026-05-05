@@ -1,0 +1,17 @@
+{
+  "surfaceId": "eth_usdt_candidate",
+  "displayName": "ETH/USDT — Candidate",
+  "chain": "arbitrum",
+  "base": "WETH",
+  "quote": "USDT",
+  "venues": [],
+  "minSpreadBps": 22,
+  "preferredSpreadBps": 24,
+  "eliteSpreadBps": 26,
+  "enabled": false,
+  "executionMode": "shadow_only",
+  "promotionStatus": "WATCHLIST",
+  "executor": null,
+  "notes": "Similar to primary surface, different stable leg. High liquidity.",
+  "validated": {}
+}

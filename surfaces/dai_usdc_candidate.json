@@ -1,0 +1,17 @@
+{
+  "surfaceId": "dai_usdc_candidate",
+  "displayName": "DAI/USDC — Candidate",
+  "chain": "arbitrum",
+  "base": "DAI",
+  "quote": "USDC",
+  "venues": [],
+  "minSpreadBps": 10,
+  "preferredSpreadBps": 15,
+  "eliteSpreadBps": 20,
+  "enabled": false,
+  "executionMode": "shadow_only",
+  "promotionStatus": "WATCHLIST",
+  "executor": null,
+  "notes": "Event-driven, low volatility. Useful filler surface. Different spread profile to primary.",
+  "validated": {}
+}

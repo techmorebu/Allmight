@@ -1,0 +1,40 @@
+{
+  "surfaceId": "eth_usdc_ramses",
+  "displayName": "ETH/USDC — Ramses V2",
+  "chain": "arbitrum",
+  "base": "WETH",
+  "quote": "USDC",
+  "venues": [
+    {
+      "name": "uniswap_v3",
+      "pool": "0x6f38e884725a116C9C7fBF208e79FE8828a2595F",
+      "feeBps": 1,
+      "type": "univ3"
+    },
+    {
+      "name": "ramses_v2",
+      "pool": "0x30AFBcF9458c3131A6d051C621E307E6278E4110",
+      "feeBps": 5,
+      "type": "univ3",
+      "notes": "Venue inertia confirmed — slow repricing is the structural edge source"
+    }
+  ],
+  "minSpreadBps": 22,
+  "preferredSpreadBps": 24,
+  "eliteSpreadBps": 26,
+  "realisticBreakevenBps": 17.4,
+  "practicalFloorBps": 20,
+  "enabled": true,
+  "executionMode": "shadow_only",
+  "promotionStatus": "DRY_RUN_ELIGIBLE",
+  "executor": "AllMightRamsesExecutor",
+  "executorAddress": "0x9812b9...",
+  "notes": "Primary surface. 641/641 dry-run proven. Execution locked pending Boss approval.",
+  "validated": {
+    "sameBlockAnchor": true,
+    "activeTickDepth": true,
+    "venueInertia": true,
+    "dryRunSuccess": "100%",
+    "v2AccuracyPct": 81.3
+  }
+}
