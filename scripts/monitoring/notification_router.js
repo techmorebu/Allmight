@@ -329,68 +329,93 @@ async function sendHeartbeat() {
       }
     } catch { shadowBlock = '─── Shadow Execution ─────────────\n  (read error)'; }
 
-    // ── Market Regime (Boss ruling 2026-05-03) ────────────────────────────────
-    // Fail-soft: if v2 file or activator data missing → regime = UNKNOWN
+    // ── Market Regime (Boss ruling 2026-05-05 — updated spec) ──────────────────
+    // Regime uses maxSpread (not latest) per Boss spec:
+    //   QUIET: maxSpread < 18bps  PRIME: maxSpread >= 22bps  etc.
+    // Fail-soft: unknown if files missing
     let marketBlock = null;
     try {
       const v2Path = path.join(_state.sessionDir, 'shadow_execution_totals_v2.json');
       const hbPath = path.join(_state.sessionDir, 'activator.jsonl');
 
-      // Best spread from last activator heartbeat record
+      // Scan all heartbeats for current spread AND session max spread
       let latestSpreadBps = null;
-      let latestHeat = null;
+      let maxSpreadBps    = 0;
+      let latestHeat      = null;
+      let totalHbCount    = 0;
       if (fs.existsSync(hbPath)) {
         const hbLines = fs.readFileSync(hbPath, 'utf8').split('\n').filter(Boolean);
+        let foundLatest = false;
         for (let i = hbLines.length - 1; i >= 0; i--) {
           try {
             const r = JSON.parse(hbLines[i]);
-            if (r.type === 'heartbeat') {
-              // spread stored as fraction (e.g. 0.00216) → convert to bps
-              if (r.spreadPct != null)   latestSpreadBps = +(r.spreadPct * 100).toFixed(2);
-              if (r.spread    != null)   latestSpreadBps = +(r.spread    * 100).toFixed(2);
-              if (r.heatClass != null)   latestHeat      = r.heatClass;
-              break;
+            if (r.type !== 'heartbeat') continue;
+            totalHbCount++;
+            const spBps = r.netSpreadFrac != null ? +(r.netSpreadFrac * 10000).toFixed(2)
+              : r.spreadPct != null ? +(r.spreadPct * 100).toFixed(2)
+              : r.spread    != null ? +(r.spread    * 100).toFixed(2)
+              : null;
+            if (spBps != null && spBps > maxSpreadBps) maxSpreadBps = spBps;
+            if (!foundLatest && spBps != null) {
+              latestSpreadBps = spBps;
+              latestHeat      = r.heatClass ?? null;
+              foundLatest     = true;
             }
-          } catch { /* skip */ }
+          } catch { /* skip malformed */ }
         }
       }
 
-      // Survivor rate from v2
-      let survivalRate = null;
+      // Survivors from v2 totals: show count/total format
+      let survivalRate   = null;
+      let survivorCount  = 0;
+      let totalSigs      = 0;
       let v2SurvivorsStr = '?';
       if (fs.existsSync(v2Path)) {
         const v2r = JSON.parse(fs.readFileSync(v2Path, 'utf8'));
         survivalRate  = v2r.realisticSurvivalRate ?? null;
-        v2SurvivorsStr = survivalRate != null ? `${survivalRate.toFixed(1)}%` : '?';
+        survivorCount = v2r.realisticPositiveCount ?? 0;
+        totalSigs     = v2r.totalSignals           ?? 0;
+        v2SurvivorsStr = totalSigs > 0
+          ? `${survivorCount}/${totalSigs}`
+          : '0/0';
       }
 
-      // Regime classification (Boss spec 2026-05-03)
-      const sp = latestSpreadBps ?? 0;
-      const sr = survivalRate    ?? 0;
+      // Regime classification using maxSpread (Boss spec 2026-05-05)
+      // ELITE:    maxSpread >= 24bps OR any 26bps+ signal
+      // PRIME:    maxSpread >= 22bps OR dry-run net-positive signals
+      // ACTIVE:   maxSpread 20–22bps OR v2 survival >= 25%
+      // BUILDING: maxSpread 18–20bps OR heat = HOT/EXTREME
+      // QUIET:    maxSpread < 18bps AND survival < 10%
+      const mx = maxSpreadBps;
+      const sr = survivalRate ?? 0;
       let regime, regimeEmoji, action;
-      if (sp >= 24 || sp >= 24) {
+      if (mx >= 26) {
+        regime = 'ELITE';    regimeEmoji = '⚡'; action = 'Boss review window';
+      } else if (mx >= 24) {
         regime = 'ELITE';    regimeEmoji = '⚡'; action = 'candidate watch';
-      } else if (sp >= 22) {
+      } else if (mx >= 22) {
         regime = 'PRIME';    regimeEmoji = '🔥'; action = 'dry-run eligible';
-      } else if (sp >= 20 || sr >= 25) {
-        regime = 'ACTIVE';   regimeEmoji = '📈'; action = 'monitor closely';
-      } else if (sp >= 18 || latestHeat === 'HOT' || latestHeat === 'EXTREME') {
-        regime = 'BUILDING'; regimeEmoji = '🌡️'; action = 'watch for breakout';
+      } else if (mx >= 20 || sr >= 25) {
+        regime = 'ACTIVE';   regimeEmoji = '📈'; action = 'candidate watch';
+      } else if (mx >= 18 || latestHeat === 'HOT' || latestHeat === 'EXTREME') {
+        regime = 'BUILDING'; regimeEmoji = '🌡️'; action = 'monitor';
       } else {
         regime = 'QUIET';    regimeEmoji = '💤'; action = 'observe only';
       }
 
       const spreadStr = latestSpreadBps != null ? `${latestSpreadBps}bps` : '?';
+      const bestStr   = maxSpreadBps > 0           ? `${maxSpreadBps.toFixed(2)}bps` : '?';
       const heatStr   = latestHeat ?? 'unknown';
 
       marketBlock = [
         `─── Market Regime ─────────────────`,
-        `Market:   ${regimeEmoji} ${regime}`,
-        `Spread:   ${spreadStr}  Heat: ${heatStr}`,
+        `Market:    ${regimeEmoji} ${regime}`,
+        `Spread:    ${spreadStr}  Best: ${bestStr}`,
+        `Heat:      ${heatStr}`,
         `Survivors: ${v2SurvivorsStr}`,
-        `Action:   ${action}`,
+        `Action:    ${action}`,
       ].join('\n');
-    } catch { marketBlock = '─── Market Regime ─────────────────\nMarket:   ❓ unknown'; }
+    } catch { marketBlock = '─── Market Regime ─────────────────\nMarket:   ⚪ UNKNOWN\nAction:   waiting for data'; }
 
     const lines = [
       `${statusIcon} **AllMight Heartbeat** | ${_state.sessionId}`,

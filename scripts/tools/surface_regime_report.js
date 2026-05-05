@@ -168,6 +168,11 @@ function buildHourlyTable(allSignals) {
       drNetPositive : 0,
       drNetSum      : 0,
       regimeVotes   : {},
+      // Boss spec 2026-05-05 — count by spread band
+      count20plus   : 0,
+      count22plus   : 0,
+      count24plus   : 0,
+      count26plus   : 0,
     };
   }
 
@@ -179,6 +184,13 @@ function buildHourlyTable(allSignals) {
     if (sig.spreadBps != null) b.spreads.push(sig.spreadBps);
     if (sig.heatClass) b.heatClasses[sig.heatClass] = (b.heatClasses[sig.heatClass]||0) + 1;
     if (sig.survives)  { b.survivors++; b.survivorNets.push(sig.realisticNet ?? 0); }
+    // Count by spread band (signals only, not ticks)
+    if (!sig.isTick && sig.spreadBps != null) {
+      if (sig.spreadBps >= 20) b.count20plus++;
+      if (sig.spreadBps >= 22) b.count22plus++;
+      if (sig.spreadBps >= 24) b.count24plus++;
+      if (sig.spreadBps >= 26) b.count26plus++;
+    }
     if (sig.wouldExecute) {
       b.drExecutable++;
       if ((sig.dryRunNet ?? 0) > 0) { b.drNetPositive++; b.drNetSum += sig.dryRunNet; }
@@ -195,8 +207,9 @@ function buildHourlyTable(allSignals) {
     const domHeat    = Object.entries(b.heatClasses).sort((a,b) => b[1]-a[1])[0]?.[0] ?? null;
     const hasDryPos  = b.drNetPositive > 0;
 
-    const regime = (avgSpread != null)
-      ? classifyRegime(avgSpread, survRate, domHeat, hasDryPos)
+    // Boss spec 2026-05-05: regime uses maxSpread (not avg)
+    const regime = (maxSpread != null)
+      ? classifyRegime(maxSpread, survRate, domHeat, hasDryPos)
       : 'QUIET';
 
     const action = REGIMES[regime]?.action ?? 'observe';
@@ -211,6 +224,10 @@ function buildHourlyTable(allSignals) {
       dominantHeat : domHeat,
       survivors    : b.survivors,
       survivalRate : survRate,
+      count20plus  : b.count20plus,
+      count22plus  : b.count22plus,
+      count24plus  : b.count24plus,
+      count26plus  : b.count26plus,
       drExecutable : b.drExecutable,
       drNetPositive: b.drNetPositive,
       drNetPnL     : b.survivorNets.length ? +b.survivorNets.reduce((a,c)=>a+c,0).toFixed(4) : 0,
@@ -298,19 +315,18 @@ function buildTextReport(hourly, bands, meta) {
   rows.push('  HOURLY BREAKDOWN:');
   rows.push(line);
   rows.push(
-    '  Hour     Regime      AvgSprd  MaxSprd  Signals  Surviv%  DrExec  Action'
+    '  Hour     Regime      MaxSprd  ≥22bps  ≥24bps  ≥26bps  Surviv%  DrExec  Action'
   );
   rows.push(line);
   for (const h of hourly) {
     if (h.totalRecords === 0) continue;
-    const avg   = h.avgSpreadBps != null ? `${h.avgSpreadBps.toFixed(1)}bps` : ' —    ';
     const max   = h.maxSpreadBps != null ? `${h.maxSpreadBps.toFixed(1)}bps` : ' —    ';
     const surv  = h.survivalRate != null ? `${h.survivalRate.toFixed(0)}%` : '  —';
     const label = (h.regimeLabel ?? '?').padEnd(12);
     rows.push(
-      `  ${h.utcLabel}  ${label}  ${avg.padEnd(8)} ${max.padEnd(8)} ` +
-      `${String(h.signalCount).padEnd(8)} ${surv.padEnd(8)} ` +
-      `${String(h.drExecutable).padEnd(7)} ${h.action}`
+      `  ${h.utcLabel}  ${label}  ${max.padEnd(8)} ` +
+      `${String(h.count22plus).padEnd(7)} ${String(h.count24plus).padEnd(7)} ${String(h.count26plus).padEnd(7)} ` +
+      `${surv.padEnd(8)} ${String(h.drExecutable).padEnd(7)} ${h.action}`
     );
   }
 
