@@ -338,11 +338,12 @@ async function sendHeartbeat() {
       const v2Path = path.join(_state.sessionDir, 'shadow_execution_totals_v2.json');
       const hbPath = path.join(_state.sessionDir, 'activator.jsonl');
 
-      // Scan all heartbeats for current spread AND session max spread
+      // Scan all heartbeats: current spread, session max, recent spread history
       let latestSpreadBps = null;
       let maxSpreadBps    = 0;
       let latestHeat      = null;
       let totalHbCount    = 0;
+      const recentSpreads = [];   // last 8 heartbeat spreads (newest first)
       if (fs.existsSync(hbPath)) {
         const hbLines = fs.readFileSync(hbPath, 'utf8').split('\n').filter(Boolean);
         let foundLatest = false;
@@ -356,6 +357,7 @@ async function sendHeartbeat() {
               : r.spread    != null ? +(r.spread    * 100).toFixed(2)
               : null;
             if (spBps != null && spBps > maxSpreadBps) maxSpreadBps = spBps;
+            if (spBps != null && recentSpreads.length < 8) recentSpreads.push(spBps);
             if (!foundLatest && spBps != null) {
               latestSpreadBps = spBps;
               latestHeat      = r.heatClass ?? null;
@@ -407,14 +409,44 @@ async function sendHeartbeat() {
       const bestStr   = maxSpreadBps > 0           ? `${maxSpreadBps.toFixed(2)}bps` : '?';
       const heatStr   = latestHeat ?? 'unknown';
 
+      // ── Volatility Acceleration (Boss ruling 2026-05-05) ──────────────────
+      // Compare oldest and newest halves of last 8 spreads to detect direction.
+      // Uses recent heartbeat spreads (collected newest-first above).
+      // STABLE:  spread flat or oscillating within ±1bps
+      // RISING:  consistent upward slope across last 8 heartbeats
+      // SURGING: rapid jump — latest spread ≥3bps above 4-heartbeat-ago spread
+      let volLabel = '';
+      let volEmoji = '';
+      if (recentSpreads.length >= 4) {
+        // recentSpreads[0] = newest, recentSpreads[N] = oldest in window
+        const newest = recentSpreads.slice(0, Math.ceil(recentSpreads.length / 2));
+        const older  = recentSpreads.slice(Math.ceil(recentSpreads.length / 2));
+        const avgNewest = newest.reduce((a,b)=>a+b,0)/newest.length;
+        const avgOlder  = older.reduce((a,b)=>a+b,0)/older.length;
+        const delta = avgNewest - avgOlder;
+        const absJump = recentSpreads[0] - (recentSpreads[3] ?? recentSpreads[recentSpreads.length-1]);
+
+        if (absJump >= 3) {
+          volLabel = 'SURGING';  volEmoji = '🚀';
+        } else if (delta >= 1) {
+          volLabel = 'RISING';   volEmoji = '📈';
+        } else if (delta <= -1) {
+          volLabel = 'FADING';   volEmoji = '📉';
+        } else {
+          volLabel = 'STABLE';   volEmoji = '➡️';
+        }
+      }
+      const volLine = volLabel ? `Volatility: ${volEmoji} ${volLabel}` : null;
+
       marketBlock = [
         `─── Market Regime ─────────────────`,
         `Market:    ${regimeEmoji} ${regime}`,
         `Spread:    ${spreadStr}  Best: ${bestStr}`,
         `Heat:      ${heatStr}`,
+        volLine,
         `Survivors: ${v2SurvivorsStr}`,
         `Action:    ${action}`,
-      ].join('\n');
+      ].filter(l => l !== null).join('\n');
     } catch { marketBlock = '─── Market Regime ─────────────────\nMarket:   ⚪ UNKNOWN\nAction:   waiting for data'; }
 
     const lines = [
