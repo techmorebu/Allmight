@@ -59,7 +59,7 @@
 |------|---------|--------|
 | `utils/provider_factory.js` | RPC routing — sticky primary, freshness tiers, round-robin | ✅ PATCHED (sticky primary 2026-05-03) |
 | `utils/rpc_provider.js` | RPC compat shim | ✅ ACTIVE |
-| `contracts/AllMightRamsesExecutor.sol` | On-chain executor — Ramses flash arb | 🔒 FROZEN (deployed, do not modify) |
+| `contracts/AllMightRamsesExecutor.sol` | On-chain executor — Ramses flash arb | 🔒 FROZEN (deployed and preflight-verified, do not modify) |
 | `hardhat.config.js` | Hardhat fork config for dry execution | ✅ ACTIVE |
 | `.env` | All secrets + RPC URLs + feature flags | ✅ ACTIVE |
 

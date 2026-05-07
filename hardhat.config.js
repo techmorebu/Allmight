@@ -2,9 +2,11 @@ require("dotenv").config();
 require("@nomicfoundation/hardhat-toolbox");
 
 // Safe account loader -- skips missing or placeholder keys
-const key = process.env.METAMASK_PRIVATE_KEY;
-const accounts = key && key !== "****" && key.length === 64
-  ? [`0x${key}`]
+const rawKey = process.env.METAMASK_PRIVATE_KEY || "";
+// Accept key with or without 0x prefix; reject placeholders and wrong length.
+const cleanKey = rawKey.replace(/^0x/i, "");
+const accounts = (cleanKey && cleanKey !== "****" && /^[0-9a-fA-F]{64}$/.test(cleanKey))
+  ? [`0x${cleanKey}`]
   : [];
 
 module.exports = {

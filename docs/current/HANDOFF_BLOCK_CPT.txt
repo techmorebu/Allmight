@@ -51,7 +51,7 @@ SYSTEM STATE:
   Chain:       Arbitrum mainnet
   Surface:     ETH/USDC Ramses V2 (primary, DRY_RUN_ELIGIBLE)
   Mode:        MODE 0 PAPER (no capital deployed)
-  Executor:    AllMightRamsesExecutor — deployed, DO NOT MODIFY
+  Executor:    AllMightRamsesExecutor — deployed and preflight-verified, DO NOT MODIFY
 
   Min viable spread:   20bps (practical)
   Preferred spread:    22bps+

@@ -63,3 +63,9 @@ scripts/analysis/arb_window_activator.js.bak
 secret
 cache/
 artifacts/
+
+# Catch all .env variants (backups, timestamped, etc.) — prevents key leaks
+.env.*
+.env.bak*
+reports/
+*.bak*

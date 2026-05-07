@@ -1263,7 +1263,15 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
       ? Math.abs(snap.uniPrice - thresholds.nearestHighPrice) / snap.uniPrice < 0.005  // within 0.5%
       : true;  // no snap yet → always allow refresh
     const _tickMapForce     = process.env.TICK_MAP_ALWAYS_REFRESH === 'true';
-    const _shouldRefresh    = _tickMapDue && (_tickMapForce || _heatElevatedNow || _nearZone || state === 'ARMED');
+    // B2 (Boss ruling 2026-05-07): hard-cap age override.
+    // If tick-map hasn't refreshed in MAX_TICK_MAP_AGE_MS, force refresh
+    // regardless of heat/zone state. Cap=20min, well under the 35-min
+    // HEALTH_TICKMAP_STALE_MS so STATE_UNHEALTHY can never fire from
+    // tick-map staleness while this override is reachable.
+    const MAX_TICK_MAP_AGE_MS  = 20 * 60 * 1000;
+    const _tickMapAgeMs        = Date.now() - (health.lastTickMapMs || 0);
+    const _tickMapTooStale     = _tickMapAgeMs > MAX_TICK_MAP_AGE_MS;
+    const _shouldRefresh    = _tickMapDue && (_tickMapForce || _heatElevatedNow || _nearZone || state === 'ARMED' || _tickMapTooStale);
     if (_tickMapDue && !_shouldRefresh) {
       // Defer: reschedule by TICK_MAP_REFRESH_MS/4 (7.5min) then reassess
       tickMapRefreshAt = Date.now() + Math.round(TICK_MAP_REFRESH_MS / 4);

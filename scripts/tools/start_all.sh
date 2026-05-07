@@ -261,6 +261,7 @@ echo "-- 2. Arb window activator (supervised) --"
     echo "[supervisor] Start #${RESTART_COUNT} $(date -u '+%Y-%m-%dT%H:%M:%SZ') consec=${CONSEC_CONTROLLED}" \
       >> "$SESSION_DIR/activator.jsonl"
     node "$REPO/scripts/analysis/arb_window_activator.js" \
+      --pair=ETH/USDC-RAMSES \
       --log "$SESSION_DIR/activator.jsonl" \
       >> "$SESSION_DIR/activator.jsonl" 2>&1
     EXIT=$?

@@ -60,7 +60,7 @@ Live execution:                   LOCKED (LIVE_DEPLOY_APPROVED=false)
 
 ## DEPLOY DECISION PACKAGE (for Boss)
 
-**Executor:** AllMightRamsesExecutor (already deployed to Arbitrum mainnet)
+**Executor:** AllMightRamsesExecutor — deployed and preflight-verified (0xd2eaa2B2E0c475e418B1682d321eD77558D1b5Fb)
 **Mode:** MICRO LIVE — trading disabled by default, manual trigger per trade
 
 **First micro-live criteria (MODE 1):**

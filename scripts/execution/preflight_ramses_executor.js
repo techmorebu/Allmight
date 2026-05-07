@@ -162,9 +162,18 @@ async function main() {
         );
         chk("executeRamsesArb staticCall reverts correctly", false, "did not revert");
       } catch (e) {
-        const msg = e.message || "";
-        const ok  = msg.includes("DEADLINE_EXPIRED") || msg.includes("NOT_OWNER");
-        chk("executeRamsesArb staticCall reverts with DEADLINE_EXPIRED or NOT_OWNER", ok, msg.slice(0, 50));
+        // ethers v6: revert reason may live in e.message, e.shortMessage,
+        // e.reason, or only in e.data (Error(string) ABI-encoded).
+        let msg = `${e.message || ""} ${e.shortMessage || ""} ${e.reason || ""}`;
+        const data = e.data || e.info?.error?.data;
+        if (data && typeof data === "string" && data.startsWith("0x08c379a0")) {
+          try {
+            const decoded = ethers.AbiCoder.defaultAbiCoder().decode(["string"], "0x" + data.slice(10));
+            msg += " " + decoded[0];
+          } catch { /* fail-soft */ }
+        }
+        const ok = msg.includes("DEADLINE_EXPIRED") || msg.includes("NOT_OWNER");
+        chk("executeRamsesArb staticCall reverts with DEADLINE_EXPIRED or NOT_OWNER", ok, msg.slice(0, 80));
       }
     }
   }
