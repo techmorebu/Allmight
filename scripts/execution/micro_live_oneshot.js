@@ -752,7 +752,7 @@ async function main() {
     });
 
     // ── CALLSTATIC PASS 1: mechanical viability (minProfit=1) ──
-    const pass1 = await callStaticPass(executorRO, mins.amountOutMinA, mins.amountOutMinB, 1n);
+    const pass1 = await callStaticPass(executorRW, mins.amountOutMinA, mins.amountOutMinB, 1n);
     if (!pass1.ok) {
       emit('GATE_FAIL', { gate: 'callStatic_pass1', reason: pass1.reason });
       continue;
@@ -777,7 +777,7 @@ async function main() {
     // minProfit is in micro-USDC (USDC has 6 decimals). gasCostUsd in USD.
     const minProfitUsd   = gasCostUsd * 1.5;
     const minProfitMicro = BigInt(Math.max(1, Math.ceil(minProfitUsd * 1e6)));
-    const pass2 = await callStaticPass(executorRO, mins.amountOutMinA, mins.amountOutMinB, minProfitMicro);
+    const pass2 = await callStaticPass(executorRW, mins.amountOutMinA, mins.amountOutMinB, minProfitMicro);
     if (!pass2.ok) {
       emit('GATE_FAIL', { gate: 'callStatic_pass2_unprofitable',
         reason: pass2.reason, minProfitUsd: +minProfitUsd.toFixed(4) });

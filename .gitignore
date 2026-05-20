@@ -69,3 +69,4 @@ artifacts/
 .env.bak*
 reports/
 *.bak*
+scripts/execution/*.pre_p2_*
