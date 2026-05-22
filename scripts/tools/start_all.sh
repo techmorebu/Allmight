@@ -255,6 +255,7 @@ echo "-- 2. Arb window activator (supervised) --"
 (
   set +e
   RESTART_COUNT=0; CONSEC_CONTROLLED=0
+  export BLUEPRINT_LOG_PATH="$SESSION_DIR/blueprints.jsonl"  # Boss G2.7 — blueprint output to session folder
   while true; do
     RESTART_COUNT=$((RESTART_COUNT+1))
     _LOOP_START=$(date +%s)
