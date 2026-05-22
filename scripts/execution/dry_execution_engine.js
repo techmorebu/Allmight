@@ -43,6 +43,7 @@ const { ethers } = require('ethers');
 // Address populated when live deployment is approved by Boss.
 // Until then, callStatic will fail cleanly (FAIL-SOFT handles it).
 const EXECUTOR_ADDRESS = process.env.EXECUTOR_ADDRESS ?? '';
+let   OWNER_ADDRESS    = null;  // Boss G2.9: populated in preflight via contract.owner() — INCIDENT 020
 
 // Contract parameters — confirmed from blueprint analysis
 const USDC    = '0xaf88d065e77c8cC2239327C5EDb3A432268e5831';
@@ -137,7 +138,8 @@ async function dryRunSignal(signal, blueprint, contract, ethPrice) {
       amountOutMinA,
       amountOutMinB,
       DIRECTION_RAMSES_FIRST,
-      deadline
+      deadline,
+      { from: OWNER_ADDRESS }
     );
     wouldExecute = true;
 
@@ -145,7 +147,8 @@ async function dryRunSignal(signal, blueprint, contract, ethPrice) {
     try {
       const gas = await contract.executeRamsesArb.estimateGas(
         USDC, BORROW_AMOUNT_USDC, MIN_PROFIT_WEI,
-        amountOutMinA, amountOutMinB, DIRECTION_RAMSES_FIRST, deadline
+        amountOutMinA, amountOutMinB, DIRECTION_RAMSES_FIRST, deadline,
+        { from: OWNER_ADDRESS }
       );
       gasEstimate = Number(gas);
       // Gas price from recent network conditions (approx)
@@ -267,6 +270,7 @@ async function main() {
     contract = new ethers.Contract(EXECUTOR_ADDRESS, EXECUTOR_ABI, provider);
     // Verify it's the right contract
     await contract.USDC();
+    OWNER_ADDRESS = await contract.owner();  // Boss G2.9: needed for staticCall from-override (INCIDENT 020)
   } catch (e) {
     unavailableTotals(`contract preflight failed: ${e.message?.slice(0, 60)}`);
     process.exit(0);
