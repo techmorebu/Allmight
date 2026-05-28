@@ -1,0 +1,441 @@
+{
+  "meta": {
+    "generatedAt": "2026-05-28T16:22:08.408Z",
+    "redisError": null,
+    "keyCount": 12,
+    "staleAgeSec": 120,
+    "chainAware": true
+  },
+  "observedChainPairCount": 25,
+  "fetchers": [
+    {
+      "fetcherName": "sushiswapFetcher",
+      "status": "LIVE",
+      "ageSec": 1,
+      "chainPairs": 6,
+      "venues": 1,
+      "rows": 6,
+      "chainsMissing": 0
+    },
+    {
+      "fetcherName": "ethereumFetcher",
+      "status": "LIVE",
+      "ageSec": 2,
+      "chainPairs": 5,
+      "venues": 2,
+      "rows": 12,
+      "chainsMissing": 0
+    },
+    {
+      "fetcherName": "curveFetcherArbitrum",
+      "status": "LIVE",
+      "ageSec": 4,
+      "chainPairs": 0,
+      "venues": 0,
+      "rows": 0,
+      "chainsMissing": 0
+    },
+    {
+      "fetcherName": "unichainFetcher",
+      "status": "LIVE",
+      "ageSec": 4,
+      "chainPairs": 0,
+      "venues": 0,
+      "rows": 0,
+      "chainsMissing": 0
+    },
+    {
+      "fetcherName": "curveFetcherEthereum",
+      "status": "LIVE",
+      "ageSec": 3,
+      "chainPairs": 4,
+      "venues": 1,
+      "rows": 4,
+      "chainsMissing": 0
+    },
+    {
+      "fetcherName": "uniswapV3Fetcher",
+      "status": "LIVE",
+      "ageSec": 0,
+      "chainPairs": 7,
+      "venues": 1,
+      "rows": 8,
+      "chainsMissing": 0
+    },
+    {
+      "fetcherName": "baseFetcher",
+      "status": "LIVE",
+      "ageSec": 3,
+      "chainPairs": 1,
+      "venues": 2,
+      "rows": 2,
+      "chainsMissing": 0
+    },
+    {
+      "fetcherName": "testFetcher",
+      "status": "LIVE",
+      "ageSec": 4,
+      "chainPairs": 0,
+      "venues": 0,
+      "rows": 0,
+      "chainsMissing": 0
+    },
+    {
+      "fetcherName": "optimismFetcher",
+      "status": "LIVE",
+      "ageSec": 3,
+      "chainPairs": 1,
+      "venues": 2,
+      "rows": 4,
+      "chainsMissing": 0
+    },
+    {
+      "fetcherName": "balancerFetcherArbitrum",
+      "status": "LIVE",
+      "ageSec": 4,
+      "chainPairs": 0,
+      "venues": 0,
+      "rows": 0,
+      "chainsMissing": 0
+    },
+    {
+      "fetcherName": "arbitrumFetcher",
+      "status": "LIVE",
+      "ageSec": 2,
+      "chainPairs": 11,
+      "venues": 5,
+      "rows": 33,
+      "chainsMissing": 0
+    },
+    {
+      "fetcherName": "gasPriceOracle",
+      "status": "LIVE",
+      "ageSec": 1,
+      "chainPairs": 0,
+      "venues": 0,
+      "rows": 0,
+      "chainsMissing": 0
+    }
+  ],
+  "surfaces": [
+    {
+      "surfaceId": "eth_usdc_ramses",
+      "chainScopedId": null,
+      "displayName": "ETH/USDC — Ramses V2",
+      "chain": "arbitrum",
+      "pair": "ETH/USDC",
+      "chainPair": "arbitrum:ETH/USDC",
+      "promotionStatus": "DRY_RUN_ELIGIBLE",
+      "declaredVenues": [
+        "uniswap_v3",
+        "ramses_v2"
+      ],
+      "hasBreakeven": true,
+      "status": "FULL",
+      "scorerMode": "FULL",
+      "observedVenues": [
+        "uniswap_v3",
+        "sushiswap_v3",
+        "ramses_v2",
+        "camelot_v2",
+        "camelot_v3"
+      ],
+      "missingVenues": [],
+      "ageSec": 2,
+      "freshestBlock": 467608035,
+      "reason": "observed, venues complete, breakeven configured"
+    },
+    {
+      "surfaceId": "arb_usdc_candidate",
+      "chainScopedId": null,
+      "displayName": "ARB/USDC — Candidate",
+      "chain": "arbitrum",
+      "pair": "ARB/USDC",
+      "chainPair": "arbitrum:ARB/USDC",
+      "promotionStatus": "WATCHLIST",
+      "declaredVenues": [],
+      "hasBreakeven": false,
+      "status": "PARTIAL",
+      "scorerMode": "PREVIEW",
+      "observedVenues": [
+        "uniswap_v3",
+        "sushiswap_v3",
+        "camelot_v3"
+      ],
+      "missingVenues": [],
+      "ageSec": 2,
+      "freshestBlock": 467608035,
+      "reason": "no realisticBreakevenBps"
+    },
+    {
+      "surfaceId": "eth_usdt_candidate",
+      "chainScopedId": null,
+      "displayName": "ETH/USDT — Candidate",
+      "chain": "arbitrum",
+      "pair": "ETH/USDT",
+      "chainPair": "arbitrum:ETH/USDT",
+      "promotionStatus": "WATCHLIST",
+      "declaredVenues": [],
+      "hasBreakeven": false,
+      "status": "PARTIAL",
+      "scorerMode": "PREVIEW",
+      "observedVenues": [
+        "uniswap_v3",
+        "sushiswap_v3",
+        "camelot_v3"
+      ],
+      "missingVenues": [],
+      "ageSec": 2,
+      "freshestBlock": 467608035,
+      "reason": "no realisticBreakevenBps"
+    },
+    {
+      "surfaceId": "dai_usdc_candidate",
+      "chainScopedId": null,
+      "displayName": "DAI/USDC — Candidate",
+      "chain": "arbitrum",
+      "pair": "DAI/USDC",
+      "chainPair": "arbitrum:DAI/USDC",
+      "promotionStatus": "WATCHLIST",
+      "declaredVenues": [],
+      "hasBreakeven": false,
+      "status": "PARTIAL",
+      "scorerMode": "PREVIEW",
+      "observedVenues": [
+        "uniswap_v3",
+        "camelot_v3"
+      ],
+      "missingVenues": [],
+      "ageSec": 2,
+      "freshestBlock": 467608035,
+      "reason": "no realisticBreakevenBps"
+    }
+  ],
+  "unregistered": [
+    {
+      "chainPair": "arbitrum:WBTC/USDC",
+      "chain": "arbitrum",
+      "pair": "WBTC/USDC",
+      "venues": [
+        "uniswap_v3",
+        "sushiswap_v3",
+        "camelot_v3"
+      ],
+      "rows": 4,
+      "venueCount": 3
+    },
+    {
+      "chainPair": "ethereum:ETH/USDC",
+      "chain": "ethereum",
+      "pair": "ETH/USDC",
+      "venues": [
+        "sushiswap_v2",
+        "uniswap_v3",
+        "sushiswap_v3"
+      ],
+      "rows": 7,
+      "venueCount": 3
+    },
+    {
+      "chainPair": "ethereum:ETH/USDT",
+      "chain": "ethereum",
+      "pair": "ETH/USDT",
+      "venues": [
+        "uniswap_v3",
+        "sushiswap_v3",
+        "curve"
+      ],
+      "rows": 4,
+      "venueCount": 3
+    },
+    {
+      "chainPair": "arbitrum:WBTC/USDT",
+      "chain": "arbitrum",
+      "pair": "WBTC/USDT",
+      "venues": [
+        "uniswap_v3",
+        "sushiswap_v3"
+      ],
+      "rows": 3,
+      "venueCount": 2
+    },
+    {
+      "chainPair": "base:ETH/USDC",
+      "chain": "base",
+      "pair": "ETH/USDC",
+      "venues": [
+        "uniswap_v3",
+        "aerodrome"
+      ],
+      "rows": 2,
+      "venueCount": 2
+    },
+    {
+      "chainPair": "ethereum:AAVE/ETH",
+      "chain": "ethereum",
+      "pair": "AAVE/ETH",
+      "venues": [
+        "sushiswap_v2",
+        "uniswap_v3"
+      ],
+      "rows": 2,
+      "venueCount": 2
+    },
+    {
+      "chainPair": "ethereum:DAI/USDC",
+      "chain": "ethereum",
+      "pair": "DAI/USDC",
+      "venues": [
+        "uniswap_v3",
+        "curve"
+      ],
+      "rows": 3,
+      "venueCount": 2
+    },
+    {
+      "chainPair": "ethereum:LINK/ETH",
+      "chain": "ethereum",
+      "pair": "LINK/ETH",
+      "venues": [
+        "sushiswap_v2",
+        "uniswap_v3"
+      ],
+      "rows": 2,
+      "venueCount": 2
+    },
+    {
+      "chainPair": "ethereum:UNI/ETH",
+      "chain": "ethereum",
+      "pair": "UNI/ETH",
+      "venues": [
+        "sushiswap_v2",
+        "uniswap_v3"
+      ],
+      "rows": 2,
+      "venueCount": 2
+    },
+    {
+      "chainPair": "ethereum:USDC/USDT",
+      "chain": "ethereum",
+      "pair": "USDC/USDT",
+      "venues": [
+        "curve",
+        "uniswap_v3"
+      ],
+      "rows": 2,
+      "venueCount": 2
+    },
+    {
+      "chainPair": "ethereum:WBTC/ETH",
+      "chain": "ethereum",
+      "pair": "WBTC/ETH",
+      "venues": [
+        "sushiswap_v2",
+        "uniswap_v3"
+      ],
+      "rows": 3,
+      "venueCount": 2
+    },
+    {
+      "chainPair": "optimism:ETH/USDC",
+      "chain": "optimism",
+      "pair": "ETH/USDC",
+      "venues": [
+        "uniswap_v3",
+        "velodrome"
+      ],
+      "rows": 4,
+      "venueCount": 2
+    },
+    {
+      "chainPair": "arbitrum:ARB/ETH",
+      "chain": "arbitrum",
+      "pair": "ARB/ETH",
+      "venues": [
+        "uniswap_v3"
+      ],
+      "rows": 1,
+      "venueCount": 1
+    },
+    {
+      "chainPair": "arbitrum:GMX/USDC",
+      "chain": "arbitrum",
+      "pair": "GMX/USDC",
+      "venues": [
+        "uniswap_v3"
+      ],
+      "rows": 1,
+      "venueCount": 1
+    },
+    {
+      "chainPair": "arbitrum:UNI/USDC",
+      "chain": "arbitrum",
+      "pair": "UNI/USDC",
+      "venues": [
+        "uniswap_v3"
+      ],
+      "rows": 1,
+      "venueCount": 1
+    },
+    {
+      "chainPair": "arbitrum:USDC/USDT",
+      "chain": "arbitrum",
+      "pair": "USDC/USDT",
+      "venues": [
+        "uniswap_v3"
+      ],
+      "rows": 1,
+      "venueCount": 1
+    },
+    {
+      "chainPair": "arbitrum:WBTC/ETH",
+      "chain": "arbitrum",
+      "pair": "WBTC/ETH",
+      "venues": [
+        "uniswap_v3"
+      ],
+      "rows": 1,
+      "venueCount": 1
+    },
+    {
+      "chainPair": "ethereum:DAI/ETH",
+      "chain": "ethereum",
+      "pair": "DAI/ETH",
+      "venues": [
+        "sushiswap_v2"
+      ],
+      "rows": 1,
+      "venueCount": 1
+    },
+    {
+      "chainPair": "ethereum:MATIC/ETH",
+      "chain": "ethereum",
+      "pair": "MATIC/ETH",
+      "venues": [
+        "uniswap_v3"
+      ],
+      "rows": 1,
+      "venueCount": 1
+    },
+    {
+      "chainPair": "ethereum:WBTC/USDC",
+      "chain": "ethereum",
+      "pair": "WBTC/USDC",
+      "venues": [
+        "uniswap_v3"
+      ],
+      "rows": 2,
+      "venueCount": 1
+    },
+    {
+      "chainPair": "ethereum:WBTC/USDT",
+      "chain": "ethereum",
+      "pair": "WBTC/USDT",
+      "venues": [
+        "curve"
+      ],
+      "rows": 1,
+      "venueCount": 1
+    }
+  ]
+}
