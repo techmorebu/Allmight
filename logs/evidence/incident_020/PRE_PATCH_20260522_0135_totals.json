@@ -1,0 +1,17 @@
+{
+  "generatedAt": "2026-05-22T15:08:01.569Z",
+  "sessionId": "20260522_0135",
+  "available": true,
+  "contractAddress": "0xd2eaa2B2E0c475e418B1682d321eD77558D1b5Fb",
+  "totalSignals": 58,
+  "attempted": 58,
+  "wouldExecuteCount": 0,
+  "wouldRevertCount": 58,
+  "executionSuccessRate": 0,
+  "avgGasCostUsd": null,
+  "expectedExecutablePnL": 0,
+  "expectedRejectedPnL": 1.0735,
+  "topRevertReasons": {
+    "NOT_OWNER": 58
+  }
+}

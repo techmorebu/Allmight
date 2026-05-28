@@ -1,0 +1,14 @@
+PRE-PATCH DRY EXECUTION (session 20260522_0135)
+============================================================
+  Source: pre-INCIDENT-020 patch
+  Patch state: dry_execution_engine.js used provider only
+  msg.sender during staticCall: address(0)
+  Outcome: contract.onlyOwner rejects → NOT_OWNER
+
+  Total candidates evaluated:  58
+  Would execute:               N/A
+  Would revert:                N/A
+  Success rate:                N/A
+
+  Revert reason distribution:
+      58× NOT_OWNER
