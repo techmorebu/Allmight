@@ -6,7 +6,7 @@ outputs/.gitkeep
 # --- Generated / local-only ---
 .venv/
 data/staging/
-logs/
+logs/*
 data/processed/
 
 # ---- AllMight: local runtime & generated artifacts ----
@@ -52,7 +52,7 @@ scripts/telemetry/*.backup*
 scripts/deploy/
 
 # runtime
-logs/
+logs/*
 balancer_known_pools.js
 ramses_depth_probe.js
 ramses_diagnostic.js
