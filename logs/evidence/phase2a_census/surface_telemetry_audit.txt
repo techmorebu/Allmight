@@ -1,0 +1,64 @@
+══════════════════════════════════════════════════════════════════════════════
+  AllMight — Surface Telemetry Audit (Boss Phase 2A)  READ-ONLY
+  generatedAt: 2026-05-28T15:50:02.874Z
+  redis: connected | fetcher keys: 12 | observed pairs: 16
+══════════════════════════════════════════════════════════════════════════════
+
+  FETCHERS
+    sushiswapFetcher         LIVE    age:1s  pairs:6 venues:1 rows:6
+    ethereumFetcher          LIVE    age:2s  pairs:5 venues:2 rows:12
+    curveFetcherArbitrum     LIVE    age:4s  pairs:0 venues:0 rows:0
+    unichainFetcher          LIVE    age:4s  pairs:0 venues:0 rows:0
+    curveFetcherEthereum     LIVE    age:3s  pairs:4 venues:1 rows:4
+    uniswapV3Fetcher         LIVE    age:0s  pairs:7 venues:1 rows:8
+    baseFetcher              LIVE    age:3s  pairs:1 venues:2 rows:2
+    testFetcher              LIVE    age:4s  pairs:0 venues:0 rows:0
+    optimismFetcher          LIVE    age:3s  pairs:1 venues:2 rows:4
+    balancerFetcherArbitrum  LIVE    age:4s  pairs:0 venues:0 rows:0
+    arbitrumFetcher          LIVE    age:2s  pairs:11 venues:5 rows:33
+    gasPriceOracle           LIVE    age:1s  pairs:0 venues:0 rows:0
+
+  REGISTERED SURFACES
+  ▸ ETH/USDC — Ramses V2  [eth_usdc_ramses]   FULL  → scorer FULL
+      pair: ETH/USDC   declaredVenues: uniswap_v3, ramses_v2
+      observedVenues: sushiswap_v2, uniswap_v3, sushiswap_v3, aerodrome, velodrome, ramses_v2, camelot_v2, camelot_v3   age: 0s
+      observed, venues complete, breakeven configured
+
+  ▸ ARB/USDC — Candidate  [arb_usdc_candidate]   PARTIAL  → scorer PREVIEW
+      pair: ARB/USDC   declaredVenues: (none)
+      observedVenues: uniswap_v3, sushiswap_v3, camelot_v3   age: 2s
+      no realisticBreakevenBps
+
+  ▸ ETH/USDT — Candidate  [eth_usdt_candidate]   PARTIAL  → scorer PREVIEW
+      pair: ETH/USDT   declaredVenues: (none)
+      observedVenues: uniswap_v3, sushiswap_v3, curve, camelot_v3   age: 2s
+      no realisticBreakevenBps
+
+  ▸ DAI/USDC — Candidate  [dai_usdc_candidate]   PARTIAL  → scorer PREVIEW
+      pair: DAI/USDC   declaredVenues: (none)
+      observedVenues: uniswap_v3, curve, camelot_v3   age: 2s
+      no realisticBreakevenBps
+
+  OBSERVED BUT UNREGISTERED (candidate discovery)
+    WBTC/USDC      venues:3 [uniswap_v3, sushiswap_v3, camelot_v3]  rows:6
+    WBTC/USDT      venues:3 [curve, uniswap_v3, sushiswap_v3]  rows:4
+    AAVE/ETH       venues:2 [sushiswap_v2, uniswap_v3]  rows:2
+    LINK/ETH       venues:2 [sushiswap_v2, uniswap_v3]  rows:2
+    UNI/ETH        venues:2 [sushiswap_v2, uniswap_v3]  rows:2
+    USDC/USDT      venues:2 [curve, uniswap_v3]  rows:3
+    WBTC/ETH       venues:2 [sushiswap_v2, uniswap_v3]  rows:4
+    ARB/ETH        venues:1 [uniswap_v3]  rows:1
+    DAI/ETH        venues:1 [sushiswap_v2]  rows:1
+    GMX/USDC       venues:1 [uniswap_v3]  rows:1
+    MATIC/ETH      venues:1 [uniswap_v3]  rows:1
+    UNI/USDC       venues:1 [uniswap_v3]  rows:1
+
+══════════════════════════════════════════════════════════════════════════════
+  TELEMETRY GAP SUMMARY (Phase 2A work order)
+    FULL: eth_usdc_ramses
+    PARTIAL: arb_usdc_candidate, eth_usdt_candidate, dai_usdc_candidate
+
+  NOTES
+  - Audit only. No execution, no config writes, no promotion. (Boss Phase 2A)
+  - Empty Redis → start the FETCHER (telemetry only) and re-run for live census.
+══════════════════════════════════════════════════════════════════════════════
