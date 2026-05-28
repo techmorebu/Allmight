@@ -70,3 +70,5 @@ artifacts/
 reports/
 *.bak*
 scripts/execution/*.pre_p2_*
+
+# ETC + incident evidence — permanent record, always tracked (Boss G2.14)

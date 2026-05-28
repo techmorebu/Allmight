@@ -1,0 +1,26 @@
+{
+  "generatedAt": "2026-05-22T15:07:44.496Z",
+  "sessionId": "20260522_0135",
+  "engineVersion": "v2",
+  "totalSignals": 464,
+  "realism": {
+    "frictionBps": 5,
+    "frictionUsdAt200": 0.1,
+    "realisticBreakevenBps": 17.4,
+    "calibrationSource": "sandbox 6,749 records — session_20260426_2209"
+  },
+  "realisticPositiveCount": 58,
+  "realisticNegativeCount": 406,
+  "realisticSurvivalRate": 12.5,
+  "shadowRealisticPnLUsd": 1.0735,
+  "shadowRealisticTheoreticalUsd": 1.0735,
+  "shadowCalibratedEstimateUsd": 0.4294,
+  "joinedToSandbox": 0,
+  "v1DirectionAccuracyPct": null,
+  "v2DirectionAccuracyPct": null,
+  "v1FalsePositive": 0,
+  "v2FalsePositive": 0,
+  "v1FalseNegative": 0,
+  "v2FalseNegative": 0,
+  "falsePositiveReduction": null
+}

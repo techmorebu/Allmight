@@ -1,0 +1,121 @@
+═══════════════════════════════════════════════════════════════════════════
+  AllMight — Execution Truth Report (ETC Baseline v1)
+  Boss G2.13 | READ-ONLY | "quoted spread ≠ executable spread"
+  Generated: 2026-05-28T06:49:25.948Z
+═══════════════════════════════════════════════════════════════════════════
+  Blueprints loaded:  464
+  Contract verdicts:  58
+  Joined records:     58
+  Unmatched verdicts: 0
+  Contract survivors: 0 / 58  (0.00%)
+
+───────────────────────────────────────────────────────────────────────────
+  SECTION 1 — LAYERED FRICTION DECOMPOSITION (avg across survivors)
+───────────────────────────────────────────────────────────────────────────
+  Layer                               BPS       Class
+  ------------------------------------------------------------
+  quoted spread                     20.96 bps   (starting point)
+    − venue fees                    -6.00 bps   DETERMINISTIC
+    − blueprint slippage            -4.30 bps   DETERMINISTIC (configured)
+    − gas                           -1.81 bps   DETERMINISTIC
+  = blueprint modeled edge           9.22 bps   (blueprint finalEdge — NO aave)
+    − Aave flash fee                -5.00 bps   DETERMINISTIC (X-bug: omitted by blueprint)
+  = true modeled edge                4.22 bps   (blueprint − aave)
+    − v2 extra friction             -3.30 bps   v2 friction term
+  = v2 modeled edge                  0.93 bps   (v2RealisticNetUsd → bps)
+  realized execution                 0.00 bps   UPPER BOUND (reverted ≤ 0)
+  UNEXPLAINED DRIFT                  0.93 bps   EMERGENT — ≥ this (the truth gap)
+
+  Note: "realized" is an upper bound (≤0) because all candidates
+  reverted at the ~zero (1-wei) profit threshold. Unexplained drift is
+  therefore a LOWER bound: at least the entire v2 modeled edge vanished.
+
+───────────────────────────────────────────────────────────────────────────
+  SECTION 2 — SPREAD-BAND SURVIVAL
+───────────────────────────────────────────────────────────────────────────
+  Band           n  survive%  avgQuoted  avgV2Edge
+  --------------------------------------------------
+  18-20bps      10     0.00%      18.74       0.22
+  20-22bps      36     0.00%      20.73       0.82
+  22-24bps      10     0.00%      23.13       1.65
+  24-26bps       1     0.00%      24.41       2.28
+  26-28bps       1     0.00%      26.24       3.21
+
+───────────────────────────────────────────────────────────────────────────
+  SECTION 3 — MODELED vs REALIZED DRIFT (by band)
+───────────────────────────────────────────────────────────────────────────
+  Band          n   bpEdge   v2Edge   realiz  driftLB
+  --------------------------------------------------------
+  18-20bps     10     7.32     0.22       ≤0    ≥0.22
+  20-22bps     36     8.96     0.82       ≤0    ≥0.82
+  22-24bps     10    11.24     1.65       ≤0    ≥1.65
+  24-26bps      1    12.53     2.28       ≤0    ≥2.28
+  26-28bps      1    14.37     3.21       ≤0    ≥3.21
+  (realiz = realized edge upper bound; driftLB = unexplained drift lower bound)
+
+───────────────────────────────────────────────────────────────────────────
+  SECTION 4 — REVERT TAXONOMY
+───────────────────────────────────────────────────────────────────────────
+  Outcome                        count       %
+  --------------------------------------------
+  INSUFFICIENT_PROFIT               58  100.00
+
+───────────────────────────────────────────────────────────────────────────
+  SECTION 5 — UNEXPLAINED DRIFT DISTRIBUTION (v2 modeled edge that vanished)
+───────────────────────────────────────────────────────────────────────────
+  Drift is a LOWER BOUND (≥) since realized ≤ 0.
+  n=58
+  min   = ≥0.03 bps
+  p25   = ≥0.34 bps
+  median= ≥0.54 bps
+  p75   = ≥1.69 bps
+  max   = ≥3.21 bps
+  mean  = ≥0.93 bps
+
+───────────────────────────────────────────────────────────────────────────
+  SECTION 6 — PROFITABILITY FRONTIER ESTIMATE
+───────────────────────────────────────────────────────────────────────────
+  Observed survival: 0% across the ENTIRE sampled range
+  Sampled spread range: 18.14 – 26.24 bps
+
+  ⇒ The profitability frontier lies ABOVE 26.24 bps.
+    Every candidate up to the observed maximum was unprofitable.
+    This is MORE pessimistic than the predicted curve. Locating the
+    true frontier requires higher-spread samples (none exist in this
+    single-session baseline).
+
+───────────────────────────────────────────────────────────────────────────
+  SECTION 7 — FRICTION CLASSIFICATION (Boss G2.13)
+───────────────────────────────────────────────────────────────────────────
+  DETERMINISTIC friction (model should know exactly):
+    venue fees:          6.00 bps
+    blueprint slippage:  4.30 bps (configured tolerance)
+    gas:                 1.81 bps
+    Aave flash fee:      5.00 bps  ← X-bug: omitted by blueprint
+    ──────────────────────────────
+    total deterministic: 17.10 bps
+
+  EMERGENT friction (market-created, the calibration target):
+    unexplained drift:   ≥0.93 bps (avg)
+    = depth traversal + price impact + liquidity shape + state mutation
+    This is what NO deterministic model captured. THIS is the Z-gap.
+
+───────────────────────────────────────────────────────────────────────────
+  LIMITATIONS (honest disclosure)
+───────────────────────────────────────────────────────────────────────────
+  1. Realized output is BOUNDED, not measured. Reverted staticCalls
+     return nothing; realized profit only known to be < 1 wei (≈$0).
+     → realized edge ≤ 0; drift ≥ modeled edge.
+  2. Single-session baseline (20260522_0135). Frontier above the
+     observed max spread cannot be located without more samples.
+  3. Blueprint netProfitUsd vs expectedEdgePct showed internal
+     inconsistency in recon — this report uses expectedEdgePct for
+     edge and v2RealisticNetUsd for the realistic modeled edge.
+  4. Precise realized bps requires future quoter-based capture at the
+     historical block (separate ETC step, needs Boss approval).
+
+═══════════════════════════════════════════════════════════════════════════
+  ETC BASELINE v1 COMPLETE — no patches applied, baseline preserved
+═══════════════════════════════════════════════════════════════════════════
+
+  JSON written: logs/evidence/etc_baseline_v0/ETC_BASELINE_v1_report.json

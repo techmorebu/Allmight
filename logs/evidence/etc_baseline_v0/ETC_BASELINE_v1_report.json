@@ -1,0 +1,97 @@
+{
+  "generatedAt": "2026-05-28T06:49:25.960Z",
+  "inputs": {
+    "blueprints": "logs/evidence/etc_baseline_v0/blueprints_pre_correction.jsonl",
+    "verdicts": "logs/evidence/etc_baseline_v0/contract_verdict_pre_correction.jsonl"
+  },
+  "counts": {
+    "blueprints": 464,
+    "verdicts": 58,
+    "joined": 58,
+    "unmatched": 0,
+    "survivors": 0,
+    "surviveRatePct": 0
+  },
+  "layeredFrictionAvg": {
+    "quotedBps": 20.956379310344822,
+    "venueFeeBps": 6,
+    "blueprintSlipBps": 4.295000000000003,
+    "gasBps": 1.8050499999999985,
+    "blueprintModeledEdgeBps": 9.222758620689659,
+    "aaveFeeBps": 5,
+    "trueModeledEdgeBps": 4.222758620689659,
+    "v2ModeledEdgeBps": 0.9254310344827583,
+    "realizedEdgeUpperBoundBps": 0,
+    "unexplainedDriftLowerBoundBps": 0.9254310344827583
+  },
+  "bands": [
+    {
+      "band": "18-20bps",
+      "n": 10,
+      "surviveRatePct": 0,
+      "avgQuotedBps": 18.738000000000003,
+      "avgV2EdgeBps": 0.22400000000000003,
+      "avgDriftLBBps": 0.22400000000000003
+    },
+    {
+      "band": "20-22bps",
+      "n": 36,
+      "surviveRatePct": 0,
+      "avgQuotedBps": 20.72666666666667,
+      "avgV2EdgeBps": 0.8172222222222224,
+      "avgDriftLBBps": 0.8172222222222224
+    },
+    {
+      "band": "22-24bps",
+      "n": 10,
+      "surviveRatePct": 0,
+      "avgQuotedBps": 23.127999999999997,
+      "avgV2EdgeBps": 1.6525000000000003,
+      "avgDriftLBBps": 1.6525000000000003
+    },
+    {
+      "band": "24-26bps",
+      "n": 1,
+      "surviveRatePct": 0,
+      "avgQuotedBps": 24.41,
+      "avgV2EdgeBps": 2.2800000000000002,
+      "avgDriftLBBps": 2.2800000000000002
+    },
+    {
+      "band": "26-28bps",
+      "n": 1,
+      "surviveRatePct": 0,
+      "avgQuotedBps": 26.240000000000002,
+      "avgV2EdgeBps": 3.2099999999999995,
+      "avgDriftLBBps": 3.2099999999999995
+    }
+  ],
+  "revertTaxonomy": {
+    "INSUFFICIENT_PROFIT": 58
+  },
+  "driftDistributionBps": {
+    "min": 0.025,
+    "p25": 0.335,
+    "median": 0.535,
+    "p75": 1.685,
+    "max": 3.2099999999999995,
+    "mean": 0.9254310344827583,
+    "note": "lower bound (≥); realized ≤ 0"
+  },
+  "frontier": {
+    "observedMinBps": 18.14,
+    "observedMaxBps": 26.240000000000002,
+    "survivors": 0,
+    "note": "frontier above 26.24 bps"
+  },
+  "frictionClassification": {
+    "deterministicBps": {
+      "venueFee": 6,
+      "blueprintSlip": 4.295000000000003,
+      "gas": 1.8050499999999985,
+      "aaveFee": 5,
+      "total": 17.10005
+    },
+    "emergentDriftLowerBoundBps": 0.9254310344827583
+  }
+}
