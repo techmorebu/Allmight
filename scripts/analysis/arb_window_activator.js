@@ -251,6 +251,7 @@ let UNIV3_POOL       = '';
 let UNIV3_FEE_FRAC   = 0;
 let CAMELOT_POOL     = '';
 let CAMELOT_FEE_FRAC = 0;
+const AAVE_FLASH_FEE_FRAC = 0.0005;  // canonical Aave V3 flash loan fee 0.05% — Boss G2.15 (X1a)
 let CAMELOT_TYPE     = 'algebra';  // 'algebra' → globalState() | 'univ3' → slot0()
 let TICK_SPACING     = 10;
 let DEC0 = 18;
@@ -1835,7 +1836,8 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
               const baseAmt      = buyPrice > 0 ? (targetExecutionSizeUsd / buyPrice) * (1 - buyFee) : null;
               const tokenOutAmt  = baseAmt != null ? baseAmt * sellPrice * (1 - sellFee) : null;
               const gasUsd       = gm.estimatedUnits * gm.gasPriceGwei * 1e-9 * 2000;
-              const netProfit    = tokenOutAmt != null ? +((tokenOutAmt - targetExecutionSizeUsd) - gasUsd).toFixed(2) : null;
+              const aaveFeeUsd   = targetExecutionSizeUsd * AAVE_FLASH_FEE_FRAC;  // Boss G2.15 (X1a)
+              const netProfit    = tokenOutAmt != null ? +((tokenOutAmt - targetExecutionSizeUsd) - gasUsd - aaveFeeUsd).toFixed(2) : null;
 
               // ── Slippage v1 (linear approximation) ───────────────────────
               const slipFrac = snap.uniDepth > 0 ? targetExecutionSizeUsd / (2 * snap.uniDepth) : 0.005;
@@ -1880,12 +1882,13 @@ async function activatorLoop(rpc, gm, durationS, logPath, forceRemap, pairCfg, h
                 },
                 economics: {
                   spreadPct      : +signal.spread.toFixed(4),
-                  expectedEdgePct: +signal.finalEdge.toFixed(6),
+                  expectedEdgePct: +(signal.finalEdge - AAVE_FLASH_FEE_FRAC * 100).toFixed(6),  // Boss G2.15 (X1a): post-aave
                   gasCostUsd     : +gasUsd.toFixed(6),
                   gasPriceGwei   : +gm.gasPriceGwei.toFixed(6),
                   gasUnits       : gm.estimatedUnits,
                   netProfitUsd   : netProfit,
                   feeBurden      : +((buyFee + sellFee) * 100).toFixed(6),
+                  aaveFeePct     : +(AAVE_FLASH_FEE_FRAC * 100).toFixed(6),  // Boss G2.15 (X1a) transparency
                   slippageBps    : slipBps,
                 },
                 safety: {
