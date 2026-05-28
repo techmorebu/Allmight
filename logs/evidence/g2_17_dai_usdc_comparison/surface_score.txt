@@ -1,0 +1,51 @@
+══════════════════════════════════════════════════════════════════════════════
+  AllMight — Surface Score (Boss G2.16, margin-centric)  READ-ONLY
+  generatedAt: 2026-05-28T17:13:28.989Z
+  surfaces: 5  |  portfolio telemetry: ABSENT
+══════════════════════════════════════════════════════════════════════════════
+
+▸ ETH/USDC — Ramses V2  [eth_usdc_ramses]
+    economic id: arbitrum:ETH/USDC:ramses_uni
+    mode: FULL   confidence: LOW   surfaceScore 18.29
+    margin: 6.6 bps  (dislocation 24 [config] − breakeven 17.4 [config])
+    marginScore: 0.75   qualityMult: 0.2439   qualityMeasured: 30%
+    telemetry GAPS: depth, frequency, persistence, gasSensitivity, regimeQuality, competitionInv
+
+▸ DAI/USDC — uni_camelot (Arbitrum)  [dai_usdc_candidate]
+    economic id: arbitrum:DAI/USDC:uni_camelot
+    mode: FULL   confidence: LOW   surfaceScore 0
+    margin: -5.7 bps  (dislocation 2 [estimate] − breakeven 7.7 [config])
+    marginScore: 0.00   qualityMult: 0   qualityMeasured: 0%
+    size sensitivity: $1k: be 9.5 / margin -7.5  |  $10k: be 7.7 / margin -5.7  |  $100k: be 7.52 / margin -5.52
+    telemetry GAPS: executionRealism, depth, frequency, persistence, gasSensitivity, regimeQuality, competitionInv
+
+▸ DAI/USDC — curve_uni (Ethereum)  [dai_usdc_eth_curve]
+    economic id: ethereum:DAI/USDC:curve_uni
+    mode: FULL   confidence: LOW   surfaceScore 0
+    margin: -8.9 bps  (dislocation 2 [estimate] − breakeven 10.9 [config])
+    marginScore: 0.00   qualityMult: 0   qualityMeasured: 0%
+    size sensitivity: $1k: be 32.5 / margin -30.5  |  $10k: be 10.9 / margin -8.9  |  $100k: be 8.74 / margin -6.74
+    telemetry GAPS: executionRealism, depth, frequency, persistence, gasSensitivity, regimeQuality, competitionInv
+
+▸ ARB/USDC — Candidate  [arb_usdc_candidate]
+    economic id: (none — arbitrum:arb_usdc_candidate)
+    mode: PREVIEW   confidence: LOW   previewScore 0 (NEEDS_TELEMETRY)
+    margin: n/a  (dislocation 24 [config] − breakeven n/a [missing])
+    marginScore: 0.00   qualityMult: 0   qualityMeasured: 0%
+    telemetry GAPS: executionRealism, depth, frequency, persistence, gasSensitivity, regimeQuality, competitionInv
+
+▸ ETH/USDT — Candidate  [eth_usdt_candidate]
+    economic id: (none — arbitrum:eth_usdt_candidate)
+    mode: PREVIEW   confidence: LOW   previewScore 0 (NEEDS_TELEMETRY)
+    margin: n/a  (dislocation 24 [config] − breakeven n/a [missing])
+    marginScore: 0.00   qualityMult: 0   qualityMeasured: 0%
+    telemetry GAPS: executionRealism, depth, frequency, persistence, gasSensitivity, regimeQuality, competitionInv
+
+══════════════════════════════════════════════════════════════════════════════
+  NOTES
+  - PREVIEW surfaces cannot outrank FULL and are never promotion-ready.
+  - dislocationSource "estimate"/"config" = NOT measured telemetry.
+  - size sensitivity recomputes breakeven from breakevenComponents per size;
+    primary score uses realisticBreakevenBps (the referenceSizeUsd anchor).
+  - No surface promoted. No execution. No contracts touched. (Boss G2.16/G2.17)
+══════════════════════════════════════════════════════════════════════════════

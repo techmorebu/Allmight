@@ -1,0 +1,211 @@
+{
+  "meta": {
+    "generatedAt": "2026-05-28T17:13:28.989Z",
+    "portfolioFound": false,
+    "bossRuling": "G2.16",
+    "model": "margin-centric (Option B)"
+  },
+  "surfaces": [
+    {
+      "surfaceId": "eth_usdc_ramses",
+      "chainScopedId": "arbitrum:ETH/USDC:ramses_uni",
+      "displayName": "ETH/USDC — Ramses V2",
+      "chain": "arbitrum",
+      "promotionStatus": "DRY_RUN_ELIGIBLE",
+      "enabled": true,
+      "mode": "FULL",
+      "confidence": "LOW",
+      "breakevenBps": 17.4,
+      "breakevenSource": "config",
+      "typicalDislocationBps": 24,
+      "dislocationSource": "config",
+      "marginBps": 6.6,
+      "marginScore": 0.75,
+      "sizeSensitivity": null,
+      "quality": {
+        "executionRealism": 0.813
+      },
+      "qualityMultiplier": 0.2439,
+      "qualityCompleteness": 0.3,
+      "telemetryGaps": [
+        "depth",
+        "frequency",
+        "persistence",
+        "gasSensitivity",
+        "regimeQuality",
+        "competitionInv"
+      ],
+      "promotionReady": false,
+      "surfaceScore": 18.29,
+      "previewScore": null
+    },
+    {
+      "surfaceId": "dai_usdc_candidate",
+      "chainScopedId": "arbitrum:DAI/USDC:uni_camelot",
+      "displayName": "DAI/USDC — uni_camelot (Arbitrum)",
+      "chain": "arbitrum",
+      "promotionStatus": "WATCHLIST",
+      "enabled": false,
+      "mode": "FULL",
+      "confidence": "LOW",
+      "breakevenBps": 7.7,
+      "breakevenSource": "config",
+      "typicalDislocationBps": 2,
+      "dislocationSource": "estimate",
+      "marginBps": -5.7,
+      "marginScore": 0,
+      "sizeSensitivity": [
+        {
+          "sizeUsd": 1000,
+          "breakevenBps": 9.5,
+          "marginBps": -7.5,
+          "marginScore": 0
+        },
+        {
+          "sizeUsd": 10000,
+          "breakevenBps": 7.7,
+          "marginBps": -5.7,
+          "marginScore": 0
+        },
+        {
+          "sizeUsd": 100000,
+          "breakevenBps": 7.52,
+          "marginBps": -5.52,
+          "marginScore": 0
+        }
+      ],
+      "quality": {},
+      "qualityMultiplier": 0,
+      "qualityCompleteness": 0,
+      "telemetryGaps": [
+        "executionRealism",
+        "depth",
+        "frequency",
+        "persistence",
+        "gasSensitivity",
+        "regimeQuality",
+        "competitionInv"
+      ],
+      "promotionReady": false,
+      "surfaceScore": 0,
+      "previewScore": null
+    },
+    {
+      "surfaceId": "dai_usdc_eth_curve",
+      "chainScopedId": "ethereum:DAI/USDC:curve_uni",
+      "displayName": "DAI/USDC — curve_uni (Ethereum)",
+      "chain": "ethereum",
+      "promotionStatus": "WATCHLIST",
+      "enabled": false,
+      "mode": "FULL",
+      "confidence": "LOW",
+      "breakevenBps": 10.9,
+      "breakevenSource": "config",
+      "typicalDislocationBps": 2,
+      "dislocationSource": "estimate",
+      "marginBps": -8.9,
+      "marginScore": 0,
+      "sizeSensitivity": [
+        {
+          "sizeUsd": 1000,
+          "breakevenBps": 32.5,
+          "marginBps": -30.5,
+          "marginScore": 0
+        },
+        {
+          "sizeUsd": 10000,
+          "breakevenBps": 10.9,
+          "marginBps": -8.9,
+          "marginScore": 0
+        },
+        {
+          "sizeUsd": 100000,
+          "breakevenBps": 8.74,
+          "marginBps": -6.74,
+          "marginScore": 0
+        }
+      ],
+      "quality": {},
+      "qualityMultiplier": 0,
+      "qualityCompleteness": 0,
+      "telemetryGaps": [
+        "executionRealism",
+        "depth",
+        "frequency",
+        "persistence",
+        "gasSensitivity",
+        "regimeQuality",
+        "competitionInv"
+      ],
+      "promotionReady": false,
+      "surfaceScore": 0,
+      "previewScore": null
+    },
+    {
+      "surfaceId": "arb_usdc_candidate",
+      "chainScopedId": null,
+      "displayName": "ARB/USDC — Candidate",
+      "chain": "arbitrum",
+      "promotionStatus": "WATCHLIST",
+      "enabled": false,
+      "mode": "PREVIEW",
+      "confidence": "LOW",
+      "breakevenBps": null,
+      "breakevenSource": "missing",
+      "typicalDislocationBps": 24,
+      "dislocationSource": "config",
+      "marginBps": null,
+      "marginScore": 0,
+      "sizeSensitivity": null,
+      "quality": {},
+      "qualityMultiplier": 0,
+      "qualityCompleteness": 0,
+      "telemetryGaps": [
+        "executionRealism",
+        "depth",
+        "frequency",
+        "persistence",
+        "gasSensitivity",
+        "regimeQuality",
+        "competitionInv"
+      ],
+      "promotionReady": false,
+      "surfaceScore": null,
+      "previewScore": 0,
+      "needsTelemetry": true
+    },
+    {
+      "surfaceId": "eth_usdt_candidate",
+      "chainScopedId": null,
+      "displayName": "ETH/USDT — Candidate",
+      "chain": "arbitrum",
+      "promotionStatus": "WATCHLIST",
+      "enabled": false,
+      "mode": "PREVIEW",
+      "confidence": "LOW",
+      "breakevenBps": null,
+      "breakevenSource": "missing",
+      "typicalDislocationBps": 24,
+      "dislocationSource": "config",
+      "marginBps": null,
+      "marginScore": 0,
+      "sizeSensitivity": null,
+      "quality": {},
+      "qualityMultiplier": 0,
+      "qualityCompleteness": 0,
+      "telemetryGaps": [
+        "executionRealism",
+        "depth",
+        "frequency",
+        "persistence",
+        "gasSensitivity",
+        "regimeQuality",
+        "competitionInv"
+      ],
+      "promotionReady": false,
+      "surfaceScore": null,
+      "previewScore": 0,
+      "needsTelemetry": true
+    }
+  ]
+}
