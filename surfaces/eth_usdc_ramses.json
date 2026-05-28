@@ -1,5 +1,6 @@
 {
   "surfaceId": "eth_usdc_ramses",
+  "chainScopedId": "arbitrum:ETH/USDC:ramses_uni",
   "displayName": "ETH/USDC — Ramses V2",
   "chain": "arbitrum",
   "base": "WETH",

@@ -44,6 +44,8 @@ function validateSurface(surface) {
     errors.push(`invalid executionMode: ${surface.executionMode}`);
   if (surface.enabled && surface.venues && surface.venues.length === 0)
     errors.push('enabled surface must have at least one venue');
+  if (surface.venues && surface.venues.length > 0 && !surface.chainScopedId)
+    errors.push('surface with venues must have chainScopedId');
   return errors;
 }
 

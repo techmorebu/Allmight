@@ -138,10 +138,40 @@ function resolveDislocation(cfg, tele) {
   if (tele && typeof tele.observedMedianSpreadBps === 'number' && isFinite(tele.observedMedianSpreadBps)) {
     return { bps: tele.observedMedianSpreadBps, source: 'observed' };
   }
+  // single-snapshot / analytics estimate of the observed dislocation (NOT measured
+  // longitudinally, NOT an execution target). Preferred over preferredSpreadBps,
+  // which is a strategy TARGET threshold, not an observation. (Boss G2.17)
+  if (typeof cfg.estimatedDislocationBps === 'number' && isFinite(cfg.estimatedDislocationBps)) {
+    return { bps: cfg.estimatedDislocationBps, source: 'estimate' };
+  }
   if (typeof cfg.preferredSpreadBps === 'number' && isFinite(cfg.preferredSpreadBps)) {
     return { bps: cfg.preferredSpreadBps, source: 'config' };
   }
   return { bps: null, source: 'missing' };
+}
+
+// ─── SIZE-AWARE BREAKEVEN (Boss G2.17 — $1k/$10k/$100k sensitivity) ──────────
+// breakeven(size) = venueFeeBps + aaveFeeBps + estimatedSlipBps + gas_bps(size)
+//   gas_bps(size) = gasUsdPerTx / sizeUsd * 10000   (fixed gas cost amortizes over size)
+// Requires cfg.breakevenComponents. realisticBreakevenBps should equal this at
+// referenceSizeUsd; the table exposes how the gas term moves the floor with size.
+function breakevenAtSize(c, sizeUsd) {
+  const venue = Number(c.venueFeeBps)      || 0;
+  const aave  = Number(c.aaveFeeBps)       || 0;
+  const slip  = Number(c.estimatedSlipBps) || 0;
+  const gasUsd= Number(c.gasUsdPerTx)      || 0;
+  const gasBps = sizeUsd > 0 ? (gasUsd / sizeUsd) * 10000 : 0;
+  return +(venue + aave + slip + gasBps).toFixed(4);
+}
+
+function sizeSensitivity(cfg, dislocationBps) {
+  const c = cfg.breakevenComponents;
+  if (!c || typeof c !== 'object') return null;
+  return [1000, 10000, 100000].map(sz => {
+    const be = breakevenAtSize(c, sz);
+    const margin = (dislocationBps != null) ? +(dislocationBps - be).toFixed(4) : null;
+    return { sizeUsd: sz, breakevenBps: be, marginBps: margin, marginScore: marginScore(margin) };
+  });
 }
 
 // ─── QUALITY DIMENSIONS ─────────────────────────────────────────────────────
@@ -190,6 +220,7 @@ function scoreOneSurface(cfg, tele) {
   const qMult     = qualityMultiplier(dims);
   const qComplete = qualityCompleteness(dims);
   const rawScore  = +(mScore * qMult * 100).toFixed(2);
+  const sensitivity = sizeSensitivity(cfg, dis.bps);   // Boss G2.17 $1k/$10k/$100k
 
   // confidence
   let confidence;
@@ -205,6 +236,7 @@ function scoreOneSurface(cfg, tele) {
 
   const result = {
     surfaceId           : cfg.surfaceId,
+    chainScopedId       : cfg.chainScopedId || null,   // Boss G2.17 economic identity
     displayName         : cfg.displayName || cfg.surfaceId,
     chain               : cfg.chain || null,
     promotionStatus     : cfg.promotionStatus || null,
@@ -217,6 +249,7 @@ function scoreOneSurface(cfg, tele) {
     dislocationSource   : dis.source,
     marginBps,
     marginScore         : mScore,
+    sizeSensitivity     : sensitivity,
     quality             : dims,
     qualityMultiplier   : +qMult.toFixed(4),
     qualityCompleteness : +qComplete.toFixed(4),
@@ -307,12 +340,21 @@ function buildTextReport(ranked, meta) {
       ? `surfaceScore ${s.surfaceScore}`
       : `previewScore ${s.previewScore} (NEEDS_TELEMETRY)`;
     L.push(`▸ ${s.displayName}  [${s.surfaceId}]`);
+    L.push(`    economic id: ${s.chainScopedId || '(none — ' + (s.chain || '?') + ':' + s.surfaceId + ')'}`);
     L.push(`    mode: ${s.mode}   confidence: ${s.confidence}   ${scoreLabel}`);
     L.push(`    margin: ${s.marginBps == null ? 'n/a' : s.marginBps + ' bps'}` +
            `  (dislocation ${s.typicalDislocationBps == null ? 'n/a' : s.typicalDislocationBps} [${s.dislocationSource}]` +
            ` − breakeven ${s.breakevenBps == null ? 'n/a' : s.breakevenBps} [${s.breakevenSource}])`);
     L.push(`    marginScore: ${s.marginScore.toFixed(2)}   qualityMult: ${s.qualityMultiplier}` +
            `   qualityMeasured: ${(s.qualityCompleteness * 100).toFixed(0)}%`);
+    if (Array.isArray(s.sizeSensitivity)) {
+      const cells = s.sizeSensitivity.map(r => {
+        const sz = r.sizeUsd >= 1000 ? `$${r.sizeUsd / 1000}k` : `$${r.sizeUsd}`;
+        const m  = r.marginBps == null ? 'n/a' : (r.marginBps > 0 ? '+' : '') + r.marginBps;
+        return `${sz}: be ${r.breakevenBps} / margin ${m}`;
+      });
+      L.push(`    size sensitivity: ${cells.join('  |  ')}`);
+    }
     if (s.telemetryGaps.length) {
       L.push(`    telemetry GAPS: ${s.telemetryGaps.join(', ')}`);
     } else {
@@ -324,8 +366,10 @@ function buildTextReport(ranked, meta) {
   L.push(bar);
   L.push('  NOTES');
   L.push('  - PREVIEW surfaces cannot outrank FULL and are never promotion-ready.');
-  L.push('  - dislocationSource "config" = ASSUMED preferred spread, not measured.');
-  L.push('  - No surface promoted. No execution. No contracts touched. (Boss G2.16)');
+  L.push('  - dislocationSource "estimate"/"config" = NOT measured telemetry.');
+  L.push('  - size sensitivity recomputes breakeven from breakevenComponents per size;');
+  L.push('    primary score uses realisticBreakevenBps (the referenceSizeUsd anchor).');
+  L.push('  - No surface promoted. No execution. No contracts touched. (Boss G2.16/G2.17)');
   L.push(bar);
   return L.join('\n');
 }
@@ -467,6 +511,42 @@ function selfTest() {
     null);
   const ranked = rankSurfaces([highPrev, lowFull]);
   cases.push(['RANK: FULL above PREVIEW regardless of raw score', ranked[0].mode === 'FULL']);
+
+  // ─── Boss G2.17 additions ───────────────────────────────────────────────
+  // estimatedDislocationBps preferred over preferredSpreadBps, flagged 'estimate'
+  const estCfg = {
+    surfaceId: 'est', chainScopedId: 'arbitrum:DAI/USDC:uni_camelot', displayName: 'Est',
+    chain: 'arbitrum', realisticBreakevenBps: 7.7,
+    estimatedDislocationBps: 2, preferredSpreadBps: 15,
+    breakevenComponents: { venueFeeBps:1.5, aaveFeeBps:5, estimatedSlipBps:1, gasUsdPerTx:0.20, referenceSizeUsd:10000 },
+    venues:[{feeBps:1},{feeBps:0.5}], validated:{},
+  };
+  const rEst = scoreOneSurface(estCfg, null);
+  cases.push(['G2.17 estimate: dislocationSource estimate (not config)', rEst.dislocationSource === 'estimate']);
+  cases.push(['G2.17 estimate: typicalDislocationBps = 2 (not 15)', rEst.typicalDislocationBps === 2]);
+  cases.push(['G2.17 estimate: chainScopedId passed through', rEst.chainScopedId === 'arbitrum:DAI/USDC:uni_camelot']);
+  // honest negative margin: 2 - 7.7 = -5.7 → marginScore 0 → surfaceScore 0
+  cases.push(['G2.17 estimate: marginBps = -5.7', approx(rEst.marginBps, -5.7)]);
+  cases.push(['G2.17 estimate: marginScore 0 (sub-floor)', rEst.marginScore === 0.00]);
+  cases.push(['G2.17 estimate: surfaceScore 0 (negative margin)', rEst.surfaceScore === 0]);
+
+  // size sensitivity: arbitrum components → $1k 9.5 / $10k 7.7 / $100k 7.52
+  cases.push(['G2.17 sens: array of 3', Array.isArray(rEst.sizeSensitivity) && rEst.sizeSensitivity.length === 3]);
+  cases.push(['G2.17 sens: $1k breakeven 9.5',   approx(rEst.sizeSensitivity[0].breakevenBps, 9.5)]);
+  cases.push(['G2.17 sens: $10k breakeven 7.7',  approx(rEst.sizeSensitivity[1].breakevenBps, 7.7)]);
+  cases.push(['G2.17 sens: $100k breakeven 7.52',approx(rEst.sizeSensitivity[2].breakevenBps, 7.52)]);
+  cases.push(['G2.17 sens: $10k anchor == realisticBreakevenBps', approx(rEst.sizeSensitivity[1].breakevenBps, rEst.breakevenBps)]);
+  cases.push(['G2.17 sens: $1k margin -7.5 (2-9.5)', approx(rEst.sizeSensitivity[0].marginBps, -7.5)]);
+
+  // ethereum components → $10k breakeven 10.9 (venue 2.5 + aave 5 + slip 1 + gas 2.4)
+  const ethBe = breakevenAtSize({ venueFeeBps:2.5, aaveFeeBps:5, estimatedSlipBps:1, gasUsdPerTx:2.40 }, 10000);
+  cases.push(['G2.17 eth: $10k breakeven 10.9', approx(ethBe, 10.9)]);
+  const ethBe100k = breakevenAtSize({ venueFeeBps:2.5, aaveFeeBps:5, estimatedSlipBps:1, gasUsdPerTx:2.40 }, 100000);
+  cases.push(['G2.17 eth: $100k breakeven 8.74', approx(ethBe100k, 8.74)]);
+
+  // no breakevenComponents → sizeSensitivity null (graceful)
+  const noSens = scoreOneSurface({ surfaceId:'ns', preferredSpreadBps:10, venues:[], validated:{} }, null);
+  cases.push(['G2.17 sens: null when no components', noSens.sizeSensitivity === null]);
 
   // print
   let pass = 0;

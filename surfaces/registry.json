@@ -1,7 +1,7 @@
 {
   "_comment": "Surface registry — AllMight Phase 2 architecture. Locked surfaces require Boss unlock.",
   "version": "2.0",
-  "updatedAt": "2026-05-05",
+  "updatedAt": "2026-05-28",
   "promotionLadder": [
     "WATCHLIST",
     "SHADOW_ONLY",
@@ -42,6 +42,14 @@
       "promotionStatus": "WATCHLIST",
       "chain": "arbitrum",
       "displayName": "DAI/USDC — Candidate"
+    },
+    {
+      "surfaceId": "dai_usdc_eth_curve",
+      "file": "dai_usdc_eth_curve.json",
+      "enabled": false,
+      "promotionStatus": "WATCHLIST",
+      "chain": "ethereum",
+      "displayName": "DAI/USDC — Curve (Ethereum)"
     }
   ]
 }

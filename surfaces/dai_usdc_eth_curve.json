@@ -1,0 +1,33 @@
+{
+  "surfaceId": "dai_usdc_eth_curve",
+  "chainScopedId": "ethereum:DAI/USDC:curve_uni",
+  "displayName": "DAI/USDC — curve_uni (Ethereum)",
+  "chain": "ethereum",
+  "base": "DAI",
+  "quote": "USDC",
+  "venues": [
+    { "name": "curve", "pool": "0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7", "feeBps": 1.5, "type": "curve_stableswap", "notes": "Curve 3pool (DAI/USDC/USDT)" },
+    { "name": "uniswap_v3", "pool": "0x5777d92f208679DB4b9778590Fa3CAB3aC9e2168", "feeBps": 1, "type": "univ3" }
+  ],
+  "minSpreadBps": 10,
+  "preferredSpreadBps": 15,
+  "eliteSpreadBps": 20,
+  "estimatedDislocationBps": 2,
+  "dislocationSource": "single_snapshot_estimate",
+  "realisticBreakevenBps": 10.9,
+  "breakevenComponents": {
+    "venueFeeBps": 2.5,
+    "aaveFeeBps": 5,
+    "estimatedSlipBps": 1,
+    "gasUsdPerTx": 2.40,
+    "gasUnitsRef": 450000,
+    "gasSource": "oracle_or_recent_estimate",
+    "referenceSizeUsd": 10000
+  },
+  "enabled": false,
+  "executionMode": "shadow_only",
+  "promotionStatus": "WATCHLIST",
+  "executor": null,
+  "notes": "Boss G2.17: ethereum leg of chain-scoped DAI/USDC comparison. curve(1.5bp)+uni(1bp)=2.5bp venue. Higher gas vs arbitrum (ethereum ~2.67 gwei recent x 450k gas ~ $2.40/tx). READ-ONLY analytics, no execution.",
+  "validated": {}
+}
