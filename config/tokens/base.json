@@ -1,0 +1,37 @@
+{
+  "chain": "base",
+  "chainId": 8453,
+  "lastUpdated": "2026-05-30",
+  "source": "Boss-verified 2026-05-30 — USDC and USDbC via Circle's Base launch note; DAI and bridged USDT via BaseScan; WETH is the canonical OP-Stack predeploy at 0x4200...0006.",
+  "tokens": {
+    "WETH": {
+      "symbol": "WETH",
+      "address": "0x4200000000000000000000000000000000000006",
+      "decimals": 18,
+      "note": "Canonical OP-Stack WETH predeploy. Same address on Optimism, Unichain, Mode, Zora, Blast, etc."
+    },
+    "USDC": {
+      "symbol": "USDC",
+      "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "decimals": 6,
+      "note": "Native Circle USDC on Base. Preferred quote leg for arb investigations."
+    },
+    "USDbC": {
+      "symbol": "USDbC",
+      "address": "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA",
+      "decimals": 6,
+      "note": "Bridged USDC (pre-native USDC era; legacy). Detect and prefer native USDC where both exist for the same pair."
+    },
+    "DAI": {
+      "symbol": "DAI",
+      "address": "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb",
+      "decimals": 18
+    },
+    "USDT": {
+      "symbol": "USDT",
+      "address": "0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2",
+      "decimals": 6,
+      "note": "Bridged USDT on Base."
+    }
+  }
+}
