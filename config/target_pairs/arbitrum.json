@@ -1,0 +1,115 @@
+{
+  "chain": "arbitrum",
+  "description": "Pair-level scan configuration for arbitrum mainnet. Ported verbatim from scripts/tools/multi_pair_pool_discovery.js TARGET_PAIRS array (Boss directive 2026-04-02 — inventory breadth expansion). Modifying this file changes WHAT discovery looks for; chains.json defines what venues EXIST.",
+  "lastUpdated": "2026-05-30",
+  "pairs": [
+    {
+      "label": "ETH/USDT",
+      "priority": 1,
+      "tokenA": "WETH",
+      "tokenB": "USDT",
+      "expectedDec0": 18,
+      "expectedDec1": 6,
+      "priceMode": "direct",
+      "sanityMin": 500,
+      "sanityMax": 20000,
+      "note": "Token sort: WETH (0x82aF) < USDT (0xFd08) → token0=WETH, token1=USDT"
+    },
+    {
+      "label": "WBTC/USDT",
+      "priority": 1,
+      "tokenA": "WBTC",
+      "tokenB": "USDT",
+      "expectedDec0": 8,
+      "expectedDec1": 6,
+      "priceMode": "direct",
+      "sanityMin": 10000,
+      "sanityMax": 200000,
+      "note": "Token sort: WBTC (0x2f2a) < USDT (0xFd08) → token0=WBTC, token1=USDT"
+    },
+    {
+      "label": "WBTC/USDC",
+      "priority": 1,
+      "tokenA": "WBTC",
+      "tokenB": "USDC",
+      "expectedDec0": 8,
+      "expectedDec1": 6,
+      "priceMode": "direct",
+      "sanityMin": 10000,
+      "sanityMax": 200000,
+      "note": "Token sort: WBTC (0x2f2a) < USDC (0xaf88) → token0=WBTC, token1=USDC. Already investigated + rejected (Wave 3, commit a257b3e)."
+    },
+    {
+      "label": "LINK/USDC",
+      "priority": 2,
+      "tokenA": "LINK",
+      "tokenB": "USDC",
+      "expectedDec0": 18,
+      "expectedDec1": 6,
+      "priceMode": "direct",
+      "sanityMin": 1,
+      "sanityMax": 200,
+      "note": "Token sort: LINK (0xf97f) > USDC (0xaf88) → token0=USDC, token1=LINK (price inverted as native; priceMode handles)"
+    },
+    {
+      "label": "GMX/USDC",
+      "priority": 2,
+      "tokenA": "GMX",
+      "tokenB": "USDC",
+      "expectedDec0": 18,
+      "expectedDec1": 6,
+      "priceMode": "direct",
+      "sanityMin": 1,
+      "sanityMax": 500
+    },
+    {
+      "label": "UNI/USDC",
+      "priority": 2,
+      "tokenA": "UNI",
+      "tokenB": "USDC",
+      "expectedDec0": 18,
+      "expectedDec1": 6,
+      "priceMode": "direct",
+      "sanityMin": 1,
+      "sanityMax": 100
+    },
+    {
+      "label": "DAI/USDC",
+      "priority": 2,
+      "tokenA": "DAI",
+      "tokenB": "USDC",
+      "expectedDec0": 18,
+      "expectedDec1": 6,
+      "priceMode": "direct",
+      "sanityMin": 0.9,
+      "sanityMax": 1.1,
+      "note": "Already investigated + rejected (Phase 2A.2, commit 3b70909)."
+    },
+    {
+      "label": "ETH/USDC (0.30%)",
+      "priority": 3,
+      "tokenA": "WETH",
+      "tokenB": "USDC",
+      "expectedDec0": 18,
+      "expectedDec1": 6,
+      "priceMode": "direct",
+      "sanityMin": 500,
+      "sanityMax": 20000,
+      "feeTiersOnly": [3000],
+      "note": "Probe ONLY the 0.30% tier; 0.05% and 0.01% are already in fetcher (proven winner is on Ramses 0.05%)."
+    },
+    {
+      "label": "ARB/USDC (0.01%)",
+      "priority": 3,
+      "tokenA": "ARB",
+      "tokenB": "USDC",
+      "expectedDec0": 18,
+      "expectedDec1": 6,
+      "priceMode": "direct",
+      "sanityMin": 0.01,
+      "sanityMax": 20,
+      "feeTiersOnly": [100],
+      "note": "Probe ONLY the 0.01% tier; 0.05% already in fetcher."
+    }
+  ]
+}

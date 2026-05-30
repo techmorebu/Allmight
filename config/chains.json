@@ -19,17 +19,17 @@
           "feeTiers": [100, 500, 3000, 10000]
         },
         "camelot_v3": {
-          "factory": null,
+          "factory": "0x1a3c9B1d2F0529D97f2afC5136Cc23e58f1FD35B",
           "type": "algebra",
           "feeTiers": [null],
-          "note": "TODO verify factory address before enabling. Header comment in scripts/tools/multi_pair_pool_discovery.js shows a truncated 39-hex-char address; canonical full address must be sourced from the script body during Commit 2 refactor."
+          "note": "Algebra protocol — uses poolByPair() (no fee tier arg) and globalState() (returns dynamic fee). Factory address sourced from scripts/tools/multi_pair_pool_discovery.js line 233 (header comment in same file was truncated to 39 hex chars; corrected here)."
         },
         "ramses_v2": {
-          "factory": null,
-          "factoryEnv": "RAMSES_V2_FACTORY",
+          "factory": "0xAA2cd7477c451E703f3B9Ba5663334914763edF8",
+          "factoryEnv": "ARB_RAMSES_V2_FACTORY",
           "type": "uniswap_v3",
-          "feeTiers": [100, 500, 3000, 10000],
-          "note": "Factory sourced from env var per Boss directive 2026-03-28 (not hardcoded — proven via existing arbitrumFetcher). Uses slot0 like UniV3 despite the V2 name."
+          "feeTiers": [250, 500, 3000, 10000],
+          "note": "V2 in the name only — Ramses V2 CL uses slot0() like UniV3, not globalState(). Factory address sourced from scripts/tools/multi_pair_pool_discovery.js line 240 (with env-var override). Fee tiers are NON-STANDARD: confirmed-active [250, 500, 3000, 10000]; reverts on [50, 100, 2500]."
         }
       }
     },

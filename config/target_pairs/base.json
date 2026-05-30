@@ -1,0 +1,19 @@
+{
+  "chain": "base",
+  "description": "Pair-level scan configuration for Base mainnet. Wave 4 priority is testing whether the single-winner outcome on Arbitrum is chain-specific or ecosystem-wide. ETH/USDC is the structural comparison point: Ramses ↔ Uni on Arbitrum is the proven winner; Aerodrome ↔ Uni on Base is the hypothesis test.",
+  "lastUpdated": "2026-05-30",
+  "pairs": [
+    {
+      "label": "ETH/USDC",
+      "priority": 1,
+      "tokenA": "WETH",
+      "tokenB": "USDC",
+      "expectedDec0": 18,
+      "expectedDec1": 6,
+      "priceMode": "direct",
+      "sanityMin": 500,
+      "sanityMax": 20000,
+      "note": "Token sort: WETH (0x4200) < USDC (0x8335) → token0=WETH, token1=USDC. Native USDC preferred over USDbC."
+    }
+  ]
+}
