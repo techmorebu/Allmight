@@ -141,11 +141,7 @@ for (const [name, v] of Object.entries(chainCfg.venues || {})) {
     console.error(`[discovery] FATAL: unknown venue type "${v.type}" for ${CHAIN}.${name}`);
     process.exit(2);
   }
-  // Commit 2: skip aerodrome_v2 with a warning (V2 discovery support arrives in Commit 3)
-  if (typeInfo.factoryType === 'v2_factory') {
-    if (!JSON_OUT) console.log(`[discovery] SKIP ${name} — V2-factory discovery support arrives in Commit 3`);
-    continue;
-  }
+  // v2_factory (e.g. aerodrome_v2): no skip — discovery supported in Commit 3
   VENUES.push({
     venue:    name,
     type:     typeInfo.factoryType,
@@ -196,6 +192,14 @@ const SLOT0_ABI = [
 ];
 const GLOBAL_STATE_ABI = [
   'function globalState() view returns (uint160 price, int24 tick, uint16 fee, uint16, uint8, uint8, bool)',
+];
+const V2_FACTORY_ABI = [
+  'function getPair(address tokenA, address tokenB, bool stable) view returns (address pool)',
+];
+const V2_POOL_ABI = [
+  'function token0() view returns (address)',
+  'function token1() view returns (address)',
+  'function getReserves() view returns (uint256 reserve0, uint256 reserve1, uint256 blockTimestampLast)',
 ];
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
@@ -351,6 +355,116 @@ async function probePool(rpc, venue, poolAddress, pair, feeTierQueried, blockNum
   };
 }
 
+// ─── V2 POOL PROBE (constant-product / Aerodrome V2) ─────────────────────────
+async function probeV2Pool(rpc, venue, poolAddress, pair, stable, blockNumber) {
+  const label = `disc.${venue.venue}.${poolAddress.slice(0, 10)}.v2`;
+
+  // Read token0, token1, getReserves
+  let t0, t1, r0Raw, r1Raw;
+  try {
+    const { result } = await rpc.callDetailed(
+      `${label}.base`,
+      async (p) => {
+        const pool = new ethers.Contract(poolAddress, V2_POOL_ABI, p);
+        const [_t0, _t1, _res] = await Promise.all([
+          pool.token0({ blockTag: blockNumber }),
+          pool.token1({ blockTag: blockNumber }),
+          pool.getReserves({ blockTag: blockNumber }),
+        ]);
+        return { t0: _t0, t1: _t1, reserves: _res };
+      },
+      { timeoutMs: 4000, hedge: true }
+    );
+    t0    = result.t0;
+    t1    = result.t1;
+    r0Raw = result.reserves[0].toString();
+    r1Raw = result.reserves[1].toString();
+  } catch (e) {
+    return { chain: CHAIN, venue: venue.venue, pair: pair.label, status: 'skip_base_read_error',
+      stable, rejectReason: e.message.slice(0, 100) };
+  }
+
+  const tok0Symbol = classifyToken(t0);
+  const tok1Symbol = classifyToken(t1);
+
+  // Verify the pool actually contains our target tokens
+  const expectedA = lower(pair.tokenA.address);
+  const expectedB = lower(pair.tokenB.address);
+  const actual0   = lower(t0);
+  const actual1   = lower(t1);
+  const validPair = (actual0 === expectedA && actual1 === expectedB) ||
+                    (actual0 === expectedB && actual1 === expectedA);
+
+  if (!validPair) {
+    return {
+      chain: CHAIN, venue: venue.venue, pair: pair.label, poolAddress, tok0Symbol, tok1Symbol, stable,
+      status: 'reject_token_mismatch',
+      rejectReason: `expected ${pair.tokenA.symbol}/${pair.tokenB.symbol}, got ${tok0Symbol}/${tok1Symbol}`,
+    };
+  }
+
+  if (BigInt(r0Raw) === 0n || BigInt(r1Raw) === 0n) {
+    return { chain: CHAIN, venue: venue.venue, pair: pair.label, poolAddress, tok0Symbol, tok1Symbol, stable,
+      status: 'reject_zero_liquidity', reserve0Raw: r0Raw, reserve1Raw: r1Raw };
+  }
+
+  // Decimal-aware reserves (math lifted from baseFetcher.js — battle-tested)
+  const t0Info = TOKENS[tok0Symbol];
+  const t1Info = TOKENS[tok1Symbol];
+  if (!t0Info || !t1Info) {
+    return { chain: CHAIN, venue: venue.venue, pair: pair.label, poolAddress, tok0Symbol, tok1Symbol, stable,
+      status: 'reject_unknown_decimals', rejectReason: 'token not in registry' };
+  }
+
+  const PREC = 1000000000n;
+  const SCALE0 = BigInt('1' + '0'.repeat(t0Info.decimals));
+  const SCALE1 = BigInt('1' + '0'.repeat(t1Info.decimals));
+  const adj0 = Number((BigInt(r0Raw) * PREC) / SCALE0) / 1e9;
+  const adj1 = Number((BigInt(r1Raw) * PREC) / SCALE1) / 1e9;
+  const rawPrice = adj1 / adj0;
+  const price = pair.priceMode === 'invert' ? 1 / rawPrice : rawPrice;
+
+  // Executable depth in USD:
+  //   volatile: 2 × USD-leg reserve (assumes token1 ≈ USD)
+  //   stable:   r0 + r1 (both legs ≈ $1)
+  const reservesUsd = stable ? (adj0 + adj1) : (adj1 * 2);
+
+  // Sanity check price
+  let sanityPassed = true;
+  if (price && pair.sanityMin && pair.sanityMax) {
+    sanityPassed = price >= pair.sanityMin && price <= pair.sanityMax;
+  }
+
+  return {
+    chain          : CHAIN,
+    venue          : venue.venue,
+    pair           : pair.label,
+    poolAddress,
+    token0         : t0,
+    token1         : t1,
+    tok0Symbol,
+    tok1Symbol,
+    type           : 'aerodrome_v2',
+    stable,
+    feeTierQueried : stable ? 'stable' : 'volatile',
+    onChainFee     : null,
+    feePct         : 'v2',
+    liquidityRaw   : null,    // V2 has no concentrated liquidity concept
+    reserve0Raw    : r0Raw,
+    reserve1Raw    : r1Raw,
+    reserve0Token  : +adj0.toFixed(6),
+    reserve1Token  : +adj1.toFixed(2),
+    priceHuman     : +price.toFixed(6),
+    approxDepthUSD : +reservesUsd.toFixed(2),
+    depthSemantic  : 'v2_reserves_usd',
+    sanityPassed,
+    blockNumber,
+    status         : sanityPassed ? 'keep' : 'warn_sanity_fail',
+    rejectReason   : sanityPassed ? null : `price ${price?.toFixed(4)} outside [${pair.sanityMin}, ${pair.sanityMax}]`,
+    fetcherConfig  : null,    // V2 fetcher config differs from V3; hand-wired if/when needed
+  };
+}
+
 // ─── VENUE SCANNER ────────────────────────────────────────────────────────────
 async function scanVenueForPair(rpc, venue, pair, blockNumber) {
   const results = [];
@@ -400,6 +514,44 @@ async function scanVenueForPair(rpc, venue, pair, blockNumber) {
       const result = await probePool(rpc, venue, poolAddress, pair, 'dynamic', blockNumber);
       results.push(result);
       continue;
+    }
+
+    // ── V2 factory (Aerodrome): getPair(A, B, stable) — scan both volatile + stable ──
+    if (venue.type === 'v2_factory') {
+      // Iterate stable=false (volatile) then stable=true.
+      // feeTier is meaningless for V2; we still loop the outer feeTier list once.
+      for (const stable of [false, true]) {
+        await sleep(150);
+        let poolAddress;
+        try {
+          const { result } = await rpc.callDetailed(
+            `disc.${venue.venue}.factory.${pair.label}.${stable ? 'stable' : 'volatile'}`,
+            async (p) => {
+              const factory = new ethers.Contract(venue.factory, V2_FACTORY_ABI, p);
+              return factory.getPair(pair.tokenA.address, pair.tokenB.address, stable, { blockTag: blockNumber });
+            },
+            { timeoutMs: 4000, hedge: false }
+          );
+          poolAddress = result;
+        } catch (e) {
+          results.push({ chain: CHAIN, venue: venue.venue, pair: pair.label, feeTierQueried: stable ? 'stable' : 'volatile',
+            status: 'skip_factory_error', rejectReason: e.message.slice(0, 100) });
+          if (VERBOSE) console.log(`  [disc] ${venue.venue} ${pair.label} ${stable ? 'stable' : 'volatile'} → factory error`);
+          continue;
+        }
+        if (!poolAddress || poolAddress === ZERO_ADDR) {
+          if (VERBOSE) console.log(`  [disc] ${venue.venue} ${pair.label} ${stable ? 'stable' : 'volatile'} → no pool`);
+          results.push({ chain: CHAIN, venue: venue.venue, pair: pair.label, feeTierQueried: stable ? 'stable' : 'volatile',
+            status: 'reject_zero_address', rejectReason: 'pool_not_deployed' });
+          continue;
+        }
+        await sleep(100);
+        const result = await probeV2Pool(rpc, venue, poolAddress, pair, stable, blockNumber);
+        results.push(result);
+      }
+      // V2 loop covers both stable variants; break out of the fee-tier outer loop
+      // (V2 doesn't iterate fee tiers — they're not a thing for constant-product).
+      break;
     }
 
     // ── Standard V3 factory: getPool(A, B, fee) ──
