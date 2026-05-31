@@ -155,6 +155,7 @@ function v2Depth(reserve0Token, reserve1Token, isStable) {
 function inferTickSpacing(type, feeBps) {
   if (type === 'algebra') return 1;
   if (type === 'aerodrome_v2') return null;  // V2 has no tick concept
+  if (type === 'slipstream') return null;    // Slipstream tickSpacing is per-pool, decoupled from fee - read via pool.tickSpacing() if needed
   if (feeBps === 1)   return 1;
   if (feeBps === 5)   return 10;
   if (feeBps === 30)  return 60;
@@ -265,7 +266,7 @@ function resolveRpcUrl(chain, chainCfg) {
 
 async function readPool(ethers, provider, pool, blockNumber) {
   const c = new ethers.Contract(pool.address, pool.abi, provider);
-  if (pool.type === 'univ3') {
+  if (pool.type === 'univ3' || pool.type === 'slipstream') {  // Slipstream is V3-style (slot0 + liquidity); see docs/lessons/dex_contract_discovery_pitfalls.md
     const [r, liquidity] = await Promise.all([
       c.slot0({ blockTag: blockNumber }),
       c.liquidity({ blockTag: blockNumber }),
@@ -472,6 +473,9 @@ function selfTest() {
   cases.push(['inferTickSpacing(univ3, 100) = 200',        inferTickSpacing('univ3', 100) === 200]);
   cases.push(['inferTickSpacing(algebra, *) = 1',          inferTickSpacing('algebra', 1) === 1 && inferTickSpacing('algebra', 5) === 1]);
   cases.push(['inferTickSpacing(aerodrome_v2, *) = null',  inferTickSpacing('aerodrome_v2', 30) === null]);
+  cases.push(['inferTickSpacing(slipstream, 5) = null',    inferTickSpacing('slipstream', 5) === null]);
+  cases.push(['inferTickSpacing(slipstream, 1) = null',    inferTickSpacing('slipstream', 1) === null]);
+  cases.push(['inferTickSpacing(slipstream, 100) = null',  inferTickSpacing('slipstream', 100) === null]);
   cases.push(['inferTickSpacing(univ3, 7) → null',         inferTickSpacing('univ3', 7) === null]);
 
   // CLI parsing — basic + NEW v3 fields

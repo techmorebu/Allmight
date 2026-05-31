@@ -38,7 +38,7 @@ function isPositiveInt(n) {
   return Number.isInteger(n) && n > 0;
 }
 
-const VALID_VENUE_TYPES = ['uniswap_v3', 'algebra', 'aerodrome_v2'];
+const VALID_VENUE_TYPES = ['uniswap_v3', 'algebra', 'aerodrome_v2', 'slipstream'];
 
 function validateTokenEntry(name, t) {
   const errors = [];

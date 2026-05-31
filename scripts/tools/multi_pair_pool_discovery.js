@@ -124,9 +124,10 @@ const TARGET_PAIRS = pairsFile.pairs.map(p => {
 
 // Map chains.json venue types → script's internal types
 const VENUE_TYPE_MAP = {
-  'uniswap_v3':   { factoryType: 'v3_factory',      slotFn: 'slot0' },
-  'algebra':      { factoryType: 'algebra_factory', slotFn: 'globalState' },
-  'aerodrome_v2': { factoryType: 'v2_factory',      slotFn: 'getReserves' },
+  'uniswap_v3':   { factoryType: 'v3_factory',         slotFn: 'slot0' },
+  'algebra':      { factoryType: 'algebra_factory',    slotFn: 'globalState' },
+  'aerodrome_v2': { factoryType: 'v2_factory',         slotFn: 'getReserves' },
+  'slipstream':   { factoryType: 'slipstream_factory', slotFn: 'slot0' },
 };
 
 // Resolve VENUES from chain config (skip null factories with verbose log)
@@ -194,7 +195,16 @@ const GLOBAL_STATE_ABI = [
   'function globalState() view returns (uint160 price, int24 tick, uint16 fee, uint16, uint8, uint8, bool)',
 ];
 const V2_FACTORY_ABI = [
-  'function getPair(address tokenA, address tokenB, bool stable) view returns (address pool)',
+  'function getPool(address tokenA, address tokenB, bool stable) view returns (address pool)',
+];
+
+const SLIPSTREAM_FACTORY_ABI = [
+  // Aerodrome Slipstream CLFactory: getPool(A, B, int24 tickSpacing).
+  // CRITICAL: REVERTS (not returns 0x0) when pool not deployed at the requested
+  // tickSpacing - different from UniV3. The slipstream_factory branch in
+  // scanVenueForPair catches and classifies the revert as informational.
+  // See docs/lessons/dex_contract_discovery_pitfalls.md.
+  'function getPool(address tokenA, address tokenB, int24 tickSpacing) view returns (address pool)',
 ];
 const V2_POOL_ABI = [
   'function token0() view returns (address)',
@@ -528,7 +538,7 @@ async function scanVenueForPair(rpc, venue, pair, blockNumber) {
             `disc.${venue.venue}.factory.${pair.label}.${stable ? 'stable' : 'volatile'}`,
             async (p) => {
               const factory = new ethers.Contract(venue.factory, V2_FACTORY_ABI, p);
-              return factory.getPair(pair.tokenA.address, pair.tokenB.address, stable, { blockTag: blockNumber });
+              return factory.getPool(pair.tokenA.address, pair.tokenB.address, stable, { blockTag: blockNumber });
             },
             { timeoutMs: 4000, hedge: false }
           );
@@ -554,6 +564,44 @@ async function scanVenueForPair(rpc, venue, pair, blockNumber) {
       break;
     }
 
+    // ── Slipstream factory (Aerodrome CL): getPool(A, B, int24 tickSpacing) ──
+    //   Slipstream uses tickSpacing (NOT fee tier) as the pool discriminator.
+    //   feeTiers in chains.json semantically holds tickSpacings for this venue.
+    //   CRITICAL: factory REVERTS for non-existent pools - we catch and classify
+    //   as reject_no_pool_at_tickspacing (informational, not factory error).
+    //   Pools themselves are V3-style (slot0, liquidity, fee) so probePool's
+    //   standard V3 path applies after lookup.
+    //   See docs/lessons/dex_contract_discovery_pitfalls.md.
+    if (venue.type === 'slipstream_factory') {
+      let poolAddress;
+      try {
+        const { result } = await rpc.callDetailed(
+          `disc.${venue.venue}.factory.${pair.label}.${feeTier}`,
+          async (p) => {
+            const factory = new ethers.Contract(venue.factory, SLIPSTREAM_FACTORY_ABI, p);
+            return factory.getPool(pair.tokenA.address, pair.tokenB.address, feeTier, { blockTag: blockNumber });
+          },
+          { timeoutMs: 4000, hedge: false }
+        );
+        poolAddress = result;
+      } catch (e) {
+        // Slipstream reverts when no pool exists at this tickSpacing - informational, not factory error.
+        results.push({ chain: CHAIN, venue: venue.venue, pair: pair.label, feeTierQueried: feeTier,
+          status: 'reject_no_pool_at_tickspacing', rejectReason: 'slipstream factory reverts when pool not deployed at this tickSpacing' });
+        if (VERBOSE) console.log(`  [disc] ${venue.venue} ${pair.label} ts=${feeTier} -> no pool (factory revert)`);
+        continue;
+      }
+      if (!poolAddress || poolAddress === ZERO_ADDR) {
+        results.push({ chain: CHAIN, venue: venue.venue, pair: pair.label, feeTierQueried: feeTier,
+          status: 'reject_zero_address', rejectReason: 'pool_not_deployed_for_tick_spacing' });
+        if (VERBOSE) console.log(`  [disc] ${venue.venue} ${pair.label} ts=${feeTier} -> no pool (zero addr)`);
+        continue;
+      }
+      await sleep(100);
+      const result = await probePool(rpc, venue, poolAddress, pair, feeTier, blockNumber);
+      results.push(result);
+      continue;
+    }
     // ── Standard V3 factory: getPool(A, B, fee) ──
     try {
       const { result } = await rpc.callDetailed(
