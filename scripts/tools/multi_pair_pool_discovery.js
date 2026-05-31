@@ -127,7 +127,7 @@ const VENUE_TYPE_MAP = {
   'uniswap_v3':   { factoryType: 'v3_factory',         slotFn: 'slot0' },
   'algebra':      { factoryType: 'algebra_factory',    slotFn: 'globalState' },
   'aerodrome_v2': { factoryType: 'v2_factory',         slotFn: 'getReserves' },
-  'slipstream':   { factoryType: 'slipstream_factory', slotFn: 'slot0' },
+  'slipstream':   { factoryType: 'slipstream_factory', slotFn: 'slot0_slipstream' },
 };
 
 // Resolve VENUES from chain config (skip null factories with verbose log)
@@ -191,6 +191,16 @@ const POOL_FEE_ABI = ['function fee() view returns (uint24)'];
 const SLOT0_ABI = [
   'function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16, uint16, uint16, uint8, bool)',
 ];
+const SLIPSTREAM_SLOT0_ABI = [
+  // Aerodrome Slipstream CLPool slot0 returns 6 fields (no feeProtocol).
+  // Different from UniswapV3 which returns 7 fields - the Aerodrome fork
+  // dropped feeProtocol. Without this ABI, ethers fails to decode the
+  // response and provider_factory reports "RPC exhausted" after retries.
+  // Confirmed via direct ABI test against pool 0xdbc69982... (Base mainnet).
+  // See docs/lessons/dex_contract_discovery_pitfalls.md.
+  'function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16, uint16, uint16, bool)',
+];
+
 const GLOBAL_STATE_ABI = [
   'function globalState() view returns (uint160 price, int24 tick, uint16 fee, uint16, uint8, uint8, bool)',
 ];
@@ -302,7 +312,9 @@ async function probePool(rpc, venue, poolAddress, pair, feeTierQueried, blockNum
   await sleep(80);
   let sqrtPriceX96 = null, tick = null, onChainFee = feeTierQueried;
   try {
-    const priceAbi = venue.slotFn === 'globalState' ? GLOBAL_STATE_ABI : SLOT0_ABI;
+    const priceAbi = venue.slotFn === 'globalState' ? GLOBAL_STATE_ABI
+                  : venue.slotFn === 'slot0_slipstream' ? SLIPSTREAM_SLOT0_ABI
+                  : SLOT0_ABI;
     const { result: pr } = await rpc.callDetailed(
       `${label}.price`,
       async (p) => {
@@ -526,7 +538,7 @@ async function scanVenueForPair(rpc, venue, pair, blockNumber) {
       continue;
     }
 
-    // ── V2 factory (Aerodrome): getPair(A, B, stable) — scan both volatile + stable ──
+    // ── V2 factory (Aerodrome): getPool(A, B, stable) — scan both volatile + stable ──
     if (venue.type === 'v2_factory') {
       // Iterate stable=false (volatile) then stable=true.
       // feeTier is meaningless for V2; we still loop the outer feeTier list once.

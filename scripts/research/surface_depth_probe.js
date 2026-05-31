@@ -171,6 +171,12 @@ const POOL_ABI = {
     'function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16, uint16, uint16, uint8, bool)',
     'function liquidity() view returns (uint128)',
   ],
+  // Aerodrome Slipstream: V3-style CL but slot0() returns 6 fields (no feeProtocol).
+  // See docs/lessons/dex_contract_discovery_pitfalls.md.
+  slipstream: [
+    'function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16, uint16, uint16, bool)',
+    'function liquidity() view returns (uint128)',
+  ],
   algebra: [
     'function globalState() view returns (uint160 price, int24 tick, uint16 feeZto, uint16 feeOtz, uint16, uint8, uint8, bool)',
     'function liquidity() view returns (uint128)',
@@ -476,6 +482,8 @@ function selfTest() {
   cases.push(['inferTickSpacing(slipstream, 5) = null',    inferTickSpacing('slipstream', 5) === null]);
   cases.push(['inferTickSpacing(slipstream, 1) = null',    inferTickSpacing('slipstream', 1) === null]);
   cases.push(['inferTickSpacing(slipstream, 100) = null',  inferTickSpacing('slipstream', 100) === null]);
+  cases.push(['POOL_ABI.slipstream exists',                  POOL_ABI.slipstream !== undefined]);
+  cases.push(['POOL_ABI.slipstream.slot0 has 6 fields',     POOL_ABI.slipstream[0].includes('uint16, bool)')]);
   cases.push(['inferTickSpacing(univ3, 7) → null',         inferTickSpacing('univ3', 7) === null]);
 
   // CLI parsing — basic + NEW v3 fields

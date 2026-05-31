@@ -218,3 +218,72 @@ validator's allow-list dynamic — read it from a single registry file
 3. Search for hard-coded allow-lists of new symbols before adding them.
 4. `set -euo pipefail` saved us: the validator's exit-1 prevented a
    broken commit. Trust the gauntlet.
+
+## Slipstream pool-side slot0 ABI divergence (Wave 4 Commit 5)
+
+Even after fixing the FACTORY ABI in Commit 4, Slipstream POOL reads
+failed because the pool's `slot0()` returns 6 fields, not 7 like UniV3.
+
+| Function | UniswapV3 returns                                       | Aerodrome Slipstream returns                       |
+|----------|---------------------------------------------------------|----------------------------------------------------|
+| slot0    | uint160, int24, uint16, uint16, uint16, **uint8**, bool | uint160, int24, uint16, uint16, uint16, bool       |
+|          | (`feeProtocol` field present)                           | (`feeProtocol` REMOVED in the Aerodrome fork)      |
+
+When ethers tries to decode a 6-field response as 7 fields, it fails with
+`could not decode result data` and provider_factory reports `RPC exhausted`
+after retries. **This was a hard error to track down**: the surface
+symptom (middleware exhaustion) looked like a network issue, but the
+root cause was a pool-side ABI mismatch.
+
+**Fix**: separate ABI per venue type. `SLIPSTREAM_SLOT0_ABI` in discovery,
+`POOL_ABI.slipstream` in probe. Dispatched via `slotFn: 'slot0_slipstream'`
+in the VENUE_TYPE_MAP entry.
+
+### Generalized lesson
+
+Identifying the factory's ABI is necessary but not sufficient. The pool's
+read ABIs (slot0, fee, liquidity, etc.) may also differ from the parent
+protocol's ABIs even when the protocol is a "fork". When integrating a
+new venue, sample EVERY read function against an actual deployed pool,
+not just the factory's deployment claims.
+
+### Pool ABI verification checklist for new venues
+
+For each new pool type, run a direct ethers read against an actual
+deployed pool and verify:
+
+- [ ] `slot0()` return tuple matches your ABI EXACTLY (count + types)
+- [ ] `liquidity()` returns the expected type (usually uint128)
+- [ ] `fee()` exists and returns uint24 (some forks rename or omit)
+- [ ] `tickSpacing()` exists and returns int24 (some forks store fee
+       and tickSpacing differently)
+- [ ] `token0()` / `token1()` return the expected addresses
+- [ ] `getReserves()` only on AMM-style pools (not CL pools)
+
+If any of these mismatch your assumed ABI, dispatch to a venue-specific
+ABI rather than treating it as an alias of the parent protocol.
+
+### Known cosmetic debt after Commit 5
+
+The discovery output table shows the QUERIED `feeTier` as the "fee" column.
+For UniV3 this is correct (feeTier == fee). For Slipstream, the queried
+value is actually the `tickSpacing`, and the real fee is read separately
+via `pool.fee()`. Currently the discovery table shows misleading fee values
+for Slipstream rows (e.g., "0.0001%" for `tickSpacing=1` when the real fee
+is 0.008%). Pool addresses and depth math are correct. Real `pool.fee()`
+read + display can be added later if ranking requires it.
+
+### Why "RPC exhausted" was the wrong error message
+
+provider_factory's retry-on-failure logic treats decoding errors the
+same way it treats network errors — retry on a different endpoint. When
+the ABI mismatch is at the application layer (ethers decoding), every
+endpoint returns the same valid response that we then fail to decode the
+same way. After exhausting the endpoint pool with the same decoding
+failure, the wrapper reports "RPC exhausted" — actively misleading.
+
+**Improvement opportunity (future)**: provider_factory should differentiate
+between transient network failures (worth retrying) and deterministic
+application-layer failures (not worth retrying — same outcome on every
+endpoint). Decoding errors should bubble up with their original message,
+not be classified as RPC exhaustion. Tracked as engineering debt.
