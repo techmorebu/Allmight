@@ -1,19 +1,19 @@
 {
   "chain": "optimism",
-  "description": "Pair-level scan configuration for Optimism mainnet. Wave 6 priority is testing the Ramses-class hypothesis on a third chain: does Velodrome Slipstream exhibit a Ramses-style lag signature, or does it match Aerodrome Slipstream's BEHAVIORALLY_DEAD pattern? Velodrome is the direct ancestor protocol of Aerodrome, so structural similarity is expected — the question is whether market behavior on Optimism diverges meaningfully from Base.",
+  "description": "Pair-level scan configuration for Optimism mainnet. Wave 6 priority is testing the Ramses-class hypothesis on a third chain: does Velodrome Slipstream exhibit a Ramses-style lag signature, or does it match Aerodrome Slipstream's BEHAVIORALLY_DEAD pattern? Velodrome is the direct ancestor protocol of Aerodrome, so structural similarity is expected \u2014 the question is whether market behavior on Optimism diverges meaningfully from Base.",
   "lastUpdated": "2026-06-01",
   "pairs": [
     {
       "label": "ETH/USDC",
       "priority": 1,
-      "tokenA": "WETH",
-      "tokenB": "USDC",
-      "expectedDec0": 18,
-      "expectedDec1": 6,
-      "priceMode": "direct",
+      "tokenA": "USDC",
+      "tokenB": "WETH",
+      "expectedDec0": 6,
+      "expectedDec1": 18,
+      "priceMode": "invert",
       "sanityMin": 500,
       "sanityMax": 20000,
-      "note": "Token sort: WETH (0x4200) < USDC (0x0b2C) → token0=WETH, token1=USDC. Native USDC primary. USDCE bridged variant not in initial config; can be added in a follow-up if discovery shows deeper legacy UniV3 pools."
+      "note": "Token sort: USDC native (0x0b2C) < WETH (0x4200) \u2192 token0=USDC, token1=WETH. This is OPPOSITE of Base where USDC (0x8335) > WETH so token0=WETH. priceMode='invert' flips the raw on-chain ratio (WETH per USDC = 0.0005) to give USDC per WETH = $2000 for display. Depth calc detects stable side automatically via STABLE_TOKENS set in multi_pair_pool_discovery.js \u2014 see wave6 commit 2."
     }
   ]
 }

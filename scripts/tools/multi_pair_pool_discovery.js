@@ -231,6 +231,14 @@ function classifyToken(addr) {
   return ADDR_MAP[lower(addr)] || 'UNKNOWN';
 }
 
+// USD-pegged stable tokens — depth calculations detect which side is the
+// stable so that L*sqrtP vs L/sqrtP routing is independent of on-chain
+// token0/token1 ordering. Chains where the stable token's address is
+// smaller than the volatile token's (e.g., Optimism native USDC at
+// 0x0b2C... < WETH at 0x4200...) flip the assumption; this set makes the
+// math chain-portable. Add new symbols here when integrating new chains.
+const STABLE_TOKENS = new Set(['USDC', 'USDCE', 'USDbC', 'USDT', 'DAI']);
+
 function sqrtPriceToHuman(sqrtPriceX96, tok0Symbol, tok1Symbol) {
   try {
     const t0 = TOKENS[tok0Symbol];
@@ -243,10 +251,24 @@ function sqrtPriceToHuman(sqrtPriceX96, tok0Symbol, tok1Symbol) {
 
 function approxDepthUSD(liquidityRaw, sqrtPriceX96, tok0Symbol, tok1Symbol) {
   try {
+    const t0 = TOKENS[tok0Symbol];
     const t1 = TOKENS[tok1Symbol];
-    if (!t1) return null;
-    const liq  = Number(liquidityRaw);
+    if (!t0 || !t1) return null;
+    const liq   = Number(liquidityRaw);
     const sqrtP = Number(sqrtPriceX96) / (2 ** 96);
+    // V3 active-tick math: amount1_raw = L * sqrtP, amount0_raw = L / sqrtP.
+    // Detect which side is USD-pegged; compute depth from the stable side ×2.
+    if (STABLE_TOKENS.has(tok1Symbol)) {
+      // Standard case (e.g., Base WETH/USDC where USDC=token1)
+      const reserveQuote = (liq * sqrtP) / Math.pow(10, t1.decimals);
+      return reserveQuote * 2;
+    }
+    if (STABLE_TOKENS.has(tok0Symbol)) {
+      // Flipped case (e.g., Optimism WETH/USDC native where USDC=token0)
+      const reserveBase = (liq / sqrtP) / Math.pow(10, t0.decimals);
+      return reserveBase * 2;
+    }
+    // Neither side stable (e.g., WBTC/ETH); preserve original behavior
     const reserveQuote = (liq * sqrtP) / Math.pow(10, t1.decimals);
     return reserveQuote * 2;
   } catch { return null; }
@@ -449,7 +471,18 @@ async function probeV2Pool(rpc, venue, poolAddress, pair, stable, blockNumber) {
   // Executable depth in USD:
   //   volatile: 2 × USD-leg reserve (assumes token1 ≈ USD)
   //   stable:   r0 + r1 (both legs ≈ $1)
-  const reservesUsd = stable ? (adj0 + adj1) : (adj1 * 2);
+  // Detect USD-pegged side. Stable pools sum both legs (~$1 each).
+  // Volatile pools approximate as 2× the USD-pegged side reserve.
+  let reservesUsd;
+  if (stable) {
+    reservesUsd = adj0 + adj1;
+  } else if (STABLE_TOKENS.has(tok1Symbol)) {
+    reservesUsd = adj1 * 2;
+  } else if (STABLE_TOKENS.has(tok0Symbol)) {
+    reservesUsd = adj0 * 2;
+  } else {
+    reservesUsd = adj1 * 2;  // no stable detected; fallback
+  }
 
   // Sanity check price
   let sanityPassed = true;
