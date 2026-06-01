@@ -93,7 +93,7 @@ function sqrtPriceAtTick(tick) {
 }
 
 // Active-tick depth (Uniswap V3 §6.2.2 in Q96 form)
-function activeTickDepth({ sqrtPriceX96, tick, tickSpacing, liquidity, decimals0, decimals1 }) {
+function activeTickDepth({ sqrtPriceX96, tick, tickSpacing, liquidity, decimals0, decimals1, stableSide = 1 }) {
   const ts = Math.max(1, tickSpacing);
   const tickLower = Math.floor(Number(tick) / ts) * ts;
   const tickUpper = tickLower + ts;
@@ -109,9 +109,17 @@ function activeTickDepth({ sqrtPriceX96, tick, tickSpacing, liquidity, decimals0
   const amount1Token = amount1Raw / Math.pow(10, decimals1);
 
   const tokenPriceUsd = priceFromSqrtX96(sqrtPriceX96, decimals0, decimals1);
-  // Assumes token1 ≈ USD (USDC/USDT/DAI). Token0 valued at current price.
-  const usd0 = amount0Token * tokenPriceUsd;
-  const usd1 = amount1Token;
+  // Stable-side aware: --stable-side CLI flag declares which token is USD-pegged.
+  //   stableSide=1 (default): token1 = USD (Base/Arb pattern — USDC at higher address)
+  //   stableSide=0:           token0 = USD (Optimism native USDC pattern)
+  let usd0, usd1;
+  if (stableSide === 0) {
+    usd0 = amount0Token;
+    usd1 = tokenPriceUsd > 0 ? amount1Token / tokenPriceUsd : 0;
+  } else {
+    usd0 = amount0Token * tokenPriceUsd;
+    usd1 = amount1Token;
+  }
   return { tickLower, tickUpper, amount0Token, amount1Token, usd0, usd1, totalUsd: usd0 + usd1 };
 }
 
@@ -145,9 +153,11 @@ function v2Price(reserve0Token, reserve1Token) {
 //   For volatile pools (token1 ≈ USD): 2 × USDC reserve
 //     (constant-product invariant means executable depth ≈ 2× one-sided notional)
 //   For stable pools (both legs ≈ $1): r0 + r1
-function v2Depth(reserve0Token, reserve1Token, isStable) {
+function v2Depth(reserve0Token, reserve1Token, isStable, stableSide = 1) {
   if (isStable) return reserve0Token + reserve1Token;
-  return reserve1Token * 2;
+  // Stable-side aware: stableSide=1 (default) → 2×r1 (token1=USD, Base/Arb).
+  // stableSide=0 → 2×r0 (token0=USD, Optimism native USDC pattern).
+  return stableSide === 0 ? reserve0Token * 2 : reserve1Token * 2;
 }
 
 // ─── tickSpacing inference (UniV3 standard fee tiers + Algebra) ─────────────
@@ -218,6 +228,7 @@ function parseArgs(argv) {
       case '--stable-b':      a.stableB = (v === 'true' || v === '1'); i++; break;
       case '--decimals0':     a.decimals0 = parseInt(v, 10); i++; break;
       case '--decimals1':     a.decimals1 = parseInt(v, 10); i++; break;
+      case '--stable-side':   a.stableSide = parseInt(v, 10); i++; break;
       case '--interval':      a.intervalSec = parseInt(v, 10) || 30; i++; break;
       case '--duration-min':  a.durationMin = parseFloat(v) || null; i++; break;
       case '--max-samples':   a.maxSamples  = parseInt(v, 10) || null; i++; break;
@@ -246,9 +257,9 @@ function buildPools(args) {
 
   return [
     { label: 'a', name: args.venueA, address: args.poolA, type: args.typeA, feeBps: args.feeA, tickSpacing: tsA,
-      decimals0: args.decimals0, decimals1: args.decimals1, abi: POOL_ABI[args.typeA], stable: args.stableA },
+      decimals0: args.decimals0, decimals1: args.decimals1, abi: POOL_ABI[args.typeA], stable: args.stableA, stableSide: args.stableSide },
     { label: 'b', name: args.venueB, address: args.poolB, type: args.typeB, feeBps: args.feeB, tickSpacing: tsB,
-      decimals0: args.decimals0, decimals1: args.decimals1, abi: POOL_ABI[args.typeB], stable: args.stableB },
+      decimals0: args.decimals0, decimals1: args.decimals1, abi: POOL_ABI[args.typeB], stable: args.stableB, stableSide: args.stableSide },
   ];
 }
 
@@ -307,7 +318,7 @@ async function probeTick(ethers, provider, POOLS, sink, stats) {
       if (r.kind === 'v2') {
         const { reserve0Token, reserve1Token } = v2Reserves(r.reserve0Raw, r.reserve1Raw, p.decimals0, p.decimals1);
         const price = v2Price(reserve0Token, reserve1Token);
-        const depth = v2Depth(reserve0Token, reserve1Token, p.stable);
+        const depth = v2Depth(reserve0Token, reserve1Token, p.stable, p.stableSide);
         obsForPool = {
           venue:                p.name,
           pool:                 p.address,
@@ -326,7 +337,7 @@ async function probeTick(ethers, provider, POOLS, sink, stats) {
         const price = priceFromSqrtX96(r.sqrtPriceX96, p.decimals0, p.decimals1);
         const depth = activeTickDepth({
           sqrtPriceX96: r.sqrtPriceX96, tick: r.tick, tickSpacing: p.tickSpacing,
-          liquidity: r.liquidity, decimals0: p.decimals0, decimals1: p.decimals1,
+          liquidity: r.liquidity, decimals0: p.decimals0, decimals1: p.decimals1, stableSide: p.stableSide,
         });
         obsForPool = {
           venue:                p.name,
@@ -455,6 +466,15 @@ function selfTest() {
   });
   cases.push(['v3 depth: totalUsd = usd0 + usd1', approx(d.totalUsd, d.usd0 + d.usd1, 1e-9)]);
   cases.push(['v3 depth: both sides > 0 mid-range', d.usd0 > 0 && d.usd1 > 0]);
+
+  // V3 stable-side=0 (Optimism native USDC pattern: USDC=token0, WETH=token1)
+  const d_s0 = activeTickDepth({
+    sqrtPriceX96: BigInt(Math.floor(sqrtPriceAtTick(5))),
+    tick: 5, tickSpacing: 10, liquidity: BigInt('1000000000000000'),
+    decimals0: 6, decimals1: 18, stableSide: 0,
+  });
+  cases.push(['v3 (stableSide=0): totalUsd = usd0 + usd1', approx(d_s0.totalUsd, d_s0.usd0 + d_s0.usd1, 1e-9)]);
+  cases.push(['v3 (stableSide=0): both sides > 0',         d_s0.usd0 > 0 && d_s0.usd1 > 0]);
   cases.push(['spread(2014, 2015) ≈ 4.96bp', approx(spreadBps(2014, 2015), 4.962, 1e-2)]);
   cases.push(['spread(0, 1) → null', spreadBps(0, 1) === null]);
 
@@ -469,6 +489,15 @@ function selfTest() {
   cases.push(['v2: reserve1 = 3M USDC (got ' + v2r.reserve1Token + ')',    approx(v2r.reserve1Token, 3000000, 1e-6)]);
   cases.push(['v2: price = 3000',          approx(v2Price(v2r.reserve0Token, v2r.reserve1Token), 3000, 1e-6)]);
   cases.push(['v2: depth volatile = 6M USD', approx(v2Depth(v2r.reserve0Token, v2r.reserve1Token, false), 6000000, 1e-6)]);
+
+  // V2 stable-side=0 (Optimism native USDC pattern: USDC at reserve0)
+  const v2r_s0 = v2Reserves(
+    '3000000000000',             // 3,000,000 USDC at reserve0 (6 decimals)
+    '1000000000000000000000',    // 1000 WETH at reserve1 (18 decimals)
+    6, 18
+  );
+  cases.push(['v2 (stableSide=0): depth = 2×r0 = 6M USD', approx(v2Depth(v2r_s0.reserve0Token, v2r_s0.reserve1Token, false, 0), 6000000, 1e-6)]);
+  cases.push(['v2 (stableSide=1 default): unchanged 6M',  approx(v2Depth(v2r.reserve0Token, v2r.reserve1Token, false), 6000000, 1e-6)]);
   cases.push(['v2: depth stable = r0+r1',   approx(v2Depth(v2r.reserve0Token, v2r.reserve1Token, true),  3001000, 1e-6)]);
   cases.push(['v2: zero r0 → price null',  v2Price(0, 1000) === null]);
 
