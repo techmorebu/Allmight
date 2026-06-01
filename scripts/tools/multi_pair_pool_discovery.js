@@ -355,7 +355,13 @@ async function probePool(rpc, venue, poolAddress, pair, feeTierQueried, blockNum
     if (VERBOSE) console.warn(`  [disc] price read failed ${label}: ${e.message.slice(0, 60)}`);
   }
 
-  const priceHuman  = sqrtPriceX96 ? sqrtPriceToHuman(sqrtPriceX96, tok0Symbol, tok1Symbol) : null;
+  let priceHuman = sqrtPriceX96 ? sqrtPriceToHuman(sqrtPriceX96, tok0Symbol, tok1Symbol) : null;
+  // V3 path: apply priceMode='invert' for display when token0 is the quote asset
+  // (e.g., Optimism native USDC where token0=USDC). V2 path applies its own
+  // inversion at the v2 depth branch; both paths now respect priceMode.
+  if (priceHuman != null && pair.priceMode === 'invert') {
+    priceHuman = 1 / priceHuman;
+  }
   const approxDepth = sqrtPriceX96 ? approxDepthUSD(liquidityRaw, sqrtPriceX96, tok0Symbol, tok1Symbol) : null;
 
   // Sanity check price
