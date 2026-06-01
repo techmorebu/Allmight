@@ -1,0 +1,19 @@
+{
+  "chain": "optimism",
+  "description": "Pair-level scan configuration for Optimism mainnet. Wave 6 priority is testing the Ramses-class hypothesis on a third chain: does Velodrome Slipstream exhibit a Ramses-style lag signature, or does it match Aerodrome Slipstream's BEHAVIORALLY_DEAD pattern? Velodrome is the direct ancestor protocol of Aerodrome, so structural similarity is expected — the question is whether market behavior on Optimism diverges meaningfully from Base.",
+  "lastUpdated": "2026-06-01",
+  "pairs": [
+    {
+      "label": "ETH/USDC",
+      "priority": 1,
+      "tokenA": "WETH",
+      "tokenB": "USDC",
+      "expectedDec0": 18,
+      "expectedDec1": 6,
+      "priceMode": "direct",
+      "sanityMin": 500,
+      "sanityMax": 20000,
+      "note": "Token sort: WETH (0x4200) < USDC (0x0b2C) → token0=WETH, token1=USDC. Native USDC primary. USDCE bridged variant not in initial config; can be added in a follow-up if discovery shows deeper legacy UniV3 pools."
+    }
+  ]
+}

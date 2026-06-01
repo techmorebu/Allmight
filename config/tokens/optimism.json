@@ -1,0 +1,47 @@
+{
+  "chain": "optimism",
+  "chainId": 10,
+  "lastUpdated": "2026-06-01",
+  "source": "Wave 6 Step 1 on-chain verification (2026-06-01). USDC (native) at 0x0b2C... is Circle's native deployment post-2023; preferred for new pools and where Slipstream lives. USDCE at 0x7F5c... is the legacy bridged USDC, still hosts deep UniV3 pools from the pre-native era. WETH is the OP-Stack canonical predeploy at 0x4200...0006 (same address as Base/Unichain).",
+  "tokens": {
+    "WETH": {
+      "symbol": "WETH",
+      "address": "0x4200000000000000000000000000000000000006",
+      "decimals": 18,
+      "note": "Canonical OP-Stack WETH predeploy. Identical address on Base, Unichain, Mode, Zora, etc."
+    },
+    "USDC": {
+      "symbol": "USDC",
+      "address": "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85",
+      "decimals": 6,
+      "note": "Native Circle USDC on Optimism (launched 2023). Preferred quote leg for arb investigations. Velodrome Slipstream pools live here."
+    },
+    "USDCE": {
+      "symbol": "USDCE",
+      "address": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+      "decimals": 6,
+      "note": "Bridged USDC.e (pre-native USDC era; legacy). May still hold deep UniV3 pools from before the 2023 Circle launch. Detect and prefer native USDC where both exist for the same pair."
+    },
+    "USDT": {
+      "symbol": "USDT",
+      "address": "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
+      "decimals": 6
+    },
+    "DAI": {
+      "symbol": "DAI",
+      "address": "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+      "decimals": 18
+    },
+    "WBTC": {
+      "symbol": "WBTC",
+      "address": "0x68f180fcCe6836688e9084f035309E29Bf0A2095",
+      "decimals": 8
+    },
+    "OP": {
+      "symbol": "OP",
+      "address": "0x4200000000000000000000000000000000000042",
+      "decimals": 18,
+      "note": "Optimism native governance token"
+    }
+  }
+}

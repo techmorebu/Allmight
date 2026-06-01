@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "description": "AllMight chain registry. Venues, factories, and token-registry pointers per chain. Modify only with verified on-chain addresses. Validated by scripts/tools/validate_chain_config.js before any consumer reads.",
-  "lastUpdated": "2026-05-30",
+  "lastUpdated": "2026-06-01",
   "chains": {
     "arbitrum": {
       "chainId": 42161,
@@ -34,7 +34,7 @@
           "feeTiers": [
             null
           ],
-          "note": "Algebra protocol — uses poolByPair() (no fee tier arg) and globalState() (returns dynamic fee). Factory address sourced from scripts/tools/multi_pair_pool_discovery.js line 233 (header comment in same file was truncated to 39 hex chars; corrected here)."
+          "note": "Algebra protocol \u2014 uses poolByPair() (no fee tier arg) and globalState() (returns dynamic fee). Factory address sourced from scripts/tools/multi_pair_pool_discovery.js line 233 (header comment in same file was truncated to 39 hex chars; corrected here)."
         },
         "ramses_v2": {
           "factory": "0xAA2cd7477c451E703f3B9Ba5663334914763edF8",
@@ -46,7 +46,7 @@
             3000,
             10000
           ],
-          "note": "V2 in the name only — Ramses V2 CL uses slot0() like UniV3, not globalState(). Factory address sourced from scripts/tools/multi_pair_pool_discovery.js line 240 (with env-var override). Fee tiers are NON-STANDARD: confirmed-active [250, 500, 3000, 10000]; reverts on [50, 100, 2500]."
+          "note": "V2 in the name only \u2014 Ramses V2 CL uses slot0() like UniV3, not globalState(). Factory address sourced from scripts/tools/multi_pair_pool_discovery.js line 240 (with env-var override). Fee tiers are NON-STANDARD: confirmed-active [250, 500, 3000, 10000]; reverts on [50, 100, 2500]."
         }
       }
     },
@@ -85,7 +85,7 @@
             2500,
             10000
           ],
-          "note": "Slipstream V1 (Initial Deployment) PoolFactory. Source: aerodrome-finance/slipstream GitHub deployments table. CRITICAL: the previous value (0xeC8E5342...) is the PoolImplementation, NOT the factory — BaseScan's public name tag 'Aerodrome: SlipStream Pool Factory' is misleading; that address's source code shows Contract Name = CLPool. CLFactory.getPool(addr,addr,int24 tickSpacing) REVERTS for non-existent pools (unlike UniV3 which returns 0x0); discovery handles via slipstream_factory branch. feeTiers semantically holds tickSpacings for Slipstream (1, 50, 100, 200, 500, 2500, 10000). Verified pools (2026-05-30): ETH/USDC tickSpacing=1 at 0xdbc699...30f1 (fee 0.008%, real depth); tickSpacing=50 at 0xAaD23a...D517 (fee 0.05%, EMPTY). See docs/lessons/dex_contract_discovery_pitfalls.md."
+          "note": "Slipstream V1 (Initial Deployment) PoolFactory. Source: aerodrome-finance/slipstream GitHub deployments table. CRITICAL: the previous value (0xeC8E5342...) is the PoolImplementation, NOT the factory \u2014 BaseScan's public name tag 'Aerodrome: SlipStream Pool Factory' is misleading; that address's source code shows Contract Name = CLPool. CLFactory.getPool(addr,addr,int24 tickSpacing) REVERTS for non-existent pools (unlike UniV3 which returns 0x0); discovery handles via slipstream_factory branch. feeTiers semantically holds tickSpacings for Slipstream (1, 50, 100, 200, 500, 2500, 10000). Verified pools (2026-05-30): ETH/USDC tickSpacing=1 at 0xdbc699...30f1 (fee 0.008%, real depth); tickSpacing=50 at 0xAaD23a...D517 (fee 0.05%, EMPTY). See docs/lessons/dex_contract_discovery_pitfalls.md."
         },
         "sushiswap_v3": {
           "factory": null,
@@ -108,6 +108,45 @@
             10000
           ],
           "note": "TODO verify Base mainnet factory address on BaseScan before enabling discovery."
+        }
+      }
+    },
+    "optimism": {
+      "chainId": 10,
+      "rpcEnv": "OPTIMISM_MAINNET_RPC_URL",
+      "tokensFile": "config/tokens/optimism.json",
+      "venues": {
+        "uniswap_v3": {
+          "factory": "0x1F98431c8aD98523631AE4a59f267346ea31F984",
+          "type": "uniswap_v3",
+          "feeTiers": [
+            100,
+            500,
+            3000,
+            10000
+          ]
+        },
+        "velodrome_v2": {
+          "factory": "0xF1046053aa5682b4F9a81b5481394DA16BE5FF5a",
+          "type": "aerodrome_v2",
+          "feeTiers": [
+            null
+          ],
+          "note": "Velodrome V2 PoolFactory \u2014 Solidly fork V2 AMM. Direct ancestor of Aerodrome V2 on Base (identical ABI). Reuses aerodrome_v2 dispatch type. getFee(*, false) confirmed = 30 raw = 30 bps volatile. Verified on-chain 2026-06-01."
+        },
+        "velodrome_slipstream": {
+          "factory": "0xCc0bDDB707055e04e497aB22a59c2aF4391cd12F",
+          "type": "slipstream",
+          "feeTiers": [
+            1,
+            50,
+            100,
+            200,
+            500,
+            2500,
+            10000
+          ],
+          "note": "Velodrome Slipstream V1 factory \u2014 direct ancestor of Aerodrome Slipstream on Base (identical ABI: 6-field slot0, getPool(addr,addr,int24)). Reuses slipstream dispatch type. Pools verified at ts=1 and ts=100 for native USDC. Alternate factory 0x548118C7... also live but skipped for initial integration; can be added in a follow-up if discovery shows deeper pools there."
         }
       }
     }
