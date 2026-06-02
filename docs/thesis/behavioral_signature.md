@@ -211,6 +211,121 @@ of outcome.
 
 ---
 
+## Wave 6 Result (2026-06-02)
+
+The Wave 6 hypothesis is **confirmed**. Optimism ETH/USDC × Velodrome
+Slipstream tickSpacing=100 classifies as `BEHAVIORALLY_DEAD` with HIGH
+confidence after a 4-hour probe (476 same-block observations, 100% data
+quality, Boss C9 ruling).
+
+### Spread distribution
+
+- Mean: 1.08 bp
+- Standard deviation: 0.65 bp
+- p99: 3.00 bp
+- Maximum: 4.00 bp
+- Threshold crossings ≥ 6 bp (fee floor): **0 of 476**
+
+### Market context — quiet-market explanation explicitly ruled out
+
+ETH moved $42 (~2%) during the 4-hour probe. Spread boundedness held
+despite this substantial price action. A quiet market could explain low
+spreads; a moving market that still produces no executable spreads is
+strong evidence that the spread process is structurally bounded below
+viability.
+
+### The predictive moment
+
+The Base Aerodrome Slipstream prior (Wave 4) generated a
+`BEHAVIORALLY_DEAD` expectation for Optimism Velodrome Slipstream
+BEFORE the probe ran. The probe confirmed. This is the first instance
+in the project where the framework demonstrated **predictive** power
+rather than merely **descriptive** power. It marks the project's
+transition from exploration to theory.
+
+### Cross-mechanism convergence
+
+Aerodrome Slipstream (Base) achieves efficient tracking via **stable
+$500M-class depth** — large pool, sticky LPs, size-based defense.
+
+Velodrome Slipstream (Optimism) achieves efficient tracking via
+**aggressive LP churn** — active-tick depth swinging from $19k to $351k
+(18.6× range) during the 4-hour probe, indicating high LP turnover
+within the active range.
+
+Two distinct LP-defense mechanisms; identical behavioral outcome. Both
+belong to the Solidly-fork CL family. This is a non-trivial finding:
+the behavioral signature is more fundamental than any single defense
+mechanism. What matters is the OUTCOME (efficient tracking), not the
+mechanism (size vs. activity).
+
+---
+
+## Framework Refinement: Dominant Venue / Tracking Venue (2026-06-02)
+
+The Optimism probe revealed that "UniV3 leads price discovery" is **not
+a universal pattern**. On Optimism, Velodrome Slipstream led 74.7% of
+single-venue tick-change events (vs. UniV3's 25.3%) — the opposite of
+the Arbitrum pattern (UniV3 leads Ramses).
+
+The thesis is hereby refined (per Boss C9 ruling, 2026-06-02). The
+canonical framework chain is:
+
+```
+Price-discovery dominant venue
+       ↓
+Tracking venue
+       ↓
+Tracking quality (loose vs. tight)
+       ↓
+Execution viability (gated by fee floor)
+```
+
+### Implications of the refinement
+
+1. **Dominant venue is per-chain, not universal.** It is determined by
+   local liquidity structure — typically the deepest pool or the one
+   with the most active LP repricing. UniV3 is dominant on Arbitrum
+   and Base; Velodrome is dominant on Optimism.
+
+2. **What matters for arbitrage viability is the TRACKING venue's
+   behavior**, not the dominant venue's behavior. The tracking venue
+   either tracks tightly (`BEHAVIORALLY_DEAD`) or loosely (potentially
+   `EXECUTION_READY`, subject to fee economics).
+
+3. **Ramses (Arbitrum) remains the only known LOOSE TRACKER** in the
+   project's sample set (3 chains, 7 surfaces). Its uniqueness may be
+   architectural (V2 constant-product, no concentrated liquidity to
+   "defend"), structural (Arbitrum LP composition and MEV regime),
+   or both. This is the active research frontier and the central
+   question for Wave 7+.
+
+4. **The behavioral signature is symmetric.** It does not depend on
+   which side of the surface is the dominant venue. A loose tracker
+   produces executable spreads regardless of whether it's the V3 or V2
+   leg, the larger or smaller pool, the UniV3 or counterpart venue.
+
+5. **Classification methodology unchanged**: still measure depth,
+   compute spread distribution under same-block anchoring, check
+   against fee floor. Only the vocabulary for describing WHICH side
+   is which has changed.
+
+### Vocabulary deprecation
+
+| Deprecated | Canonical |
+|------------|-----------|
+| "UniV3 leads" | "Price-discovery dominant venue" |
+| "Counterpart lags" | "Tracking venue" |
+| "Lag signature" | "Tracking quality" (loose / tight) |
+| "Spread crosses fee floor" | "Execution viability" (achieved / not) |
+
+All future classifications should use the canonical vocabulary. Earlier
+classifications in this document and in `docs/project_ledger.md` retain
+the original wording for historical preservation; their conclusions are
+unchanged.
+
+---
+
 ## Methodology Standards
 
 All measurements supporting this thesis adhere to these standards:

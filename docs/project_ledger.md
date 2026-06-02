@@ -106,6 +106,39 @@ Each variable failing produces a distinct, diagnosable classification.
 
 ---
 
+### Optimism
+
+#### ETH/USDC — UniswapV3 0.05% × Velodrome Slipstream tickSpacing=100
+
+- **Status**: `BEHAVIORALLY_DEAD`
+- **Confidence**: HIGH
+- **Verdict date**: 2026-06-02 (Boss C9 ruling)
+- **Evidence**: 4-hour probe, 476 same-block observations, 100% data quality
+  - Spread distribution: mean 1.08 bp, p99 3.00 bp, max **4.00 bp**
+  - Fee floor: 6 bp (5 bp UniV3 + 1 bp Slipstream)
+  - Threshold crossings ≥ 6 bp: **0 of 476** observations
+  - Standard deviation: 0.65 bp (tight, bounded distribution)
+  - Max sustained event ≥ 4 bp: 1 observation (~30 sec); ≥ 5 bp: zero
+- **Market context**: ETH moved $42 (~2%) during the probe — not a stagnant
+  market. The boundedness held despite substantial price action,
+  ruling out the "quiet market" explanation.
+- **Lead/lag finding**: Velodrome Slipstream is the price-discovery
+  dominant venue (74.7% Velodrome-leads bias on single-venue tick changes).
+  UniV3 is the tracking venue — the OPPOSITE of the Arbitrum and Base
+  patterns. This finding triggered the framework refinement (see thesis
+  Framework Refinement section).
+- **Depth profile**: UniV3 0.05% active-tick depth ~$1,474 mean (stable);
+  Velodrome Slipstream active-tick depth $19k-$351k (mean $76k, 18.6× LP
+  churn range). Different mechanism than Aerodrome Slipstream on Base
+  (which defended via stable $500M-class depth), yet identical
+  BEHAVIORALLY_DEAD outcome — cross-mechanism convergence.
+- **Pool addresses**:
+  - UniV3 0.05%: `0x1fb3cf6e48F1E7B10213E7b6d87D4c073C7Fdb7b`
+  - Velodrome Slipstream ts=100: `0x478946BcD4a5a22b316470F5486fAfb928C0bA25`
+- **Archive**: [docs/archive/rejected_surfaces/optimism_eth_usdc_velodrome_slipstream/](./archive/rejected_surfaces/optimism_eth_usdc_velodrome_slipstream/)
+
+---
+
 ## Wave-by-Wave Investigation History
 
 | Wave | Investigation Focus | Outcome | Closes |
