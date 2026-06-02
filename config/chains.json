@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "description": "AllMight chain registry. Venues, factories, and token-registry pointers per chain. Modify only with verified on-chain addresses. Validated by scripts/tools/validate_chain_config.js before any consumer reads.",
-  "lastUpdated": "2026-06-01",
+  "lastUpdated": "2026-06-02",
   "chains": {
     "arbitrum": {
       "chainId": 42161,
@@ -147,6 +147,23 @@
             10000
           ],
           "note": "Velodrome Slipstream V1 factory \u2014 direct ancestor of Aerodrome Slipstream on Base (identical ABI: 6-field slot0, getPool(addr,addr,int24)). Reuses slipstream dispatch type. Pools verified at ts=1 and ts=100 for native USDC. Alternate factory 0x548118C7... also live but skipped for initial integration; can be added in a follow-up if discovery shows deeper pools there."
+        }
+      }
+    },
+    "unichain": {
+      "chainId": 130,
+      "rpcEnv": "UNICHAIN_MAINNET_RPC_URL",
+      "tokensFile": "config/tokens/unichain.json",
+      "venues": {
+        "uniswap_v3": {
+          "factory": "0x1F98431c8aD98523631AE4a59f267346ea31F984",
+          "type": "uniswap_v3",
+          "feeTiers": [
+            100,
+            500,
+            3000,
+            10000
+          ]
         }
       }
     }

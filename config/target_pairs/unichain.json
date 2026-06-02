@@ -1,0 +1,19 @@
+{
+  "chain": "unichain",
+  "description": "Pair-level scan configuration for Unichain mainnet. Wave 7 question: does Unichain (Uniswap's own L2) contain a non-Uniswap counterpart of sufficient depth to qualify as an arbitrage surface? Discovery will identify all UniV3 pools and report depths. Non-Uniswap counterparts (Velodrome, DYORSwap, UniChainSwap from external research) will be added in wave7(commit 2) after on-chain factory verification. Constitutional discipline: discovery runs regardless of DexScreener depth signals — TVL is not behavioral profile, surprises happen.",
+  "lastUpdated": "2026-06-02",
+  "pairs": [
+    {
+      "label": "ETH/USDC",
+      "priority": 1,
+      "tokenA": "USDC",
+      "tokenB": "WETH",
+      "expectedDec0": 6,
+      "expectedDec1": 18,
+      "priceMode": "invert",
+      "sanityMin": 500,
+      "sanityMax": 20000,
+      "note": "Token sort: USDC native (0x078D) < WETH (0x4200) → token0=USDC, token1=WETH. Same flipped pattern as Optimism native USDC (chain-portable depth math handles this; --stable-side 0 for probes)."
+    }
+  ]
+}

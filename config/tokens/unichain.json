@@ -1,0 +1,20 @@
+{
+  "chain": "unichain",
+  "chainId": 130,
+  "lastUpdated": "2026-06-02",
+  "source": "Wave 7 Step 1 (2026-06-02). WETH is the OP-Stack canonical predeploy at 0x4200...0006 (Unichain is OP-Stack-based, same WETH address as Base/Optimism/Mode/Zora). USDC native via Circle, address from Unichain documentation. USDC sorts BELOW WETH on Unichain (0x078D < 0x4200), making USDC=token0 — same flipped-order pattern as Optimism native USDC. Use priceMode='invert' and --stable-side 0 for any V3 probe.",
+  "tokens": {
+    "WETH": {
+      "symbol": "WETH",
+      "address": "0x4200000000000000000000000000000000000006",
+      "decimals": 18,
+      "note": "Canonical OP-Stack WETH predeploy. Identical address on Base, Optimism, Unichain, Mode, Zora, Blast, etc."
+    },
+    "USDC": {
+      "symbol": "USDC",
+      "address": "0x078D782b760474a361dDA0AF3839290b0EF57AD6",
+      "decimals": 6,
+      "note": "Circle native USDC on Unichain. Address < 0x4200 (WETH), so token0=USDC on this chain — opposite of Base, same as Optimism native. Use priceMode='invert' and --stable-side 0."
+    }
+  }
+}
