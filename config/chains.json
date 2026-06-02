@@ -156,7 +156,7 @@
       "tokensFile": "config/tokens/unichain.json",
       "venues": {
         "uniswap_v3": {
-          "factory": "0x1F98431c8aD98523631AE4a59f267346ea31F984",
+          "factory": "0x1f98400000000000000000000000000000000003",
           "type": "uniswap_v3",
           "feeTiers": [
             100,
@@ -164,6 +164,14 @@
             3000,
             10000
           ]
+        },
+        "velodrome_v2": {
+          "factory": "0x31832f2a97Fd20664D76Cc421207669b55CE4BC0",
+          "type": "aerodrome_v2",
+          "feeTiers": [
+            null
+          ],
+          "note": "Velodrome V2 PoolFactory \u2014 Solidly fork V2 AMM. Direct ancestor of Aerodrome V2 on Base (identical ABI). Reuses aerodrome_v2 dispatch type. getFee(*, false) confirmed = 30 raw = 30 bps volatile. Verified on-chain 2026-06-01."
         }
       }
     }

@@ -17,7 +17,7 @@
  *   Verification happens regardless of external data signals about size.
  *
  * Factories tested:
- *   - Uniswap V3 PoolFactory (canonical 0x1F98...)
+ *   - Uniswap V3 PoolFactory (0x1f9840...003 — Unichain-specific, NOT canonical 0x1F98431c)
  *   - Velodrome V2 PoolFactory (0x31832f2a97... from velodrome-finance
  *     superchain-contracts deployment-addresses/unichain.json)
  *
@@ -71,7 +71,7 @@ const VELO_V2_ABI = [
 const FACTORIES = [
   {
     name: 'Uniswap V3 PoolFactory',
-    address: '0x1F98431c8aD98523631AE4a59f267346ea31F984',
+    address: '0x1f98400000000000000000000000000000000003',
     type: 'uniswap_v3',
     feeTiers: [100, 500, 3000, 10000],
   },
