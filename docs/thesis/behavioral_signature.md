@@ -362,3 +362,77 @@ All measurements supporting this thesis adhere to these standards:
 refine the model should be appended (not replaced) and dated. The thesis
 itself may be superseded by new evidence; preserving the original allows
 the project's epistemic evolution to be traced.*
+
+## Wave 7 Result (2026-06-02)
+
+**Surface:** Unichain ETH/USDC × UniV3 × Velodrome V2
+**Verdict:** `STRUCTURALLY_DEAD` (HIGH confidence, Boss C9 ruling 2026-06-02)
+**Probe:** not run (depth alone decisive)
+
+### Findings
+
+Discovery measured Velodrome V2 active-tick depth at **$88** — five-plus
+orders of magnitude below Ramses (~$7M). With Velodrome V2's 30 bps
+fee adding to UniV3's 5 bps to produce a ~60+ bps economic floor, no
+behavioral lag pattern could compensate. Probe correctly skipped.
+
+### Framework contribution: Pattern 2 strengthened
+
+This surface is the first direct counterexample for the question:
+"Is V2 architecture sufficient for a Ramses-class surface?"
+
+**Answer:** No. V2 architecture is necessary (per current evidence) but
+NOT sufficient. When depth is absent, the surface is dead regardless of
+architectural pedigree.
+
+Combined with Surface 7 (Base Aero V2 — ECONOMICALLY_BLOCKED on fees
+despite V2 + depth), Pattern 2 now has two distinct failure modes
+documented:
+
+| Gate failed | Example | Wave |
+|-------------|---------|------|
+| Depth absent | Unichain Velo V2 ($88) | W7 |
+| Fees too high | Base Aero V2 (37 bp floor) | W5 |
+| Tight tracking | Base/Optimism Slipstream | W4, W6 |
+
+### Boss variable necessity model (canonical, 2026-06-02)
+
+| Variable | Necessary? | Direct counterexample |
+|----------|-----------|----------------------|
+| V2 architecture | Maybe | none yet |
+| Depth (active-tick) | **Yes** | Unichain Velo V2 |
+| Loose tracking | **Yes** | Base/Optimism Slipstream |
+| Reasonable fees | **Yes** | Base Aero V2 |
+
+Each gate now has a direct example of failure. The "V2 architecture
+necessary?" question remains open — a CL surface achieving EXECUTION_READY
+would falsify it.
+
+### Novel structural observation
+
+Unichain UniV3 fee-tier depth is INVERTED from the standard cross-chain
+pattern. On Arbitrum/Optimism/Base the 0.05% tier is deepest for ETH/USDC;
+on Unichain the 0.30% tier ($2.9M) is 20× deeper than the 0.05% tier
+($143.7K). Hypothesis: Uniswap v4 captures most volume on its home chain,
+forcing residual v3 liquidity into the higher-fee tier where LPs can break
+even.
+
+### Scoreboard post-W7
+
+```
+EXECUTION_READY        1
+BEHAVIORALLY_DEAD      2
+ECONOMICALLY_BLOCKED   1
+STRUCTURALLY_DEAD      5
+                       ──
+n = 9 surfaces classified
+```
+
+Probability that another EXECUTION_READY surface exists somewhere:
+~75% (down from ~80% post-W6). Direction of update: small but correct.
+
+### Next: Wave 8 — Sonic
+
+Sonic is the next test point for the Ramses-class question. Not because
+Sonic is likely to win, but because every additional chain increases
+confidence in the variable-necessity model.

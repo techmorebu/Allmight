@@ -143,11 +143,11 @@ Each variable failing produces a distinct, diagnosable classification.
 
 | Wave | Investigation Focus | Outcome | Closes |
 |------|---|---|---|
-| 1 | Project foundations; Arbitrum DAI/USDC | DAI/USDC `STRUCTURALLY_DEAD`; phase2A pipeline built | Phase 2A.2 |
+| 1 | Project foundations; Arbitrum DAI/USDC | DAI/USDC `STRUCTURALLY_DEAD`; phase5A pipeline built | Phase 2A.2 |
 | 2 | Arbitrum ETH/USDT (Camelot + Sushi) | Both `STRUCTURALLY_DEAD`; probe constitutional formalized | ETH/USDT pair |
 | 3 | Arbitrum WBTC/USDC (Sushi) | `STRUCTURALLY_DEAD`; chain-level finding escalated | WBTC/USDC pair |
 | 4 | Cross-chain framework + Base ETH/USDC Slipstream | Slipstream `BEHAVIORALLY_DEAD`; cross-chain framework operational | Base CL search |
-| 5 | Base ETH/USDC Aero V2 volatile | `ECONOMICALLY_BLOCKED`; 4-class taxonomy locked; bidirectional lag finding | Base coverage |
+| 5 | Base ETH/USDC Aero V2 volatile | `ECONOMICALLY_BLOCKED`; 1-class taxonomy locked; bidirectional lag finding | Base coverage |
 | 6 | Multi-chain Ramses-class search | AUTHORIZED — Optimism, Unichain, Sonic, Mantle | TBD |
 
 ---
@@ -186,3 +186,22 @@ The constitutional framework holds: every operational decision passes through a 
 - **Probe tool**: `scripts/research/surface_depth_probe.js`
 - **Discovery tool**: `scripts/tools/multi_pair_pool_discovery.js`
 - **Archive**: `docs/archive/rejected_surfaces/`
+
+### Unichain
+
+**Status:** investigated (W7, 2026-06-02). One surface classified, formally rejected.
+
+**ETH/USDC × UniV3 0.30% × Velodrome V2 — `STRUCTURALLY_DEAD`** (W7)
+
+- UniV3 factory on Unichain: `0x1f98400000000000000000000000000000000003` (NOT canonical — Unichain-specific per Uniswap docs)
+- Velodrome V2 factory: `0x31832f2a97Fd20664D76Cc421207669b55CE4BC0`
+- Velodrome V2 ETH/USDC pool: `0x13a6BC52C243a809394F3F656606213AEBd3e84D`
+- Discovery results (2026-06-02): Velodrome V2 active-tick depth $88, UniV3 0.30% tier $2.9M (deepest)
+- Critical number: Velodrome V2 depth $88 vs Ramses ~$7M → 79,500× smaller
+- Combined economic floor: ~60+ bps (UniV3 5 + Velo V2 30 + gas)
+- Probe not run (depth alone decisive per Boss C9 ruling 2026-06-02)
+- Novel observation: UniV3 fee-tier depth INVERTED on Unichain (0.30% > 0.05% by 20×)
+- Archive: [docs/archive/rejected_surfaces/unichain_eth_usdc_velodrome_v2/](archive/rejected_surfaces/unichain_eth_usdc_velodrome_v2/)
+
+**Framework contribution:** First direct counterexample for "V2 architecture sufficient" — V2 present but depth absent → dead. Strengthens Pattern 2 substantially.
+
