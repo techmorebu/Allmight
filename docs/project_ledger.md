@@ -139,6 +139,69 @@ Each variable failing produces a distinct, diagnosable classification.
 
 ---
 
+---
+
+### Unichain
+
+**Status:** investigated (W7, 2026-06-02). One surface classified, formally rejected.
+
+**ETH/USDC × UniV3 0.30% × Velodrome V2 — `STRUCTURALLY_DEAD`** (W7)
+
+- UniV3 factory on Unichain: `0x1f98400000000000000000000000000000000003` (NOT canonical — Unichain-specific per Uniswap docs)
+- Velodrome V2 factory: `0x31832f2a97Fd20664D76Cc421207669b55CE4BC0`
+- Velodrome V2 ETH/USDC pool: `0x13a6BC52C243a809394F3F656606213AEBd3e84D`
+- Discovery results (2026-06-02): Velodrome V2 active-tick depth $88, UniV3 0.30% tier $2.9M (deepest)
+- Critical number: Velodrome V2 depth $88 vs Ramses ~$7M → 79,500× smaller
+- Combined economic floor: ~60+ bps (UniV3 5 + Velo V2 30 + gas)
+- Probe not run (depth alone decisive per Boss C9 ruling 2026-06-02)
+- Novel observation: UniV3 fee-tier depth INVERTED on Unichain (0.30% > 0.05% by 20×)
+- Archive: [docs/archive/rejected_surfaces/unichain_eth_usdc_velodrome_v2/](archive/rejected_surfaces/unichain_eth_usdc_velodrome_v2/)
+
+**Framework contribution:** First direct counterexample for "V2 architecture sufficient" — V2 present but depth absent → dead. Strengthens Pattern 2 substantially.
+
+---
+
+## Research Mission
+
+**Mission (canonical, Boss-reaffirmed 2026-06-02 after Wave 7):**
+
+> Map the viability landscape until the model becomes predictive.
+
+This is a deliberate REFRAMING from the project's earlier objective ("find another EXECUTION_READY surface"). The framework is now mature enough that NEGATIVE results contribute as much information as positive ones — every surface, viable or not, refines the variable-necessity model.
+
+### First predictive success: Wave 6 (Optimism CL)
+
+Wave 4 surfaced behavioral signatures on Base CL (Aerodrome Slipstream → `BEHAVIORALLY_DEAD`). Pattern 1 was hypothesized: Solidly-fork CL → `BEHAVIORALLY_DEAD` across chains.
+
+Wave 6 was the first test of that prediction: Optimism ETH/USDC × Velodrome Slipstream. The framework predicted `BEHAVIORALLY_DEAD` before any probe ran. Probe confirmed: max spread 4 bp vs 6 bp floor across 476 same-block observations.
+
+**The framework transitioned from exploration to prediction.** That is the most important milestone the project has produced so far. Individual surfaces come and go; the predictive machine persists.
+
+### Variable necessity model (canonical post-Wave 7)
+
+Execution viability requires ALL of:
+- **Depth (active-tick)** ≥ Ramses-class threshold
+- **Behavioral signature** (loose tracking, structural lag)
+- **Spread distribution** reaching above economic floor
+- **Fee structure** compatible with achievable spreads
+
+Each variable has a documented direct counterexample where its absence killed the surface:
+
+| Variable | Counterexample | Wave |
+|----------|----------------|------|
+| Depth | Unichain Velo V2 (\$88 active-tick) | W7 |
+| Behavioral lag | Base + Optimism Slipstream (tight tracking) | W4, W6 |
+| Spread reaches floor | Base Aero V2 (max 31 bp < 37 bp floor) | W5 |
+| Fee structure | (same as above — fees define the floor) | W5 |
+
+See the [research notebook](research/ramses_class_surface_characteristics.md) for the canonical surface catalogue (n=9).
+
+### Target
+
+n = 15-20 classified surfaces before strong claims about model completeness. Current: n = 9.
+
+---
+
 ## Wave-by-Wave Investigation History
 
 | Wave | Investigation Focus | Outcome | Closes |
@@ -148,7 +211,8 @@ Each variable failing produces a distinct, diagnosable classification.
 | 3 | Arbitrum WBTC/USDC (Sushi) | `STRUCTURALLY_DEAD`; chain-level finding escalated | WBTC/USDC pair |
 | 4 | Cross-chain framework + Base ETH/USDC Slipstream | Slipstream `BEHAVIORALLY_DEAD`; cross-chain framework operational | Base CL search |
 | 5 | Base ETH/USDC Aero V2 volatile | `ECONOMICALLY_BLOCKED`; 1-class taxonomy locked; bidirectional lag finding | Base coverage |
-| 6 | Multi-chain Ramses-class search | AUTHORIZED — Optimism, Unichain, Sonic, Mantle | TBD |
+| 6 | Optimism ETH/USDC × Velodrome Slipstream | `BEHAVIORALLY_DEAD`; **framework first predictive success** (Base CL pattern predicted Optimism CL → confirmed by probe) | Optimism CL surface |
+| 7 | Unichain ETH/USDC × UniV3 × Velodrome V2 | `STRUCTURALLY_DEAD`; first **V2-present + depth-absent** counterexample; novel UniV3 fee-tier inversion logged | Unichain investigation |
 
 ---
 
@@ -186,22 +250,4 @@ The constitutional framework holds: every operational decision passes through a 
 - **Probe tool**: `scripts/research/surface_depth_probe.js`
 - **Discovery tool**: `scripts/tools/multi_pair_pool_discovery.js`
 - **Archive**: `docs/archive/rejected_surfaces/`
-
-### Unichain
-
-**Status:** investigated (W7, 2026-06-02). One surface classified, formally rejected.
-
-**ETH/USDC × UniV3 0.30% × Velodrome V2 — `STRUCTURALLY_DEAD`** (W7)
-
-- UniV3 factory on Unichain: `0x1f98400000000000000000000000000000000003` (NOT canonical — Unichain-specific per Uniswap docs)
-- Velodrome V2 factory: `0x31832f2a97Fd20664D76Cc421207669b55CE4BC0`
-- Velodrome V2 ETH/USDC pool: `0x13a6BC52C243a809394F3F656606213AEBd3e84D`
-- Discovery results (2026-06-02): Velodrome V2 active-tick depth $88, UniV3 0.30% tier $2.9M (deepest)
-- Critical number: Velodrome V2 depth $88 vs Ramses ~$7M → 79,500× smaller
-- Combined economic floor: ~60+ bps (UniV3 5 + Velo V2 30 + gas)
-- Probe not run (depth alone decisive per Boss C9 ruling 2026-06-02)
-- Novel observation: UniV3 fee-tier depth INVERTED on Unichain (0.30% > 0.05% by 20×)
-- Archive: [docs/archive/rejected_surfaces/unichain_eth_usdc_velodrome_v2/](archive/rejected_surfaces/unichain_eth_usdc_velodrome_v2/)
-
-**Framework contribution:** First direct counterexample for "V2 architecture sufficient" — V2 present but depth absent → dead. Strengthens Pattern 2 substantially.
 
