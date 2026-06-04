@@ -287,3 +287,73 @@ between transient network failures (worth retrying) and deterministic
 application-layer failures (not worth retrying — same outcome on every
 endpoint). Decoding errors should bubble up with their original message,
 not be classified as RPC exhaustion. Tracked as engineering debt.
+
+---
+
+## Protocol lineage is a search prior, ABI is an empirical fact
+
+**Date**: 2026-06-04 (Wave 9 Step 2 — Mantle Cleopatra factory verification, commit 316995e)
+
+**Boss principle (C9 ruling 2026-06-04)**:
+> "Protocol lineage is a search prior. ABI behavior is an empirical fact.
+> Cleopatra can still be an authorized Ramses fork while exposing a
+> standard UniV3 factory interface. That does not invalidate Pattern 4.
+> It refines how we test it."
+
+### Context
+
+In Wave 8 (Sonic), the factory verification diagnostic established that Shadow V3 — the Ramses-family CL on Sonic — uses Ramses V3 ABI (`int24 tickSpacing`) rather than standard UniV3 (`uint24 fee`). This led to introducing the `ramses_v3` venue type in wave8 commit `0eb8bdf`.
+
+Wave 9 integrated Mantle Cleopatra, an **officially authorized** Ramses fork:
+- BUSL-1.1 license from Ramses, documented at docs.cleo.exchange
+- Same AAA-prefix vanity address convention as Arbitrum Ramses (e.g., factory `0xAAA32926fc...`)
+- Same overall infrastructure pattern (router, voter, votingEscrow, etc.)
+
+The strong prior was: Cleopatra CL will also use Ramses V3 ABI. Wave 9 Step 1 (`d589332`) registered the venue as `type: ramses_v3` with tickSpacings `[1, 5, 10, 50, 100, 200]`.
+
+Step 2 factory verification (`316995e`) **REJECTED** this prior. Cleopatra CL responds to standard UniV3 `getPool(address, address, uint24 fee)` across standard fee tiers and returns actual pool addresses. The Ramses V3 ABI variant was never reached — UniV3 succeeded first.
+
+### The data
+
+| Surface              | Lineage                 | Factory ABI                |
+|----------------------|-------------------------|----------------------------|
+| Arbitrum Ramses V2   | original Ramses         | Solidly `getPair()` (V2)   |
+| Sonic Shadow V3      | Ramses V3 fork          | `int24 tickSpacing`        |
+| Mantle Cleopatra CL  | authorized Ramses fork  | `uint24 fee` (standard V3) |
+
+Three Ramses-family deployments, three different factory ABIs. Lineage did not predict ABI.
+
+### The rule
+
+Every DEX contract integration MUST empirically verify:
+
+1. **Factory ABI** — does `getPool` / `getPair` signature match the expected one? Test multiple variants.
+2. **Pool ABI** — does `slot0()` work (standard UniV3) or `globalState()` (Algebra/Camelot)?
+3. **Fee semantics** — does the fee field hold a basis-point fee (`uint24`) or a tick spacing (`int24`)?
+4. **Pool lookup behavior** — does the factory return a non-zero pool address? Or zero? Or revert?
+
+**NEVER assume ABI from lineage.** The factory verification diagnostic (`scripts/research/<chain>_factory_verification.js`) exists specifically to settle these questions before any code that depends on ABI assumptions ships.
+
+### Procedural enforcement
+
+Wave 9 constitutional flow now codifies:
+- Step 2 (factory verification) MUST run before Step 3 (pool ABI) or Step 4 (discovery)
+- Empirical findings WIN over lineage-derived `chains.json` entries — config gets corrected post hoc
+- Surprises get logged here
+
+### Related commits
+
+- `a6e4852` — sonic factory verification (established Ramses V3 ABI for Shadow)
+- `0eb8bdf` — introduced `ramses_v3` venue type (Sonic-specific architecture)
+- `316995e` — mantle factory verification (REJECTED `ramses_v3` prior for Cleopatra)
+- this commit — `chains.json` correction + this lesson entry
+
+### Pattern 4 status
+
+Pattern 4 does NOT depend on the factory ABI being Ramses-style. It depends on whether the surface behaves like the Arbitrum Ramses winner:
+- Deep enough
+- Loose enough
+- Cheap enough
+- Persistent enough
+
+That answer comes from Step 4 discovery + Step 5 probe data, not from lineage.

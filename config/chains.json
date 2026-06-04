@@ -212,16 +212,14 @@
       "venues": {
         "cleopatra_cl": {
           "factory": "0xAAA32926fcE6bE95ea2c51cB4Fcb60836D320C42",
-          "type": "ramses_v3",
+          "type": "uniswap_v3",
           "feeTiers": [
-            1,
-            5,
-            10,
-            50,
             100,
-            200
+            500,
+            3000,
+            10000
           ],
-          "note": "Cleopatra CL factory \u2014 AUTHORIZED RAMSES V3 SISTER FORK on Mantle (BUSL-1.1 license from Ramses per docs.cleo.exchange). Source: docs.cleo.exchange/resources/deployed-contract-addresses (verified 2026-06-04). venue type 'ramses_v3' (introduced wave8 commit 3) \u2014 reuses slipstream_factory dispatch for int24 tickSpacing getPool, uses standard UniV3 slot0 for pool reads. feeTiers field semantically holds tickSpacings (same convention as slipstream + Sonic Shadow V3). Initial set [1,5,10,50,100,200] mirrors Sonic Shadow tickSpacing range; Step 2 factory verification will confirm which tickSpacings actually have wS/USDC and WMNT/USDC pools. Pattern 4 PRIMARY TEST TARGET \u2014 first chain where Ramses-family depth gate can actually be challenged (Sonic + Unichain both STRUCTURALLY_DEAD before reaching behavioral probe)."
+          "note": "Cleopatra CL factory \u2014 authorized Ramses fork (BUSL-1.1 license from Ramses, docs.cleo.exchange) but EMPIRICALLY exposes STANDARD UniV3 factory ABI (getPool with uint24 fee), NOT Ramses V3 ABI (int24 tickSpacing). Verified by Step 2 factory verification (commit 316995e, mantle_factory_verification.js). Pools discovered: WETH/USDC at fee=500 (0xC0b66C7535...) + fee=3000 (0xAAA87a36B9... \u2014 CREATE2 AAA vanity); WMNT/USDC at fee=100 (0xB05088D53f...) + fee=10000 (0x37a6B77F1a...). venue type uniswap_v3 reuses existing dispatch (no new architecture). Pattern 4 status: factory wiring CONFIRMED; depth gate measurement is Step 4 discovery. LESSON: lineage is a search prior, ABI is an empirical fact \u2014 see docs/lessons/dex_contract_discovery_pitfalls.md."
         },
         "cleopatra_legacy": {
           "factory": "0xAAA16c016BF556fcD620328f0759252E29b1AB57",
