@@ -145,7 +145,7 @@ Each variable failing produces a distinct, diagnosable classification.
 
 **Status:** investigated (W7, 2026-06-02). One surface classified, formally rejected.
 
-**ETH/USDC × UniV3 0.30% × Velodrome V2 — `STRUCTURALLY_DEAD`** (W7)
+**ETH/USDC × UniV3 0.30% × Velodrome V2 — `STRUCTURALLY_DEAD`** (W6)
 
 - UniV3 factory on Unichain: `0x1f98400000000000000000000000000000000003` (NOT canonical — Unichain-specific per Uniswap docs)
 - Velodrome V2 factory: `0x31832f2a97Fd20664D76Cc421207669b55CE4BC0`
@@ -171,7 +171,7 @@ This is a deliberate REFRAMING from the project's earlier objective ("find anoth
 
 ### First predictive success: Wave 6 (Optimism CL)
 
-Wave 4 surfaced behavioral signatures on Base CL (Aerodrome Slipstream → `BEHAVIORALLY_DEAD`). Pattern 1 was hypothesized: Solidly-fork CL → `BEHAVIORALLY_DEAD` across chains.
+Wave 4 surfaced behavioral signatures on Base CL (Aerodrome Slipstream → `BEHAVIORALLY_DEAD`). Pattern 2 was hypothesized: Solidly-fork CL → `BEHAVIORALLY_DEAD` across chains.
 
 Wave 6 was the first test of that prediction: Optimism ETH/USDC × Velodrome Slipstream. The framework predicted `BEHAVIORALLY_DEAD` before any probe ran. Probe confirmed: max spread 4 bp vs 6 bp floor across 476 same-block observations.
 
@@ -202,6 +202,43 @@ n = 15-20 classified surfaces before strong claims about model completeness. Cur
 
 ---
 
+
+### Sonic
+
+**Status:** investigated (W8, 2026-06-04). One surface classified, formally rejected. **First chain investigated based on protocol lineage rather than chain popularity.**
+
+**wS/USDC × Shadow V3 ts=50 × Shadow V2 volatile — `STRUCTURALLY_DEAD`** (W8)
+
+- Chain ID 146 (standalone L1, NOT OP-Stack; Fantom successor — rebranded by Sonic Labs Dec 2024)
+- Native gas: S; wrapped native: wS @ `0x039e2fB66102314Ce7b64Ce5Ce3E5183bc94aD38`
+- USDC (Circle native, via CCTP) @ `0x29219dd400f2Bf60E5a23d13Be72B486D4038894`
+- Shadow V3 factory: `0xcD2d0637c94fe77C2896BbCBB174cefFb08DE6d7` (Ramses V3 fork)
+- Shadow V2 factory: `0x2dA25E7446A70D7be65fd4c053948BEcAA6374c8` (Solidly V2 fork)
+- Discovery results (2026-06-04, block 72,434,879):
+  - Shadow V3 ts=50: $1.22M active-tick depth (actual pool fee 28 bps via direct pool.fee() call)
+  - Shadow V3 ts=1, 5, 10, 100, 200: ALL EMPTY (factory pools created but no LPs)
+  - Shadow V2 volatile: $79 TVL (active-tick depth ~$79 since V2 has no concentration)
+  - Shadow V2 stable: ~$0 (abandoned)
+  - wS/USDC.e: no pools at any tier
+- Critical number: Shadow V2 depth $79 vs Ramses $7M → 88,608× smaller (smaller than Unichain Velo V2)
+- Combined economic floor: ~58+ bps (Shadow V3 28 + Shadow V2 30)
+- Probe not run (depth gate failure prevents behavioral test, per Boss C9 ruling 2026-06-04)
+- Archive: [docs/archive/rejected_surfaces/sonic_shadow_v3_shadow_v2/](archive/rejected_surfaces/sonic_shadow_v3_shadow_v2/)
+
+**Framework contributions:**
+
+1. **Protocol lineage helpful but NOT sufficient** — Shadow V3 confirms Ramses-family CL exists on Sonic (per `IRamsesV3Pool` import in Shadow source); Shadow V2's $79 fails the depth gate.
+
+2. **Pattern 4 formalized** — Boss promoted the Ramses-family hypothesis from "loose tracking" to "candidate class" with four requirements (lineage + depth + behavior + fees). Status: UNRESOLVED on Sonic (passes 1/4).
+
+3. **Pattern 5 tentative (n=2)** — modern chains (Unichain 2024, Sonic 2024-rebrand) both show V2 forks deployed but unused. Hypothesis: post-CL-dominant chains skip V2 liquidity.
+
+4. **New venue type `ramses_v3` introduced** in our infrastructure (wave8 commit 3) — first venue type added specifically to track protocol lineage rather than ABI family alone.
+
+5. **Two infrastructure gaps surfaced** during discovery, approved for follow-up commit:
+   - aerodrome_v2 dispatch needs getPair fallback for Solidly-legacy V2 factories
+   - ramses_v3 dispatch should read pool.fee() instead of using venue feeTiers as fee display
+
 ## Wave-by-Wave Investigation History
 
 | Wave | Investigation Focus | Outcome | Closes |
@@ -213,6 +250,7 @@ n = 15-20 classified surfaces before strong claims about model completeness. Cur
 | 5 | Base ETH/USDC Aero V2 volatile | `ECONOMICALLY_BLOCKED`; 1-class taxonomy locked; bidirectional lag finding | Base coverage |
 | 6 | Optimism ETH/USDC × Velodrome Slipstream | `BEHAVIORALLY_DEAD`; **framework first predictive success** (Base CL pattern predicted Optimism CL → confirmed by probe) | Optimism CL surface |
 | 7 | Unichain ETH/USDC × UniV3 × Velodrome V2 | `STRUCTURALLY_DEAD`; first **V2-present + depth-absent** counterexample; novel UniV3 fee-tier inversion logged | Unichain investigation |
+| 8 | Sonic wS/USDC × Shadow V3 × Shadow V2 | `STRUCTURALLY_DEAD`; Pattern 4 hypothesis test attempted, depth gate failure on V2 side ($79 vs Ramses $7M); Ramses-family CL lineage confirmed but counterpart liquidity absent; ramses_v3 venue type introduced | Sonic investigation |
 
 ---
 

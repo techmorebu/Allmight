@@ -436,3 +436,132 @@ Probability that another EXECUTION_READY surface exists somewhere:
 Sonic is the next test point for the Ramses-class question. Not because
 Sonic is likely to win, but because every additional chain increases
 confidence in the variable-necessity model.
+
+## Wave 8 Result (2026-06-04)
+
+**Surface:** Sonic wS/USDC × Shadow V3 ts=50 × Shadow V2 volatile
+**Verdict:** `STRUCTURALLY_DEAD` (HIGH confidence, Boss C9 ruling 2026-06-04)
+**Probe:** not run (V2 depth gate failure prevents behavioral test)
+
+### Findings
+
+Discovery measured Shadow V2 volatile pool TVL at **$79** — five-plus
+orders of magnitude below Ramses (~$7M). Shadow V3 at ts=50 had
+substantial $1.22M active-tick depth at 28 bps fee (per direct
+`pool.fee()` read), but no V2 counterpart with adequate depth exists
+in the Shadow ecosystem on Sonic.
+
+Combined with the missing V2 partner, the surface fails the first
+variable necessity gate (depth) before behavioral, distributional, or
+fee analysis can yield any executable conclusion. Probe correctly
+skipped — same logic as Unichain Wave 7.
+
+### Wave 8 was the first chain investigated based on protocol lineage
+
+Pre-Wave 8 chains (Base, Optimism, Unichain) were selected by L2
+popularity/TVL. Sonic was selected because Shadow Exchange's xSHADOW
+contract source code on SonicScan contains:
+
+```solidity
+import {IRamsesV3Pool} from "../CL/core/interfaces/IRamsesV3Pool.sol";
+```
+
+This is direct evidence that Shadow CL is built on the Ramses V3
+codebase. Wave 8 tested whether following the protocol that produced
+our EXECUTION_READY surface would lead to another.
+
+**Conclusion:** Protocol lineage predicts WHERE to look — Shadow V3
+exists on Sonic with $1.22M depth, exactly the Ramses-class CL we
+hypothesized. Protocol lineage does NOT predict WHETHER the surface
+will be viable — the V2 counterpart needed to test Pattern 4
+behavioral signature is empty.
+
+### Pattern 4 formalization (Boss canonical, 2026-06-04)
+
+The hypothesis evolved through Wave 8 from a behavioral prediction to a
+multi-requirement candidate class:
+
+```
+Pattern 4: Ramses-family candidate class
+
+Requirements (all four must align):
+  1. Ramses-family deployment
+  2. Deep counterpart liquidity
+  3. Loose-tracking behavior
+  4. Favorable fee economics
+
+Arbitrum Ramses:  4/4 → EXECUTION_READY
+Sonic Shadow:     1/4 → STRUCTURALLY_DEAD (lineage only)
+
+Status: UNRESOLVED — neither confirmed nor falsified
+```
+
+Confirmation requires another Ramses-family deployment where the V2
+counterpart has Ramses-class depth, allowing the behavioral signature
+to actually be measured.
+
+### Variable necessity model — updated
+
+After Wave 8, the canonical model now distinguishes operational
+necessity from informational helpfulness:
+
+| Variable | Necessary | Sufficient | Helpful for search? |
+|----------|:---------:|:----------:|:--------------------|
+| Depth | YES | No | — |
+| Behavioral signature | YES | No | — |
+| Spread distribution | YES | No | — |
+| Fee structure | YES | No | — |
+| **Protocol lineage** | No | No | **YES — predicts where to look** |
+
+Protocol lineage is the first variable identified as HELPFUL but NOT
+operationally necessary. A non-Ramses-family chain could theoretically
+produce an EXECUTION_READY surface if all four operational variables
+align. But Ramses-family chains are higher-prior search targets.
+
+### Cross-chain emerging observation (Pattern 5 tentative — n=2)
+
+Two chains launched/rebranded since ~late 2023 show the identical
+V2-depth-absent failure:
+
+| Chain | Launched | V2 fork depth | Verdict |
+|-------|----------|---------------|---------|
+| Unichain | 2024 | $88 (Velo V2) | STRUCTURALLY_DEAD |
+| Sonic | 2024 rebrand | $79 (Shadow V2) | STRUCTURALLY_DEAD |
+
+**Hypothesis (not yet promoted):** Modern chains skip V2 liquidity
+because CL was already dominant at launch time. If this holds across
+more chains, future investigations should bias toward chains launched
+BEFORE ~2022 (Optimism 2021, Arbitrum 2021, Polygon 2020, BSC 2020,
+etc.) where V2 forks had time to accumulate liquidity organically.
+
+### Scoreboard post-W8
+
+```
+EXECUTION_READY        1
+BEHAVIORALLY_DEAD      2
+ECONOMICALLY_BLOCKED   1
+STRUCTURALLY_DEAD      6
+                       ──
+n = 10 surfaces classified
+```
+
+### Strategic conclusion
+
+The Wave 4-8 cumulative finding is that **the framework's discovery
+process is working as designed**. Three distinct failure modes
+(STRUCTURALLY_DEAD, BEHAVIORALLY_DEAD, ECONOMICALLY_BLOCKED) have been
+documented before capital touched any of them. Each verdict was reached
+by measurement rather than speculation.
+
+The search continues for Surface #2. Sonic was not a winner, but Sonic
+WAS the first surface selected because the framework predicted it might
+be one. That methodological progress is more valuable than any
+individual surface.
+
+### Next: Wave 9 — Mantle (or next chain in queue)
+
+Per Boss directive, infrastructure fixes apply first (Solidly V2
+getPair fallback, ramses_v3 fee display), then Wave 9 begins on a
+chain queued for protocol-lineage investigation. Mantle is the
+default next target; other candidates include older Ramses-family
+deployments if any can be located.
