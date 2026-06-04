@@ -145,7 +145,7 @@ Each variable failing produces a distinct, diagnosable classification.
 
 **Status:** investigated (W7, 2026-06-02). One surface classified, formally rejected.
 
-**ETH/USDC × UniV3 0.30% × Velodrome V2 — `STRUCTURALLY_DEAD`** (W6)
+**ETH/USDC × UniV3 0.30% × Velodrome V2 — `STRUCTURALLY_DEAD`** (W7)
 
 - UniV3 factory on Unichain: `0x1f98400000000000000000000000000000000003` (NOT canonical — Unichain-specific per Uniswap docs)
 - Velodrome V2 factory: `0x31832f2a97Fd20664D76Cc421207669b55CE4BC0`
@@ -171,7 +171,7 @@ This is a deliberate REFRAMING from the project's earlier objective ("find anoth
 
 ### First predictive success: Wave 6 (Optimism CL)
 
-Wave 4 surfaced behavioral signatures on Base CL (Aerodrome Slipstream → `BEHAVIORALLY_DEAD`). Pattern 2 was hypothesized: Solidly-fork CL → `BEHAVIORALLY_DEAD` across chains.
+Wave 4 surfaced behavioral signatures on Base CL (Aerodrome Slipstream → `BEHAVIORALLY_DEAD`). Pattern 1 was hypothesized: Solidly-fork CL → `BEHAVIORALLY_DEAD` across chains.
 
 Wave 6 was the first test of that prediction: Optimism ETH/USDC × Velodrome Slipstream. The framework predicted `BEHAVIORALLY_DEAD` before any probe ran. Probe confirmed: max spread 4 bp vs 6 bp floor across 476 same-block observations.
 
@@ -238,6 +238,30 @@ n = 15-20 classified surfaces before strong claims about model completeness. Cur
 5. **Two infrastructure gaps surfaced** during discovery, approved for follow-up commit:
    - aerodrome_v2 dispatch needs getPair fallback for Solidly-legacy V2 factories
    - ramses_v3 dispatch should read pool.fee() instead of using venue feeTiers as fee display
+
+## Scoreboard
+
+Canonical surface count and breakdown by classification. This block has
+a deliberate code-fenced format that future deploys MUST target as a
+single unit via str_replace, never via global regex. See commit
+docs(ledger-repair) for the regex-corruption incident that motivates
+this explicit-block convention.
+
+```
+EXECUTION_READY        1   Arbitrum ETH/USDC × Ramses
+BEHAVIORALLY_DEAD      2   Base Slipstream + Optimism Velodrome Slipstream
+ECONOMICALLY_BLOCKED   1   Base ETH/USDC × Aero V2
+STRUCTURALLY_DEAD      6   4× Arbitrum + Unichain + Sonic
+                     ─────
+n = 10 surfaces classified
+```
+
+**Target:** n = 15-20 classified surfaces before strong claims about the
+predictive model.
+
+**Last updated:** 2026-06-04 (post-Wave 8 closure)
+
+---
 
 ## Wave-by-Wave Investigation History
 
