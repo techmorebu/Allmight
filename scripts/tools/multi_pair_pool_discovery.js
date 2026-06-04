@@ -207,6 +207,13 @@ const GLOBAL_STATE_ABI = [
 ];
 const V2_FACTORY_ABI = [
   'function getPool(address tokenA, address tokenB, bool stable) view returns (address pool)',
+  // Solidly V2 legacy fallback: factories using original Solidly naming
+  // (e.g., Shadow Exchange on Sonic) only expose getPair, not getPool.
+  // Same signature, same return semantics. The v2_factory dispatch
+  // tries getPool first then getPair as fallback. See
+  // docs/lessons/dex_contract_discovery_pitfalls.md and the Wave 8
+  // close-out commit for the Shadow V2 case that motivated this fix.
+  'function getPair(address tokenA, address tokenB, bool stable) view returns (address pool)',
 ];
 
 const SLIPSTREAM_FACTORY_ABI = [
@@ -354,6 +361,27 @@ async function probePool(rpc, venue, poolAddress, pair, feeTierQueried, blockNum
     if (venue.slotFn === 'globalState') onChainFee = Number(pr[2]);
   } catch (e) {
     if (VERBOSE) console.warn(`  [disc] price read failed ${label}: ${e.message.slice(0, 60)}`);
+  }
+
+  // For slipstream_factory venues (Slipstream + ramses_v3), the venue's
+  // feeTiers field semantically holds tickSpacings, NOT fees. We must
+  // read pool.fee() to display the actual fee. Ramses V3 also allows
+  // per-pool custom fees (e.g., Sonic Shadow V3 ts=50 has fee=2795 pips
+  // = 0.2795%, NOT the venue feeTier value of 50). See Wave 8 closure.
+  if (venue.type === 'slipstream_factory') {
+    try {
+      const { result: feeResult } = await rpc.callDetailed(
+        `${label}.fee`,
+        async (p) => {
+          const pool = new ethers.Contract(poolAddress, POOL_FEE_ABI, p);
+          return pool.fee({ blockTag: blockNumber });
+        },
+        { timeoutMs: 3000, hedge: true }
+      );
+      onChainFee = Number(feeResult);
+    } catch (e) {
+      if (VERBOSE) console.warn(`  [disc] fee read failed ${label}: ${e.message.slice(0, 60)}`);
+    }
   }
 
   let priceHuman = sqrtPriceX96 ? sqrtPriceToHuman(sqrtPriceX96, tok0Symbol, tok1Symbol) : null;
@@ -590,7 +618,13 @@ async function scanVenueForPair(rpc, venue, pair, blockNumber) {
             `disc.${venue.venue}.factory.${pair.label}.${stable ? 'stable' : 'volatile'}`,
             async (p) => {
               const factory = new ethers.Contract(venue.factory, V2_FACTORY_ABI, p);
-              return factory.getPool(pair.tokenA.address, pair.tokenB.address, stable, { blockTag: blockNumber });
+              try {
+                return await factory.getPool(pair.tokenA.address, pair.tokenB.address, stable, { blockTag: blockNumber });
+              } catch (errGetPool) {
+                // Solidly V2 legacy fallback (e.g., Shadow V2 on Sonic):
+                // factory only exposes getPair. Same args + semantics.
+                return await factory.getPair(pair.tokenA.address, pair.tokenB.address, stable, { blockTag: blockNumber });
+              }
             },
             { timeoutMs: 4000, hedge: false }
           );
