@@ -128,6 +128,7 @@ const VENUE_TYPE_MAP = {
   'algebra':      { factoryType: 'algebra_factory',    slotFn: 'globalState' },
   'aerodrome_v2': { factoryType: 'v2_factory',         slotFn: 'getReserves' },
   'slipstream':   { factoryType: 'slipstream_factory', slotFn: 'slot0_slipstream' },
+  'ramses_v3':    { factoryType: 'slipstream_factory', slotFn: 'slot0' },
 };
 
 // Resolve VENUES from chain config (skip null factories with verbose log)

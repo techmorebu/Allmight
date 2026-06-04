@@ -182,15 +182,17 @@
       "targetPairsFile": "config/target_pairs/sonic.json",
       "venues": {
         "shadow_v3": {
-          "type": "uniswap_v3",
+          "type": "ramses_v3",
           "factory": "0xcD2d0637c94fe77C2896BbCBB174cefFb08DE6d7",
           "feeTiers": [
+            1,
+            5,
+            10,
+            50,
             100,
-            500,
-            3000,
-            10000
+            200
           ],
-          "note": "Shadow Exchange CL \u2014 Ramses V3 fork on Sonic. Per Shadow official docs (docs.shadow.so/pages/contract-addresses). Using uniswap_v3 venue type because Ramses V3 maintains UniV3-style slot0() interface; Step 2 factory verification will confirm ABI compatibility. If incompatible, Step 3 will introduce ramses_v3 venue type."
+          "note": "Shadow Exchange CL \u2014 Ramses V3 fork on Sonic. Per Shadow official docs (docs.shadow.so/pages/contract-addresses). Step 2 factory verification (wave8 commit 2 / a6e4852) CONFIRMED ABI = Ramses V3 family: getPool(address, address, int24 tickSpacing). NOT UniV3-compatible. feeTiers field semantically holds tickSpacings (same convention as slipstream venues): [1, 5, 10, 50, 100, 200] all confirmed with wS/USDC pools on-chain; ts=60 tested and confirmed empty (no pool). Dispatch reuses slipstream_factory factoryType (same int24 signature) but uses standard slot0 slotFn (Ramses V3 maintains UniV3 pool ABI, distinct from Slipstream's Solidly-derivative slot0_slipstream)."
         },
         "shadow_v2": {
           "type": "aerodrome_v2",
