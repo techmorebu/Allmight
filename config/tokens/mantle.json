@@ -6,7 +6,7 @@
   "tokens": {
     "WETH": {
       "symbol": "WETH",
-      "address": "0xdeaddeaddeaddeaddeaddeaddeaddeaddead1111",
+      "address": "0xdEAddEaDdeadDEadDEADDEAddEADDEAddead1111",
       "decimals": 18,
       "note": "Mantle canonical bridged WETH. Vanity dead-prefix address - Mantle convention for canonical assets. Verified via mantlescan token tracker."
     },

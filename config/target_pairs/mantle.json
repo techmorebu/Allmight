@@ -1,0 +1,31 @@
+{
+  "chain": "mantle",
+  "description": "Pair-level scan configuration for Mantle mainnet. Wave 9 question: can an authorized Ramses-family deployment (Cleopatra Exchange, BUSL-1.1 licensed from Ramses) produce a second EXECUTION_READY surface? Cleopatra CL is the natural dominant-venue candidate (Ramses V3 sister fork); Cleopatra Legacy is the natural tracking-venue candidate (Solidly V2 fork). Discovery measures active-tick depths and reports. The depth gate (Cleopatra Legacy ≥ Ramses-class ~$5M+) is THE measurement that determines whether Pattern 4 gets a behavioral probe or joins Sonic/Unichain in STRUCTURALLY_DEAD. mETH/WETH deferred to Step 2/3 per Boss directive.",
+  "lastUpdated": "2026-06-04",
+  "pairs": [
+    {
+      "label": "WETH/USDC",
+      "priority": 1,
+      "tokenA": "WETH",
+      "tokenB": "USDC",
+      "expectedDec0": 6,
+      "expectedDec1": 18,
+      "priceMode": "invert",
+      "sanityMin": 100,
+      "sanityMax": 10000,
+      "note": "Primary cross-chain canonical pair. Token sort: USDC (0x09Bc) < WETH (0xdEAd) → token0=USDC (6 decimals), token1=WETH (18 decimals). On-chain price = token1/token0 = WETH/USDC = 1/(USD per ETH); priceMode='invert' to display USD per ETH. Same orientation as Optimism WETH/USDC (USDC has smaller address on both chains). Probes use --stable-side 0 (USDC=token0)."
+    },
+    {
+      "label": "WMNT/USDC",
+      "priority": 2,
+      "tokenA": "WMNT",
+      "tokenB": "USDC",
+      "expectedDec0": 6,
+      "expectedDec1": 18,
+      "priceMode": "invert",
+      "sanityMin": 0.05,
+      "sanityMax": 10,
+      "note": "Mantle-native primary pair (analogous to Sonic wS/USDC). Token sort: USDC (0x09Bc) < WMNT (0x78c1) → token0=USDC (6 decimals), token1=WMNT (18 decimals). On-chain price = token1/token0 = WMNT/USDC = 1/(USD per WMNT); priceMode='invert' to display USD per WMNT (MNT ~ $0.60-1.20 typical range). Probes use --stable-side 0 (USDC=token0)."
+    }
+  ]
+}

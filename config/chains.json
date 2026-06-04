@@ -208,6 +208,7 @@
       "chainId": 5000,
       "rpcEnv": "MANTLE_MAINNET_RPC_URL",
       "tokensFile": "config/tokens/mantle.json",
+      "targetPairsFile": "config/target_pairs/mantle.json",
       "venues": {
         "cleopatra_cl": {
           "factory": "0xAAA32926fcE6bE95ea2c51cB4Fcb60836D320C42",
@@ -230,25 +231,7 @@
           ],
           "note": "Cleopatra Legacy pairFactory \u2014 Solidly V2 fork (Ramses V2 sister fork lineage). Source: docs.cleo.exchange/resources/deployed-contract-addresses (verified 2026-06-04). Uses Solidly-legacy getPair(A, B, stable) ABI \u2014 discovery's aerodrome_v2 dispatch handles this via the getPair fallback landed in infra(discovery) commit 048b97d. Discovery will scan BOTH stable=false (volatile) and stable=true. THIS IS THE PATTERN 4 DEPTH GATE \u2014 if Cleopatra Legacy has Ramses-class depth (~\\$5M+), the surface progresses to behavioral probe. If depth is dust (similar to Shadow V2 \\$79 or Velo V2 \\$88), Pattern 5 (modern chains skip V2) strengthens and Mantle joins Sonic/Unichain in the STRUCTURALLY_DEAD column."
         }
-      },
-      "targetPairs": [
-        {
-          "label": "WETH/USDC",
-          "tokenA": "WETH",
-          "tokenB": "USDC",
-          "sanityMin": 100,
-          "sanityMax": 10000,
-          "priceMode": "invert"
-        },
-        {
-          "label": "WMNT/USDC",
-          "tokenA": "WMNT",
-          "tokenB": "USDC",
-          "sanityMin": 0.05,
-          "sanityMax": 10,
-          "priceMode": "invert"
-        }
-      ]
+      }
     }
   }
 }
