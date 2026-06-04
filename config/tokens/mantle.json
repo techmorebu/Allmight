@@ -1,0 +1,32 @@
+{
+  "chain": "mantle",
+  "chainId": 5000,
+  "lastUpdated": "2026-06-04",
+  "source": "Wave 9 Step 1 (2026-06-04). WETH/USDC/USDT/WMNT addresses verified via mantlescan.xyz token tracker 2026-06-04. mETH deferred to Step 2/3 per Boss directive. Mantle is an OP-Stack-derived L2 (chainId 5000) - WETH uses Mantle's canonical 0xdead...1111 vanity dead-prefix convention; WMNT is the ERC20 wrapper of native MNT gas token.",
+  "tokens": {
+    "WETH": {
+      "symbol": "WETH",
+      "address": "0xdeaddeaddeaddeaddeaddeaddeaddeaddead1111",
+      "decimals": 18,
+      "note": "Mantle canonical bridged WETH. Vanity dead-prefix address - Mantle convention for canonical assets. Verified via mantlescan token tracker."
+    },
+    "USDC": {
+      "symbol": "USDC",
+      "address": "0x09Bc4E0D864854c6aFB6eB9A9cdF58aC190D0dF9",
+      "decimals": 6,
+      "note": "Mantle USDC. Smallest address in token set, so token0=USDC in all USDC pairs (priceMode=invert for WETH/USDC and WMNT/USDC). Verified via mantlescan."
+    },
+    "USDT": {
+      "symbol": "USDT",
+      "address": "0x201EBa5CC46D216Ce6DC03F6a759e8E766e956aE",
+      "decimals": 6,
+      "note": "Mantle bridged Tether USDT. Verified via mantlescan."
+    },
+    "WMNT": {
+      "symbol": "WMNT",
+      "address": "0x78c1b0C915c4FAA5FffA6CAbf0219DA63d7f4cb8",
+      "decimals": 18,
+      "note": "Wrapped Mantle. ERC20 wrapper of native MNT gas token. Verified via mantle official explorer (explorer.mantle.xyz)."
+    }
+  }
+}

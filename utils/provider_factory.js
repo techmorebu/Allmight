@@ -671,6 +671,15 @@ function getChainRpcUrls(chain) {
       process.env.SONIC_MAINNET_RPC_URL_5,       // slot 5: reserved
       process.env.SONIC_MAINNET_RPC_URL_6,       // slot 6: reserved
     ]),
+    mantle: cleanRpcList([
+      process.env.MANTLE_MAINNET_RPC_URL,         // slot 0: Alchemy primary (Cornelius provisioning 2026-06-04)
+      process.env.MANTLE_MAINNET_RPC_URL_1,       // slot 1: reserved
+      process.env.MANTLE_MAINNET_RPC_URL_2,       // slot 2: Tenderly fallback (when provisioned)
+      process.env.MANTLE_MAINNET_RPC_URL_3,       // slot 3: reserved
+      process.env.MANTLE_MAINNET_RPC_URL_4,       // slot 4: reserved
+      process.env.MANTLE_MAINNET_RPC_URL_5,       // slot 5: reserved
+      process.env.MANTLE_MAINNET_RPC_URL_6,       // slot 6: reserved
+    ]),
   };
 
   return RPCS[chainKey] || [];
@@ -685,7 +694,8 @@ function getChainNetwork(chain) {
     optimism: ethers.Network.from({ name: 'optimism', chainId: 10 }),
     base: ethers.Network.from({ name: 'base', chainId: 8453 }),
     unichain: ethers.Network.from({ name: 'unichain', chainId: 130 }), // adjust later if needed
-    sonic: ethers.Network.from({ name: 'sonic', chainId: 146 })
+    sonic: ethers.Network.from({ name: 'sonic', chainId: 146 }),
+    mantle: ethers.Network.from({ name: 'mantle', chainId: 5000 })
   };
 
   return networks[chainKey] || null;

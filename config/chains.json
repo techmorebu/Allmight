@@ -203,6 +203,52 @@
           ]
         }
       }
+    },
+    "mantle": {
+      "chainId": 5000,
+      "rpcEnv": "MANTLE_MAINNET_RPC_URL",
+      "tokensFile": "config/tokens/mantle.json",
+      "venues": {
+        "cleopatra_cl": {
+          "factory": "0xAAA32926fcE6bE95ea2c51cB4Fcb60836D320C42",
+          "type": "ramses_v3",
+          "feeTiers": [
+            1,
+            5,
+            10,
+            50,
+            100,
+            200
+          ],
+          "note": "Cleopatra CL factory \u2014 AUTHORIZED RAMSES V3 SISTER FORK on Mantle (BUSL-1.1 license from Ramses per docs.cleo.exchange). Source: docs.cleo.exchange/resources/deployed-contract-addresses (verified 2026-06-04). venue type 'ramses_v3' (introduced wave8 commit 3) \u2014 reuses slipstream_factory dispatch for int24 tickSpacing getPool, uses standard UniV3 slot0 for pool reads. feeTiers field semantically holds tickSpacings (same convention as slipstream + Sonic Shadow V3). Initial set [1,5,10,50,100,200] mirrors Sonic Shadow tickSpacing range; Step 2 factory verification will confirm which tickSpacings actually have wS/USDC and WMNT/USDC pools. Pattern 4 PRIMARY TEST TARGET \u2014 first chain where Ramses-family depth gate can actually be challenged (Sonic + Unichain both STRUCTURALLY_DEAD before reaching behavioral probe)."
+        },
+        "cleopatra_legacy": {
+          "factory": "0xAAA16c016BF556fcD620328f0759252E29b1AB57",
+          "type": "aerodrome_v2",
+          "feeTiers": [
+            null
+          ],
+          "note": "Cleopatra Legacy pairFactory \u2014 Solidly V2 fork (Ramses V2 sister fork lineage). Source: docs.cleo.exchange/resources/deployed-contract-addresses (verified 2026-06-04). Uses Solidly-legacy getPair(A, B, stable) ABI \u2014 discovery's aerodrome_v2 dispatch handles this via the getPair fallback landed in infra(discovery) commit 048b97d. Discovery will scan BOTH stable=false (volatile) and stable=true. THIS IS THE PATTERN 4 DEPTH GATE \u2014 if Cleopatra Legacy has Ramses-class depth (~\\$5M+), the surface progresses to behavioral probe. If depth is dust (similar to Shadow V2 \\$79 or Velo V2 \\$88), Pattern 5 (modern chains skip V2) strengthens and Mantle joins Sonic/Unichain in the STRUCTURALLY_DEAD column."
+        }
+      },
+      "targetPairs": [
+        {
+          "label": "WETH/USDC",
+          "tokenA": "WETH",
+          "tokenB": "USDC",
+          "sanityMin": 100,
+          "sanityMax": 10000,
+          "priceMode": "invert"
+        },
+        {
+          "label": "WMNT/USDC",
+          "tokenA": "WMNT",
+          "tokenB": "USDC",
+          "sanityMin": 0.05,
+          "sanityMax": 10,
+          "priceMode": "invert"
+        }
+      ]
     }
   }
 }
