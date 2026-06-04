@@ -1,0 +1,26 @@
+{
+  "chain": "sonic",
+  "chainId": 146,
+  "lastUpdated": "2026-06-03",
+  "source": "Wave 8 Step 1 (2026-06-03). wS is the canonical wrapped native gas token per Sonic Labs official docs (docs.soniclabs.com/sonic/build-on-sonic/contract-addresses). USDC is the Circle native USDC token on Sonic (issued via Circle CCTP). USDC.e is the bridged variant from Sonic's official docs token list — included as a candidate token; presence and depth to be verified by Step 4 discovery. Sonic is a STANDALONE L1 (Fantom successor), not OP-Stack — wS is NOT at the 0x4200... canonical address.",
+  "tokens": {
+    "wS": {
+      "symbol": "wS",
+      "address": "0x039e2fB66102314Ce7b64Ce5Ce3E5183bc94aD38",
+      "decimals": 18,
+      "note": "Wrapped Sonic native gas token. Per docs.soniclabs.com canonical contract addresses page. Plays the role of WETH on other chains, but Sonic is standalone L1 so the address is Sonic-specific (not OP-Stack 0x4200... canonical)."
+    },
+    "USDC": {
+      "symbol": "USDC",
+      "address": "0x29219dd400f2Bf60E5a23d13Be72B486D4038894",
+      "decimals": 6,
+      "note": "Circle-issued native USDC on Sonic (via CCTP). Address > 0x039e (wS), so token1=USDC in wS/USDC pairs. priceMode='normal' (same pattern as Base, opposite of Optimism native USDC)."
+    },
+    "USDC.e": {
+      "symbol": "USDC.e",
+      "address": "0x0BA304580ee7c9a980CF72e55f5Ed2E9fd30Bc51",
+      "decimals": 6,
+      "note": "Bridged USDC variant on Sonic per docs.soniclabs.com. Candidate token; depth and active usage to be confirmed by Step 4 discovery. SushiSwap tutorials reference wS/USDC.e pools so this token likely has real trading activity."
+    }
+  }
+}

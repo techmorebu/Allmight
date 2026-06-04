@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "description": "AllMight chain registry. Venues, factories, and token-registry pointers per chain. Modify only with verified on-chain addresses. Validated by scripts/tools/validate_chain_config.js before any consumer reads.",
-  "lastUpdated": "2026-06-02",
+  "lastUpdated": "2026-06-03",
   "chains": {
     "arbitrum": {
       "chainId": 42161,
@@ -172,6 +172,33 @@
             null
           ],
           "note": "Velodrome V2 PoolFactory \u2014 Solidly fork V2 AMM. Direct ancestor of Aerodrome V2 on Base (identical ABI). Reuses aerodrome_v2 dispatch type. getFee(*, false) confirmed = 30 raw = 30 bps volatile. Verified on-chain 2026-06-01."
+        }
+      }
+    },
+    "sonic": {
+      "chainId": 146,
+      "rpcEnv": "SONIC_MAINNET_RPC_URL",
+      "tokensFile": "config/tokens/sonic.json",
+      "targetPairsFile": "config/target_pairs/sonic.json",
+      "venues": {
+        "shadow_v3": {
+          "type": "uniswap_v3",
+          "factory": "0xcD2d0637c94fe77C2896BbCBB174cefFb08DE6d7",
+          "feeTiers": [
+            100,
+            500,
+            3000,
+            10000
+          ],
+          "note": "Shadow Exchange CL \u2014 Ramses V3 fork on Sonic. Per Shadow official docs (docs.shadow.so/pages/contract-addresses). Using uniswap_v3 venue type because Ramses V3 maintains UniV3-style slot0() interface; Step 2 factory verification will confirm ABI compatibility. If incompatible, Step 3 will introduce ramses_v3 venue type."
+        },
+        "shadow_v2": {
+          "type": "aerodrome_v2",
+          "factory": "0x2dA25E7446A70D7be65fd4c053948BEcAA6374c8",
+          "note": "Shadow Exchange V2 \u2014 Solidly fork on Sonic. Per Shadow official docs. Using aerodrome_v2 venue type because all Solidly forks share the getPool(tokenA, tokenB, stable) interface.",
+          "feeTiers": [
+            null
+          ]
         }
       }
     }

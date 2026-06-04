@@ -1,0 +1,31 @@
+{
+  "chain": "sonic",
+  "description": "Pair-level scan configuration for Sonic mainnet. Wave 8 question: does Sonic — Fantom successor with mature DeFi ecosystem — contain a Ramses-class arbitrage surface? The Shadow Exchange CL (Ramses V3 fork) is a natural dominant-venue candidate; Shadow V2 (Solidly fork) is a natural tracking-venue candidate. Discovery will measure active-tick depths and report. Constitutional discipline: discovery runs regardless of external data signals.",
+  "lastUpdated": "2026-06-03",
+  "pairs": [
+    {
+      "label": "wS/USDC",
+      "priority": 1,
+      "tokenA": "wS",
+      "tokenB": "USDC",
+      "expectedDec0": 18,
+      "expectedDec1": 6,
+      "priceMode": "normal",
+      "sanityMin": 0.01,
+      "sanityMax": 100,
+      "note": "Primary Sonic pair. Token sort: wS (0x039e) < USDC (0x29219dd4) → token0=wS, token1=USDC. priceMode='normal' (price = USDC/wS = wS price in USD ≈ $0.50 as of Jun 2026). Same orientation as Base ETH/USDC. Probes use default --stable-side 1 (USDC=token1)."
+    },
+    {
+      "label": "wS/USDC.e",
+      "priority": 2,
+      "tokenA": "wS",
+      "tokenB": "USDC.e",
+      "expectedDec0": 18,
+      "expectedDec1": 6,
+      "priceMode": "normal",
+      "sanityMin": 0.01,
+      "sanityMax": 100,
+      "note": "Secondary pair using bridged USDC.e variant. Token sort: wS (0x039e) < USDC.e (0x0BA304) → token0=wS, token1=USDC.e. priceMode='normal'. May be deprecated by Circle native USDC; depth comparison via Step 4 discovery will inform Step 5 probe decision."
+    }
+  ]
+}
