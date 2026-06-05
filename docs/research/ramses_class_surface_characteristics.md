@@ -2,7 +2,7 @@
 
 **Status:** ACTIVE
 **Initialized:** 2026-06-02 (Boss directive, Wave 7 opening)
-**Current sample:** n = 10 classified surfaces
+**Current sample:** n = 11 classified surfaces
 **Target sample:** n = 15-20 classified surfaces before strong claims about a predictive model
 
 ---
@@ -14,7 +14,7 @@ Catalog every classified surface across all chains and DEX families to:
 1. Identify shared characteristics among `EXECUTION_READY` surfaces (n=1)
 2. Identify shared characteristics among `BEHAVIORALLY_DEAD` surfaces (n=2)
 3. Identify shared characteristics among `ECONOMICALLY_BLOCKED` surfaces (n=1)
-4. Identify shared characteristics among `STRUCTURALLY_DEAD` surfaces (n=6)
+4. Identify shared characteristics among `STRUCTURALLY_DEAD` surfaces (n=7)
 5. Detect predictive variables — which features correlate with viability?
 6. Build toward an empirically-grounded predictive model
 
@@ -157,16 +157,23 @@ Two chains launched/rebranded since ~late 2023 have shown the same
 |-------|----------|---------------------:|---------|
 | Unichain | 2024 | $88 (Velodrome V2) | STRUCTURALLY_DEAD |
 | Sonic    | 2024 (rebrand) | $79 (Shadow V2) | STRUCTURALLY_DEAD |
+| **Mantle** | **July 2023** | **$804 (Cleopatra Legacy WMNT/USDC)** | STRUCTURALLY_DEAD |
 
-**Hypothesis:** On chains launched after CL became the dominant DEX
-architecture (~2023+), V2 forks exist for governance/token-launch reasons
-but never accumulate meaningful liquidity. Capital flows directly to CL.
+**Refined hypothesis (Boss canonical post-Wave 9):** Ramses-family V2 forks
+OUTSIDE Arbitrum do not accumulate Ramses-class depth. Mantle (July 2023,
+older than Unichain and Sonic) confirms the pattern crosses chain
+generations — the original "modern chains skip V2" framing was wrong.
+The deeper pattern is that the Arbitrum Ramses V2 outcome does NOT
+replicate to forks regardless of chain age.
 
-**Implication if pattern holds:** Searching for Ramses-class surfaces on
-chains launched BEFORE ~2022 would be the higher-information search
-strategy. Modern chains may not have the V2 partner the framework requires.
+**Implication:** Lineage-based search (find another Ramses fork) is
+weakened substantially. Three external Ramses-family deployments
+across three chain generations all failed the depth gate before
+behavioral test could run. Boss C9 ruling 2026-06-04: Ramses lineage
+remains a useful search prior but is NO LONGER the primary search
+strategy. Wave 10 will broaden beyond Ramses lineage.
 
-n=2 is suggestive only. Watch for confirmation or falsification in Wave 9+.
+n=3 substantially strengthens this — HIGH confidence finding.
 
 ---
 
@@ -176,9 +183,14 @@ n=2 is suggestive only. Watch for confirmation or falsification in Wave 9+.
    family deployment with adequate V2 counterpart depth? Candidates:
    Ramses V2 on Mantle (if exists), other Ramses forks on older chains.
 
-2. **Pattern 5 confirmation.** Wave 9+ chains: which have V2 forks
-   with > $1M active depth? Mantle is older (2023) so V2 forks may
-   have more historical accumulation than Sonic/Unichain.
+2. **Pattern 5 confirmation — ANSWERED (Wave 9).** Mantle (July 2023,
+   older than Unichain 2024 and Sonic 2024-rebrand) had Cleopatra
+   Legacy max depth of just $804 on WMNT/USDC volatile. The "older
+   chain" hypothesis failed — chain age does not explain V2 depth.
+   Pattern 5 strengthened to n=3 across chain generations. New
+   questions: are there ANY Ramses-family V2 deployments outside
+   Arbitrum with > $100k depth? Or is Arbitrum Ramses V2 a singular
+   case?
 
 3. **V2 architecture necessity.** No CL surface has achieved
    EXECUTION_READY (n=10). A CL EXECUTION_READY would falsify the V2
@@ -202,16 +214,22 @@ n=2 is suggestive only. Watch for confirmation or falsification in Wave 9+.
 
 | Event | Probability |
 |-------|------------:|
-| Another EXECUTION_READY surface exists somewhere | ~75% |
-| ...on Mantle (Wave 9 candidate) | ~25% |
-| ...on a pre-2022 chain | ~50% |
-| Ramses is completely unique | ~25% |
-| Pattern 4 (Ramses candidate class) is correct framing | ~70% |
-| Pattern 5 (modern chains skip V2) holds at n=5 | ~50% |
+| Another EXECUTION_READY surface exists somewhere | ~65% (down from 75% pre-W9) |
+| ...via Ramses-family search | ~20% (down from prior; lineage downgraded) |
+| ...via non-Ramses search (Wave 10 direction) | ~50% (broader search) |
+| ...on Mantle (Wave 9 candidate) | ANSWERED — no |
+| Ramses is completely unique (Arbitrum-singular) | ~40% (up from 25%) |
+| Pattern 4 (Ramses candidate class) is correct framing | ~70% (unchanged; just untestable in practice) |
+| Pattern 5 (Ramses V2 outside Arbitrum doesn't replicate) holds | HIGH confidence (n=3) |
 
-Sonic was supposed to be the first test of Pattern 4. It tested the
-LINEAGE requirement (✓) but failed the DEPTH gate (✗) before behavioral
-signature could be probed. Pattern 4 confidence remains uncertain.
+Sonic was the first test of Pattern 4 — passed LINEAGE (✓), failed
+DEPTH gate (✗). Mantle was the second test (Wave 9) — passed LINEAGE (✓,
+authorized BUSL-1.1 fork), failed DEPTH gate (✗, max $804). Both failed
+before behavioral signature could be probed. Pattern 4 has now been
+TESTED FOR TESTABILITY three times (Sonic, Unichain, Mantle); three times
+the answer to 'can we even test it?' has been NO. Pattern 4 confidence
+remains uncertain BUT lineage-based search is now downgraded per Boss
+C9 ruling 2026-06-04.
 
 ---
 

@@ -540,9 +540,9 @@ etc.) where V2 forks had time to accumulate liquidity organically.
 EXECUTION_READY        1
 BEHAVIORALLY_DEAD      2
 ECONOMICALLY_BLOCKED   1
-STRUCTURALLY_DEAD      6
+STRUCTURALLY_DEAD      7
                        ──
-n = 10 surfaces classified
+n = 11 surfaces classified
 ```
 
 ### Strategic conclusion
@@ -558,10 +558,42 @@ WAS the first surface selected because the framework predicted it might
 be one. That methodological progress is more valuable than any
 individual surface.
 
-### Next: Wave 9 — Mantle (or next chain in queue)
+### Wave 9 — Mantle Cleopatra (concluded 2026-06-04)
 
-Per Boss directive, infrastructure fixes apply first (Solidly V2
-getPair fallback, ramses_v3 fee display), then Wave 9 begins on a
-chain queued for protocol-lineage investigation. Mantle is the
-default next target; other candidates include older Ramses-family
-deployments if any can be located.
+Wave 9 investigated Mantle Cleopatra — an EXPLICITLY AUTHORIZED Ramses
+fork (BUSL-1.1 licensed by Ramses) with the same AAA-prefix vanity
+address convention as Arbitrum Ramses. Verdict: STRUCTURALLY_DEAD,
+HIGH confidence. Max active-tick depth = $804 (Cleopatra Legacy
+WMNT/USDC volatile), ~8,700× below Ramses-class threshold.
+
+Wave 9 produced two empirical findings worth crystallizing:
+1. Lineage does not predict factory ABI (Cleopatra CL uses standard
+   UniV3, not Ramses V3 like Sonic Shadow V3).
+2. Lineage does not predict depth (authorized fork with sophisticated
+   CREATE2 deployment still has dust liquidity).
+
+Pattern 5 strengthens to n=3 across chain generations (Unichain 2024,
+Sonic 2024-rebrand, Mantle 2023). Ramses-family V2 outside Arbitrum
+does not accumulate Ramses-class depth. HIGH confidence.
+
+Pattern 4 (Ramses candidate class) — three external deployments all
+failed the depth gate before behavioral test could run. Pattern 4
+remains unresolved but DOWNGRADED as a primary search strategy.
+
+### Next: Wave 10 — broader hunt
+
+Boss C9 ruling 2026-06-04:
+> "Ramses lineage is a useful search prior, but not the primary
+> search strategy."
+
+Wave 10 will broaden beyond Ramses lineage. Candidate directions:
+- Velocimeter / Solidly ecosystem on alt-L1s (non-Ramses Solidly forks)
+- Non-V3 designs (e.g., Liquidity Book on Merchant Moe / Trader Joe)
+- Pre-2022 chains with mature DEX ecosystems
+- Cross-protocol pairings (UniV3 dominant × non-Ramses V2 tracking)
+
+The deeper question Wave 9 raises: is Arbitrum Ramses' depth a
+replicable Ramses-family property, or a one-off phenomenon driven by
+specific Arbitrum conditions (DEX maturity, GMX synergy, early Ramses
+positioning, Camelot ecosystem)? Wave 10 may need to test this
+hypothesis directly by searching outside the Ramses family entirely.

@@ -239,6 +239,45 @@ n = 15-20 classified surfaces before strong claims about model completeness. Cur
    - aerodrome_v2 dispatch needs getPair fallback for Solidly-legacy V2 factories
    - ramses_v3 dispatch should read pool.fee() instead of using venue feeTiers as fee display
 
+
+### Mantle
+
+**Status:** investigated (W9, 2026-06-04). One surface class (two-pair, multi-venue) classified, formally rejected. **First chain investigated using an EXPLICITLY AUTHORIZED Ramses fork (BUSL-1.1 license from Ramses).**
+
+**WETH/USDC + WMNT/USDC × Cleopatra CL × Cleopatra Legacy — `STRUCTURALLY_DEAD`** (W9)
+
+- Chain ID 5000 (OP-Stack-derived L2, launched July 2023)
+- Native gas: MNT; wrapped native: WMNT @ `0x78c1b0C915c4FAA5FffA6CAbf0219DA63d7f4cb8`
+- USDC (Circle native, smallest address — token0 for all USDC pairs) @ `0x09Bc4E0D864854c6aFB6eB9A9cdF58aC190D0dF9`
+- WETH (Mantle canonical vanity dead-prefix) @ `0xdEAddEaDdeadDEadDEADDEAddEADDEAddead1111`
+- Cleopatra CL factory: `0xAAA32926fcE6bE95ea2c51cB4Fcb60836D320C42` (AAA-prefix vanity matches Arbitrum Ramses convention; BUSL-1.1 licensed)
+- Cleopatra Legacy factory: `0xAAA16c016BF556fcD620328f0759252E29b1AB57` (Solidly V2 fork)
+- ABI surprise: Cleopatra CL uses STANDARD UniV3 ABI (uint24 fee), NOT Ramses V3 (int24 tickSpacing) — empirical correction shipped as commit 1cf936e
+- Discovery results (2026-06-04, block 96,242,502):
+  - Cleopatra CL WETH/USDC fee=3000 (AAA-vanity pool): $23 active-tick depth
+  - Cleopatra CL WETH/USDC fee=500: $0
+  - Cleopatra CL WMNT/USDC fee=100: $0 (active pool, observation cardinality 1)
+  - Cleopatra CL WMNT/USDC fee=10000: L=0 (MIN_TICK zombie, filtered)
+  - Cleopatra Legacy WETH/USDC volatile: $0 (one reserve drained)
+  - Cleopatra Legacy WMNT/USDC volatile: **$804** (highest on entire Mantle surface)
+  - Cleopatra Legacy WMNT/USDC stable: $0 (misconfigured curve)
+- Critical number: highest depth $804 vs Ramses $7M → ~8,700× smaller (~10× larger than Sonic Shadow V2 $79 but still far below executable threshold)
+- Probe not run (depth gate failure prevents behavioral test, per Boss C9 ruling 2026-06-04)
+- Archive: [docs/archive/rejected_surfaces/mantle_cleopatra_cl_legacy/](archive/rejected_surfaces/mantle_cleopatra_cl_legacy/)
+
+**Framework contributions:**
+
+1. **Lineage doesn't predict ABI** — Step 2 rejected the `ramses_v3` prior; Cleopatra CL uses standard UniV3 ABI despite being an authorized Ramses fork. Three Ramses-family deployments now have three different factory ABIs.
+
+2. **Lineage doesn't predict depth** — Authorized fork with sophisticated AAA-prefix CREATE2 deployment still has dust depth across all pools.
+
+3. **Pattern 4 DOWNGRADED as primary search strategy** — Three external Ramses-family deployments now untested due to depth gate failure. Boss ruling: Ramses lineage remains a useful prior but is no longer the primary search strategy. Wave 10 broadens.
+
+4. **Pattern 5 strengthens to n=3** — Refined from "modern chains skip V2" to "Ramses-family V2 outside Arbitrum doesn't accumulate Ramses-class depth." Mantle (older 2023 chain) confirms the pattern crosses chain generations. HIGH confidence.
+
+5. **New lesson logged** — `docs/lessons/dex_contract_discovery_pitfalls.md` updated with "Protocol lineage is a search prior, ABI is an empirical fact." Rule: every integration must empirically verify factory ABI, pool ABI, fee semantics, pool lookup behavior — never assume from lineage.
+
+
 ## Scoreboard
 
 Canonical surface count and breakdown by classification. This block has
@@ -251,15 +290,15 @@ this explicit-block convention.
 EXECUTION_READY        1   Arbitrum ETH/USDC × Ramses
 BEHAVIORALLY_DEAD      2   Base Slipstream + Optimism Velodrome Slipstream
 ECONOMICALLY_BLOCKED   1   Base ETH/USDC × Aero V2
-STRUCTURALLY_DEAD      6   4× Arbitrum + Unichain + Sonic
+STRUCTURALLY_DEAD      7   4× Arbitrum + Unichain + Sonic + Mantle
                      ─────
-n = 10 surfaces classified
+n = 11 surfaces classified
 ```
 
 **Target:** n = 15-20 classified surfaces before strong claims about the
 predictive model.
 
-**Last updated:** 2026-06-04 (post-Wave 8 closure)
+**Last updated:** 2026-06-04 (post-Wave 9 closure)
 
 ---
 
@@ -275,6 +314,7 @@ predictive model.
 | 6 | Optimism ETH/USDC × Velodrome Slipstream | `BEHAVIORALLY_DEAD`; **framework first predictive success** (Base CL pattern predicted Optimism CL → confirmed by probe) | Optimism CL surface |
 | 7 | Unichain ETH/USDC × UniV3 × Velodrome V2 | `STRUCTURALLY_DEAD`; first **V2-present + depth-absent** counterexample; novel UniV3 fee-tier inversion logged | Unichain investigation |
 | 8 | Sonic wS/USDC × Shadow V3 × Shadow V2 | `STRUCTURALLY_DEAD`; Pattern 4 hypothesis test attempted, depth gate failure on V2 side ($79 vs Ramses $7M); Ramses-family CL lineage confirmed but counterpart liquidity absent; ramses_v3 venue type introduced | Sonic investigation |
+| 9 | Mantle WETH/USDC + WMNT/USDC × Cleopatra CL × Cleopatra Legacy | `STRUCTURALLY_DEAD`; second Pattern 4 hypothesis test on authorized Ramses fork (BUSL-1.1); depth gate failure (max $804 vs Ramses $7M); ABI surprise refined the framework (lineage doesn't predict ABI OR depth); Pattern 5 strengthens to n=3; Pattern 4 downgraded as primary search strategy | Mantle investigation |
 
 ---
 
