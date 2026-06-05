@@ -1,7 +1,7 @@
 {
   "chain": "arbitrum",
-  "description": "Pair-level scan configuration for arbitrum mainnet. Ported verbatim from scripts/tools/multi_pair_pool_discovery.js TARGET_PAIRS array (Boss directive 2026-04-02 — inventory breadth expansion). Modifying this file changes WHAT discovery looks for; chains.json defines what venues EXIST.",
-  "lastUpdated": "2026-05-30",
+  "description": "Pair-level scan configuration for arbitrum mainnet. Ported verbatim from scripts/tools/multi_pair_pool_discovery.js TARGET_PAIRS array (Boss directive 2026-04-02 \u2014 inventory breadth expansion). Modifying this file changes WHAT discovery looks for; chains.json defines what venues EXIST.",
+  "lastUpdated": "2026-06-04",
   "pairs": [
     {
       "label": "ETH/USDT",
@@ -13,7 +13,7 @@
       "priceMode": "direct",
       "sanityMin": 500,
       "sanityMax": 20000,
-      "note": "Token sort: WETH (0x82aF) < USDT (0xFd08) → token0=WETH, token1=USDT"
+      "note": "Token sort: WETH (0x82aF) < USDT (0xFd08) \u2192 token0=WETH, token1=USDT"
     },
     {
       "label": "WBTC/USDT",
@@ -25,7 +25,7 @@
       "priceMode": "direct",
       "sanityMin": 10000,
       "sanityMax": 200000,
-      "note": "Token sort: WBTC (0x2f2a) < USDT (0xFd08) → token0=WBTC, token1=USDT"
+      "note": "Token sort: WBTC (0x2f2a) < USDT (0xFd08) \u2192 token0=WBTC, token1=USDT"
     },
     {
       "label": "WBTC/USDC",
@@ -37,7 +37,7 @@
       "priceMode": "direct",
       "sanityMin": 10000,
       "sanityMax": 200000,
-      "note": "Token sort: WBTC (0x2f2a) < USDC (0xaf88) → token0=WBTC, token1=USDC. Already investigated + rejected (Wave 3, commit a257b3e)."
+      "note": "Token sort: WBTC (0x2f2a) < USDC (0xaf88) \u2192 token0=WBTC, token1=USDC. Already investigated + rejected (Wave 3, commit a257b3e)."
     },
     {
       "label": "LINK/USDC",
@@ -49,7 +49,7 @@
       "priceMode": "direct",
       "sanityMin": 1,
       "sanityMax": 200,
-      "note": "Token sort: LINK (0xf97f) > USDC (0xaf88) → token0=USDC, token1=LINK (price inverted as native; priceMode handles)"
+      "note": "Token sort: LINK (0xf97f) > USDC (0xaf88) \u2192 token0=USDC, token1=LINK (price inverted as native; priceMode handles)"
     },
     {
       "label": "GMX/USDC",
@@ -95,7 +95,9 @@
       "priceMode": "direct",
       "sanityMin": 500,
       "sanityMax": 20000,
-      "feeTiersOnly": [3000],
+      "feeTiersOnly": [
+        3000
+      ],
       "note": "Probe ONLY the 0.30% tier; 0.05% and 0.01% are already in fetcher (proven winner is on Ramses 0.05%)."
     },
     {
@@ -108,8 +110,22 @@
       "priceMode": "direct",
       "sanityMin": 0.01,
       "sanityMax": 20,
-      "feeTiersOnly": [100],
+      "feeTiersOnly": [
+        100
+      ],
       "note": "Probe ONLY the 0.01% tier; 0.05% already in fetcher."
+    },
+    {
+      "label": "WETH/USDC.e",
+      "priority": 2,
+      "tokenA": "WETH",
+      "tokenB": "USDCE",
+      "expectedDec0": 18,
+      "expectedDec1": 6,
+      "priceMode": "normal",
+      "sanityMin": 100,
+      "sanityMax": 10000,
+      "note": "Wave 10A primary test pair for Chronos venue (Boss C9 ruling 2026-06-04 approved this substitution from ETH/USDC native \u2014 Chronos predates native USDC on Arbitrum and has no native USDC pools). Token sort: WETH (0x82) < USDC.e (0xFF) \u2192 token0=WETH (18 decimals), token1=USDC.e (6 decimals). On-chain price = token1/token0 = USDC.e/WETH = ETH price in USD directly. priceMode='normal'. Same orientation as Arbitrum's existing ETH/USDC (native) entry. Hypothesis: do non-Ramses Arbitrum Solidly V2 venues have meaningful WETH/USDC.e depth? Probes use --stable-side 1 (USDC.e=token1)."
     }
   ]
 }

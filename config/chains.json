@@ -47,6 +47,14 @@
             10000
           ],
           "note": "V2 in the name only \u2014 Ramses V2 CL uses slot0() like UniV3, not globalState(). Factory address sourced from scripts/tools/multi_pair_pool_discovery.js line 240 (with env-var override). Fee tiers are NON-STANDARD: confirmed-active [250, 500, 3000, 10000]; reverts on [50, 100, 2500]."
+        },
+        "chronos_v1": {
+          "factory": "0xCe9240869391928253Ed9cc9Bcb8cb98CB5B0722",
+          "type": "aerodrome_v2",
+          "feeTiers": [
+            null
+          ],
+          "note": "Chronos V1 factory \u2014 Solidly V2 fork on Arbitrum (DIFFERENT TEAM from Ramses; not lineage-connected, just architectural sibling). Launched April 27 2023; peaked at $217-230M TVL within ~7 days; collapsed to ~$78.6K TVL by 2026 (99.97% drawdown). ABI verified empirically 2026-06-04: getPair(addr, addr, bool stable) \u2014 Solidly-legacy convention. Pools confirmed: WETH/USDC.e volatile (0xA2F1C1B52E...) + stable (0x312702D569...), ARB/USDC.e volatile, WETH/USDT, USDC.e/USDT. Wave 10A PRIMARY TEST TARGET: does ANY Solidly V2 fork on Arbitrum besides Ramses produce a viable surface? If Chronos has dust depth on WETH/USDC.e (its canonical pre-native-USDC pair), Ramses-on-Arbitrum uniqueness strengthens (same chain, same architecture, same era \u2014 different team, different outcome). Discovery dispatch type=aerodrome_v2 (uses getPair fallback landed in infra(discovery) commit 048b97d)."
         }
       }
     },
