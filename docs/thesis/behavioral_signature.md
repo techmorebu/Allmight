@@ -537,12 +537,16 @@ etc.) where V2 forks had time to accumulate liquidity organically.
 ### Scoreboard post-W8
 
 ```
-EXECUTION_READY        1
-BEHAVIORALLY_DEAD      2
-ECONOMICALLY_BLOCKED   1
-STRUCTURALLY_DEAD      7
-                       ──
-n = 11 surfaces classified
+EXECUTION_READY            1
+BEHAVIORALLY_DEAD          2
+ECONOMICALLY_BLOCKED       1
+STRUCTURALLY_DEAD          8   (5× Arbitrum + Unichain + Sonic + Mantle + Chronos)
+                         ────
+                          12   investigated
+
+TIER_1_CATALOG (V4.1)      1   (SolidLizard, Arbitrum)
+                         ────
+n = 13 surfaces classified
 ```
 
 ### Strategic conclusion
@@ -580,20 +584,68 @@ Pattern 4 (Ramses candidate class) — three external deployments all
 failed the depth gate before behavioral test could run. Pattern 4
 remains unresolved but DOWNGRADED as a primary search strategy.
 
-### Next: Wave 10 — broader hunt
+### Wave 10A — Arbitrum intra-ecosystem Solidly V2 test (concluded 2026-06-05)
 
-Boss C9 ruling 2026-06-04:
-> "Ramses lineage is a useful search prior, but not the primary
-> search strategy."
+Wave 10A pivoted from broader-hunt to intra-chain — Boss directed
+"test whether Arbitrum is the hidden variable" before any further
+chain expansion. The test had two comparators:
 
-Wave 10 will broaden beyond Ramses lineage. Candidate directions:
-- Velocimeter / Solidly ecosystem on alt-L1s (non-Ramses Solidly forks)
-- Non-V3 designs (e.g., Liquidity Book on Merchant Moe / Trader Joe)
-- Pre-2022 chains with mature DEX ecosystems
-- Cross-protocol pairings (UniV3 dominant × non-Ramses V2 tracking)
+**Chronos V1** (measured): $230M peak TVL (April 2023) → $78.6K
+collapse. WETH/USDC.e volatile active-tick depth = $9,300, ~750×
+below Ramses-class threshold. STRUCTURALLY_DEAD, HIGH confidence.
+USDC.e confounder noted in archive (Chronos predates native USDC
+on Arbitrum; stablecoin migration may have contributed to LP
+flight alongside Ramses-specific weakness).
 
-The deeper question Wave 9 raises: is Arbitrum Ramses' depth a
-replicable Ramses-family property, or a one-off phenomenon driven by
-specific Arbitrum conditions (DEX maturity, GMX synergy, early Ramses
-positioning, Camelot ecosystem)? Wave 10 may need to test this
-hypothesis directly by searching outside the Ramses family entirely.
+**SolidLizard** (cataloged under V4.1): ~$35K TVL since January 2023
+inception. Tier 1 — Catalog Only under V4.1 RULE 1; no integration,
+no discovery, no probe. "Failed to launch" pattern with NO migration
+confounder, providing a cleaner intra-Arbitrum evidence point.
+
+**Pattern 6 emerging (n=2 intra-Arbitrum):** Both forks fail the
+depth gate. Combined with Pattern 5 (n=3 chain-external: Sonic,
+Unichain, Mantle), the project has 5 non-Ramses Solidly V2
+deployments across 4 chains, all failing the depth gate.
+
+**Constitutional upgrade mid-wave:** Wave 10A produced Discovery
+Constitution V4.1 (commit 1ad113d). The framework now operates
+"classify first, investigate only if promoted" — the inverse of
+the prior "investigate first, classify later" pattern.
+
+**Ramses uniqueness formalized:** The Boss-directed Wave 10A
+objective concludes that Ramses-on-Arbitrum is a singular phenomenon,
+not a reproducible architectural property. See
+`docs/research/ramses_class_surface_characteristics.md` Ramses
+uniqueness section.
+
+### Next: Wave 10B — opportunity-class tracks under V4.1
+
+Per V4.1 (and Boss ruling 2026-06-05), the project formally retires
+the question:
+
+> "Can we find another Ramses?"
+
+and replaces it with:
+
+> "What opportunity classes remain underexplored?"
+
+Wave 10B will be organized around **opportunity classes**, not
+chains. Suggested tracks:
+
+| Track | Class | Focus |
+|-------|-------|-------|
+| A | Cross-DEX Arbitrage | Continued, but only on Tier 2+ surfaces — likely off-Arbitrum chains with mature non-Solidly DEXes |
+| B | Flash Loan Arbitrage | New lane: identify borrow sources + execution routes + repayment routes |
+| C | Triangular Arbitrage | ETH → USDC → ARB → ETH and similar across already-integrated venues |
+| D | Stablecoin Basis | Chronos exposed this lane (USDC.e variants); also USDC/DAI/USDe |
+| E | LSD Arbitrage | mETH / cmETH / stETH and similar derivatives |
+| F | Inventory Arbitrage | Already partially developed; needs persistence data from extended runs |
+| G | Liquidity Migration | USDC.e → native USDC patterns; protocol-decay flows (Chronos, SolidLizard data points) |
+| H | Directional / Scalping Research | Future phases; benefits from discovery data already collected |
+
+V4.1 RULE 6 holds throughout: capital LOCKED, broadcast LOCKED,
+proven winner UNTOUCHED until any new surface satisfies all
+execution gates.
+
+See `docs/specs/DISCOVERY_CONSTITUTION_V4_1.md` for the full V4.1
+framework.

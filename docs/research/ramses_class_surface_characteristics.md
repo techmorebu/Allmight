@@ -2,7 +2,7 @@
 
 **Status:** ACTIVE
 **Initialized:** 2026-06-02 (Boss directive, Wave 7 opening)
-**Current sample:** n = 11 classified surfaces
+**Current sample:** n = 13 classified surfaces (12 investigated under 4-class + 1 V4.1 Tier 1 catalog)
 **Target sample:** n = 15-20 classified surfaces before strong claims about a predictive model
 
 ---
@@ -14,7 +14,7 @@ Catalog every classified surface across all chains and DEX families to:
 1. Identify shared characteristics among `EXECUTION_READY` surfaces (n=1)
 2. Identify shared characteristics among `BEHAVIORALLY_DEAD` surfaces (n=2)
 3. Identify shared characteristics among `ECONOMICALLY_BLOCKED` surfaces (n=1)
-4. Identify shared characteristics among `STRUCTURALLY_DEAD` surfaces (n=7)
+4. Identify shared characteristics among `STRUCTURALLY_DEAD` surfaces (n=8)
 5. Detect predictive variables — which features correlate with viability?
 6. Build toward an empirically-grounded predictive model
 
@@ -166,6 +166,13 @@ generations — the original "modern chains skip V2" framing was wrong.
 The deeper pattern is that the Arbitrum Ramses V2 outcome does NOT
 replicate to forks regardless of chain age.
 
+**Wave 10A extension (intra-Arbitrum):** The intra-chain test confirmed
+the same result. Chronos (measured: $9.3K best depth) and SolidLizard
+(cataloged: ~$35K TVL) provide n=2 INSIDE Arbitrum evidence that Ramses
+is uniquely viable on its own chain. Pattern 5 (n=3 chain-external) and
+Pattern 6 (n=2 intra-Arbitrum) combine into a stronger claim formalized
+in the Ramses uniqueness analysis below.
+
 **Implication:** Lineage-based search (find another Ramses fork) is
 weakened substantially. Three external Ramses-family deployments
 across three chain generations all failed the depth gate before
@@ -214,22 +221,35 @@ n=3 substantially strengthens this — HIGH confidence finding.
 
 | Event | Probability |
 |-------|------------:|
-| Another EXECUTION_READY surface exists somewhere | ~65% (down from 75% pre-W9) |
-| ...via Ramses-family search | ~20% (down from prior; lineage downgraded) |
-| ...via non-Ramses search (Wave 10 direction) | ~50% (broader search) |
-| ...on Mantle (Wave 9 candidate) | ANSWERED — no |
-| Ramses is completely unique (Arbitrum-singular) | ~40% (up from 25%) |
-| Pattern 4 (Ramses candidate class) is correct framing | ~70% (unchanged; just untestable in practice) |
-| Pattern 5 (Ramses V2 outside Arbitrum doesn't replicate) holds | HIGH confidence (n=3) |
+| Another EXECUTION_READY surface exists somewhere | ~60% (down from 65% post-W9 — Wave 10A further narrowed the space) |
+| ...via Solidly-V2 lineage search (any chain) | ~5% (down from ~20%; Patterns 5+6 effectively close this lane) |
+| ...via Class A on non-tested architectures | ~30% (Liquidity Book, Maverick, Curve V2 untested) |
+| ...via Class B-H opportunity classes (Wave 10B direction) | ~50% (V4.1 opens new lanes) |
+| Ramses-on-Arbitrum is a singular phenomenon | HIGH confidence (Pattern 5 + Pattern 6 = n=5 confirming) |
+| Pattern 4 (Ramses candidate class) is correct framing | RETIRED under V4.1 (lineage downgraded to search prior; original question replaced) |
+| Pattern 5 (Ramses V2 outside Arbitrum doesn't replicate) holds | HIGH confidence (n=3 chain-external) |
+| Pattern 6 (Ramses unique INTRA-Arbitrum) holds | HIGH confidence (n=2 intra-chain, no confounders for SolidLizard) |
+| Stable-curve cross-wave artifact (n=4) is real | HIGH confidence (Sonic, Mantle ×2, Chronos) |
 
 Sonic was the first test of Pattern 4 — passed LINEAGE (✓), failed
 DEPTH gate (✗). Mantle was the second test (Wave 9) — passed LINEAGE (✓,
 authorized BUSL-1.1 fork), failed DEPTH gate (✗, max $804). Both failed
-before behavioral signature could be probed. Pattern 4 has now been
-TESTED FOR TESTABILITY three times (Sonic, Unichain, Mantle); three times
-the answer to 'can we even test it?' has been NO. Pattern 4 confidence
-remains uncertain BUT lineage-based search is now downgraded per Boss
-C9 ruling 2026-06-04.
+before behavioral signature could be probed.
+
+Wave 10A added two intra-Arbitrum tests: Chronos (measured $9.3K) and
+SolidLizard (Tier 1 catalog under V4.1, ~$35K TVL). Both also failed
+the depth gate. Pattern 4 has now been TESTED FOR TESTABILITY five
+times (Sonic, Unichain, Mantle, Chronos, SolidLizard); five times the
+answer to 'can we even test it?' has been NO.
+
+Pattern 4 confidence remains uncertain BUT lineage-based search was
+DOWNGRADED per Boss C9 ruling 2026-06-04, and the question itself was
+FORMALLY RETIRED under Discovery Constitution V4.1 (2026-06-05):
+
+> Retired: "Can we find another Ramses?"
+> Replaced with: "What opportunity classes remain underexplored?"
+
+See `docs/specs/DISCOVERY_CONSTITUTION_V4_1.md` for the full framework.
 
 ---
 
@@ -245,6 +265,108 @@ summary.
 
 ---
 
+
+
+---
+
+## Pattern 6 — Ramses unique INTRA-Arbitrum (Wave 10A finding, n=2)
+
+Established 2026-06-05 (Wave 10A closure).
+
+Both non-Ramses Solidly V2 forks on Arbitrum that have been catalogued
+or measured fail the depth gate decisively:
+
+| Surface | Best canonical-pair depth | Total TVL | Failure mode | Confounder |
+|---------|--------------------------:|----------:|--------------|------------|
+| Chronos V1 | $9,300 (measured) | ~$78,600 | "Failed to retain" ($230M peak → 99.97% collapse) | USDC.e migration |
+| **SolidLizard** | not measured (V4.1 Tier 1) | ~$35,100 | "Failed to launch" (never reached peak) | None |
+
+Two distinct failure modes — "failed to retain" and "failed to launch" — converge on the same conclusion. The SolidLizard case is particularly clean because it has NO confounder (no migration impact at this TVL scale).
+
+**Conclusion:** Within Arbitrum's Solidly V2 ecosystem, Ramses is the only viable EXECUTION_READY surface across the 2 measured/catalogued forks. Combined with Pattern 5 (n=3 chain-external), the project has 5 non-Ramses Solidly V2 deployments across 4 chains, ALL failing the depth gate.
+
+---
+
+## Stable-curve cross-wave observation — formalized (n=4)
+
+Established 2026-06-05 (Wave 10A closure). Boss-flagged across multiple waves.
+
+The "Solidly stable curve deployed for clearly-volatile pair" pattern is now recurring across four chains:
+
+| Chain | Surface | Stable pool | Depth | Quoted price | Real spot price |
+|-------|---------|-------------|------:|-------------:|---------------:|
+| Sonic | Shadow V2 wS/USDC | exists | $0 | misconfigured | $0.034 |
+| Mantle | Cleopatra Legacy WMNT/USDC | exists | $0 | $1,000 (anomalous) | $0.50-$0.93 |
+| Mantle | Cleopatra CL WMNT/USDC fee=100 | exists | $0 | (irrelevant; CL zombie) | $0.50-$0.93 |
+| Arbitrum | Chronos WETH/USDC.e | exists | $106 | $4,757 (anomalous) | $1,603 |
+
+**Pattern:** Solidly-family deployments create stable+volatile curves for every pair regardless of whether the pair is actually stable. The stable curve mathematics assume ~1:1 reserve ratios; volatile pairs (WMNT/USDC, WETH/USDC) violate this. The pools mechanically exist but their quoted prices are unreliable.
+
+**Implication:** Solidly stable curves should NEVER be probed when the underlying pair is non-parity. These pools exist as architectural artifacts of the dual-curve deployment template, not as economically meaningful surfaces.
+
+**Not yet observed:** A stable curve on a true parity pair (e.g., USDC/USDC.e, USDC/USDT) producing executable depth. Future Class D (Stablecoin Basis) research may identify such surfaces.
+
+---
+
+## Ramses-on-Arbitrum uniqueness — Wave 10A formal finding (2026-06-05)
+
+This section fulfills the Boss-directed Wave 10A objective: "After both are classified, write short Ramses uniqueness note."
+
+### The finding
+
+After 13 classified surfaces across 7 chains, the project's most robust framework-level finding is:
+
+> **Ramses-on-Arbitrum's EXECUTION_READY outcome is a SINGULAR phenomenon, not a reproducible architectural property.**
+
+### Evidence summary
+
+**Inter-chain evidence (Pattern 5, n=3 — investigated):**
+
+| Chain | Architecture | Best Solidly V2 depth | Verdict |
+|-------|--------------|----------------------:|---------|
+| Unichain | Velodrome V2 | $88 | STRUCTURALLY_DEAD |
+| Sonic | Shadow V2 | $79 | STRUCTURALLY_DEAD |
+| Mantle | Cleopatra Legacy | $804 | STRUCTURALLY_DEAD |
+
+**Intra-Arbitrum evidence (Pattern 6, n=2 — Wave 10A):**
+
+| Surface | Best canonical-pair depth | Failure mode | Confounders |
+|---------|--------------------------:|--------------|-------------|
+| Chronos V1 | $9,300 (measured) | Failed to retain ($230M → $78K) | USDC.e migration |
+| SolidLizard | not measured (Tier 1) | Failed to launch (~$35K TVL since inception) | None |
+
+**Combined:** Five non-Ramses Solidly V2 deployments across four chains and two failure modes. The closest peer (Chronos, intra-Arbitrum) fails by 750×. The farthest peers (Sonic, Unichain) fail by 88,000×.
+
+### Why Ramses is unique — testable hypotheses (NOT confirmed in this project)
+
+The data identifies Ramses-on-Arbitrum as singular but does not yet explain WHY. Possible contributing factors (in approximate order of CPT's confidence, none verified):
+
+1. **Vote-direction governance retained capital flywheel.** Ramses's ve(3,3) governance directing emissions toward high-fee pools that actually attracted LPs — vs Chronos's emissions being absorbed by short-term yield farmers who exited at peak.
+2. **GMX ecosystem integration.** Ramses had a meaningful liquidity relationship with GMX (the dominant Arbitrum perp protocol) which provided real fee revenue, not just emissions-driven volume.
+3. **Camelot synergy.** Ramses appears to have had cooperative liquidity routing relationships with Camelot's Algebra-based V3 pools — neither competing for the same LP base nor cannibalizing each other.
+4. **Earlier launch timing.** Ramses launched before Chronos and SolidLizard. Arbitrum's Solidly-V2 LP base may have been "locked in" to Ramses by the time competitors appeared.
+5. **Team execution / public-vs-anonymous.** Ramses had a semi-public team relationship; Chronos and SolidLizard were anonymous. Possible coordination or trust premium.
+
+None of these is confirmed. All are testable through Class G (Liquidity Migration) research and on-chain capital flow analysis. Wave 10B Class G track is the right place to investigate.
+
+### What this means for capital deployment
+
+**Capital deployment policy is UNCHANGED.** Arbitrum ETH/USDC × Ramses V2 remains EXECUTION_READY. Capital remains LOCKED. Broadcast remains LOCKED. The proven winner is UNTOUCHED.
+
+What this finding DOES change: **future discovery effort**. We no longer expect to find "another Ramses" by hunting Solidly V2 forks. Wave 10B should pursue opportunity-class tracks (Flash Loan, Stablecoin Basis, Liquidity Migration, etc.) per V4.1.
+
+### What this finding does NOT mean
+
+This finding does NOT mean:
+- Ramses will continue to produce EXECUTION_READY conditions forever (must continue monitoring; capital remains LOCKED until execution gates are re-verified for any new size)
+- No other EXECUTION_READY surfaces exist anywhere (other opportunity classes — Flash Loan, Triangular, LSD — remain unexplored)
+- Solidly V2 architecture is dead (we tested it for one specific opportunity class on five chains; it may still be viable for other classes)
+
+The finding is narrow and well-supported:
+
+> Within Class A (Cross-DEX Arbitrage) and within the Solidly V2 architecture family, Ramses-on-Arbitrum is the only viable EXECUTION_READY surface across the 5 measured/cataloged forks on 4 chains.
+
+---
 ## Cross-references
 
 - Project ledger: [../project_ledger.md](../project_ledger.md)

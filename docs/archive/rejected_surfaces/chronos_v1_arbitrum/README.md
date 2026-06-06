@@ -158,6 +158,34 @@ total                 12+ surfaces classified
 
 ---
 
+
+---
+
+## Opportunity-class tags (per V4.1 RULE 5)
+
+Added 2026-06-05 (Wave 10A close-out under V4.1). RULE 5 requires
+every archive entry to carry opportunity-class tags so future
+research phases can locate eligible candidates by class.
+
+| Class | Status | Reasoning |
+|-------|--------|-----------|
+| A. Cross-DEX Arbitrage | ❌ Closed | Best measured depth $9,300; gap from execution threshold is ~750× |
+| B. Flash Loan Arbitrage | ❌ Closed | No meaningful borrow/execution route at this depth |
+| C. Triangular Arbitrage | ❌ Closed | Insufficient depth across all paths |
+| D. Stablecoin Basis | ⚠ Limited | USDC.e vs native USDC migration is interesting but Chronos's $78K total TVL too small to be a useful basis-trade surface |
+| E. LSD Arbitrage | ❌ Closed | No LSD pairs |
+| F. Inventory Arbitrage | ❌ Closed | No persistent flow at $12 annualized fees |
+| G. Liquidity Migration | ✅ **OPEN** | "Failed-to-retain" historical study; USDC.e → native USDC migration impact analysis; capital flight from $230M peak is rich data |
+| H. Directional / Scalping Research | ⚠ Limited | Supporting evidence for Pattern 6 (Ramses unique INTRA-Arbitrum) |
+
+**Active opportunity classes for Chronos:** G (Liquidity Migration —
+USDC.e migration history + LP retention failure pattern).
+
+**Retrospective V4.1 tier assignment:** Tier 1 ($9,300 best canonical
+depth). Under V4.1 RULE 1, Chronos would have been catalog-only —
+the full integration + discovery cycle that produced this archive
+was performed pre-V4.1.
+
 ## Files in this archive
 
 - `README.md` — this file (verdict + reasoning + USDC.e confounder + framework contribution)

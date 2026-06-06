@@ -77,6 +77,40 @@ Each variable failing produces a distinct, diagnosable classification.
 - **Failure mode**: Stable-stable pair with structurally sticky pricing; counterpart depth issues prevented opportunity formation.
 - **Rejection archived**: `docs/archive/rejected_surfaces/`
 
+#### WETH/USDC.e — UniV3 × Chronos V1 (Wave 10A)
+- **Status**: `STRUCTURALLY_DEAD`
+- **Wave**: 10A (first comparator in intra-Arbitrum Solidly V2 hypothesis test)
+- **Confidence**: HIGH (Boss C9 ruling 2026-06-05)
+- **Best depth**: $9,300 (WETH/USDC.e volatile) vs Ramses ~$7M = ~750× gap
+- **USDC.e confounder**: noted in archive — Chronos predates native USDC (launched April 2023, native USDC arrived June 2023); stablecoin migration may have contributed to failure-to-retain pattern alongside Ramses-specific weakness
+- **Stable pool**: $106 with anomalous $4,757 price quote (Solidly stable-curve math broken for non-parity pairs — recurring cross-wave observation, now n=4)
+- **Probe**: not run (depth gate failure prevents behavioral test)
+- **Archive**: [docs/archive/rejected_surfaces/chronos_v1_arbitrum/](archive/rejected_surfaces/chronos_v1_arbitrum/)
+- **V4.1 retrospective tier**: 1 (depth $9.3K in Tier 1 band $1K-$100K; under V4.1 would have been catalog-only)
+- **Opportunity classes active**: G (Liquidity Migration — USDC.e → native USDC history)
+
+#### SolidLizard — V4.1 Tier 1 Catalog (Wave 10A)
+- **Status**: `TIER_1_CATALOG` (V4.1 RULE 1; first surface processed start-to-finish under V4.1)
+- **Wave**: 10A (second comparator in intra-Arbitrum Solidly V2 hypothesis test)
+- **Confidence**: HIGH (Boss C9 ruling 2026-06-05; public-metric pre-screen sufficient at Tier 1)
+- **Total TVL**: ~$35,100 (DefiLlama)
+- **Tier**: 1 ($1K-$100K range)
+- **Investigation status**: NO INTEGRATION · NO DISCOVERY · NO PROBE (per V4.1 RULE 1)
+- **Failure mode**: "Failed to launch" (never reached peak; ~$35K TVL since January 2023 inception)
+- **Confounders**: NONE (unlike Chronos, no USDC.e migration impact at this TVL scale)
+- **Factory address**: `0x734d84631f00dC0d3FCD18b04b6cf42BFd407074` (recorded from official docs; NOT verified on-chain per Tier 1 policy)
+- **Archive**: [docs/archive/rejected_surfaces/solidlizard_arbitrum/](archive/rejected_surfaces/solidlizard_arbitrum/)
+- **Opportunity classes active**: G (Liquidity Migration — failed-to-launch pattern study), H (limited, supporting evidence for Pattern 6)
+
+**Wave 10A combined finding — Pattern 6 emerging (n=2 intra-Arbitrum):**
+
+Both Chronos (measured) and SolidLizard (cataloged) provide intra-Arbitrum evidence that **Ramses's success is Ramses-specific**, not Arbitrum-specific, not Solidly-V2-architecture-specific, not era-specific. Two distinct failure modes ("failed to retain" + "failed to launch") on the same chain, same architecture, same era as Ramses converge on the same conclusion.
+
+Combined with Pattern 5 (n=3 chain-external: Sonic, Unichain, Mantle), the project now has **5 non-Ramses Solidly V2 deployments across 4 chains, all failing the depth gate**. The Ramses-on-Arbitrum outcome is a singular phenomenon, not a reproducible architectural property. See `docs/research/ramses_class_surface_characteristics.md` for the formal Ramses uniqueness analysis (Boss-directed Wave 10A objective).
+
+**Constitutional upgrade mid-wave:** Wave 10A produced Discovery Constitution V4.1 (commit 1ad113d), restructuring all future discovery work around the tier system (RULE 1) and opportunity classes (RULE 2). SolidLizard is the first surface processed start-to-finish under V4.1.
+
+
 ### Base
 
 #### ETH/USDC — UniswapV3 0.05% × Aerodrome Slipstream tickSpacing=100
@@ -287,18 +321,24 @@ docs(ledger-repair) for the regex-corruption incident that motivates
 this explicit-block convention.
 
 ```
-EXECUTION_READY        1   Arbitrum ETH/USDC × Ramses
-BEHAVIORALLY_DEAD      2   Base Slipstream + Optimism Velodrome Slipstream
-ECONOMICALLY_BLOCKED   1   Base ETH/USDC × Aero V2
-STRUCTURALLY_DEAD      7   4× Arbitrum + Unichain + Sonic + Mantle
-                     ─────
-n = 11 surfaces classified
+EXECUTION_READY            1   Arbitrum ETH/USDC × Ramses
+BEHAVIORALLY_DEAD          2   Base Slipstream + Optimism Velodrome Slipstream
+ECONOMICALLY_BLOCKED       1   Base ETH/USDC × Aero V2
+STRUCTURALLY_DEAD          8   5× Arbitrum + Unichain + Sonic + Mantle + Chronos
+                         ─────
+                          12   surfaces investigated under 4-class taxonomy
+
+TIER_1_CATALOG (V4.1)      1   SolidLizard (Arbitrum)
+                         ─────
+                            1   surface cataloged under V4.1 RULE 1
+
+n = 13 total surfaces classified (12 investigated + 1 V4.1 cataloged)
 ```
 
 **Target:** n = 15-20 classified surfaces before strong claims about the
 predictive model.
 
-**Last updated:** 2026-06-04 (post-Wave 9 closure)
+**Last updated:** 2026-06-05 (post-Wave 10A closure, V4.1 in force)
 
 ---
 
@@ -315,6 +355,7 @@ predictive model.
 | 7 | Unichain ETH/USDC × UniV3 × Velodrome V2 | `STRUCTURALLY_DEAD`; first **V2-present + depth-absent** counterexample; novel UniV3 fee-tier inversion logged | Unichain investigation |
 | 8 | Sonic wS/USDC × Shadow V3 × Shadow V2 | `STRUCTURALLY_DEAD`; Pattern 4 hypothesis test attempted, depth gate failure on V2 side ($79 vs Ramses $7M); Ramses-family CL lineage confirmed but counterpart liquidity absent; ramses_v3 venue type introduced | Sonic investigation |
 | 9 | Mantle WETH/USDC + WMNT/USDC × Cleopatra CL × Cleopatra Legacy | `STRUCTURALLY_DEAD`; second Pattern 4 hypothesis test on authorized Ramses fork (BUSL-1.1); depth gate failure (max $804 vs Ramses $7M); ABI surprise refined the framework (lineage doesn't predict ABI OR depth); Pattern 5 strengthens to n=3; Pattern 4 downgraded as primary search strategy | Mantle investigation |
+| 10A | Arbitrum intra-Solidly-V2 hypothesis test (Chronos + SolidLizard) | Chronos `STRUCTURALLY_DEAD` (depth $9.3K, USDC.e confounder); SolidLizard `TIER_1_CATALOG` under V4.1 (no integration, ~$35K TVL); Pattern 6 emerging (Ramses unique INTRA-Arbitrum); Discovery Constitution V4.1 locked mid-wave; Ramses uniqueness conclusion: singular phenomenon | Intra-Arbitrum hypothesis + V4.1 framework |
 
 ---
 
