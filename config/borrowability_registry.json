@@ -1,0 +1,104 @@
+{
+  "$schema": "borrowability_registry_v1",
+  "lastUpdated": "2026-08-26",
+  "verifiedAtBlock": 498454270,
+  "verifiedAtTimestamp": "2026-08-26T03:51:04.527Z",
+  "note": "Wave 10B c1 — flash-loan capital source registry per Opportunity Router Spec V1. Snapshot values are point-in-time and will drift; refresh cadence depends on Class B scanner needs (implementation deferred to wave10b c2). Fee schedules are protocol constants (Aave V3 flashLoan premium = 5 bps as of V3.2; Balancer V2 flashLoan = 0 bps). This registry is a scanner INPUT, not an opportunity TARGET — per spec, flash loans are a capital mechanism, not an opportunity source. The underlying arbitrage must work before financing. Assets marked with error records failed on-chain verification at snapshot time and should be re-checked before the Class B scanner uses them.",
+  "chains": {
+    "arbitrum": {
+      "chainId": 42161,
+      "sources": {
+        "aave_v3": {
+          "pool_address": "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
+          "pool_addresses_provider": "0xa97684ead0e402dC232d5A977953DF7ECBaB3CDb",
+          "flash_loan_fee_bps": 5,
+          "flash_loan_fee_note": "Aave V3 flashLoan premium is 5 bps (0.05%) as of V3.2; subject to governance vote",
+          "assets": {
+            "USDC": {
+              "token_address": "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+              "atoken_address": "0x724dc807b04555b71ed48a6896b6F41593b8C637",
+              "decimals": 6,
+              "available_liquidity_wei": "33284052152427",
+              "snapshot_note": "$33.28M",
+              "asset_note": "Native USDC (Circle, Arbitrum-native since June 2023)"
+            },
+            "USDCE": {
+              "token_address": "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
+              "atoken_address": "0x625E7708f30cA75bfd92586e17077590C60eb4cD",
+              "decimals": 6,
+              "available_liquidity_wei": "209269137928",
+              "snapshot_note": "$209.3K",
+              "asset_note": "Bridged USDC.e (legacy; predates native USDC)"
+            },
+            "USDT": {
+              "token_address": "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
+              "atoken_address": "0x6ab707Aca953eDAeFBc4fD23bA73294241490620",
+              "decimals": 6,
+              "available_liquidity_wei": "6086548692303",
+              "snapshot_note": "$6.09M",
+              "asset_note": "Tether USD"
+            },
+            "DAI": {
+              "token_address": "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+              "atoken_address": "0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE",
+              "decimals": 18,
+              "available_liquidity_wei": "1346337613889892317189234",
+              "snapshot_note": "$1.35M",
+              "asset_note": "MakerDAO DAI"
+            },
+            "WETH": {
+              "token_address": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+              "atoken_address": "0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8",
+              "decimals": 18,
+              "available_liquidity_wei": "19106640679708487975475",
+              "snapshot_note": "19,106.6407 WETH",
+              "asset_note": "Wrapped ETH (canonical Arbitrum WETH)"
+            }
+          }
+        },
+        "balancer_v2": {
+          "vault_address": "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
+          "flash_loan_fee_bps": 0,
+          "flash_loan_fee_note": "Balancer V2 Vault charges zero flashLoan premium; capacity limited by vault balance per asset",
+          "assets": {
+            "USDC": {
+              "token_address": "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+              "decimals": 6,
+              "available_liquidity_wei": "9322002973",
+              "snapshot_note": "$9.3K",
+              "asset_note": "Native USDC (Circle, Arbitrum-native since June 2023)"
+            },
+            "USDCE": {
+              "token_address": "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
+              "decimals": 6,
+              "available_liquidity_wei": "171126574691",
+              "snapshot_note": "$171.1K",
+              "asset_note": "Bridged USDC.e (legacy; predates native USDC)"
+            },
+            "USDT": {
+              "token_address": "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
+              "decimals": 6,
+              "available_liquidity_wei": "50400942954",
+              "snapshot_note": "$50.4K",
+              "asset_note": "Tether USD"
+            },
+            "DAI": {
+              "token_address": "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+              "decimals": 18,
+              "available_liquidity_wei": "42961019446111621416317",
+              "snapshot_note": "$43.0K",
+              "asset_note": "MakerDAO DAI"
+            },
+            "WETH": {
+              "token_address": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+              "decimals": 18,
+              "available_liquidity_wei": "91590640362452132295",
+              "snapshot_note": "91.5906 WETH",
+              "asset_note": "Wrapped ETH (canonical Arbitrum WETH)"
+            }
+          }
+        }
+      }
+    }
+  }
+}
