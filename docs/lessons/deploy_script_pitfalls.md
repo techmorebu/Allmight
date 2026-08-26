@@ -211,6 +211,102 @@ dedicated section with a clearly bounded format.
 
 ---
 
+## Pitfall 3: `set -o pipefail` + Pipe to `grep -q` (SIGPIPE False Negative)
+
+### Symptom
+
+A deploy script uses `set -o pipefail` and validates its output with a
+pattern like `producer | grep -q "pattern"`. Spot-checks report tokens
+as MISSING even when those tokens are visibly present in the artifact.
+The deploy exits before the commit stage, though everything it wrote
+to disk is correct.
+
+Concrete example from Wave 10B c3 (2026-06-05):
+
+    scanner_content=$(cat "${SCANNER_PATH}")
+    for token in SCHEMA_VERSION SIZE_LADDER_USD ...; do
+      if echo "${scanner_content}" | grep -qF "${token}"; then
+        echo "  OK: ${token}"
+      else
+        echo "  MISSING: ${token}"
+        exit 1
+      fi
+    done
+
+The first token happens to live late in the file, so `echo` flushes its
+entire buffer before `grep` matches. Subsequent tokens live earlier in
+the file — `grep -q` matches, exits, and `echo` receives SIGPIPE from
+the closed downstream pipe. Under `pipefail`, `echo`'s non-zero exit
+propagates through the pipeline, so `grep`'s SUCCESS gets reported as
+failure and the deploy dies with a false "MISSING" verdict.
+
+### Cause
+
+`grep -q` exits immediately on first match. Under `set -o pipefail`,
+the exit status of a pipeline is the exit status of the last command
+that returned non-zero, so if any upstream producer receives SIGPIPE
+after `grep -q` closes its stdin, the entire pipeline reports failure.
+
+This is orthogonal to WHERE the input comes from. Piping a captured
+variable through `echo` has the same SIGPIPE mechanic as piping `cat`
+or `git log` directly — the pipe is the problem, not the source.
+
+### Fix — Three options, in order of preference
+
+#### Option A (preferred): Direct-file grep
+
+    grep -qF "$pattern" "$file"
+
+No pipe, no SIGPIPE, no pipefail interaction. Works whenever the
+artifact being validated already exists on disk (which for deploy
+spot-checks is nearly always true — the file was just written).
+
+#### Option B (acceptable): Herestring
+
+    grep -qF "$pattern" <<< "$variable"
+
+Bash herestring feeds the variable into `grep`'s stdin as a file, not
+through a pipeline. Use when the value being checked is only in memory
+(e.g. `git log` output that shouldn't be re-invoked).
+
+#### Option C (use deliberately): Subshell pipefail opt-out
+
+    ( set +o pipefail; producer | grep -q "$pattern" )
+
+Explicitly disables `pipefail` for one specific check. Use only when
+the producer must be piped and neither A nor B fits. Document why in
+a comment next to the check.
+
+### Anti-pattern — NOT a fix
+
+    echo "$captured" | grep -q "$pattern"
+
+Capturing the producer's output to a variable and then piping the
+variable through `echo` does not solve the problem. The pipe itself
+triggers the SIGPIPE / pipefail interaction. If this pattern appears
+in a deploy script, replace it with Option A, B, or C.
+
+### History
+
+- 2026-06-04 — Wave 10B c2 deploy (`33e3830`). The `git log | grep -qE`
+  pattern was flagged during authoring and rewritten to capture-then-
+  pipe. The rewrite was believed to be a fix but retained the pipe;
+  the bug did not fire on c2 only because the checked token happened
+  to sit late enough in the log output for `echo` to flush before
+  `grep` matched.
+
+- 2026-06-05 — Wave 10B c3 deploy. The same capture-then-pipe pattern
+  was used for scanner file spot-checks. It fired on the second token
+  (`SIZE_LADDER_USD`, matched early in a 26 KB file), exiting the
+  deploy at stage 4 with the scanner correctly on disk but uncommitted.
+  Recovery deploy `deploy_w10b_c3_recovery.sh` used Option A (direct-
+  file grep) and landed as `fea4def`.
+
+The recurrence across two consecutive deploys is why this was promoted
+from an anti-pattern note into a governance lesson.
+
+---
+
 ## Operating procedure for future deploys
 
 1. **Commit messages:** Use indented blocks for code-like content, NEVER
@@ -227,6 +323,11 @@ dedicated section with a clearly bounded format.
 
 4. **Pre-commit sanity:** When in doubt, `cat` the modified file region
    to stdout and visually verify before `git add`/`git commit`.
+
+5. **Artifact validation:** When spot-checking a file the deploy just
+   wrote, prefer `grep -qF "$pat" "$file"` over any pipe-based pattern.
+   `producer | grep -q` under `set -o pipefail` can report false
+   negatives via the SIGPIPE mechanic documented in Pitfall 3.
 
 ---
 
