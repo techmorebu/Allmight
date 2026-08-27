@@ -3,7 +3,7 @@
 Authoritative record of every cross-venue arbitrage surface investigated under
 the AllMight constitutional framework. Updated after each Boss verdict.
 
-**Last updated**: Wave 5 close
+**Last updated**: Wave 10B close (post-primitive stack, pre-live-telemetry)
 **Maintained by**: Boss (ChatGPT) ruling, CPT (Claude) implementation
 **Capital state**: 0.042322364 ETH locked on Arbitrum; broadcast LOCKED throughout
 
@@ -338,7 +338,7 @@ n = 13 total surfaces classified (12 investigated + 1 V4.1 cataloged)
 **Target:** n = 15-20 classified surfaces before strong claims about the
 predictive model.
 
-**Last updated:** 2026-06-05 (post-Wave 10A closure, V4.1 in force)
+**Last updated:** 2026-06-05 (post-Wave 10B closure — primitive stack complete, no surfaces added, capital untouched)
 
 ---
 
@@ -356,6 +356,7 @@ predictive model.
 | 8 | Sonic wS/USDC × Shadow V3 × Shadow V2 | `STRUCTURALLY_DEAD`; Pattern 4 hypothesis test attempted, depth gate failure on V2 side ($79 vs Ramses $7M); Ramses-family CL lineage confirmed but counterpart liquidity absent; ramses_v3 venue type introduced | Sonic investigation |
 | 9 | Mantle WETH/USDC + WMNT/USDC × Cleopatra CL × Cleopatra Legacy | `STRUCTURALLY_DEAD`; second Pattern 4 hypothesis test on authorized Ramses fork (BUSL-1.1); depth gate failure (max $804 vs Ramses $7M); ABI surprise refined the framework (lineage doesn't predict ABI OR depth); Pattern 5 strengthens to n=3; Pattern 4 downgraded as primary search strategy | Mantle investigation |
 | 10A | Arbitrum intra-Solidly-V2 hypothesis test (Chronos + SolidLizard) | Chronos `STRUCTURALLY_DEAD` (depth $9.3K, USDC.e confounder); SolidLizard `TIER_1_CATALOG` under V4.1 (no integration, ~$35K TVL); Pattern 6 emerging (Ramses unique INTRA-Arbitrum); Discovery Constitution V4.1 locked mid-wave; Ramses uniqueness conclusion: singular phenomenon | Intra-Arbitrum hypothesis + V4.1 framework |
+| 10B | Opportunity-class primitives + persistence + router | 6 commits + 1 governance patch (Pitfall 3); NO new surfaces classified; delivered A/B financing overlay + C triangular + D stablecoin basis + cross-class persistence telemetry + unified opportunity router; every output constitutional (executionAuthorized=false); router capped at priority=WATCH under fixture inputs; sets up Wave 11 for live telemetry under objective 'replace synthetic confidence with empirical confidence without changing capital or execution posture' | Wave 10B primitive stack — see docs/waves/wave_10b_summary.md |
 
 ---
 
@@ -376,7 +377,7 @@ Every classification in this ledger meets these methodological standards:
 
 - **Capital wallet**: `0xd2eaa2B2E0c475e418B1682d321eD77558D1b5Fb` (Arbitrum executor)
 - **Capital amount**: 0.042322364 ETH
-- **Capital status**: Untouched across all 6 waves
+- **Capital status**: Untouched across 10 waves (Wave 10B added 6 primitive commits + 1 governance patch without capital touch)
 - **Execution**: Locked
 - **Broadcast**: Locked
 - **Armed surfaces**: Arbitrum ETH/USDC Ramses only (proven winner)

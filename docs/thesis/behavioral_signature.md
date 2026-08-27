@@ -649,3 +649,123 @@ execution gates.
 
 See `docs/specs/DISCOVERY_CONSTITUTION_V4_1.md` for the full V4.1
 framework.
+
+
+---
+
+## Wave 10B — Capturability as first-class dimension (2026-06-05)
+
+Wave 10B contained no new surface classifications. It built the
+analytical machinery for opportunity classes A, B, C, D under
+Discovery Constitution V4.1 and produced two thesis-level architectural
+findings.
+
+### Finding 1: Capturability is separate from instantaneous economics
+
+Prior thesis (Waves 1-10A) focused on the four viability variables:
+depth, tracking quality, spread distribution, fee floor. All four
+address instantaneous economics — is this surface economically viable
+at some observed moment?
+
+Wave 10B introduced a fifth axis: **capturability**. Given that a
+surface IS instantaneously economic, can that opportunity actually be
+captured given detection latency and execution mechanics? A 40 bp
+opportunity that survives one block is captured differently than a
+40 bp opportunity that survives thirty blocks. A candidate that shows
+up frequently but never crosses the executable threshold (Boss's
+predicted "showy but useless" diagnostic) is not the same opportunity
+as one that shows up rarely but reliably clears execution costs.
+
+Capturability is measured through five persistence telemetry primitives:
+
+1. **captureProfile** — descriptive taxonomy over observed economic
+   run length: UNKNOWN_WINDOW / SAME_BLOCK_ONLY / SHORT_WINDOW /
+   PERSISTENT_WINDOW.
+2. **candidateHitRate vs economicHitRate** — the delta identifies
+   surfaces showing frequent discrepancies with negligible executable
+   yield.
+3. **Latency survival buckets** — 0, +1, +2, +5, +10 blocks — describe
+   how detection-to-execution delay affects capture probability.
+4. **bindingConstraintTransitions** — whether a surface's bottleneck
+   is static (safe to pre-lock size) or dynamic (requires
+   revalidation).
+5. **UTC hour recurrence histogram** — captures event timing patterns
+   without prescribing execution windows.
+
+**Constitutional principle:** These metrics are DESCRIPTIVE, not
+prescriptive. The router uses them to reason, not to instruct. No
+threshold on any of these five collapses into an execution rule
+without explicit Boss ruling.
+
+### Finding 2: Atomicity and financing are orthogonal dimensions
+
+Prior thesis treated "flash-loan-viable" and "atomic-only" as
+overlapping concepts. Wave 10B (Boss C9 explicit correction) established
+these as ORTHOGONAL:
+
+- **Atomicity** = does the opportunity require single-transaction
+  capture? Answered by captureProfile + latency survival, NOT by
+  whether flash financing is available.
+- **Financing** = where does the capital come from? Answered by
+  inventoryCapable / flashEligible / flashBeneficial, NOT by whether
+  the opportunity is atomic.
+
+A SAME_BLOCK_ONLY opportunity requires atomic execution. It does NOT
+automatically require flash financing — if inventory is sufficient
+for the recommended size, atomic self-financed capture is a valid
+mode. Conversely, a PERSISTENT_WINDOW opportunity may still benefit
+from flash financing if capital-constrained, even though the surface
+doesn't demand atomicity.
+
+**Constitutional principle:** Class B (financing overlay) is not the
+same as "atomic execution." The router composes them independently:
+`opportunityClass = ["A", "B"]` means "cross-DEX arb, flash-financed."
+Nothing in that composition asserts atomicity — the captureProfile
+field is separate and independent.
+
+### Framework refinement implication
+
+The variable-necessity model (Wave 7 canonical) was:
+
+> Depth + Behavioral signature + Spread distribution + Fee floor
+> — all four must align for EXECUTION_READY.
+
+Wave 10B adds:
+
+> When the four variables align, EXECUTION_READY is contingent on
+> capturability being demonstrable through observed persistence data
+> and on the financing/inventory decision being economically justified
+> against that capturability profile.
+
+The four instantaneous variables classify a surface. The capturability
+axis + financing dimensions determine how that surface should be
+routed for execution planning. The distinction is not cosmetic — it
+enables the router to correctly SKIP surfaces whose fixture output
+LOOKS economic but whose empirical telemetry shows never actually
+clearing the executable threshold.
+
+### Machinery vs findings
+
+**Machinery:** the c5 aggregator and c6 router implement the
+capturability axis and financing orthogonality. Both run against
+deterministic fixture corpora and produce reproducible decisions.
+
+**Findings:** Wave 10B produced NO new empirical findings about real
+market surfaces. All six behavioral observations documented in the
+research notebook are ABOUT THE MACHINERY, not about real markets.
+
+Wave 11 (live telemetry wiring) will produce the first empirical
+findings under the capturability framework. The constitutional
+objective is:
+
+> "Replace synthetic confidence with empirical confidence without
+>  changing capital or execution posture."
+
+Capital, execution, and broadcast remain LOCKED throughout Wave 10B
+and will remain LOCKED throughout Wave 11.
+
+### Cross-reference
+
+- Full architectural summary: [`docs/waves/wave_10b_summary.md`](../waves/wave_10b_summary.md)
+- Router implementation: `scripts/router/opportunity_router.js`
+- Research notebook (Wave 10B machinery findings): [`docs/research/ramses_class_surface_characteristics.md`](../research/ramses_class_surface_characteristics.md)
