@@ -15,7 +15,7 @@
 #    5. On-chain state — executor bytecode, pool depth, wallet ETH, gas
 #    6. Supervisor health — recent stale_exit / restart cadence
 #    7. Metrics reconciliation — signal counts agree across views
-#    8. Drift vs PROJECT_STATE_CURRENT.md — claims match reality
+#    8. Drift vs canonical state — ledger + wave summary claims match reality
 #    9. Phase/disarmed posture — flags + canonical C9 set
 #   10. Output routing — Discord channels reachable
 #
@@ -374,32 +374,67 @@ if [ -s "$SESS_DIR/activator.jsonl" ]; then
 fi
 
 # ════════════════════════════════════════════════════════════════════════════
-# 8. DRIFT vs PROJECT_STATE_CURRENT.md
+# 8. DRIFT vs canonical state (ledger + wave summary + guardrails)
 # ════════════════════════════════════════════════════════════════════════════
-H1 "8. Drift vs PROJECT_STATE_CURRENT.md"
+H1 "8. Drift vs canonical state (ledger + wave summary + guardrails)"
 
-PSC=docs/current/PROJECT_STATE_CURRENT.md
-if [ -f "$PSC" ]; then
-  H2 "executor address claim"
-  CLAIMED=$(grep -oE '0x[a-fA-F0-9]{40}' "$PSC" | head -1)
-  CURRENT=$(grep -E '^EXECUTOR_ADDRESS=' .env | cut -d= -f2)
-  info "  PROJECT_STATE: $CLAIMED"
-  info "  .env:          $CURRENT"
-  if [ "$CLAIMED" = "$CURRENT" ] || [[ "$(cat $PSC)" == *"$CURRENT"* ]]; then
-    green "executor address consistent"
+# Canonical state sources (post-W11 cleanup):
+#   Research/project state:
+#     - docs/project_ledger.md
+#     - docs/waves/wave_10b_summary.md
+#   Constitutional posture:
+#     - docs/current/SYSTEM_GUARDRAILS.md
+#     - docs/current/EXECUTION_GATING_POLICY.md
+LEDGER=docs/project_ledger.md
+WAVE_SUMMARY=docs/waves/wave_10b_summary.md
+GUARDRAILS=docs/current/SYSTEM_GUARDRAILS.md
+EXEC_GATING=docs/current/EXECUTION_GATING_POLICY.md
+
+H2 "canonical state sources present"
+missing_canonical=0
+for f in "$LEDGER" "$WAVE_SUMMARY" "$GUARDRAILS" "$EXEC_GATING"; do
+  if [ -f "$f" ]; then
+    info "  present: $f"
   else
-    yellow "PROJECT_STATE may not yet reference deployed address"
+    red "MISSING canonical state source: $f"
+    missing_canonical=$((missing_canonical + 1))
   fi
+done
+if [ $missing_canonical -eq 0 ]; then
+  green "all 4 canonical state sources present"
+fi
 
-  H2 "primary surface claim"
-  if grep -q "ETH/USDC Ramses" "$PSC" 2>/dev/null; then
-    info "  PROJECT_STATE claims ETH/USDC Ramses as primary"
+H2 "executor address claim (vs ledger)"
+if [ -f "$LEDGER" ]; then
+  CLAIMED=$(grep -oE '0x[a-fA-F0-9]{40}' "$LEDGER" | head -1)
+  CURRENT=$(grep -E '^EXECUTOR_ADDRESS=' .env 2>/dev/null | cut -d= -f2)
+  info "  ledger:  $CLAIMED"
+  info "  .env:    $CURRENT"
+  if [ -n "$CLAIMED" ] && [ -n "$CURRENT" ] && \
+     ( [ "$CLAIMED" = "$CURRENT" ] || grep -qF "$CURRENT" "$LEDGER" ); then
+    green "executor address consistent between ledger and .env"
+  else
+    yellow "ledger may not yet reference the currently deployed .env address"
+  fi
+fi
+
+H2 "primary surface claim (vs wave summary)"
+if [ -f "$WAVE_SUMMARY" ]; then
+  if grep -q "Ramses" "$WAVE_SUMMARY"; then
+    info "  wave summary references Ramses"
     if [ "${PAIRS[activator]:-?}" = "ETH/USDC" ]; then
-      green "activator targets matching pair"
+      green "activator targets matching pair (ETH/USDC)"
     else
-      red "DRIFT — PROJECT_STATE says ETH/USDC, activator on ${PAIRS[activator]:-?}"
+      red "DRIFT — wave summary references Ramses ETH/USDC; activator on ${PAIRS[activator]:-?}"
     fi
   fi
+fi
+
+H2 "constitutional posture (guardrails + gating)"
+if [ -f "$GUARDRAILS" ] && [ -f "$EXEC_GATING" ]; then
+  green "guardrails + execution gating present"
+else
+  red "constitutional posture docs incomplete — guardrails or gating missing"
 fi
 
 # ════════════════════════════════════════════════════════════════════════════

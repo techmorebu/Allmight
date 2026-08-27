@@ -1,8 +1,0 @@
-ID: APPX-PHASE8-AUDIT-SINGLE-SINK-01
-Title: Phase 8 Audit Consolidation — Single Sink
-Applies To: Phase 8 onward
-Status: CANONICAL
-Notes:
-- Establishes outputs/audit/allmight_audit.jsonl as the canonical audit sink
-- Enforces append-only JSONL with schema stamping
-- Logging failures must never enable live execution

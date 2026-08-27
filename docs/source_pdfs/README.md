@@ -1,15 +1,22 @@
-# Phase 0 Source PDFs (Authoritative Inputs)
+# Phase 0 Source PDFs
 
-Place the Phase 0 specification PDFs here so Phase 2 extraction is repeatable and version-controlled.
+## Runtime constants (retained)
 
-Expected filenames (preferred):
-- `Phase 0 workbook.pdf`
-- `Phase 0 Blueprint — Final Edition.pdf`
+Current runtime regime constants live at:
+- `scripts/regime/phase0_regime_constants.json` — authoritative constants
+  file consumed by the regime detection subsystem
 
-If your filenames differ, update `scripts/regime/extract_phase0_regime_spec.py` accordingly.
+## Historical extraction (archived)
 
-Why this exists:
-- Phase 2 regime thresholds must be Excel-faithful to Tabs 40–45.
-- We extract labels, thresholds, and rule text from these PDFs to produce:
-  - `docs/specs/PHASE-2-REGIME-EXTRACTION.md`
-  - `scripts/regime/phase0_regime_constants.json`
+The Phase 0 specification PDFs and the extraction workflow that produced
+labels, thresholds, and rule text from Tabs 40–45 (`Phase 0 workbook.pdf`,
+`Phase 0 Blueprint — Final Edition.pdf`, `scripts/regime/extract_phase0_regime_spec.py`,
+and the extraction spec doc) are archived as historical evidence in the
+external `W11_CLEANUP_BUNDLE` historical archive. They are preserved for
+reproducibility of how the current constants were derived, but they are
+not part of the active runtime.
+
+If the constants file needs to be regenerated or amended, restore the
+extraction toolchain from the historical archive as a deliberate,
+scoped operation — do not re-add it silently.
+

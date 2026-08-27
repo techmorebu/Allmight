@@ -13,7 +13,8 @@
 //   # Arbitrum dry-run (reads live gas prices, NO broadcast):
 //   npx hardhat run scripts/execution/deploy_ramses_executor.js --network arbitrum
 //
-// LIVE DEPLOYMENT: NOT ENABLED. See EXECUTOR_READINESS.md.
+// LIVE DEPLOYMENT: NOT ENABLED. See docs/current/EXECUTION_GATING_POLICY.md
+// and docs/current/LIVE_READINESS_GATE.md.
 // ════════════════════════════════════════════════════════════════════════════
 
 const { ethers } = require("hardhat");
@@ -112,7 +113,8 @@ async function main() {
     console.log("  DRY-RUN COMPLETE — no transaction broadcast.");
     console.log("  LIVE_DEPLOY_APPROVED is not set.");
     console.log("  Boss approval required before live deployment.");
-    console.log("  See docs/current/EXECUTOR_READINESS.md.");
+    console.log("  See docs/current/EXECUTION_GATING_POLICY.md");
+    console.log("  and docs/current/LIVE_READINESS_GATE.md.");
     console.log("═══════════════════════════════════════════════════════");
     return;
   }

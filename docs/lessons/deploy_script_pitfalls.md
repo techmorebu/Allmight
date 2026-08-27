@@ -299,8 +299,9 @@ in a deploy script, replace it with Option A, B, or C.
   was used for scanner file spot-checks. It fired on the second token
   (`SIZE_LADDER_USD`, matched early in a 26 KB file), exiting the
   deploy at stage 4 with the scanner correctly on disk but uncommitted.
-  Recovery deploy `deploy_w10b_c3_recovery.sh` used Option A (direct-
-  file grep) and landed as `fea4def`.
+  Recovery used direct-file grep (Option A) and landed as `fea4def`.
+  The historical recovery deploy script is preserved in the external
+  W11_CLEANUP_BUNDLE historical archive.
 
 The recurrence across two consecutive deploys is why this was promoted
 from an anti-pattern note into a governance lesson.

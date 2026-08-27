@@ -155,8 +155,10 @@ not hours.
 
 ## Wave 4 Commit 4 deploy post-mortem (two anchor failures)
 
-The deploy_commit4.sh script failed twice before succeeding. Both
-failures are recorded here for future-proofing.
+The Wave 4 commit-4 deploy script failed twice before succeeding.
+Both failures are recorded here for future-proofing. The historical
+deploy script itself is preserved in the external W11_CLEANUP_BUNDLE
+historical archive.
 
 ### Failure 1 — multi-line anchor with unaccounted blank line
 

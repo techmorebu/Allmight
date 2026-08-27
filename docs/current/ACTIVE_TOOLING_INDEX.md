@@ -80,13 +80,9 @@
 
 | File | Purpose | Status |
 |------|---------|--------|
-| `docs/current/PROJECT_STATE_CURRENT.md` | Proven vs not proven, unlock conditions | ✅ NEW (2026-05-03) |
-| `docs/current/NEXT_ACTIONS.md` | Ordered CPT task queue | ✅ NEW (2026-05-03) |
 | `docs/current/SYSTEM_GUARDRAILS.md` | Rules CPT cannot break | ✅ NEW (2026-05-03) |
-| `docs/current/HANDOFF_BLOCK_CPT.txt` | Paste into new chat to prevent regression | ✅ NEW (2026-05-03) |
 | `docs/current/ACTIVE_TOOLING_INDEX.md` | This file | ✅ UPDATED (2026-05-03) |
 | `docs/current/LIVE_READINESS_GATE.md` | Deploy checklist + blockers | ✅ ACTIVE |
-| `docs/current/STACK_STATE.md` | Process stack confirmed working state | ✅ ACTIVE |
 
 ---
 

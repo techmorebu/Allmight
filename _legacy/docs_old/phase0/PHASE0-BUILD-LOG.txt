@@ -1,6 +1,0 @@
-PHASE 0 BUILD LOG (ordered)
-1) CSV import illegal quoting -> switched to XLSX export or corrected CSV quoting.
-2) "argument must be a range" in Shared_Inputs window calcs -> replaced INDEX():INDEX() with INDEX+SEQUENCE on FILTER arrays.
-3) "MULTIPLY expects numbers but 'UP' is text" in Pressure -> removed TrendSimple from numeric math; ensured J2/N2 use numeric fields only.
-4) AvgVol_20 + VolSpikeFlag N/A -> verified volume mapping + used SEQUENCE window formulas + guards.
-5) SwingLow_20 missing -> inserted column + added formula.

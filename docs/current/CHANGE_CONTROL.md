@@ -117,7 +117,8 @@ PROCESS                   - CPT proposes with Boss ruling request including
                           - CPT implements behind a feature flag where possible
                           - new dry-run evidence required (full 5/5 cycle)
                           - 1+ rehearsal pass on the post-change behavior
-                          - update SYSTEM_STATE.md to reflect new policy
+                          - update docs/project_ledger.md and docs/waves/wave_10b_summary.md
+                            to reflect the new policy
 INVALIDATES               all prior rehearsal evidence
                           all prior C9 sessions (must re-establish on new code)
                           existing live-trade authorizations (Boss G3 must
@@ -233,7 +234,11 @@ quiet-market deadlock. Ruling: Boss 2026-05-07 (B2)."
 
 5. Validation runs per the ruling's plan.
 
-6. Update SYSTEM_STATE.md to reflect the new authoritative state.
+6. Update the canonical state authorities to reflect the new state:
+   - `docs/project_ledger.md` for surface classifications + wave history
+   - `docs/waves/wave_10b_summary.md` for architectural summary
+   - Operational state remains governed by `docs/current/OPERATOR_RUNBOOK.md`
+     and `docs/current/SYSTEM_GUARDRAILS.md`.
 
 7. Commit references the Boss ruling explicitly.
 
@@ -292,9 +297,10 @@ Before any commit                  state the tier in the commit message
 
 Before any rollback                document why; tag the broken state
 
-Weekly                             review docs/current/SYSTEM_STATE.md
-                                    against actual runtime; update if drift
-                                    has occurred (which itself is a T0 patch)
+Weekly                             review docs/project_ledger.md and
+                                    docs/waves/wave_10b_summary.md against
+                                    actual runtime; update if drift has
+                                    occurred (which itself is a T0 patch)
 
 Monthly                            review INCIDENT_LOG.md for patterns;
                                     if the same tier of issue recurs,
@@ -307,7 +313,11 @@ Monthly                            review INCIDENT_LOG.md for patterns;
 
 - `ARCHITECTURE_LOCK.md` — what the system IS and IS NOT
 - `CANONICAL_SURFACE.md` — surface authority
-- `SYSTEM_STATE.md` — runtime authority
+- Runtime authority is the combination of:
+  - `docs/project_ledger.md` — research/project state (surface ledger)
+  - `docs/waves/wave_10b_summary.md` — architectural summary
+  - `docs/current/OPERATOR_RUNBOOK.md` — operational reference
+  - `docs/current/SYSTEM_GUARDRAILS.md` — binding invariants
 - `INCIDENT_LOG.md` — historical record of bugs, drifts, rollbacks
 - `OPERATOR_RUNBOOK.md` — operational procedures including emergency disarm
 

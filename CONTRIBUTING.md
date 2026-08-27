@@ -46,6 +46,7 @@ For python-only blocks:
 wl-paste --no-newline | python
 ```
 
-Full policy lives here:
-- `docs/governance/PHASE0_WAYLAND_EXECUTION_RULES.txt`
+Full policy lives in the current governance docs:
+- `docs/current/SYSTEM_GUARDRAILS.md` — binding invariants
+- `docs/current/ARCHITECTURE_LOCK.md` — architectural invariants
 
