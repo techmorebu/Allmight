@@ -85,11 +85,13 @@ cleanup();
 console.log('─── Wave 11 c1 acceptance tests ───');
 
 // ── A1: positive observation stages + promotes ──
+// c1.1: compact session dirs, real activator record shape (two rows per block)
 {
-  const sess = 'session_2099-01-01T00-00-00Z';
+  const sess = 'session_20990101_0000';
   makeFakeSession(sess, [
-    { blockNumber: 1, timestamp: 1000, uniswap_v3: { sqrtPriceX96: '100' }, ramses_v2: { sqrtPriceX96: '110' }, venue: 'ramses_v2' },
-    { blockNumber: 2, timestamp: 1004, uniswap_v3: { sqrtPriceX96: '101' }, ramses_v2: { sqrtPriceX96: '105' }, venue: 'ramses_v2' }
+    // Block 1: two rows (activator writes both venues per successful pool read)
+    { ts: '2099-01-01T00:00:16.000Z', blockNumber: 1, sourceType: 'activator_tick', venue: 'uniswap_v3', price: 3000, chain: 'arbitrum', pair: 'ETH/USDC' },
+    { ts: '2099-01-01T00:00:16.000Z', blockNumber: 1, sourceType: 'activator_tick', venue: 'ramses_v2',  price: 3010, chain: 'arbitrum', pair: 'ETH/USDC' }
   ]);
   const runId = 'OBS_test_A1_' + crypto.randomBytes(2).toString('hex');
   const res = runNode(OBSERVER, ['--source', `logs/sessions/${sess}/price_replay.jsonl`, '--observer-run-id', runId]);
@@ -109,18 +111,20 @@ console.log('─── Wave 11 c1 acceptance tests ───');
 }
 
 // ── A2: negative-outcome observation still stages + promotes (content-neutral) ──
+// c1.1: use compact session + real record shape.
+// "Unfavorable" here = the two venue prices happen to be identical.
+// The observer/promoter must NOT reject on economic outcome — schema/integrity only.
 {
-  const sess = 'session_2099-02-02T00-00-00Z';
-  // Records where uniswap_v3 == ramses_v2 (no spread). Content-neutral validation
-  // MUST NOT reject these.
+  const sess = 'session_20990202_0000';
   makeFakeSession(sess, [
-    { blockNumber: 10, timestamp: 2000, uniswap_v3: { sqrtPriceX96: '100' }, ramses_v2: { sqrtPriceX96: '100' }, venue: 'ramses_v2' }
+    { ts: '2099-02-02T00:00:04.000Z', blockNumber: 10, sourceType: 'activator_tick', venue: 'uniswap_v3', price: 3000, chain: 'arbitrum', pair: 'ETH/USDC' },
+    { ts: '2099-02-02T00:00:04.000Z', blockNumber: 10, sourceType: 'activator_tick', venue: 'ramses_v2',  price: 3000, chain: 'arbitrum', pair: 'ETH/USDC' }
   ]);
   const runId = 'OBS_test_A2_' + crypto.randomBytes(2).toString('hex');
   const res = runNode(OBSERVER, ['--source', `logs/sessions/${sess}/price_replay.jsonl`, '--observer-run-id', runId]);
   const staged = path.join(REPO_ROOT, 'data', 'telemetry_sessions', runId, 'observations_staged.jsonl');
   const ok = res.status === 0 && fs.existsSync(staged) &&
-             fs.readFileSync(staged, 'utf8').split('\n').filter(Boolean).length === 1;
+             fs.readFileSync(staged, 'utf8').split('\n').filter(Boolean).length === 2;
   check('A2 unfavorable-outcome record still stages (content-neutral)', ok);
   if (ok) {
     const promRes = runNode(PROMOTER, ['--observer-run-id', runId, '--canonical-path', 'data/observations_test.jsonl']);
@@ -129,9 +133,9 @@ console.log('─── Wave 11 c1 acceptance tests ───');
 }
 
 // ── A3: invalid schema/integrity rejected deterministically ──
+// c1.1: 'garbage' has no blockNumber/ts/sourceType → still rejects.
 {
-  const sess = 'session_2099-03-03T00-00-00Z';
-  // Missing required fields (no blockNumber, no timestamp)
+  const sess = 'session_20990303_0000';
   makeFakeSession(sess, [{ garbage: 'yes' }]);
   const runId = 'OBS_test_A3_' + crypto.randomBytes(2).toString('hex');
   const res = runNode(OBSERVER, ['--source', `logs/sessions/${sess}/price_replay.jsonl`, '--observer-run-id', runId]);
@@ -151,7 +155,7 @@ console.log('─── Wave 11 c1 acceptance tests ───');
   // Point observer at a NON-session-dir path
   const bogusDir = path.join(REPO_ROOT, 'data', 'telemetry_sessions', '.test_tmp', 'bogus');
   fs.mkdirSync(bogusDir, { recursive: true });
-  fs.writeFileSync(path.join(bogusDir, 'price_replay.jsonl'), '{"blockNumber":1,"timestamp":1}\n');
+  fs.writeFileSync(path.join(bogusDir, 'price_replay.jsonl'), '{"ts":"2099-04-04T00:00:00.000Z","blockNumber":1,"sourceType":"activator_tick"}\n');
   const runId = 'OBS_test_A4_' + crypto.randomBytes(2).toString('hex');
   const res = runNode(OBSERVER, ['--source', 'data/telemetry_sessions/.test_tmp/bogus/price_replay.jsonl', '--observer-run-id', runId]);
   check('A4 observer refuses non-session-dir path (exit 2)', res.status === 2);
@@ -160,8 +164,8 @@ console.log('─── Wave 11 c1 acceptance tests ───');
 // ── A5: no scheduler introduced — observer exits cleanly after source idle ──
 {
   // Reuse an A1-shape session; observer should stop within reasonable time (no daemon)
-  const sess = 'session_2099-05-05T00-00-00Z';
-  makeFakeSession(sess, [{ blockNumber: 1, timestamp: 1000 }]);
+  const sess = 'session_20990505_0000';
+  makeFakeSession(sess, [{ ts: '2099-05-05T00:00:00.000Z', blockNumber: 1, sourceType: 'activator_tick', venue: 'uniswap_v3', price: 3000, chain: 'arbitrum', pair: 'ETH/USDC' }]);
   const runId = 'OBS_test_A5_' + crypto.randomBytes(2).toString('hex');
   const start = Date.now();
   const res = runNode(OBSERVER, ['--source', `logs/sessions/${sess}/price_replay.jsonl`, '--observer-run-id', runId]);
@@ -283,6 +287,28 @@ console.log('─── Wave 11 c1 acceptance tests ───');
   const res = runNode(BACKFILL, []);
   check('A14 retrospective_backfill: hard-disabled constant present', disabled);
   check('A14 retrospective_backfill: exits 0 without doing work', res.status === 0);
+}
+
+// ── A15 (c1.1): bad sourceType is deterministically rejected ──
+{
+  const sess = 'session_20991515_0000';
+  makeFakeSession(sess, [
+    // Structurally valid but sourceType is WRONG — this could be a
+    // generate_price_replay.js output masquerading as LIVE. Observer must
+    // reject via the sourceType guard, NOT allow it through to canonical.
+    { ts: '2099-12-15T00:00:00.000Z', blockNumber: 42, sourceType: 'synthetic_replay', venue: 'uniswap_v3', price: 3000, chain: 'arbitrum', pair: 'ETH/USDC' }
+  ]);
+  const runId = 'OBS_test_A15_' + crypto.randomBytes(2).toString('hex');
+  const res = runNode(OBSERVER, ['--source', `logs/sessions/${sess}/price_replay.jsonl`, '--observer-run-id', runId]);
+  const staged = path.join(REPO_ROOT, 'data', 'telemetry_sessions', runId, 'observations_staged.jsonl');
+  const lines = fs.existsSync(staged) ? fs.readFileSync(staged, 'utf8').split('\n').filter(Boolean) : [];
+  const isRejection = lines.length === 1 && (() => {
+    try {
+      const rec = JSON.parse(lines[0]);
+      return rec.rejection === true && String(rec.rejection_reason || '').includes('sourceType mismatch');
+    } catch { return false; }
+  })();
+  check('A15 (c1.1) wrong sourceType rejected with sourceType-mismatch reason', isRejection);
 }
 
 // ── summary ──

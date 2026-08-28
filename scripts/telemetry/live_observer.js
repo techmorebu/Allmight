@@ -46,16 +46,19 @@ const OBSERVER_SCHEMA_VERSION = '1';
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 
 // ── Boss C9 provenance regex (LIVE_TAIL only for c1) ────────────────────────
+// c1.1 patch (Boss C9 2026-08-28): compact activator format
+//   session_YYYYMMDD_HHMM   NOT ISO   NOT with seconds
 const LIVE_SOURCE_PATH_RE =
-  /^logs\/sessions\/session_(\d{4})-(\d{2})-(\d{2})T(\d{2})-(\d{2})-(\d{2})Z\/price_replay\.jsonl$/;
+  /^logs\/sessions\/session_(\d{8})_(\d{4})\/price_replay\.jsonl$/;
 const SESSION_DIR_RE =
-  /^session_(\d{4})-(\d{2})-(\d{2})T(\d{2})-(\d{2})-(\d{2})Z$/;
+  /^session_(\d{8})_(\d{4})$/;
 
 // ── minimum required activator-record shape ─────────────────────────────────
 // Content-neutral: we check FIELD PRESENCE, not value acceptability.
 // Records with unfavorable outcomes still pass and are staged.
-const REQUIRED_ACTIVATOR_FIELDS = ['blockNumber', 'timestamp'];
-const RECOMMENDED_ACTIVATOR_FIELDS = ['uniswap_v3', 'ramses_v2', 'venue', 'sqrtPriceX96'];
+const REQUIRED_ACTIVATOR_FIELDS = ['blockNumber', 'ts', 'sourceType'];
+const RECOMMENDED_ACTIVATOR_FIELDS = ['venue', 'price', 'chain', 'pair'];
+const EXPECTED_ACTIVATOR_SOURCE_TYPE = 'activator_tick';
 
 // ── argument parsing (minimal, no dependencies) ─────────────────────────────
 function parseArgs(argv) {
@@ -141,6 +144,12 @@ function validateActivatorRecord(record) {
     if (!(f in record)) {
       reasons.push(`missing required field: ${f}`);
     }
+  }
+  // FIX D (c1.1): sourceType MUST equal 'activator_tick' — additional
+  // provenance guard. Any other value (including a mistyped variant)
+  // means the record was not written by the LIVE activator loop.
+  if ('sourceType' in record && record.sourceType !== EXPECTED_ACTIVATOR_SOURCE_TYPE) {
+    reasons.push(`sourceType mismatch: expected '${EXPECTED_ACTIVATOR_SOURCE_TYPE}', got '${record.sourceType}'`);
   }
   // Recommended fields: presence NOT enforced; noted in observationNotes
   return { ok: reasons.length === 0, reasons };
