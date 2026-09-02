@@ -29,6 +29,7 @@
 'use strict';
 
 const fs   = require('fs');
+const { dryAdmissionFilter } = require('../../utils/admission_gate');
 const path = require('path');
 // Load .env before reading any env vars — 'npx hardhat run' does not auto-load dotenv.
 // This ensures ARBITRUM_MAINNET_RPC_URL_* are available even without shell export.
@@ -206,8 +207,14 @@ async function main() {
   // ── Load v2 survivors ─────────────────────────────────────────────────────
   const v2Ledger   = readJsonl(path.join(sessionDir, 'shadow_execution_ledger_v2.jsonl'));
   // Sort by spread descending — top signals first (highest spread = most likely to execute)
-  let survivors = v2Ledger
-    .filter(r => r.realisticSurvives === true)
+  // ── S4: SHARED EXECUTION-MODEL ADMISSION (Boss C9) ─────────────────────
+  // Identical semantics and identical shared filter as S3 — one implementation,
+  // not a second copy. Applied BEFORE the sort so a non-admitted candidate
+  // cannot occupy a top-N slot, and before any signer or executor interaction.
+  // realisticSurvives stays NECESSARY; it is no longer SUFFICIENT.
+  // Legacy/unversioned rows remain DIAGNOSTIC_ONLY, so this is safe pre-S0.
+  // Subtractive only; the source v2 ledger is never rewritten.
+  let survivors = dryAdmissionFilter(v2Ledger.filter(r => r.realisticSurvives === true))
     .sort((a, b) => (b.spreadBps ?? 0) - (a.spreadBps ?? 0));
 
   // SIGNAL_LIMIT env var — for trusted small-batch testing before full run

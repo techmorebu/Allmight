@@ -34,6 +34,7 @@
 // or source .env before running directly
 
 const fs   = require('fs');
+const { dryAdmissionFilter } = require('../../utils/admission_gate');
 const path = require('path');
 const { ethers } = require('ethers');
 
@@ -216,7 +217,17 @@ async function main() {
 
   // Load candidate signals from v2 ledger (realistic survivors only)
   const v2Ledger   = readJsonl(path.join(sessionDir, 'shadow_execution_ledger_v2.jsonl'));
-  const survivors  = v2Ledger.filter(r => r.realisticSurvives === true);
+  // ── S3: SHARED EXECUTION-MODEL ADMISSION (Boss C9) ─────────────────────
+  // realisticSurvives remains NECESSARY; it is no longer SUFFICIENT.
+  // The shared filter applies the DRY_EXECUTION boundary policy:
+  //   legacy / unversioned rows  → DIAGNOSTIC_ONLY, pass through unchanged
+  //                                (so this wiring is safe before S0 lands)
+  //   exec_faithful_v1 rows      → executability enforced
+  //   unknown modelVersion       → fails closed
+  // This is SUBTRACTIVE: it can only remove rows from the survivor set.
+  // It does NOT recompute executability — the v2 ledger remains the sole
+  // authority for that evidence.
+  const survivors  = dryAdmissionFilter(v2Ledger.filter(r => r.realisticSurvives === true));
 
   // Blueprint lookup for amountOutMin computation
   const bpLines    = readJsonl(path.join(sessionDir, 'blueprints.jsonl'));

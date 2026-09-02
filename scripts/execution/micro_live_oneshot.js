@@ -10,7 +10,7 @@
 //
 //  BEHAVIOR
 //  ────────
-//  1. Watch session activator.jsonl for the next EXECUTION_READY signal that
+//  1. Evaluate ONE operator-named exact signalId from activator.jsonl. The
 //     passes ALL Boss-mandated gates.
 //  2. Run TWO callStatic passes against the deployed AllMightRamsesExecutor:
 //        pass 1: minProfit=1   → mechanical viability
@@ -25,7 +25,7 @@
 //  ────────────────────
 //  Any uncertainty (RPC error, missing artifact, ambiguous signal, gate
 //  failure on a candidate) → log reason, do NOT trade, keep watching until
-//  --max-wait-sec elapses. On timeout, exit 0 without flipping flags.
+//     candidate must already exist; there is no waiting and no retry.
 //
 //  HARD GATES (Boss spec)
 //  ──────────────────────
@@ -50,7 +50,7 @@
 //  ─────
 //    node scripts/execution/micro_live_oneshot.js --help
 //    node scripts/execution/micro_live_oneshot.js --dry
-//    node scripts/execution/micro_live_oneshot.js --max-wait-sec 3600
+//    node scripts/execution/micro_live_oneshot.js --signal-id <sessionToken>-<block>
 //    node scripts/execution/micro_live_oneshot.js --lock-after-trade
 //
 //  OUTPUT
@@ -77,8 +77,35 @@ function argVal(flag, def) {
 const FLAG_HELP             = ARGS.includes('--help');
 const FLAG_DRY              = ARGS.includes('--dry');
 const FLAG_LOCK_AFTER_TRADE = ARGS.includes('--lock-after-trade');
-const MAX_WAIT_SEC          = Math.max(60, parseInt(argVal('--max-wait-sec', '3600'), 10) || 3600);
-const POLL_INTERVAL_MS      = Math.max(1000, parseInt(argVal('--poll-ms', '5000'), 10) || 5000);
+// M-2R3 D4: --max-wait-sec had no semantics beyond candidate polling, which the
+// exact-request architecture removes. Parsing deleted rather than repurposed.
+
+// ── M-2 EXACT EXECUTION REQUEST (Boss C9) ───────────────────────────────────
+// The operator owns claim 3. micro_live no longer chooses its own candidate.
+// Applies to BOTH --dry and live: ONE candidate-selection contract.
+const _signalIdOccurrences = ARGS.filter((a) => a === '--signal-id').length;
+const REQUESTED_SIGNAL_ID  = argVal('--signal-id', null);
+
+// grammar: <sessionToken>-<block>; token = everything before the LAST '-'
+function parseSignalIdentity(id) {
+  if (id === null || id === undefined || String(id).trim() === '') {
+    return { ok: false, code: 'IDENTITY_NOT_SUPPLIED' };
+  }
+  const raw = String(id).trim();
+  const cut = raw.lastIndexOf('-');
+  if (cut <= 0 || cut === raw.length - 1) {
+    return { ok: false, code: 'IDENTITY_MALFORMED', detail: 'no <sessionToken>-<block> split' };
+  }
+  const sessionToken = raw.slice(0, cut);
+  const blockStr = raw.slice(cut + 1);
+  if (!sessionToken) return { ok: false, code: 'IDENTITY_MALFORMED', detail: 'empty session token' };
+  if (!/^[0-9]+$/.test(blockStr) || Number(blockStr) <= 0) {
+    return { ok: false, code: 'IDENTITY_MALFORMED', detail: 'non-numeric block' };
+  }
+  return { ok: true, signalId: raw, sessionToken, block: Number(blockStr) };
+}
+
+// M-2R3 D4: --poll-ms likewise had no semantics beyond polling. Deleted.
 // --min-spread-bps N: raise the spread floor for this run only.
 // RAISE-ONLY: any value below the Boss-locked MIN_SPREAD_BPS is ignored.
 const MIN_SPREAD_BPS_OVERRIDE = parseInt(argVal('--min-spread-bps', '0'), 10) || 0;
@@ -97,8 +124,7 @@ FLAGS
   --help                 Show this and exit 0.
   --dry                  Run all gates + callStatic, NO broadcast.
                          Use this for rehearsal.
-  --max-wait-sec N       Watch for up to N seconds (default 3600).
-  --poll-ms N            Poll interval in ms (default 5000, min 1000).
+  --signal-id <id>       REQUIRED. Exact signalId to evaluate (single shot).
   --min-spread-bps N     Raise the spread floor for THIS run only.
                          Raise-only: values below the Boss-locked
                          constant (24bps) are ignored.
@@ -135,6 +161,7 @@ try { require('dotenv').config(); } catch { /* optional */ }
 const fs   = require('fs');
 const path = require('path');
 const { ethers } = require('ethers');
+const { admitExactCandidate } = require('../../utils/candidate_intake');
 
 // ─── CONSTANTS (Boss-locked) ──────────────────────────────────────────────────
 
@@ -425,11 +452,18 @@ function buildProvider() {
 // The session blueprint expresses minOuts for the blueprint trade size; we
 // scale by (actual / blueprint) and apply slippage buffer.
 
-function computeAmountOutMins(latestSignal, sessionDir) {
-  const bpLines  = readJsonlAll(path.join(sessionDir, 'blueprints.jsonl'));
-  const bp = bpLines
-    .filter(b => String(b.signalBlock ?? '') === String(latestSignal.block ?? ''))
-    .pop();
+function computeAmountOutMins(latestSignal, sessionDir, boundBlueprint) {
+  // S5R2: consume the EXACT blueprint bound at admission. No re-read of
+  // mutable storage, no .pop() last-wins, no dependence on candidate.block.
+  // The legacy path is retained only for callers that supply no bound
+  // blueprint; the exact-request path always supplies one.
+  let bp = boundBlueprint ?? null;
+  if (!bp) {
+    const bpLines  = readJsonlAll(path.join(sessionDir, 'blueprints.jsonl'));
+    bp = bpLines
+      .filter(b => String(b.signalBlock ?? '') === String(latestSignal.block ?? ''))
+      .pop();
+  }
 
   // Fallback: 95% of theoretical equivalent at signal price, conservative
   if (!bp || !bp.safety || !bp.sizing) {
@@ -494,7 +528,6 @@ function writeFinalJson(payload) {
     flags: {
       dry: FLAG_DRY,
       lockAfterTrade: FLAG_LOCK_AFTER_TRADE,
-      maxWaitSec: MAX_WAIT_SEC,
     },
     eventCount: _events.length,
     ...payload,
@@ -510,7 +543,7 @@ async function main() {
   console.log('═══════════════════════════════════════════════════════════');
   console.log('  AllMight — Micro-Live One-Shot Executor');
   console.log(`  Mode:   ${FLAG_DRY ? 'DRY (no broadcast)' : 'LIVE'}`);
-  console.log(`  MaxWait: ${MAX_WAIT_SEC}s   Poll: ${POLL_INTERVAL_MS}ms`);
+  console.log(`  Request: ${REQUESTED_SIGNAL_ID ?? '(none supplied)'}   Mode: single-shot exact request`);
   console.log('═══════════════════════════════════════════════════════════');
 
   // ── Resolve session ──────────────────────────────────────────────────────
@@ -523,6 +556,73 @@ async function main() {
   _jsonlPath = path.join(session.dir, 'micro_live_trade.jsonl');
   emit('STARTED', { sessionId: session.sid, sessionDir: session.dir, dry: FLAG_DRY });
   console.log(`  Session: ${session.sid}`);
+
+  // ── M-2 GATE STACK — ABOVE the first executor-preparation effect ─────────
+  // OBSERVED: staticCall occurs BEFORE the pre-existing live gates, so gates
+  // placed only above signer creation would still permit a simulation on an
+  // unadmitted candidate. Identity/evidence gating happens here instead.
+  if (_signalIdOccurrences > 1) {
+    return fatal('IDENTITY_DUPLICATED', { occurrences: _signalIdOccurrences });
+  }
+  const _ident = parseSignalIdentity(REQUESTED_SIGNAL_ID);
+  if (!_ident.ok) return fatal(_ident.code, { detail: _ident.detail ?? null });
+
+  // session assertion — supplements, never replaces, full-signalId matching
+  if (String(_ident.sessionToken) !== String(session.sid)) {
+    return fatal('EVIDENCE_SESSION_MISMATCH', {
+      requestedSessionToken: _ident.sessionToken, resolvedSessionId: session.sid });
+  }
+
+  // AUTHORITY SEPARATION (I-4): the CANDIDATE SOURCE identifies the
+  // opportunity; the v2 ledger is the sole authority for EXECUTABILITY
+  // EVIDENCE. An earlier staging revision passed the v2 ledger as the
+  // candidate collection, collapsing the two. They are loaded separately and
+  // both must resolve to the SAME requested signalId.
+  // M-2R4 D6: readJsonl returns { records, nextByte } — NOT a bare array.
+  // The pre-existing call sites already destructured `.records`; the staged
+  // calls did not. Found by offline entry-path EXECUTION, invisible to every
+  // structural assertion.
+  const _candidateSource = (readJsonl(path.join(session.dir, 'activator.jsonl')).records || [])
+    .filter((r) => r && r.signalId !== undefined);
+  const _v2Evidence = readJsonl(path.join(session.dir, 'shadow_execution_ledger_v2.jsonl')).records || [];
+  const _blueprints = readJsonl(path.join(session.dir, 'blueprints.jsonl')).records || [];
+
+  // candidate must exist in the candidate source, by exact identity
+  const _candMatches = _candidateSource.filter((c) => String(c.signalId) === String(_ident.signalId));
+  if (_candMatches.length === 0) return fatal('CANDIDATE_NOT_FOUND', { requestedSignalId: _ident.signalId });
+  if (_candMatches.length > 1)  return fatal('CANDIDATE_IDENTITY_AMBIGUOUS', { matches: _candMatches.length });
+
+  // evidence + blueprint admission, joined by the SAME identity
+  const _admission = admitExactCandidate(
+    _ident.signalId, _v2Evidence, _blueprints,
+    process.env.LIVE_DEPLOY_APPROVED === 'true');
+  if (!_admission.executabilityAdmitted) {
+    return fatal('EXECUTION_MODEL_ADMISSION_FAILED',
+      { blockers: _admission.blockers, requestedSignalId: _ident.signalId });
+  }
+  // ── S5R2: BIND THE EXACT ADMITTED BLUEPRINT (Boss C9) ───────────────────
+  // Previously the amountOutMin path re-selected from blueprints.jsonl using
+  // the RAW candidate.block and `.pop()`. That allowed two proven divergences:
+  //   C1  candidate.block disagreeing with the block encoded in the signalId
+  //       → a different blueprint than the one admission validated
+  //   C2  a duplicate appended after admission → last-wins on re-read (TOCTOU)
+  // The exact blueprint is now bound HERE, from the same in-memory set that
+  // admission validated, and consumed directly. Mutable storage is not
+  // re-read after admission. Selection is by the ADMITTED identity block.
+  const _bpMatches = _blueprints.filter(
+    (b) => String(b.signalBlock ?? '') === String(_ident.block));
+  if (_bpMatches.length === 0) {
+    return fatal('BLUEPRINT_NOT_FOUND', { requestedSignalId: _ident.signalId, block: _ident.block });
+  }
+  if (_bpMatches.length > 1) {
+    // fail closed, matching candidate_intake's BLUEPRINT_IDENTITY_MISMATCH
+    return fatal('BLUEPRINT_IDENTITY_MISMATCH',
+      { requestedSignalId: _ident.signalId, block: _ident.block, matches: _bpMatches.length });
+  }
+  const REQUESTED = Object.freeze({ signalId: _ident.signalId,
+    sessionToken: _ident.sessionToken, block: _ident.block,
+    candidate: _candMatches[0], evidence: _admission.candidate ?? null,
+    blueprint: _bpMatches[0], admission: _admission });
 
   // ── Env preflight (FAIL CLOSED) ──────────────────────────────────────────
   if (process.env.LIVE_DEPLOY_APPROVED !== 'true') {
@@ -593,25 +693,43 @@ async function main() {
   }
   emit('TRADES_TODAY', td);
 
-  // ── Watch loop ───────────────────────────────────────────────────────────
+  // ── M-2R2 SINGLE-SHOT EXACT-REQUEST EVALUATION ──────────────────────────
+  // The operator named an ALREADY-OBSERVED candidate. This is one bounded
+  // evaluation of that candidate, not a subscription.
+  //
+  //   no polling loop · no retry-until-pass · no waiting for future records
+  //   no TIMEOUT_NO_SIGNAL for candidate selection or evaluation
+  //
+  // VOLATILITY CONTEXT (Boss C9): derived ONLY from records at or before the
+  // requested candidate's own block. Future records cannot change the decision
+  // context after the operator made the request — a candidate rejected now
+  // must not pass later because unrelated observations arrived.
   const activatorPath = path.join(session.dir, 'activator.jsonl');
-  let activatorByte   = fs.existsSync(activatorPath) ? fs.statSync(activatorPath).size : 0;
-  // We only consider records produced AFTER script start. Capture current
-  // tail position so historical records do not retro-trigger.
-  emit('WATCH_BEGIN', { activatorPath, tailByte: activatorByte });
+  emit('EXACT_REQUEST_BEGIN', { activatorPath, requestedSignalId: REQUESTED.signalId,
+    requestedBlock: REQUESTED.block, singleShot: true });
 
-  const deadlineMs = T_START + MAX_WAIT_SEC * 1000;
-  let recentSpreadBuffer = [];   // last 8 spread observations for volatility calc
+  // M-2R3 D2/D3: classifyVolatility() consumes RECORD OBJECTS, so the bounded
+  // set must stay records — not pre-mapped numbers. The requested observation
+  // is included exactly ONCE by the boundary filter itself; nothing is pushed
+  // afterwards, so no synthetic duplicate can exist.
+  const _boundedRecords = _candidateSource
+    .filter((r) => typeof r.spread === 'number'
+                && typeof r.block === 'number'
+                && r.block <= REQUESTED.block);
+  const recentSpreadBuffer = _boundedRecords.slice(-8);
 
-  while (Date.now() < deadlineMs) {
-    await sleep(POLL_INTERVAL_MS);
-
-    // Read new activator records since last poll
+  // SINGLE-ITERATION loop, deliberately. The existing gate logic uses
+  // `continue` to abandon an evaluation; with exactly one iteration each
+  // `continue` becomes an EXIT to the rejection terminus rather than a retry.
+  // This preserves every gate's existing semantics without rewriting them,
+  // and no second pass is reachable by construction.
+  for (let _singleShot = 0; _singleShot < 1; _singleShot++) {
+    // Records are read ONCE, bounded at the requested candidate's block.
     let newRecs = [];
     try {
-      const r = readJsonl(activatorPath, activatorByte);
-      newRecs = r.records;
-      activatorByte = r.nextByte;
+      newRecs = [REQUESTED.candidate];
+      // M-2R3 D1: obsolete polling residue removed. The exact-request path does
+      // not tail activator bytes, so there is no byte cursor to advance.
     } catch (e) {
       emit('ACTIVATOR_READ_ERROR', { error: e.message?.slice(0, 80) });
       continue;
@@ -620,14 +738,17 @@ async function main() {
     // Update rolling spread buffer
     for (const r of newRecs) {
       if (typeof r.spread === 'number') {
-        recentSpreadBuffer.push(r);
-        if (recentSpreadBuffer.length > 16) recentSpreadBuffer.shift();
+        // M-2R3 D3: no push. The bounded set is fixed at request time; adding
+        // the requested candidate here would double-count it.
       }
     }
 
-    // Find newest EXECUTION_READY in this batch (if any)
-    const candidate = [...newRecs].reverse()
-      .find(r => r.signal === 'EXECUTION_READY' && typeof r.spread === 'number');
+    // M-2R1: RECENCY SELECTION REMOVED. The executed candidate is the one the
+    // operator requested and the gate stack admitted — never a record chosen
+    // here. Downstream reads REQUESTED.candidate so that
+    //   candidate admitted === candidate executed
+    // holds by construction. This loop no longer selects; it only observes.
+    const candidate = REQUESTED.candidate;
     if (!candidate) continue;
 
     const spreadBps = +(candidate.spread * 100).toFixed(2);
@@ -743,7 +864,7 @@ async function main() {
     }
 
     // ── Compute amountOutMin from blueprint (scaled to $25) ──
-    const mins = computeAmountOutMins(candidate, session.dir);
+    const mins = computeAmountOutMins(candidate, session.dir, REQUESTED.blueprint);
     emit('AMOUNT_OUT_MINS', {
       source: mins.source,
       blueprintScale: mins.blueprintScale ?? null,
@@ -858,9 +979,21 @@ async function main() {
 
     // ── Wait for receipt ──
     let receipt;
+    // M-2R7E-11: the receipt timeout is RACED against tx.wait(1), but
+    // Promise.race() does not cancel the loser. Previously the 120s timer was
+    // created inside sleep() with no reachable handle, so when the receipt
+    // arrived first the timer stayed REFERENCED and kept this one-shot process
+    // alive for up to two minutes past TX_RECEIPT.
+    // The handle is now explicitly owned and cleared on EVERY completion path.
+    // Duration, rejection value and catch semantics are unchanged. unref() is
+    // deliberately NOT used: it would hide the leak rather than remove it.
+    let receiptTimeoutHandle = null;
     try {
       const wait = tx.wait(1);
-      const timeout = sleep(RECEIPT_TIMEOUT_MS).then(() => { throw new Error('RECEIPT_TIMEOUT'); });
+      const timeout = new Promise((_resolve, reject) => {
+        receiptTimeoutHandle = setTimeout(
+          () => reject(new Error('RECEIPT_TIMEOUT')), RECEIPT_TIMEOUT_MS);
+      });
       receipt = await Promise.race([wait, timeout]);
     } catch (e) {
       emit('TX_RECEIPT_TIMEOUT_OR_ERROR', { error: (e.message||'').slice(0,140), txHash });
@@ -877,6 +1010,10 @@ async function main() {
         'DEGRADED'
       );
       return;
+    } finally {
+      // Runs on success, on timeout, on error, and on the early `return`
+      // inside catch — i.e. every completion path.
+      if (receiptTimeoutHandle !== null) clearTimeout(receiptTimeoutHandle);
     }
 
     // ── Parse receipt + compute realized ──
@@ -962,13 +1099,15 @@ async function main() {
     return;   // exit watch loop — single trade attempted, done
   }
 
-  // ── Timeout: no qualifying signal within MAX_WAIT_SEC ──
-  emit('TIMEOUT_NO_SIGNAL', { maxWaitSec: MAX_WAIT_SEC });
-  writeFinalJson({ status: 'TIMEOUT_NO_SIGNAL', maxWaitSec: MAX_WAIT_SEC });
+  // ── M-2R2: single-shot terminus. TIMEOUT_NO_SIGNAL is removed — the request
+  // named an existing candidate, so there is nothing to wait for. Reaching
+  // here means the requested candidate failed a gate on its single evaluation.
+  emit('EXACT_REQUEST_REJECTED', { requestedSignalId: REQUESTED.signalId, singleShot: true });
+  writeFinalJson({ status: 'EXACT_REQUEST_REJECTED', requestedSignalId: REQUESTED.signalId });
   await discordNotify(
     'ops',
-    'ℹ️ AllMight micro-live TIMEOUT',
-    `No qualifying signal within ${MAX_WAIT_SEC}s.\nFlags unchanged. AUTO_MICRO_ONESHOT remains armed for next run.`,
+    'ℹ️ AllMight micro-live EXACT_REQUEST_REJECTED',
+    `Requested candidate ${REQUESTED.signalId} did not pass its single evaluation.\nFlags unchanged. AUTO_MICRO_ONESHOT remains armed.`,
     'INFO'
   );
 }

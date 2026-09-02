@@ -123,6 +123,26 @@ function classifySignalV2(signal, ctx, sessionId) {
 
   const pnl = estimateRealisticPnL(signal, theoreticalSize);
 
+  // ── G-7 EXECUTION-EVIDENCE PROPAGATION (Boss C9) ────────────────────────
+  // COPY ONLY. This writer is not a calculator: it never computes, infers or
+  // derives executability. realisticSurvives must NEVER manufacture it.
+  //   present upstream  → exact value preserved (including false)
+  //   absent upstream   → field remains absent
+  // failureClass is deliberately excluded per ruling.
+  // signalId arrives via ...base (v1.classifySignal) and is preserved by the
+  // spread; it is re-copied explicitly only when the upstream signal carries
+  // one, so provenance is unambiguous.
+  const evidence = {};
+  if (Object.prototype.hasOwnProperty.call(signal, 'modelVersion')) {
+    evidence.modelVersion = signal.modelVersion;
+  }
+  if (Object.prototype.hasOwnProperty.call(signal, 'executableUnderCurrentExecutor')) {
+    evidence.executableUnderCurrentExecutor = signal.executableUnderCurrentExecutor;
+  }
+  if (signal.signalId !== undefined) {
+    evidence.signalId = signal.signalId;
+  }
+
   return {
     ...base,
     // v2 realism additions
@@ -131,6 +151,8 @@ function classifySignalV2(signal, ctx, sessionId) {
     realisticNetUsd            : pnl.realisticNetUsd,
     realisticBreakevenBps      : pnl.realisticBreakevenBps,
     realisticSurvives          : pnl.realisticSurvives,
+    // G-7 propagated execution evidence — copied, never derived
+    ...evidence,
   };
 }
 

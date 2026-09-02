@@ -17,6 +17,7 @@
 'use strict';
 
 const fs   = require('fs');
+const { executionModelBlockers } = require('../../utils/execution_model_gate');
 const path = require('path');
 
 // ─── CAPITAL MODE DEFINITIONS ────────────────────────────────────────────────
@@ -169,6 +170,15 @@ function evaluateSignal(signal, gateResult, sl, fl) {
   if (spreadPct < 0.22)          perSignalBlockers.push(`spread ${spreadPct.toFixed(4)}% < 0.22% floor`);
   if (sizing.final === 0)         perSignalBlockers.push('computed size = $0 (mode locked or no approved size)');
   if (!signal.amountOutMin && signal.amountOutMin !== 0) perSignalBlockers.push('amountOutMin not in signal');
+
+  // ── S2: EXECUTION-MODEL ADMISSION (Boss C9) ─────────────────────────────
+  // SUBTRACTIVE ONLY. This can add hard blockers; it can never raise a score,
+  // lower a threshold, widen a tier, or award eligibility. Placed with the
+  // other per-signal blockers and BEFORE the verdict IIFE, so a non-executable
+  // candidate cannot reach PAPER_ONLY or any higher tier on score alone.
+  // Legacy/unversioned records keep their pre-S2 behaviour; exec_faithful_v1
+  // records are enforced; unknown model versions fail closed.
+  perSignalBlockers.push(...executionModelBlockers(signal));
 
   const verdict = (() => {
     if (gateResult?.hardBlockers?.length > 0) return 'BLOCK';

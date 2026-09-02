@@ -242,6 +242,32 @@ async function main() {
   let tx, receipt;
   const t0 = Date.now();
 
+  // ── S6R2 CONTAINMENT (Boss C9) ──────────────────────────────────────────
+  // This legacy research path reached a wallet-bound, non-view
+  // executeArbitrage(...) on a SECOND executor contract (ArbitrageBot),
+  // consulting neither LIVE_DEPLOY_APPROVED nor AUTO_MICRO_ONESHOT and
+  // carrying no signalId, v2 evidence or blueprint.
+  //
+  // Capital reach is SEVERED here. Everything upstream — auth flag, edge,
+  // size, venue, RPC, gas and balance checks, and the profit calculation —
+  // is preserved, so shadow/research output is unchanged.
+  //
+  // Fail-closed by construction: there is no flag that re-enables this.
+  // Re-enabling requires a Boss ruling and a source change, not configuration.
+  return result(false, {
+    error:      "CONTAINED_LEGACY_LIVE_PATH",
+    detail:     "Capital movement severed by S6R2. Canonical live execution is "
+              + "micro_live_oneshot.js under the exact-request contract.",
+    contained:  true,
+    would_have_called: {
+      contract: "ArbitrageBot", method: "executeArbitrage",
+      asset, amount: String(amountBn),
+      buyVenue: buyVenueIdx, sellVenue: sellVenueIdx,
+    },
+    gross_bps, session_id,
+  });
+
+  /* eslint-disable no-unreachable */
   try {
     tx = await bot.executeArbitrage(
       asset,
