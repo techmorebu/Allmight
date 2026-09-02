@@ -558,6 +558,10 @@ async function readBothPools(blockNumber, rpc) {
     camFee     : camFeeRaw > 0 ? camFeeRaw / 10000 / 100 : CAMELOT_FEE_FRAC,
     currentTick: Number(uniRes.result.s0[1]),   // needed for proximity arm check
     blockNumber,
+    // S15R5B: provenance marker. Set HERE, at the single producer boundary, so
+    // delay-0 and delayed reads are labelled by one mechanism that cannot drift.
+    // Both venues were read at the same explicit blockTag above.
+    readMode   : 'MEASURED',
   };
 }
 
@@ -670,6 +674,10 @@ function simulateOne(detected, delayed, size, gm) {
   const finalEdge  = execSpread - feeBurden - slip - gasPct;
   return {
     size, delayBlocks: delayed.blockNumber - detected.blockNumber,
+    // S15R5B: copy-only. `?? 'UNKNOWN'` is mandatory: a snapshot arriving without
+    // a marker (pre-repair data, or any future unmarked path) must NOT be
+    // asserted as MEASURED.
+    readMode: delayed.readMode ?? 'UNKNOWN',
     detectedEdge: +detSpread.toFixed(5), executedSpread: +execSpread.toFixed(5),
     slippage: +slip.toFixed(5), feeBurden: +feeBurden.toFixed(5),
     gasUsd: +calcGasUSD(gm).toFixed(6), gasPct: +gasPct.toFixed(5),
@@ -701,7 +709,9 @@ async function runSimulation(snap, rpc, gm) {
   for (const d of [1, 2]) {
     await sleep(400);
     try   { snaps[d] = await readBothPools(base + d, rpc); }
-    catch { snaps[d] = { ...snap, blockNumber: base + d }; }
+    // S15R5B: the fallback copies delay-0 data forward under a relabelled block.
+    // It is NOT a measurement. Behaviour is unchanged; only provenance is added.
+    catch { snaps[d] = { ...snap, blockNumber: base + d, readMode: 'SYNTHETIC' }; }
   }
   const matrix = {};
   const all    = [];
