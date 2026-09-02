@@ -314,6 +314,97 @@ function withTimeout(promise, ms, label) {
   ]);
 }
 
+// ── P24/P26 (Boss C9 ruling 2026-08-31) ──────────────────────────────────────
+//
+//   A provider is unhealthy when it fails to deliver a trustworthy execution
+//   result — not when the trustworthy result happens to be a contract failure.
+//
+//   Target failure must not be charged to transport health.
+//
+// A CALL_EXCEPTION means RPC transport and EVM execution both SUCCEEDED and the
+// contract reverted. The endpoint did its job.
+//
+// EVIDENCE (proven): CALL_EXCEPTION was observed being charged to endpoint
+// health during the S-C investigation. Such target-level failures accumulate
+// provider failure/cooldown state and can therefore degrade healthy endpoints.
+//
+// NOT CLAIMED: the 6-vs-4 probe asymmetry observed in the S-C runs is NOT
+// assigned a causal mechanism here. Per-endpoint MAX_FAILS makes a single
+// revert per endpoint insufficient to demote, absent pre-existing state, so
+// that symptom's cause remains unresolved on current evidence.
+//
+//   A mechanism can be proven without proving that it caused a particular
+//   historical symptom. Capability is not causation.
+//
+// Scope is deliberately narrow: CALL_EXCEPTION only. Any other error code
+// retains existing provider-failure treatment. Expanding this set requires a
+// separate ruling.
+function isContractLevelError(err) {
+  return (err && err.code === 'CALL_EXCEPTION') === true;
+}
+
+// P29: ONE taxonomy, consumed by every structured surface. Two surfaces
+// describing the same observation must not use different epistemic
+// vocabularies. Only CALL_EXCEPTION is positively classified; everything else
+// is NOT-PROVEN-CONTRACT-LEVEL and must not be asserted as proven transport.
+function classifyErrorSurface(err) {
+  return isContractLevelError(err) ? 'CONTRACT_LEVEL' : 'NON_CONTRACT_CLASSIFIED';
+}
+
+// P29 hardening: `detail` copies an upstream error message, which can embed a
+// credential-bearing endpoint URL (ethers frequently includes the request URL).
+// Every URL-like substring is reduced through the SAME canonical redactor used
+// for the endpoint field, so the structured cause is credential-free as a
+// whole, not just in the field that was previously checked.
+function sanitizeDetail(text) {
+  return String(text == null ? '' : text)
+    .replace(/https?:\/\/[^\s"'`,)\]}]+/gi, (m) => redactUrl(m))
+    .slice(0, 200);
+}
+
+// Structured, credential-free description of one failed attempt (P24).
+// Consumers read these instead of parsing the terminal message string.
+function describeAttemptFailure(url, err, order) {
+  return {
+    order,
+    endpoint:   redactUrl(url),
+    errorCode:  (err && err.code) || null,
+    // P29: shared taxonomy — identical vocabulary to rpc_attempt_fail.
+    errorClass: classifyErrorSurface(err),
+    // P29: credential-redacted through the canonical redactor.
+    detail:     sanitizeDetail((err && err.message) || err),
+  };
+}
+
+// Attach structured causes to a terminal error without changing its message
+// (P24). The human-readable message is retained for backward compatibility;
+// the structured properties are authoritative.
+// P28: `complete` states whether EVERY launched attempt was observed. The
+// hedged path races two attempts and then retries; when the race resolves, the
+// losing attempt may still be in flight. Waiting for it would change latency
+// and retry behaviour, which is NOT authorized — so the evidence is instead
+// made honest about what it does not know.
+//
+//   allContractLevel may be true ONLY when the cause set is complete.
+//
+function attachTerminalCauses(error, causes, complete) {
+  error.attemptFailures = causes;
+  error.causeSummary = {
+    complete: complete === true,
+    attempts:        causes.length,
+    contractLevel:      causes.filter((c) => c.errorClass === 'CONTRACT_LEVEL').length,
+    nonContractClassified: causes.filter((c) => c.errorClass === 'NON_CONTRACT_CLASSIFIED').length,
+    // true when EVERY attempt was a contract-level failure: the call is
+    // deterministic and endpoint-independent, not an availability problem.
+    // P28: gated on completeness — an incomplete cause set cannot support a
+    // conclusive claim about all attempts.
+    allContractLevel: complete === true
+      && causes.length > 0
+      && causes.every((c) => c.errorClass === 'CONTRACT_LEVEL'),
+  };
+  return error;
+}
+
 class EndpointHealth {
   constructor() {
     this.map = new Map();
@@ -965,6 +1056,7 @@ function createProvider(chain) {
         return {
           ok: true,
           result,
+          url,                 // P28: symmetric identity on the success path
           meta: {
             url,
             urlRedacted: redactUrl(url),
@@ -973,24 +1065,45 @@ function createProvider(chain) {
           }
         };
       } catch (err) {
-        _health.recordFailure(url);
-        _countAttempt(intent, url, false);   // intent counter — failure
-        recordConsecFail(url);              // Fix 3: track consecutive failures → long demotion
+        // P26: provider health is charged ONLY for failures attributable to the
+        // provider/transport layer. A CALL_EXCEPTION means transport and EVM
+        // execution succeeded and the contract reverted — the endpoint
+        // delivered a trustworthy result. Health accounting is skipped, so the
+        // endpoint remains eligible. Telemetry is still emitted in full.
+        const contractLevel = isContractLevelError(err);
+        if (!contractLevel) {
+          _health.recordFailure(url);
+          recordConsecFail(url);            // Fix 3: consecutive failures → long demotion
+        }
+        _countAttempt(intent, url, false);  // intent counter — failure (telemetry, not health)
         // Emit per-attempt failure — records which endpoint failed and why.
         _logEvent({
-          ev:        'rpc_attempt_fail',
-          ts:        new Date().toISOString(),
-          chain:     chainKey,
+          ev:         'rpc_attempt_fail',
+          ts:         new Date().toISOString(),
+          chain:      chainKey,
           label,
-          url:       redactUrl(url),
-          lag:       _freshness.get(url)?.lagBlocks    ?? null,
-          penalty:   _freshness.get(url)?.penaltyScore ?? 0,
-          errorCode: err?.code  || null,
-          error:     String(err?.message || err).slice(0, 120),
+          url:        redactUrl(url),
+          lag:        _freshness.get(url)?.lagBlocks    ?? null,
+          penalty:    _freshness.get(url)?.penaltyScore ?? 0,
+          errorCode:  err?.code  || null,
+          // P29: same redactor as the terminal cause — telemetry is structured
+          // evidence too and must not leak credentials.
+          error:      sanitizeDetail(err?.message || err).slice(0, 120),
+          // P29: SAME taxonomy as describeAttemptFailure(). Previously emitted
+          // TRANSPORT_LEVEL here while the terminal cause said
+          // NON_CONTRACT_CLASSIFIED — two contradictory structured
+          // classifications of one observation.
+          errorClass: classifyErrorSurface(err),
+          healthCharged: !contractLevel,   // P26: explicit in telemetry
         });
         return {
           ok: false,
-          err
+          err,
+          // P28: endpoint identity is a FACT CARRIED BY THE ATTEMPT, never
+          // reconstructed by the caller from control flow. The hedged path
+          // races two attempts; assuming the race winner was `first` can
+          // misattribute a failure to an endpoint that did not produce it.
+          url
         };
       }
     }
@@ -1044,6 +1157,22 @@ function createProvider(chain) {
         return retry;
       }
 
+      // P24/P28: hedged causes use the endpoint identity CARRIED BY each
+      // attempt. The previous form assumed Promise.race resolved to `first`;
+      // when the delayed second attempt fails fast while first hangs, the
+      // winner IS second, and attributing its error to `first` fabricates a
+      // fact. Order, count, delay and winner-selection are unchanged.
+      const _hCauses = [
+        describeAttemptFailure(winner.url ?? first, winner.err, 0),
+        describeAttemptFailure(retry.url  ?? second, retry.err,  1),
+      ];
+      // P28 COMPLETENESS: three attempts are LAUNCHED on this path (first,
+      // delayed second, retry second) but only two outcomes are observed. When
+      // the race resolves, the losing attempt may still be in flight. We are
+      // not authorized to await it — that would change latency/retry
+      // behaviour — so the cause set is declared INCOMPLETE and no conclusive
+      // allContractLevel claim may be derived from it.
+      const _hComplete = false;
       _logEvent({
         ev:    'rpc_exhausted',
         ts:    new Date().toISOString(),
@@ -1051,23 +1180,38 @@ function createProvider(chain) {
         label,
         mode:  'hedged',
         urls:  [first, second].map(redactUrl),
+        causes: _hCauses,
+        causesComplete: _hComplete,
+        allContractLevel: false,   // never conclusive on an incomplete set
       });
-      throw new Error(`RPC hedged failure (${chainKey}:${label})`);
+      throw attachTerminalCauses(
+        new Error(`RPC hedged failure (${chainKey}:${label})`), _hCauses, _hComplete);
     }
 
     // Fix C: Serial loop — try primary first, then failover if primary fails
+    // P24: retry ORDER AND COUNT ARE UNCHANGED. The only addition is collecting
+    // the per-attempt causes that were previously discarded.
+    const _causes = [];
     for (const url of effectiveCandidates) {
       const r = await attempt(url);
       if (r.ok) return r;
+      // P28: identity from the attempt, not the loop variable.
+      _causes.push(describeAttemptFailure(r.url ?? url, r.err, _causes.length));
     }
     // Primary failed — try failover candidates if any exist
     if (PRIMARY_ONLY && failoverCandidates.length > 0) {
       for (const url of failoverCandidates) {
         const r = await attempt(url);
         if (r.ok) return r;
+        _causes.push(describeAttemptFailure(r.url ?? url, r.err, _causes.length));
       }
     }
+    // P28: the serial path awaits every attempt it launches, so the cause set
+    // is COMPLETE and a conclusive allContractLevel claim is permitted.
+    const _serialComplete = true;
 
+    const _allContract = _causes.length > 0
+      && _causes.every((c) => c.errorClass === 'CONTRACT_LEVEL');
     _logEvent({
       ev:    'rpc_exhausted',
       ts:    new Date().toISOString(),
@@ -1075,8 +1219,15 @@ function createProvider(chain) {
       label,
       mode:  'serial',
       urls:  rotated.map(redactUrl),
+      // P24: the terminal event now records WHY, not just that it happened.
+      causes: _causes,
+      causesComplete: _serialComplete,
+      allContractLevel: _allContract,
     });
-    throw new Error(`RPC exhausted (${chainKey}:${label})`);
+    // P24: message retained verbatim for backward compatibility; the attached
+    // structured properties are authoritative for consumers.
+    throw attachTerminalCauses(
+      new Error(`RPC exhausted (${chainKey}:${label})`), _causes, _serialComplete);
   }
 
   async function getBlockNumber(label, opts = {}) {
@@ -1174,4 +1325,7 @@ module.exports = {
   getIntentCounters,
   estimateCreditCost,
   getEndpointHealth,
+  // P24/P26: exposed so consumers classify from an authoritative source
+  // instead of parsing terminal message strings.
+  isContractLevelError,
 };
