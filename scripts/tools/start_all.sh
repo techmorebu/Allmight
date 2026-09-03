@@ -198,7 +198,51 @@ set -a && source .env && set +a
 # ─── SESSION ID ──────────────────────────────────────────────────────────────
 SESSION_ID=$(date +%Y%m%d_%H%M)
 SESSION_DIR="$LOG_DIR/sessions/session_${SESSION_ID}"
-mkdir -p "$SESSION_DIR" "$LOG_DIR"
+ARCHIVE_DIR_GUARD="$LOG_DIR/archive"
+ABORTED_DIR_GUARD="$LOG_DIR/aborted"
+
+# ─── COMPACT-SID COLLISION GUARD (Boss C9 S15R6Q) ────────────────────────────
+# SESSION_ID has MINUTE resolution, so a same-minute restart previously reused
+# the session directory: `mkdir -p` succeeds silently on an existing dir, two
+# runtime sessions appended into one set of .jsonl files, and the stop path's
+# `zip` UPDATED the existing archive. That mixing is unrecoverable after the
+# fact. It also let a stale same-SID archive trigger a false CLEAN_LOGICAL_END
+# in the telemetry observers.
+#
+# Order matters:
+#   1. ATOMIC CLAIM  — `mkdir` WITHOUT -p either creates or fails with EEXIST.
+#                      There is no check-then-create window. This single call is
+#                      both the claim and the guard.
+#   2. ADVISORY      — the other four persisted claimants. Retention reaps the
+#                      session dir while archives survive (log_retention_manager
+#                      deleteRaw), and `remote_ctl.sh abort` MOVES the dir away
+#                      while the SID stays claimed under logs/aborted/. So an
+#                      absent directory does NOT mean an unclaimed SID.
+#   3. PUBLISH       — the pointer is written only after the namespace is fully
+#                      claimed; consumers must never see a SID we then abandon.
+#
+# Rollback uses `rmdir`, never `rm -rf`: rmdir fails on a non-empty directory,
+# so a rollback can never delete through evidence something else has written.
+mkdir -p "$LOG_DIR" "$LOG_DIR/sessions"
+if ! mkdir "$SESSION_DIR" 2>/dev/null; then
+  echo "ABORT: session id ${SESSION_ID} is already claimed by $SESSION_DIR"
+  echo "       A session started during this clock minute."
+  echo "       Wait for the next minute, then start again."
+  exit 1
+fi
+
+SID_CLAIMED_BY=""
+[[ -e "$ARCHIVE_DIR_GUARD/session_${SESSION_ID}.zip" ]] && SID_CLAIMED_BY="$ARCHIVE_DIR_GUARD/session_${SESSION_ID}.zip"
+[[ -z "$SID_CLAIMED_BY" && -e "$ARCHIVE_DIR_GUARD/session_${SESSION_ID}.tar.gz" ]] && SID_CLAIMED_BY="$ARCHIVE_DIR_GUARD/session_${SESSION_ID}.tar.gz"
+[[ -z "$SID_CLAIMED_BY" && -e "$ARCHIVE_DIR_GUARD/session_${SESSION_ID}_critical" ]] && SID_CLAIMED_BY="$ARCHIVE_DIR_GUARD/session_${SESSION_ID}_critical"
+[[ -z "$SID_CLAIMED_BY" && -e "$ABORTED_DIR_GUARD/session_${SESSION_ID}" ]] && SID_CLAIMED_BY="$ABORTED_DIR_GUARD/session_${SESSION_ID}"
+if [[ -n "$SID_CLAIMED_BY" ]]; then
+  rmdir "$SESSION_DIR" 2>/dev/null || echo "       NOTE: $SESSION_DIR is not empty and was left in place"
+  echo "ABORT: session id ${SESSION_ID} is already claimed by $SID_CLAIMED_BY"
+  echo "       A prior session used this id. Wait for the next minute, then start again."
+  exit 1
+fi
+
 echo "$SESSION_ID" > "$SESSION_FILE"
 
 echo ""
