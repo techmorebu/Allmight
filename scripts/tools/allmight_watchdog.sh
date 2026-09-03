@@ -558,7 +558,7 @@ if [[ $LOOP_SEC -gt 0 ]]; then
 
           heat)
             _try_restart "heat" \
-              "node scripts/tools/volatility_divergence_report.js --log $SESSION_DIR_NOW/volatility.jsonl --out $SESSION_DIR_NOW/heat.jsonl --interval 30" \
+              "node scripts/tools/volatility_divergence_report.js --log logs/volatility_arbitrum.jsonl --out $SESSION_DIR_NOW/heat.jsonl --interval 30" \
               "heat"
             ;;
 

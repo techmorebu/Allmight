@@ -40,6 +40,52 @@
 const fs   = require('fs');
 const path = require('path');
 
+
+// ─── S15R7: EXIT OBSERVABILITY ───────────────────────────────────────────────
+// This process previously died leaving NO diagnostic: its stdout/stderr are
+// redirected into notification_router.log by the launcher, and that log simply
+// ended mid-heartbeat. A merged stream cannot distinguish "wrote nothing" from
+// "was killed before writing", so the exit record goes to a SEPARATE file.
+//
+// beforeExit is the natural event-loop-DRAIN detector — a router whose loop
+// timer was cleared exits with no error and no signal, invisible to the other
+// handlers. It does NOT fire after an explicit process.exit().
+//
+// After this lands, ABSENCE of a record is itself informative: it indicates
+// SIGKILL / OOM-kill / host death, excluding the classified alternatives.
+const EXIT_LOG_PATH = path.join(
+  process.env.LOG_DIR || path.join(__dirname, '..', '..', 'logs'),
+  'notification_router.exit.jsonl');
+let _exitRecorded = false;               // one-shot: one death, one record
+function _readSessionIdSafe() {
+  try {
+    return fs.readFileSync(path.join(path.dirname(EXIT_LOG_PATH), 'allmight.session'), 'utf8').trim() || null;
+  } catch { return null; }
+}
+function recordExit(reason, detail, code) {
+  if (_exitRecorded) return;
+  _exitRecorded = true;
+  try {
+    fs.appendFileSync(EXIT_LOG_PATH, JSON.stringify({
+      ts: new Date().toISOString(),
+      pid: process.pid,
+      component: 'notification_router',
+      sessionId: _readSessionIdSafe(),
+      reason,
+      exitCode: code === undefined ? null : code,
+      detail: String(detail === undefined || detail === null ? '' : detail).slice(0, 500),
+      uptimeSec: Math.round(process.uptime()),
+    }) + '\n');
+  } catch { /* instrumentation must never become the cause of an exit */ }
+}
+process.on('uncaughtException',  (e) => { recordExit('uncaughtException',  e && e.stack ? e.stack : e, 1); process.exit(1); });
+process.on('unhandledRejection', (e) => { recordExit('unhandledRejection', e && e.stack ? e.stack : e, 1); process.exit(1); });
+process.on('SIGTERM',            ()  => { recordExit('SIGTERM', 'external signal', 0); process.exit(0); });
+process.on('SIGINT',             ()  => { recordExit('SIGINT',  'external signal', 0); process.exit(0); });
+process.on('beforeExit',         (c) => { recordExit('beforeExit', 'event loop drained', c); });
+module.exports = Object.assign(module.exports || {}, { recordExit, EXIT_LOG_PATH });
+// ─── end S15R7 ───────────────────────────────────────────────────────────────
+
 // ─── DISCORD SENDER ───────────────────────────────────────────────────────────
 // Plain text payloads only — embed fields fail silently on this Discord setup.
 
