@@ -1,0 +1,38 @@
+PROJECT ALLMIGHT — BOSS DIRECTIVE
+Directive: BOSS-RCV-001
+Authority: Boss
+Mode: recovery/governance overlay only
+
+RULINGS
+1. `scripts/tools/volatility_divergence_report.js` modified state is RECOGNIZED M2-C DEPLOYMENT and is NOT an RCV-1 stop condition.
+2. Existing untracked telemetry/research paths are not to be overwritten, staged, deleted, or normalized by RCV-1.
+3. This overlay writes only the listed docs paths.
+4. Runtime remains untouched.
+5. Security path `_legacy/root_clutter/secret.EXPOSED_DO_NOT_COMMIT` must not be read or printed.
+6. Repo visibility is PUBLIC. If that credential is live, rotation/revocation preempts RCV-2.
+7. RCV-2 remains HELD until RCV-1 is committed/pushed and remote readback verifies exact files.
+
+INSTALL
+- place this ZIP in ~/Downloads
+- verify its SHA-256 against the Boss-provided hash
+- extract to a temporary directory
+- inspect archive path list before copying
+- copy ONLY the listed docs paths into ~/Allmight
+- use explicit-path git staging only
+- commit message:
+  docs(recovery): establish Boss recovery and archive control layer
+- push main
+- verify local HEAD == remote main
+- verify each new file exists at remote main
+- report `RECOVERY_REPO_STATE: VERIFIED` only after remote readback
+
+STOP CONDITIONS
+- ZIP SHA mismatch
+- archive contains paths outside docs/recovery, docs/evidence, docs/governance/directives
+- any target path would overwrite an unexpected existing file
+- local HEAD != remote main before commit
+- push rejected
+- remote readback differs
+
+NO AUTHORITY
+No runtime repair/restart, second heartbeat, Redis, router work, live mode, signing, broadcast, capital movement, threshold change, or history rewrite.
