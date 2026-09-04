@@ -567,11 +567,16 @@ if [[ $LOOP_SEC -gt 0 ]]; then
               "node -r dotenv/config scripts/analysis/arb_window_activator.js --pair ETH/USDC-RAMSES --remap-ticks --gas-profile atomic_optimistic --log $SESSION_DIR_NOW/activator.jsonl --heat-log $SESSION_DIR_NOW/heat.jsonl"
             ;;
 
-          notifier)
-            _try_restart "notifier" \
+          # RTR-002A: the pid file records this component as `notification_router`
+          # (start_all.sh, the only writer). The dispatcher matched `notifier)`, a
+          # label nothing ever writes, so detection succeeded and dispatch silently
+          # matched nothing. IDENTITY REPAIR ONLY — no new branch, no default case,
+          # no policy change.
+          notification_router)
+            _try_restart "notification_router" \
               "node -r dotenv/config scripts/monitoring/notification_router.js --loop 300" \
-              "notifier"
-            ;;
+              "notification_router"
+              ;;
 
         esac
       done
