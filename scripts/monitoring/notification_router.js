@@ -62,12 +62,39 @@ function _readSessionIdSafe() {
     return fs.readFileSync(path.join(path.dirname(EXIT_LOG_PATH), 'allmight.session'), 'utf8').trim() || null;
   } catch { return null; }
 }
+// ─── RTR-004: bounded signal-time context ────────────────────────────
+// Incident 021 proved the MECHANISM (SIGINT) twice but never the SENDER, and
+// RTR-003/R1 exhausted retrospective attribution: no auditd, no /proc sender
+// field, and no sshd/logind/kill activity in the corrected journal windows.
+//
+// Linux does not tell a process who signalled it. This does NOT name the
+// sender. It captures what the record currently omits — this process's own
+// lineage and which AllMight components were alive at the instant — so the
+// NEXT occurrence is comparable rather than blank.
+//
+// LOADED LAZILY AND DEFENSIVELY: if the module is missing or throws, the exit
+// record is still written. Enrichment must never break the instrument it
+// enriches.
+function _signalContextSafe() {
+  try {
+    // eslint-disable-next-line global-require
+    const { collectSignalContext } = require('./signal_context');
+    return collectSignalContext({
+      pidFilePath: path.join(path.dirname(EXIT_LOG_PATH), 'allmight.pid'),
+    });
+  } catch { return null; }
+}
+
 function recordExit(reason, detail, code) {
   if (_exitRecorded) return;
   _exitRecorded = true;
+  // Collected BEFORE the write and OUTSIDE its try, so a context failure can
+  // never abort the append that is the actual evidence.
+  let signalContext = null;
+  if (reason === 'SIGINT' || reason === 'SIGTERM') signalContext = _signalContextSafe();
   try {
-    fs.appendFileSync(EXIT_LOG_PATH, JSON.stringify({
-      ts: new Date().toISOString(),
+    const rec = {
+      ts: new Date().toISOString(),            // TIME-001: UTC only
       pid: process.pid,
       component: 'notification_router',
       sessionId: _readSessionIdSafe(),
@@ -75,7 +102,9 @@ function recordExit(reason, detail, code) {
       exitCode: code === undefined ? null : code,
       detail: String(detail === undefined || detail === null ? '' : detail).slice(0, 500),
       uptimeSec: Math.round(process.uptime()),
-    }) + '\n');
+    };
+    if (signalContext) rec.signalContext = signalContext;
+    fs.appendFileSync(EXIT_LOG_PATH, JSON.stringify(rec) + '\n');
   } catch { /* instrumentation must never become the cause of an exit */ }
 }
 process.on('uncaughtException',  (e) => { recordExit('uncaughtException',  e && e.stack ? e.stack : e, 1); process.exit(1); });
