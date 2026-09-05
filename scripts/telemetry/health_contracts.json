@@ -1,0 +1,137 @@
+{
+  "$schema": "allmight.healthcontracts.v3",
+  "note": "M1A-R3. Signals carry ACTIVATION and REQUIREDNESS. A pending REQUIRED authority contributes to COVERAGE, never to PASS/FAIL — so an ACTIVE output can never silently waive a DECLARED heartbeat requirement. lifecycleState reports what deployed authorities prove; healthCertification reports whether the target contract is verifiable this epoch.",
+  "epoch": {
+    "id": "pre-M2",
+    "deployedProducers": [
+      "arb_volatility_monitor --log (S15R7)",
+      "heat worker heartbeat (M2-C, build heat-hb-build-5de9d400)"
+    ],
+    "notYetDeployed": [
+      "logs/hb/*.hb producers for the other seven components"
+    ]
+  },
+  "contracts": {
+    "fetcher": {
+      "class": "RESTARTABLE",
+      "heartbeatPath": "logs/hb/fetcher.hb",
+      "heartbeatStaleSec": 120,
+      "heartbeatActivation": "PENDING_MIGRATION",
+      "outputRecord": {
+        "format": "redis_ttl",
+        "keyPattern": "fetcher:*",
+        "ttlSec": 120,
+        "recordType": null,
+        "staleSec": 120,
+        "failedSec": 300
+      },
+      "healthAuthority": "redis_ttl provider IMPLEMENTED (R3): authority is the key's remaining TTL, which proves the producer wrote within (ttlSec - remaining). PENDING because no Redis probe is deployed to the supervisor this epoch — the provider exists, the probe does not.",
+      "outputActivation": "PENDING_MIGRATION",
+      "heartbeatRequired": true
+    },
+    "activator": {
+      "class": "RESTARTABLE",
+      "heartbeatPath": "logs/hb/activator.hb",
+      "heartbeatStaleSec": 120,
+      "heartbeatActivation": "PENDING_MIGRATION",
+      "outputRecord": {
+        "path": "$SESSION_DIR/activator.jsonl",
+        "format": "jsonl_record",
+        "recordType": "signal",
+        "staleSec": 1800,
+        "failedSec": 5400,
+        "emptyGraceSec": 5400
+      },
+      "outputActivation": "ACTIVE",
+      "healthAuthority": "signals are BURSTY — session 20260903_0255 produced none for ~35 min, correctly. M2-D-R4: an EMPTY record set is UNKNOWN (not yet observed) for emptyGraceSec=5400 measured from SESSION START, then FAIL. There is no record timestamp to age, so the SESSION is aged instead. Thresholds staleSec/failedSec apply only once at least one record exists.",
+      "heartbeatRequired": true,
+      "outputRequired": true
+    },
+    "volatility": {
+      "class": "RESTARTABLE",
+      "heartbeatPath": "logs/hb/volatility.hb",
+      "heartbeatStaleSec": 180,
+      "heartbeatActivation": "PENDING_MIGRATION",
+      "outputRecord": {
+        "path": "logs/volatility_arbitrum.jsonl",
+        "format": "jsonl_record",
+        "recordType": "volatility_scan",
+        "staleSec": 300,
+        "failedSec": 600,
+        "emptyGraceSec": 600
+      },
+      "outputActivation": "ACTIVE",
+      "healthAuthority": "ACTIVE output (S15R7 --log). Heartbeat contract RATIFIED but activation still PENDING_MIGRATION. session-bound=true / pid-bound=false because the pid file records the WRAPPER (Incident 023) and each one-shot worker is a new process — a pid check could never pass. staleSec 180 = ~6 nominal cycles (measured 30-31s over 24 samples, M2E-003A); startupGraceSec 240 is deliberately more conservative because the steady-state sample does not measure cold start.",
+      "heartbeatRequired": true,
+      "outputRequired": true,
+      "heartbeatStartupGraceSec": 240,
+      "heartbeatProducerBuild": "volatility-hb-build-0455a658",
+      "heartbeatSchemaVersion": 1,
+      "heartbeatSessionBound": true,
+      "heartbeatPidBound": false,
+      "heartbeatCycle": "complete",
+      "heartbeatRequireTs": true
+    },
+    "heat": {
+      "class": "RESTARTABLE",
+      "heartbeatPath": "logs/hb/heat.hb",
+      "heartbeatStaleSec": 120,
+      "heartbeatActivation": "ACTIVE",
+      "outputRecord": {
+        "path": "$SESSION_DIR/heat.jsonl",
+        "format": "text_append",
+        "recordType": null,
+        "staleSec": 180,
+        "failedSec": 600
+      },
+      "outputActivation": "ACTIVE",
+      "healthAuthority": "heartbeat ACTIVATED (M2-D, heat only): the producer was deployed from accepted canonical bytes 6f623cca... and proven fresh from the running worker. Freshness authority is mtime; the payload adds PRODUCER IDENTITY, so a touched-but-foreign file, a previous generation's pid, or a different build all FAIL rather than passing on mtime alone. Output remains text_append: mtime plus proof of growth.",
+      "heartbeatRequired": true,
+      "outputRequired": true,
+      "heartbeatProducerBuild": "heat-hb-build-5de9d400"
+    },
+    "monitor": {
+      "class": "RESTARTABLE",
+      "heartbeatPath": "logs/hb/monitor.hb",
+      "heartbeatStaleSec": 180,
+      "heartbeatActivation": "PENDING_MIGRATION",
+      "outputRecord": null,
+      "healthAuthority": "heartbeat only and REQUIRED. spread_monitor.py has no identified output artifact, so this component cannot be CERTIFIED until its heartbeat is deployed. Stated, not waived.",
+      "heartbeatRequired": true
+    },
+    "watchdog": {
+      "class": "NOT_RECOVERABLE_BY_SELF",
+      "heartbeatPath": "logs/hb/watchdog.hb",
+      "heartbeatStaleSec": 180,
+      "heartbeatActivation": "PENDING_MIGRATION",
+      "outputRecord": {
+        "path": "$SESSION_DIR/analysis.log",
+        "format": "text_append",
+        "recordType": null,
+        "staleSec": 600,
+        "failedSec": 1800
+      },
+      "outputActivation": "PENDING_MIGRATION",
+      "healthAuthority": "analysis.log grows only when the watchdog DECIDES something; a healthy quiet supervisor writes nothing. PENDING_MIGRATION until heartbeat exists.",
+      "heartbeatRequired": true
+    },
+    "notification_router": {
+      "class": "RESTARTABLE",
+      "heartbeatPath": "logs/hb/notification_router.hb",
+      "heartbeatStaleSec": 400,
+      "heartbeatActivation": "PENDING_MIGRATION",
+      "outputRecord": null,
+      "healthAuthority": "M2 target: heartbeat (window > the 300s loop). The exit log is a DEATH record, not liveness — treating it as output would make a healthy router look silent.",
+      "heartbeatRequired": true
+    },
+    "shadow_engine": {
+      "class": "RESTARTABLE",
+      "heartbeatPath": "logs/hb/shadow_engine.hb",
+      "heartbeatStaleSec": 400,
+      "heartbeatActivation": "PENDING_MIGRATION",
+      "outputRecord": null,
+      "healthAuthority": "heartbeat ONLY — an absent ledger is CORRECT in a quiet market, so output freshness cannot distinguish quiet from dead.",
+      "heartbeatRequired": true
+    }
+  }
+}

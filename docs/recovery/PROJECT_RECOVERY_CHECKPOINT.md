@@ -1,12 +1,14 @@
 # ALLMIGHT — RECOVERY CHECKPOINT
 
-**Refreshed:** 2026-09-05 (R8B) · **Authority:** Boss · **Standard:** GOV-CHK-001
+**Refreshed:** 2026-09-05 (M2E-005R1) · **Authority:** Boss · **Standard:** GOV-CHK-001
 
 ```
-base (parent) commit   db4ebc28e23bb93ee6281ef87cf702b7bfb673dd
+base (parent) commit   0a1040789f0b850c6a12e71815d695b1f3552b24
 this checkpoint         travels in the commit that supersedes that base and
-                        corrects a now-FALSE statement: the M2E-001 volatility
-                        producer is DEPLOYED AND EXECUTING, not merely committed
+                        records the M2E-004A volatility EVALUATOR CONTRACT —
+                        implementation only. Activation is NOT performed.
+                        It is also the FIRST repository admission of the
+                        frozen M0 components baseline (see below).
 ```
 
 > **PRECEDENCE — running machine > repository > this document > chat memory.**
@@ -64,6 +66,16 @@ one-shot).
 **The heartbeat is inert.** `health_contracts.json` is offline-only and nothing
 consults it. Producer deployed != authority activated.
 
+**M2E-004A evaluator contract (committed with this checkpoint, NOT activated):**
+`heartbeatActivation` stays `PENDING_MIGRATION`. The contract now declares
+`sessionBound true · pidBound false · schemaVersion 1 · cycle "complete" ·
+requireTs true · staleSec 180 · startupGraceSec 240`. Three evaluator blockers
+found in M2E-002 are closed: pid comparison is per-contract, `workerPid` and
+legacy `pid` are both understood, and `sessionId` is ENFORCED rather than merely
+recorded. Two further activation blockers closed in M2E-004A: a non-`complete`
+cycle can no longer pass on freshness, and future `mtime`/`ts` are rejected with
+ZERO allowance — `mtime > now` is not fresh, it is wrong.
+
 **One deployed file differs from git, deliberately:**
 `scripts/tools/volatility_divergence_report.js` carries the M2-C heat heartbeat
 producer at `6f623cca…`; git holds `a63b15db…`. `git status` **will** show it
@@ -119,6 +131,28 @@ GOV-CHK-001  every commit changing meaningful state must refresh this
              Verify GIT BLOB vs RAW at the pinned commit; a bundle-artifact
              hash is NOT a repository hash.
 ```
+
+## 4b. GOVERNANCE EVENT — components.json ENTERS GIT (M2E-005R1)
+
+`scripts/telemetry/components.json` entered the repository in this commit as the
+**exact frozen M0 baseline**, byte-identical at
+`81bdb023cb939bd6d7c366183dc0cf8469b3f21dad6c03c5c5bebe5b9af7cacd`.
+
+**Why now:** it is required by the minimum executable evaluator/test closure.
+`m2e004_activation.test.js` cannot run without it, and a committed test that
+cannot execute is the looks-verified-but-isn't class this project exists to
+remove.
+
+**Repository admission does NOT unfreeze it.** Its governance status remains
+**FROZEN M0 BASELINE**: no edits, no normalization, no reformatting, no field or
+semantic changes. Until this commit it had lived only in verification bundles
+and Drive for the entire M0→M2E redesign — carried forward by hash, never by git.
+
+Admitted alongside it, and only as a real module dependency of both
+`registry_loader.js` and `health.js`: `scripts/telemetry/providers.js`. That is
+a dependency admission, not a broader supervisor-tree migration.
+`observe.js`, `state.js`, `evidence.js`, `runtime_adapter.js` and
+`registry_validator.js` remain OUTSIDE the repository.
 
 ## 5. WHAT IS CLOSED
 
@@ -230,7 +264,15 @@ SESSION AUTHORITY  heat binds its epoch via the PID check, because its pid file
 10 Never patch from a cached reference — read the deployed file first.
    (CPT's tree was stale TWICE; hash-gating caught both before damage.)
 11 One action per slice. Every stop returns evidence and never repairs.
-12 A test must be PORTABLE. console.log passes through a formatter that can
+12 A MANIFEST must be GENERATED from the bundled bytes, never transcribed.
+   M2E-004A shipped a stale health.js hash because it was typed; the rebuild
+   computes every SHA at build time and re-verifies them against the finished
+   archive.
+13 An UNRATIFIED tolerance is a defect. A 5s future-time window was imported
+   from the session-pointer guard, where filesystem granularity justified it;
+   it did not transfer, and any window is a gap a touched artifact passes
+   through. Carry a constant only where its justification carries too.
+14 A test must be PORTABLE. console.log passes through a formatter that can
    inject ANSI escapes; parsing it as a number yields NaN and fails a CORRECT
    implementation. Prefer machine-readable output, and better still verify
    from the ARTIFACT rather than from stdout.
@@ -279,6 +321,12 @@ first volatility heartbeat    2026-09-05T06:41:14Z  session 20260904_2239
 M2E-001-R4 result             28/28 x3, and 28/28 under FORCE_COLOR=1
 volatility monitor (pre-M2E)  0455a658db36863da761f680ca2448cd56decff12fc925fbe182bfa7403d0874
 volatility producer build     volatility-hb-build-0455a658
+volatility cadence (measured) 30-31s over 24 consecutive cycles (M2E-003A);
+                              staleSec 180 ~= 6 nominal cycles, startupGrace 240
+M2E-004A bundle               476ba19552ce3fdc778eb82a9b6f34ed82aa1461caf6e2397cd84fa41e06c67e
+components.json (FROZEN M0)   entered git M2E-005R1 at scripts/telemetry/
+                              81bdb023cb939bd6d7c366183dc0cf8469b3f21dad6c03c5c5bebe5b9af7cacd
+M2E-004A regression           18 suites / 312 checks, 3x from clean extraction
 heartbeat payload schema      heartbeatSchemaVersion 1
 Drive pre-prune snapshot      f29f8aa19d9d1ff5a1bda77715a6daa0880c31953a4e548505d5cee1620cb1c5
 ```
@@ -288,11 +336,10 @@ Drive pre-prune snapshot      f29f8aa19d9d1ff5a1bda77715a6daa0880c31953a4e548505
 **Return to Boss for review.** This checkpoint is the deliverable; no further
 work is authorized by it.
 
-The volatility producer is committed, deployed and emitting; only the AUTHORITY
-remains. An activation contract (session-bound = true, PID-bound = false, stale
-window 180s PROPOSED and NOT ratified) has been discussed but **NOT released** —
-it would be an evaluator and contract change, and `health.js` has not been
-touched since M2-D.
+The volatility producer is committed, deployed and emitting, and the evaluator
+CONTRACT is now implemented and committed. **Only ACTIVATION remains** — flipping
+`heartbeatActivation` to `ACTIVE` — and that is a separate gate that has **NOT**
+been released.
 
 **Ask Boss for the current directive rather than resuming from this section.**
 

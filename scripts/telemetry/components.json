@@ -1,0 +1,126 @@
+{
+  "$schema": "allmight.registry.v1",
+  "generatedFor": "M0 — describes the CURRENT system truthfully, including defects",
+  "note": "current.* fields record what IS. target.* fields record what the redesign intends. M0 asserts only that current.* matches the real launcher and supervisor sources.",
+  "components": [
+    {
+      "id": "fetcher",
+      "exec": "scripts/master-fetcher.js",
+      "current": {
+        "pidKey": "fetcher",
+        "pidRefers": "wrapper",
+        "restartLabel": "fetcher",
+        "freshnessLabel": "fetcher",
+        "freshnessPath": "$SESSION_DIR/fetcher.log",
+        "staleSec": 300, "failedSec": 600
+      },
+      "target": { "class": "RESTARTABLE", "heartbeat": true, "outputRecord": "redis:fetcher:*" }
+    },
+    {
+      "id": "activator",
+      "exec": "scripts/analysis/arb_window_activator.js",
+      "current": {
+        "pidKey": "activator",
+        "pidRefers": "wrapper",
+        "restartLabel": "activator",
+        "freshnessLabel": "activator",
+        "freshnessPath": "$SESSION_DIR/activator.jsonl",
+        "staleSec": 180, "failedSec": 600
+      },
+      "target": { "class": "RESTARTABLE", "heartbeat": true, "outputRecord": "activator.jsonl" }
+    },
+    {
+      "id": "volatility",
+      "exec": "scripts/analysis/arb_volatility_monitor.js",
+      "current": {
+        "pidKey": "volatility",
+        "pidRefers": "wrapper",
+        "restartLabel": null,
+        "freshnessLabel": "volatility",
+        "freshnessPath": "$SESSION_DIR/volatility.jsonl",
+        "staleSec": 300, "failedSec": 600,
+        "defects": [
+          "INCIDENT_023: pid records the retry-wrapper subshell, not the worker",
+          "INCIDENT_022: no restart case label — dispatch falls through silently",
+          "S15R7_SIDE_EFFECT: freshness watches the PROCESS LOG, which the wrapper keeps fresh with its own failure messages; the real records are in logs/volatility_arbitrum.jsonl, which nothing checks"
+        ]
+      },
+      "target": { "class": "RESTARTABLE", "heartbeat": true,
+                  "outputRecord": { "path": "logs/volatility_arbitrum.jsonl", "recordType": "volatility_scan" } }
+    },
+    {
+      "id": "heat",
+      "exec": "scripts/tools/volatility_divergence_report.js",
+      "current": {
+        "pidKey": "heat", "pidRefers": "worker",
+        "restartLabel": "heat",
+        "freshnessLabel": "heat",
+        "freshnessPath": "$SESSION_DIR/heat.jsonl",
+        "staleSec": 180, "failedSec": 600
+      },
+      "target": { "class": "RESTARTABLE", "heartbeat": true, "outputRecord": "heat.jsonl" }
+    },
+    {
+      "id": "monitor",
+      "exec": "scripts/spread_monitor.py",
+      "current": {
+        "pidKey": "monitor", "pidRefers": "worker",
+        "restartLabel": "monitor",
+        "freshnessLabel": null, "freshnessPath": null,
+        "defects": ["no freshness check and no identified output artifact"]
+      },
+      "target": { "class": "RESTARTABLE", "heartbeat": true, "outputRecord": null,
+                  "unresolved": "no output artifact identified" }
+    },
+    {
+      "id": "watchdog",
+      "exec": "scripts/tools/allmight_watchdog.sh",
+      "current": {
+        "pidKey": "watchdog", "pidRefers": "worker",
+        "restartLabel": null,
+        "freshnessLabel": null, "freshnessPath": null,
+        "defects": ["INCIDENT_022: in the pid file with no restart policy — detected dead, never dispatched"]
+      },
+      "target": { "class": "NOT_RECOVERABLE_BY_SELF", "heartbeat": true,
+                  "keeper": "systemd (Boss C9 ruling)" }
+    },
+    {
+      "id": "notification_router",
+      "exec": "scripts/monitoring/notification_router.js",
+      "current": {
+        "pidKey": "notification_router", "pidRefers": "worker",
+        "restartLabel": null,
+        "orphanRestartLabel": "notifier",
+        "freshnessLabel": null, "freshnessPath": null,
+        "defects": [
+          "INCIDENT_022: pid key is notification_router but the dispatcher matches notifier) — a label nothing writes. Detected DEAD, dispatched nothing, logged nothing.",
+          "INCIDENT_021: received SIGINT at 08:24:10Z; sender UNKNOWN (parked)"
+        ]
+      },
+      "target": { "class": "RESTARTABLE", "heartbeat": true,
+                  "outputRecord": "logs/notification_router.exit.jsonl (on death)" }
+    },
+    {
+      "id": "shadow_engine",
+      "exec": "scripts/execution/shadow_execution_engine{,_v2}.js",
+      "current": {
+        "pidKey": "shadow_engine", "pidRefers": "wrapper",
+        "restartLabel": null,
+        "freshnessLabel": null, "freshnessPath": null,
+        "defects": [
+          "INCIDENT_023: pid records the 300s poll-loop subshell, not the engine",
+          "INCIDENT_022: no restart case label",
+          "output freshness is UNUSABLE — an absent ledger is correct in a quiet market"
+        ]
+      },
+      "target": { "class": "RESTARTABLE", "heartbeat": true, "outputRecord": null,
+                  "healthAuthority": "heartbeat only — output legitimately may not exist" }
+    }
+  ],
+  "orphanRestartLabels": ["notifier"],
+  "supervisorPrograms": {
+    "current": ["start_all.sh", "allmight_watchdog.sh", "remote_ctl.sh",
+                "activator_supervisor.sh", "watchdog.py"],
+    "target": ["supervisor (node)", "systemd keeper"]
+  }
+}
