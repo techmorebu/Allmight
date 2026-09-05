@@ -1,12 +1,12 @@
 # ALLMIGHT — RECOVERY CHECKPOINT
 
-**Refreshed:** 2026-09-05 (R5) · **Authority:** Boss · **Standard:** GOV-CHK-001
+**Refreshed:** 2026-09-05 (R8B) · **Authority:** Boss · **Standard:** GOV-CHK-001
 
 ```
-base (parent) commit   d7350f6ec5e897e1a8c8986ee4327a9468288334
+base (parent) commit   db4ebc28e23bb93ee6281ef87cf702b7bfb673dd
 this checkpoint         travels in the commit that supersedes that base and
-                        describes the state being committed — the M2E-001
-                        volatility worker-owned cycle heartbeat (producer only)
+                        corrects a now-FALSE statement: the M2E-001 volatility
+                        producer is DEPLOYED AND EXECUTING, not merely committed
 ```
 
 > **PRECEDENCE — running machine > repository > this document > chat memory.**
@@ -50,11 +50,19 @@ watchdog  pid 1668839, running the corrected identity dispatch (082f6da8…)
           the watchdog IS a shell. That is not an Incident 023 instance.
 ```
 
-**Being committed alongside this checkpoint (M2E-001, producer only):**
-`scripts/analysis/cycle_heartbeat.js` (NEW) and a hash-gated edit to
-`scripts/analysis/arb_volatility_monitor.js` adding two worker-owned
-cycle-completion emit points. **NOT deployed and NOT activated** — the running
-volatility worker keeps executing pre-patch bytes until a separate slice.
+**M2E-001 volatility producer: COMMITTED AND DEPLOYED, NOT ACTIVATED.**
+Committed at `db4ebc28…`: `scripts/analysis/cycle_heartbeat.js` (NEW) plus two
+worker-owned cycle-completion emit points in `arb_volatility_monitor.js`.
+
+**It deployed ITSELF.** The volatility wrapper re-launches the monitor from the
+repository path on every ~30s cycle, so the new bytes ran on the next cycle with
+**no restart, no signal and no deploy command**. First heartbeat observed
+2026-09-05T06:41:14Z — session-bound to `20260904_2239`, schema 1, build
+`volatility-hb-build-0455a658`, `workerPid` already exited (correct for a
+one-shot).
+
+**The heartbeat is inert.** `health_contracts.json` is offline-only and nothing
+consults it. Producer deployed != authority activated.
 
 **One deployed file differs from git, deliberately:**
 `scripts/tools/volatility_divergence_report.js` carries the M2-C heat heartbeat
@@ -71,12 +79,45 @@ TIME-001     UTC is canonical for ALL input, storage, logic, evidence and
              Every local-time query must show its conversion inline —
              journalctl and date -d assume LOCAL unless told otherwise, and
              that silent assumption cost a 5-hour investigation error.
+DEPLOY-SEM   every directive touching a potentially self-reloading component
+             must classify its commit/deployment semantics:
+               AUTO_ON_NEXT_CYCLE   a wrapper re-launches the worker from the
+                                    repo path, so COMMITTING IS DEPLOYING
+               RESTART_REQUIRED     a long-lived process must be restarted
+               UNKNOWN              FAILS CLOSED — treat as live and gate it
+             Classifications — PROVEN only where observed:
+               volatility        AUTO_ON_NEXT_CYCLE   PROVEN (M2E-001-R7: a
+                                 heartbeat from post-patch bytes appeared with
+                                 no restart, signal or deploy command)
+               fetcher           UNKNOWN — its launch shape RESEMBLES
+                                 volatility's, but resemblance is not evidence
+                                 and no auto-reload has been observed
+               shadow_engine     UNKNOWN — same reasoning
+               activator         UNKNOWN — same reasoning, and its wrapper is
+                                 long-lived with adaptive backoff, so the worker
+                                 and wrapper may classify differently
+               heat              RESTART_REQUIRED  PROVEN (M2-C required a
+                                 controlled stop/start to load new bytes)
+               notification_router  RESTART_REQUIRED  PROVEN (RTR-004-R2: the
+                                 instrumentation armed only after a new process)
+               monitor           UNKNOWN — never characterized
+               allmight_watchdog.sh  RESTART_REQUIRED  PROVEN (RTR-002C/D), and
+                                 editing it beneath a running bash process risks
+                                 mid-loop byte-offset corruption
+             UNKNOWN fails closed: treat as live and gate it. Upgrading an
+             UNKNOWN requires observed evidence for THAT component, never
+             inference from a similar launch shape.
 GOV-CHK-001  every commit changing meaningful state must refresh this
              checkpoint IN THE SAME COMMIT, and must be followed by a RAW
              GITHUB read (raw.githubusercontent.com or the REST API). A local
              read does not count. A commit report is incomplete without:
                checkpoint updated YES · raw GitHub verification PASS ·
                local HEAD == remote YES
+             The verified set must cover EVERY path in the commit. Derive it
+             from `git show --name-only`, never from a hand-kept list — R6
+             verified three of four paths because the list was manual.
+             Verify GIT BLOB vs RAW at the pinned commit; a bundle-artifact
+             hash is NOT a repository hash.
 ```
 
 ## 5. WHAT IS CLOSED
@@ -131,9 +172,11 @@ INCIDENT 023  FOUR components record WRAPPER pids, not two — fetcher,
               the stack. heat, monitor and notification_router record their
               WORKER directly and are NOT affected; watchdog is legitimately a
               shell and is not an instance.
-M2-E          IN PROGRESS. M2E-001 (volatility producer) is BEING COMMITTED
-              in the same commit as this checkpoint — not committed until that
-              commit exists. NOT deployed, NOT activated. fetcher, shadow_engine
+M2-E          IN PROGRESS. M2E-001 volatility producer COMMITTED (db4ebc28…)
+              and DEPLOYED — it self-deployed on the wrapper's next cycle.
+              NOT ACTIVATED: heartbeatActivation stays PENDING_MIGRATION and no
+              evaluator consults the artifact. Next: the session-bound /
+              PID-unbound activation contract. fetcher, shadow_engine
               and activator not started. Activator BLOCKED on the conditional-
               authority model gap.
 PARKED        Dependabot 124 findings incl. 1 CRITICAL
@@ -227,8 +270,12 @@ heat producer (deployed)      6f623cca514c12aca2c027095a934b1ae3ccc22975901e6fd8
 heat producer (git)           a63b15db005fd004dd4e19ff661bc155b215b49c7e506ced449f65be972f57f3
 heartbeat producer build      heat-hb-build-5de9d400
 cycle_heartbeat.js            7ca2a401567a460f093c6d16d537702cf86923fa9504a4f0034547d1fe070019
-M2E-001-R4 test               d511f73d0a3111f9a8440ffadc1654e57ca76d643ecd44a55149afbb2830f82d
+M2E-001 test (REPOSITORY)     6470c14f2d616c50e28543d14a49719cb241f569dda8e30de100d99693695cf0
+  NOTE d511f73d… is the BUNDLE-ARTIFACT hash; the committed file has its module
+  paths rewritten to scripts/analysis/ and is the one that runs from the repo.
+volatility monitor (DEPLOYED) 38799103b615ea34d3e85e1081795d4ec0c2fe85ceeceb64f767d19ccef0b0b0
 M2E-001-R4 bundle             dac2173f7d79920f722f4f3fcba2ada17b52a6312d58d66d078be0d2cd61edb9
+first volatility heartbeat    2026-09-05T06:41:14Z  session 20260904_2239
 M2E-001-R4 result             28/28 x3, and 28/28 under FORCE_COLOR=1
 volatility monitor (pre-M2E)  0455a658db36863da761f680ca2448cd56decff12fc925fbe182bfa7403d0874
 volatility producer build     volatility-hb-build-0455a658
@@ -238,8 +285,16 @@ Drive pre-prune snapshot      f29f8aa19d9d1ff5a1bda77715a6daa0880c31953a4e548505
 
 ## 11. THE EXACT NEXT AUTHORIZED ACTION
 
-**M2E-001 machine patch, install, test, and this commit.** After it: the
-volatility producer exists in git but is NOT deployed and NOT activated.
+**Return to Boss for review.** This checkpoint is the deliverable; no further
+work is authorized by it.
+
+The volatility producer is committed, deployed and emitting; only the AUTHORITY
+remains. An activation contract (session-bound = true, PID-bound = false, stale
+window 180s PROPOSED and NOT ratified) has been discussed but **NOT released** —
+it would be an evaluator and contract change, and `health.js` has not been
+touched since M2-D.
+
+**Ask Boss for the current directive rather than resuming from this section.**
 
 Nothing beyond that is released. Incident 021 is in passive observation;
 fetcher/shadow_engine/activator heartbeats, Dependabot, TIME-001
