@@ -1,11 +1,12 @@
 # ALLMIGHT — RECOVERY CHECKPOINT
 
-**Refreshed:** 2026-09-05 · **Authority:** Boss · **Standard:** GOV-CHK-001
+**Refreshed:** 2026-09-05 (R5) · **Authority:** Boss · **Standard:** GOV-CHK-001
 
 ```
-base (parent) commit   123810b113b23d67fe12df87639530618a6a9920
+base (parent) commit   d7350f6ec5e897e1a8c8986ee4327a9468288334
 this checkpoint         travels in the commit that supersedes that base and
-                        describes the state being committed
+                        describes the state being committed — the M2E-001
+                        volatility worker-owned cycle heartbeat (producer only)
 ```
 
 > **PRECEDENCE — running machine > repository > this document > chat memory.**
@@ -44,7 +45,16 @@ capital.**
 session   20260904_2239   (pointer mtime is the start authority — never the SID)
 stack     8/8 non-live
 router    pid 1668840, started after the RTR-004 commit — instrumentation ARMED
+watchdog  pid 1668839, running the corrected identity dispatch (082f6da8…)
+          NOTE: the pid file records the WATCHDOG SCRIPT, which is correct —
+          the watchdog IS a shell. That is not an Incident 023 instance.
 ```
+
+**Being committed alongside this checkpoint (M2E-001, producer only):**
+`scripts/analysis/cycle_heartbeat.js` (NEW) and a hash-gated edit to
+`scripts/analysis/arb_volatility_monitor.js` adding two worker-owned
+cycle-completion emit points. **NOT deployed and NOT activated** — the running
+volatility worker keeps executing pre-patch bytes until a separate slice.
 
 **One deployed file differs from git, deliberately:**
 `scripts/tools/volatility_divergence_report.js` carries the M2-C heat heartbeat
@@ -85,6 +95,15 @@ SEC-001    41-byte credential committed to a public repo — ROTATED, inert
 RCV-1/1A/2 Git docs/ recovery tree; Drive snapshot f29f8aa1… proven by
            exact-byte read-back; repo measured at 6.58 MB — broad pruning
            NOT JUSTIFIED, RCV-003 on HOLD
+INC023-001 characterization: FOUR components record wrapper pids, not two —
+           fetcher, activator, volatility, shadow_engine. Three currently show
+           `bash -> sleep`, so `kill -0` succeeds during normal idle when NO
+           worker exists. The watchdog inherits this for half the stack.
+M2E-000    heartbeat semantics design accepted. RULING A: a wrapper-written
+           completion record is auxiliary evidence, NOT heartbeat authority —
+           the one-shot WORKER emits at its own cycle end. RULING B: activator
+           needs conditional authority (RUNNING vs COOLDOWN) and is deferred.
+           Order: volatility, fetcher, shadow_engine, activator.
 INCIDENT 022  watchdog matched `notifier)` while the pid key is
            `notification_router`, so it detected the death and dispatched
            NOTHING, silently. Source fixed, committed, and DEPLOYED via a
@@ -103,9 +122,21 @@ INCIDENT 021  R-SIGINT mechanism PROVEN ×2 (412s and 2130s uptimes).
               SIGINT would not answer the historical question and is not
               authorized. If a third occurs naturally, preserve the enriched
               record and bring it back.
-INCIDENT 023  volatility and shadow_engine record WRAPPER pids, so `kill -0`
-              tests a subshell whose job is to survive the worker dying.
-PARKED        M2-E heartbeat rollout · Dependabot 124 findings incl. 1 CRITICAL
+INCIDENT 023  FOUR components record WRAPPER pids, not two — fetcher,
+              activator, volatility, shadow_engine (INC023-001, live-confirmed).
+              `kill -0` tests a subshell whose job is to survive the worker
+              dying. THREE of them currently show `bash -> sleep`, so the check
+              succeeds during normal idle when NO worker process exists at all.
+              The watchdog reads the same pid file and inherits this for half
+              the stack. heat, monitor and notification_router record their
+              WORKER directly and are NOT affected; watchdog is legitimately a
+              shell and is not an instance.
+M2-E          IN PROGRESS. M2E-001 (volatility producer) is BEING COMMITTED
+              in the same commit as this checkpoint — not committed until that
+              commit exists. NOT deployed, NOT activated. fetcher, shadow_engine
+              and activator not started. Activator BLOCKED on the conditional-
+              authority model gap.
+PARKED        Dependabot 124 findings incl. 1 CRITICAL
               on a public repo · TIME-001 implementation · RCV-003 HOLD
               hygiene: execution_gate_score.js.pre-nan.bak (0 refs) and narrow
               history sanitization of the rotated secret
@@ -127,7 +158,18 @@ ACTIVATION GATE   a DECLARED signal is not a FAILURE AUTHORITY until its
 EMPTY SET   NO OBSERVATION YET != STALE != FAILED. An empty set has no
   timestamp to age, so the SESSION is aged instead.
 HEARTBEAT OWNERSHIP  a heartbeat must be produced by the WORKER whose liveness
-  it claims. A wrapper outlives its worker by design.
+  it claims. A wrapper outlives its worker by design. For a ONE-SHOT worker the
+  worker emits a CYCLE-COMPLETION record at its own cycle end, before exiting;
+  a wrapper-written record is auxiliary evidence only (Boss Ruling A).
+  The guarantee is NOT that workerPid/producerBuild/sessionId are unforgeable —
+  a wrapper could write anything. It is that the only AUTHORIZED emitter call
+  site is inside the worker-owned path, and no wrapper has one.
+SESSION AUTHORITY  heat binds its epoch via the PID check, because its pid file
+  records the long-lived worker. That is UNAVAILABLE for one-shot-under-wrapper
+  components: a new pid every cycle, and the pid file records the WRAPPER. Those
+  carry an explicit sessionId read FRESH per emit from logs/allmight.session.
+  At activation: session-bound = true, PID-bound = false. A 180s stale window
+  (4x the 30s wrapper cadence) is PROPOSED ONLY and is NOT ratified.
 ```
 
 ## 8. RULES EARNED THE HARD WAY
@@ -145,6 +187,10 @@ HEARTBEAT OWNERSHIP  a heartbeat must be produced by the WORKER whose liveness
 10 Never patch from a cached reference — read the deployed file first.
    (CPT's tree was stale TWICE; hash-gating caught both before damage.)
 11 One action per slice. Every stop returns evidence and never repairs.
+12 A test must be PORTABLE. console.log passes through a formatter that can
+   inject ANSI escapes; parsing it as a number yields NaN and fails a CORRECT
+   implementation. Prefer machine-readable output, and better still verify
+   from the ARTIFACT rather than from stdout.
 ```
 
 **For any future CPT session:** roughly a dozen *measurements CPT wrote* were
@@ -180,14 +226,25 @@ allmight_watchdog.sh          082f6da800896f5b80bf0fd911cf8342451740ea5c4b371e18
 heat producer (deployed)      6f623cca514c12aca2c027095a934b1ae3ccc22975901e6fd8448b30fe3903c4
 heat producer (git)           a63b15db005fd004dd4e19ff661bc155b215b49c7e506ced449f65be972f57f3
 heartbeat producer build      heat-hb-build-5de9d400
+cycle_heartbeat.js            7ca2a401567a460f093c6d16d537702cf86923fa9504a4f0034547d1fe070019
+M2E-001-R4 test               d511f73d0a3111f9a8440ffadc1654e57ca76d643ecd44a55149afbb2830f82d
+M2E-001-R4 bundle             dac2173f7d79920f722f4f3fcba2ada17b52a6312d58d66d078be0d2cd61edb9
+M2E-001-R4 result             28/28 x3, and 28/28 under FORCE_COLOR=1
+volatility monitor (pre-M2E)  0455a658db36863da761f680ca2448cd56decff12fc925fbe182bfa7403d0874
+volatility producer build     volatility-hb-build-0455a658
+heartbeat payload schema      heartbeatSchemaVersion 1
 Drive pre-prune snapshot      f29f8aa19d9d1ff5a1bda77715a6daa0880c31953a4e548505d5cee1620cb1c5
 ```
 
 ## 11. THE EXACT NEXT AUTHORIZED ACTION
 
-**None.** Incident 021 is in passive observation; every other workstream is
-parked and none was released by the RTR-004-R2 closure. **Ask Boss for the
-current directive rather than resuming from this section.**
+**M2E-001 machine patch, install, test, and this commit.** After it: the
+volatility producer exists in git but is NOT deployed and NOT activated.
+
+Nothing beyond that is released. Incident 021 is in passive observation;
+fetcher/shadow_engine/activator heartbeats, Dependabot, TIME-001
+implementation and economics all remain parked. **Ask Boss for the current
+directive rather than resuming from this section.**
 
 ## 12. WHAT A FRESH SESSION DOES FIRST
 

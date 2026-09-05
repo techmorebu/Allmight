@@ -29,6 +29,10 @@
 
 const fs      = require('fs');
 const path    = require('path');
+// M2E-001: worker-owned cycle-completion heartbeat (Boss Ruling A).
+// Required HERE, in the worker, because a wrapper-written record is
+// auxiliary evidence and NOT heartbeat authority.
+const { emitCycleHeartbeat } = require('./cycle_heartbeat');
 const Redis   = require('ioredis');
 const { execFile }  = require('child_process');
 const { promisify } = require('util');
@@ -435,6 +439,9 @@ async function main() {
   if (INTERVAL_SEC <= 0) {
     // One-shot
     await runScan(redis, ++scanCount);
+    // M2E-001: the CYCLE completed. Emitted by the worker, before it exits, so
+    // a wrapper that outlives a stopped worker cannot keep this fresh.
+    emitCycleHeartbeat({ component: 'volatility', cycleNumber: scanCount, intervalSec: INTERVAL_SEC });
     await redis.quit();
     process.exit(0);
   }
@@ -453,6 +460,8 @@ async function main() {
       // Populate Redis before reading — keeps data fresh each interval
       await runFetcher();
       await runScan(redis, ++scanCount);
+      // M2E-001: this iteration's cycle completed.
+      emitCycleHeartbeat({ component: 'volatility', cycleNumber: scanCount, intervalSec: INTERVAL_SEC });
     } catch (e) {
       process.stderr.write(`[vol] scan error: ${e.message}\n`);
     }
