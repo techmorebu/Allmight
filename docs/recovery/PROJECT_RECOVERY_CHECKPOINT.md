@@ -1,12 +1,13 @@
 # ALLMIGHT — RECOVERY CHECKPOINT
 
-**Refreshed:** 2026-09-05 (M2E-006R5) · **Authority:** Boss · **Standard:** GOV-CHK-001
+**Refreshed:** 2026-09-06 (M2E-008D) · **Authority:** Boss · **Standard:** GOV-CHK-001
 
 ```
-base (parent) commit   28aa8b79e37e726617c0b9cd642f2f9dcdf6d7a5
+base (parent) commit   d790c631e486e2edf939a03d3542e78b4824c808
 this checkpoint         travels in the commit that supersedes that base and
-                        records the VOLATILITY HEARTBEAT ACTIVATION (M2E-006).
-                        The ACTIVE heartbeat set becomes {heat, volatility}.
+                        records the FETCHER HEARTBEAT PRODUCER — already
+                        DEPLOYED and EMITTING, but NOT committed until now and
+                        NOT activated. No fetcher heartbeat contract exists.
 ```
 
 > **PRECEDENCE — running machine > repository > this document > chat memory.**
@@ -64,6 +65,24 @@ one-shot).
 **The heartbeat is inert.** `health_contracts.json` is offline-only and nothing
 consults it. Producer deployed != authority activated.
 
+**M2E-008 fetcher heartbeat producer: DEPLOYED, EMITTING, NOT ACTIVATED.**
+`scripts/fetcher_heartbeat.js` (NEW) plus a hash-gated emit point in
+`scripts/master-fetcher.js`. It **self-deployed within 30 seconds** of the patch
+landing on disk — first heartbeat 2026-09-06T04:08:38Z, session `20260904_2239`,
+`producerBuild fetcher-hb-build-928a76e6`, 12 sub-fetchers attempted, 12 ok.
+
+**No fetcher heartbeat CONTRACT exists**, so nothing evaluates this artifact.
+`heartbeatStaleSec 300` is RATIFIED; `heartbeatStartupGraceSec` is UNRATIFIED
+and no number will be invented from steady-state cadence.
+
+**The SKIP GUARD fired in production before the first emit.** A lock-held cycle
+resolved `{}` — which reaches `.then()` normally — and the producer declined to
+claim completion, logging `heartbeat NOT emitted`. Without that guard the cycle
+would have written `cycle:"complete"` with ZERO fetches. Because the Redis lock
+is `SET NX PX`, one hung holder would have produced a healthy-looking 60s
+cadence indefinitely: Incident 023's failure shape reproduced inside the
+heartbeat layer.
+
 **M2E-006 volatility heartbeat: ACTIVATED.** `heartbeatActivation` is now
 `ACTIVE`, making the authoritative set exactly **{heat, volatility}**. The other
 six remain `PENDING_MIGRATION`. Volatility becomes the SECOND component able to
@@ -101,12 +120,13 @@ DEPLOY-SEM   every directive touching a potentially self-reloading component
                RESTART_REQUIRED     a long-lived process must be restarted
                UNKNOWN              FAILS CLOSED — treat as live and gate it
              Classifications — PROVEN only where observed:
-               volatility        AUTO_ON_NEXT_CYCLE   PROVEN (M2E-001-R7: a
-                                 heartbeat from post-patch bytes appeared with
-                                 no restart, signal or deploy command)
-               fetcher           UNKNOWN — its launch shape RESEMBLES
-                                 volatility's, but resemblance is not evidence
-                                 and no auto-reload has been observed
+               volatility        AUTO_ON_NEXT_CYCLE   PROVEN (M2E-001-R7)
+               fetcher           AUTO_ON_NEXT_CYCLE   PROVEN (M2E-008C: a
+                                 heartbeat carrying the post-patch producerBuild
+                                 and the current session appeared within 30s,
+                                 with no restart, signal or manual execution).
+                                 Upgraded from UNKNOWN by OBSERVATION, never by
+                                 analogy to volatility.
                shadow_engine     UNKNOWN — same reasoning
                activator         UNKNOWN — same reasoning, and its wrapper is
                                  long-lived with adaptive backoff, so the worker
@@ -288,7 +308,16 @@ SESSION AUTHORITY  heat binds its epoch via the PID check, because its pid file
    assertions correctly checked ACTIVE. Three successive greps each missed at
    least one; a structural sweep comparing every label against its own body
    found all four. A pattern that cannot see the whole structure is a guess.
-16 A test must be PORTABLE. console.log passes through a formatter that can
+16 ABSENCE OF EVIDENCE IS NOT EVIDENCE OF A DIFFERENT MECHANISM. When the
+   fetcher heartbeat had not appeared, the correct verdict was DEPLOY_SEM
+   UNKNOWN — not RESTART_REQUIRED. The producer deliberately emits nothing on
+   the lock-held, empty, null and fatal paths, so absence was consistent with
+   CORRECT behaviour. Only a positive observation could upgrade the claim.
+17 A REDIS NAMESPACE IS NOT OWNED BY ITS NAME. `fetcher:*` keys can be
+   refreshed by volatility, which calls runFetcher() on its own cycle. Key
+   freshness therefore cannot serve as fetcher output authority; only a
+   payload carrying producer and session identity can.
+18 A test must be PORTABLE. console.log passes through a formatter that can
    inject ANSI escapes; parsing it as a number yields NaN and fails a CORRECT
    implementation. Prefer machine-readable output, and better still verify
    from the ARTIFACT rather than from stdout.
@@ -337,6 +366,12 @@ first volatility heartbeat    2026-09-05T06:41:14Z  session 20260904_2239
 M2E-001-R4 result             28/28 x3, and 28/28 under FORCE_COLOR=1
 volatility monitor (pre-M2E)  0455a658db36863da761f680ca2448cd56decff12fc925fbe182bfa7403d0874
 volatility producer build     volatility-hb-build-0455a658
+fetcher_heartbeat.js          d1211578a0ba60b0d875d27ac2d6ca0a920386b7f7fb1ea1c56f3eaf82102370
+master-fetcher.js (pre-M2E)   928a76e6483ebe44103793dbaa0457092795212398bbb42bcd2a4fbeac8ac933
+fetcher producer build        fetcher-hb-build-928a76e6
+fetcher cadence (measured)    60-73s over 12 natural cycles (M2E-007-R1);
+                              staleSec 300 RATIFIED, startupGrace UNRATIFIED
+M2E-008A bundle               b36a7c6bfed27e0eb6e2393f783369af92954678dee356fa5d55214c327500ba
 volatility cadence (measured) 30-31s over 24 consecutive cycles (M2E-003A);
                               staleSec 180 ~= 6 nominal cycles, startupGrace 240
 M2E-004A bundle               476ba19552ce3fdc778eb82a9b6f34ed82aa1461caf6e2397cd84fa41e06c67e
@@ -357,8 +392,9 @@ Drive pre-prune snapshot      f29f8aa19d9d1ff5a1bda77715a6daa0880c31953a4e548505
 **Return to Boss for review.** This checkpoint is the deliverable; no further
 work is authorized by it.
 
-The volatility migration is COMPLETE: producer deployed and emitting, contract
-committed, authority ACTIVE. **Nothing further is released** — fetcher,
+The volatility migration is COMPLETE. The FETCHER producer is deployed and
+emitting but has NO contract and NO activation — those are separate gates that
+have not been released. **Nothing further is released** — fetcher,
 shadow_engine and activator have not been started, Incident 023 remains open for
 the pid namespace, and Dependabot, TIME-001 implementation, RCV-003 and
 economics all remain parked.

@@ -12,6 +12,11 @@
 require("dotenv").config();
 const path = require("path");
 const fs = require("fs");
+// M2E-008A: worker-owned cycle-completion heartbeat. A SEPARATE module from
+// scripts/analysis/cycle_heartbeat.js, because volatility is DEPLOY-SEM
+// AUTO_ON_NEXT_CYCLE (proven) and an edit there would deploy itself into a
+// working component. Fetcher's own DEPLOY-SEM is UNKNOWN and fails closed.
+const { emitCycleHeartbeat } = require("./fetcher_heartbeat");
 const cron = require("node-cron");
 
 let redisClient;
@@ -363,11 +368,50 @@ if (require.main === module) {
     process.exit(0);
   } else {
     runFetchersOnce()
-      .then(() => {
+      .then((results) => {
         log("info", "One-shot fetchers run completed");
+        // ── M2E-008A: WORKER-OWNED CYCLE-COMPLETION HEARTBEAT ──────────────
+        // Emitted ONLY for a run that actually ORCHESTRATED fetches.
+        //
+        // runFetchersOnce resolves {} on two early paths: the Redis lock was
+        // held (:258) and no fetcher modules were found (:266). Both reach
+        // .then() successfully. Emitting there would claim a completed cycle
+        // when NOTHING was fetched — and because the lock is SET NX PX, a
+        // single hung holder would make every later cycle skip while the
+        // heartbeat reported a healthy 60s cadence forever. That is the
+        // Incident-023 failure shape reproduced inside the heartbeat itself.
+        //
+        // Skips are reported on stderr rather than passing silently: silence
+        // would be indistinguishable from a crash.
+        try {
+          const names = results && typeof results === "object" ? Object.keys(results) : [];
+          if (names.length === 0) {
+            process.stderr.write("[MASTER-FETCHER] cycle produced no fetcher results (lock held or no modules) — heartbeat NOT emitted\n");
+          } else {
+            let ok = 0, failed = 0, anyPartial = false;
+            for (const n of names) {
+              const r = results[n];
+              if (r && r.ok === true) ok++; else failed++;
+              if (r && r.data && r.data.partial === true) anyPartial = true;
+            }
+            // Counts are DIAGNOSTIC ONLY (Boss ruling Q2). The heartbeat
+            // asserts cycle completion; partial sub-fetch failure does not
+            // withhold it and does not determine authority.
+            emitCycleHeartbeat({
+              component: "fetcher",
+              intervalSec: 60,
+              fetchersAttempted: names.length,
+              fetchersOk: ok,
+              fetchersFailed: failed,
+              anyPartial,
+            });
+          }
+        } catch (_) { /* emission must never cause an exit */ }
         process.exit(0);
       })
       .catch((err) => {
+        // NO heartbeat here, deliberately: a cycle that died is not a cycle
+        // that completed. This path already exits non-zero via exitCode.
         log("error", "Unhandled error in one-shot run", { error: err.message });
         process.exitCode = 1;
       });
