@@ -32,9 +32,11 @@ const ev=(c,hb,pid,session,startMs)=>health.evalHeartbeat(
   pid===undefined?1668737:pid, session===undefined?SESSION:session,
   startMs===undefined?NOW-100000:startMs);
 
-t('C0 canonical contract: activation still PENDING, values ratified', () => {
+t('C0 canonical contract: activation ACTIVE, ratified values intact', () => {
   const v=comp('volatility').target;
-  assert.strictEqual(v.heartbeatActivation,'PENDING_MIGRATION','activation NOT performed');
+  // CLASS A: activation PERFORMED in M2E-006. The property this test guards is
+  // that the ratified values are intact and activation is DELIBERATE.
+  assert.strictEqual(v.heartbeatActivation,'ACTIVE','activated in M2E-006');
   assert.strictEqual(v.heartbeatStaleSec,180);
   assert.strictEqual(v.heartbeatStartupGraceSec,240);
   assert.strictEqual(v.heartbeatSessionBound,true);
@@ -126,10 +128,19 @@ t('A10b evaluator with NO current session -> UNKNOWN, not a false PASS', () => {
   assert.strictEqual(r.state,'UNKNOWN'); assert(/no current session/.test(r.reason));
   fs.rmSync(h.dir,{recursive:true,force:true});
 });
-t('A11 PENDING activation still short-circuits everything', () => {
+t('A11 a PENDING contract still short-circuits everything', () => {
+  // CLASS A: volatility is ACTIVE now, so the rule is proven against a
+  // deliberately PENDING contract — otherwise the test asserts nothing.
   const h=hbFile({sessionId:'WRONG',producerBuild:'BAD'},9999);
-  const r=ev(comp('volatility'),h.path);   // canonical = PENDING
+  const v=comp('volatility');
+  const pending={...v,target:{...v.target,heartbeatActivation:'PENDING_MIGRATION'}};
+  const r=ev(pending,h.path);
   assert.strictEqual(r.state,'NOT_APPLICABLE','a pending contract consults nothing');
+  fs.rmSync(h.dir,{recursive:true,force:true});
+});
+t('A11b the ACTIVE volatility contract DOES consult that same record', () => {
+  const h=hbFile({sessionId:'WRONG',producerBuild:'BAD'},9999);
+  assert.strictEqual(ev(comp('volatility'),h.path).state,'FAIL','activation is the only difference');
   fs.rmSync(h.dir,{recursive:true,force:true});
 });
 t('B1 CYCLE: payload.cycle != "complete" -> FAIL even when fresh', () => {
@@ -223,9 +234,13 @@ t('B3d heat does NOT require ts — its contract omits heartbeatRequireTs', () =
   assert.strictEqual(r.state,'PASS','an undeclared requirement must not be enforced');
   fs.rmSync(h.dir,{recursive:true,force:true});
 });
-t('A12 the other six heartbeat authorities remain PENDING', () => {
+t('A12 the ACTIVE set is exactly {heat, volatility}', () => {
+  // CLASS A: M2E-006 activated volatility. The invariant is that activation is
+  // SCOPED — the remaining six must not have been activated incidentally.
+  const act=load().components.filter(c=>c.target.heartbeatActivation==='ACTIVE').map(c=>c.id).sort();
+  assert.deepStrictEqual(act,['heat','volatility']);
   for (const c of load().components)
-    if (c.id!=='heat') assert.strictEqual(c.target.heartbeatActivation,'PENDING_MIGRATION',c.id);
+    if (!act.includes(c.id)) assert.strictEqual(c.target.heartbeatActivation,'PENDING_MIGRATION',c.id);
 });
 t('A13 loader preserves every identity field (IDENTITY_LOST invariant)', () => {
   const v=comp('volatility').target;

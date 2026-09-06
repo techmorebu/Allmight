@@ -51,7 +51,7 @@
       "class": "RESTARTABLE",
       "heartbeatPath": "logs/hb/volatility.hb",
       "heartbeatStaleSec": 180,
-      "heartbeatActivation": "PENDING_MIGRATION",
+      "heartbeatActivation": "ACTIVE",
       "outputRecord": {
         "path": "logs/volatility_arbitrum.jsonl",
         "format": "jsonl_record",
@@ -61,7 +61,7 @@
         "emptyGraceSec": 600
       },
       "outputActivation": "ACTIVE",
-      "healthAuthority": "ACTIVE output (S15R7 --log). Heartbeat contract RATIFIED but activation still PENDING_MIGRATION. session-bound=true / pid-bound=false because the pid file records the WRAPPER (Incident 023) and each one-shot worker is a new process — a pid check could never pass. staleSec 180 = ~6 nominal cycles (measured 30-31s over 24 samples, M2E-003A); startupGraceSec 240 is deliberately more conservative because the steady-state sample does not measure cold start.",
+      "healthAuthority": "ACTIVE output (S15R7 --log) and ACTIVE heartbeat (M2E-006). session-bound=true / pid-bound=false because the pid file records the WRAPPER (Incident 023) and each one-shot worker is a new process — a pid check could never pass. staleSec 180 = ~6 nominal cycles (measured 30-31s over 24 samples, M2E-003A); startupGraceSec 240 is deliberately more conservative because the steady-state sample does not measure cold start. cycle must be 'complete' and ts must be present, parsable and not future.",
       "heartbeatRequired": true,
       "outputRequired": true,
       "heartbeatStartupGraceSec": 240,

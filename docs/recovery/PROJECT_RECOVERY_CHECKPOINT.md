@@ -1,14 +1,12 @@
 # ALLMIGHT — RECOVERY CHECKPOINT
 
-**Refreshed:** 2026-09-05 (M2E-005R1) · **Authority:** Boss · **Standard:** GOV-CHK-001
+**Refreshed:** 2026-09-05 (M2E-006R5) · **Authority:** Boss · **Standard:** GOV-CHK-001
 
 ```
-base (parent) commit   0a1040789f0b850c6a12e71815d695b1f3552b24
+base (parent) commit   28aa8b79e37e726617c0b9cd642f2f9dcdf6d7a5
 this checkpoint         travels in the commit that supersedes that base and
-                        records the M2E-004A volatility EVALUATOR CONTRACT —
-                        implementation only. Activation is NOT performed.
-                        It is also the FIRST repository admission of the
-                        frozen M0 components baseline (see below).
+                        records the VOLATILITY HEARTBEAT ACTIVATION (M2E-006).
+                        The ACTIVE heartbeat set becomes {heat, volatility}.
 ```
 
 > **PRECEDENCE — running machine > repository > this document > chat memory.**
@@ -66,8 +64,13 @@ one-shot).
 **The heartbeat is inert.** `health_contracts.json` is offline-only and nothing
 consults it. Producer deployed != authority activated.
 
-**M2E-004A evaluator contract (committed with this checkpoint, NOT activated):**
-`heartbeatActivation` stays `PENDING_MIGRATION`. The contract now declares
+**M2E-006 volatility heartbeat: ACTIVATED.** `heartbeatActivation` is now
+`ACTIVE`, making the authoritative set exactly **{heat, volatility}**. The other
+six remain `PENDING_MIGRATION`. Volatility becomes the SECOND component able to
+reach `HEALTHY / CERTIFIED 3/3`, and the first whose heartbeat is session-bound
+rather than pid-bound.
+
+**The contract declares**
 `sessionBound true · pidBound false · schemaVersion 1 · cycle "complete" ·
 requireTs true · staleSec 180 · startupGraceSec 240`. Three evaluator blockers
 found in M2E-002 are closed: pid comparison is per-contract, `workerPid` and
@@ -197,7 +200,12 @@ INCIDENT 021  R-SIGINT mechanism PROVEN ×2 (412s and 2130s uptimes).
               SIGINT would not answer the historical question and is not
               authorized. If a third occurs naturally, preserve the enriched
               record and bring it back.
-INCIDENT 023  FOUR components record WRAPPER pids, not two — fetcher,
+INCIDENT 023  STILL OPEN. Volatility now has a worker-owned, session-bound
+              heartbeat that detects worker death independently of its wrapper
+              pid — but the PID ENTRY IS STILL THE WRAPPER and `kill -0` still
+              tests a shell. The DUAL model mitigates volatility; it does not
+              repair the pid namespace for any component.
+              FOUR components record WRAPPER pids, not two — fetcher,
               activator, volatility, shadow_engine (INC023-001, live-confirmed).
               `kill -0` tests a subshell whose job is to survive the worker
               dying. THREE of them currently show `bash -> sleep`, so the check
@@ -272,7 +280,15 @@ SESSION AUTHORITY  heat binds its epoch via the PID check, because its pid file
    from the session-pointer guard, where filesystem granularity justified it;
    it did not transfer, and any window is a gap a touched artifact passes
    through. Carry a constant only where its justification carries too.
-14 A test must be PORTABLE. console.log passes through a formatter that can
+14 CLASSIFY A RETROFIT ITEM BY WHAT MADE IT FAIL. If a fixture stopped
+   supplying required evidence it is a SUPPORT change, even when a count moves
+   as a downstream consequence. Counting it twice inflates the ledger and hides
+   whether every original item was addressed exactly once.
+15 A LABEL IS PART OF THE TEST. Four test titles claimed PENDING while their
+   assertions correctly checked ACTIVE. Three successive greps each missed at
+   least one; a structural sweep comparing every label against its own body
+   found all four. A pattern that cannot see the whole structure is a guess.
+16 A test must be PORTABLE. console.log passes through a formatter that can
    inject ANSI escapes; parsing it as a number yields NaN and fails a CORRECT
    implementation. Prefer machine-readable output, and better still verify
    from the ARTIFACT rather than from stdout.
@@ -326,7 +342,12 @@ volatility cadence (measured) 30-31s over 24 consecutive cycles (M2E-003A);
 M2E-004A bundle               476ba19552ce3fdc778eb82a9b6f34ed82aa1461caf6e2397cd84fa41e06c67e
 components.json (FROZEN M0)   entered git M2E-005R1 at scripts/telemetry/
                               81bdb023cb939bd6d7c366183dc0cf8469b3f21dad6c03c5c5bebe5b9af7cacd
-M2E-004A regression           18 suites / 312 checks, 3x from clean extraction
+M2E-006R4 bundle              b2f8ff0046a4d89670951e477e1a812614066566dc428182e27e34f89187422c
+M2E-006 regression            18 suites / 313 checks, 3x from clean extraction
+                              312 + 1 new control (A11b). The count was NOT
+                              forced back: test meaning outranks the integer.
+M2E-006 epoch retrofit        28 failing assertion instances from 19 distinct
+                              causes: CLASS A 13, CLASS B 6, CLASS C 0
 heartbeat payload schema      heartbeatSchemaVersion 1
 Drive pre-prune snapshot      f29f8aa19d9d1ff5a1bda77715a6daa0880c31953a4e548505d5cee1620cb1c5
 ```
@@ -336,10 +357,11 @@ Drive pre-prune snapshot      f29f8aa19d9d1ff5a1bda77715a6daa0880c31953a4e548505
 **Return to Boss for review.** This checkpoint is the deliverable; no further
 work is authorized by it.
 
-The volatility producer is committed, deployed and emitting, and the evaluator
-CONTRACT is now implemented and committed. **Only ACTIVATION remains** — flipping
-`heartbeatActivation` to `ACTIVE` — and that is a separate gate that has **NOT**
-been released.
+The volatility migration is COMPLETE: producer deployed and emitting, contract
+committed, authority ACTIVE. **Nothing further is released** — fetcher,
+shadow_engine and activator have not been started, Incident 023 remains open for
+the pid namespace, and Dependabot, TIME-001 implementation, RCV-003 and
+economics all remain parked.
 
 **Ask Boss for the current directive rather than resuming from this section.**
 
