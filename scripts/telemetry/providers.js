@@ -92,11 +92,36 @@ const PROVIDERS = { jsonl_record: jsonlRecord, text_append: textAppend, redis_tt
  *   redis       a key pattern — NEVER path-joined, NEVER prefixed
  *   none        no source, no resolution
  */
-const SOURCE_KIND = { jsonl_record: 'filesystem', text_append: 'filesystem', redis_ttl: 'redis' };
+const SOURCE_KIND = { jsonl_record: 'filesystem', text_append: 'filesystem', redis_ttl: 'redis',
+                      // M2E-016B: causal_coverage resolves like a filesystem source, but
+                      // through paths[] rather than a single `path`. Registering it here
+                      // is required — sourceKind() reads THIS map, not PROVIDERS, and
+                      // returning null made the adapter fail loud (correctly).
+                      causal_coverage: 'filesystem' };
 function sourceKind(format) {
   if (format === null || format === undefined) return 'none';
   return SOURCE_KIND[format] || null;      // null = unknown, callers must fail loud
 }
+
+// ── M2E-016: causal_coverage ────────────────────────────────────────────
+// Registered so the loader will ACCEPT the contract. The reading strategy
+// lives in causal_coverage.js because it correlates FIVE artifacts across TWO
+// components — no single-artifact provider signature can express it. This
+// entry declares that the behaviour EXISTS and names its source kind; the
+// evaluator dispatches to the module.
+//
+// It carries NO `path`: its paths are requiredWork.path plus one per
+// coverageLeg. The loader's filesystem-path check must therefore treat this
+// format as multi-path, which is why `multiPath` is declared here rather
+// than special-cased in the loader.
+PROVIDERS.causal_coverage = {
+  sourceKind: 'filesystem',
+  multiPath: true,
+  pathsFrom: (o) => [o && o.requiredWork && o.requiredWork.path,
+                     ...((o && o.coverageLegs) || []).map(l => l && l.path)].filter(Boolean),
+  evaluate: () => { throw new Error('causal_coverage is evaluated by causal_coverage.js, not by a single-artifact provider'); },
+};
+
 const FORMATS = Object.keys(PROVIDERS);
 function get(format) { return PROVIDERS[format] || null; }
 module.exports = { get, sourceKind, FORMATS, PROVIDERS, SOURCE_KIND };

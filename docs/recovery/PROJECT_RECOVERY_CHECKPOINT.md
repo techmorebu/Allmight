@@ -1,13 +1,12 @@
 # ALLMIGHT — RECOVERY CHECKPOINT
 
-**Refreshed:** 2026-09-06 (M2E-008D) · **Authority:** Boss · **Standard:** GOV-CHK-001
+**Refreshed:** 2026-09-06 (M2E-016E) · **Authority:** Boss · **Standard:** GOV-CHK-001
 
 ```
-base (parent) commit   d790c631e486e2edf939a03d3542e78b4824c808
+base (parent) commit   371dcc4f66bf8ba6b7049f66721bff58335a1924
 this checkpoint         travels in the commit that supersedes that base and
-                        records the FETCHER HEARTBEAT PRODUCER — already
-                        DEPLOYED and EMITTING, but NOT committed until now and
-                        NOT activated. No fetcher heartbeat contract exists.
+                        records the SHADOW CAUSAL COVERAGE OUTPUT AUTHORITY —
+                        implemented, dispatched, DECLARED, and NOT ACTIVATED.
 ```
 
 > **PRECEDENCE — running machine > repository > this document > chat memory.**
@@ -64,6 +63,36 @@ one-shot).
 
 **The heartbeat is inert.** `health_contracts.json` is offline-only and nothing
 consults it. Producer deployed != authority activated.
+
+**M2E-016 shadow causal coverage: IMPLEMENTED, DECLARED, NOT ACTIVATED.**
+A new authority form. Every prior output authority ages the OUTPUT; this one
+ages the WORK. The deadline is anchored to the required record's own `ts`, never
+to output age, so a quiet activator cannot age shadow into failure.
+
+```
+requiredWork   activator.jsonl, parseable JSON, type=signal signal=EXECUTION_READY
+workKey        session + chain + block   [block RATIFIED M2E-013A: 2515/2515
+               present, strictly monotonic, zero collisions, zero extras]
+coverageLegs   v1 + v2 ledgers, ALL_REQUIRED
+states         PASS · PENDING · ASYMMETRIC · FAIL · UNKNOWN
+deadline       processingDeadlineSec 360   reReadDelayMs 250   attempts 1
+```
+
+**ASYMMETRIC is a distinct non-failing state, not a PENDING alias.** 35 of 35
+measured samples showed a 2.17-5.80s window where one engine covers before the
+other — the sequential-engine race. Immediate failure there would false-red on
+essentially every new work item.
+
+**Full fingerprint stability is mandatory** — existence + size + mtime_ns +
+sha256. A v2 rewrite was observed changing content while holding EXACTLY
+2,604,110 bytes, twice in one hour. Length alone is permanently rejected.
+
+**EMPTY_FILE_TRANSIENT_CANDIDATE:** `fs.writeFileSync` truncates to zero before
+writing (observed 2,142,199 -> 0). A read in that window sees an empty file that
+parses cleanly as "zero covered work" — a confident, wrong answer with no parse
+error. Zero bytes must pass the bounded re-read before meaning anything.
+
+**Activation is a SEPARATE gate and is BLOCKED** by SHADOW-SILENT-FAILURE.
 
 **M2E-008 fetcher heartbeat producer: DEPLOYED, EMITTING, NOT ACTIVATED.**
 `scripts/fetcher_heartbeat.js` (NEW) plus a hash-gated emit point in
@@ -220,6 +249,13 @@ INCIDENT 021  R-SIGINT mechanism PROVEN ×2 (412s and 2130s uptimes).
               SIGINT would not answer the historical question and is not
               authorized. If a third occurs naturally, preserve the enriched
               record and bring it back.
+SHADOW-SILENT-FAILURE  OPEN. The launcher runs both engines under
+              `2>/dev/null || true`, so stderr is DISCARDED and a non-zero exit
+              is SWALLOWED. Both engines can fail every cycle, forever, with no
+              trace. The wrapper also SLEEPS FIRST, so for the first 300s of a
+              session `kill -0` reports a healthy component that has never run.
+              This BLOCKS any shadow authority activation: output proves work
+              LANDED; it says nothing about a cycle that died before writing.
 INCIDENT 023  STILL OPEN. Volatility now has a worker-owned, session-bound
               heartbeat that detects worker death independently of its wrapper
               pid — but the PID ENTRY IS STILL THE WRAPPER and `kill -0` still
@@ -317,7 +353,15 @@ SESSION AUTHORITY  heat binds its epoch via the PID check, because its pid file
    refreshed by volatility, which calls runFetcher() on its own cycle. Key
    freshness therefore cannot serve as fetcher output authority; only a
    payload carrying producer and session identity can.
-18 A test must be PORTABLE. console.log passes through a formatter that can
+18 CLASSIFY A TEST FAILURE BEFORE FIXING IT. A = real implementation defect,
+   B = intentional declaration-epoch drift, C = unrelated. M2E-016 broke 9
+   suites; 2 were real defects (unresolved $SESSION_DIR in multi-path sources)
+   and 5 assertions were epoch drift. Retrofitting first would have blessed
+   expectations around a still-broken implementation.
+19 VERIFY BY PATH, NEVER BY BASENAME. A manifest check using `find -name`
+   matched test/refs/runtime_adapter.js instead of the staging copy and
+   reported a false mismatch. The same class as the four stale test labels.
+20 A test must be PORTABLE. console.log passes through a formatter that can
    inject ANSI escapes; parsing it as a number yields NaN and fails a CORRECT
    implementation. Prefer machine-readable output, and better still verify
    from the ARTIFACT rather than from stdout.
@@ -372,6 +416,11 @@ fetcher producer build        fetcher-hb-build-928a76e6
 fetcher cadence (measured)    60-73s over 12 natural cycles (M2E-007-R1);
                               staleSec 300 RATIFIED, startupGrace UNRATIFIED
 M2E-008A bundle               b36a7c6bfed27e0eb6e2393f783369af92954678dee356fa5d55214c327500ba
+M2E-016D bundle               bc503ca3df7bb236fa034c2af34bd08fe1f4b2b64de2c63b2db364834b4824d9
+M2E-016 regression            19 suites / 366 checks, 3x from clean extraction
+shadow cadence (measured)     11 intervals, median 306s, max 311s
+shadow causal latency         35 distinct samples, median 142.3s, max 307.6s
+shadow rewrite window         12 events, max 92ms; zero-byte exposure 35ms (n=1)
 volatility cadence (measured) 30-31s over 24 consecutive cycles (M2E-003A);
                               staleSec 180 ~= 6 nominal cycles, startupGrace 240
 M2E-004A bundle               476ba19552ce3fdc778eb82a9b6f34ed82aa1461caf6e2397cd84fa41e06c67e
@@ -392,8 +441,10 @@ Drive pre-prune snapshot      f29f8aa19d9d1ff5a1bda77715a6daa0880c31953a4e548505
 **Return to Boss for review.** This checkpoint is the deliverable; no further
 work is authorized by it.
 
-The volatility migration is COMPLETE. The FETCHER producer is deployed and
-emitting but has NO contract and NO activation — those are separate gates that
+The volatility migration is COMPLETE. SHADOW has a declared, dispatched, INACTIVE
+causal output authority; its activation is blocked by SHADOW-SILENT-FAILURE and
+it still needs a heartbeat for idle liveness. The FETCHER producer is deployed
+and emitting but has NO contract and NO activation — those are separate gates that
 have not been released. **Nothing further is released** — fetcher,
 shadow_engine and activator have not been started, Incident 023 remains open for
 the pid namespace, and Dependabot, TIME-001 implementation, RCV-003 and

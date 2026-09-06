@@ -129,9 +129,42 @@
       "heartbeatPath": "logs/hb/shadow_engine.hb",
       "heartbeatStaleSec": 400,
       "heartbeatActivation": "PENDING_MIGRATION",
-      "outputRecord": null,
-      "healthAuthority": "heartbeat ONLY — an absent ledger is CORRECT in a quiet market, so output freshness cannot distinguish quiet from dead.",
-      "heartbeatRequired": true
+      "outputRecord": {
+        "format": "causal_coverage",
+        "sourceKind": "filesystem",
+        "requiredWork": {
+          "path": "$SESSION_DIR/activator.jsonl",
+          "match": {
+            "type": "signal",
+            "signal": "EXECUTION_READY"
+          },
+          "workKey": "block",
+          "timeField": "ts",
+          "skipUnparsable": true
+        },
+        "coverageLegs": [
+          {
+            "id": "v1",
+            "path": "$SESSION_DIR/shadow_execution_ledger.jsonl",
+            "workKeyFrom": "signalId",
+            "workKeyTransform": "suffix-after-last-dash"
+          },
+          {
+            "id": "v2",
+            "path": "$SESSION_DIR/shadow_execution_ledger_v2.jsonl",
+            "workKeyFrom": "signalId",
+            "workKeyTransform": "suffix-after-last-dash"
+          }
+        ],
+        "coverage": "ALL_REQUIRED",
+        "processingDeadlineSec": 360,
+        "reReadDelayMs": 250,
+        "reReadAttempts": 1
+      },
+      "healthAuthority": "Output authority DECLARED but PENDING_MIGRATION (M2E-016). Causal form: the deadline is anchored to requiredWork.ts, never to output age, so a quiet activator cannot age shadow into failure. ALL_REQUIRED across v1+v2 because 2>/dev/null || true lets one engine run while the other is dead. ASYMMETRIC is a distinct non-failing state — 35/35 measured samples showed a 2.17-5.80s sequential-engine window. processingDeadlineSec 360 (worst observed causal latency 307.6s, max cadence 311s). reReadDelayMs 250 exceeds the 92ms max observed rewrite window. Full fingerprint stability is mandatory: a v2 rewrite was observed changing content while holding exactly 2604110 bytes. ACTIVATION BLOCKED by SHADOW-SILENT-FAILURE.",
+      "heartbeatRequired": true,
+      "outputActivation": "PENDING_MIGRATION",
+      "outputRequired": true
     }
   }
 }

@@ -177,6 +177,14 @@ function evalHeartbeat(comp, now, fsx, expectedPid, currentSessionId, sessionSta
 // Reads the newest RECORD'S OWN ts, never file mtime. After S15R7 the volatility
 // process log is kept fresh by the wrapper's failure messages — mtime there is
 // satisfied BY failure. A record timestamp cannot be.
+// M2E-016D: the bounded re-read needs a synchronous pause. Injectable so tests
+// never actually block, and so the 250ms cost is visible rather than hidden.
+function sleepFn(ms) {
+  if (!ms || ms <= 0) return;
+  const end = Date.now() + ms;
+  while (Date.now() < end) { /* deliberate synchronous wait */ }
+}
+
 function evalOutput(comp, now, fsx, sessionStartMs, previous) {
   const t = comp.target || {};
   const o = t.outputRecord;
@@ -189,6 +197,34 @@ function evalOutput(comp, now, fsx, sessionStartMs, previous) {
       o.sourceKind === 'redis'
         ? { sourceKind: 'redis', keyPattern: o.keyPattern, activation: t.outputActivation || 'PENDING_MIGRATION' }
         : { sourceKind: o.sourceKind || 'filesystem', path: o.path, activation: t.outputActivation || 'PENDING_MIGRATION' });
+
+  // M2E-016D — CAUSAL COVERAGE DISPATCH.
+  // Routed here, AFTER the activation gate: a PENDING_MIGRATION contract still
+  // returns NOT_APPLICABLE above and never reaches this code. The dispatch
+  // exists so a future activation ruling has an end-to-end path; it does not
+  // itself activate anything.
+  //
+  // Multi-artifact by nature — it correlates an upstream work source with one
+  // coverage leg per producer — so it cannot use the single-artifact provider
+  // signature. The registered provider deliberately throws if invoked directly,
+  // which is why the format is intercepted here rather than falling through.
+  if (o.format === 'causal_coverage') {
+    const cc = require('./causal_coverage');
+    const work = cc.requiredWork(o.requiredWork, fsx);
+    const newestKey = (work.items && work.items.length)
+      ? work.items[work.items.length - 1].workKey : undefined;
+    const legs = (o.coverageLegs || []).map(spec =>
+      cc.readLegWithStability(spec, fsx, sleepFn, {
+        reReadDelayMs: o.reReadDelayMs === undefined ? 250 : o.reReadDelayMs,
+        newestRequiredKey: newestKey }));
+    const r = cc.allRequired(work, legs, { now, processingDeadlineSec: o.processingDeadlineSec });
+    // ASYMMETRIC and PENDING are DISTINCT non-failing states, not PASS aliases:
+    // 35/35 measured samples showed a 2.17-5.80s sequential-engine window, so
+    // ASYMMETRIC is a normal condition and collapsing it would hide a real
+    // property of the system.
+    return V('output', r.state, r.reason,
+      { ...r.evidence, format: 'causal_coverage', activation: 'ACTIVE' });
+  }
 
   // TYPED PROVIDER (M1A-R2). The contract names its reading strategy; a format
   // with no implementation is rejected at LOAD time, so this cannot silently

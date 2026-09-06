@@ -53,6 +53,11 @@ function normalizeHeartbeat(c, issues) {
                              'heartbeatSessionBound', 'heartbeatPidBound',
                              'heartbeatStartupGraceSec', 'heartbeatCycle',
                              'heartbeatRequireTs'];
+    // M2E-016A: the causal contract's identity. Losing processingDeadlineSec or
+    // a coverage leg silently would leave the contract stricter than the
+    // evaluator — the false-assurance class GOV-CHK closed for producerBuild.
+    const OUTPUT_IDENTITY_FIELDS = ['processingDeadlineSec', 'coverage',
+                                    'reReadDelayMs', 'reReadAttempts'];
     const out = { heartbeatPath: t.heartbeatPath,
                   heartbeatStaleSec: t.heartbeatStaleSec || DEFAULTS.heartbeatStaleSec,
                   heartbeatActivation: act };
@@ -92,6 +97,37 @@ function normalizeOutput(c, issues) {
     // sourceKind, not assumed to be `path`. A redis source has a keyPattern and
     // no path; demanding a path is what let a redis URI be treated as a file.
     const kind = providers.sourceKind(fmt);
+    // M2E-016A: a MULTI-PATH format declares its sources through the provider,
+    // so the single-`path` requirement does not apply. The paths are still
+    // CHECKED — via pathsFrom — so a contract cannot omit them silently. The
+    // M1A-R1 guard is unweakened: an unregistered format is still INVALID.
+    const provDef = providers.get(fmt);
+    if (provDef && provDef.multiPath) {
+      const paths = provDef.pathsFrom(o);
+      if (!paths.length) {
+        issues.push({ level: 'INVALID', componentId: c.id, field: 'target.outputRecord',
+          msg: `format '${fmt}' is multi-path but declares NO paths` }); return {}; }
+      if (o.path) {
+        issues.push({ level: 'INVALID', componentId: c.id, field: 'target.outputRecord.path',
+          msg: `format '${fmt}' is multi-path and must NOT declare a single path` }); return {}; }
+      // the early return must NOT skip the activation gate: an implicit
+      // undefined would leave the epoch unstated, and PENDING_MIGRATION is a
+      // required, EXPLICIT declaration.
+      const mact = t.outputActivation || 'PENDING_MIGRATION';
+      if (!ACTIVATIONS.includes(mact)) { issues.push({ level: 'INVALID', componentId: c.id,
+        field: 'target.outputActivation', msg: `unknown activation '${mact}'` }); return {}; }
+      // SAME SHAPE as the single-path return: the causal contract nests under
+      // outputRecord, with outputActivation as a sibling. A flat spread would
+      // have made `target.outputRecord` undefined, and every downstream check
+      // that tests for its presence would silently read the component as
+      // having no output contract at all.
+      return { outputRecord: { format: fmt, sourceKind: kind, multiPath: true, paths,
+                 requiredWork: o.requiredWork, coverageLegs: o.coverageLegs,
+                 coverage: o.coverage,
+                 processingDeadlineSec: o.processingDeadlineSec,
+                 reReadDelayMs: o.reReadDelayMs, reReadAttempts: o.reReadAttempts },
+               outputActivation: mact };
+    }
     if (kind === 'filesystem' && !o.path) {
       issues.push({ level: 'INVALID', componentId: c.id, field: 'target.outputRecord.path',
         msg: `format '${fmt}' is a filesystem source but no path is declared` }); return {}; }
