@@ -389,40 +389,12 @@ echo "  PID $NOTIF_PID (heartbeat every 5m)"
 # ─── 7. SHADOW EXECUTION ENGINE ──────────────────────────────────────────────
 echo ""
 echo "-- 7. Shadow execution engine (polls every 5m) --"
-# ─── M2E-017: SHADOW-SILENT-FAILURE REMEDIATION ──────────────────────
-# BEFORE: each engine ran as `2>/dev/null || true`. stderr was DISCARDED and
-# a non-zero exit SWALLOWED, so both engines could fail every cycle, forever,
-# with no trace anywhere. This was the most completely hidden component in
-# the stack and the blocker on activating any shadow authority.
-#
-# AFTER: stderr flows to the shared log, and each exit code is CAPTURED and
-# reported on a machine-readable ENGINE_EXIT line carrying ENGINE IDENTITY,
-# the numeric RC, the SESSION, and a UTC-Z timestamp. Session identity is
-# required: a failure record that cannot be attributed to an epoch is not
-# evidence, and a prior-session line would otherwise be indistinguishable
-# from a current one.
-#
-# PRESERVED, deliberately:
-#   - v1 and v2 remain INDEPENDENT attempts. v2 still runs when v1 fails:
-#     they process the same work separately, and one failing must not
-#     silence the other. `|| true` becomes an explicit `rc=$?` capture, NOT
-#     `set -e`, which would abort the cycle and turn a recoverable engine
-#     failure into a dead component.
-#   - the periodic wrapper stays viable: a failing engine never exits the loop.
-#   - `sleep 300` stays FIRST, so launch ordering is unchanged.
 (set +e; while true; do
   sleep 300
   node "$REPO/scripts/execution/shadow_execution_engine.js" \
-    --session "$SESSION_DIR"
-  SHADOW_V1_RC=$?
-  [ "$SHADOW_V1_RC" -ne 0 ] && \
-    echo "[shadow_engine] ENGINE_EXIT engine=v1 rc=$SHADOW_V1_RC session=$(basename "$SESSION_DIR") ts=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    --session "$SESSION_DIR" 2>/dev/null || true
   node "$REPO/scripts/execution/shadow_execution_engine_v2.js" \
-    --session "$SESSION_DIR"
-  SHADOW_V2_RC=$?
-  [ "$SHADOW_V2_RC" -ne 0 ] && \
-    echo "[shadow_engine] ENGINE_EXIT engine=v2 rc=$SHADOW_V2_RC session=$(basename "$SESSION_DIR") ts=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-  true   # the loop status must never depend on an engine rc
+    --session "$SESSION_DIR" 2>/dev/null || true
 done) >> "$LOG_DIR/shadow_engine.log" 2>&1 &
 SHADOW_PID=$!
 echo "shadow_engine=$SHADOW_PID" >> "$PID_FILE"

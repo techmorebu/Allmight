@@ -1,12 +1,15 @@
 # ALLMIGHT — RECOVERY CHECKPOINT
 
-**Refreshed:** 2026-09-06 (M2E-016E) · **Authority:** Boss · **Standard:** GOV-CHK-001
+**Refreshed:** 2026-09-06 (M2E-017C) · **Authority:** Boss · **Standard:** GOV-CHK-001
 
 ```
-base (parent) commit   371dcc4f66bf8ba6b7049f66721bff58335a1924
+base (parent) commit   1da984b510b3036074a3ff17340d1d249fb3cc95
 this checkpoint         travels in the commit that supersedes that base and
-                        records the SHADOW CAUSAL COVERAGE OUTPUT AUTHORITY —
-                        implemented, dispatched, DECLARED, and NOT ACTIVATED.
+                        records the M2E-017 SHADOW SILENT-FAILURE SOURCE REPAIR
+                        CANDIDATE — VERIFIED, NOT COMMITTED, runtime not
+                        remediated. Canonical repository source REMAINS THE
+                        PREIMAGE until a successful Phase B commit.
+                        The running wrapper has NOT been restarted.
 ```
 
 > **PRECEDENCE — running machine > repository > this document > chat memory.**
@@ -249,13 +252,18 @@ INCIDENT 021  R-SIGINT mechanism PROVEN ×2 (412s and 2130s uptimes).
               SIGINT would not answer the historical question and is not
               authorized. If a third occurs naturally, preserve the enriched
               record and bring it back.
-SHADOW-SILENT-FAILURE  OPEN. The launcher runs both engines under
+SHADOW-SILENT-FAILURE  OPEN AT RUNTIME. Source repair CANDIDATE verified but
+              NOT COMMITTED, see 6b.
+              The DEPLOYED launcher still runs both engines under
               `2>/dev/null || true`, so stderr is DISCARDED and a non-zero exit
               is SWALLOWED. Both engines can fail every cycle, forever, with no
               trace. The wrapper also SLEEPS FIRST, so for the first 300s of a
               session `kill -0` reports a healthy component that has never run.
               This BLOCKS any shadow authority activation: output proves work
               LANDED; it says nothing about a cycle that died before writing.
+              DEPLOY_SEM(start_all.sh)=RESTART_REQUIRED, so a committed source
+              fix does NOT remediate the running process. Restart/deploy is
+              separately unauthorized.
 INCIDENT 023  STILL OPEN. Volatility now has a worker-owned, session-bound
               heartbeat that detects worker death independently of its wrapper
               pid — but the PID ENTRY IS STILL THE WRAPPER and `kill -0` still
@@ -281,6 +289,89 @@ PARKED        Dependabot 124 findings incl. 1 CRITICAL
               on a public repo · TIME-001 implementation · RCV-003 HOLD
               hygiene: execution_gate_score.js.pre-nan.bak (0 refs) and narrow
               history sanitization of the rotated secret
+```
+
+## 6b. M2E-017C — SHADOW SILENT-FAILURE SOURCE REPAIR CANDIDATE
+##      (VERIFIED · NOT COMMITTED)
+
+```
+STATE          source repair CANDIDATE verified; NOT COMMITTED; runtime not
+               remediated. The canonical repository source at
+               scripts/tools/start_all.sh REMAINS THE PREIMAGE 27e8b93... until
+               a successful Phase B commit.
+               Running wrapper NOT restarted; runtime remediation PENDING.
+               SHADOW-SILENT-FAILURE remains OPEN as a RUNTIME condition.
+               DEPLOY_SEM(start_all.sh) = RESTART_REQUIRED.
+
+LANGUAGE LAW   "Canonical source silent-failure mechanism repaired." is allowed
+               ONLY AFTER a successful commit. Before that, the only accurate
+               phrasing is "source repair candidate verified; NOT COMMITTED".
+
+THE CHANGE     one launch block. `2>/dev/null || true` removed from BOTH engine
+               invocations; each exit captured and reported as
+                 [shadow_engine] ENGINE_EXIT engine=<v1|v2> rc=<n>
+                                 session=<session> ts=<UTC Z>
+               PRESERVED: set +e · v1/v2 independence · unconditional `true` at
+               loop end · `sleep 300` first · SHADOW_PID recording · production
+               trailing `&` · log destination.
+               diff scope: ONE hunk, +30/-2, shadow launch block only.
+               No heartbeat implemented. Shadow output stays PENDING_MIGRATION.
+
+HARNESS — THE LESSON OF THIS SLICE
+               A-2 ran the bundle harness unmodified and it FAILED 24/3.
+               Cause was NOT the candidate. The harness backgrounded the
+               synthetic cycle and read the log after a FIXED `sleep 0.3`;
+               the v2 ENGINE_EXIT is the last write of a cycle, so on a loaded
+               machine it landed after the read. S4/S9/S21 all consumed that ONE
+               capture. Shortening only the settle interval reproduced the exact
+               three-failure signature against a byte-identical candidate.
+               CONSEQUENCE: the earlier "27/27 x3" of the ASYNCHRONOUS harness is
+               NON-CERTIFYING historical evidence. It was a race that won three
+               times. A suite whose result depends on machine load certifies
+               nothing under an x3 determinism standard.
+               A-3 REPAIR: extend the existing mkfix transformation so the
+               synthetic one-cycle fixture runs in the FOREGROUND. The race is
+               removed BY CONSTRUCTION, not by widening a delay.
+
+TARGET-MACHINE RESULTS (A-3, 2026-09-06)
+               repaired harness   27/0 x3 EXACT, clean extraction each run
+               zero-delay control 27/0  -> TIMING_INDEPENDENCE = PROVEN
+               all four logs byte-identical once timestamps are stripped
+               candidate bash -n PASS · harness bash -n PASS
+               shipped diff truthful YES · target path collisions NONE
+               runtime restart NO · signal NO · repo mutated NO
+
+PORTABILITY    the bundle-layout harness must NOT be committed verbatim. The
+               canonical harness resolves
+                 P="$HERE/../../scripts/tools/start_all.sh"
+                 B="$HERE/fixtures/m2e017_baseline_start_all.sh"
+               and COMPUTES the S17/S18 scope diff from baseline vs candidate in
+               scratch. The bundle dependency on ../staging/m2e017.diff is GONE;
+               no sixth path carries a committed diff.
+               Verified from the ruled layout: 27/0 x3, zero-delay 27/0,
+               bash -n PASS, computed diff payload IDENTICAL to the retired
+               m2e017.diff, and S17/S18 mutation-proven DISCRIMINATING —
+               S17 fires only on another component's launch change, S18 only on
+               a SHADOW_PID change, both pass unmutated.
+
+PRESERVED      tests/tools/baseline_start_all.sh
+               27e8b9367788f2268513f203d5770b49f0ea6026ed229031bc9123e49f558f0c
+               UNTRACKED, content-identical to the canonical fixture but
+               PATH-DIVERGENT. Preserved in place; NOT renamed, deleted,
+               overwritten or staged; NOT part of the five-path commit set.
+               Disposition deferred to a separate cleanup ruling.
+
+INSTRUMENT DEFECTS CPT SELF-REPORTED IN THIS SLICE
+               find -maxdepth 2 could not see bundle artifacts at depth 3
+               a keyword filter matched the DIRECTORY "test/" and mistook the
+                 fixture for a runner
+               a suite counter matched "PASS" while this harness prints "OK" and
+                 a "passed N failed M" summary — it reported 0 passes for a
+                 suite that had passed. Test labels are part of the test; read
+                 the harness's own summary, never a vocabulary you invented.
+
+HARD LOCKS     unchanged. No restart, signal, reload, deploy, broadcast,
+               signing or capital movement is authorized by this checkpoint.
 ```
 
 ## 7. THE ARCHITECTURE
@@ -434,12 +525,40 @@ M2E-006 epoch retrofit        28 failing assertion instances from 19 distinct
                               causes: CLASS A 13, CLASS B 6, CLASS C 0
 heartbeat payload schema      heartbeatSchemaVersion 1
 Drive pre-prune snapshot      f29f8aa19d9d1ff5a1bda77715a6daa0880c31953a4e548505d5cee1620cb1c5
+M2E-017 launcher preimage     27e8b9367788f2268513f203d5770b49f0ea6026ed229031bc9123e49f558f0c
+M2E-017 candidate launcher    0364dd3961dff5b0547c034cb306164c07915a9a233e9b9485fdcfe6a39c409c
+M2E-017B bundle               8da4916837eed70f11609d1d5cd30df134eb78a5197387fe8e0d272bde0f836f
+M2E-017 harness (bundle)      0f30af7cda3561478a8642bc32b1f1679cb041f7e3197326f111626b14681a8b
+  NON-CERTIFYING. Asynchronous fixture; its x3 result was timing-dependent.
+M2E-017 harness (A-3 repair)  2dfa650f2567ee67d431208101b111f45805ee08b7d546a6f48dd3eae2d45d85
+M2E-017 harness (CANONICAL)   f2b68dade557e4ffec6a7398b360b7048ef18d6b2a08b4be37290af9bd748a37
+  at tests/tools/m2e017_silent_failure.test.sh · 27/0 x3 · zero-delay 27/0
+M2E-017 canonical fixture     27e8b9367788f2268513f203d5770b49f0ea6026ed229031bc9123e49f558f0c
+  at tests/tools/fixtures/m2e017_baseline_start_all.sh (bytes == preimage)
+W11 lessons (governance)      bb56a2ac8f5ea89e0e4a9b9fad1ab0072cebde46924476a868fe865c79050b62
+checkpoint base for M2E-017C  aa682b9a2011def87e71370992aab78d9d3fd2f752aa13b4a7039f31376b60aa
+M2E-017B checkpoint delivery archive
+                              195e6968fdc73df8ff05cbfa0d1cb1fcbe4d349a17dba2ba9ee515b5b4f8c5c5
+  SHA256 of the delivery archive W11_CHECKPOINT_M2E017.zip; NOT a
+  checkpoint-document hash. Do not search for a document with this hash.
+  HISTORICAL EVIDENCE ONLY. Not a restoration target.
 ```
 
 ## 11. THE EXACT NEXT AUTHORIZED ACTION
 
 **Return to Boss for review.** This checkpoint is the deliverable; no further
 work is authorized by it.
+
+M2E-017C has verified a source-repair CANDIDATE and a deterministic canonical
+harness (§6b); **Phase B remains unauthorized.** The candidate is NOT COMMITTED
+and the canonical repository source is still the preimage. **Staging, commit and
+push of the five-path set has NOT been started.** The expected
+set, if later authorized, is exactly:
+`scripts/tools/start_all.sh` · `tests/tools/m2e017_silent_failure.test.sh` ·
+`tests/tools/fixtures/m2e017_baseline_start_all.sh` ·
+`docs/recovery/PROJECT_RECOVERY_CHECKPOINT.md` ·
+`docs/governance/ALLMIGHT_LESSONS_LEARNED_W11.md`. No sixth path.
+**Source repair is not runtime remediation.** No restart is authorized.
 
 The volatility migration is COMPLETE. SHADOW has a declared, dispatched, INACTIVE
 causal output authority; its activation is blocked by SHADOW-SILENT-FAILURE and
