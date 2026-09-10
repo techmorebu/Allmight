@@ -1,0 +1,273 @@
+BOSS M2E-017G R80N — POST-MERGE DOCUMENTATION FRESHNESS / FINAL PRE-STAGE REFRESH
+
+STATUS
+
+R80M host merge construction completed successfully.
+
+Observed and accepted evidence:
+
+  BASE_ACTUAL_SHA
+    87af009366a887640d1e84a98955c6aee195eddbc2fcbc2e887017cf94cd19f3
+
+  BASE_BYTES
+    34793
+
+  OVERLAY_ACTUAL_SHA
+    713ecfbf1c94a7a081708c1534c0ca2c9cd75d46b54e76a3f780c0cfb0a8cb14
+
+  OVERLAY_BYTES
+    9359
+
+  MERGED_SHA
+    e6ab75929ee412941dd02a603cb48dad9222815da4eb3927cdb0a9ee6bf1a4dd
+
+  MERGED_BYTES
+    44152
+
+  BASE_PREFIX_MATCH
+    YES
+
+  OVERLAY_SUFFIX_MATCH
+    YES
+
+  CANONICAL_REPO_CHANGED_BY_MERGE_CONSTRUCTION
+    NO
+
+Therefore:
+
+  HOST_MERGE_PROOF=PASS
+  CANONICAL_HISTORY_BYTE_PRESERVATION=PROVEN
+  OVERLAY_BYTE_INTEGRITY=PROVEN
+
+======================================================================
+FRESHNESS FINDING
+======================================================================
+
+The accepted preservation-review package was assembled before R80M completed.
+
+Independent package inspection shows the proposed preservation archive/document set
+does not yet fully preserve the post-R80K authority chain.
+
+In particular:
+
+  R80L
+    PRE-COMMIT PRESERVATION REVIEW CORRECTION
+
+  R80M
+    HOST MERGE CONSTRUCTION AUTHORIZATION
+
+are not both fully represented in the immutable authority archive / current
+documentation chain.
+
+The final merged checkpoint SHA:
+
+  e6ab75929ee412941dd02a603cb48dad9222815da4eb3927cdb0a9ee6bf1a4dd
+
+was also unknown when the prior preservation review was assembled.
+
+A canonical documentation commit must not become stale at the instant it is made.
+
+======================================================================
+RULING
+======================================================================
+
+Canonical repo mutation is STILL NOT AUTHORIZED.
+
+Before any copy into the canonical docs tree or any git add, CPT must perform one
+FINAL OFFLINE / NON-CANONICAL DOCUMENTATION REFRESH.
+
+This refresh is limited to preservation freshness only.
+
+======================================================================
+REQUIRED REFRESH
+======================================================================
+
+1. GOVERNANCE AUTHORITY ARCHIVE
+
+Add exact immutable originals for:
+
+  BOSS_M2E_017G_R80L_PRECOMMIT_REVIEW_CORRECTION.txt
+  BOSS_M2E_017G_R80M_HOST_MERGE_CONSTRUCTION_AUTHORIZATION.txt
+
+Use exact Boss-issued bytes.
+
+Do not mutate existing authority originals.
+
+2. GOVERNANCE AUTHORITY INDEX
+
+Add R80L and R80M with:
+
+  filename
+  SHA256
+  role
+  scope
+  relation to R80K / R80N
+  preservation destination
+
+3. BUILD_AND_CERTIFICATION_LEDGER.md
+
+Record:
+
+  R80L
+    pre-commit review correction
+    BUG-011 staged-state repair
+    BUG-009 recurrence capture
+
+  R80M
+    temporary host merge construction authorization
+    prefix/suffix proof
+    canonical repo unchanged
+
+  host merge result:
+    MERGED_SHA =
+      e6ab75929ee412941dd02a603cb48dad9222815da4eb3927cdb0a9ee6bf1a4dd
+    MERGED_BYTES = 44152
+    BASE_PREFIX_MATCH = YES
+    OVERLAY_SUFFIX_MATCH = YES
+
+  R80N
+    final preservation freshness gate
+
+4. PROJECT_RECOVERY_CHECKPOINT OVERLAY / MERGE PLAN
+
+The final overlay must carry:
+
+  MERGED_DESTINATION_SHA =
+    e6ab75929ee412941dd02a603cb48dad9222815da4eb3927cdb0a9ee6bf1a4dd
+
+  BASE_CHECKPOINT_SHA =
+    87af009366a887640d1e84a98955c6aee195eddbc2fcbc2e887017cf94cd19f3
+
+  OVERLAY_SHA =
+    713ecfbf1c94a7a081708c1534c0ca2c9cd75d46b54e76a3f780c0cfb0a8cb14
+
+  HOST_MERGE_PROOF = PASS
+
+  CANONICAL_REPO_CHANGED_BY_MERGE_CONSTRUCTION = NO
+
+If adding R80L/R80M/R80N changes the overlay bytes, then the prior merged SHA is no
+longer the final destination SHA.
+
+In that case:
+
+  DO NOT reuse e6ab7592... as the final destination SHA.
+
+Instead:
+
+  regenerate the overlay,
+  report its new SHA and byte count,
+  and require a fresh host merge proof before staging.
+
+This is a critical distinction.
+
+5. BUG / INCIDENT LEDGER
+
+Do not change BUG-011 disposition:
+
+  FIX_VALIDATED
+
+Add only any already-authorized BUG-009 recurrence note needed to capture the failed
+heredoc correction attempt if not already present.
+
+No new root bug ID is required.
+
+======================================================================
+IMPORTANT MERGE-SHA RULE
+======================================================================
+
+The current proven merged SHA:
+
+  e6ab75929ee412941dd02a603cb48dad9222815da4eb3927cdb0a9ee6bf1a4dd
+
+is valid ONLY for:
+
+  canonical base SHA 87af0093...
+  +
+  overlay SHA 713ecfbf...
+
+If the final documentation refresh changes CHECKPOINT_OVERLAY.md, the merge proof
+must be repeated.
+
+Never carry a stale merged SHA across an overlay mutation.
+
+======================================================================
+FINAL PRE-STAGE PACKAGE
+======================================================================
+
+CPT shall produce a refreshed preservation-review package containing:
+
+  - updated proposed staged docs
+  - R80L and R80M immutable originals
+  - updated authority index
+  - updated build/certification ledger
+  - updated checkpoint overlay if required
+  - R80N preservation-state record
+  - regenerated manifest
+
+Return:
+
+  FINAL_REVIEW_ZIP_SHA
+  MANIFEST_ENTRY_COUNT
+  MANIFEST_MISMATCH_COUNT
+  changed-file list relative to PRESERVATION_REVIEW__3f8d84e1.zip
+  authority-original count
+  exact proposed canonical path count
+  whether CHECKPOINT_OVERLAY.md changed
+  overlay SHA / bytes
+  whether prior MERGED_SHA remains valid
+  four preservation invariant counts
+
+If overlay changed:
+
+  MERGE_REPROOF_REQUIRED=YES
+
+If overlay did not change:
+
+  MERGE_REPROOF_REQUIRED=NO
+
+STOP for Boss review.
+
+======================================================================
+NOT AUTHORIZED
+======================================================================
+
+Do not:
+
+  write into canonical docs/
+  overwrite canonical checkpoint
+  git add
+  git commit
+  git push
+  git fetch
+  git pull
+  modify executable source
+  modify launcher
+  invoke launcher
+  execute R80 certification
+  run SP01
+  restart
+  broadcast
+  touch capital
+
+======================================================================
+LOCKS
+======================================================================
+
+R80 documentation Stage 1             ACCEPTED
+pre-commit preservation review        ACCEPTED
+R80M host merge proof                 PASS
+canonical history preservation        PROVEN FOR overlay 713ecfbf...
+final documentation freshness refresh AUTHORIZED OFFLINE ONLY
+canonical repo mutation               NOT AUTHORIZED
+git add / commit / push               NOT AUTHORIZED
+executor 583cfdbc...                   NOT CERTIFIED
+R80 host behavioral execution         NOT AUTHORIZED
+launcher                              NOT AUTHORIZED
+SP01                                  NOT AUTHORIZED
+restart                               NOT AUTHORIZED
+broadcast                             LOCKED
+capital                               UNTOUCHED
+
+CORNELIUS
+
+Nothing to run until CPT returns the final refreshed pre-stage package.

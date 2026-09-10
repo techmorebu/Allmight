@@ -1,0 +1,250 @@
+BOSS M2E-017G R80G — DOCUMENTATION STAGE-1 ACCEPTANCE / PRESERVATION PREP AUTHORIZATION
+
+PACKAGE REVIEWED
+
+  M2E017G_DOCUMENTATION__5549f87b.zip
+
+Observed ZIP SHA256:
+
+  5549f87b666beeba537940e13ec065c14974419f64a03ac158def64074f9d5b2
+
+======================================================================
+INDEPENDENT BYTE VERIFICATION
+======================================================================
+
+Boss independently verified the uploaded ZIP bytes.
+
+Observed:
+
+  MANIFEST.sha256 entry count                21
+  MANIFEST.sha256 mismatches                 0
+  MANIFEST.md embedded hash entries          21
+  MANIFEST.md embedded mismatches            0
+
+BUG_AND_INCIDENT_LEDGER.md actual SHA256:
+
+  cb0643fa9f24ae11a2a6f958f3d770604b19042a2e9a12fda33200d03af12306
+
+MANIFEST.sha256 recorded ledger SHA256:
+
+  cb0643fa9f24ae11a2a6f958f3d770604b19042a2e9a12fda33200d03af12306
+
+Verdict:
+
+  MANIFEST_MISMATCH_COUNT=0
+  BUG_LEDGER_HASH_MATCH=YES
+  ROUND_TRIP/CONTENT AUTHENTICATION=PASS
+
+Comparison against prior package 1bb9df71... shows only these paths changed:
+
+  DRAFT_DOCS/BUG_AND_INCIDENT_LEDGER.md
+  MANIFEST.md
+  MANIFEST.sha256
+  ORIGINALS/BOSS_M2E_017G_R80F_MANIFEST_INTEGRITY_CORRECTION.txt
+
+This is consistent with the authorized R80F rebuild:
+  - BUG-011 added
+  - integrity records regenerated
+  - R80F authority preserved
+
+No unrelated draft-document mutation was observed.
+
+======================================================================
+BUG-011 DISPOSITION
+======================================================================
+
+BUG-011 is now independently verified corrected.
+
+Boss disposition:
+
+  BUG-011
+  severity          S2
+  prior status      FIX_IMPLEMENTED
+  new status        FIX_VALIDATED
+
+Evidence:
+
+  final uploaded package authenticates the final ledger in both integrity records;
+  both records agree with the actual extracted bytes;
+  mismatch count is zero.
+
+The disclosure concerning the transient grep/arithmetic verifier error is accepted
+as another BUG-009-family verifier-precision occurrence. It did not invalidate the
+final artifact because the final package was independently rechecked from its
+uploaded bytes.
+
+======================================================================
+R80 DOCUMENTATION STAGE-1 VERDICT
+======================================================================
+
+R80B/R80C DOCUMENTATION STAGE 1:
+
+  ACCEPTED
+
+Accepted components:
+
+  PROJECT_RECOVERY_CHECKPOINT.md
+  M2E017G_EXECUTOR_CERTIFICATION_HISTORY.md
+  M2E017G_GOVERNANCE_AUTHORITY_INDEX.md
+  M2E017G_EXECUTOR_BEHAVIOR_MATRIX.md
+  M2E017G_R79_TOPOLOGY_PROOF.md
+  M2E017G_R80_RECERTIFICATION_PLAN.md
+  BUG_AND_INCIDENT_LEDGER.md
+  BUILD_AND_CERTIFICATION_LEDGER.md
+
+Accepted recovered authority:
+
+  R28
+  R29
+  R30
+  R33
+  R40
+
+Accepted certification scope:
+
+  A01-A04
+  I01-I06
+  D01-D06
+  S01-S08
+  C01-C08
+  T01-T10
+
+Total:
+
+  4 + 6 + 6 + 8 + 8 + 10 = 42
+
+Also required:
+
+  SELF-LINEAGE / PROCESS-SELECTION REGRESSION
+
+T05-T10 remain required but host start/launcher execution remains locked.
+
+======================================================================
+NEXT STEP — CANONICAL PRESERVATION PREPARATION
+======================================================================
+
+A documentation-only canonical preservation PREPARATION step is now AUTHORIZED.
+
+This is NOT yet commit/push authorization.
+
+CPT shall:
+
+1. Re-read actual canonical repository state at the verified machine/repo source.
+
+2. Report before any mutation:
+
+     git HEAD
+     git status --short
+     origin/main identity
+     whether HEAD equals expected:
+       923dd5041e645c22ad025a3f8335a03880f89b99
+
+3. Re-read the affected existing canonical documentation paths before proposing
+   replacements. Do not assume package drafts supersede newer committed content.
+
+4. Prepare an exact preservation mapping for the accepted documents.
+
+Preferred targets:
+
+  docs/recovery/PROJECT_RECOVERY_CHECKPOINT.md
+
+  docs/recovery/BUILD_AND_CERTIFICATION_LEDGER.md
+
+  docs/recovery/BUG_AND_INCIDENT_LEDGER.md
+
+  docs/certification/M2E017G_EXECUTOR_CERTIFICATION_HISTORY.md
+
+  docs/certification/M2E017G_EXECUTOR_BEHAVIOR_MATRIX.md
+
+  docs/certification/M2E017G_R79_TOPOLOGY_PROOF.md
+
+  docs/certification/M2E017G_R80_RECERTIFICATION_PLAN.md
+
+  docs/governance/M2E017G_GOVERNANCE_AUTHORITY_INDEX.md
+
+Recovered immutable authority originals should be proposed for a bounded
+documentation/governance archive location, for example:
+
+  docs/governance/authority/m2e017g/
+
+Do not overwrite an existing authority file with different bytes.
+
+5. Account for the post-package Boss disposition:
+
+     BUG-011 = FIX_VALIDATED
+
+   This must be represented in the proposed canonical patch, but CPT must identify
+   it explicitly as a post-package Boss-authorized status update.
+
+6. Account for this R80G ruling in the proposed governance/recovery chain.
+
+7. Produce a PRE-COMMIT PRESERVATION REVIEW containing:
+
+     exact proposed paths
+     source SHA for every source artifact
+     proposed destination SHA
+     new / replace / merge classification
+     diff summary
+     executable-file-change count
+     non-document-file-change count
+     unresolved conflicts
+     exact explicit-path staging list
+
+8. Required invariants:
+
+     EXECUTABLE_FILE_CHANGE_COUNT=0
+     NON_DOCUMENT_FILE_CHANGE_COUNT=0
+     AUTHORITY_BYTE_MUTATION_COUNT=0
+     UNRESOLVED_DOC_CONFLICT_COUNT=0
+
+9. STOP for Boss review.
+
+======================================================================
+NOT AUTHORIZED
+======================================================================
+
+Do not:
+
+  git add
+  git commit
+  git push
+  modify executable source
+  modify launcher
+  invoke launcher
+  run executor certification
+  start governed runtime
+  run SP01
+  restart
+  broadcast
+  touch capital
+
+Reading canonical repo state for preservation preparation is authorized.
+
+Drafting the proposed documentation patch in a non-canonical staging/work area is
+authorized.
+
+Mutation of canonical repo bytes is NOT yet authorized.
+
+======================================================================
+LOCKS
+======================================================================
+
+R80 documentation Stage 1             ACCEPTED
+package 5549f87b...                    VERIFIED / ACCEPTED
+BUG-010                                FIX_VALIDATED
+BUG-011                                FIX_VALIDATED
+R28/R29/R30/R33/R40 authority          ACCEPTED FOR R80
+canonical preservation preparation    AUTHORIZED
+canonical repo mutation               NOT AUTHORIZED
+git add / commit / push                NOT AUTHORIZED
+executor 583cfdbc...                   NOT CERTIFIED
+R80 host behavioral execution         NOT AUTHORIZED
+launcher                              NOT AUTHORIZED
+SP01                                  NOT AUTHORIZED
+restart                               NOT AUTHORIZED
+broadcast                             LOCKED
+capital                               UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

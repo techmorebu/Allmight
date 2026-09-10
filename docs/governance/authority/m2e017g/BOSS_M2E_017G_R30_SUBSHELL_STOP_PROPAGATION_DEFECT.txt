@@ -1,0 +1,243 @@
+BOSS M2E-017G R30 — SUBSHELL STOP-PROPAGATION DEFECT / TARGETED REGRESSION REQUIRED
+
+STATUS REPORTED
+
+  current build SHA256:
+    804926cd23aa009615d4719c63bee130f024dedc996cbc71dfda588b49e92d66
+
+  bash -n:
+    PASS
+
+  A04 rerun:
+    PASS
+
+  TERM summary counters:
+    all zero under A04
+    per-process TSV retained
+
+DEFECT RULING
+
+The discovered command-substitution behavior is a MATERIAL CORRECTNESS DEFECT.
+
+Previous pattern:
+
+  out="$(signal_one ...)"
+
+combined with:
+
+  stop() { ...; exit 2; }
+
+meant that any stop() invoked inside signal_one() terminated only the command-
+substitution subshell. The parent shell could then continue teardown.
+
+Therefore the pre-fix executor did NOT satisfy the core fail-closed invariant.
+
+Potentially affected stop paths included, at minimum:
+
+  TD_IDENTITY_MISMATCH
+  TD_EPERM
+  TD_SIGNALLED_REUSED_PID
+  TD_TERM_TIMEOUT
+  any other hard STOP reachable inside signal_one()
+
+This is exactly the class of defect the sandbox matrix is intended to expose.
+
+The defect was found before packaging and before live execution.
+No live authority was consumed.
+
+FIX DIRECTION — ACCEPTED
+
+The reported repair direction is ACCEPTED:
+
+  - signal_one called directly, not through command substitution
+  - result communicated via global SIG_OUTCOME
+  - counters maintained in parent-shell state
+  - no signal_one call wrapped in $(...)
+
+This preserves stop() as a process-wide fail-closed exit.
+
+However, this repair is not certified merely by grep or bash -n.
+
+TARGETED REGRESSION GATE — REQUIRED BEFORE RESUMING THE FULL MATRIX
+
+Before continuing A01-A03 or the broad matrix, run a narrow STOP-propagation
+regression set against the current bytes.
+
+Required focused cases:
+
+  SP01 identity mismatch inside signal_one
+       EXPECT:
+         parent script exits immediately
+         exactly zero later targets are signalled
+         RESULT STOP
+         START_ATTEMPTED 0
+
+  SP02 EPERM path inside signal_one
+       EXPECT:
+         parent script exits immediately
+         TERM_EPERM_COUNT increments exactly once
+         no subsequent target signal attempt
+         START_ATTEMPTED 0
+
+  SP03 SIGNALLED_REUSED_PID path
+       EXPECT:
+         parent script exits immediately after detection
+         SIGNALLED_REUSED_PID_COUNT increments exactly once
+         no subsequent teardown target attempted
+         START_ATTEMPTED 0
+
+  SP04 TERM timeout path
+       EXPECT:
+         parent script exits immediately at timeout
+         TERM_TIMEOUT_COUNT increments exactly once
+         label TERM_TIMEOUT_NOT_PROVEN_REFUSED
+         no escalation
+         no subsequent target attempted
+         START_ATTEMPTED 0
+
+  SP05 unknown signal syscall failure
+       EXPECT:
+         TERM_OTHER_ERROR_COUNT increments exactly once
+         parent exits immediately
+         no subsequent target attempted
+         START_ATTEMPTED 0
+
+For each SP case, the fixture must contain at least TWO ordered teardown targets
+so the evidence can prove the second target was never reached after the first
+target caused STOP.
+
+Required evidence per case:
+
+  FIRST_TARGET_ATTEMPTED YES
+  SECOND_TARGET_ATTEMPTED NO
+  CONTROL_FILES_CHANGED 0
+  START_ATTEMPTED 0
+  USED_SIGKILL NO
+
+If the harness uses a test-only syscall adapter, the adapter boundary must obey
+R29:
+
+  - production default remains the one real kill -TERM path
+  - test mode explicit
+  - test mode self-evident in evidence
+  - signal_one itself is NOT stubbed into desired outcomes
+
+GLOBAL SHELL-STATE AUDIT — REQUIRED
+
+The subshell defect may have affected more than stop propagation.
+
+Audit the executor for every function whose side effects are expected to persist
+in parent-shell state.
+
+Specifically search for function calls inside:
+
+  $(...)
+  backticks
+  pipelines
+  process substitutions
+  subshell groups: ( ... )
+
+For each such call, determine whether it mutates or relies on:
+
+  counters
+  arrays
+  state-machine variables
+  frozen descendant sets
+  teardown outcomes
+  STOP flags
+  control-transition flags
+  start-attempt flags
+
+Any required parent-state mutation occurring in a subshell is a defect.
+
+This audit must be reported explicitly as:
+
+  PERSISTENT_STATE_SUBSHELL_AUDIT PASS|FAIL
+
+and include the list of all remaining intentional subshell uses.
+
+Do not blanket-ban command substitution.
+Read-only value capture is allowed.
+The rule is:
+
+  parent-required state mutation or hard-stop authority
+  MUST NOT depend on subshell persistence.
+
+A04 STATUS
+
+The rerun A04 result is ACCEPTED for the current bytes:
+
+  G3z zero-live STOP
+  all nine TERM counters zero
+  no signal
+  no control-file change
+  no start
+
+But A04 does not exercise signal_one and therefore does not certify this fix.
+
+MATRIX ORDER — REVISED
+
+Proceed in this order:
+
+  1. SP01-SP05 targeted stop-propagation regression
+  2. persistent-state subshell audit
+  3. bash -n
+  4. rerun A04 if any executor byte changes
+  5. A01-A03
+  6. I/D groups
+  7. S01-S08
+  8. C/T groups
+  9. mandatory self-lineage regression
+ 10. final full clean matrix
+ 11. only then package
+
+MATRIX CREDIT
+
+No pre-fix green-path result should be treated as certifying a failure path
+affected by the subshell defect.
+
+A04 may remain credited after the current-byte rerun because it does not enter
+signal_one.
+
+Any future executor-byte change after a case runs requires rerunning every case
+whose behavior could be affected by that change.
+
+PACKAGE STATUS
+
+Still HELD.
+
+Do not generate the final review ZIP until:
+
+  SP01-SP05 PASS
+  PERSISTENT_STATE_SUBSHELL_AUDIT PASS
+  complete R28/R29 matrix PASS
+  self-lineage regression PASS
+  final clean matrix on final bytes
+  no bytes changed after final clean matrix
+
+CURRENT AUTHORITY
+
+  M2E-017G design                         ACCEPTED
+  executor build                         AUTHORIZED / IN PROGRESS
+  stop-propagation fix                   ACCEPTED DIRECTION
+  SP01-SP05 regression                   AUTHORIZED / REQUIRED
+  persistent-state subshell audit        AUTHORIZED / REQUIRED
+  sandbox testing                        AUTHORIZED / IN PROGRESS
+  packaging                              HELD
+  live execution                         NOT AUTHORIZED
+  zero-live clean-start                  NOT AUTHORIZED
+  live signals                           NOT AUTHORIZED
+  restart                                NOT AUTHORIZED
+  PID/session repair                     NOT AUTHORIZED
+  broadcast                              LOCKED
+  capital                                UNTOUCHED
+
+BOTTOM LINE
+
+The reporting-counter change exposed a genuine fail-closed bug before live use.
+
+That is a successful certification finding, not a reason to rush past it.
+
+Prove that every hard STOP inside signal_one now terminates the parent executor
+and prevents all later teardown activity, then audit the rest of the shell for
+the same subshell-state hazard before resuming the broad matrix.

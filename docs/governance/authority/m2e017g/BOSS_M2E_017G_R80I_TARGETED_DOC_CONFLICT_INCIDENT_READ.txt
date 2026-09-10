@@ -1,0 +1,240 @@
+BOSS M2E-017G R80I — TARGETED READ-ONLY DOC CONFLICT / INCIDENT EVIDENCE AUTHORIZATION
+
+STATUS
+
+R80 documentation Stage 1 remains ACCEPTED.
+
+R80G preservation preparation is ACTIVE.
+
+R80H canonical read-only inspection completed and established:
+
+  HEAD =
+    923dd5041e645c22ad025a3f8335a03880f89b99
+
+  origin/main =
+    923dd5041e645c22ad025a3f8335a03880f89b99
+
+Canonical repository identity is therefore synchronized at the observed ref.
+
+The inspection also established:
+
+  docs/recovery/PROJECT_RECOVERY_CHECKPOINT.md
+    EXISTS
+    SHA256 =
+      87af009366a887640d1e84a98955c6aee195eddbc2fcbc2e887017cf94cd19f3
+    size =
+      34,793 bytes
+
+while the accepted Stage-1 draft checkpoint is substantially smaller.
+
+Therefore:
+
+  PROJECT_RECOVERY_CHECKPOINT.md
+    CLASSIFICATION=MERGE_REQUIRED
+    UNRESOLVED_DOC_CONFLICT_COUNT=1
+
+No overwrite is authorized.
+
+The inspection additionally found:
+
+  docs/evidence/INCIDENT_INDEX.md
+    SHA256 =
+      a73cc0c0fbf33fa4b39d9d0297af2605cce443a00e5b27b16392f25d09764802
+
+This may contain source evidence for INCIDENT 015 / INCIDENT 020, which are
+currently represented only as memory-provenance placeholders in the Stage-1
+bug ledger.
+
+======================================================================
+AUTHORIZATION
+======================================================================
+
+Cornelius is AUTHORIZED to perform one targeted read-only evidence pass.
+
+Preferred block:
+
+bash -lc '
+cd ~/Allmight || exit 1
+
+echo "== REPO IDENTITY =="
+git rev-parse HEAD
+git rev-parse origin/main
+
+echo "== CHECKPOINT WORKTREE HASH =="
+sha256sum docs/recovery/PROJECT_RECOVERY_CHECKPOINT.md
+
+echo "== CHECKPOINT COMMITTED HASH =="
+git show HEAD:docs/recovery/PROJECT_RECOVERY_CHECKPOINT.md | sha256sum
+
+echo "== CHECKPOINT COMMITTED CONTENT =="
+git show HEAD:docs/recovery/PROJECT_RECOVERY_CHECKPOINT.md
+
+echo "== INCIDENT INDEX WORKTREE HASH =="
+sha256sum docs/evidence/INCIDENT_INDEX.md
+
+echo "== INCIDENT INDEX COMMITTED HASH =="
+git show HEAD:docs/evidence/INCIDENT_INDEX.md | sha256sum
+
+echo "== INCIDENT INDEX COMMITTED CONTENT =="
+git show HEAD:docs/evidence/INCIDENT_INDEX.md
+'
+
+======================================================================
+WHY USE git show
+======================================================================
+
+The repository currently has unrelated working-tree dirt.
+
+Using:
+
+  git show HEAD:<path>
+
+establishes the exact committed bytes at the verified canonical HEAD rather than
+silently treating working-tree content as committed authority.
+
+The worktree SHA is also collected so any divergence is visible.
+
+Required equality checks:
+
+  CHECKPOINT_WORKTREE_SHA == CHECKPOINT_COMMITTED_SHA
+  INCIDENT_INDEX_WORKTREE_SHA == INCIDENT_INDEX_COMMITTED_SHA
+
+If either differs:
+
+  STATE_DIVERGENCE
+  STOP
+
+Do not reconcile automatically.
+
+======================================================================
+DIRTY WORKTREE — CLASSIFICATION
+======================================================================
+
+Observed unrelated dirt includes:
+
+  modified:
+    scripts/tools/volatility_divergence_report.js
+
+  untracked:
+    data/observations.jsonl
+    telemetry session paths
+    research paths
+    tests/tools/baseline_start_all.sh
+
+The modified volatility_divergence_report.js is noteworthy because it is associated
+with the heat/runtime area and BUG-004 history.
+
+For the current documentation-preservation lane:
+
+  DIRTY_TREE_PRESENT=YES
+  DIRTY_TREE_RELATED_TO_DOC_PRESERVATION=NO, based on current path inventory
+  DIRTY_TREE_AUTOMATIC_RECONCILIATION=FORBIDDEN
+
+Do not inspect, edit, restore, stage, clean, delete, or otherwise alter those paths
+under R80I.
+
+Their existence must be carried into the recovery checkpoint and pre-commit review.
+
+A later ruling may authorize a separate read-only investigation of the heat-script
+working-tree diff if needed.
+
+======================================================================
+WHAT CPT MAY DO AFTER THE READ
+======================================================================
+
+After receiving the exact output, CPT may:
+
+1. Merge the accepted Stage-1 checkpoint material into the existing canonical
+   checkpoint content in OFFLINE / NON-CANONICAL STAGING ONLY.
+
+2. Preserve all existing canonical checkpoint information unless there is an
+   explicit, evidence-supported reason to supersede a statement.
+
+3. Clearly distinguish:
+     retained canonical content
+     new R80 documentation content
+     superseded state
+     unresolved historical state
+
+4. If INCIDENT_INDEX contains authoritative source evidence for INCIDENT 015 or
+   INCIDENT 020:
+     replace memory-only placeholders with source-grounded records;
+     preserve original incident identifiers;
+     cite the exact committed source path/hash;
+     remove no historical uncertainty that the source itself does not resolve.
+
+5. If INCIDENT_INDEX does not contain those incidents:
+     retain:
+       STATUS=PARKED
+       PROVENANCE=RECONSTRUCTED_FROM_MEMORY
+       SOURCE_EVIDENCE=NOT_RECOVERED
+
+6. Recompute the preservation mapping and unresolved conflict count.
+
+======================================================================
+PRE-COMMIT GATE
+======================================================================
+
+No staging list shall be finalized until:
+
+  UNRESOLVED_DOC_CONFLICT_COUNT=0
+
+and the proposed merged checkpoint has been reviewed against the committed source.
+
+Required preservation invariants remain:
+
+  EXECUTABLE_FILE_CHANGE_COUNT=0
+  NON_DOCUMENT_FILE_CHANGE_COUNT=0
+  AUTHORITY_BYTE_MUTATION_COUNT=0
+  UNRESOLVED_DOC_CONFLICT_COUNT=0
+
+======================================================================
+NOT AUTHORIZED
+======================================================================
+
+Do not:
+
+  git add
+  git commit
+  git push
+  git fetch
+  git pull
+  git checkout
+  git switch
+  git reset
+  git restore
+  git clean
+  edit canonical repo files
+  extract package into canonical repo
+  alter volatility_divergence_report.js
+  alter any untracked research/telemetry path
+  invoke launcher
+  execute certification
+  signal processes
+  restart
+  run SP01
+  broadcast
+  touch capital
+
+======================================================================
+LOCKS
+======================================================================
+
+R80 documentation Stage 1             ACCEPTED
+canonical preservation preparation    ACTIVE
+checkpoint merge conflict             OPEN / READ AUTHORIZED
+INCIDENT 015/020 source recovery       READ AUTHORIZED
+canonical repo mutation               NOT AUTHORIZED
+git add / commit / push               NOT AUTHORIZED
+dirty unrelated worktree              PRESERVE / DO NOT TOUCH
+executor 583cfdbc...                   NOT CERTIFIED
+R80 host behavioral execution         NOT AUTHORIZED
+launcher                              NOT AUTHORIZED
+SP01                                  NOT AUTHORIZED
+restart                               NOT AUTHORIZED
+broadcast                             LOCKED
+capital                               UNTOUCHED
+
+CORNELIUS
+
+Run the R80I targeted read-only block once and return the complete output.

@@ -1,0 +1,295 @@
+BOSS M2E-017G R80D — DOCUMENTATION PACKAGE REVIEW / T10 MATRIX CORRECTION
+
+STATUS
+
+Reviewed actual uploaded package:
+
+  M2E017G_DOCUMENTATION__a4fcbca6.zip
+  SHA256:
+    a4fcbca67a0d127d3073aa13b5f62bc1ad3373bc241926987ae6d00c9ff47c9d
+
+Manifest:
+  18/18 PASS
+
+The recovered ORIGINALS are internally hash-consistent with the package manifest.
+
+Authority recovery is materially successful.
+
+However, the documentation package is NOT YET ACCEPTED for canonical preservation.
+
+One matrix transcription defect propagates through multiple draft documents.
+
+======================================================================
+FINDING — R28 DEFINES T01-T10, NOT T01-T09
+======================================================================
+
+Exact recovered R28 bytes show:
+
+  T01 partial teardown STOP leaves no start attempt
+  T02 old roots absent but captured descendant remains -> no control transition
+  T03 old governed census non-empty -> no control transition
+  T04 control-file transition failure -> no start
+  T05 canonical start attempted exactly once
+  T06 canonical start failure -> no retry
+  T07 post-start not exact eight roles -> STOP / no retry
+  T08 launcher SHA drift at proof -> STOP / no retry
+  T09 SHADOW_POSTDATES_COMMIT != YES -> STOP / no retry
+  T10 exact post-start proof -> COMPLETE
+
+Therefore the matrix cardinality is:
+
+  A = 4
+  I = 6
+  D = 6
+  S = 8
+  C = 8
+  T = 10
+
+TOTAL = 42
+
+The draft behavior-matrix document correctly preserved T10 inside its verbatim R28
+extract, but its structured transcription labels:
+
+  "T — teardown / control transition (9)"
+
+and stops at T09.
+
+That makes the structured matrix only 41 cases while calling itself 42.
+
+The R80 recertification plan likewise says:
+
+  "All 42 R28 cases ... T01-T09"
+
+which is arithmetically and semantically inconsistent.
+
+This is exactly the type of documentation/verifier precision defect the new bug
+ledger is intended to catch.
+
+======================================================================
+PROPAGATED CORRECTIONS REQUIRED
+======================================================================
+
+Correct every affected draft:
+
+1. M2E017G_EXECUTOR_BEHAVIOR_MATRIX.md
+
+  source range:
+    R28 matrix definition is lines 91-139, not 91-138
+
+  structured T heading:
+    T — teardown / control transition (10)
+
+  add:
+    T10 | exact post-start proof -> COMPLETE | launcher/start dependency YES
+
+  dependency section:
+    T05-T10, not T05-T09
+
+2. M2E017G_R80_RECERTIFICATION_PLAN.md
+
+  change:
+    T01-T09
+  to:
+    T01-T10
+
+  change dependency section:
+    T05-T09
+  to:
+    T05-T10
+
+3. PROJECT_RECOVERY_CHECKPOINT.md
+
+  change unresolved launcher dependency:
+    T05-T09
+  to:
+    T05-T10
+
+4. M2E017G_EXECUTOR_CERTIFICATION_HISTORY.md
+
+  change NOT TESTED launcher/start behavior:
+    T05-T09
+  to:
+    T05-T10
+
+5. M2E017G_GOVERNANCE_AUTHORITY_INDEX.md
+
+  R28 primary matrix source range:
+    lines 91-139
+
+  correction-of-record case identifier range:
+    A01..T10
+
+6. MANIFEST.md
+
+  dependency note:
+    T05-T10
+
+======================================================================
+AUTHORITY RULING
+======================================================================
+
+Recovered exact bytes of:
+
+  R28 c465ee2eece143c8c6439ba9b891e77829bbcf0785e7dc5de0b10f43b76f3505
+  R29 0619e41379bc3fe648b29b816338d706b764319b03445989d42783dc8b15beb2
+  R30 efa2806bc185d5f1753da6842bd0a283d0544c9bfa910c7f62c275a3a8fa5ecc
+  R33 155990048ba2b5114b1fcbba584a7aa43f972d59b896efa89ea171ff7d7c4fb7
+  R40 f12e5ab2b696d7848b0637d28f1b489ed0943f2ee0ba6d6d69de4a896ada92d3
+
+are ACCEPTED as recovered governance authority for R80.
+
+Authority roles:
+
+  R28 = PRIMARY full A/I/D/S/C/T matrix authority
+  R29 = fixture-honesty / adapter constraint authority
+  R30 = stop-propagation correction authority
+  R33 = later SP authorization/context authority
+  R40 = command-position + verifier-consistency authority
+
+They are authoritative for R80 certification design even though they are not yet
+preserved in canonical git.
+
+Canonical repo preservation remains a separate future documentation-only mutation.
+
+======================================================================
+T05-T10 RULING
+======================================================================
+
+T05-T10 are all required matrix cases.
+
+T10 is not optional:
+  exact post-start proof -> COMPLETE
+
+Because T10 necessarily evaluates the post-start state, it belongs with the
+launcher/start-dependent transition cases.
+
+Current classification:
+
+  T05-T10
+    REQUIRED_MATRIX_CASES
+    EXECUTION_DEPENDENCY=START/LAUNCHER TRANSITION
+    CURRENT_HOST_EXECUTION_AUTHORITY=LOCKED
+
+R80D does NOT authorize launcher invocation.
+
+CPT must design how T05-T10 can be tested safely and deterministically.
+
+Preferred order:
+
+  first determine whether the canonical behavior can be reproduced in an isolated
+  fixture/clone without touching canonical runtime/control state;
+
+  only if exact behavior cannot be faithfully reproduced should CPT propose a
+  bounded later host launcher certification window.
+
+No omission and no substitution with a weaker assertion.
+
+======================================================================
+BUG LEDGER UPDATE
+======================================================================
+
+Add this documentation defect as a new bug entry.
+
+Suggested classification:
+
+  BUG-010
+  title:
+    R80 documentation matrix omitted T10 from structured certification scope
+
+  severity:
+    S2
+
+Reason:
+  it would have caused a required certification case to be absent while the plan
+  falsely claimed the complete 42-case matrix.
+
+Status after corrected package:
+  FIX_IMPLEMENTED until Boss verifies the rebuilt bytes
+  then FIX_VALIDATED if exact review passes.
+
+Related:
+  BUG-009 verifier/documentation precision defect class
+
+Do not hide this correction by silently editing the drafts.
+Preserve the bug record.
+
+======================================================================
+OTHER PACKAGE FINDINGS
+======================================================================
+
+Accepted:
+
+  - package SHA matches user report
+  - manifest 18/18 verifies
+  - R28 verbatim extract itself includes T10
+  - recovered authority originals are preserved separately from drafts
+  - prior e1f1cca7 bytes are explicitly unavailable
+  - INCIDENT 015/020 are not given invented technical evidence
+  - heat/V8 root cause remains unresolved
+  - R79 non-claims are preserved
+  - no repo/host/launcher authority was exercised by package construction
+
+One semantic cleanup:
+
+The bug ledger currently uses "RECONSTRUCTED_FROM_MEMORY" as a status-like label
+for INCIDENT 015/020 even though R80C's allowed status enum does not include it.
+
+On rebuild, give each historical incident an allowed lifecycle status such as:
+
+  PARKED
+
+and separately label provenance:
+
+  PROVENANCE=RECONSTRUCTED_FROM_MEMORY
+  SOURCE_EVIDENCE=NOT_RECOVERED
+
+Do not assign technical root-cause claims until source evidence is recovered.
+
+======================================================================
+CPT NEXT TASK
+======================================================================
+
+Rebuild documentation package only.
+
+DO NOT RUN HOST.
+DO NOT COMMIT.
+DO NOT PUSH.
+DO NOT INVOKE LAUNCHER.
+DO NOT MODIFY EXECUTOR.
+
+Required return:
+
+  corrected ZIP SHA
+  manifest PASS
+  round-trip PASS
+  hashes for changed drafts
+  exact diff from package a4fcbca6...
+  grep/inventory proving:
+    T01-T10 present exactly once in structured matrix
+    total matrix cardinality = 42
+    T05-T10 dependency consistently represented
+    no stale "T01-T09" or "T05-T09" scope statements remain
+  BUG-010 entry
+  corrected lifecycle/provenance separation for INCIDENT 015/020
+
+STOP for Boss review.
+
+======================================================================
+LOCKS
+======================================================================
+
+R28/R29/R30/R33/R40 recovered authority     ACCEPTED FOR R80
+R80 documentation package a4fcbca6...       REVIEWED / CORRECTION REQUIRED
+R80D documentation correction               AUTHORIZED
+documentation repo commit                    NOT AUTHORIZED
+executor 583cfdbc...                         NOT CERTIFIED
+R80 host behavioral execution                NOT AUTHORIZED
+launcher                                     NOT AUTHORIZED
+SP01                                         NOT AUTHORIZED
+restart                                      NOT AUTHORIZED
+broadcast                                    LOCKED
+capital                                      UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

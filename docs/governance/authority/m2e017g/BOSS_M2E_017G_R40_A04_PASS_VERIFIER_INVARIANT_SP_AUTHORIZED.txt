@@ -1,0 +1,254 @@
+BOSS M2E-017G R40 — A04 RESET COMPLETE / VERIFIER CONSISTENCY INVARIANT / SP FIXTURE BUILD AUTHORIZED
+
+STATUS REVIEWED
+
+Current executor SHA256:
+  e1f1cca7481a48b33e9a501a57a57359aa07ebb1f647998353c939fcb30eb918
+
+A04:
+  PASS
+
+Required production/default evidence confirmed:
+  SIGNAL_SYSCALL_MODE          REAL_KILL
+  TEST_MODE_ENABLED            NO
+  PROC_ROOT                    /proc
+  PROC_ROOT_MODE               REAL_PROC
+  PRE_REVALIDATION_HOOK_MODE   DISABLED
+  STOP                         G3z_ZERO_LIVE
+  USED_SIGKILL                 NO
+  all nine TERM counters       0
+  CONTROL_FILES_CHANGED        0
+  START_ATTEMPTED              0
+
+Corrected command-surface evidence:
+  kill -TERM          TEXTUAL_COUNT 1   EXECUTABLE_COUNT 1
+  kill -KILL          TEXTUAL_COUNT 0   EXECUTABLE_COUNT 0
+  kill -9             TEXTUAL_COUNT 0   EXECUTABLE_COUNT 0
+  pkill               TEXTUAL_COUNT 2   EXECUTABLE_COUNT 0
+  killall             TEXTUAL_COUNT 2   EXECUTABLE_COUNT 0
+  pidfd_send_signal   TEXTUAL_COUNT 0   EXECUTABLE_COUNT 0
+  pidfd_open          TEXTUAL_COUNT 0   EXECUTABLE_COUNT 0
+
+Negative control:
+  all executable command-position uses of base word "kill":
+    exactly one
+    kill -TERM "$pid"
+
+RULING 1 — RESET GATE FULLY RESTORED
+
+On executor:
+  e1f1cca7481a48b33e9a501a57a57359aa07ebb1f647998353c939fcb30eb918
+
+credit is now:
+
+  COMMAND_SURFACE_AUDIT                 PASS
+  PERSISTENT_STATE_SUBSHELL_AUDIT_DELTA PASS
+  A04                                   PASS
+
+The executor may proceed to SP01-SP05 fixture certification.
+
+RULING 2 — VERIFIER CONSISTENCY INVARIANT LOCKED
+
+For all remaining static command-surface counts in M2E-017G:
+
+  EXECUTABLE_COUNT <= TEXTUAL_COUNT
+
+must hold for every primitive.
+
+If:
+  EXECUTABLE_COUNT > TEXTUAL_COUNT
+
+then:
+  VERIFIER_INCONSISTENT
+  audit result INVALID
+  do not carry PASS credit
+
+This is a verifier self-consistency check, not merely a presentation rule.
+
+RULING 3 — BASE-COMMAND NEGATIVE CONTROL REQUIRED
+
+For each high-risk base command used in audit claims, enumerate all actual
+command-position invocations independently.
+
+At minimum:
+
+  kill
+  pkill
+  killall
+  pidfd-related executable calls
+
+For "kill", report every command-position invocation with its actual arguments.
+
+Expected production result:
+  exactly one:
+    kill -TERM "$pid"
+
+No flag-stripping or base-word matching may be used to infer a variant-specific
+count unless the actual argument form is also verified.
+
+RULING 4 — AUDIT IMPLEMENTATION STANDARD
+
+The remaining audits must distinguish:
+
+  lexical presence
+  command-position presence
+  variant/argument identity
+
+A correct audit for:
+  kill -KILL
+
+must prove:
+  the base command is kill
+  the first relevant argument is -KILL
+
+It must not infer that from:
+  "a kill command exists somewhere"
+
+Similarly for:
+  kill -9
+  kill -- -
+  pkill
+  killall
+  pidfd calls
+
+RULING 5 — VERIFICATION TOOLING FAILURE HISTORY
+
+Preserve these four verifier/build precision findings for closeout:
+
+  1. duplicate adapter_init definition survived syntax validation
+  2. token presence did not prove reporting-column semantics
+  3. blacklist list entries were misclassified as executable invocations
+  4. flag-stripped matching attributed kill -TERM to nonexistent kill variants
+
+Do not expand into documentation work now.
+
+Closeout lesson:
+  safety-critical verification requires structural property checks plus internal
+  consistency invariants, not token-presence heuristics.
+
+RULING 6 — SP01 FIXED HOOK ARTIFACT NOW AUTHORIZED
+
+Proceed to build the fixed SP01 pre-revalidation hook artifact.
+
+Required properties:
+
+  fixed file
+  hash captured before execution
+  body inspected
+  test-fixture-owned
+  path beneath TEST_FIXTURE_ROOT
+  hook mode TEST_FIXTURE
+  production mode DISABLED
+
+Positive allowlist required.
+
+Preferred permitted operations only:
+  parameter expansion
+  [[ ... ]] / test
+  case
+  variable assignment
+  printf builtin
+  redirection to one validated synthetic fixture path
+  exit / return
+
+Required evidence:
+
+  PRE_REVALIDATION_HOOK_SHA256 <sha256>
+  HOOK_BODY_INSPECTED YES
+  HOOK_CAPABILITY_AUDIT PASS
+  HOOK_ALLOWED_BUILTINS <explicit list>
+  HOOK_ALLOWED_EXTERNALS NONE
+  HOOK_ALLOWED_WRITE_TARGETS <single validated synthetic target/pattern>
+  HOOK_UNEXPECTED_COMMANDS 0
+  HOOK_UNEXPECTED_WRITE_TARGETS 0
+  HOOK_FORBIDDEN_CAPABILITIES 0
+
+R38 denylist remains required in addition to the positive allowlist.
+
+RULING 7 — SP01 FIXTURE OWNERSHIP STILL REQUIRED
+
+Before descendant G7 authority:
+
+  FIXTURE_OWNERSHIP_GATE PASS
+
+Per PID prove:
+
+  PID_DESCENDS_FROM_FIXTURE_ROOT YES
+  PID_NOT_BASELINE_ROOT YES
+  PID_NOT_CANONICAL_PIDFILE_MEMBER YES
+  PID_NOT_EXECUTOR_PID YES
+  PID_NOT_EXECUTOR_ANCESTOR YES
+  PID_NOT_REAL_GOVERNED_RUNTIME YES
+
+Any collision:
+  TEST_FIXTURE_PID_COLLISION
+  STOP
+  SP01 not executed
+
+RULING 8 — SP SEQUENCE
+
+On unchanged executor:
+  e1f1cca7481a48b33e9a501a57a57359aa07ebb1f647998353c939fcb30eb918
+
+run:
+
+  SP01
+  SP02
+  SP03
+  SP04
+  SP05
+
+All five must pass on common executor bytes before:
+
+  STOP_PROPAGATION_REGRESSION PASS
+
+may be declared.
+
+If executor bytes change:
+  reset gate restarts.
+
+If fixture/harness bytes change only:
+  rerun affected SP cases only.
+
+RULING 9 — PACKAGE / LIVE STATUS
+
+Packaging remains HELD.
+
+No Cornelius live block.
+No live execution.
+No live signals.
+No restart.
+No PID/session repair.
+No zero-live clean-start.
+
+CURRENT AUTHORITY
+
+  M2E-017G design                         ACCEPTED
+  executor e1f1cca...                     IN CERTIFICATION
+  command-surface reset                  PASS
+  subshell delta reset                    PASS
+  A04                                     PASS
+  verifier consistency invariant          LOCKED
+  base-command negative control           LOCKED
+  SP01 fixed hook build                   AUTHORIZED
+  SP01 fixture ownership proof            REQUIRED
+  SP01-SP05                              AUTHORIZED / REQUIRED
+  broad sandbox matrix                    HELD until SP PASS
+  packaging                              HELD
+  live execution                         NOT AUTHORIZED
+  zero-live clean-start                  NOT AUTHORIZED
+  live signals                           NOT AUTHORIZED
+  restart                                NOT AUTHORIZED
+  PID/session repair                     NOT AUTHORIZED
+  broadcast                              LOCKED
+  capital                                UNTOUCHED
+
+BOTTOM LINE
+
+The reset gate is fully restored on e1f1cca....
+
+The corrected command-surface audit is accepted, and its self-consistency rule is
+now part of the verifier contract.
+
+Build and certify the minimal fixed SP01 hook next, then run SP01-SP05 on the
+unchanged executor bytes.

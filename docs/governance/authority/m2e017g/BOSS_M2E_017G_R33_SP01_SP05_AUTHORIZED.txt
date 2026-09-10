@@ -1,0 +1,241 @@
+BOSS M2E-017G R33 — R32 IMPLEMENTATION ACCEPTED / SP01-SP05 AUTHORIZED ON COMMON BYTES
+
+STATUS REVIEWED
+
+  current build SHA256:
+    10f1a4236f4bac7887ebd725dead839a42ddc3173e04101277cd7f3473258089
+
+  bash -n:
+    PASS
+
+  A04 on current bytes:
+    PASS
+
+  production/default evidence:
+    SIGNAL_SYSCALL_MODE REAL_KILL
+    TEST_MODE_ENABLED NO
+    PROC_ROOT /proc
+    PROC_ROOT_MODE REAL_PROC
+    all nine TERM counters 0
+    CONTROL_FILES_CHANGED 0
+    START_ATTEMPTED 0
+
+  command surface:
+    executable kill -TERM exactly 1
+    kill -KILL 0
+    kill -9 0
+    pkill executable 0
+    killall executable 0
+    process-group kill 0
+    pidfd executable 0
+
+  PERSISTENT_STATE_SUBSHELL_AUDIT_DELTA:
+    PASS
+
+RULING 1 — R32 IMPLEMENTATION DIRECTION ACCEPTED
+
+The reported PROC_ROOT abstraction and post-syscall mutation hook satisfy the
+R32 testability requirement in architecture:
+
+  production default remains real /proc
+  synthetic proc is test-mode only
+  synthetic root requires validated fixture containment
+  signal_one production comparison logic remains intact
+  post-syscall starttime comparison remains the real executor logic
+  no real PID reuse is attempted
+
+A04 has been rerun on the new bytes and credit is restored.
+
+RULING 2 — POST_SYSCALL_HOOK SAFETY LOCK
+
+Because the fixture hook is executable, it must be treated as a test artifact
+with its own bounded authority.
+
+Before SP03 is credited, prove all of the following:
+
+  HOOK_PATH_BENEATH_FIXTURE YES
+  HOOK_EXECUTABLE YES
+  HOOK_TEST_MODE_ONLY YES
+  HOOK_NOT_REACHABLE_IN_REAL_MODE YES
+  HOOK_SIGNAL_PRIMITIVES 0
+  HOOK_REPO_MUTATION_PRIMITIVES 0
+  HOOK_CONTROL_FILE_MUTATION_PRIMITIVES 0
+  HOOK_START_PRIMITIVES 0
+
+The hook may mutate ONLY synthetic fixture data required for the SP03 identity
+transition.
+
+It must not invoke:
+
+  kill
+  pkill
+  killall
+  start_all
+  systemctl/service restart
+  repo commit/push
+  canonical PID/session writes
+  canonical runtime/log/session mutation
+
+A content hash of the hook must be captured in SP03 evidence.
+
+Required:
+
+  POST_SYSCALL_HOOK_SHA256 <sha256>
+
+This does not require redesigning the executor.
+It is a fixture-certification requirement.
+
+RULING 3 — SP01-SP05 NOW AUTHORIZED ON THESE COMMON BYTES
+
+Run all five against the SAME executor bytes:
+
+  10f1a4236f4bac7887ebd725dead839a42ddc3173e04101277cd7f3473258089
+
+unless a defect forces an executor change.
+
+Each case must contain at least two ordered eligible teardown targets:
+
+  first  = shadow_engine
+  second = activator
+
+or another pair only if the harness proves the same ordering property.
+
+Universal required evidence:
+
+  EXECUTOR_SHA256
+  TEST_CASE_ID
+  SIGNAL_SYSCALL_MODE TEST_ADAPTER
+  TEST_MODE_ENABLED YES
+  PROC_ROOT_MODE TEST_SYNTHETIC or the case-appropriate validated test view
+  FIRST_TARGET_ATTEMPTED YES
+  SECOND_TARGET_ATTEMPTED NO
+  RESULT STOP
+  CONTROL_FILES_CHANGED 0
+  START_ATTEMPTED 0
+  USED_SIGKILL NO
+
+SP01 — IDENTITY MISMATCH
+
+Expected:
+
+  mismatch occurs during signal_one revalidation
+  no syscall issued
+  TERM_ATTEMPTED_COUNT 0 for the target
+  TERM_DELIVERED_COUNT 0
+  parent exits immediately
+  second target untouched
+
+SP02 — EPERM
+
+Expected:
+
+  TERM_ATTEMPTED_COUNT 1
+  TERM_DELIVERED_COUNT 0
+  TERM_EPERM_COUNT 1
+  parent exits immediately
+  second target untouched
+
+SP03 — SIGNALLED_REUSED_PID
+
+Expected:
+
+  PRE_SIGNAL_STARTTIME A
+  accepted adapter syscall rc 0
+  fixture hook changes synthetic stat to B
+  POST_SIGNAL_STARTTIME B
+  STARTTIME_CHANGED YES
+  TERM_ATTEMPTED_COUNT 1
+  TERM_DELIVERED_COUNT 1
+  SIGNALLED_REUSED_PID_COUNT 1
+  parent exits immediately
+  second target untouched
+
+Also prove the hook safety lock from RULING 2.
+
+SP04 — TERM TIMEOUT
+
+Expected:
+
+  TERM_ATTEMPTED_COUNT 1
+  TERM_DELIVERED_COUNT 1
+  TERM_TIMEOUT_COUNT 1
+  TERM_TIMEOUT_NOT_PROVEN_REFUSED
+  no escalation
+  parent exits immediately at timeout
+  second target untouched
+
+SP05 — OTHER SYSCALL FAILURE
+
+Expected:
+
+  TERM_ATTEMPTED_COUNT 1
+  TERM_DELIVERED_COUNT 0
+  TERM_OTHER_ERROR_COUNT 1
+  parent exits immediately
+  second target untouched
+
+RULING 4 — STOP-PROPAGATION PASS GATE
+
+Only if SP01-SP05 all pass on common executor bytes may CPT report:
+
+  STOP_PROPAGATION_REGRESSION PASS
+
+At that point the broad matrix may resume.
+
+If any executor byte changes during SP work:
+
+  - record the new SHA
+  - rerun A04
+  - rerun every SP case whose behavior could be affected
+  - common-byte certification is re-established only after those reruns
+
+If only fixture bytes change:
+  affected fixture cases must be rerun
+  executor A04 need not be rerun unless executor bytes changed.
+
+RULING 5 — NO PACKAGE YET
+
+Packaging remains HELD.
+
+Do not create the final review ZIP after SP01-SP05 alone.
+
+Required sequence remains:
+
+  SP01-SP05
+  -> STOP_PROPAGATION_REGRESSION PASS
+  -> A01-A03
+  -> I group
+  -> D group
+  -> S01-S08
+  -> C group
+  -> T group
+  -> self-lineage regression
+  -> final full clean matrix
+  -> only then package
+
+CURRENT AUTHORITY
+
+  M2E-017G design                         ACCEPTED
+  R32 PROC_ROOT implementation           ACCEPTED DIRECTION
+  A04 current-byte credit                PASS
+  persistent-state subshell delta audit  PASS
+  post-syscall hook fixture use          AUTHORIZED WITH R33 SAFETY LOCK
+  SP01-SP05                              AUTHORIZED / REQUIRED
+  broad sandbox matrix                   AUTHORIZED after SP gate
+  packaging                              HELD
+  live execution                         NOT AUTHORIZED
+  zero-live clean-start                  NOT AUTHORIZED
+  live signals                           NOT AUTHORIZED
+  restart                                NOT AUTHORIZED
+  PID/session repair                     NOT AUTHORIZED
+  broadcast                              LOCKED
+  capital                                UNTOUCHED
+
+BOTTOM LINE
+
+The executor is ready for the focused runtime STOP-propagation proof.
+
+Run SP01-SP05 on the current common bytes, with the SP03 hook separately proven
+fixture-only and incapable of real signalling or canonical mutation.
+
+Do not broaden scope and do not package yet.

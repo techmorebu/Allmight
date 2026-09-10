@@ -1,0 +1,206 @@
+BOSS M2E-017G R28 — DESIGN ACCEPTED / BOUNDED EXECUTOR BUILD AUTHORIZED
+
+SOURCE REVIEWED
+  M2E017G_MONOTONIC_DECAY_DESIGN_R27.md
+
+RULING
+
+The R27 revised design is ACCEPTED as the implementation basis.
+
+R27 residual 1 is closed:
+  - TERM_ATTEMPTED, syscall result, and TERM_DELIVERED are separate facts.
+  - ESRCH cannot become TERMINATED_BY_US.
+  - post-syscall PID reuse is disclosed and stops.
+  - EPERM and unknown syscall failures stop.
+
+R27 residual 2 is closed:
+  - descendant closure capture is now an explicit pre-signal gate.
+  - governed census occurs only after that frozen closure exists.
+  - the eligible descendant set cannot grow.
+
+G9 root-role substitution scoping is accepted:
+  - root-role substitution is checked independently.
+  - captured descendants derive authority from frozen ancestry and exact identity,
+    never signature resemblance alone.
+
+IMPLEMENTATION AUTHORIZATION
+
+CPT is authorized to BUILD AND SANDBOX-TEST the M2E-017G executor against the
+accepted design.
+
+This does NOT authorize:
+  - execution on the live host
+  - any live signal
+  - restart
+  - PID/session repair
+  - zero-live clean-start behavior
+  - broadcast/signing/capital action
+
+IMPLEMENTATION INVARIANTS
+
+The executor must preserve:
+
+  1. immutable original eight-role baseline
+  2. any non-zero exact surviving subset may proceed
+  3. zero-live => STOP / ZERO_LIVE_CLEAN_START_REQUIRED
+  4. every live baseline PID must match original starttime + signature
+  5. dead state is run-local monotonic and enforced
+  6. frozen descendant closure established before governed census
+  7. post-capture governed process => STOP
+  8. exact captured descendants may retain teardown authority after parent exit
+  9. PID/starttime/signature revalidation immediately before every signal
+ 10. TERM_ATTEMPTED != TERM_DELIVERED
+ 11. ESRCH != governed termination
+ 12. SIGTERM only
+ 13. 60-second observation
+ 14. no escalation
+ 15. TERM timeout => TERM_TIMEOUT_NOT_PROVEN_REFUSED / STOP
+ 16. PID reuse/substitution/resurrection/second stack => STOP
+ 17. full pre-signal evidence snapshot before first mutation
+ 18. all eight baseline roots + all frozen descendants absent before control
+     transition
+ 19. fresh governed census empty before control transition
+ 20. canonical launcher invoked exactly once
+ 21. no retry
+ 22. post-start exact eight-role proof
+ 23. SHADOW_POSTDATES_COMMIT YES
+ 24. launcher SHA remains canonical at proof
+
+PLAIN kill(2) MODEL
+
+Use the accepted plain-kill model for this slice.
+
+Do NOT introduce pidfd_open/pidfd_send_signal in M2E-017G implementation.
+That would change the certified signal mechanism and is not needed to implement
+the accepted design.
+
+SIGNAL DELIVERY WORDING
+
+A kill syscall return of 0 may be recorded as:
+  TERM_DELIVERED YES
+or:
+  TERM_SYSCALL_ACCEPTED YES
+
+Do not claim that a JavaScript handler ran or that process shutdown was caused
+by TERM until the later observation supports the appropriate bounded outcome.
+
+SANDBOX MATRIX — REQUIRED BEFORE PACKAGING
+
+At minimum:
+
+  A01 8 live, exact identities
+  A02 5 live / known watchdog-router-heat dead
+  A03 1 live
+  A04 0 live -> ZERO_LIVE_CLEAN_START_REQUIRED, no mutation
+
+  I01 live baseline starttime mismatch -> STOP
+  I02 live baseline signature mismatch -> STOP
+  I03 baseline PID reuse -> STOP
+  I04 dead baseline PID resurrection -> STOP
+  I05 root-role substitution alternate PID -> STOP
+  I06 second governed stack/process -> STOP
+
+  D01 descendant closure captured before census
+  D02 captured descendant survives parent -> exact descendant remains eligible
+  D03 captured descendant vanishes unsignalled
+  D04 captured descendant PID reused -> STOP
+  D05 new governed descendant after closure -> STOP
+  D06 captured descendant identity mismatch -> STOP
+
+  S01 root vanishes before revalidation -> VANISHED_UNSIGNALLED, no syscall
+  S02 kill returns ESRCH after revalidation -> VANISHED_UNSIGNALLED,
+      TERM_ATTEMPTED YES, TERM_DELIVERED NO
+  S03 kill returns EPERM -> STOP
+  S04 other kill failure -> STOP
+  S05 post-syscall same PID/starttime -> observation window
+  S06 post-syscall changed starttime -> SIGNALLED_REUSED_PID / STOP
+  S07 TERM accepted then process absent -> TERMINATED_BY_US
+  S08 TERM accepted then survivor at 60s -> TERM_TIMEOUT_NOT_PROVEN_REFUSED,
+      STOP, no escalation
+
+  C01 PID file mapping drift -> STOP before signal
+  C02 session drift -> STOP before signal
+  C03 repo HEAD drift -> STOP before signal
+  C04 launcher worktree SHA drift -> STOP before signal
+  C05 launcher blob SHA drift -> STOP before signal
+  C06 watchdog unexpectedly alive -> STOP
+  C07 router unexpectedly alive -> STOP
+  C08 router exit provenance missing/mismatch -> STOP
+
+  T01 partial teardown STOP leaves no start attempt
+  T02 old roots absent but captured descendant remains -> no control transition
+  T03 old governed census non-empty -> no control transition
+  T04 control-file transition failure -> no start
+  T05 canonical start attempted exactly once
+  T06 canonical start failure -> no retry
+  T07 post-start not exact eight roles -> STOP / no retry
+  T08 launcher SHA drift at proof -> STOP / no retry
+  T09 SHADOW_POSTDATES_COMMIT != YES -> STOP / no retry
+  T10 exact post-start proof -> COMPLETE
+
+SELF-LINEAGE / PROCESS-SELECTION REGRESSION
+
+The sandbox suite must explicitly prove that executor/test processes, shells,
+grep/pgrep/ps helpers, and their ancestors cannot enter the governed census or
+become cleanup targets.
+
+This is a mandatory regression because self-matching process-selection logic is
+a known project hazard.
+
+TEST SAFETY
+
+Sandbox tests must not target actual AllMight runtime PIDs.
+
+Use isolated fixtures/fake process trees or an equivalent bounded test
+environment.
+
+No test may send a signal to a real governed production process.
+
+PACKAGE / REVIEW REQUIREMENT
+
+After implementation and sandbox validation, return a review package containing:
+
+  - executor source
+  - test harness
+  - fixtures
+  - complete matrix result
+  - bash -n / syntax results
+  - MANIFEST.md generated from final bytes
+  - MANIFEST.sha256 generated from final bytes
+  - outer ZIP SHA256
+  - script SHA256
+  - exact file inventory
+  - explicit statement that no byte changed after the final clean test
+
+Do NOT issue a Cornelius live command block.
+
+Boss will byte-review the package separately before any live execution decision.
+
+FOLLOW-ON PRESERVATION
+
+Preserve, but do not implement in this slice:
+
+  NON-SHADOW-SILENT-FAILURE SUPERVISION HARDENING
+
+Motivation:
+  heat's native V8 fatal termination produced no supervised exit event and was
+  discovered only through component-local stderr/log evidence.
+
+This follow-on should eventually address supervised detection/notification for
+unexpected native/process-level exits across governed components, while keeping
+the unresolved V8 root cause and host-OOM uncertainty separate.
+
+CURRENT AUTHORITY
+
+  M2E-017G design                    ACCEPTED
+  M2E-017G executor build            AUTHORIZED
+  M2E-017G sandbox testing           AUTHORIZED
+  M2E-017G packaging for review      AUTHORIZED
+  M2E-017G live execution            NOT AUTHORIZED
+  zero-live clean-start impl         NOT AUTHORIZED
+  live signals                       NOT AUTHORIZED
+  restart                            NOT AUTHORIZED
+  PID/session repair                 NOT AUTHORIZED
+  broadcast                          LOCKED
+  capital                            UNTOUCHED
+  SHADOW-SILENT-FAILURE runtime      OPEN

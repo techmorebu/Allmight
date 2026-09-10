@@ -1,0 +1,247 @@
+BOSS M2E-017G R80M — PRE-COMMIT REVIEW ACCEPTANCE / HOST MERGE CONSTRUCTION AUTHORIZATION
+
+PACKAGE REVIEWED
+
+  PRESERVATION_REVIEW__3f8d84e1.zip
+
+Observed ZIP SHA256:
+
+  3f8d84e196d2de4b30b1a23290f9b8f7a7fa42579d1d0b80136351ebba39be2a
+
+======================================================================
+INDEPENDENT BYTE VERIFICATION
+======================================================================
+
+Boss independently verified the uploaded package.
+
+Observed:
+
+  MANIFEST.sha256 entries              27
+  MANIFEST mismatches                  0
+
+BUG_AND_INCIDENT_LEDGER.md SHA256:
+
+  7d0d0dca11ea914c90f57cac90e3eda06716887d759e2bfa04747c2d295b0878
+
+BUG-011 status assignments:
+
+  FIX_VALIDATED
+
+The only remaining literal FIX_IMPLEMENTED occurrence is the R80C allowed-status
+vocabulary line and is not a BUG-011 status assignment.
+
+BUG-009 recurrence records are present for:
+
+  - vacuous invariant pass under /bin/sh brace-expansion failure
+  - printf option parsing dropping "- **" lines
+  - self-referential MANIFEST.sha256 attempt
+
+Comparison against PRESERVATION_REVIEW__2c050ace.zip:
+
+  changed staged documentation:
+    docs/recovery/BUG_AND_INCIDENT_LEDGER.md
+
+  changed package metadata:
+    MANIFEST.sha256
+
+  unrelated staged-document changes:
+    NONE OBSERVED
+
+Therefore the R80L correction is accepted.
+
+======================================================================
+PRE-COMMIT PRESERVATION REVIEW VERDICT
+======================================================================
+
+  PRE_COMMIT_REVIEW=ACCEPTED
+
+Required invariant claims are accepted for design/preparation:
+
+  EXECUTABLE_FILE_CHANGE_COUNT=0
+  NON_DOCUMENT_FILE_CHANGE_COUNT=0
+  AUTHORITY_BYTE_MUTATION_COUNT=0
+  UNRESOLVED_DOC_CONFLICT_COUNT=0
+
+Canonical mutation remains NOT AUTHORIZED.
+
+======================================================================
+NEXT AUTHORIZED STEP — HOST MERGE CONSTRUCTION ONLY
+======================================================================
+
+Cornelius/CPT may now construct the merged recovery checkpoint on the canonical
+host in a TEMPORARY NON-REPOSITORY OR NON-CANONICAL STAGING LOCATION.
+
+Purpose:
+
+  prove exact byte preservation of the existing 34,793-byte checkpoint
+  plus the accepted 9,359-byte overlay before any git staging or canonical write.
+
+Required source anchors:
+
+  BASE_CHECKPOINT_SHA =
+    87af009366a887640d1e84a98955c6aee195eddbc2fcbc2e887017cf94cd19f3
+
+  OVERLAY_SHA =
+    713ecfbf1c94a7a081708c1534c0ca2c9cd75d46b54e76a3f780c0cfb0a8cb14
+
+  EXPECTED_BASE_BYTES =
+    34793
+
+  EXPECTED_OVERLAY_BYTES =
+    9359
+
+  EXPECTED_MERGED_BYTES =
+    44152
+
+======================================================================
+MERGE CONSTRUCTION REQUIREMENTS
+======================================================================
+
+Do NOT transcribe the canonical checkpoint.
+
+Construct by exact-byte concatenation:
+
+  committed checkpoint bytes
+  followed by
+  accepted CHECKPOINT_OVERLAY.md bytes
+
+The temporary merged artifact must NOT be written over:
+
+  docs/recovery/PROJECT_RECOVERY_CHECKPOINT.md
+
+under this ruling.
+
+Before any later canonical mutation, return evidence proving:
+
+  BASE_ACTUAL_SHA == BASE_CHECKPOINT_SHA
+  OVERLAY_ACTUAL_SHA == OVERLAY_SHA
+  BASE_BYTES == 34793
+  OVERLAY_BYTES == 9359
+  MERGED_BYTES == 44152
+
+Compute:
+
+  MERGED_SHA=<sha256>
+
+Additionally prove the byte prefix:
+
+  sha256(first 34793 bytes of merged file)
+    ==
+  87af009366a887640d1e84a98955c6aee195eddbc2fcbc2e887017cf94cd19f3
+
+and prove the suffix:
+
+  sha256(bytes 34794 through EOF of merged file)
+    ==
+  713ecfbf1c94a7a081708c1534c0ca2c9cd75d46b54e76a3f780c0cfb0a8cb14
+
+Required result:
+
+  BASE_PREFIX_MATCH=YES
+  OVERLAY_SUFFIX_MATCH=YES
+
+This protects both halves independently.
+
+======================================================================
+PACKAGE / OVERLAY TRANSFER
+======================================================================
+
+If CHECKPOINT_OVERLAY.md must be transferred from the reviewed package to the host,
+the received host copy must be SHA256-verified against:
+
+  713ecfbf1c94a7a081708c1534c0ca2c9cd75d46b54e76a3f780c0cfb0a8cb14
+
+before concatenation.
+
+Do not substitute manually copied text.
+
+======================================================================
+DIRTY TREE BOUNDARY
+======================================================================
+
+Existing unrelated dirty/untracked paths remain untouched.
+
+The temporary merge construction must not:
+
+  stage them
+  modify them
+  clean them
+  restore them
+  move them
+  include them in any documentation artifact
+
+The modified heat script remains explicitly out of scope.
+
+======================================================================
+REQUIRED RETURN
+======================================================================
+
+Return:
+
+  BASE_ACTUAL_SHA
+  BASE_BYTES
+  OVERLAY_ACTUAL_SHA
+  OVERLAY_BYTES
+  MERGED_SHA
+  MERGED_BYTES
+  BASE_PREFIX_SHA
+  BASE_PREFIX_MATCH
+  OVERLAY_SUFFIX_SHA
+  OVERLAY_SUFFIX_MATCH
+  temporary merged artifact path
+  git status --short after construction
+
+Also state whether git status changed because of the merge construction.
+
+Expected:
+
+  CANONICAL_REPO_CHANGED_BY_MERGE_CONSTRUCTION=NO
+
+STOP for Boss review.
+
+======================================================================
+NOT AUTHORIZED
+======================================================================
+
+Do not:
+
+  overwrite canonical checkpoint
+  copy staged docs into canonical docs tree
+  git add
+  git commit
+  git push
+  git fetch
+  git pull
+  modify executable source
+  modify launcher
+  invoke launcher
+  execute R80 certification
+  run SP01
+  restart
+  broadcast
+  touch capital
+
+======================================================================
+LOCKS
+======================================================================
+
+R80 documentation Stage 1             ACCEPTED
+pre-commit preservation review        ACCEPTED
+BUG-011                               FIX_VALIDATED
+BUG-009 recurrences                   RECORDED
+host temp merge construction          AUTHORIZED
+canonical checkpoint overwrite        NOT AUTHORIZED
+canonical repo mutation               NOT AUTHORIZED
+git add / commit / push               NOT AUTHORIZED
+executor 583cfdbc...                   NOT CERTIFIED
+R80 host behavioral execution         NOT AUTHORIZED
+launcher                              NOT AUTHORIZED
+SP01                                  NOT AUTHORIZED
+restart                               NOT AUTHORIZED
+broadcast                             LOCKED
+capital                               UNTOUCHED
+
+CORNELIUS
+
+Construct the merged checkpoint only in a temporary non-canonical location,
+produce the required byte-prefix/suffix proof, return the evidence, and STOP.

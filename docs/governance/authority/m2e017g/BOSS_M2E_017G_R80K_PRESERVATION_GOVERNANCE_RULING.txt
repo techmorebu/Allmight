@@ -1,0 +1,379 @@
+BOSS M2E-017G R80K — CANONICAL DOCUMENTATION PRESERVATION GOVERNANCE RULING
+
+STATUS
+
+R80 documentation Stage 1 remains ACCEPTED.
+
+The full committed canonical recovery checkpoint has now been recovered and
+verified:
+
+  lines: 589
+  bytes: 34,793
+  SHA256:
+    87af009366a887640d1e84a98955c6aee195eddbc2fcbc2e887017cf94cd19f3
+
+Observed:
+
+  worktree SHA == committed HEAD SHA
+  HEAD == origin/main ==
+    923dd5041e645c22ad025a3f8335a03880f89b99
+
+Therefore:
+
+  STATE_DIVERGENCE=NO
+  SOURCE_CONTENT_COMPLETE=YES
+  UNRESOLVED_DOC_CONFLICT_COUNT=0
+
+The checkpoint merge is technically unblocked.
+
+======================================================================
+RULING 1 — GOV-CHK-001 CONTROLS THE FUTURE PRESERVATION COMMIT
+======================================================================
+
+The canonical checkpoint's GOV-CHK-001 commit discipline is authoritative and
+stricter than the earlier abbreviated R80B preservation language.
+
+Any future documentation-only preservation commit MUST satisfy GOV-CHK-001.
+
+Required sequence:
+
+  1. verify machine / repository state
+  2. prepare documentation-only changes
+  3. update PROJECT_RECOVERY_CHECKPOINT.md in the SAME commit
+  4. derive changed-path set from git itself
+  5. explicitly stage only authorized paths
+  6. commit
+  7. push
+  8. verify local HEAD
+  9. verify origin/main
+ 10. verify pinned raw GitHub-served bytes for the committed documentation
+ 11. prove local HEAD == origin/main
+ 12. record verification result in the checkpoint / ledger as required
+
+A local read is NOT a substitute for pinned raw GitHub verification.
+
+The future commit is not complete until remote verification passes.
+
+======================================================================
+RULING 2 — THE "NO SIXTH PATH" LOCK IS NOT A GLOBAL REPOSITORY BAN
+======================================================================
+
+The recovered checkpoint's five-path set and "No sixth path" language belongs to
+the M2E-017C source-repair change boundary.
+
+It means:
+
+  the M2E-017C executable/source repair commit must not silently expand beyond its
+  authorized five-path set.
+
+It does NOT mean:
+
+  no later, separately authorized documentation-only commit may contain additional
+  documentation paths.
+
+Therefore the proposed R80 documentation preservation is permissible as a
+SEPARATE DOCUMENTATION-ONLY GOVERNANCE COMMIT, provided:
+
+  - it contains zero executable/source changes
+  - it does not amend or smuggle changes into the M2E-017C five-path set
+  - its scope is explicitly authorized
+  - its changed-path set is derived and verified independently
+  - GOV-CHK-001 is satisfied
+
+Classification:
+
+  M2E017C_FIVE_PATH_LOCK = PRESERVED
+  R80_DOC_PRESERVATION = SEPARATE_COMMIT_CLASS
+  SIXTH_PATH_VIOLATION = NO, if the above separation is maintained
+
+======================================================================
+RULING 3 — DO NOT LEAVE STALE MACHINE STATE AS ACTIVE RECOVERY TRUTH
+======================================================================
+
+The recovered checkpoint contains historical operational state that is now stale,
+including sections describing the earlier running stack.
+
+Known current machine reality from the accepted R72/R76/R77 maintenance arc is:
+
+  governed runtime intentionally quiescent
+  historical baseline 0/8 present
+  governed role hit count 0
+  maintenance/certification window open
+  restart not authorized
+
+Therefore stale sections must NOT remain presented as current operational truth.
+
+Required merge treatment:
+
+  - preserve historical content for audit/recovery history;
+  - explicitly mark superseded operational-state statements as SUPERSEDED;
+  - add a current-state section that is authoritative for recovery;
+  - current machine evidence outranks the historical snapshot;
+  - do not silently delete prior state.
+
+At minimum, the merge must correct/overlay the stale operational meaning in:
+
+  §3
+  §6
+  §12
+
+The historical text may remain in place or be moved to a clearly labeled
+historical/superseded subsection, but a fresh operator must not be instructed to
+treat the old running-stack state as current.
+
+In particular, any instruction that would cause a fresh session to invoke
+start_all.sh or restart runtime without a current Boss authorization must be
+superseded.
+
+Current recovery instruction must instead say, in substance:
+
+  READ CURRENT MACHINE STATE FIRST.
+  GOVERNED RUNTIME IS QUIESCENT FOR CERTIFICATION.
+  DO NOT RESTART OR INVOKE LAUNCHER WITHOUT CURRENT BOSS AUTHORIZATION.
+
+======================================================================
+RULING 4 — INCIDENT 021 / 022 / 023
+======================================================================
+
+Canonical INCIDENT_INDEX.md is authoritative evidence that:
+
+  INCIDENT 021 = OPEN
+  INCIDENT 022 = OPEN
+  INCIDENT 023 = OPEN
+
+For INCIDENT 021:
+  preserve OPEN status and source-ground it to the canonical incident index.
+
+For INCIDENT 023:
+  preserve OPEN status.
+  Cross-link to the later wrapper-versus-worker / kill -0 liveness-proof failure
+  class where supported.
+  Do NOT claim identical root cause unless evidence proves it.
+
+For INCIDENT 022:
+  the canonical repository contains an internal contradiction:
+
+    INCIDENT_INDEX.md says OPEN
+    recovered checkpoint §5 says CLOSED
+
+This is not to be silently reconciled.
+
+Boss ruling:
+
+  INCIDENT 022 STATUS = CONTESTED / UNRESOLVED
+  RESTART_READINESS_IMPACT = BLOCKING UNTIL RESOLVED
+
+Use an allowed lifecycle value in the bug/incident ledger:
+
+  STATUS=OPEN
+
+and add:
+
+  STATE_CONFLICT=YES
+  CHECKPOINT_CLAIM=CLOSED
+  INCIDENT_INDEX_CLAIM=OPEN
+  BOSS_DISPOSITION=DO_NOT_TREAT_AS_CLOSED UNTIL PATCH-APPLICATION EVIDENCE IS FOUND
+
+Do not invent whether the accepted patch was applied.
+
+A later read-only evidence pass may resolve the conflict.
+
+======================================================================
+RULING 5 — INCIDENT 015 / 020
+======================================================================
+
+No canonical source has yet been recovered for INCIDENT 015 / 020.
+
+Keep:
+
+  STATUS=PARKED
+  PROVENANCE=RECONSTRUCTED_FROM_MEMORY
+  SOURCE_EVIDENCE=NOT_RECOVERED
+
+No technical root-cause claim may be elevated from memory alone.
+
+======================================================================
+RULING 6 — BUG-009 / BUG-011 CLASSIFICATION
+======================================================================
+
+Do not create duplicate root bugs where the evidence shows recurrence of an
+existing verifier-precision failure class.
+
+Preferred structure:
+
+  BUG-009 = root verifier-precision defect class
+
+Recorded occurrences include:
+  - false/over-strong verification claim patterns in this arc
+  - R80E literal-string-vs-scope-assertion wording defect
+  - R80F manifest-verifier scope mismatch
+  - transient grep/arithmetic verifier failure
+
+BUG-011 remains a distinct packaging-integrity incident/bug record because it
+affected a concrete preservation package and required its own corrective artifact.
+
+Cross-link:
+
+  BUG-011 RELATED_TO=BUG-009
+
+Do not erase BUG-011 merely because its verifier behavior belongs to the BUG-009
+family.
+
+BUG-011 remains:
+
+  FIX_VALIDATED
+
+per the accepted R80G byte verification.
+
+======================================================================
+RULING 7 — MERGE METHOD
+======================================================================
+
+CPT is AUTHORIZED to prepare the merged documentation set in a NON-CANONICAL
+staging/work area only.
+
+For PROJECT_RECOVERY_CHECKPOINT.md:
+
+  CLASSIFICATION=MERGE
+
+Required behavior:
+
+  preserve canonical history
+  preserve GOV-CHK-001
+  preserve architecture/governance sections unless specifically superseded
+  add current M2E-017G state
+  add R79/R80 documentation/certification state
+  add current locks
+  add incident/bug references
+  mark stale runtime sections superseded
+  make the exact next authorized step unambiguous
+  do not silently rewrite chronology
+
+For other accepted Stage-1 docs:
+
+  classify NEW / MERGE / REPLACE based on canonical evidence.
+
+======================================================================
+RULING 8 — PRE-COMMIT PRESERVATION REVIEW NOW AUTHORIZED
+======================================================================
+
+CPT may now produce the full PRE-COMMIT PRESERVATION REVIEW.
+
+It must include:
+
+  exact proposed destination path
+  source artifact SHA
+  proposed destination SHA
+  classification:
+    NEW / MERGE / REPLACE / ARCHIVE
+  diff summary
+  executable-file-change count
+  non-document-file-change count
+  authority-byte-mutation count
+  unresolved-doc-conflict count
+  exact proposed explicit-path staging list
+  GOV-CHK-001 verification plan
+  raw GitHub verification plan
+  dirty-tree exclusion proof
+
+Required invariants:
+
+  EXECUTABLE_FILE_CHANGE_COUNT=0
+  NON_DOCUMENT_FILE_CHANGE_COUNT=0
+  AUTHORITY_BYTE_MUTATION_COUNT=0
+  UNRESOLVED_DOC_CONFLICT_COUNT=0
+
+The explicit staging list may now be proposed.
+
+It may NOT yet be executed.
+
+======================================================================
+DIRTY WORKTREE
+======================================================================
+
+Existing unrelated dirt remains OUT OF SCOPE and must be preserved untouched.
+
+Observed examples include:
+
+  scripts/tools/volatility_divergence_report.js
+  data/observations.jsonl
+  telemetry session paths
+  research paths
+  tests/tools/baseline_start_all.sh
+
+No restore, clean, stage, edit, move, or delete operation is authorized on them.
+
+The future documentation commit must prove none of those paths entered the
+commit.
+
+======================================================================
+NOT AUTHORIZED
+======================================================================
+
+Do not:
+
+  mutate canonical repo yet
+  git add
+  git commit
+  git push
+  git fetch
+  git pull
+  modify executable source
+  modify launcher
+  invoke launcher
+  execute R80 certification
+  run SP01
+  restart governed runtime
+  signal governed processes
+  broadcast
+  touch capital
+
+======================================================================
+NEXT RETURN REQUIRED
+======================================================================
+
+CPT shall return:
+
+  PRE-COMMIT PRESERVATION REVIEW
+
+including:
+
+  1. merged checkpoint candidate SHA
+  2. complete proposed documentation path set
+  3. 8 Stage-1 document mappings
+  4. immutable authority archive mappings
+  5. INCIDENT 021/022/023 ledger treatment
+  6. BUG-009/BUG-011 treatment
+  7. current-state supersession treatment for checkpoint §§3/6/12
+  8. exact explicit-path staging list
+  9. dirty-tree exclusion proof
+ 10. GOV-CHK-001 post-commit verification plan
+ 11. the four required invariant counts
+
+STOP for Boss review before canonical mutation.
+
+======================================================================
+LOCKS
+======================================================================
+
+R80 documentation Stage 1             ACCEPTED
+checkpoint source recovery             COMPLETE
+checkpoint merge conflict              RESOLVED FOR DESIGN
+INCIDENT 021                           OPEN / SOURCE-GROUNDED
+INCIDENT 022                           OPEN / STATE_CONFLICT / RESTART-BLOCKING
+INCIDENT 023                           OPEN / SOURCE-GROUNDED
+R80 documentation merge drafting       AUTHORIZED OFFLINE ONLY
+pre-commit preservation review         AUTHORIZED
+canonical repo mutation                NOT AUTHORIZED
+git add / commit / push               NOT AUTHORIZED
+executor 583cfdbc...                   NOT CERTIFIED
+R80 host behavioral execution         NOT AUTHORIZED
+launcher                              NOT AUTHORIZED
+SP01                                  NOT AUTHORIZED
+restart                               NOT AUTHORIZED
+broadcast                             LOCKED
+capital                               UNTOUCHED
+
+CORNELIUS
+
+Nothing further to run until CPT returns the pre-commit preservation review.

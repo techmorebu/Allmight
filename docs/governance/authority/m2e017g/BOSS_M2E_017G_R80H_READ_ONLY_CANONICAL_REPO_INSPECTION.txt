@@ -1,0 +1,152 @@
+BOSS M2E-017G R80H — READ-ONLY CANONICAL REPO INSPECTION AUTHORIZATION
+
+STATUS
+
+R80 documentation Stage 1 remains ACCEPTED.
+
+R80G authorized canonical-preservation preparation, but its footer incorrectly
+stated:
+
+  "Cornelius: nothing to run."
+
+That wording conflicts with R80G steps 1-3, which require read-only inspection of
+the canonical AllMight host repository.
+
+This ruling corrects that contradiction.
+
+======================================================================
+AUTHORIZATION
+======================================================================
+
+Cornelius is AUTHORIZED to run the following read-only inspection block on the
+canonical AllMight machine:
+
+bash -lc '
+cd ~/Allmight || exit 1
+echo "== HEAD =="; git rev-parse HEAD
+echo "== STATUS =="; git status --short || true
+echo "== REMOTE =="; git remote -v | sed -n 1,2p
+echo "== origin/main =="; git rev-parse origin/main 2>&1 || echo "no origin/main ref locally"
+echo "== EXISTING DOC TREE =="
+for d in docs docs/recovery docs/certification docs/governance docs/governance/authority; do
+  printf -- "-- %s --\n" "$d"
+  if [ -d "$d" ]; then ls -la "$d"; else echo "ABSENT"; fi
+done
+echo "== EXISTING DOC HASHES =="
+find docs -type f 2>/dev/null | sort | xargs -r sha256sum || echo "no docs tree"
+'
+
+======================================================================
+PURPOSE
+======================================================================
+
+This read-only evidence is required to resolve R80G preservation preparation:
+
+  - canonical git HEAD
+  - working-tree cleanliness
+  - origin/main identity
+  - current docs tree
+  - current committed/document bytes
+  - new / replace / merge classification
+  - conflict detection before any proposed preservation mutation
+
+CPT's build-environment copy without .git remains:
+
+  BUILD_ENVIRONMENT_COPY
+
+It must not be treated as canonical repo authority.
+
+======================================================================
+BOUNDARIES
+======================================================================
+
+AUTHORIZED:
+
+  read-only git identity commands
+  directory listing
+  SHA256 hashing of existing docs
+  returning command output/evidence to CPT/Boss
+
+NOT AUTHORIZED:
+
+  git fetch
+  git pull
+  git checkout
+  git switch
+  git reset
+  git restore
+  git add
+  git commit
+  git push
+  file creation
+  file edits
+  file deletion
+  package extraction into canonical repo
+  launcher invocation
+  process signals
+  executor execution
+  restart
+  SP01
+  broadcast
+  capital action
+
+If the command reveals:
+
+  unexpected HEAD
+  dirty working tree
+  origin/main mismatch
+  unexpected documentation conflicts
+  repository path mismatch
+
+then STOP and report exact output.
+
+Do not reconcile automatically.
+
+======================================================================
+EVIDENCE RETURN
+======================================================================
+
+Return the complete command output unchanged.
+
+CPT may then use that evidence to prepare the R80G preservation mapping.
+
+No preservation mutation is authorized by this ruling.
+
+======================================================================
+R80G CORRECTION OF RECORD
+======================================================================
+
+R80G footer:
+
+  "Cornelius: nothing to run."
+
+is superseded for preservation preparation by R80H.
+
+Correct state:
+
+  Cornelius has ONE authorized read-only inspection block to run.
+
+After that block:
+
+  STOP for CPT/Boss review.
+
+======================================================================
+LOCKS
+======================================================================
+
+R80 documentation Stage 1             ACCEPTED
+canonical preservation preparation    ACTIVE
+canonical repo read-only inspection   AUTHORIZED
+canonical repo mutation               NOT AUTHORIZED
+git add / commit / push               NOT AUTHORIZED
+executor 583cfdbc...                   NOT CERTIFIED
+R80 host behavioral execution         NOT AUTHORIZED
+launcher                              NOT AUTHORIZED
+SP01                                  NOT AUTHORIZED
+restart                               NOT AUTHORIZED
+broadcast                             LOCKED
+capital                               UNTOUCHED
+
+CORNELIUS
+
+Run the authorized read-only block above once and return the complete output.

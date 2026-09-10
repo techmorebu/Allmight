@@ -1,0 +1,240 @@
+BOSS M2E-017G R80J — SEGMENTED CHECKPOINT READ / INCIDENT-LEDGER UPDATE AUTHORIZATION
+
+STATUS
+
+R80 documentation Stage 1 remains ACCEPTED.
+
+R80G preservation preparation remains ACTIVE.
+
+R80I established:
+
+  HEAD ==
+    923dd5041e645c22ad025a3f8335a03880f89b99
+
+  origin/main ==
+    923dd5041e645c22ad025a3f8335a03880f89b99
+
+  CHECKPOINT_WORKTREE_SHA ==
+    CHECKPOINT_COMMITTED_SHA ==
+    87af009366a887640d1e84a98955c6aee195eddbc2fcbc2e887017cf94cd19f3
+
+  INCIDENT_INDEX_WORKTREE_SHA ==
+    INCIDENT_INDEX_COMMITTED_SHA ==
+    a73cc0c0fbf33fa4b39d9d0297af2605cce443a00e5b27b16392f25d09764802
+
+Therefore:
+
+  STATE_DIVERGENCE=NO
+
+However, the checkpoint content transfer was truncated after approximately the
+opening portion of the 34,793-byte committed file.
+
+The merge conflict remains unresolved.
+
+======================================================================
+RULING — DO NOT MERGE AGAINST TRUNCATED CONTENT
+======================================================================
+
+CPT correctly refused to merge the accepted Stage-1 checkpoint draft against only
+a partial view of the canonical checkpoint.
+
+Current classification:
+
+  PROJECT_RECOVERY_CHECKPOINT.md
+    CLASSIFICATION=MERGE_REQUIRED
+    SOURCE_HASH_VERIFIED=YES
+    SOURCE_CONTENT_COMPLETE=NO
+    UNRESOLVED_DOC_CONFLICT_COUNT=1
+
+No preservation staging list may be finalized yet.
+
+======================================================================
+INCIDENT INDEX — ACCEPTED NEW SOURCE FINDINGS
+======================================================================
+
+The committed INCIDENT_INDEX.md is accepted as authoritative for the following
+open incidents:
+
+  INCIDENT 021
+    notification_router SIGINT / sender identity unresolved
+
+  INCIDENT 022
+    watchdog name mismatch causes silent case fallthrough;
+    accepted patch not applied
+
+  INCIDENT 023
+    wrapper PIDs recorded for volatility/shadow_engine;
+    kill -0 can test surviving subshell rather than worker
+
+Consequences:
+
+1. INCIDENT 015 / 020
+
+   remain:
+
+     STATUS=PARKED
+     PROVENANCE=RECONSTRUCTED_FROM_MEMORY
+     SOURCE_EVIDENCE=NOT_RECOVERED
+
+   Do not add technical detail unless a source artifact is later recovered.
+
+2. INCIDENT 021 / 022 / 023
+
+   must be added to BUG_AND_INCIDENT_LEDGER.md during the proposed preservation
+   patch.
+
+3. INCIDENT 023
+
+   must be cross-linked to the current wrapper/worker and liveness-proof history,
+   including R73/R75/P3 where supported by current recovered documentation.
+
+   Do not assert identity of root cause across incidents unless directly supported.
+   Safer wording:
+
+     "INCIDENT 023 is materially related to the same wrapper-versus-worker and
+      kill -0 liveness-proof failure class encountered later in this certification
+      arc."
+
+4. INCIDENT 022
+
+   must be carried into restart-readiness / unresolved-operational-risk sections
+   because its accepted patch is recorded as not applied.
+
+5. INCIDENT 021
+
+   remains open and must be preserved without reinterpretation.
+
+======================================================================
+AUTHORIZATION — SEGMENTED CHECKPOINT READ
+======================================================================
+
+Cornelius is AUTHORIZED to read the committed checkpoint in bounded segments using
+git show only.
+
+Run sequentially:
+
+bash -lc 'cd ~/Allmight || exit 1
+git show HEAD:docs/recovery/PROJECT_RECOVERY_CHECKPOINT.md | sed -n "1,250p"'
+
+bash -lc 'cd ~/Allmight || exit 1
+git show HEAD:docs/recovery/PROJECT_RECOVERY_CHECKPOINT.md | sed -n "251,500p"'
+
+bash -lc 'cd ~/Allmight || exit 1
+git show HEAD:docs/recovery/PROJECT_RECOVERY_CHECKPOINT.md | sed -n "501,750p"'
+
+bash -lc 'cd ~/Allmight || exit 1
+git show HEAD:docs/recovery/PROJECT_RECOVERY_CHECKPOINT.md | sed -n "751,1000p"'
+
+If content continues beyond line 1000, continue in the same 250-line increments
+until EOF.
+
+This is a read-only evidence operation.
+
+======================================================================
+COMPLETENESS CHECK
+======================================================================
+
+After the segmented reads, also run:
+
+bash -lc 'cd ~/Allmight || exit 1
+echo "LINES=$(git show HEAD:docs/recovery/PROJECT_RECOVERY_CHECKPOINT.md | wc -l)"
+echo "BYTES=$(git show HEAD:docs/recovery/PROJECT_RECOVERY_CHECKPOINT.md | wc -c)"
+echo "SHA=$(git show HEAD:docs/recovery/PROJECT_RECOVERY_CHECKPOINT.md | sha256sum | awk "{print \$1}")"
+'
+
+Expected byte/hash anchors:
+
+  BYTES should correspond to the committed 34,793-byte file
+  SHA must equal:
+    87af009366a887640d1e84a98955c6aee195eddbc2fcbc2e887017cf94cd19f3
+
+If the terminal/paste again truncates a segment:
+  STOP
+  identify the missing line interval
+  re-read only that interval
+
+Do not infer missing text.
+
+======================================================================
+AFTER COMPLETE SOURCE RECOVERY
+======================================================================
+
+CPT may then prepare, in NON-CANONICAL staging only:
+
+  - a merge proposal for PROJECT_RECOVERY_CHECKPOINT.md
+  - additions for INCIDENT 021/022/023
+  - BUG-011 status update to FIX_VALIDATED
+  - R80G/R80H/R80I/R80J governance chain updates
+  - revised preservation mapping
+  - explicit staging list proposal
+
+Required merge behavior:
+
+  PRESERVE existing canonical checkpoint content
+  ADD reviewed R80 documentation state
+  MARK superseded historical state rather than deleting it
+  CARRY unrelated dirty-worktree observations forward
+  DO NOT silently rewrite chronology
+
+======================================================================
+PRE-COMMIT GATE REMAINS
+======================================================================
+
+Before any canonical mutation authorization:
+
+  EXECUTABLE_FILE_CHANGE_COUNT=0
+  NON_DOCUMENT_FILE_CHANGE_COUNT=0
+  AUTHORITY_BYTE_MUTATION_COUNT=0
+  UNRESOLVED_DOC_CONFLICT_COUNT=0
+
+======================================================================
+NOT AUTHORIZED
+======================================================================
+
+Do not:
+
+  edit canonical repo files
+  git add
+  git commit
+  git push
+  git fetch
+  git pull
+  git checkout
+  git switch
+  git reset
+  git restore
+  git clean
+  touch volatility_divergence_report.js
+  touch untracked research/telemetry paths
+  invoke launcher
+  execute certification
+  signal processes
+  restart
+  run SP01
+  broadcast
+  touch capital
+
+======================================================================
+LOCKS
+======================================================================
+
+R80 documentation Stage 1             ACCEPTED
+canonical preservation preparation    ACTIVE
+checkpoint source hash                VERIFIED
+checkpoint source content             INCOMPLETE / READ AUTHORIZED
+checkpoint merge conflict             OPEN
+INCIDENT 021/022/023 source            ACCEPTED
+canonical repo mutation               NOT AUTHORIZED
+git add / commit / push               NOT AUTHORIZED
+executor 583cfdbc...                   NOT CERTIFIED
+R80 host behavioral execution         NOT AUTHORIZED
+launcher                              NOT AUTHORIZED
+SP01                                  NOT AUTHORIZED
+restart                               NOT AUTHORIZED
+broadcast                             LOCKED
+capital                               UNTOUCHED
+
+CORNELIUS
+
+Run the segmented checkpoint reads until EOF, then run the completeness check and
+return the complete outputs.

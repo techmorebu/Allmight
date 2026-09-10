@@ -1,0 +1,263 @@
+BOSS M2E-017G R80A — AUTHORITY RECOVERY RULING AFTER CANONICAL MATRIX STOP
+
+STATUS
+
+CPT correctly stopped at:
+
+  R80_CANONICAL_MATRIX_DEFINITION_NOT_FOUND
+
+The stop is ACCEPTED.
+
+Reported findings:
+
+  current executor:
+    /home/claude/m2e017g_continuation.sh
+    583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+    build-environment artifact; never committed
+
+  prior certified executor e1f1cca7...:
+    ABSENT from current disk search
+
+  A/I/D/S/C/T matrix:
+    ABSENT from repo
+
+  R40 authority:
+    FOUND as hash-identified Boss governance/evidence artifact
+
+  executor certification tests:
+    ABSENT from repo
+
+  CPT local Allmight copy:
+    no .git directory
+    cannot establish canonical HEAD
+
+No host action is authorized.
+
+======================================================================
+RULING
+======================================================================
+
+DO NOT choose Option 3.
+
+R80 remains a FULL executor re-certification.
+The A/I/D/S/C/T matrix is not waived and is not deferred.
+
+DO NOT immediately choose Option 2 either.
+
+We will not mutate the canonical repository merely to manufacture the authority
+needed to justify the mutation/test that follows.
+
+Choose a bounded form of Option 1:
+
+  RECOVER AND VERIFY THE ORIGINAL BOSS GOVERNANCE ARTIFACTS FIRST.
+
+R29/R30/R33 are not automatically elevated merely because their filenames and
+hashes are remembered/reported.
+
+They become R80 certification authority only after their exact bytes are recovered
+and independently reviewed against the historical certification chain.
+
+R40 is treated the same way for consistency even though CPT reports it found.
+
+======================================================================
+WHY
+======================================================================
+
+The machine-first rule is:
+
+  machine reality first
+  committed repo second
+  memory last
+
+But "repo second" does not mean "only git may contain authority."
+
+PROJECT ALLMIGHT historically used immutable Boss directives/evidence packages as
+governance authority during this slice.
+
+The error would be either:
+
+  A. reconstructing A/I/D/S/C/T from memory, or
+  B. declaring remembered R29/R30/R33 canonical without recovering their bytes.
+
+R80A authorizes neither.
+
+It authorizes evidence recovery.
+
+======================================================================
+AUTHORITY RECOVERY TARGETS
+======================================================================
+
+Recover exact bytes for:
+
+  R29_BUILD_STATUS_CONTINUE_MATRIX.txt
+    reported SHA prefix: 0619e413...
+
+  R30_SUBSHELL_STOP_PROPAGATION_DEFECT.txt
+    reported SHA prefix: efa2806b...
+
+  R33_SP01_SP05_AUTHORIZED.txt
+    reported SHA prefix: 15599004...
+
+  BOSS_M2E_017G_R40_A04_PASS_VERIFIER_INVARIANT_SP_AUTHORIZED.txt
+    reported full SHA:
+    f12e5ab2b696d7848b0637d28f1b489ed0943f2ee0ba6d6d69de4a896ada92d3
+
+Also recover any directly referenced predecessor/successor artifact needed to
+interpret those files without ambiguity.
+
+Search order:
+
+  1. current conversation/project attachments and evidence packages
+  2. ~/Uploads / ~/Downloads / verifier/evidence archives available to CPT's
+     build environment
+  3. canonical host/repo only by separately authorized READ-ONLY search if the
+     artifact cannot otherwise be recovered
+  4. memory never as artifact content
+
+Do not ask Cornelius to run a search yet.
+
+======================================================================
+RECOVERY ACCEPTANCE
+======================================================================
+
+For each recovered artifact report:
+
+  exact path/source
+  exact filename
+  exact SHA256
+  byte size
+  whether complete
+  whether it references another authority
+  the exact clauses defining:
+    A/I/D/S/C/T category meaning
+    required cases
+    expected outcomes
+    command-position rules
+    verifier-consistency rules
+
+Do not paraphrase first.
+
+Extract the exact relevant clauses and then separately provide CPT interpretation.
+
+If R29/R30/R33 together establish the original full matrix and historical
+certification standard without contradiction:
+
+  classify:
+    RECOVERED_GOVERNANCE_AUTHORITY_CANDIDATE
+
+They are not yet "canonicalized into git."
+
+Boss will review the recovered bytes and may then rule them authoritative for R80.
+
+If the artifacts are incomplete, contradictory, or only secondary summaries:
+
+  STOP R80_MATRIX_AUTHORITY_RECOVERY_INSUFFICIENT
+
+If exact bytes cannot be recovered:
+
+  STOP R80_MATRIX_AUTHORITY_BYTES_NOT_FOUND
+
+======================================================================
+PRIOR EXECUTOR ABSENCE
+======================================================================
+
+The absence of e1f1cca7... bytes does NOT by itself cancel R80.
+
+But no byte-diff claim against e1f1cca7... may be made.
+
+Allowed wording:
+
+  prior certified identity = e1f1cca7...
+  prior bytes unavailable
+  certification ancestry/diff unavailable
+
+The current executor must therefore be certified as a standalone current-byte
+artifact.
+
+This strengthens, rather than weakens, the decision to run the full matrix.
+
+======================================================================
+CPT LOCAL REPO DIVERGENCE
+======================================================================
+
+CPT's no-.git Allmight copy is NOT canonical repo authority.
+
+Do not use it to claim:
+  HEAD
+  commit identity
+  canonical absence
+  canonical presence
+
+Its file bytes may be used only as:
+  BUILD_ENVIRONMENT_COPY
+
+The already observed canonical machine checkpoint remains the current host-state
+authority until another separately authorized machine refresh.
+
+No host refresh is required for this recovery substep.
+
+======================================================================
+REPO COMMIT DECISION DEFERRED
+======================================================================
+
+If Boss accepts the recovered governance artifacts as R80 authority, we will then
+decide whether to:
+
+  - use them directly for this certification and later archive the suite into git,
+    or
+  - authorize a governance-only repo preservation step before behavioral testing.
+
+That decision is NOT made by R80A.
+
+No repo mutation now.
+
+======================================================================
+CPT — NEXT TASK
+======================================================================
+
+Perform authority recovery only.
+
+Return an R80A AUTHORITY RECOVERY PACKET containing:
+
+  1. exact recovered R29 bytes/hash
+  2. exact recovered R30 bytes/hash
+  3. exact recovered R33 bytes/hash
+  4. exact recovered R40 bytes/hash
+  5. any required linked governance artifacts
+  6. exact A/I/D/S/C/T clauses
+  7. exact command-position clauses
+  8. exact verifier-consistency clauses
+  9. provenance table
+ 10. contradiction/gap table
+ 11. conclusion:
+       SUFFICIENT_FOR_BOSS_AUTHORITY_REVIEW
+       or
+       INSUFFICIENT
+
+Package the recovered originals unchanged.
+Do not rewrite them into a new standard.
+
+STOP for Boss review.
+
+======================================================================
+LOCKS
+======================================================================
+
+R79 topology proof                    PASS / CONSUMED
+R80 initial inventory                 STOP ACCEPTED
+R80A authority recovery               AUTHORIZED
+Boss-artifact elevation               PENDING BYTE REVIEW
+full A/I/D/S/C/T requirement          STILL REQUIRED
+executor 583cfdbc...                  NOT CERTIFIED
+R80 host behavioral execution         NOT AUTHORIZED
+repo mutation                         NOT AUTHORIZED
+commit/push                           NOT AUTHORIZED
+SP01                                  NOT AUTHORIZED
+restart                               NOT AUTHORIZED
+launcher                              NOT AUTHORIZED
+broadcast                             LOCKED
+capital                               UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

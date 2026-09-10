@@ -1,0 +1,161 @@
+BOSS M2E-017G R80E — DOCUMENTATION PACKAGE ACCEPTANCE WITH ONE WORDING CORRECTION
+
+PACKAGE REVIEWED
+
+M2E017G_DOCUMENTATION__ca1af267.zip
+SHA256:
+  ca1af26750a5fbbc5c88d367cfa87c215022cbcf739f4f0e810b0f0e1094f05a
+
+Independent byte review confirms:
+
+  package SHA matches
+  manifest hashes are internally consistent
+  R28 exact bytes contain T01-T10
+  structured matrix contains T01-T10 exactly once each
+  derived cardinality is:
+    A4 + I6 + D6 + S8 + C8 + T10 = 42
+  T10 is restored
+  T05-T10 is the current launcher/start-dependent transition group
+  R28 SELF-LINEAGE / PROCESS-SELECTION REGRESSION is preserved
+  INCIDENT 015 / 020 use allowed lifecycle status PARKED
+  provenance is separated from lifecycle state
+  BUG-010 is present and cross-linked to BUG-009
+  no host/runtime/launcher/repo mutation was performed
+
+======================================================================
+ONE CORRECTION REQUIRED
+======================================================================
+
+BUG-010 currently states in its regression text, in substance:
+
+  "the package proves zero stale T01-T09 / T05-T09 strings remain"
+
+That literal claim is false because the package intentionally preserves those
+strings in:
+
+  - BUG-010's defect description
+  - the R80D correction notice
+  - historical R80B authority text
+
+The package correctly explains elsewhere that these are historical/correction
+references rather than active scope claims.
+
+Therefore change the BUG-010 regression wording to:
+
+  "The package proves zero stale T01-T09 / T05-T09 SCOPE ASSERTIONS remain.
+   Historical defect/correction references containing those strings are preserved
+   intentionally and are not active scope statements."
+
+Do not suppress or delete historical references merely to satisfy grep.
+
+Verification criterion must be semantic / location-bounded:
+
+  ACTIVE_SCOPE_ASSERTION_T01_T09_COUNT=0
+  ACTIVE_SCOPE_ASSERTION_T05_T09_COUNT=0
+
+Historical quotation/correction references may remain.
+
+======================================================================
+BUG-010 DISPOSITION
+======================================================================
+
+The original matrix omission itself is independently verified corrected.
+
+Therefore:
+
+  BUG-010 matrix defect:
+    FIX_VALIDATED
+
+The wording issue above is a documentation precision correction within the same
+entry. It does not reopen the matrix omission.
+
+After the wording correction:
+  retain BUG-010 = FIX_VALIDATED
+  add note:
+    "R80E corrected the regression-proof wording from literal-string absence to
+     stale-scope-assertion absence."
+
+No new bug ID is required because this is correction of BUG-010's own validation
+description, not a separate executable/certification defect.
+
+======================================================================
+DOCUMENTATION STAGE-1 VERDICT
+======================================================================
+
+Subject only to the wording correction above:
+
+  R80B/R80C DOCUMENTATION STAGE 1 = ACCEPTED
+
+Recovered governance authority:
+  R28 / R29 / R30 / R33 / R40 = ACCEPTED FOR R80
+
+Documentation architecture:
+  ACCEPTED
+
+42-case matrix transcription:
+  ACCEPTED AFTER T10 CORRECTION
+
+Self-lineage regression requirement:
+  ACCEPTED / REQUIRED
+
+Bug/incident ledger structure:
+  ACCEPTED
+
+R79 proof/non-claims:
+  ACCEPTED
+
+R80 plan:
+  ACCEPTED AS DESIGN BASELINE, subject to later T05-T10 execution ruling
+
+======================================================================
+NEXT STATE — DOCUMENTATION PRESERVATION
+======================================================================
+
+The project now has enough reviewed documentation to justify canonical
+preservation.
+
+However, this ruling does NOT itself authorize a repository commit.
+
+CPT shall first produce the minimally corrected documentation package with only
+the R80E wording correction and updated package/manifest hashes.
+
+Then STOP.
+
+After Boss verifies those exact bytes, Boss may issue a separate
+DOCUMENTATION-ONLY REPO PRESERVATION authorization.
+
+That future preservation step must not include executable changes.
+
+======================================================================
+T05-T10
+======================================================================
+
+T05-T10 remain:
+
+  REQUIRED_MATRIX_CASES
+  START/LAUNCHER DEPENDENT
+  HOST EXECUTION NOT AUTHORIZED
+
+The documentation package may design fixture reproduction for them, but no
+launcher invocation is authorized.
+
+======================================================================
+LOCKS
+======================================================================
+
+R79 topology proof                    PASS / CONSUMED
+R28/R29/R30/R33/R40 authority         ACCEPTED FOR R80
+R80 documentation Stage 1             ACCEPTED SUBJECT TO R80E WORDING FIX
+R80E package wording correction       AUTHORIZED
+documentation repo preservation       NOT YET AUTHORIZED
+executor 583cfdbc...                  NOT CERTIFIED
+R80 host behavioral execution         NOT AUTHORIZED
+launcher                              NOT AUTHORIZED
+SP01                                  NOT AUTHORIZED
+restart                               NOT AUTHORIZED
+broadcast                             LOCKED
+capital                               UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

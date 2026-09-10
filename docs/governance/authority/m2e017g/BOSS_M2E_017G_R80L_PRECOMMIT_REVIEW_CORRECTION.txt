@@ -1,0 +1,252 @@
+BOSS M2E-017G R80L — PRE-COMMIT PRESERVATION REVIEW CORRECTION
+
+PACKAGE REVIEWED
+
+  PRESERVATION_REVIEW__2c050ace.zip
+
+Observed ZIP SHA256:
+
+  2c050acea8b63dc295ce5aeb02e22e01cdb7997fc91f0c9cc515c212d84681b0
+
+======================================================================
+INDEPENDENT REVIEW
+======================================================================
+
+Boss independently verified:
+
+  - uploaded ZIP SHA matches reported SHA
+  - PRESERVATION/MANIFEST.sha256 authenticates 27 listed files
+  - manifest mismatch count = 0
+  - CHECKPOINT_OVERLAY.md SHA256 =
+      713ecfbf1c94a7a081708c1534c0ca2c9cd75d46b54e76a3f780c0cfb0a8cb14
+  - overlay length =
+      9,359 bytes
+      190 lines
+  - preservation staging tree is non-empty
+  - authority originals are present as separate immutable files
+  - checkpoint merge is defined as canonical-byte concatenation, not transcription
+  - no executable source is present in the proposed staging tree
+  - dirty runtime/research paths are outside the proposed explicit staging set
+  - MANIFEST.sha256 does not hash itself
+
+The concatenation method is ACCEPTED IN PRINCIPLE:
+
+  git show HEAD:docs/recovery/PROJECT_RECOVERY_CHECKPOINT.md > merged.md
+  cat CHECKPOINT_OVERLAY.md >> merged.md
+
+provided the merged artifact is built and hashed BEFORE any git staging.
+
+Expected merged size anchor:
+
+  34,793 + 9,359 = 44,152 bytes
+
+The final destination SHA remains legitimately DEFERRED until host-side concatenation.
+
+======================================================================
+BLOCKER — BUG-011 STATUS IS STALE IN THE PROPOSED STAGING TREE
+======================================================================
+
+The proposed:
+
+  docs/recovery/BUG_AND_INCIDENT_LEDGER.md
+
+still contains:
+
+  BUG-011
+    Status FIX_IMPLEMENTED
+
+and later repeats:
+
+  BUG-011 FIX_IMPLEMENTED under R80F — pending Boss verification of rebuilt ZIP.
+
+That is no longer current authority.
+
+Boss R80G independently verified the rebuilt 5549f87b... package and ruled:
+
+  BUG-011 = FIX_VALIDATED
+
+Boss R80K reiterated:
+
+  BUG-011 remains FIX_VALIDATED
+
+Therefore the proposed preservation tree currently contains a known stale governance
+state.
+
+This must be corrected before canonical mutation.
+
+======================================================================
+REQUIRED BUG-011 CORRECTION
+======================================================================
+
+Update only the affected BUG-011 governance state in the staged documentation set.
+
+Required result:
+
+  BUG-011
+    Status FIX_VALIDATED
+
+Replace the stale pending-verification disposition with a source-grounded statement
+in substance:
+
+  "Boss R80G independently verified the rebuilt package and accepted the manifest
+   correction. BUG-011 is FIX_VALIDATED. R80K preserved this disposition."
+
+The CERTIFICATION INTERLOCK section must likewise say:
+
+  BUG-011 FIX_VALIDATED
+
+Do not weaken or remove the BUG-009 cross-link.
+Do not merge BUG-011 into BUG-009.
+Do not change BUG-011 severity or root-cause description.
+
+======================================================================
+BUG-009 DISCLOSURES
+======================================================================
+
+The three preservation-review construction failures disclosed in this turn are
+accepted as additional BUG-009 recurrence events:
+
+  1. vacuous invariant pass against an empty staging directory caused by brace
+     expansion attempted under /bin/sh;
+
+  2. printf option parsing silently dropping lines beginning with "- **";
+
+  3. MANIFEST.sha256 initially including itself.
+
+These may be added as recurrence instances under BUG-009.
+
+No new root bug ID is required unless one of these later proves to be a distinct
+shipped artifact defect.
+
+The non-vacuity lesson is important:
+
+  zero-result proof must establish a known-positive / non-empty measurement surface
+  before interpreting zero as success.
+
+======================================================================
+INCIDENT 021 / 022 / 023
+======================================================================
+
+The staged ledger treatment is accepted in principle:
+
+  INCIDENT 021
+    OPEN / source-grounded
+
+  INCIDENT 022
+    OPEN
+    STATE_CONFLICT=YES
+    RESTART-BLOCKING
+
+  INCIDENT 023
+    OPEN / source-grounded
+
+The bounded wording for INCIDENT 023 is acceptable because it explicitly avoids
+claiming identical root cause.
+
+INCIDENT 015 / 020 correctly remain:
+
+  PARKED
+  RECONSTRUCTED_FROM_MEMORY
+  SOURCE_EVIDENCE=NOT_RECOVERED
+
+======================================================================
+SOURCE-PROVENANCE LIMITATION
+======================================================================
+
+The preservation-review ZIP does not itself include the 34,793-byte canonical
+checkpoint source.
+
+Therefore Boss's package review can verify the overlay and proposed staging artifacts,
+but cannot independently recompute the final merged checkpoint SHA from the ZIP alone.
+
+That is acceptable because R80K intentionally deferred merge construction to the host.
+
+Before any git add, the host-side merge must prove:
+
+  BASE_CHECKPOINT_SHA =
+    87af009366a887640d1e84a98955c6aee195eddbc2fcbc2e887017cf94cd19f3
+
+  OVERLAY_SHA =
+    713ecfbf1c94a7a081708c1534c0ca2c9cd75d46b54e76a3f780c0cfb0a8cb14
+
+  MERGED_BYTES =
+    44152
+
+  MERGED_SHA =
+    <computed and reported>
+
+and the first 34,793 bytes of the merged file must hash exactly to the canonical base
+checkpoint SHA.
+
+This byte-prefix proof is required because size alone does not prove canonical history
+was preserved.
+
+======================================================================
+PRE-COMMIT REVIEW VERDICT
+======================================================================
+
+Current package:
+
+  PRESERVATION_REVIEW__2c050ace.zip
+
+Verdict:
+
+  REVIEWED
+  STRUCTURE_ACCEPTED
+  MERGE_METHOD_ACCEPTED
+  NOT YET READY FOR CANONICAL MUTATION
+
+Blocking reason:
+
+  STALE_BUG_011_GOVERNANCE_STATE=1
+
+Required correction is documentation-only.
+
+======================================================================
+NEXT AUTHORIZED STEP
+======================================================================
+
+CPT is AUTHORIZED to rebuild the PRE-COMMIT PRESERVATION REVIEW only.
+
+Required changes:
+
+  1. BUG-011 -> FIX_VALIDATED everywhere in the proposed staging docs.
+  2. Add the three disclosed BUG-009 recurrence instances.
+  3. Regenerate package manifest from final bytes.
+  4. Re-run non-vacuous invariant checks.
+  5. Return:
+       new ZIP SHA
+       manifest PASS
+       changed-file list relative to 2c050ace...
+       proof no unrelated staging docs changed
+       BUG-011 occurrence grep/output
+       BUG-009 recurrence update
+       four invariant counts
+
+Do not build the host merged checkpoint yet.
+Do not mutate the canonical repo yet.
+
+STOP for Boss review.
+
+======================================================================
+LOCKS
+======================================================================
+
+R80 documentation Stage 1             ACCEPTED
+pre-commit preservation structure     ACCEPTED
+checkpoint concat method              ACCEPTED IN PRINCIPLE
+BUG-011 staged status                 STALE / CORRECTION REQUIRED
+canonical checkpoint merge build      NOT YET AUTHORIZED
+canonical repo mutation               NOT AUTHORIZED
+git add / commit / push               NOT AUTHORIZED
+executor 583cfdbc...                   NOT CERTIFIED
+R80 host behavioral execution         NOT AUTHORIZED
+launcher                              NOT AUTHORIZED
+SP01                                  NOT AUTHORIZED
+restart                               NOT AUTHORIZED
+broadcast                             LOCKED
+capital                               UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

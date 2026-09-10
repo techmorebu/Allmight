@@ -1,0 +1,208 @@
+BOSS M2E-017G R79G — HOST EXECUTION AUTHORIZATION FOR R79F TOPOLOGY PROOF
+
+STATUS
+
+Exact-byte reviewed package:
+
+  R79F_TOPOLOGY__017142c9.zip
+  SHA256:
+    017142c90f836790474e4aa600ad70d7f331040faedad7cf42d11d3b271b0553
+
+Runner:
+  bin/r79f_runner.sh
+  SHA256:
+    30fad8c93a271ee8436e23a1f33caf51134b3c2a8aa6e4d793306dffcab07be1
+
+Manifest:
+  9/9 PASS
+
+bash -n:
+  PASS
+
+Immutable bundled identities verified:
+
+  executor
+    583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+
+  hook
+    fcbb957cf6fb789c7987305d7510449019bb8d78daa4e43c793fdcf1e6cfb4bf
+
+  P1
+    7c85e0a5d5813326979aef8e7fe6ecd049ae16f8bc1e780a57c441ac5e344f04
+  P2
+    2d99c4d7b12eb83348acf672f201c0815c26f9af21c9b32e11a31e458c5d3d95
+  P3
+    a1777755c38f80feeb905c94f8d3f4f278ccd16440a2f10bf64a732a602ee0ec
+  P4
+    cc8b053ee9c95051947d516a8b0e0824f1dc2d35993ffd8a6743fe969380e52f
+  P5
+    0b3998fa0338f5517bff95ada3e958ad0c05157f2de2ea304c8127da041e8c5e
+
+RULING
+
+R79F_TOPOLOGY__017142c9.zip is AUTHORIZED for one bounded host execution of the
+R79 offline synthetic-baseline topology proof.
+
+This authorization is for the reviewed exact bytes only.
+
+It does NOT authorize:
+  executor modification
+  hook modification
+  P1-P5 modification
+  SP01 certification
+  SP02-SP05
+  launcher
+  restart
+  broadcast
+  capital
+  repo mutation
+  commit/push
+  canonical control-file edits
+
+MACHINE-FIRST PRECONDITIONS
+
+The runner itself must prove before fixture creation:
+
+  canonical HEAD exact:
+    923dd5041e645c22ad025a3f8335a03880f89b99
+
+  governed role hits:
+    0
+
+  historical baseline PIDs:
+    8/8 absent
+
+  canonical control files exact standing hashes:
+
+    allmight.pid
+      2899bbf5be90879de6229e28fb306ade8f370d1fdba47b94701b04b7eeadb3c1
+
+    allmight.session
+      d92e2b5c2f319499e6201c601f998e46be264139dd2dd508c9907d6169aeecbb
+
+    notification_router.exit.jsonl
+      b59ae10c118b0ab3d1d3fee7af147ba9fe9b02fadfac24ce8fd7cdc9e8077671
+
+Any divergence must STOP through the reviewed runner.
+
+AUTHORIZED EXECUTION MODEL
+
+The reviewed runner may:
+
+  create /home/allmight/sp01_fixture
+  create a standalone local exact-HEAD clone beneath it
+  create fixture-local synthetic control files
+  create the bounded certified P3 real fixture root/descendant
+  build the synthetic PROC_ROOT mirror
+  execute the development executor in TEST_ADAPTER mode for topology cases
+  run the five bounded fail-closed negative cases
+  run the no-adapter production-default observation only against a non-repository path
+  perform certified P3 fixture cleanup
+  remove its exact disposable clone/tree
+  package evidence under ~/Uploads
+
+SIGNAL AUTHORITY
+
+Executor topology cases:
+  observed required mode = TEST_ADAPTER
+
+Real executor signal zero is not directly instrumented by the runner.
+Its zero-real-signal claim is classified as inference from:
+  exact reviewed executor bytes
+  +
+  observed TEST_ADAPTER mode
+
+Certified P3 cleanup remains the only authorized real signal surface and is bounded to
+the captured temporary fixture lifecycle.
+
+No improvised cleanup is authorized.
+
+PASS STANDARD
+
+The only successful conclusion is:
+
+  R79_RESULT=OFFLINE_SYNTHETIC_BASELINE_TOPOLOGY_PROOF_PASS
+
+The runner must gate:
+
+  positive topology invariants
+  G7 frozen count > 0
+  exact fixture descendant present in frozen set
+  five expected negative STOP codes
+  production-default G1_NO_REPO behavior
+  certified fixture cleanup
+  canonical HEAD/control integrity
+  baseline absence
+  governed-role zero
+  executor/hook/P1-P5 hashes
+
+A generic execution completion is not a pass.
+
+CORNELIUS — EXACT OPERATOR ACTION
+
+1. Locate the approved ZIP by exact SHA.
+
+2. Extract it into a fresh verifier directory.
+
+3. Verify MANIFEST.sha256.
+
+4. Run only:
+     bin/r79f_runner.sh
+
+Recommended block:
+
+  Z=$(find ~/Downloads -maxdepth 1 -type f -name 'R79F_TOPOLOGY*.zip' | while read -r f; do
+    [ "$(sha256sum "$f" | cut -d' ' -f1)" = "017142c90f836790474e4aa600ad70d7f331040faedad7cf42d11d3b271b0553" ] && echo "$f" && break
+  done)
+
+  echo "SELECTED: ${Z:-NONE}"
+  [ -n "$Z" ] || { echo "STOP: approved ZIP not found"; exit 1; }
+
+  rm -rf ~/verifiers/R79F_TOPOLOGY
+  mkdir -p ~/verifiers
+  unzip -qo "$Z" -d ~/verifiers
+
+  cd ~/verifiers/R79F_TOPOLOGY
+  sha256sum -c MANIFEST.sha256 || { echo "STOP: manifest verification failed"; exit 1; }
+
+  sha256sum bin/r79f_runner.sh
+  [ "$(sha256sum bin/r79f_runner.sh | cut -d' ' -f1)" = "30fad8c93a271ee8436e23a1f33caf51134b3c2a8aa6e4d793306dffcab07be1" ] || {
+    echo "STOP: runner hash mismatch"
+    exit 1
+  }
+
+  bash bin/r79f_runner.sh
+
+AFTER EXECUTION
+
+STOP.
+
+Return:
+  complete terminal output
+  generated evidence ZIP path
+  generated evidence ZIP SHA256
+
+Do not run anything else even if R79 passes.
+
+If the runner stops/fails:
+  do not manually clean
+  do not rerun
+  do not restart
+  return the full output and any evidence path/package produced.
+
+If the runner passes:
+  do not proceed to R80
+  do not run SP01
+  do not restart
+  return evidence for Boss review.
+
+CURRENT LOCKS
+
+R79F exact package host run       AUTHORIZED ONCE
+R79 topology proof                PENDING MACHINE EVIDENCE
+executor certification            NOT GRANTED
+SP01                              NOT AUTHORIZED
+restart                           NOT AUTHORIZED
+launcher                          NOT AUTHORIZED
+broadcast                         LOCKED
+capital                           UNTOUCHED

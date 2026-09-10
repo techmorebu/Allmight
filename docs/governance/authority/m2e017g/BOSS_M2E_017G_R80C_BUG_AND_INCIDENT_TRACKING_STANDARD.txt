@@ -1,0 +1,326 @@
+BOSS M2E-017G R80C — BUG / INCIDENT TRACKING STANDARD
+
+STATUS
+
+R80B documentation lane remains ACTIVE.
+
+This ruling adds a mandatory BUG / INCIDENT TRACKING lane to PROJECT ALLMIGHT.
+
+No runtime, repo, restart, launcher, SP01, broadcast, or capital authority is changed.
+
+======================================================================
+RULING — BUGS ARE FIRST-CLASS BUILD ARTIFACTS
+======================================================================
+
+Every meaningful defect discovered during design, build, test, certification, or
+runtime must be recorded in a durable bug / incident ledger.
+
+A bug is not closed merely because code changed.
+
+Closure requires:
+  defect identified
+  failure mechanism understood or explicitly marked unresolved
+  scope bounded
+  fix implemented
+  regression test/evidence produced
+  Boss disposition recorded
+  residual risk documented
+  affected documentation/checkpoint updated
+
+======================================================================
+CANONICAL BUG / INCIDENT LEDGER
+======================================================================
+
+Suggested target:
+
+  docs/recovery/BUG_AND_INCIDENT_LEDGER.md
+
+Each entry must have a stable identifier.
+
+Preferred format:
+
+  BUG-###
+  INC-###
+
+Use:
+  BUG for defects found in design/build/test before production impact.
+  INC for defects/failures observed in a running governed system or live-like
+  operational environment.
+
+Existing historical incident numbering should be preserved where already assigned
+(e.g. INCIDENT 015 / INCIDENT 020).
+
+Do not renumber historical records.
+
+======================================================================
+REQUIRED FIELDS
+======================================================================
+
+Every bug/incident entry must record:
+
+  ID
+  title
+  discovery UTC timestamp
+  discovered in phase/slice
+  status
+  severity
+  affected component
+  affected artifact / file / function
+  affected SHA / commit when known
+  triggering condition
+  observed symptom
+  exact failure / STOP code when available
+  machine evidence
+  reproduction status
+  root cause status
+  root cause
+  safety impact
+  execution/capital impact
+  containment
+  authorized fix
+  implementation SHA / commit
+  validation evidence
+  regression test
+  Boss ruling / disposition
+  residual risk
+  related bugs/incidents
+  documentation links
+  closure UTC timestamp
+
+======================================================================
+STATUS VALUES
+======================================================================
+
+Use only:
+
+  OPEN
+  TRIAGED
+  ROOT_CAUSE_PENDING
+  ROOT_CAUSE_CONFIRMED
+  FIX_AUTHORIZED
+  FIX_IMPLEMENTED
+  VALIDATION_PENDING
+  FIX_VALIDATED
+  CLOSED
+  PARKED
+  WONT_FIX
+
+Do not use CLOSED unless validation evidence exists.
+
+======================================================================
+SEVERITY
+======================================================================
+
+Use:
+
+  S0 — documentation / cosmetic, no behavioral effect
+  S1 — bounded correctness/usability defect, no safety boundary crossed
+  S2 — deterministic function degraded or certification blocked
+  S3 — safety/governance boundary threatened, silent failure, wrong authority,
+       signal/mutation ambiguity, or possible unintended execution
+  S4 — unauthorized execution/capital action, credential compromise, or confirmed
+       material loss / uncontrolled mutation
+
+Severity is about consequence, not difficulty of fixing.
+
+======================================================================
+EVIDENCE CLASSIFICATION
+======================================================================
+
+Every important claim in an entry must distinguish:
+
+  OBSERVED
+  COMMITTED
+  TESTED
+  INFERRED
+  PROPOSED
+  AUTHORIZED
+
+Examples:
+
+  OBSERVED:
+    58/58 dry executions returned NOT_OWNER.
+
+  INFERRED:
+    ethers v6 default from=0x0 explains ownership mismatch.
+
+  TESTED:
+    signer-bound callStatic patch changed failure mode as expected.
+
+  NOT TESTED:
+    unrelated analytics path remained unpatched.
+
+======================================================================
+BUG LIFECYCLE
+======================================================================
+
+1. DISCOVER
+   Record symptom immediately.
+   Do not wait for root cause.
+
+2. CONTAIN
+   Pause or bound affected path where required.
+
+3. TRIAGE
+   Identify affected surface and severity.
+
+4. ROOT CAUSE
+   Separate evidence from interpretation.
+
+5. AUTHORIZE
+   Boss approves fix scope before mutation when governance requires it.
+
+6. IMPLEMENT
+   CPT changes only authorized scope.
+
+7. VALIDATE
+   Reproduce old failure if possible, run regression, prove new behavior.
+
+8. DOCUMENT
+   Update:
+     bug ledger
+     build/certification ledger
+     recovery checkpoint
+     affected design/certification docs
+
+9. CLOSE
+   Only after Boss accepts evidence.
+
+======================================================================
+REGRESSION RULE
+======================================================================
+
+Every S2+ bug should have a regression artifact unless technically impossible.
+
+If impossible, entry must say:
+
+  REGRESSION_TEST=NOT_POSSIBLE
+
+and explain why.
+
+A bug fixed without a regression check remains:
+
+  VALIDATION_PENDING
+
+not CLOSED.
+
+======================================================================
+DUPLICATES / RECURRENCES
+======================================================================
+
+If a later failure is the same defect:
+
+  link to original ID
+  record recurrence event
+  do not create a new root bug unless mechanism differs
+
+If same symptom but different cause:
+  create new ID
+  cross-link both
+
+======================================================================
+CERTIFICATION INTERLOCK
+======================================================================
+
+Certification documents must list all OPEN / PARKED S2+ bugs affecting the
+certified component.
+
+An executor cannot be certified while an unresolved S3/S4 defect affects the
+certification boundary unless Boss explicitly rules the defect out of scope and
+documents why.
+
+R80 recertification plan must therefore include:
+
+  OPEN_BUGS_AFFECTING_EXECUTOR
+  CLOSED_BUGS_RETESTED
+  KNOWN_LIMITATIONS
+  REGRESSION_CASES
+
+======================================================================
+CURRENT KNOWN HISTORICAL ITEMS TO PRESERVE
+======================================================================
+
+Do not reconstruct details from memory if source evidence exists.
+
+At minimum, the documentation recovery pass should locate and index existing
+records for:
+
+  INCIDENT 015
+    live callStatic signer/owner mismatch
+
+  INCIDENT 020
+    shadow/dry-execution NOT_OWNER ownership mismatch
+
+  M2E-017F heat termination
+    native V8 fatal CHECK / GC sweeper
+    root cause unresolved
+
+  R30 subshell STOP propagation defect
+
+  R79 harness defects
+    missing synthetic role keys
+    fixture pidfile ordering
+    canonical-pidfile admission source
+    fail-closed cleanup ordering
+    weak acceptance gates
+    timeout hidden signal surface
+    governed-selection evidence authority
+
+These may be historical BUG/INC entries or grouped sub-defects, but the original
+identifiers and evidence must remain traceable.
+
+======================================================================
+DOCUMENTATION PACKAGE UPDATE
+======================================================================
+
+R80B draft package must now also include:
+
+  DRAFT_DOCS/
+    BUG_AND_INCIDENT_LEDGER.md
+
+And the following documents must cross-reference it where relevant:
+
+  PROJECT_RECOVERY_CHECKPOINT.md
+  M2E017G_EXECUTOR_CERTIFICATION_HISTORY.md
+  M2E017G_R80_RECERTIFICATION_PLAN.md
+  BUILD_AND_CERTIFICATION_LEDGER.md
+
+The source-to-document mapping must show which evidence/ruling feeds each bug
+record.
+
+======================================================================
+COMMIT POLICY
+======================================================================
+
+Drafting is authorized offline.
+
+Canonical repo mutation remains NOT AUTHORIZED.
+
+When documentation commit is later authorized:
+  bug ledger is included
+  documentation-only commit
+  no executable changes bundled
+  explicit-path staging only
+  checkpoint updated
+  pinned remote verification required
+
+======================================================================
+CURRENT LOCKS
+======================================================================
+
+R80B documentation drafting           AUTHORIZED
+R80C bug/incident drafting            AUTHORIZED
+documentation repo commit             NOT AUTHORIZED
+executor 583cfdbc...                  NOT CERTIFIED
+R80 host behavioral execution         NOT AUTHORIZED
+SP01                                  NOT AUTHORIZED
+restart                               NOT AUTHORIZED
+launcher                              NOT AUTHORIZED
+repo mutation                         NOT AUTHORIZED
+commit/push                           NOT AUTHORIZED
+broadcast                             LOCKED
+capital                               UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

@@ -1,0 +1,115 @@
+BOSS M2E-017G R80F — MANIFEST INTEGRITY CORRECTION
+
+PACKAGE REVIEWED
+
+M2E017G_DOCUMENTATION__1bb9df71.zip
+
+Observed ZIP SHA256:
+  1bb9df71f6465e5718f20bdc800ac1deb9bb757b48be9ff450dbfefd4755b3d5
+
+R80E wording change in BUG_AND_INCIDENT_LEDGER.md is present and technically acceptable.
+
+However, the package cannot yet be accepted as a verified preservation artifact.
+
+======================================================================
+FINDING — MANIFEST HASH IS STALE
+======================================================================
+
+Actual BUG_AND_INCIDENT_LEDGER.md SHA256 inside the uploaded ZIP:
+
+  d2b27d36fb07870d9b89888d5e672f14a6b9a28c0a387d3dcb2724b5c328c65b
+
+MANIFEST.md still records:
+
+  0653843622ea3667387c1dca954ba13de62cba6d79ad2803410416fb8b0bfac2
+
+Therefore the reported:
+
+  manifest 20/20
+
+is not supported by the uploaded bytes.
+
+This is a fail-closed packaging/integrity defect.
+
+The R80E content correction itself is good; the preservation package metadata was
+not regenerated consistently after that correction.
+
+======================================================================
+CLASSIFICATION
+======================================================================
+
+Add:
+
+  BUG-011
+  title:
+    R80E documentation package retained stale manifest hash after ledger mutation
+  severity:
+    S2
+  status:
+    FIX_IMPLEMENTED after corrected repackaging
+  related:
+    BUG-009 verifier-precision class
+    BUG-010 matrix-transcription defect
+
+Reason for S2:
+  a preservation package was reported manifest-PASS while its own manifest did not
+  authenticate one changed document. If accepted, future recovery could reject the
+  correct file or trust an incorrect integrity claim.
+
+Do not mark FIX_VALIDATED until Boss independently verifies the rebuilt ZIP.
+
+======================================================================
+REQUIRED CORRECTION
+======================================================================
+
+Rebuild package only.
+
+1. Preserve the accepted R80E wording correction.
+2. Add BUG-011 to BUG_AND_INCIDENT_LEDGER.md.
+3. Regenerate every manifest hash from final packaged bytes.
+4. Verify the manifest against the final ZIP contents, not the pre-package staging
+   directory.
+5. Report:
+     final ZIP SHA256
+     exact manifest entry count
+     manifest verification PASS/FAIL
+     round-trip verification PASS/FAIL
+     actual BUG_AND_INCIDENT_LEDGER.md SHA256
+     manifest-recorded BUG_AND_INCIDENT_LEDGER.md SHA256
+     equality verdict
+6. Ensure the verifier exits nonzero on any manifest mismatch.
+7. STOP for Boss byte review.
+
+No other documentation content change is authorized.
+
+======================================================================
+ACCEPTANCE CONDITION
+======================================================================
+
+Required:
+
+  MANIFEST_MISMATCH_COUNT=0
+  BUG_LEDGER_HASH_MATCH=YES
+  ROUND_TRIP=PASS
+
+Only then can R80 documentation Stage 1 be fully accepted for preservation.
+
+======================================================================
+LOCKS
+======================================================================
+
+R80E wording correction               CONTENT ACCEPTED
+package 1bb9df71...                    INTEGRITY FAIL / SUPERSEDE AFTER REBUILD
+R80F package integrity correction      AUTHORIZED
+documentation repo preservation        NOT AUTHORIZED
+executor 583cfdbc...                   NOT CERTIFIED
+R80 host behavioral execution          NOT AUTHORIZED
+launcher                               NOT AUTHORIZED
+SP01                                   NOT AUTHORIZED
+restart                                NOT AUTHORIZED
+broadcast                              LOCKED
+capital                                UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

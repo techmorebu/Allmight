@@ -1,0 +1,387 @@
+BOSS M2E-017G R80B — BUILD DOCUMENTATION + AUTHORITY PRESERVATION LANE
+
+STATUS
+
+User ruling:
+  The build itself must now be documented as part of the work.
+  This is where the documentation layer becomes active.
+
+R79 topology:
+  PASS / CONSUMED
+
+R80:
+  full executor re-certification remains required
+
+R80A:
+  authority recovery in progress / recovered candidate authority includes:
+    R28 — primary A/I/D/S/C/T matrix definition
+    R29 — fixture honesty / signal-adapter constraints
+    R30 — stop-propagation defect correction
+    R33 — later certification authorization context
+    R40 — command-position / verifier-consistency authority
+
+No runtime authorization changes are created by this document.
+
+======================================================================
+RULING — DOCUMENTATION IS NOW A REQUIRED PARALLEL BUILD LANE
+======================================================================
+
+From this point forward, PROJECT ALLMIGHT shall maintain two synchronized outputs:
+
+  1. EXECUTABLE / TESTED BUILD STATE
+  2. DURABLE DOCUMENTED BUILD STATE
+
+A slice is not considered fully closed merely because the code/test evidence passes.
+
+The corresponding build state, authority, evidence, unresolved limits, and next
+authorized step must also be documented.
+
+This documentation is not decorative.
+
+It is part of deterministic recovery and governance.
+
+======================================================================
+DOCUMENTATION SOURCE ORDER
+======================================================================
+
+Documentation must be built from:
+
+  current machine evidence
+    ->
+  current committed repo bytes
+    ->
+  recovered immutable Boss directives / evidence
+    ->
+  accepted Boss rulings
+    ->
+  CPT implementation notes
+    ->
+  memory last
+
+Documentation may summarize memory only when the source artifact cannot be
+recovered, and such content must be explicitly labeled:
+
+  RECONSTRUCTED_FROM_MEMORY
+
+No reconstructed memory may be promoted to canonical technical authority.
+
+======================================================================
+REQUIRED DOCUMENT SET
+======================================================================
+
+The durable documentation lane should converge on the following structure.
+
+1. PROJECT RECOVERY CHECKPOINT
+
+Canonical purpose:
+  restore Boss/CPT/operator context without relying on chat memory.
+
+Must contain:
+  current HEAD / current executable identities
+  current machine state
+  current phase/slice
+  active locks
+  consumed rulings
+  unresolved defects
+  exact next authorized step
+  current evidence package hashes
+  current authority chain
+
+Target:
+  docs/recovery/PROJECT_RECOVERY_CHECKPOINT.md
+
+2. EXECUTOR CERTIFICATION HISTORY
+
+Purpose:
+  durable record of the M2E-017G executor evolution and certification state.
+
+Must record:
+  prior certified executor identity e1f1cca7...
+  current executor identity 583cfdbc...
+  prior bytes unavailable
+  current bytes treated as standalone certification target
+  synthetic-baseline seam introduction
+  PID-0/1 ancestor-hole fix
+  R79 topology proof result
+  R80 re-certification requirement
+  certification limitations
+
+Suggested target:
+  docs/certification/M2E017G_EXECUTOR_CERTIFICATION_HISTORY.md
+
+3. GOVERNANCE AUTHORITY INDEX
+
+Purpose:
+  prevent future loss of the standards now being recovered.
+
+Must index:
+  R28
+  R29
+  R30
+  R33
+  R40
+  later R79/R80 rulings where relevant
+
+For each:
+  filename
+  SHA256
+  role
+  supersedes / constrained-by / feeds
+  exact authority scope
+  whether bytes are preserved in repo or external evidence archive
+
+Suggested target:
+  docs/governance/M2E017G_GOVERNANCE_AUTHORITY_INDEX.md
+
+4. A/I/D/S/C/T CERTIFICATION MATRIX
+
+Purpose:
+  preserve the exact behavioral matrix as durable technical documentation.
+
+Must NOT be rewritten from memory.
+
+It must be transcribed from recovered R28 exact bytes, with:
+  case ID
+  category
+  fixture/precondition
+  expected behavior
+  expected STOP/result
+  mutation/signal allowance
+  evidence requirement
+  verifier requirement
+
+R29/R30/R40 constraints must be referenced explicitly where they modify how cases
+are constructed or verified.
+
+Suggested target:
+  docs/certification/M2E017G_EXECUTOR_BEHAVIOR_MATRIX.md
+
+5. R79 TOPOLOGY PROOF RECORD
+
+Purpose:
+  record what R79 actually proved and what it did not prove.
+
+Must include:
+  fixture root/descendant model
+  G7 real pgrep parentage
+  synthetic PROC_ROOT world
+  three-role synthetic baseline
+  exact positive result
+  negative cases
+  production-default case
+  adapter signal classification
+  PT_ROOT_SURVIVOR interpretation
+  evidence ZIP SHA
+  exact non-claims:
+    no real teardown proof
+    no real signal-path proof
+    no SP01 proof
+    no restart proof
+
+Suggested target:
+  docs/certification/M2E017G_R79_TOPOLOGY_PROOF.md
+
+6. R80 RE-CERTIFICATION PLAN / RESULT
+
+Before execution:
+  plan document
+
+After later authorized execution:
+  result document
+
+Must contain:
+  full A/I/D/S/C/T scope
+  R40 command-position audit
+  R40 verifier-consistency audit
+  synthetic seam overlay
+  PID-0/1 overlay
+  evidence acceptance criteria
+  exact executor hash
+  exact verifier hash
+  host-state pre/post conditions
+
+Suggested targets:
+  docs/certification/M2E017G_R80_RECERTIFICATION_PLAN.md
+  docs/certification/M2E017G_R80_RECERTIFICATION_RESULT.md
+
+7. BUILD CHANGE LOG / PHASE LEDGER
+
+Purpose:
+  tell the story of what changed, why, what evidence accepted it, and what remains
+  open without requiring replay of the entire chat.
+
+For each meaningful slice:
+  ruling ID
+  implementation artifact
+  test/evidence
+  Boss verdict
+  state transition
+  unresolved item
+  next step
+
+Suggested target:
+  docs/recovery/BUILD_AND_CERTIFICATION_LEDGER.md
+
+======================================================================
+DOCUMENTATION RULES
+======================================================================
+
+Every document must distinguish:
+
+  OBSERVED
+  COMMITTED
+  TESTED
+  INFERRED
+  PROPOSED
+  AUTHORIZED
+
+Do not flatten those into generic statements.
+
+Example:
+
+  TESTED:
+    R79 G7 froze exactly one fixture descendant.
+
+  INFERRED:
+    real executor signal syscall count was zero because TEST_ADAPTER selected the
+    non-kill branch in exact reviewed bytes.
+
+  NOT TESTED:
+    real teardown signal delivery.
+
+======================================================================
+DOCUMENTATION AND COMMITS
+======================================================================
+
+Documentation does NOT automatically authorize repo mutation.
+
+Current repo mutation lock remains in place.
+
+Therefore R80B has two stages:
+
+STAGE 1 — BUILD DOCUMENTS OFFLINE / IN CPT BUILD ENVIRONMENT
+  AUTHORIZED
+
+STAGE 2 — ADD DOCUMENTS TO CANONICAL REPO
+  NOT YET AUTHORIZED
+
+Boss will review the proposed document set and recovered authority bytes first.
+
+Only after review may a separate governance-only commit be authorized.
+
+If authorized later, the commit must:
+
+  change documentation/governance files only
+  use explicit-path staging
+  update PROJECT_RECOVERY_CHECKPOINT.md
+  verify local HEAD
+  verify origin/main
+  verify pinned raw GitHub content
+  preserve executable bytes unchanged
+
+No code change may be bundled into the documentation commit.
+
+======================================================================
+R80 / DOCUMENTATION INTERLOCK
+======================================================================
+
+R80 certification design must now consume the documented authority set.
+
+Meaning:
+
+  recovered R28/R29/R30/R33/R40
+    ->
+  reviewed documentation transcription/index
+    ->
+  Boss acceptance
+    ->
+  R80 test package design
+    ->
+  separate host execution authorization
+    ->
+  result documentation
+    ->
+  later certification ruling
+
+This prevents the certification standard from disappearing again.
+
+======================================================================
+T05-T09 DEPENDENCY
+======================================================================
+
+T05-T09 remain part of the full matrix.
+
+Their launcher/start behavior must be documented exactly from R28 and linked
+authority before any execution ruling.
+
+R80B does NOT authorize launcher invocation.
+
+During the documentation/inventory phase classify T05-T09 as:
+
+  REQUIRED_MATRIX_CASES
+  EXECUTION_DEPENDENCY=LAUNCHER
+  CURRENT_EXECUTION_AUTHORITY=LOCKED
+
+Boss will separately rule whether they are:
+  safely fixture-reproducible without canonical launcher mutation,
+  or require a later bounded launcher certification window.
+
+Do not silently omit them.
+
+======================================================================
+CPT — NEXT TASK
+======================================================================
+
+Continue R80A authority recovery and add the documentation lane.
+
+Return one package containing:
+
+  ORIGINALS/
+    exact unchanged recovered authority files
+
+  DRAFT_DOCS/
+    PROJECT_RECOVERY_CHECKPOINT.md
+    M2E017G_EXECUTOR_CERTIFICATION_HISTORY.md
+    M2E017G_GOVERNANCE_AUTHORITY_INDEX.md
+    M2E017G_EXECUTOR_BEHAVIOR_MATRIX.md
+    M2E017G_R79_TOPOLOGY_PROOF.md
+    M2E017G_R80_RECERTIFICATION_PLAN.md
+    BUILD_AND_CERTIFICATION_LEDGER.md
+
+Also return:
+  SHA256 for every original and draft
+  provenance table
+  source-to-document mapping
+  unresolved-gap table
+  explicit T05-T09 dependency note
+
+Do not commit.
+Do not push.
+Do not run host tests.
+Do not invoke launcher.
+Do not alter executor.
+
+STOP for Boss review.
+
+======================================================================
+CURRENT LOCKS
+======================================================================
+
+R79 topology proof                    PASS / CONSUMED
+R80A authority recovery               ACTIVE
+R80B documentation drafting           AUTHORIZED
+governance-artifact authority         PENDING BOSS BYTE REVIEW
+documentation repo commit             NOT AUTHORIZED
+executor 583cfdbc...                  NOT CERTIFIED
+R80 host behavioral execution         NOT AUTHORIZED
+SP01                                  NOT AUTHORIZED
+restart                               NOT AUTHORIZED
+launcher                              NOT AUTHORIZED
+repo mutation                         NOT AUTHORIZED
+commit/push                           NOT AUTHORIZED
+broadcast                             LOCKED
+capital                               UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

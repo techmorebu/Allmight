@@ -1,0 +1,398 @@
+BOSS M2E-017G R80 — DEVELOPMENT EXECUTOR FULL RE-CERTIFICATION AUDIT DIRECTIVE
+
+STATUS
+
+R79 topology proof:
+  ACCEPTED / CONSUMED
+
+Current development executor:
+  SHA256 583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+  STATUS NOT CERTIFIED
+
+Prior certified executor:
+  e1f1cca7481a48b33e9a501a57a57359aa07ebb1f647998353c939fcb30eb918
+
+Certification credit does NOT transfer by ancestry, similarity, or prior behavior.
+
+Current machine checkpoint supplied after R79:
+  governed processes: 0
+  historical baseline: 8/8 absent
+  canonical HEAD: 923dd5041e645c22ad025a3f8335a03880f89b99
+  R79 fixture: cleaned/removed
+  canonical control state: unchanged
+  R79 evidence SHA256:
+    fc63edb5b94bcd092cd524e7cc6a97a969dbd1748a536c6cd902bc9a5f096a6f
+
+======================================================================
+RULING 1 — AUDIT DEPTH
+======================================================================
+
+R80 SHALL USE THE FULL EXISTING EXECUTOR CERTIFICATION MATRIX.
+
+Do not perform a seam-only delta certification.
+
+Reason:
+
+The current executor has a new executable identity and contains changes at two
+trust-boundary surfaces:
+
+  1. synthetic-baseline / TEST_ADAPTER certification seam
+  2. PID-0/1 / executor-ancestor ownership exclusion
+
+Those surfaces influence admission, identity, observation, signal routing, and
+fail-closed behavior. They are not isolated presentation changes.
+
+A scoped audit could prove the new code locally while silently inheriting stale
+assumptions about interactions with unchanged paths.
+
+Therefore:
+
+  full A/I/D/S/C/T behavioral matrix = REQUIRED
+
+Use the canonical definitions, fixtures, expected outcomes, and evidence contracts
+from the last accepted executor certification suite/repository bytes.
+
+DO NOT reconstruct the meanings of A/I/D/S/C/T from memory.
+
+Before building the R80 audit runner, CPT must locate and read the exact prior
+certification artifacts/tests that define those categories.
+
+If the canonical repository cannot establish the exact matrix definition and
+expected outcomes:
+
+  STOP R80_CANONICAL_MATRIX_DEFINITION_NOT_FOUND
+
+and return the repo evidence.
+
+No invented replacement matrix is authorized.
+
+======================================================================
+RULING 2 — R40 APPLIES
+======================================================================
+
+R40 command-position and verifier-consistency standards APPLY AS WRITTEN to the
+entire current executor, including the new seam gates.
+
+They are not grandfathered merely because the new logic is test-only.
+
+At minimum, the R80 audit must establish from canonical R40 authority that:
+
+  - executable command-position behavior satisfies R40;
+  - verifier/evidence interpretation is consistent with the behavior being
+    certified;
+  - a verifier cannot certify a path that command execution would reject;
+  - command execution cannot admit a path the verifier classifies invalid;
+  - fail-closed/terminal states cannot be followed by valid governed execution
+    evidence;
+  - evidence fields used for certification are authoritative fields, not
+    runner-reconstructed substitutes where the executor already emits the
+    predicate result.
+
+CPT must quote/reference the exact canonical R40 clauses it applies.
+
+If the exact R40 authority cannot be located in repo/evidence:
+
+  STOP R80_R40_AUTHORITY_NOT_FOUND
+
+Do not invent R40 from recollection.
+
+======================================================================
+RULING 3 — CURRENT-BYTE STATIC RE-AUDIT
+======================================================================
+
+Before behavioral execution, re-read the complete current executor bytes.
+
+Audit the complete trust path, not only the diff.
+
+Required static review includes:
+
+  G1-G10 ordering and terminality
+  synthetic seam lock completeness
+  production-default resolution
+  BASELINE substitution/parser
+  PROC_ROOT routing
+  signal adapter routing
+  hook gating
+  P5 binding
+  PID 0/1 exclusion
+  executor/self ancestor exclusion
+  canonical governed-baseline exclusion
+  run-local DEAD permanence
+  reappearance/identity substitution handling
+  G7 descendant freeze/provenance
+  G8/G9 interaction
+  G10 monotonic check
+  teardown order
+  ESRCH re-observation
+  EPERM STOP
+  reused-PID handling
+  TERM-only/no escalation
+  post-teardown control transition
+  clean-start / zero-live behavior
+  control-file mutation boundary
+  launcher boundary
+
+Classify each finding:
+
+  OBSERVED
+  COMMITTED
+  TESTED
+  INFERRED
+
+Do not upgrade static reachability to tested behavior.
+
+======================================================================
+RULING 4 — CHANGE-SPECIFIC REGRESSION OVERLAY
+======================================================================
+
+The full matrix is the base.
+
+Add a bounded overlay specifically for the two changes since e1f1cca7.
+
+A. SYNTHETIC SEAM
+
+Prove at least:
+
+  all required locks present -> seam may resolve
+  each required lock missing/inconsistent -> fail closed
+  malformed/unreadable map -> fail closed
+  synthetic identities cannot equal governed baseline identities
+  synthetic identities cannot equal PID 0/1
+  synthetic identities cannot equal executor/self ancestors
+  P5 binding mismatch -> fail closed
+  TEST_ADAPTER selects adapter branch
+  production defaults remain:
+      synthetic baseline DISABLED
+      real /proc
+      real kill branch
+      test mode NO
+  no mixed synthetic/production fallback
+  hook mutation remains impossible without its independent positive ownership gate
+
+R79 evidence MAY be reused as machine evidence for the topology property it
+actually proved:
+
+  real pgrep parentage can freeze the correct non-governed fixture descendant
+  under the synthetic-baseline certification world.
+
+R79 may NOT be reused as proof of:
+  real teardown
+  real TERM delivery
+  SP01
+  restart
+  launcher behavior.
+
+B. PID 0/1 / ANCESTOR HOLE FIX
+
+Prove at least:
+
+  PID 0 rejected
+  PID 1 rejected
+  executor PID rejected
+  every executor ancestor tested by canonical ownership logic is rejected
+  ordinary valid non-governed fixture descendant remains admissible
+  stale governed/canonical identities remain rejected
+  no regression in P5 six-predicate ownership result.
+
+======================================================================
+RULING 5 — VERIFIER CONSISTENCY
+======================================================================
+
+Every behavioral case must have:
+
+  input/fixture identity
+  expected gate/result
+  actual gate/result
+  executor exit status
+  authoritative executor evidence
+  independent verifier result
+  consistency verdict
+
+Required:
+
+  EXECUTOR_RESULT == EXPECTED
+  VERIFIER_RESULT == EXPECTED
+  EXECUTOR_AND_VERIFIER_CONSISTENT == YES
+
+Any disagreement is certification failure even if one side says PASS.
+
+No runner may manufacture a PASS by merely finding expected strings somewhere in
+a log.
+
+Evidence must be case-bounded and attributable to the exact invocation.
+
+======================================================================
+RULING 6 — COMMAND-POSITION AUDIT
+======================================================================
+
+Apply canonical R40 command-position checks to:
+
+  production path
+  synthetic seam path
+  verifier/audit helper invocations
+  hook invocation
+  signal adapter boundary
+  control-state transition
+  launcher invocation boundary
+
+Search both:
+  literal signal/mutation primitives
+  indirect signal-capable or mutation-capable supervisors/helpers
+
+The R79 lesson is binding:
+
+  absence of a literal "kill" command is NOT sufficient to prove absence of
+  signal authority.
+
+Command-position audit must reason about effective executable capability.
+
+======================================================================
+RULING 7 — NO LIVE-HOST EXECUTION YET
+======================================================================
+
+R80 currently authorizes:
+
+  canonical repo/evidence reads
+  exact-byte static audit
+  audit design
+  fixture/test construction in CPT's build environment
+  package construction
+  non-host static validation
+  comparison to prior certification artifacts
+
+R80 DOES NOT YET AUTHORIZE Cornelius to run the certification suite on the
+AllMight host.
+
+CPT must first return the R80 audit package/direct evidence model for Boss review.
+
+No host fixture processes.
+No executor invocation on canonical host.
+No restart.
+No launcher.
+No SP01.
+
+======================================================================
+RULING 8 — MACHINE-FIRST / REPO-FIRST SOURCE ORDER
+======================================================================
+
+For R80:
+
+  current machine checkpoint
+      ->
+  current committed repo bytes at verified HEAD
+      ->
+  canonical prior certification/R40 artifacts
+      ->
+  R79 accepted evidence for topology-only claims
+      ->
+  current Boss R80 ruling
+      ->
+  CPT notes
+      ->
+  memory last
+
+If current repo evidence contradicts remembered certification structure:
+
+  STATE_DIVERGENCE
+  STOP
+
+Report the contradiction rather than reconciling it silently.
+
+======================================================================
+CPT — FIRST R80 TASK
+======================================================================
+
+DO NOT BUILD THE FINAL HOST RUNNER YET.
+
+First produce an R80 CERTIFICATION INVENTORY / AUDIT PLAN from actual repo bytes.
+
+It must identify:
+
+  1. exact current executor path + SHA
+  2. exact prior certified executor artifact/path if present + SHA
+  3. exact canonical source defining A/I/D/S/C/T
+  4. exact meaning and expected cases for every A/I/D/S/C/T category
+  5. exact R40 command-position authority
+  6. exact R40 verifier-consistency authority
+  7. existing reusable certification tests/verifiers/fixtures
+  8. which existing tests run unchanged against 583cfdbc
+  9. which tests require fixture-only adaptation because of the new seam
+ 10. bounded new regression cases required for:
+       synthetic seam
+       PID-0/1 ancestor fix
+ 11. effective signal/mutation surfaces of the proposed audit harness
+ 12. proposed evidence schema and independent verifier
+ 13. explicit proof that the audit itself cannot restart, launch, broadcast,
+     touch capital, or mutate canonical control state
+ 14. proposed final certification acceptance rule
+
+Return exact paths and hashes.
+
+If a required canonical artifact is absent, say ABSENT and STOP at the applicable
+R80_*_NOT_FOUND gate.
+
+Do not fill gaps from memory.
+
+======================================================================
+CERTIFICATION STANDARD
+======================================================================
+
+R80 is PASS only if, after later separately authorized execution:
+
+  full canonical A/I/D/S/C/T matrix passes
+  R40 command-position audit passes
+  R40 verifier-consistency audit passes
+  synthetic-seam regression overlay passes
+  PID-0/1 ancestor regression overlay passes
+  evidence verifier passes
+  executor/verifier consistency passes
+  immutable component hashes remain exact
+  no unauthorized signal/mutation surface is exercised
+  post-run machine integrity passes
+
+Only then may Boss consider:
+
+  EXECUTOR 583cfdbc... CERTIFIED
+
+R80 certification would still NOT itself authorize:
+
+  SP01
+  restart
+  launcher
+  broadcast
+  capital
+
+Those remain separate gates.
+
+======================================================================
+CURRENT LOCKS
+======================================================================
+
+R79 topology proof                 PASS / CONSUMED
+executor 583cfdbc...               NOT CERTIFIED
+R80 inventory/static audit         AUTHORIZED
+R80 host behavioral execution      NOT AUTHORIZED
+SP01                               NOT AUTHORIZED
+restart                            NOT AUTHORIZED
+launcher                           NOT AUTHORIZED
+repo mutation                      NOT AUTHORIZED
+commit/push                        NOT AUTHORIZED
+broadcast                          LOCKED
+capital                            UNTOUCHED
+
+FINAL SCOPE RULING
+
+Question 1:
+  full A/I/D/S/C/T or touched surfaces only?
+
+ANSWER:
+  FULL A/I/D/S/C/T + bounded change-specific regression overlay.
+
+Question 2:
+  does R40 apply to the new seam?
+
+ANSWER:
+  YES. R40 command-position and verifier-consistency standards apply as written
+  to the complete current executor and all new seam gates.
+
+No host action for Cornelius.

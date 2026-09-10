@@ -587,3 +587,278 @@ directive rather than resuming from this section.**
 ```
 
 **STOP.**
+
+---
+---
+
+# ══════════════════════════════════════════════════════════════════
+# M2E-017G SUPERSESSION OVERLAY — AUTHORITATIVE CURRENT STATE
+# ══════════════════════════════════════════════════════════════════
+
+**Appended:** 2026-09-10 (M2E-017G) · **Authority:** Boss R80K · **Standard:** GOV-CHK-001
+
+> **EVERYTHING ABOVE THIS LINE IS PRESERVED CANONICAL HISTORY.**
+> It is retained verbatim for audit and recovery history. Where it describes
+> operational state, it is **SUPERSEDED** by this overlay. Nothing above has been
+> deleted, reordered or rewritten.
+>
+> **PRECEDENCE — running machine > repository > this document > chat memory.**
+> That rule from the header above is unchanged and still governs.
+
+## S1. SUPERSEDED OPERATIONAL SECTIONS
+
+| Section | Historical statement | Status |
+|---|---|---|
+| **§3 CURRENT RUNTIME** | `session 20260904_2239`, `stack 8/8 non-live`, router pid 1668840 ARMED, watchdog pid 1668839 running | **SUPERSEDED** — see S2 |
+| **§6 WHAT IS OPEN** | runtime conditions stated against a running stack | **SUPERSEDED IN OPERATIONAL MEANING** — the defects remain open; the runtime they describe no longer exists |
+| **§11 NEXT AUTHORIZED ACTION** | M2E-017C Phase B commit not started; five-path set | **PARTIALLY SUPERSEDED** — see S6. Phase B remains unauthorized; the M2E-017C candidate WAS subsequently committed (see S2) |
+| **§12 FRESH SESSION** | step 2 instructs `bash scripts/tools/start_all.sh status` | **SUPERSEDED** — see S7. **Do not invoke the launcher.** |
+
+## S2. CURRENT MACHINE STATE — OBSERVED 2026-09-10T04:13:16Z
+
+```
+canonical HEAD        923dd5041e645c22ad025a3f8335a03880f89b99
+origin/main           923dd5041e645c22ad025a3f8335a03880f89b99   (in sync)
+governed runtime      INTENTIONALLY QUIESCENT FOR CERTIFICATION
+historical baseline   0/8 present   (all eight original PIDs absent)
+governed role hits    0
+maintenance window    OPEN
+restart               NOT AUTHORIZED
+```
+
+The M2E-017C source repair described in §6b **was committed**; HEAD `923dd504…` is
+that commit. The canonical launcher is now `0364dd39…` (the §10 "candidate"), no
+longer the preimage `27e8b93…`.
+
+**How the runtime became quiescent** — a deliberate, evidence-gated maintenance
+shutdown, not a failure:
+
+```
+R72   drift reset: uptime preservation abandoned in favour of a clean window
+R76   five surviving roots stopped by identity-validated SIGTERM, exact PIDs
+R77   one orphaned activator worker (2560704) stopped, same discipline
+      GOVERNED_RUNTIME_STATE=QUIESCENT_FOR_CERTIFICATION
+```
+
+No SIGKILL, no launcher, no broadcast, no capital movement at any point.
+
+Canonical control files remain **unchanged and stale by design** — the pidfile
+still carries its eight original mappings and was deliberately not edited:
+
+```
+logs/allmight.pid                    2899bbf5be90879de6229e28fb306ade8f370d1fdba47b94701b04b7eeadb3c1
+logs/allmight.session                d92e2b5c2f319499e6201c601f998e46be264139dd2dd508c9907d6169aeecbb
+logs/notification_router.exit.jsonl  b59ae10c118b0ab3d1d3fee7af147ba9fe9b02fadfac24ce8fd7cdc9e8077671
+```
+
+## S3. CURRENT EXECUTABLE IDENTITIES
+
+| Component | SHA256 | Status |
+|---|---|---|
+| development executor | `583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7` | **NOT CERTIFIED** · never committed |
+| prior certified executor | `e1f1cca7481a48b33e9a501a57a57359aa07ebb1f647998353c939fcb30eb918` | bytes **UNAVAILABLE** |
+| SP01 hook (host-bound) | `fcbb957cf6fb789c7987305d7510449019bb8d78daa4e43c793fdcf1e6cfb4bf` | accepted R78/R79G |
+| historical hook | `4ef4b9498b3e989e565d1088e3f8244f1fd92eb0b0aca1b40a72b9fe56a29010` | preserved, superseded |
+| P1 parse_stat | `7c85e0a5d5813326979aef8e7fe6ecd049ae16f8bc1e780a57c441ac5e344f04` | CERTIFIED |
+| P2 walk_ancestry | `2d99c4d7b12eb83348acf672f201c0815c26f9af21c9b32e11a31e458c5d3d95` | CERTIFIED |
+| P3 lineage_lifecycle | `a1777755c38f80feeb905c94f8d3f4f278ccd16440a2f10bf64a732a602ee0ec` | CERTIFIED |
+| P4 ownership_predicates | `cc8b053ee9c95051947d516a8b0e0824f1dc2d35993ffd8a6743fe969380e52f` | CERTIFIED |
+| P5 ownership_gate | `0b3998fa0338f5517bff95ada3e958ad0c05157f2de2ea304c8127da041e8c5e` | CERTIFIED |
+
+## S4. R79 TOPOLOGY PROOF — PASS / CONSUMED
+
+Evidence `fc63edb5b94bcd092cd524e7cc6a97a969dbd1748a536c6cd902bc9a5f096a6f`.
+Detail: `docs/certification/M2E017G_R79_TOPOLOGY_PROOF.md`.
+
+**PROVED** — G7 discovers and freezes the correct non-governed fixture descendant
+through the executor's unmodified real `pgrep -P` parentage, under a
+synthetic-baseline certification world, with governed selection count 0.
+
+**DID NOT PROVE** — real teardown · real TERM delivery · SP01 · restart · launcher
+behaviour · executor certification.
+
+`PT_ROOT_SURVIVOR` occurred after all topology evidence was established and is
+consistent with the adapter-injected ESRCH path. It **must not** be read as
+successful teardown behaviour.
+
+## S5. R80 CERTIFICATION SCOPE — ACCEPTED, NOT YET EXECUTED
+
+Full A/I/D/S/C/T matrix from recovered R28 exact bytes:
+
+```
+A 4 + I 6 + D 6 + S 8 + C 8 + T 10 = 42
+```
+
+plus the mandatory R28 **SELF-LINEAGE / PROCESS-SELECTION REGRESSION**.
+
+**T05-T10 are launcher-dependent** and remain `CURRENT_EXECUTION_AUTHORITY=LOCKED`.
+
+Accepted governance authority (bytes archived under
+`docs/governance/authority/m2e017g/`): **R28** (primary matrix) · **R29**
+(fixture honesty) · **R30** (stop-propagation) · **R33** (authorization context) ·
+**R40** (command-position / verifier consistency).
+
+## S6. ACTIVE LOCKS
+
+```
+executor 583cfdbc...          NOT CERTIFIED
+R80 host behavioral execution NOT AUTHORIZED
+SP01 / SP02-SP05              NOT AUTHORIZED
+restart                       NOT AUTHORIZED
+launcher                      NOT AUTHORIZED
+repo mutation                 NOT AUTHORIZED (this preservation commit excepted
+                              only when separately authorized)
+broadcast                     LOCKED
+capital                       UNTOUCHED
+economics                     PARKED   (unchanged from §2 above)
+```
+
+§11's **"No sixth path"** is scoped to the M2E-017C five-path source-repair commit
+and is **not** a permanent bar on later documentation files (Boss R80K Ruling 2).
+A documentation-only preservation commit is a separate, separately authorized act
+and must bundle **no** executable or source change.
+
+## S7. WHAT A FRESH SESSION DOES FIRST — SUPERSEDES §12
+
+```
+1  READ CURRENT MACHINE STATE FIRST.
+2  GOVERNED RUNTIME IS QUIESCENT FOR CERTIFICATION.
+3  DO NOT RESTART OR INVOKE THE LAUNCHER WITHOUT CURRENT BOSS AUTHORIZATION.
+4  read this checkpoint, including the preserved history above
+5  verify read-only:  git rev-parse HEAD · git rev-parse origin/main
+                      ls /proc for the eight historical baseline PIDs (expect none)
+   DO NOT run start_all.sh status — §12 step 2 is SUPERSEDED.
+6  if reality disagrees with S2, REPORT IT — do not reconcile silently
+7  ask Boss for the current directive
+```
+
+## S8. EXACT NEXT AUTHORIZED STEP
+
+Boss review of the R80 pre-commit preservation review and proposed explicit-path
+staging list. **Nothing is authorized to run on the machine.**
+
+## S9. OPEN INCIDENTS AND DEFECTS
+
+Full records: `docs/recovery/BUG_AND_INCIDENT_LEDGER.md`.
+
+```
+INCIDENT 021  OPEN / source-grounded — R-SIGINT sender unrecoverable; passive
+              observation; instrumentation armed
+INCIDENT 022  OPEN · STATE_CONFLICT=YES — the incident index records it OPEN with
+              the accepted patch not applied; §5 above records it CLOSED via a
+              controlled restart. UNRESOLVED. Treat as RESTART-BLOCKING until
+              evidence resolves it.
+INCIDENT 023  OPEN / source-grounded — four components record WRAPPER pids;
+              three show `bash -> sleep`, so `kill -0` succeeds while no worker
+              exists. Cross-linked to the wrapper-vs-worker liveness-proof class
+              WITHOUT any claim of identical root cause.
+INCIDENT 015  PARKED · SOURCE_EVIDENCE=NOT_RECOVERED
+INCIDENT 020  PARKED · SOURCE_EVIDENCE=NOT_RECOVERED
+BUG-004       ROOT_CAUSE_PENDING S2 — heat native V8 GC fatal CHECK; mechanism
+              proven, underlying cause unresolved; REGRESSION_TEST=NOT_POSSIBLE
+BUG-009       OPEN S1 — verifier-precision root class
+BUG-010       FIX_VALIDATED S2 — T10 dropped from the transcribed matrix
+BUG-011       FIX_VALIDATED S2 — stale manifest hash after ledger mutation
+SHADOW-SILENT-FAILURE  source repaired at HEAD; runtime remediation still
+              pending because the stack is deliberately down
+```
+
+## S9b. CANONICAL MERGE PROVENANCE
+
+This checkpoint was produced by **exact-byte concatenation**, never transcription.
+The canonical history above is the committed object, read via
+`git show HEAD:docs/recovery/PROJECT_RECOVERY_CHECKPOINT.md`.
+
+```
+BASE_CHECKPOINT_SHA   87af009366a887640d1e84a98955c6aee195eddbc2fcbc2e887017cf94cd19f3
+BASE_BYTES            34793
+HOST_MERGE_PROOF      PASS      [Boss R80M]
+BASE_PREFIX_MATCH     YES       first BASE_BYTES of merged file hash to BASE_CHECKPOINT_SHA
+OVERLAY_SUFFIX_MATCH  YES       bytes BASE_BYTES+1..EOF hash to this overlay
+CANONICAL_REPO_CHANGED_BY_MERGE_CONSTRUCTION   NO
+```
+
+**OVERLAY_SHA and MERGED_DESTINATION_SHA are deliberately NOT recorded here.**
+A file cannot contain its own hash: embedding either value changes the bytes and
+therefore changes the hash, with no fixed point. Both are recorded externally in
+`docs/recovery/BUILD_AND_CERTIFICATION_LEDGER.md` and in the preservation-review
+package manifest, and must be re-proven on the host whenever this overlay changes
+(Boss R80N merge-SHA rule: never carry a stale merged SHA across an overlay
+mutation).
+
+## S10. DOCUMENT SET ADDED BY THIS PRESERVATION
+
+```
+docs/certification/M2E017G_EXECUTOR_BEHAVIOR_MATRIX.md
+docs/certification/M2E017G_EXECUTOR_CERTIFICATION_HISTORY.md
+docs/certification/M2E017G_R79_TOPOLOGY_PROOF.md
+docs/certification/M2E017G_R80_RECERTIFICATION_PLAN.md
+docs/governance/M2E017G_GOVERNANCE_AUTHORITY_INDEX.md
+docs/governance/authority/m2e017g/          (11 immutable authority originals)
+docs/recovery/BUILD_AND_CERTIFICATION_LEDGER.md
+docs/recovery/BUG_AND_INCIDENT_LEDGER.md
+```
+
+**STOP.**
+
+
+## S11. R80P COMMIT-BOUND PRESERVATION AUTHORITY — SUPERSEDES S8 / S9b / S10 WHERE CONFLICTING
+
+This section is the current recovery authority for the documentation-preservation
+transaction. Earlier S8/S9b/S10 statements remain historical evidence but are
+SUPERSEDED where they conflict with this section.
+
+### Current machine / preservation state
+
+- Governed runtime remains deliberately QUIESCENT_FOR_CERTIFICATION.
+- Historical baseline process count remains 0/8.
+- Launcher, SP01, restart, behavioral certification execution, broadcast, and
+  capital remain NOT AUTHORIZED.
+- Existing unrelated dirty/untracked worktree paths remain preserve/do-not-touch.
+- R80O fresh merge re-proof PASSED for base SHA
+  `87af009366a887640d1e84a98955c6aee195eddbc2fcbc2e887017cf94cd19f3`
+  plus pre-addendum overlay SHA
+  `31408c1006471639ab6c49da1714de3b352f28de0159b5715e803a6ad33daf0c`.
+- The resulting pre-addendum candidate merged SHA
+  `1d9fd605c8a6c562eef4b75cb6fbaf0088cf99755c480a10906a381399901249`
+  is historical proof only and becomes superseded when this addendum is appended.
+
+### Documentation set
+
+The preservation transaction contains 28 staged documentation files from the
+accepted R80N package plus this merged checkpoint, for 29 canonical documentation
+paths total. The package contains 21 immutable authority originals. Earlier S10
+counts are historical and SUPERSEDED by these counts.
+
+### Exact next authorized action
+
+Boss R80P authorizes one bounded documentation-preservation transaction:
+
+1. reconstruct the final overlay from the accepted R80N overlay plus this exact
+   addendum;
+2. re-prove base-prefix and final-overlay-suffix integrity;
+3. compute the final overlay SHA, byte count, merged SHA, and merged byte count;
+4. only if every preservation invariant passes, write the 28 reviewed staged
+   documentation files plus the proven merged checkpoint to their exact canonical
+   `docs/` destinations;
+5. stage only the 29 authorized documentation paths;
+6. prove no executable/non-document/unrelated dirty path entered the index;
+7. commit once and push once;
+8. verify local HEAD == origin/main;
+9. derive the committed path set from `git show --name-only`;
+10. verify every committed documentation file against pinned raw GitHub-served
+    bytes at that exact commit;
+11. STOP for Boss review.
+
+No additional documentation refresh is required solely because R80P exists. R80P
+is the commit-bound transaction authority and may be archived in a later governance
+preservation cycle. This prevents recursive self-invalidation of the commit snapshot.
+
+### Post-transaction recovery state
+
+After a successful commit, push, and pinned remote verification, no launcher,
+restart, SP01, behavioral certification execution, broadcast, or capital action is
+automatically authorized. The exact next step is Boss review of the completed
+preservation commit and remote-verification evidence.
+
+**STOP after remote verification.**

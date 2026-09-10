@@ -1,0 +1,192 @@
+BOSS M2E-017G R29 — BUILD STATUS ACCEPTED / AUDIT-OBSERVABILITY TIGHTENING / CONTINUE MATRIX
+
+STATUS REVIEWED
+
+  executor build SHA256:
+    b13dd785bf437a5d527c39ee58760f11f5a38b1256fe230e818c30e87a2ccedb
+
+  reported:
+    545 lines
+    bash -n PASS
+    not packaged
+    not certified
+    live execution NOT attempted
+
+  first required matrix case:
+    A04 zero-live
+    PASS
+
+RULING 1 — BUILD DIRECTION ACCEPTED
+
+The reported implementation structure matches the accepted R27/R28 design:
+
+  G1 -> G2 -> G3/G3z -> G4/G5/G6 -> G7 -> G8 -> G9 -> G10
+  -> SAFE_TO_SIGNAL
+
+The reported signal path also matches the accepted model:
+
+  revalidate
+  -> TERM_ATTEMPTED fact
+  -> one plain kill -TERM syscall
+  -> capture rc/error
+  -> ESRCH => VANISHED_UNSIGNALLED
+  -> EPERM/unknown => STOP
+  -> immediate identity re-read
+  -> only then 60s observation
+  -> no escalation
+
+Command-surface report is directionally acceptable:
+  no SIGKILL
+  no pkill
+  no process-group kill
+  no killall execution path
+  no pidfd use
+  no repo commit/push surface
+
+This is NOT yet a byte certification.
+It is permission to continue the already-authorized build/test slice.
+
+RULING 2 — TERM FACTS IN TSV ARE SEMANTICALLY VALID, BUT AUDIT SURFACE SHOULD BE IMPROVED NOW
+
+The existing TSV columns:
+
+  term_attempted
+  syscall_rc
+  syscall_errno
+  term_delivered
+
+DO satisfy R28's requirement that attempted and delivered are distinct facts.
+
+Therefore:
+  this is NOT a correctness defect.
+
+However, for reviewability and machine-audit ergonomics, add explicit summary
+emit keys before the matrix proceeds much further.
+
+Required final summary fields:
+
+  TERM_ATTEMPTED_COUNT
+  TERM_DELIVERED_COUNT
+  TERM_ESRCH_COUNT
+  TERM_EPERM_COUNT
+  TERM_OTHER_ERROR_COUNT
+  VANISHED_UNSIGNALLED_COUNT
+  TERMINATED_BY_US_COUNT
+  TERM_TIMEOUT_COUNT
+  SIGNALLED_REUSED_PID_COUNT
+
+Also retain the per-process TSV rows as the detailed source of truth.
+
+Reason:
+  a reviewer should be able to establish aggregate signal semantics without
+  reconstructing the entire teardown TSV manually.
+
+Do NOT replace the TSV with counters.
+The counters are summaries; the TSV is the per-process evidence.
+
+RULING 3 — DO THE REPORTING CHANGE BEFORE THE S-GROUP MATRIX
+
+Because only A04 has been exercised so far, make this reporting-only addition
+NOW, before running S01-S08 and the rest of the matrix.
+
+After the change:
+  - bash -n PASS
+  - rerun A04
+  - confirm all TERM_* counters are zero in A04
+  - then continue the full sandbox matrix
+
+No matrix reset is needed because only A04 has run and it must be rerun on the
+new bytes anyway.
+
+RULING 4 — S-GROUP FIXTURES MUST TEST REAL OBSERVABLE SEMANTICS, NOT FAKE SUCCESS
+
+For S01-S08, synthetic fixtures are acceptable, but they must preserve the
+observable contract of the system.
+
+Do not simply stub signal_one() to return desired labels.
+
+Acceptable approaches include:
+  - isolated child processes whose timing causes natural disappearance
+  - helper wrappers around a test-only signal syscall adapter
+  - a bounded fixture layer that returns controlled errno while leaving the
+    production signal path unchanged and visibly proves the fixture boundary
+
+If a test adapter is used:
+  - production path must still contain the single real kill -TERM call
+  - adapter use must be impossible unless explicit test mode is enabled
+  - test mode must be self-evident in emitted evidence
+  - packaging must prove production default is real syscall mode
+
+The goal is to test semantics honestly, not to impersonate the outcome.
+
+RULING 5 — A04 RESULT ACCEPTED
+
+A04 demonstrates the required zero-live behavior:
+
+  0 live / 8 dead
+  STOP G3z_ZERO_LIVE
+  ZERO_LIVE_CLEAN_START_REQUIRED YES
+  SIGNALLED 0
+  CONTROL_FILES_CHANGED 0
+  START_ATTEMPTED 0
+  USED_SIGKILL NO
+
+This is the correct behavior.
+
+It confirms M2E-017G does NOT silently expand itself into clean-start authority.
+
+NEXT AUTHORIZED ACTION
+
+Continue the already-authorized sandbox build/test slice with this sequence:
+
+  1. add the explicit TERM summary counters
+  2. bash -n
+  3. rerun A04 on the new bytes
+  4. continue A01-A03
+  5. continue identity/census/descendant groups
+  6. run S01-S08
+  7. run C/T groups
+  8. run mandatory self-lineage regression
+  9. only after the entire matrix is green, generate final manifest/package
+
+DO NOT PACKAGE before the matrix is complete.
+
+DO NOT issue a Cornelius command block.
+
+PACKAGE-ELIGIBILITY GATE
+
+Packaging becomes eligible only when:
+
+  full required matrix PASS
+  self-lineage regression PASS
+  bash -n PASS
+  no real governed PIDs targeted in tests
+  zero unauthorized signal surfaces
+  one production kill -TERM invocation
+  final source hash recorded
+  no bytes changed after final clean matrix
+
+CURRENT AUTHORITY
+
+  M2E-017G design                    ACCEPTED
+  executor build                    AUTHORIZED / IN PROGRESS
+  sandbox testing                   AUTHORIZED / IN PROGRESS
+  reporting-only TERM counters      AUTHORIZED
+  packaging                         HELD until full matrix PASS
+  live execution                    NOT AUTHORIZED
+  zero-live clean-start             NOT AUTHORIZED
+  live signals                      NOT AUTHORIZED
+  restart                           NOT AUTHORIZED
+  PID/session repair                NOT AUTHORIZED
+  broadcast                         LOCKED
+  capital                           UNTOUCHED
+
+BOTTOM LINE
+
+The TSV already satisfies the semantic requirement.
+
+Add explicit aggregate TERM_* emit counters anyway because this improves audit
+clarity at negligible design risk, and do it now while the matrix has barely
+started.
+
+Then continue the full matrix. No packaging and no live run yet.
