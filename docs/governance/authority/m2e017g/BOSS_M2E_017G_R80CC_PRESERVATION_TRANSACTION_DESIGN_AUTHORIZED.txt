@@ -1,0 +1,503 @@
+BOSS M2E-017G R80CC — PRESERVATION TRANSACTION DESIGN AUTHORIZED
+
+STATUS
+======
+
+R80CB read-only preservation inventory accepted as the transaction baseline.
+
+Repository baseline:
+
+  BRANCH
+    main
+
+  LOCAL_HEAD
+    4133fd9dd5b84565c3903e85ef04c6d6325aa2f4
+
+  REMOTE_MAIN
+    4133fd9dd5b84565c3903e85ef04c6d6325aa2f4
+
+  LOCAL_EQUALS_REMOTE
+    YES
+
+The nine pre-existing dirty paths remain outside the preservation scope.
+
+Target documentation paths report no unrelated local modifications.
+
+======================================================================
+1. PRESERVATION GAP CLASSIFICATION
+======================================================================
+
+The preservation gap is accepted with one important distinction:
+
+  AUTHORITY ORIGINALS AVAILABLE
+    preserve as exact original artifacts
+
+  RELAYED CHAT-ONLY RULINGS
+    preserve as canonical ledger/history summaries
+    DO NOT manufacture "original" authority files
+
+The fifteen R80BK-R80BY rulings that have no artifact file must remain explicitly
+identified as:
+
+  SOURCE_FORM = RELAYED_CHAT_TEXT
+  ORIGINAL_AUTHORITY_ARTIFACT = UNAVAILABLE
+
+Their substantive rulings may be recorded in the canonical ledgers/history and
+checkpoint, but provenance must not be upgraded to "preserved original."
+
+The transaction must retain this distinction permanently.
+
+======================================================================
+2. AUTHORIZED SCOPE
+======================================================================
+
+Authorize DESIGN AND CONSTRUCTION of one documentation-only preservation
+transaction over the proposed 60-path maximum set:
+
+  8 existing canonical documents updated
+  up to 52 new authority-original .txt artifacts
+
+All authorized paths must remain under:
+
+  docs/
+
+Allowed extensions:
+
+  .md
+  .txt
+
+Forbidden path classes:
+
+  scripts/
+  tests/
+  config/
+  logs/
+  runtime/
+  executable files
+  source files outside docs/
+  existing nine dirty paths
+
+EXECUTABLE_OR_SOURCE_OR_RUNTIME_PATHS_IN_SET must remain 0.
+
+======================================================================
+3. EIGHT EXISTING DOCUMENT TARGETS
+======================================================================
+
+The transaction may update only these existing canonical documents:
+
+  PROJECT_RECOVERY_CHECKPOINT.md
+  BUILD_AND_CERTIFICATION_LEDGER.md
+  BUG_AND_INCIDENT_LEDGER.md
+  M2E017G_GOVERNANCE_AUTHORITY_INDEX.md
+  M2E017G_EXECUTOR_BEHAVIOR_MATRIX.md
+  M2E017G_EXECUTOR_CERTIFICATION_HISTORY.md
+  M2E017G_R79_TOPOLOGY_PROOF.md
+  M2E017G_R80_RECERTIFICATION_PLAN.md
+
+The transaction design must resolve each to its exact canonical repository path
+before mutation and pin its current SHA256 preimage.
+
+Inventory-reported preimage prefixes:
+
+  PROJECT_RECOVERY_CHECKPOINT.md
+    90cc2206...
+
+  BUILD_AND_CERTIFICATION_LEDGER.md
+    ecdc2304...
+
+  BUG_AND_INCIDENT_LEDGER.md
+    7d0d0dca...
+
+  M2E017G_GOVERNANCE_AUTHORITY_INDEX.md
+    00ae856a...
+
+  M2E017G_EXECUTOR_BEHAVIOR_MATRIX.md
+    9d3f9a04...
+
+  M2E017G_EXECUTOR_CERTIFICATION_HISTORY.md
+    aef3bcc6...
+
+  M2E017G_R79_TOPOLOGY_PROOF.md
+    76269889...
+
+  M2E017G_R80_RECERTIFICATION_PLAN.md
+    bf148261...
+
+Do not rely on prefixes in the mutating transaction.
+Capture and pin the full 64-character SHA256 for every target during the static
+transaction-design phase.
+
+======================================================================
+4. AUTHORITY ORIGINAL SET
+======================================================================
+
+The preservation transaction may add only authority originals that:
+
+  a) actually exist as files,
+  b) can be hash-identified before mutation,
+  c) are not already canonically preserved,
+  d) are copied byte-for-byte into the authorized docs authority location.
+
+Expected maximum:
+
+  49 previously available post-R80P originals
+  + R80BZ
+  + R80CA
+  + R80CB
+  = 52
+
+Before mutation, the transaction design must produce an exact authority manifest:
+
+  ruling ID
+  source absolute path
+  source filename
+  source SHA256
+  source bytes
+  destination repo-relative path
+  destination pre-exists YES/NO
+
+Every destination must be unique.
+
+Any collision, missing source, hash drift, or pre-existing nonidentical
+destination is STOP.
+
+Do not silently reduce 52 to a smaller set.
+If fewer than 52 exact originals are available at transaction time, report the
+missing IDs and stop for Boss review before mutation.
+
+======================================================================
+5. CHAT-ONLY RULING GAP
+======================================================================
+
+The fifteen R80BK-R80BY chat-only rulings are NOT part of the authority-original
+file count.
+
+They must be represented in canonical documentation with an explicit provenance
+marker.
+
+Required authority-index fields or equivalent:
+
+  RULING_ID
+  PRESERVATION_STATUS
+  SOURCE_FORM
+  ORIGINAL_ARTIFACT_SHA256
+
+For those fifteen:
+
+  PRESERVATION_STATUS
+    SUMMARY_PRESERVED
+
+  SOURCE_FORM
+    RELAYED_CHAT_TEXT
+
+  ORIGINAL_ARTIFACT_SHA256
+    UNAVAILABLE
+
+No synthetic .txt file may be created and labeled as their original ruling.
+
+======================================================================
+6. CONTENT STATE THAT MUST BE PRESERVED
+======================================================================
+
+At minimum, the canonical documents must accurately capture:
+
+  executor SHA
+    583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+
+  executor certification
+    NOT_CERTIFIED
+
+  accepted/pass-credit cases
+    A01-A04
+    I01-I03
+    D01
+    S02-S06
+    S08
+
+  S01
+    BLOCKED_REACHABILITY
+
+  S07
+    BLOCKED_LAUNCHER_BOUNDARY
+    TEARDOWN_BEHAVIOR_DEMONSTRATED=YES
+    CERTIFICATION_PASS_CREDIT=NO
+    RERUN_REQUIRED_OFFLINE=NO
+
+  blocked totals/classifications
+    preserve exact controlling matrix accounting
+
+  C01-C08
+    NOT_STARTED
+    next technical item after preservation = DESIGN REVIEW only
+
+  T01-T04
+    NOT_STARTED
+    REACHABILITY_REVIEW_REQUIRED
+
+  T05-T10
+    EXECUTION_LOCKED
+
+  self-lineage regression
+    NOT_IMPLEMENTED
+    global-PASS gate remains open
+
+  R80BB aborted D01 evidence hold
+    PRESERVE
+
+  S-slice evidence packages
+    PRESERVE UNCHANGED
+
+  launcher
+    NOT_AUTHORIZED
+
+  SP01
+    NOT_AUTHORIZED
+
+  restart
+    NOT_AUTHORIZED
+
+  broadcast
+    LOCKED
+
+  capital
+    UNTOUCHED
+
+======================================================================
+7. CHECKPOINT REQUIREMENT
+======================================================================
+
+PROJECT_RECOVERY_CHECKPOINT.md must be refreshed in the SAME commit.
+
+Its stale next-step section must be replaced with the post-preservation state:
+
+  NEXT AUTHORIZED TECHNICAL STEP
+    C01-C08 DESIGN REVIEW
+
+Explicitly:
+
+  NOT implementation
+  NOT execution
+
+The checkpoint must also record:
+
+  preservation commit SHA placeholder/design mechanism
+  executor exact SHA
+  matrix summary
+  S07 final disposition
+  active locks
+  self-lineage regression NOT_IMPLEMENTED
+  T05-T10 EXECUTION_LOCKED
+
+Because the commit SHA is not known until commit creation, the design must use a
+non-self-referential mechanism.
+
+Do NOT attempt to embed the final commit SHA into content that must itself be
+part of that same commit unless the existing governance standard already defines
+a safe method.
+
+Preferred:
+  record BASELINE_HEAD and transaction ID in the committed checkpoint;
+  record final preservation commit SHA in the post-commit verification report.
+
+======================================================================
+8. TRANSACTION DESIGN — REQUIRED FAIL-CLOSED ORDER
+======================================================================
+
+The transaction runner/design must implement this order:
+
+  G0  bash/tool prerequisites
+
+  G1  cd canonical repo and verify branch main
+
+  G2  verify:
+        LOCAL_HEAD == pinned baseline
+        REMOTE_MAIN == pinned baseline
+
+  G3  capture git status and prove the nine pre-existing dirty paths are exactly
+      the allowed unrelated dirty set
+
+  G4  resolve eight target canonical document paths and verify:
+        tracked
+        current worktree == committed bytes
+        full SHA256 == pinned preimage
+
+  G5  verify authority-original manifest:
+        expected count
+        every source exists
+        source SHA/bytes pinned
+        every destination unique
+        destination absent or exact allowed state
+
+  G6  prove authorized destination set:
+        under docs/
+        .md/.txt only
+        zero executable/source/runtime paths
+        zero overlap with unrelated dirty paths
+
+  G7  generate all updated documents and copied authority originals into a
+      transaction staging area OUTSIDE the canonical repo worktree
+
+  G8  hash and validate staged generated output
+
+  G9  immediately before canonical write:
+        re-check HEAD
+        re-check remote
+        re-check git status
+        re-check eight preimages
+        re-check authority sources
+
+  G10 copy exact generated outputs into authorized canonical destinations only
+
+  G11 verify post-write changed/untracked path set equals expected authorized set
+
+  G12 stage exact paths only:
+        git add -- <explicit path list>
+
+      FORBIDDEN:
+        git add .
+        git add -A
+
+  G13 verify git diff --cached --name-only equals exact authorized staged set
+
+  G14 emit/show:
+        git diff --cached --stat
+        staged path manifest
+        staged content hashes
+
+  G15 commit ONCE
+
+  G16 verify commit changed-path set equals authorized set
+
+  G17 push ONCE
+
+  G18 fetch/verify:
+        local HEAD == remote main
+        committed path set exact
+        unrelated dirty paths preserved unchanged
+
+  G19 emit final preservation verification report
+
+Any mismatch before commit:
+  STOP with no commit/push.
+
+Any failure after canonical writes but before commit:
+  STOP.
+  Do not automatically reset unrelated repository state.
+  Report exact preservation-owned paths requiring recovery.
+
+Any push failure:
+  preserve local commit.
+  Do not amend/recommit automatically.
+  report local/remote divergence for Boss ruling.
+
+======================================================================
+9. NO AUTOMATIC ROLLBACK OF UNRELATED STATE
+======================================================================
+
+Because the worktree intentionally contains nine pre-existing dirty paths, the
+transaction must never use:
+
+  git reset --hard
+  git clean
+  git checkout .
+  git restore .
+  broad rm
+  broad cleanup
+
+Recovery may touch only transaction-owned authorized documentation paths and only
+under a separately defined deterministic recovery branch.
+
+======================================================================
+10. REQUIRED STATIC RETURN BEFORE EXECUTION
+======================================================================
+
+Do NOT run the preservation transaction yet.
+
+Return the transaction design/runner plus a static report containing:
+
+  TRANSACTION_ID
+  RUNNER_FILENAME
+  RUNNER_SHA256
+  RUNNER_BYTES
+  bash -n
+
+  BASELINE_HEAD
+  EXPECTED_DIRTY_PATH_COUNT
+  EXPECTED_DIRTY_PATH_SHA/MODE inventory or equivalent immutable identity proof
+
+  EXISTING_DOC_TARGET_COUNT=8
+  full preimage SHA256 for all eight
+
+  AUTHORITY_ORIGINAL_EXPECTED_COUNT=52
+  exact authority manifest for all 52
+
+  CHAT_ONLY_RULING_COUNT=15
+  exact IDs for all 15
+
+  PROPOSED_CANONICAL_PATH_COUNT
+  PROPOSED_STAGE_PATH_COUNT
+  EXECUTABLE_OR_SOURCE_OR_RUNTIME_PATH_COUNT=0
+
+  GIT_ADD_DOT_COUNT=0
+  GIT_ADD_A_COUNT=0
+  HARD_RESET_COUNT=0
+  GIT_CLEAN_COUNT=0
+
+  CHECKPOINT_INCLUDED=YES
+
+  POST_PRESERVATION_NEXT_STEP
+    C01-C08 DESIGN REVIEW ONLY
+
+Also return a source/static proof that no command capable of:
+
+  launching AllMight
+  signalling governed processes
+  running certification cases
+  invoking SP01
+  modifying executor bytes
+
+exists in the transaction runner.
+
+======================================================================
+11. AUTHORIZATION STATE
+======================================================================
+
+AUTHORIZED NOW:
+  preservation transaction DESIGN
+  staging-area generation for static inspection if it does not mutate canonical
+  repo
+
+NOT AUTHORIZED YET:
+  canonical repo documentation mutation
+  git add
+  git commit
+  git push
+  certification execution
+  C-slice implementation
+  C-slice execution
+
+======================================================================
+12. NEXT DECISION
+======================================================================
+
+After Boss reviews the static transaction runner and complete manifests:
+
+  Boss may authorize ONE bounded preservation transaction.
+
+Only after successful preservation close-out:
+
+  C01-C08 DESIGN REVIEW becomes the next technical step.
+
+======================================================================
+CORNELIUS
+======================================================================
+
+Build the preservation transaction only.
+
+Do not execute it against the canonical repo.
+Do not stage.
+Do not commit.
+Do not push.
+Do not start C-slice work.
+
+Return the static preservation runner + complete manifests for Boss review.

@@ -1,0 +1,266 @@
+BOSS M2E-017G R80AB — A01-A04 OFFLINE HOST EXECUTION AUTHORIZED
+
+ARTIFACT REVIEWED
+
+  r80_runner_v7.sh
+
+Exact uploaded bytes independently verified:
+
+  SHA256    3afb29545fec33ac94b72c0b1ff1a609dfe85ecc162a3a2f2b95818168c1baa8
+  BYTES     48548
+  LINE_COUNT 835
+  bash -n   PASS
+
+TARGET EXECUTOR
+
+  583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+
+RULING
+
+The A-slice runner is APPROVED for one bounded OFFLINE host execution of
+A01-A04 using the exact reviewed v7 bytes above.
+
+This is NOT authorization for:
+  - I/D/S/C/T fixture execution
+  - T05-T10
+  - SP01
+  - launcher/start_all
+  - restart
+  - canonical repo mutation
+  - real governed-process signaling
+  - broadcast
+  - capital deployment
+
+======================================================================
+WHY EXECUTION IS NOW AUTHORIZED
+======================================================================
+
+R80AA Blocker 1 is closed:
+
+  A_ANC_FULL is computed.
+  A_FIXTURE_ADMISSIBLE becomes NO on any partial ancestor walk.
+  a_build_world checks A_FIXTURE_ADMISSIBLE at its first gate, before clone
+  construction or PID allocation.
+
+Therefore an incomplete runner ancestor chain cannot proceed into A fixtures.
+
+R80AA Blocker 2 is closed:
+
+  a_rolepid_verify() is a single shared verifier.
+  It is called by A01-A03 and again by A04.
+  It detects:
+    wrong_pid
+    missing_role
+    duplicate_role
+    unexpected_role
+
+  A04 includes pidmm=0 in its verdict predicate.
+
+Additional reviewed invariants remain intact:
+
+  registry                     42 / 36 / 6
+  locked cases                 T05,T06,T07,T08,T09,T10
+  A cases implemented          4
+  remaining NOT_IMPLEMENTED    32
+  SELF_LINEAGE_REGRESSION      NOT_IMPLEMENTED
+
+The runner-owned safety scan independently reproduces:
+
+  REAL_KILL_CALL_SITES                  0
+  REAL_LAUNCHER_CALL_SITES              0
+  START_ALL_CALL_SITES                  0
+  SP01_CALL_SITES                       0
+  GIT_CANONICAL_MUTATION_CALL_SITES     0
+
+The disposable fixture clone remains the only checkout target.
+
+======================================================================
+EXPECTED RUNNER OUTCOME
+======================================================================
+
+A successful A-slice exercise is NOT expected to return shell exit 0.
+
+Because:
+  32 numbered cases remain NOT_IMPLEMENTED
+  SELF_LINEAGE_IMPLEMENTED remains 0
+
+the expected global runner state is:
+
+  R80_OFFLINE_NONLAUNCHER_MATRIX=INCOMPLETE
+  EXECUTOR_CERTIFICATION_STATE=NOT_CERTIFIED
+  FULL_R80_CERTIFICATION=NOT_CLAIMED
+  RUNNER_EXIT=13
+
+Therefore:
+
+  exit 13 is EXPECTED for this bounded run.
+
+Do not interpret exit 13 by itself as an A-slice failure.
+
+The A01-A04 case rows and evidence package determine whether the A slice passes.
+
+======================================================================
+PRE-RUN IDENTITY GATE
+======================================================================
+
+Cornelius must execute ONLY the exact reviewed runner.
+
+Before execution, verify the host copy SHA256 is exactly:
+
+  3afb29545fec33ac94b72c0b1ff1a609dfe85ecc162a3a2f2b95818168c1baa8
+
+If it differs:
+
+  STOP
+  do not execute
+  return the observed path + SHA to Boss/CPT
+
+Also confirm before run:
+
+  canonical HEAD =
+    4133fd9dd5b84565c3903e85ef04c6d6325aa2f4
+
+The runner itself will fail closed if the canonical governance HEAD differs.
+
+======================================================================
+EXECUTION BOUNDARY
+======================================================================
+
+One run only.
+
+Do not rerun automatically after:
+  STOP
+  BLOCKED
+  unexpected exit
+  failed safety audit
+  missing artifact
+  missing ROOT_MAP
+  malformed fixture
+  A-case FAIL
+
+Do not troubleshoot by changing files on the host.
+
+Do not manually edit:
+  canonical repo
+  pidfile
+  session file
+  executor
+  P1-P5
+  hook
+  launcher
+  fixture outputs
+
+Preserve the first-run evidence exactly.
+
+======================================================================
+A-SLICE ACCEPTANCE QUESTIONS
+======================================================================
+
+Boss will evaluate:
+
+A01
+  exact 8 live identities
+  exact 0 dead
+  role->PID mismatch count 0
+
+A02
+  exact live set:
+    fetcher
+    activator
+    volatility
+    monitor
+    shadow_engine
+
+  exact dead set:
+    heat
+    watchdog
+    notification_router
+
+  role->PID mismatch count 0
+
+A03
+  exact live set:
+    shadow_engine
+
+  exact dead set:
+    fetcher
+    activator
+    volatility
+    heat
+    monitor
+    watchdog
+    notification_router
+
+  role->PID mismatch count 0
+
+A04
+  live set empty
+  exact 8-role dead set
+  role->PID mismatch count 0
+  ZERO_LIVE_CLEAN_START_REQUIRED observed
+  TERM_ATTEMPTED_COUNT=0
+  CONTROL_FILES_CHANGED=0
+  START_ATTEMPTED=0
+  pidfile PRE == POST
+  session PRE == POST
+
+Also required:
+  no locked-case selection attempt
+  safety surface PASS
+  canonical repo unchanged
+  no governed process signaling
+
+======================================================================
+RETURN EVIDENCE
+======================================================================
+
+After the single run, return the generated:
+
+  M2E017G_R80_EVIDENCE_<timestamp>.zip
+
+Do not summarize around missing evidence.
+Upload the ZIP intact.
+
+If no ZIP is produced, preserve and return:
+  terminal output
+  evidence directory
+  runner exit code
+
+No rerun without a new Boss ruling.
+
+======================================================================
+NEXT STATE AFTER EXECUTION
+======================================================================
+
+If A01-A04 pass:
+  A slice may be accepted.
+  This still does NOT certify executor 583cfdbc...
+  Next fixture slice requires a separate Boss authorization.
+
+If any A case fails or blocks:
+  stop at A.
+  Diagnose from the first-run evidence only.
+
+======================================================================
+LOCKS
+======================================================================
+
+r80_runner_v7 3afb2954...               APPROVED FOR ONE OFFLINE A-SLICE RUN
+A01-A04 offline host execution           AUTHORIZED
+automatic rerun                          NOT AUTHORIZED
+I/D/S/C/T fixture work                   NOT AUTHORIZED
+full self-lineage regression             NOT AUTHORIZED
+T05-T10                                  EXECUTION-LOCKED
+SP01                                     NOT AUTHORIZED
+executor 583cfdbc...                     NOT CERTIFIED
+launcher                                 NOT AUTHORIZED
+restart                                  NOT AUTHORIZED
+broadcast                                LOCKED
+capital                                  UNTOUCHED
+
+CORNELIUS
+
+You may now perform the single bounded offline A01-A04 run, but only after the
+host copy of r80_runner_v7.sh matches the exact authorized SHA above.
+
+After the run, upload the evidence ZIP and do nothing else.

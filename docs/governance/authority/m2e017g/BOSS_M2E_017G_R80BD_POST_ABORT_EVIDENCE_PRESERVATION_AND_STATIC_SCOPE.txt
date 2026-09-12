@@ -1,0 +1,321 @@
+BOSS M2E-017G R80BD — POST-ABORT EVIDENCE PRESERVATION + R80BC SCOPE REAFFIRMATION
+
+STATUS
+
+  R80BB authorized D01 host run:
+    ABORTED_RUNNER_DEFECT
+    D01 CERTIFICATION CREDIT: NONE
+
+  v24:
+    e9f5957da3ded1830af4e6ffc4a3e6702535f73051ad870e6db824bf7d139d95
+    EXECUTION AUTHORIZATION: REVOKED
+
+  Executor:
+    583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+    NOT CERTIFIED
+
+======================================================================
+POST-ABORT HOST OBSERVATION — ACCEPTED
+======================================================================
+
+Operator-reported post-abort observation:
+
+  D01_FIXTURE_PROCESSES_PRESENT=0
+  SLEEP_PROCESSES_SEEN=2
+
+This is accepted as:
+
+  POST_ABORT_FIXTURE_PROCESS_STATE=ABSENT_OBSERVED
+
+The nonzero sleep-process control means the process scan was capable of seeing
+matching processes; the D01 fixture zero is therefore treated as an observed
+zero rather than a vacuous probe result.
+
+DO NOT record:
+
+  FIXTURE_NEVER_STARTED
+
+Exact v24 source proves the fixture-spawn and executor-invocation regions precede
+the line-999 unbound-variable abort site.
+
+The hypothesis that the d01fx processes disappeared because their sleep 120
+lifetimes expired is PLAUSIBLE, but it is not independently proven by the
+post-abort observation alone.
+
+No cleanup action is required now if the observed D01 fixture process count
+remains zero.
+
+No speculative kill, cleanup, or process mutation is authorized.
+
+======================================================================
+SURVIVING D01 TREE — EVIDENCE HOLD
+======================================================================
+
+The following surviving tree is now an incident/certification evidence artifact:
+
+  /home/allmight/r80_a_fixture/D01/
+
+Reported contents include:
+
+  .d01root
+  .d01desc
+  exec.log
+  Uploads/
+  proc/
+  sbmap
+  repo/
+  hook.sh
+  inject_rc
+  inject_err
+
+RULING:
+
+  PRESERVE IN PLACE
+  DO NOT DELETE
+  DO NOT EDIT
+  DO NOT RENAME
+  DO NOT RE-RUN INSIDE IT
+  DO NOT CLEAN ITS REPO
+  DO NOT TOUCH ITS SYNTHETIC PROC TREE
+
+The tree may contain executor evidence produced before the runner aborted,
+including baseline classification, G7/G8 emissions, captured fixture PIDs, and
+synthetic topology state.
+
+Its contents must be treated as historical evidence from an ABORTED runner run,
+not as certification credit.
+
+======================================================================
+ONE READ-ONLY EVIDENCE CAPTURE — AUTHORIZED
+======================================================================
+
+A single bounded evidence-capture transaction is authorized.
+
+Purpose:
+
+  preserve the surviving D01 tree exactly enough for Boss review without
+  mutating the source tree.
+
+Authorized operations:
+
+  read files
+  stat files
+  hash files
+  create a manifest OUTSIDE the source tree
+  create one archive OUTSIDE the source tree
+  hash the archive
+
+Not authorized:
+
+  deletion
+  chmod/chown
+  touching timestamps intentionally
+  git checkout/reset/clean inside fixture repo
+  editing files
+  running executor
+  running hook
+  running start_all
+  spawning fixture processes
+  cleanup
+  moving source tree
+  replacing source tree with archive
+
+Recommended output location:
+
+  ~/Uploads/
+
+Recommended archive name:
+
+  M2E017G_R80BB_ABORTED_D01_FIXTURE_EVIDENCE_<UTC>.tar.gz
+
+Recommended companion manifest:
+
+  M2E017G_R80BB_ABORTED_D01_FIXTURE_MANIFEST_<UTC>.sha256
+
+The manifest should hash regular files under:
+
+  /home/allmight/r80_a_fixture/D01/
+
+using stable relative paths.
+
+The archive must be created from the parent directory so the stored root is:
+
+  D01/
+
+not an absolute path.
+
+After archive creation:
+
+  compute SHA256 of the archive
+  do not remove the source tree
+
+If packaging fails:
+
+  STOP
+  preserve the tree
+  return the error
+  do not retry destructively
+
+======================================================================
+EVIDENCE REVIEW QUESTIONS
+======================================================================
+
+Boss review of the package will determine, from machine evidence where present:
+
+  1. Were .d01root and .d01desc populated?
+  2. What exact PIDs were captured?
+  3. Did exec.log show the executor invocation?
+  4. Does an executor evidence TSV exist?
+  5. What BASELINE map was emitted?
+  6. Was G7_CLOSURE emitted?
+  7. Was G7_FROZEN_DESCENDANTS emitted?
+  8. Was G8_CENSUS emitted?
+  9. Did the frozen set contain the captured descendant?
+ 10. What SIGNAL_SYSCALL_MODE was active?
+ 11. What TERM attempt/delivery counters were emitted?
+ 12. Were control-file/start counters emitted?
+ 13. Did any executor STOP gate fire?
+ 14. What exact disposable repo HEAD was used?
+ 15. Do sbmap and synthetic proc mirrors match the captured fixture identities?
+ 16. Was any evidence written after the runner abort point? If not, identify the
+     latest durable executor evidence boundary.
+
+This review is diagnostic only.
+
+No D01 PASS credit may be granted from the aborted run because the independent
+runner verifier never completed.
+
+======================================================================
+R80BC STATIC REVISION SCOPE — REAFFIRMED
+======================================================================
+
+The R80BC revision scope remains authorized and unchanged in principle:
+
+  1. restore the missing D01 independent-verifier block;
+  2. restore the accepted R80AU descendant synthetic-mirror starttime check;
+  3. restore the accepted R80AV root LIVE_VERIFIED predicate;
+  4. restore fixture/source-derived closure/membership/order prediction;
+  5. prove D01 verifier variables are assigned before first use;
+  6. add variable definition/reference/defined-before-first-use integrity audit;
+  7. add a negative control proving the variable audit can fail;
+  8. require exact artifact-location identity handling rather than LOC_N >= 1;
+  9. preserve all accepted v24 safety/lifetime/branch-bound hardening.
+
+However, the duplicate artifact observation requires one refinement before the
+next runner is host-runnable.
+
+======================================================================
+ARTIFACT DUPLICATE RULING
+======================================================================
+
+The reported host state contains two byte-identical copies of each of:
+
+  EXEC
+  HOOK
+  P1
+  P2
+  P3
+  P4
+  P5
+
+Do NOT delete or rename those copies yet.
+
+For the STATIC revision, require the runner to fail closed when SHA match count
+is not exactly one.
+
+That deliberately means the revised runner is expected to STOP on the current
+host until duplicate artifact placement is separately reconciled.
+
+This is desirable.
+
+Do not weaken the gate merely because the duplicates are byte-identical.
+
+Before any future host execution authorization, Boss will issue a separate
+artifact-reconciliation ruling after the exact duplicate paths are reported.
+
+Required duplicate report:
+
+  artifact class
+  expected SHA
+  every matching absolute path
+  SHA of every matched path
+  byte-identical YES/NO
+
+No removal in the reporting transaction.
+
+======================================================================
+PROBE-DISCIPLINE CORRECTION
+======================================================================
+
+Two operator-facing probe errors are now explicitly recorded:
+
+  1. source-order inference incorrectly claimed fixture/executor had not run;
+  2. first process-presence probe self-matched its own command line.
+
+Both are BUG-009-class verifier/probe precision failures.
+
+Going forward, any host-facing probe used to justify an operational statement
+must include, where applicable:
+
+  self-exclusion
+  a known-positive or known-negative control
+  distinction between OBSERVED and INFERRED
+  exact command-output preservation when the claim affects cleanup/safety
+
+Do not convert console silence into a process-state claim.
+
+Do not use a process search whose own command line can satisfy the predicate
+without explicit self-exclusion.
+
+======================================================================
+NEXT AUTHORIZED SEQUENCE
+======================================================================
+
+1. Preserve /home/allmight/r80_a_fixture/D01/ in place.
+
+2. Perform ONE read-only package+manifest capture of that tree to ~/Uploads.
+
+3. Report duplicate artifact paths + SHAs without deleting anything.
+
+4. Return the R80BC revised runner for STATIC review only.
+
+5. Upload the preserved aborted-run D01 evidence package.
+
+Then STOP.
+
+No revised runner execution is authorized.
+
+======================================================================
+LOCKS
+======================================================================
+
+surviving D01 fixture tree         EVIDENCE HOLD / PRESERVE
+one read-only evidence package     AUTHORIZED
+duplicate-artifact inventory       AUTHORIZED / READ-ONLY
+duplicate deletion/rename          NOT AUTHORIZED
+
+R80BC runner revision              AUTHORIZED / STATIC ONLY
+revised runner execution           NOT AUTHORIZED
+v24 rerun                          NOT AUTHORIZED
+D01 retry                          NOT AUTHORIZED
+A/I rerun                          NOT AUTHORIZED
+D02-D06 execution                  NOT AUTHORIZED
+S01-S08                            NOT AUTHORIZED
+C01-C08                            NOT AUTHORIZED
+T01-T04                            NOT AUTHORIZED
+full self-lineage                  NOT AUTHORIZED
+T05-T10                            EXECUTION-LOCKED
+SP01                               NOT AUTHORIZED
+launcher                           NOT AUTHORIZED
+restart                            NOT AUTHORIZED
+broadcast                          LOCKED
+capital                            UNTOUCHED
+
+CORNELIUS
+
+Do not clean or delete the surviving D01 tree.
+
+Create one read-only evidence package and manifest in ~/Uploads, inventory the
+duplicate certified-artifact paths and SHAs, then upload those results.
+
+Do not run the executor or revised runner.

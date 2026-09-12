@@ -75,3 +75,28 @@ package design, then a separate host execution authorization.
    artifact says nothing about the next.
 7. **R80N** — a file cannot contain its own hash. Self-referential integrity values
    belong in an external record, never embedded in the artifact they describe.
+
+
+---
+
+## PRESERVATION OVERLAY 2 — 2026-09-12T00:53:58Z
+**Authority:** Boss R80CB / R80CC · **Transaction:** `M2E017G-PRESV-002`
+**Baseline HEAD:** `4133fd9dd5b84565c3903e85ef04c6d6325aa2f4`
+
+Content above is preserved verbatim; where superseded, this section controls.
+
+### Slices since the first preservation commit
+
+| Ruling range | Work | Verdict |
+|---|---|---|
+| R80O-R80AF | v3→v9 runner hardening; A01-A04 built and run | A-slice ACCEPTED |
+| R80AG-R80AO | I-slice; I04/I05 reachability, I06 P5 contract | I01-I03 ACCEPTED |
+| R80AP-R80BJ | D-slice; D01 only buildable; v24 abort and evidence hold | D01 ACCEPTED |
+| R80BK-R80BY | S-slice design, build and correction (chat-only) | S02-S06, S08 ACCEPTED |
+| R80BZ-R80CA | S07 launcher-boundary finding and disposition | S07 CLOSED |
+| R80CB-R80CC | preservation-first ruling and transaction design | this transaction |
+
+**Lessons added:** a verification statement must not assert more than its probe
+checks (recurring, BUG-009) · a file cannot contain its own hash · absence of
+output is not evidence of absence of action · preservation must recur with the
+work, not once.

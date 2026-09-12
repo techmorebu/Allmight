@@ -1,0 +1,359 @@
+BOSS M2E-017G R80AN — V13 ACCEPTED / ONE BOUNDED I01-I03 OFFLINE RUN AUTHORIZED
+
+TARGET RUNNER REVIEWED
+
+  r80_runner_v13.sh
+
+Exact delivered-file measurements independently verified:
+
+  SHA256     7c27985b8bee1e438019467b353d433f4fc1743894ec32076e012a3bdd01ddac
+  BYTES      65795
+  wc -l      1124
+  bash -n    PASS
+
+Target executor remains:
+
+  583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+
+v12 79539481... is superseded.
+
+======================================================================
+R80AM RUN-SCOPE PATCH — ACCEPTED
+======================================================================
+
+A01-A04 are no longer executed.
+
+They are represented as:
+
+  ACCEPTED_PRIOR
+  EXECUTED_THIS_RUN=NO
+
+with prior-evidence reference:
+
+  M2E017G_R80_EVIDENCE_20260910T222739Z
+
+This does not create fresh PASS credit.
+
+Verified:
+
+  A_CASE_EXECUTION_CALLS=0
+  A_SLICE_EXECUTED_THIS_RUN=NO
+  A_CASES_ACCEPTED_PRIOR=4
+
+The A fixture helper foundation remains available to I01-I03.
+
+======================================================================
+RESTORED a_preserve — ACCEPTED
+======================================================================
+
+The region-replacement defect is corrected.
+
+Each of the following runner helpers is defined exactly once:
+
+  a_alloc_pid
+  a_build_world
+  a_run_executor
+  a_rolepid_verify
+  a_case
+  a_preserve
+
+a_preserve retains the R80AE behavior:
+
+  - case-local diagnostic directory
+  - executor log preservation
+  - fixture pidfile/session preservation
+  - synthetic baseline map preservation
+  - fixture HEAD preservation
+  - evidence inventory
+  - structured TSV preservation
+  - case_status.tsv use
+  - case-local RC preservation rather than global A_RC
+
+The I-slice calls a_preserve only for:
+
+  I01
+  I02
+  I03
+
+before deleting the fixture root.
+
+======================================================================
+I-SLICE CURRENT DISPOSITION
+======================================================================
+
+Executable in this bounded run:
+
+  I01
+    expected G2_IDENTITY_MISMATCH
+    static starttime mismatch
+    fixture-derived independent verifier
+
+  I02
+    expected G2_SIGNATURE_MISMATCH
+    matching starttime / signature mismatch
+    fixture-derived independent verifier
+
+  I03
+    expected G2_IDENTITY_MISMATCH
+    same numeric PID
+    S1 -> S2 transition preserved
+    fixture-derived independent verifier
+
+Not executed:
+
+  I04
+    BLOCKED_REACHABILITY
+    NO_AUTHORIZED_G2_TO_G10_PROC_ROOT_MUTATION_SEAM
+
+  I05
+    BLOCKED_REACHABILITY
+    G9_EXCLUDES_BASELINE_ROOT
+
+  I06
+    BLOCKED_CERTIFICATION_CONTRACT
+    P5_NOT_GOVERNED_CONFLICT
+
+I06 creates no process and invokes no executor path.
+
+======================================================================
+SAFETY SURFACE
+======================================================================
+
+Runner-owned direct signal expectation:
+
+  REAL_KILL_CALL_SITES=0
+  RUNNER_PATTERN_KILL_SITES=0
+  RUNNER_OWNS_NO_DIRECT_SIGNAL_SITE=YES
+
+No authorized expansion exists for:
+
+  launcher
+  start_all
+  SP01
+  canonical git mutation
+  restart
+  broadcast
+  capital
+
+The certified P3 helper's bounded fixture-signal capability remains separately
+disclosed and is not a direct runner signal site.
+
+======================================================================
+ONE BOUNDED HOST RUN — AUTHORIZED
+======================================================================
+
+One offline host execution of the exact v13 bytes is AUTHORIZED.
+
+This authorization covers only:
+
+  I01
+  I02
+  I03
+
+as current-run certification cases.
+
+A01-A04 are prior accepted declarations only.
+
+I04/I05/I06 are blocked declarations only.
+
+D/S/C/T01-T04 remain NOT_IMPLEMENTED and must not execute.
+
+T05-T10 remain execution-locked.
+
+No automatic rerun is authorized.
+
+======================================================================
+PRE-RUN IDENTITY GATE
+======================================================================
+
+Cornelius must verify the exact runner before executing.
+
+  sha256sum ~/r80_runner_v13.sh
+
+Must equal:
+
+  7c27985b8bee1e438019467b353d433f4fc1743894ec32076e012a3bdd01ddac
+
+If it does not:
+
+  STOP
+  do not execute
+  return observed path + SHA
+
+If exact:
+
+  cd ~/Allmight
+  bash ~/r80_runner_v13.sh
+
+Run ONCE.
+
+======================================================================
+EXPECTED SUCCESSFUL CURRENT-RUN ACCOUNTING
+======================================================================
+
+For a clean I01-I03 run:
+
+  A_CASES_ACCEPTED_PRIOR=4
+  A_CASES_EXECUTED_THIS_RUN=0
+
+  I current-run:
+    PASS=3
+    FAIL=0
+
+  I blocked:
+    BLOCKED_REACHABILITY=2
+    BLOCKED_CERTIFICATION_CONTRACT=1
+    BLOCKED_TOTAL=3
+
+  ordinary NOT_IMPLEMENTED:
+    26
+
+Because accepted-prior and blocked cases are not current-run CASES_RUN entries,
+expected numbered current-run accounting is:
+
+  CASES_RUN=29
+  CASES_PASS=3
+  CASES_FAIL=0
+  CASES_NOT_IMPLEMENTED=26
+
+Global result remains intentionally:
+
+  R80_OFFLINE_NONLAUNCHER_MATRIX=INCOMPLETE
+  EXECUTOR_CERTIFICATION_STATE=NOT_CERTIFIED
+  FULL_R80_CERTIFICATION=NOT_CLAIMED
+  RUNNER_EXIT=13
+
+Exit 13 is expected.
+
+======================================================================
+I01-I03 ACCEPTANCE TARGET
+======================================================================
+
+I01:
+
+  expected STOP_GATE=G2_IDENTITY_MISMATCH
+  fixture present
+  expected starttime != observed starttime
+  signature match=YES
+  reuse transition proof=NO
+  TERM_ATTEMPTED_COUNT=0
+  CONTROL_FILES_CHANGED=0
+  START_ATTEMPTED=0
+  executor actual == fixture-derived verifier prediction
+
+I02:
+
+  expected STOP_GATE=G2_SIGNATURE_MISMATCH
+  expected starttime == observed starttime
+  signature match=NO
+  reuse transition proof=NO
+  TERM_ATTEMPTED_COUNT=0
+  CONTROL_FILES_CHANGED=0
+  START_ATTEMPTED=0
+  executor actual == fixture-derived verifier prediction
+
+I03:
+
+  expected STOP_GATE=G2_IDENTITY_MISMATCH
+  same numeric PID before/after=YES
+  starttime changed=YES
+  preserved BEFORE/AFTER snapshots
+  reuse transition proof=YES
+  TERM_ATTEMPTED_COUNT=0
+  CONTROL_FILES_CHANGED=0
+  START_ATTEMPTED=0
+  executor actual == fixture-derived verifier prediction
+
+======================================================================
+FRAMEWORK ACCEPTANCE TARGET
+======================================================================
+
+Required:
+
+  R40_COMMAND_POSITION_AUDIT=PASS
+  R40_VERIFIER_CONSISTENCY_AUDIT=PASS
+  SYNTHETIC_BASELINE_OVERLAY=PASS
+  PID01_ANCESTOR_OVERLAY=PASS
+  SAFETY_SURFACE=PASS
+  GIT_PROBE_KNOWN_POSITIVE_CONTROL=PASS
+  LOCKED_CASE_SELECTION_ATTEMPTS=0
+
+Expected:
+
+  SELF_LINEAGE_REGRESSION=NOT_IMPLEMENTED
+
+That remains a known global certification blocker.
+
+======================================================================
+STOP CONDITIONS
+======================================================================
+
+After the single run:
+
+  do not rerun automatically.
+
+If any of the following occurs:
+
+  I01/I02/I03 FAIL
+  unexpected STOP gate
+  missing zero-boundary evidence
+  fixture construction BLOCK
+  safety audit FAIL
+  artifact identity failure
+  unexpected A execution
+  I04/I05/I06 execution
+  locked case selection
+  unexpected direct signal site
+  evidence package missing
+  accounting differs from expected 29/3/0/26
+
+preserve the first-run evidence exactly and stop.
+
+Do not repair the host in the same transaction.
+
+======================================================================
+RETURN EVIDENCE
+======================================================================
+
+Upload:
+
+  M2E017G_R80_EVIDENCE_<timestamp>.zip
+
+and the terminal output.
+
+Then stop.
+
+Boss will independently review exact evidence before granting certification
+credit or authorizing the D-slice.
+
+======================================================================
+LOCKS
+======================================================================
+
+v13 7c27985b...                 APPROVED FOR ONE I01-I03 OFFLINE RUN
+A01-A04                         ACCEPTED / CLOSED / NOT EXECUTED
+A rerun                         NOT AUTHORIZED
+I01-I03                         ONE HOST RUN AUTHORIZED
+I04                             BLOCKED_REACHABILITY
+I05                             BLOCKED_REACHABILITY
+I06                             BLOCKED_CERTIFICATION_CONTRACT
+automatic rerun                 NOT AUTHORIZED
+D01-D06                         NOT AUTHORIZED
+S01-S08                         NOT AUTHORIZED
+C01-C08                         NOT AUTHORIZED
+T01-T04                         NOT AUTHORIZED
+full self-lineage               NOT AUTHORIZED
+T05-T10                         EXECUTION-LOCKED
+SP01                            NOT AUTHORIZED
+executor 583cfdbc...            NOT CERTIFIED
+launcher                        NOT AUTHORIZED
+restart                         NOT AUTHORIZED
+broadcast                       LOCKED
+capital                         UNTOUCHED
+
+CORNELIUS
+
+You may perform the single bounded offline v13 run after the SHA matches
+exactly.
+
+Afterward upload the evidence ZIP and terminal output, then stop.

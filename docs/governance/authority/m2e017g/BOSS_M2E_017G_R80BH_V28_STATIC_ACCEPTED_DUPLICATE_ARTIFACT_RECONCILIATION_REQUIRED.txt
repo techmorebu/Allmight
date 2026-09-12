@@ -1,0 +1,357 @@
+BOSS M2E-017G R80BH — V28 STATIC ACCEPTED / DUPLICATE ARTIFACT RECONCILIATION REQUIRED BEFORE D01 RETRY
+
+TARGET
+
+  r80_runner_v28.sh
+
+Independent delivered-file identity:
+
+  SHA256
+    1a63932e38ba02ae9d2d695c6a66c49c7260caf5b79c3fed26dbc66c31555832
+
+  BYTES
+    97973
+
+  wc -l
+    1606
+
+  bash -n
+    PASS
+
+v27 2b31e046... is superseded.
+v24/v25/v27 remain NOT run-authorized.
+
+======================================================================
+R80BG BLOCKER 1 — TEMPORAL PRECOMMITMENT CLOSED
+======================================================================
+
+Exact v28 source proves:
+
+  D01_VER_FROZEN assignment:
+    line 1052
+
+  sole exact D01 executor call:
+    line 1089
+
+Therefore:
+
+  1052 < 1089
+
+The complete independent verifier prediction is constructed before execution
+from:
+
+  fixture facts
+  captured real parent/descendant facts
+  synthetic mirror facts
+  exact executor source structure
+
+The frozen value is:
+
+  D01_VER_FROZEN=
+    closure=$D01_V_CL
+    frozen_contains_desc=$D01_V_CONTAINS
+    order=$D01_V_ORDER
+
+It is emitted before execution as:
+
+  D01_VERIFIER_PRECOMMITTED=YES
+  D01_VERIFIER_PRECOMMITTED_VALUE=<frozen value>
+
+The runner self-audits:
+
+  D01_EXECUTOR_CALL_COUNT=1
+  D01_VERIFIER_FROZEN_ASSIGNMENT_COUNT=1
+  D01_VERIFIER_FROZEN_BEFORE_EXECUTOR=YES
+
+and scans all certification-critical frozen verifier scalars for assignment
+after the executor-call line.
+
+Independent exact-byte review confirms:
+
+  post-executor assignments to those scalars = 0
+
+After execution:
+
+  D01_EXEC is constructed from executor evidence
+  D01_VER is assigned only from D01_VER_FROZEN
+
+The verifier is no longer recomputed after the system under test runs.
+
+RULING:
+
+  D01_VERIFIER_DATA_INDEPENDENCE=ACCEPTED
+  D01_VERIFIER_TEMPORAL_PRECOMMITMENT=ACCEPTED
+
+======================================================================
+R80BG BLOCKER 2 — TRUE PRE-MUTATION COLLISION GATE CLOSED
+======================================================================
+
+Exact v28 source:
+
+  evidence collision gate:
+    lines 39-43
+
+  first filesystem mutation:
+    line 65
+      mkdir -p "$OUT"; : > "$EV"
+
+The collision gate:
+
+  evaluates before OUT/EV initialization
+  does not call die()
+  prints direct STOP to stderr
+  exits 85
+  performs no evidence-output or fixture mutation first
+
+Active fixture namespace:
+
+  /home/allmight/r80_r80bc_fixture
+
+Preserved evidence hold:
+
+  /home/allmight/r80_a_fixture
+
+No alias exists.
+
+RULING:
+
+  EVIDENCE_COLLISION_GATE_PRECEDES_FIRST_MUTATION=YES
+  R80BD_EVIDENCE_HOLD_ISOLATION=ACCEPTED
+
+======================================================================
+R80BF HARDENING — RETAINED / ACCEPTED
+======================================================================
+
+Accepted:
+
+  exact-one SHA artifact locator policy
+  duplicate-path reporting
+  fresh fixture namespace
+  shared var_audit negative control
+  assignment/reference/defined-before-first-use audit
+  root LIVE_VERIFIED verifier predicate
+  descendant synthetic mirror starttime predicate
+  real parentage predicate
+  root-in-map predicate
+  DESC_SIGS unique definition requirement
+  DESC_SIGS negative control
+  unique G7_CLOSURE source authority
+  unique G8_CENSUS source authority
+  source-order proof
+  six P5 predicates + OW_VERDICT
+  no P5 waiver
+  branch-bounded D01 SAFETY_FAIL increment proof
+  single SAFETY_FAIL initialization
+  safety lifetime-order proof
+  TEST_ADAPTER TERM-attempt vs delivery boundary
+  D01 three-property verdict boundary
+  exact fixture cleanup revalidation
+  one disclosed direct TERM site
+  zero pattern kill sites
+  zero launcher/start_all/SP01 invocation path
+  no canonical repo mutation path
+  RUNNER_EXIT before pack
+  A/I accepted-prior treatment
+  D02-D06 blocked dispositions
+  T05-T10 locked
+
+Independent destructive-path review found:
+
+  rm -rf "$W"
+    W is under /home/allmight/r80_r80bc_fixture/<case>
+
+  rm -rf "$A_WORLD/Uploads"
+    under active fixture world
+
+  rm -rf "$A_FXBASE"
+    /home/allmight/r80_r80bc_fixture
+
+None resolves to:
+
+  /home/allmight/r80_a_fixture
+  /home/allmight/r80_a_fixture/D01
+
+======================================================================
+STATIC STATUS
+======================================================================
+
+v28:
+
+  STATIC REVIEW = ACCEPTED
+
+This means:
+
+  the currently authorized D01 runner design is statically acceptable
+
+It does NOT mean:
+
+  D01 certified
+  executor certified
+  host retry authorized
+  launcher authorized
+  restart authorized
+
+======================================================================
+CURRENT HOST BLOCKER — DUPLICATE CERTIFIED ARTIFACTS
+======================================================================
+
+The host was previously observed to contain two SHA-identical copies of each:
+
+  EXEC
+  HOOK
+  P1
+  P2
+  P3
+  P4
+  P5
+
+v28 intentionally requires:
+
+  LOC_N == 1
+
+Therefore the current host is expected to STOP at artifact identity before D01.
+
+Do not weaken this gate.
+
+Do not run v28 merely to rediscover the known duplicate condition.
+
+======================================================================
+NEXT AUTHORIZED STEP — READ-ONLY DUPLICATE INVENTORY
+======================================================================
+
+The existing R80BD authorization for read-only duplicate inventory remains
+active.
+
+Return, for each artifact class:
+
+  artifact class
+  expected SHA
+  every matching absolute path
+  SHA256 of every path
+  byte-identical YES/NO
+
+Classes:
+
+  EXEC
+  HOOK
+  P1
+  P2
+  P3
+  P4
+  P5
+
+No deletion.
+No rename.
+No move.
+No chmod/chown.
+No extraction.
+No runner execution.
+
+After Boss reviews the exact duplicate-path inventory, Boss will rule which
+copy is canonical for certification-tool placement and whether the redundant
+copies may be removed or relocated.
+
+Only after artifact uniqueness is reconciled will Boss decide whether ONE
+bounded D01 v28 host retry is authorized.
+
+======================================================================
+EVIDENCE HOLD
+======================================================================
+
+Continue preserving:
+
+  /home/allmight/r80_a_fixture/D01/
+
+Status:
+
+  R80BB_ABORTED_D01_EVIDENCE_HOLD
+
+Do not:
+
+  delete
+  edit
+  rename
+  clean
+  reuse as a fixture
+  execute from inside it
+
+======================================================================
+LOCKS
+======================================================================
+
+v28 1a63932e...
+  STATIC ACCEPTED
+  NOT YET HOST-RUN-AUTHORIZED
+
+v27 2b31e046...
+  SUPERSEDED
+
+v24/v25
+  SUPERSEDED / DO NOT RUN
+
+duplicate artifact inventory
+  AUTHORIZED / READ-ONLY
+
+duplicate deletion/rename/move
+  NOT AUTHORIZED
+
+D01 retry
+  NOT AUTHORIZED YET
+
+R80BB evidence tree
+  EVIDENCE HOLD
+
+A01-A04
+  ACCEPTED / CLOSED
+
+I01-I03
+  ACCEPTED / CLOSED
+
+I04/I05
+  BLOCKED_REACHABILITY
+
+I06
+  BLOCKED_CERTIFICATION_CONTRACT
+
+D02/D03/D04/D06
+  BLOCKED_REACHABILITY
+
+D05
+  BLOCKED_CERTIFICATION_CONTRACT
+
+S01-S08
+  NOT AUTHORIZED
+
+C01-C08
+  NOT AUTHORIZED
+
+T01-T04
+  NOT AUTHORIZED
+
+T05-T10
+  EXECUTION-LOCKED
+
+SP01
+  NOT AUTHORIZED
+
+executor 583cfdbc...
+  NOT CERTIFIED
+
+launcher
+  NOT AUTHORIZED
+
+restart
+  NOT AUTHORIZED
+
+broadcast
+  LOCKED
+
+capital
+  UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.
+
+Return only the read-only duplicate artifact path/SHA inventory.
+Do not delete or relocate anything until Boss rules.

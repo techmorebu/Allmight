@@ -1,0 +1,233 @@
+BOSS M2E-017G R80AL — V11 REVIEW / I06 P5 CONTRACT CONFLICT BLOCKED
+
+TARGET RUNNER REVIEWED
+
+  r80_runner_v11.sh
+
+Exact uploaded bytes independently verified:
+
+  SHA256     32f28e59c724bef8f5300278e72d926de1142ecd6a8e88c2746950c5fa0727f6
+  BYTES      72990
+  LINE_COUNT 1232
+  bash -n    PASS
+
+Target executor remains:
+
+  583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+
+======================================================================
+ACCEPTED R80AK CORRECTIONS
+======================================================================
+
+1. INDEPENDENT GATE VERIFIER
+
+I01/I02/I03 now derive I_PREDICTED_GATE from fixture evidence rather than
+STOP_GATE / STOP_REASON / RESULT or a copied executor classification.
+
+Accepted:
+  I_VERIFIER_SOURCE=FIXTURE_DERIVED
+  I_VERIFIER_USES_EXECUTOR_STOP_GATE_FOR_PREDICTION=NO
+  I_VERIFIER_USES_COPIED_STOP_GATE_FOR_PREDICTION=NO
+
+2. I03 REUSE CONSTRUCTION
+
+The same-PID S1 -> S2 transition remains explicitly preserved and checked
+before executor invocation.
+
+3. I06 PARENT EQUALITY
+
+Direct parent equality is now enforced as a local admission predicate rather
+than merely emitted as descriptive evidence.
+
+4. I06 PRE-TERM IDENTITY REVALIDATION
+
+The runner now captures and rechecks:
+  PID
+  starttime
+  cmdline
+  parent
+
+before its direct fixture cleanup TERM.
+
+The cleanup path remains exact-PID, TERM-only, no pattern kill, no escalation.
+
+======================================================================
+DECISIVE BLOCKER — P5 CONTRACT MAY NOT BE WEAKENED
+======================================================================
+
+v11 calls certified P5 and observes:
+
+  OW_NOT_GOVERNED=NO
+
+for the intentionally governed-looking I06 fixture.
+
+v11 then explicitly accepts either:
+
+  OW_NOT_GOVERNED=NO
+or
+  OW_NOT_GOVERNED=YES
+
+as sufficient for I06_P5_OK.
+
+That is NOT accepted.
+
+The certified P5 ownership contract consists of six predicates. The fixture
+does not receive ownership admission by selectively waiving one predicate
+because the case intentionally violates it.
+
+The relevant doctrine remains:
+
+  PID_DESCENDS_FROM_FIXTURE_ROOT
+  PID_NOT_BASELINE_ROOT
+  PID_NOT_CANONICAL_PIDFILE_MEMBER
+  PID_NOT_EXECUTOR_PID
+  PID_NOT_EXECUTOR_ANCESTOR
+  PID_NOT_REAL_GOVERNED_RUNTIME
+
+A governed-looking process that causes:
+
+  PID_NOT_REAL_GOVERNED_RUNTIME = NO
+
+does not satisfy certified P5 ownership.
+
+Therefore:
+
+  I06_P5_CONTRACT_SATISFIED=NO
+  I06_FINAL_OWNERSHIP_ADMISSION_MUST_BE_NO
+  I06_EXECUTOR_RUN_AUTHORIZED=NO
+
+The accommodation:
+
+  "NOT_GOVERNED is expected NO"
+
+is rejected because it changes the P5 gate rather than satisfying it.
+
+======================================================================
+RULING — I06
+======================================================================
+
+I06 is now BLOCKED under the current certified ownership contract.
+
+  I06_STATUS=BLOCKED_CERTIFICATION_CONTRACT
+  I06_BLOCKING_REASON=P5_NOT_GOVERNED_CONFLICT
+  I06_EXPECTED_STOP_GATE=G8_SECOND_STACK
+  I06_EXECUTION_CREDIT=NONE
+
+This does NOT prove G8_SECOND_STACK is unreachable.
+
+It proves the currently designed real fixture cannot both:
+
+  A. carry the governed-looking signature required to provoke G8
+
+and
+
+  B. satisfy the certified P5 requirement:
+       PID_NOT_REAL_GOVERNED_RUNTIME=YES
+
+without weakening the ownership doctrine.
+
+Do not weaken P5.
+
+Do not create another ownership exception without a new Boss ruling.
+
+======================================================================
+I-SLICE DISPOSITION
+======================================================================
+
+Current status:
+
+  I01  BUILT
+       expected G2_IDENTITY_MISMATCH
+
+  I02  BUILT
+       expected G2_SIGNATURE_MISMATCH
+
+  I03  BUILT
+       expected G2_IDENTITY_MISMATCH
+
+  I04  BLOCKED_REACHABILITY
+       NO_AUTHORIZED_G2_TO_G10_PROC_ROOT_MUTATION_SEAM
+
+  I05  BLOCKED_REACHABILITY
+       G9_EXCLUDES_BASELINE_ROOT
+
+  I06  BLOCKED_CERTIFICATION_CONTRACT
+       P5_NOT_GOVERNED_CONFLICT
+
+Accounting:
+
+  I_CASES_BUILT=3
+  I_CASES_BLOCKED=3
+
+Do not call I06 built/passing/executable for certification credit.
+
+======================================================================
+PATCH AUTHORIZED
+======================================================================
+
+Patch v11 only to reconcile runner behavior/accounting with this ruling.
+
+AUTHORIZED:
+
+  1. remove I06 executor invocation path;
+  2. remove I06 real fixture process creation from the executable I-slice path;
+  3. remove the runner-owned I06 cleanup TERM if no longer needed;
+  4. represent I06 explicitly as BLOCKED_CERTIFICATION_CONTRACT;
+  5. update blocked accounting so I04/I05/I06 all prevent global PASS;
+  6. restore direct runner real-kill expectation to 0 if I06 process creation and
+     cleanup are removed;
+  7. retain I01/I02/I03 fixture-derived independent verifier logic;
+  8. retain all existing A-slice accepted behavior and global locks.
+
+Do NOT collapse I06 into ordinary NOT_IMPLEMENTED.
+
+Recommended blocked accounting:
+
+  CASES_BLOCKED_REACHABILITY=2
+  CASES_BLOCKED_CONTRACT=1
+  CASES_BLOCKED_TOTAL=3
+
+Global PASS must require:
+
+  CASES_BLOCKED_TOTAL=0
+
+======================================================================
+NO EXECUTION AUTHORIZATION
+======================================================================
+
+No I-slice host execution is authorized yet.
+
+Reason:
+  runner must first be reconciled so the blocked I06 case cannot create a real
+  process or execute its cleanup signal path.
+
+After revised exact bytes are returned, Boss will review whether a bounded
+I01/I02/I03-only host execution is appropriate.
+
+======================================================================
+LOCKS
+======================================================================
+
+v11 32f28e59...                 STATIC REVIEWED / NOT RUN-AUTHORIZED
+A01-A04                         ACCEPTED / CLOSED
+I01-I03                         BUILT
+I04                             BLOCKED_REACHABILITY
+I05                             BLOCKED_REACHABILITY
+I06                             BLOCKED_CERTIFICATION_CONTRACT
+I-slice host execution          NOT AUTHORIZED
+D01-D06                         NOT AUTHORIZED
+S01-S08                         NOT AUTHORIZED
+C01-C08                         NOT AUTHORIZED
+T01-T04                         NOT AUTHORIZED
+full self-lineage               NOT AUTHORIZED
+T05-T10                         EXECUTION-LOCKED
+SP01                            NOT AUTHORIZED
+executor 583cfdbc...            NOT CERTIFIED
+launcher                        NOT AUTHORIZED
+restart                         NOT AUTHORIZED
+broadcast                       LOCKED
+capital                         UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

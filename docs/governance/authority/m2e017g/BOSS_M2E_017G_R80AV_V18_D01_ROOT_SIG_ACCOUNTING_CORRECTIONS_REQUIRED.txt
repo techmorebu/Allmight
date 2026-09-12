@@ -1,0 +1,349 @@
+BOSS M2E-017G R80AV — V18 STATIC REVIEW / ROOT-LIVE VERIFIER + UNIQUE DESC_SIGS + SLICE ACCOUNTING CORRECTIONS REQUIRED
+
+TARGET RUNNER REVIEWED
+
+  r80_runner_v18.sh
+
+Exact delivered-file measurements independently verified:
+
+  SHA256     37feacf98319c8ab15a8dfcea07ffeb975df60a728dfad3f4720a31bcc2d309b
+  BYTES      78914
+  wc -l      1312
+  bash -n    PASS
+
+Target executor remains:
+
+  583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+
+======================================================================
+R80AU CORRECTIONS — MATERIAL PROGRESS ACCEPTED
+======================================================================
+
+Accepted in v18:
+
+  - descendant synthetic starttime is parsed and compared to captured real
+    descendant starttime;
+  - DESC_SIGS is no longer duplicated as a runner-local literal;
+  - per-slice D reachability count is corrected from 3 to 4;
+  - global blocked arithmetic is now explicitly cross-checked:
+      reachability 6
+      contract 2
+      total 8.
+
+v18 is still NOT host-run-authorized.
+
+======================================================================
+BLOCKER 1 — ROOT LIVE-VERIFIED PREREQUISITES ARE NOT INDEPENDENTLY PROVEN
+======================================================================
+
+The D01 independent verifier now proves descendant mirror identity more
+honestly.
+
+However, it currently treats the root side as sufficient when:
+
+  root is named in A_MAP
+  root synthetic stat file exists
+
+That is not enough to independently prove the executor can reach G7.
+
+Before G7, the exact executor's G2 baseline classification requires the root to
+be LIVE_VERIFIED, which depends on the root's synthetic identity matching its
+baseline-map identity.
+
+The independent verifier must therefore prove, from fixture bytes only:
+
+  root mirror stat exists;
+  root synthetic starttime == root expected/captured starttime;
+  root synthetic cmdline matches the exact baseline signature stored for that
+  role in A_MAP;
+  root role -> PID mapping is exact.
+
+REQUIRED CORRECTION:
+
+Parse and emit:
+
+  D01_VERIFIER_ROOT_SYNTH_STARTTIME
+  D01_VERIFIER_ROOT_EXPECTED_STARTTIME
+  D01_VERIFIER_ROOT_STARTTIME_MATCH=YES
+
+Resolve the exact baseline signature for I_ROLE from A_MAP and apply it to the
+synthetic root cmdline.
+
+Emit:
+
+  D01_VERIFIER_ROOT_BASELINE_SIG
+  D01_VERIFIER_ROOT_BASELINE_SIG_MATCH=YES
+
+D01_V_CL may become FROZEN only if BOTH root LIVE_VERIFIED prerequisites and
+descendant prerequisites are independently proven.
+
+File existence alone is not identity.
+
+======================================================================
+BLOCKER 2 — DESC_SIGS EXTRACTION IS NOT UNIQUENESS-GATED
+======================================================================
+
+v18 does:
+
+  grep -m1 '^DESC_SIGS=' "$PATH_EXEC"
+
+and applies the extracted regex.
+
+That is an improvement, but it silently takes the first match.
+
+R80AU required:
+
+  D01_EXECUTOR_DESC_SIG_DEFINITION_MATCH_COUNT=1
+
+The runner must prove the exact executor contains one and only one source
+definition being used as authority.
+
+REQUIRED CORRECTION:
+
+  DESC_SIG_DEF_COUNT=$(grep -c '^DESC_SIGS=' "$PATH_EXEC")
+
+Require:
+
+  DESC_SIG_DEF_COUNT == 1
+
+If count != 1:
+
+  D01 verifier/admission must BLOCK
+  no executor run
+  preserve source matches
+
+Emit:
+
+  D01_EXECUTOR_DESC_SIG_DEFINITION_MATCH_COUNT
+  D01_EXECUTOR_DESC_SIG_DEFINITION
+  D01_VERIFIER_DESC_SIG_EXACT_SOURCE_PREDICATE=YES|NO
+
+Also gate the negative control.
+
+Current v18 emits:
+
+  D01_DESC_SIG_NEGATIVE_CONTROL
+
+but a MATCHED negative control does not prevent D01 from proceeding.
+
+Require:
+
+  D01_DESC_SIG_NEGATIVE_CONTROL=NO_MATCH
+
+If the known-negative string matches:
+  BLOCK D01
+  do not trust the predicate.
+
+Thus D01 signature admission requires all three:
+
+  exact definition count = 1
+  fixture descendant matches exact predicate
+  known-negative control does NOT match
+
+======================================================================
+BLOCKER 3 — ACCEPTED-PRIOR / SLICE ACCOUNTING STILL MISLABELS GLOBAL COUNTERS
+======================================================================
+
+The I/D blocked arithmetic is improved, but two mislabeled outputs remain.
+
+A_CASES_ACCEPTED_PRIOR currently emits:
+
+  CASES_ACCEPTED_PRIOR
+
+after BOTH A01-A04 and I01-I03 have been recorded ACCEPTED_PRIOR.
+
+Therefore the value is 7, while the label says A_CASES_ACCEPTED_PRIOR.
+
+Correct value:
+
+  A_CASES_ACCEPTED_PRIOR=4
+  I_CASES_ACCEPTED_PRIOR=3
+  CASES_ACCEPTED_PRIOR_TOTAL=7
+
+Separately, terminal output still prints:
+
+  I_CASES_BLOCKED_REACHABILITY = CASES_BLOCKED_REACH
+
+where CASES_BLOCKED_REACH is the GLOBAL I+D count (6), not the I-slice count
+(2).
+
+Do not leave a correct evidence field next to a contradictory terminal label.
+
+REQUIRED CORRECTION:
+
+Emit and display consistently:
+
+  A_CASES_ACCEPTED_PRIOR=4
+  I_CASES_ACCEPTED_PRIOR=3
+  CASES_ACCEPTED_PRIOR_TOTAL=7
+
+  I_CASES_BLOCKED_REACHABILITY=2
+  I_CASES_BLOCKED_CERTIFICATION_CONTRACT=1
+  I_CASES_BLOCKED_TOTAL=3
+
+  D_CASES_BLOCKED_REACHABILITY=4
+  D_CASES_BLOCKED_CERTIFICATION_CONTRACT=1
+  D_CASES_BLOCKED_TOTAL=5
+
+  CASES_BLOCKED_REACHABILITY_TOTAL=6
+  CASES_BLOCKED_CERTIFICATION_CONTRACT_TOTAL=2
+  CASES_BLOCKED_TOTAL=8
+
+All terminal kv labels must display the corresponding slice value, not a global
+accumulator under a slice label.
+
+Prefer deterministic derivation from R80_CASES.tsv or dedicated per-slice
+counters over duplicated hard-coded arithmetic.
+
+======================================================================
+PRECISION CLEANUP — DUPLICATE PATTERN-KILL MEASUREMENT
+======================================================================
+
+v18 still measures:
+
+  RUNNER_PATTERN_KILL_SITES
+
+twice.
+
+Both expect zero, so this does not by itself create a false safety PASS, but it
+creates duplicate evidence keys and violates the prior "one authoritative
+signal-surface declaration" cleanup.
+
+Remove the duplicate.
+
+Retain exactly one authoritative:
+
+  RUNNER_PATTERN_KILL_SITES=0
+
+======================================================================
+PATCH SCOPE AUTHORIZED
+======================================================================
+
+AUTHORIZED PATCH ONLY:
+
+  1. independently prove root LIVE_VERIFIED prerequisites:
+       root starttime match
+       root baseline signature match
+       role->PID map identity;
+  2. require exactly one DESC_SIGS source definition and gate the negative
+     control;
+  3. repair accepted-prior and slice/global accounting labels;
+  4. remove duplicate RUNNER_PATTERN_KILL_SITES measurement;
+  5. update evidence labels required by those corrections.
+
+Retain:
+
+  P5 six predicates + OW_VERDICT gating
+  descendant mirror starttime proof
+  exact PPID cleanup revalidation
+  pre-TERM P5 revalidation
+  one disclosed direct TERM site
+  exact-kill probe gating
+  A/I prior-only execution scope
+  D01 only fresh executable D case
+  D02/D03/D04/D06 BLOCKED_REACHABILITY
+  D05 BLOCKED_CERTIFICATION_CONTRACT
+  no launcher/start_all/SP01/canonical mutation
+  RUNNER_EXIT-before-pack
+
+NOT AUTHORIZED:
+
+  D01 host execution
+  automatic run
+  D02-D06 implementation
+  new temporal seam
+  SP01 repurposing
+  S/C/T work
+  full self-lineage work
+  launcher/restart
+  broadcast
+  capital
+
+======================================================================
+REQUIRED RETURN
+======================================================================
+
+Return revised runner:
+
+  RUNNER_FILENAME
+  RUNNER_SHA256
+  RUNNER_BYTES
+  wc -l
+  bash -n
+
+D01 root verifier:
+
+  D01_VERIFIER_ROOT_STARTTIME_MATCH=YES
+  D01_VERIFIER_ROOT_BASELINE_SIG_MATCH=YES
+  D01_VERIFIER_ROOT_ROLE_PID_MATCH=YES
+
+DESC_SIGS:
+
+  D01_EXECUTOR_DESC_SIG_DEFINITION_MATCH_COUNT=1
+  D01_VERIFIER_DESC_SIG_EXACT_SOURCE_PREDICATE=YES
+  D01_VERIFIER_DESC_SIG_MATCH=YES
+  D01_DESC_SIG_NEGATIVE_CONTROL=NO_MATCH
+  D01_DESC_SIG_NEGATIVE_CONTROL_GATED=YES
+
+Accounting:
+
+  A_CASES_ACCEPTED_PRIOR=4
+  I_CASES_ACCEPTED_PRIOR=3
+  CASES_ACCEPTED_PRIOR_TOTAL=7
+
+  I_CASES_BLOCKED_REACHABILITY=2
+  I_CASES_BLOCKED_CERTIFICATION_CONTRACT=1
+  I_CASES_BLOCKED_TOTAL=3
+
+  D_CASES_BLOCKED_REACHABILITY=4
+  D_CASES_BLOCKED_CERTIFICATION_CONTRACT=1
+  D_CASES_BLOCKED_TOTAL=5
+
+  CASES_BLOCKED_REACHABILITY_TOTAL=6
+  CASES_BLOCKED_CERTIFICATION_CONTRACT_TOTAL=2
+  CASES_BLOCKED_TOTAL=8
+
+Safety:
+
+  REAL_KILL_CALL_SITES=1
+  RUNNER_PATTERN_KILL_SITES=0
+  RUNNER_PATTERN_KILL_SITES_KEY_COUNT=1
+  D01 exact-kill probe remains fail-closed
+
+After exact-byte Boss review:
+  Boss decides whether ONE bounded D01 offline host execution is authorized.
+
+======================================================================
+LOCKS
+======================================================================
+
+v18 37feacf9...                 STATIC REVIEWED / NOT RUN-AUTHORIZED
+A01-A04                         ACCEPTED / CLOSED
+I01-I03                         ACCEPTED / CLOSED
+I04/I05                         BLOCKED_REACHABILITY
+I06                             BLOCKED_CERTIFICATION_CONTRACT
+
+D01                             BUILT / STATIC PATCH REQUIRED
+D02                             BLOCKED_REACHABILITY
+D03                             BLOCKED_REACHABILITY
+D04                             BLOCKED_REACHABILITY
+D05                             BLOCKED_CERTIFICATION_CONTRACT
+D06                             BLOCKED_REACHABILITY
+
+D host execution                NOT AUTHORIZED
+SP01                            NOT AUTHORIZED
+new temporal mutation seam      NOT AUTHORIZED
+S01-S08                         NOT AUTHORIZED
+C01-C08                         NOT AUTHORIZED
+T01-T04                         NOT AUTHORIZED
+full self-lineage               NOT AUTHORIZED
+T05-T10                         EXECUTION-LOCKED
+executor 583cfdbc...            NOT CERTIFIED
+launcher                        NOT AUTHORIZED
+restart                         NOT AUTHORIZED
+broadcast                       LOCKED
+capital                         UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

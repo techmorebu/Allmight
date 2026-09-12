@@ -1,0 +1,265 @@
+BOSS M2E-017G R80CA — S07 PERMANENT DISPOSITION / NO EXECUTOR-SEAM MODIFICATION
+
+STATUS
+======
+
+Source-grounded pre-launch seam analysis accepted.
+
+Controlling executor:
+  SHA256
+    583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+
+======================================================================
+1. SOURCE FINDING ACCEPTED
+======================================================================
+
+The exact executor transition is:
+
+  post-teardown proof completes
+      ->
+  control-file transition
+      ->
+  canonical start
+
+The only insertion point satisfying BOTH:
+
+  a) after S07 teardown/post-teardown evidence is durable
+  b) before any control-file transition or launcher invocation
+
+is between the last post-teardown proof gate and:
+
+  -- control-file transition --
+
+No currently certified test capability can terminate execution at that point.
+
+Accepted:
+
+  EXISTING_PRE_LAUNCH_TEST_STOP_SEAM = NONE
+
+The existing hooks and synthetic/test controls do not provide a terminal
+control-flow boundary there.
+
+======================================================================
+2. EXECUTOR MODIFICATION IS NOT AUTHORIZED
+======================================================================
+
+Adding a new seam would create new executor bytes.
+
+That would create a new executor identity and reopen certification against a
+different SHA.
+
+Therefore:
+
+  NEW_PRE_LAUNCH_SEAM_PATCH = NOT AUTHORIZED
+
+Reason:
+
+  S07's behavioral property is already demonstrated and preserved.
+  The marginal value of modifying the certified target solely to earn a terminal
+  S07 PASS is not worth invalidating exact-byte certification lineage.
+
+======================================================================
+3. EFFECT OF CHANGING EXECUTOR BYTES
+======================================================================
+
+If the executor is modified later:
+
+  - executor SHA changes;
+  - certification authority no longer applies to 583cfdbc... as the running
+    candidate;
+  - A/I/D/S results against 583cfdbc... remain valid HISTORICAL EVIDENCE;
+  - they do NOT automatically transfer as certification credit to the new SHA.
+
+A new candidate may be able to reuse prior evidence for design justification,
+but behavioral certification credit must be re-established under whatever
+bounded regression doctrine is authorized for the new exact bytes.
+
+Therefore the current exact-byte lineage should be preserved unless a future
+change has materially greater value than the recertification cost.
+
+======================================================================
+4. S07 FINAL DISPOSITION
+======================================================================
+
+S07 is now permanently dispositioned for the 583cfdbc... certification arc as:
+
+  S07
+    STATUS
+      BLOCKED_LAUNCHER_BOUNDARY
+
+    TEARDOWN_BEHAVIOR_DEMONSTRATED
+      YES
+
+    TERMINATED_BY_US_BEHAVIOR_OBSERVED
+      YES
+
+    POST_TEARDOWN_CLEAN
+      YES
+
+    CERTIFICATION_PASS_CREDIT
+      NO
+
+    RERUN_REQUIRED_IN_CURRENT_OFFLINE_ARC
+      NO
+
+    FAILURE_INTERPRETATION
+      NOT_A_BEHAVIORAL_REFUTATION
+
+The historical runner result remains unchanged.
+
+Do not rewrite the original evidence package.
+
+======================================================================
+5. NO MORE S07 OFFLINE WORK
+======================================================================
+
+The current offline/non-launcher S-slice is closed with S07 dispositioned as a
+boundary block.
+
+Do not:
+
+  patch S07 predicates
+  extend timeout
+  add an executor seam
+  rerun S07
+  attempt to force a terminal RESULT before launcher
+  reinterpret the accidental launcher run as T05-T10 credit
+
+The evidence already answers the S07 behavioral question.
+
+======================================================================
+6. T-WINDOW RELATIONSHIP
+======================================================================
+
+The launcher boundary discovered by S07 is deferred to the separately governed
+T-window.
+
+When T05-T10 are eventually opened, that work must define its own bounded
+launcher authority.
+
+At that time, Boss may choose among:
+
+  - a dedicated external launcher harness,
+  - a test-only executor seam,
+  - another source-grounded bounded mechanism,
+
+but that decision belongs to the T-window design and must be evaluated together
+with exact-byte certification consequences.
+
+No T-window design is authorized by this ruling.
+
+======================================================================
+7. CURRENT CERTIFICATION INTERPRETATION
+======================================================================
+
+For executor 583cfdbc...:
+
+  S01-S06
+    retain previously accepted dispositions
+
+  S07
+    BLOCKED_LAUNCHER_BOUNDARY
+    teardown behavior demonstrated
+    no PASS credit
+    no further offline rerun
+
+  S08
+    retains previously accepted disposition
+
+The accidental fixture launcher crossing earns:
+
+  T05-T10 CREDIT = NONE
+
+Executor certification state:
+
+  NOT_CERTIFIED
+
+======================================================================
+8. GOVERNANCE RATIONALE
+======================================================================
+
+The certification target is exact bytes.
+
+A test seam is not free instrumentation when it changes those bytes.
+
+The project should not spend an entire exact-byte recertification cycle merely
+to turn a well-understood boundary-blocked S07 into a cosmetic PASS.
+
+The stronger governance outcome is:
+
+  preserve exact executor identity
+  preserve historical evidence
+  record S07's demonstrated behavior
+  keep launcher tests in their own bounded authority window
+
+======================================================================
+9. NEXT AUTHORIZED STEP
+======================================================================
+
+S07 work is CLOSED for the current offline arc.
+
+Proceed only to the next still-authorized certification work item under the
+existing matrix and locks.
+
+If the next desired work item would touch:
+
+  T05-T10
+  launcher
+  executor bytes
+  SP01
+  restart
+  canonical runtime
+
+stop and return for a separate Boss ruling.
+
+======================================================================
+LOCKS
+======================================================================
+
+executor 583cfdbc...
+  PRESERVE EXACT BYTES
+  NOT CERTIFIED
+
+S07 rerun
+  NOT AUTHORIZED
+  NOT REQUIRED IN CURRENT OFFLINE ARC
+
+new pre-launch executor seam
+  NOT AUTHORIZED
+
+timeout extension
+  NOT AUTHORIZED
+
+T05-T10
+  EXECUTION-LOCKED
+
+launcher
+  NOT AUTHORIZED
+
+SP01
+  NOT AUTHORIZED
+
+restart
+  NOT AUTHORIZED
+
+broadcast
+  LOCKED
+
+capital
+  UNTOUCHED
+
+evidence package
+  PRESERVE UNCHANGED
+
+======================================================================
+CORNELIUS
+======================================================================
+
+Nothing to run for S07.
+
+Do not modify executor 583cfdbc...
+Do not rerun S07.
+Do not extend the timeout.
+Do not invoke the launcher.
+
+S07 is closed as BLOCKED_LAUNCHER_BOUNDARY with teardown behavior demonstrated.

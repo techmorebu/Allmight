@@ -1,0 +1,169 @@
+BOSS M2E-017G R80AD — A-SLICE DIAGNOSTIC PATCH SCOPE AUTHORIZED
+
+SOURCE DIAGNOSIS ACCEPTED
+
+Exact target executor:
+  SHA256 583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+
+Accepted source-grounded findings:
+
+  ROOT_MAP_ARTIFACT_DEFINED_IN_EXECUTOR   YES
+  ROOT_MAP_EXPECTED_PATH_OR_EQUIVALENT    ${OUTDIR}/BASELINE_${RUN_UTC}.tsv
+  EXECUTOR_EVIDENCE_KEY                   BASELINE_MAP
+  ROOT_MAP_CREATION_GATE                  G2 — BASELINE EVALUATION
+  EXECUTOR_EVIDENCE_PRESENT_AT_A_STAGE    YES
+
+The executor does not write ROOT_MAP_*.tsv.
+
+The prior A-slice runner searched for a filename carried forward from a
+different artifact family. Therefore:
+
+  EXECUTOR_DEFECT                         NO
+  RUNNER_LOCATOR_ASSUMPTION_DEFECT        YES
+  DEFECT_CLASS                            BUG-009 verifier/source-model drift
+
+No executor change is authorized.
+
+======================================================================
+AUTHORIZED PATCH SCOPE
+======================================================================
+
+CPT may patch ONLY the A-slice runner in the following bounded ways.
+
+1. BASELINE MAP LOCATOR
+
+Replace the invented ROOT_MAP_*.tsv assumption with source-grounded lookup.
+
+Preferred resolution order:
+
+  a. read executor evidence key BASELINE_MAP when available;
+  b. otherwise locate BASELINE_*.tsv inside that case's executor evidence dir;
+  c. if neither resolves, preserve a complete case-local inventory and BLOCK.
+
+The verifier source must be the actual BASELINE map emitted by the exact
+executor.
+
+Do not synthesize an equivalent file.
+Do not rename executor output.
+Do not change executor behavior.
+
+2. OVERLAY A EXPECTED COUNT
+
+For exact executor SHA 583cfdbc...:
+
+  fixed expected SB_LOCKS_INCOMPLETE occurrence count = 1
+
+Required form:
+
+  EXPECTED_LOCK_GATE_COUNT=1
+  OBSERVED_LOCK_GATE_COUNT=<measured from exact executor bytes>
+
+Do not derive expected and observed from the same measurement.
+
+3. DIAGNOSTIC PRESERVATION BEFORE FIXTURE CLEANUP
+
+Before deleting /home/allmight/r80_a_fixture, preserve into runner OUT for
+A01-A04 at minimum:
+
+  exec.log
+  executor evidence directory inventory
+  BASELINE map / BASELINE_MAP target
+  any other executor TSVs
+  fixture repo HEAD
+  fixture pidfile
+  fixture session file
+  synthetic baseline map
+  A_RC
+  RESULT
+  STOP_GATE
+  STOP_REASON when present
+  file inventory with path + SHA256 where practical
+
+The evidence package must retain enough information to diagnose a future BLOCK
+without another run.
+
+4. GIT SAFETY PROBE REPAIR
+
+Repair the literal-variable matching bug for:
+
+  $W/repo
+  $CANON
+
+The verifier must avoid shell/ERE escaping ambiguity.
+
+Required known-positive controls:
+
+  GIT_FIXTURE_CLONE_SITES            = 1
+  GIT_FIXTURE_CLONE_CHECKOUT_SITES   = 1
+
+Required canonical negatives:
+
+  GIT_CANONICAL_STATE_CHANGE_SITES   = 0
+  GIT_CANONICAL_MUTATION_CALL_SITES  = 0
+
+The positive and negative checks must use the same probe family.
+
+Print or preserve the matching source lines so zero claims are auditable.
+
+======================================================================
+UNCHANGED LOCKS
+======================================================================
+
+A01-A04 rerun                           NOT AUTHORIZED
+I/D/S/C/T fixture implementation       NOT AUTHORIZED
+full self-lineage regression           NOT AUTHORIZED
+T05-T10                                EXECUTION-LOCKED
+SP01                                   NOT AUTHORIZED
+executor 583cfdbc...                   NOT CERTIFIED
+launcher                               NOT AUTHORIZED
+restart                                NOT AUTHORIZED
+canonical repo mutation                NOT AUTHORIZED
+broadcast                              LOCKED
+capital                                UNTOUCHED
+
+======================================================================
+REQUIRED RETURN
+======================================================================
+
+Return corrected runner with:
+
+  RUNNER_FILENAME
+  RUNNER_SHA256
+  RUNNER_BYTES
+  LINE_COUNT
+  bash -n
+
+Static/source evidence:
+
+  ROOT_MAP_ARTIFACT_DEFINED_IN_EXECUTOR=YES
+  BASELINE_MAP_LOCATOR_USES_EVIDENCE_KEY=YES|NO
+  BASELINE_MAP_LOCATOR_USES_BASELINE_GLOB=YES|NO
+  ROOT_MAP_GLOB_REFERENCES_REMAINING=0
+
+  OVERLAY_A_LOCK_GATE_EXPECTED=1
+  OVERLAY_A_LOCK_GATE_OBSERVED_STATIC=1
+
+  A_EXEC_LOG_PRESERVED=YES
+  A_EVIDENCE_INVENTORY_PRESERVED=YES
+  A_BASELINE_MAP_PRESERVED=YES
+  A_RC_RESULT_STOP_FIELDS_PRESERVED=YES
+
+  GIT_FIXTURE_CLONE_SITES=1
+  GIT_FIXTURE_CLONE_CHECKOUT_SITES=1
+  GIT_CANONICAL_STATE_CHANGE_SITES=0
+  GIT_CANONICAL_MUTATION_CALL_SITES=0
+  GIT_PROBE_KNOWN_POSITIVE_CONTROL=PASS
+
+Scope state:
+
+  A_CASES_IMPLEMENTED=4
+  REMAINING_NOT_IMPLEMENTED=32
+  SELF_LINEAGE_REGRESSION=NOT_IMPLEMENTED
+  T05-T10=EXECUTION_LOCKED
+
+After exact-byte Boss review of that runner, Boss will decide whether one
+bounded A01-A04 rerun is authorized.
+
+CORNELIUS
+
+Nothing to run.

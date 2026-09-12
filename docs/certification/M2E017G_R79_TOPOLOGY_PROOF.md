@@ -64,3 +64,18 @@ launcher behaviour · executor certification.
 `FIXTURE_CLEANUP_RESULT CLEANED` · both fixture PIDs absent · clone and tree removed ·
 canonical HEAD and all three control hashes unchanged · baseline 8/8 absent ·
 governed role hits 0 · all seven artifact SHAs unchanged.
+
+
+---
+
+## PRESERVATION OVERLAY 2 — 2026-09-12T00:53:58Z
+**Authority:** Boss R80CB / R80CC · **Transaction:** `M2E017G-PRESV-002`
+**Baseline HEAD:** `4133fd9dd5b84565c3903e85ef04c6d6325aa2f4`
+
+Content above is preserved verbatim; where superseded, this section controls.
+
+### Standing
+
+R79 remains PASS and consumed; nothing in the A/I/D/S work altered it. It proved
+topology only — not teardown, not TERM delivery, not SP01, not restart, not
+launcher behaviour, not executor certification.

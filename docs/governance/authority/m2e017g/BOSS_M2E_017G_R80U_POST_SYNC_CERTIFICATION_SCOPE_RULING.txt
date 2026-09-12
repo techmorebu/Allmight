@@ -1,0 +1,278 @@
+BOSS M2E-017G R80U — POST-SYNC CERTIFICATION SCOPE RULING
+
+STATUS
+
+Post-commit synchronization is ACCEPTED.
+
+STATE_DIVERGENCE=NO
+
+Canonical repo:
+  HEAD        4133fd9dd5b84565c3903e85ef04c6d6325aa2f4
+  origin/main 4133fd9dd5b84565c3903e85ef04c6d6325aa2f4
+  branch      main
+
+Current executor:
+  SHA256
+    583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+
+Executor state:
+  NOT CERTIFIED
+
+======================================================================
+RULING 1 — T05-T10
+======================================================================
+
+T05-T10 are NOT to be treated as ordinary offline fixture cases for certification
+credit.
+
+They remain:
+
+  EXECUTION_DEPENDENCY=LAUNCHER
+  CURRENT_EXECUTION_AUTHORITY=LOCKED
+
+Reason:
+
+  T05-T10 certify start/launcher transition behavior itself:
+
+    T05 canonical start attempted exactly once
+    T06 canonical start failure -> no retry
+    T07 post-start not exact eight roles -> STOP/no retry
+    T08 launcher SHA drift at proof -> STOP/no retry
+    T09 SHADOW_POSTDATES_COMMIT != YES -> STOP/no retry
+    T10 exact post-start proof -> COMPLETE
+
+A synthetic or stubbed launcher may be useful for runner/unit plumbing, but it
+cannot satisfy the certification claim that the actual launcher/start transition
+behaves correctly.
+
+Therefore:
+
+  T05-T10 must exist in the runner/matrix definition.
+  Their expected outcomes and verifier logic may be built now.
+  Their execution must remain LOCKED.
+  They receive no R80 certification PASS credit until a separate Boss-authorized
+  bounded launcher certification window.
+
+Do not silently substitute a fake launcher and label those cases certified.
+
+======================================================================
+RULING 2 — CURRENT OFFLINE EXECUTABLE MATRIX
+======================================================================
+
+The current offline behavioral certification execution scope is:
+
+  A01-A04   4
+  I01-I06   6
+  D01-D06   6
+  S01-S08   8
+  C01-C08   8
+  T01-T04   4
+
+Total:
+  36 numbered cases
+
+Plus mandatory non-numbered requirements:
+
+  SELF-LINEAGE / PROCESS-SELECTION REGRESSION
+  R40 COMMAND-POSITION AUDIT
+  R40 VERIFIER-CONSISTENCY AUDIT
+  synthetic-baseline / TEST_ADAPTER change-specific overlay
+  PID-0/1 executor-ancestor change-specific overlay
+
+The runner must still enumerate all 42 cases so the six locked cases cannot be
+forgotten.
+
+Required reporting:
+
+  MATRIX_DEFINED_CASE_COUNT=42
+  MATRIX_CURRENT_EXECUTABLE_CASE_COUNT=36
+  MATRIX_LOCKED_CASE_COUNT=6
+  LOCKED_CASES=T05,T06,T07,T08,T09,T10
+
+A successful 36-case run must NOT print or imply:
+  FULL_R80_CERTIFICATION=PASS
+
+Instead use a bounded result such as:
+  R80_OFFLINE_NONLAUNCHER_MATRIX=PASS
+
+Executor remains:
+  NOT CERTIFIED
+
+until all required certification scope, including later T05-T10, is dispositioned.
+
+======================================================================
+RULING 3 — INCIDENT 022
+======================================================================
+
+INCIDENT 022 remains:
+
+  OPEN
+  STATE_CONFLICT=YES
+  RESTART-BLOCKING
+
+It does NOT block:
+
+  building the R80 runner
+  static audit
+  offline fixture execution
+  A/I/D/S/C cases
+  T01-T04
+  self-lineage regression
+  R40 audits
+  the two change-specific overlays
+
+It DOES block any real restart/start/launcher-dependent certification window,
+including T05-T10 host execution, until Boss resolves the incident state conflict
+or explicitly authorizes a narrowly isolated exception.
+
+No such exception is authorized now.
+
+Before any T05-T10 execution authorization, INCIDENT 022 requires targeted
+source/commit evidence sufficient to determine whether the accepted patch was
+actually applied/deployed and whether restart remains unsafe.
+
+======================================================================
+RULING 4 — SP01
+======================================================================
+
+SP01 remains separately NOT AUTHORIZED.
+
+Do not fold SP01 execution into the R80 offline 36-case run.
+
+The R80 runner may preserve references to SP01/SP05 governance and may contain
+non-executing declarations/checks needed to keep the runner structurally complete,
+but it must not invoke SP01 or claim SP01 certification credit.
+
+======================================================================
+NEXT AUTHORIZED STEP
+======================================================================
+
+CPT is AUTHORIZED to BUILD the R80 behavioral certification runner only.
+
+Build requirements:
+
+1. Target exact executor SHA:
+     583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+
+2. Define all 42 numbered R28 cases.
+
+3. Mark T05-T10 as execution-locked.
+
+4. Prepare executable offline coverage for exactly 36 numbered cases:
+     A01-A04
+     I01-I06
+     D01-D06
+     S01-S08
+     C01-C08
+     T01-T04
+
+5. Include:
+     SELF-LINEAGE / PROCESS-SELECTION REGRESSION
+     R40 command-position audit
+     R40 verifier-consistency audit
+     synthetic-baseline / TEST_ADAPTER overlay
+     PID-0/1 executor-ancestor overlay
+
+6. No real launcher invocation.
+
+7. No restart.
+
+8. No SP01 execution.
+
+9. No real governed-process signaling.
+
+10. No canonical repo mutation.
+
+11. No git add/commit/push.
+
+12. Runner must fail closed if:
+      executor SHA differs
+      required authority files are absent/mismatched
+      defined case count != 42
+      executable case count != 36
+      locked case set != T05-T10
+      any locked case is accidentally selected for execution
+
+13. Every executed case must emit:
+      case ID
+      test input/fixture
+      expected result
+      actual result
+      executor authoritative evidence
+      independent verifier result
+      verifier/executor consistency
+      process exit
+      mutation/signal/start-attempt counters where relevant
+
+14. Return runner for exact-byte Boss review BEFORE host execution.
+
+======================================================================
+REQUIRED BUILD RETURN
+======================================================================
+
+Return:
+
+  RUNNER_FILENAME
+  RUNNER_SHA256
+  RUNNER_BYTES
+  LINE_COUNT
+  bash -n / syntax result
+
+  MATRIX_DEFINED_CASE_COUNT
+  MATRIX_EXECUTABLE_CASE_COUNT
+  MATRIX_LOCKED_CASE_COUNT
+  LOCKED_CASES
+
+  REAL_LAUNCHER_CALL_SITES
+  START_ALL_CALL_SITES
+  REAL_KILL_CALL_SITES
+  SP01_CALL_SITES
+  GIT_MUTATION_CALL_SITES
+
+  SELF_LINEAGE_SECTION_PRESENT=YES
+  R40_COMMAND_POSITION_AUDIT_PRESENT=YES
+  R40_VERIFIER_CONSISTENCY_AUDIT_PRESENT=YES
+  SYNTHETIC_BASELINE_OVERLAY_PRESENT=YES
+  PID01_ANCESTOR_OVERLAY_PRESENT=YES
+
+No host execution yet.
+
+======================================================================
+DEPENDABOT DRIFT
+======================================================================
+
+Observed:
+  prior checkpoint snapshot 124
+  current GitHub push report 125
+  delta +1
+  critical count remains 1
+
+State:
+  PARKED
+  non-blocking for current R80 runner-build slice
+
+Record during the next normal ledger/checkpoint mutation.
+Do not mutate canonical docs solely for this count.
+
+======================================================================
+LOCKS
+======================================================================
+
+post-commit synchronization             ACCEPTED
+STATE_DIVERGENCE                        NO
+R80 runner build                        AUTHORIZED
+R80 runner host execution               NOT AUTHORIZED
+offline executable numbered cases       36
+T05-T10                                 DEFINED / EXECUTION-LOCKED
+INCIDENT 022                            RESTART-BLOCKING
+SP01                                    NOT AUTHORIZED
+executor 583cfdbc...                     NOT CERTIFIED
+launcher                                NOT AUTHORIZED
+restart                                 NOT AUTHORIZED
+broadcast                               LOCKED
+capital                                 UNTOUCHED
+
+CORNELIUS
+
+Nothing to run yet.
+Wait for the built runner, Boss byte review, and a separate execution authorization.

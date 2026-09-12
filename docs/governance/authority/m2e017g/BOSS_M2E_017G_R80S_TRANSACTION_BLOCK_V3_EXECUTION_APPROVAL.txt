@@ -1,0 +1,217 @@
+BOSS M2E-017G R80S — R80P TRANSACTION BLOCK V3 APPROVED FOR EXECUTION
+
+FILE REVIEWED
+
+  R80P_BLOCK_v3.sh
+
+Observed SHA256:
+
+  204d094420b9ba7baf2f62ac2bce30cae54984e366757e2d1064e6bdaf1452b7
+
+Observed:
+
+  LINE_COUNT=233
+  bash -n=PASS
+
+STATUS
+
+  R80Q blockers 1, 2, and 3 are CLOSED.
+  R80R publication-identity blocker is CLOSED.
+
+  R80P_BLOCK_v3.sh is APPROVED FOR ONE EXECUTION by Cornelius.
+
+======================================================================
+INDEPENDENT BYTE REVIEW
+======================================================================
+
+Boss verified the uploaded bytes directly.
+
+Pre-mutation identity gates now prove:
+
+  HEAD == 923dd5041e645c22ad025a3f8335a03880f89b99
+  origin/main == 923dd5041e645c22ad025a3f8335a03880f89b99
+  PREEXISTING_STAGED_PATH_COUNT == 0
+  CURRENT_BRANCH == main
+  local ref main == expected HEAD
+  origin URL is explicitly allowlisted to techmorebu/Allmight
+  publication target == raw-verification target
+
+These gates execute before final overlay construction and before G7 canonical
+writes.
+
+The block also retains:
+
+  package selection by SHA, not filename
+  package manifest verification
+  exact addendum SHA/byte anchor
+  final overlay reconstruction
+  base/overlay merge prefix+suffix proof
+  exact 29-path authorized set
+  duplicate-path rejection
+  docs-only/.md|.txt boundary
+  per-file temporary sibling + SHA verification + atomic rename
+  post-write hash verification
+  explicit-path staging only
+  exact staged-set equality
+  exact committed-set equality before push
+  one documentation-only commit
+  one non-force push
+  no push retry path
+  pinned raw GitHub verification at exact commit
+  raw checkpoint SHA equality
+  exit 0 only on complete GOV-CHK-001 PASS
+  exit 12 on post-push verification failure
+
+======================================================================
+SURFACE AUDIT
+======================================================================
+
+Observed in uploaded block:
+
+  executable git push call sites     1
+  executable git commit call sites   1
+  explicit git add loop              1
+  git add -A / git add . / git add docs
+                                      0 executable uses
+  git reset                          0
+  git checkout                       0
+  git fetch                          0
+  git pull                           0
+  kill                               0
+  sudo                               0
+  rm -rf                             0
+  start_all                          0
+
+The additional textual `git push` occurrence is explanatory comment text, not an
+executable call.
+
+======================================================================
+AUDIT DISCLOSURE
+======================================================================
+
+The earlier ORDER_CORRECT=NO result is accepted as a verifier/audit defect, not a
+transaction-block defect.
+
+Cause:
+
+  the audit regex assumed git add began the line, while the actual command appears
+  after `while ...; do` on the same line.
+
+Disposition:
+
+  BUG-009-class recurrence / verifier precision failure.
+  It does not alter R80P_BLOCK_v3.sh approval.
+
+Do not modify the transaction block to accommodate the faulty audit.
+
+======================================================================
+EXECUTION AUTHORIZATION
+======================================================================
+
+Cornelius is authorized to run EXACTLY the hash-verified:
+
+  R80P_BLOCK_v3.sh
+  SHA256:
+    204d094420b9ba7baf2f62ac2bce30cae54984e366757e2d1064e6bdaf1452b7
+
+ONE TIME.
+
+Before running, verify the local downloaded file SHA equals the value above.
+
+Do not substitute an earlier version:
+
+  e55ff3d8...    SUPERSEDED
+  b027ad1c...    SUPERSEDED
+
+Run only the approved v3 bytes.
+
+======================================================================
+ON SUCCESS
+======================================================================
+
+A successful run must end with:
+
+  raw GitHub verification         PASS
+  POST_PUSH_REMOTE_VERIFICATION   PASS
+
+and process exit status 0.
+
+Return the ENTIRE terminal output to Boss.
+
+Do nothing else after the block finishes.
+
+======================================================================
+ON ANY PRE-PUSH STOP
+======================================================================
+
+If the block exits before push:
+
+  do not improvise
+  do not repair
+  do not retry
+  do not manually stage/commit/push
+
+Return the entire output.
+
+Some canonical documentation files may already have been atomically replaced in
+the working tree if the failure occurs after G7. That state is evidence and must
+not be manually rolled back.
+
+======================================================================
+ON POST-PUSH VERIFICATION FAILURE
+======================================================================
+
+If the block reports:
+
+  POST_PUSH_REMOTE_VERIFICATION=FAIL
+
+or exits 12:
+
+  the commit may already be public/remote.
+
+Do NOT:
+
+  retry push
+  revert
+  reset
+  amend
+  force push
+  run a second transaction
+
+Return the entire output for Boss disposition.
+
+======================================================================
+PUBLICATION BOUNDARY
+======================================================================
+
+This authorization knowingly permits publication of exactly the governed
+documentation set to:
+
+  github.com/techmorebu/Allmight
+  branch main
+
+subject to every fail-closed identity, path-set, and hash gate in the approved
+block.
+
+No path outside the exact 29-path documentation set is authorized.
+
+======================================================================
+LOCKS
+======================================================================
+
+R80P_BLOCK_v3 204d0944...              APPROVED — ONE EXECUTION
+canonical documentation transaction   AUTHORIZED VIA APPROVED BLOCK ONLY
+documentation commit                  AUTHORIZED VIA APPROVED BLOCK ONLY
+single push                            AUTHORIZED VIA APPROVED BLOCK ONLY
+raw GitHub verification               REQUIRED
+manual repair/retry                    NOT AUTHORIZED
+executor 583cfdbc...                   NOT CERTIFIED
+launcher                               NOT AUTHORIZED
+SP01                                   NOT AUTHORIZED
+restart                                NOT AUTHORIZED
+broadcast                              LOCKED
+capital                                UNTOUCHED
+
+CORNELIUS
+
+Verify the SHA of R80P_BLOCK_v3.sh, run it once, return the entire output, and STOP.

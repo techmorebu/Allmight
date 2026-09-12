@@ -1,0 +1,325 @@
+BOSS M2E-017G R80AC — FIRST A-SLICE RUN EVIDENCE RULING / DIAGNOSTIC PATCH REQUIRED
+
+EVIDENCE REVIEWED
+
+  M2E017G_R80_EVIDENCE_20260910T214551Z.zip
+
+Embedded runner:
+  SHA256  3afb29545fec33ac94b72c0b1ff1a609dfe85ecc162a3a2f2b95818168c1baa8
+
+RUN DISPOSITION
+
+  R80_OFFLINE_NONLAUNCHER_MATRIX = INCOMPLETE
+  shell exit                      = 13
+  A01-A04 certification credit    = NONE
+  executor 583cfdbc...            = NOT CERTIFIED
+
+The run is accepted as a valid fail-closed diagnostic run.
+
+No rerun is authorized yet.
+
+======================================================================
+WHAT THE EVIDENCE ACTUALLY PROVES
+======================================================================
+
+The following held:
+
+  registry                         42 / 36 / 6
+  T05-T10 selection attempts       0
+  canonical HEAD                   4133fd9...
+  executor SHA                     583cfdbc...
+  fixture executor HEAD            923dd504... for A01-A04
+  G1 fixture HEAD match            YES for A01-A04
+  fixture PID count                8 each
+  fixture PID uniqueness           PASS each
+  per-role PID admission           YES each
+  full runner ancestor chain       YES
+  R40 command-position audit       PASS
+  R40 verifier-consistency audit   PASS
+  PID0/1 ancestor overlay          PASS
+  partial self-lineage evidence    PASS
+  safety surface                   PASS
+  locked case attempts             0
+
+All four A cases were recorded NOT_IMPLEMENTED/BLOCKED because the independent
+ROOT_MAP verifier source was unavailable.
+
+That is correct fail-closed behavior.
+
+======================================================================
+IMPORTANT DIAGNOSTIC CORRECTION
+======================================================================
+
+Do NOT state that "no executor evidence file was produced at all."
+
+The first-run package proves that executor evidence WAS available.
+
+For A01-A03, the code reaches the ROOT_MAP check only after successfully reading
+BASELINE_LIVE_COUNT / BASELINE_DEAD_COUNT. Otherwise it would have taken the
+earlier:
+
+  "executor emitted no baseline classification evidence"
+
+branch.
+
+For A04, executor evidence is even more explicit:
+
+  ZERO_LIVE_CLEAN_START_REQUIRED marker count = 2
+  A_A04_MISSING_BOUNDARY_FIELDS = NONE
+  pidfile PRE == POST
+  session PRE == POST
+
+Therefore the correct finding is:
+
+  EXECUTOR_EVIDENCE_PRESENT = YES
+  ROOT_MAP_INDEPENDENT_ARTIFACT_LOCATED = NO
+
+The stop/gate location is still not proven because the runner failed to preserve
+the executor log and per-case evidence inventory before deleting fixture worlds.
+
+Do not infer the stopping gate yet.
+
+======================================================================
+DEFECT 1 — OVERLAY A LOCK-GATE EXPECTATION WRONG
+======================================================================
+
+Observed on exact executor identity:
+
+  OVERLAY_A_SIX_LOCK_GATE_PRESENT  got=1 want=2
+
+The other Overlay A predicates passed.
+
+This is a runner verifier expected-value defect, not evidence of executor drift.
+
+REQUIRED CORRECTION
+
+For the exact certified target executor SHA 583cfdbc..., establish the correct
+fixed expected count from exact executor bytes and set that as the authority
+constant.
+
+Current machine evidence says the exact count is 1.
+
+Do NOT compute both "got" and "expected" dynamically from the same executor file.
+That would be tautological.
+
+Required model:
+
+  target executor SHA == 583cfdbc...
+  fixed expected SB_LOCKS_INCOMPLETE occurrence count == 1
+  observed count from target executor bytes == 1
+
+Add a negative/perturbation control if useful, but do not derive the expected
+value from the observation under test.
+
+======================================================================
+DEFECT 2 — DIAGNOSTIC EVIDENCE IS DELETED BEFORE PACKAGING
+======================================================================
+
+The runner stores per-case:
+
+  exec.log
+  executor evidence directory
+  potential ROOT_MAP location
+
+inside /home/allmight/r80_a_fixture/<case>/...
+
+Then after A04 it executes:
+
+  rm -rf "$A_FXBASE"
+
+before pack().
+
+The first-run ZIP therefore contains only:
+  R80_EVIDENCE.tsv
+  R80_CASES.tsv
+  runner
+  code-only scan
+  manifest
+
+and not the executor logs or case-local evidence trees needed to diagnose why
+ROOT_MAP was not found.
+
+REQUIRED CORRECTION
+
+Before deleting each A fixture world, copy diagnostic evidence into the runner
+OUT directory.
+
+For each A01-A04 preserve at minimum:
+
+  A_<id>_exec.log
+  A_<id>_executor_evidence_inventory.txt
+  any executor TSV emitted
+  any ROOT_MAP-like files found anywhere under the fixture world
+  fixture repo HEAD
+  fixture pidfile
+  fixture session file
+  synthetic map
+  per-case file inventory with paths + SHA256 where practical
+
+Do not change the executor.
+Do not change the fixture semantics merely to make ROOT_MAP appear.
+
+The next run must allow Boss/CPT to determine whether:
+  - ROOT_MAP is emitted under another name/path;
+  - ROOT_MAP is not an artifact of this executor stage;
+  - executor stops before ROOT_MAP creation;
+  - the runner's locator assumption is wrong.
+
+Also preserve A_RC and raw RESULT/STOP_GATE/STOP_REASON fields when present.
+
+If no structured evidence directory is produced, preserve exec.log and report
+that fact explicitly.
+
+======================================================================
+DEFECT 3 — GIT CHECKOUT SAFETY PROBES FALSE-ZERO
+======================================================================
+
+First-run evidence reports:
+
+  GIT_FIXTURE_CLONE_SITES          1
+  GIT_FIXTURE_CLONE_CHECKOUT_SITES 0
+
+But the exact reviewed runner contains an executable command:
+
+  git -C "$W/repo" checkout --quiet --detach ...
+
+Therefore zero is false.
+
+Boss reproduced the cause from the archived runner bytes.
+
+The direct grep pattern is built in a double-quoted shell string with:
+
+  \"\$W/repo\"
+
+The shell consumes the backslash protecting `$W`; grep ERE then receives `$W`,
+where `$` is interpreted as the end-of-line anchor. The expression cannot match
+the intended literal shell variable reference.
+
+The analogous GIT_CANON_CHECKOUT probe uses the same risky construction around
+$CANON and must be repaired at the same time.
+
+This is BUG-009-class verifier imprecision.
+
+REQUIRED CORRECTION
+
+Use a verifier construction that mechanically matches literal source tokens
+without shell/ERE ambiguity.
+
+Preferred:
+  fixed-string or awk token/command-position logic over SCAN_SRC,
+  or a single-quoted ERE with a literal escaped dollar reaching grep intact.
+
+Required known-positive controls:
+
+  fixture clone site count      = 1
+  fixture checkout site count   = 1
+
+Required canonical negatives:
+
+  canonical checkout/reset/clean/fetch/pull sites = 0
+  canonical add/commit/push/reset/clean mutation sites = 0
+
+The verifier must show the actual matching source lines for both positive and
+negative-class audits.
+
+Do not allow a zero canonical result to pass unless the same probe family has a
+known-positive fixture checkout hit.
+
+======================================================================
+ROOT_MAP DIAGNOSIS — AUTHORIZED SCOPE
+======================================================================
+
+CPT may inspect the exact executor bytes and the first-run runner/evidence to
+determine the executor's actual evidence naming/path behavior.
+
+This is source/evidence diagnosis only.
+
+Authorized:
+  - exact-byte static inspection of executor 583cfdbc...
+  - identify where ROOT_MAP or equivalent baseline-root detail is written
+  - identify which gates precede its creation
+  - patch runner locator/preservation logic if the current assumption is wrong
+
+Not authorized:
+  - executor changes
+  - canonical repo changes
+  - I/D/S/C/T fixture implementation
+  - launcher/start_all/restart
+  - SP01 execution
+  - host rerun yet
+
+If the exact executor does NOT emit a separate ROOT_MAP artifact at the A-stage,
+CPT must report that fact rather than inventing one. Boss will then rule on an
+independent verifier source appropriate to the exact executor's real evidence
+surface.
+
+======================================================================
+REQUIRED RETURN
+======================================================================
+
+Return patched runner plus source diagnosis:
+
+  RUNNER_FILENAME
+  RUNNER_SHA256
+  RUNNER_BYTES
+  LINE_COUNT
+  bash -n
+
+  OVERLAY_A_LOCK_GATE_EXPECTED=1
+  OVERLAY_A_LOCK_GATE_OBSERVED_STATIC=<count>
+
+  GIT_FIXTURE_CLONE_SITES=1
+  GIT_FIXTURE_CLONE_CHECKOUT_SITES=1
+  GIT_CANONICAL_STATE_CHANGE_SITES=0
+  GIT_CANONICAL_MUTATION_CALL_SITES=0
+  GIT_PROBE_KNOWN_POSITIVE_CONTROL=PASS
+
+For executor evidence:
+  EXECUTOR_EVIDENCE_PRESENT_AT_A_STAGE=YES|NO
+  ROOT_MAP_ARTIFACT_DEFINED_IN_EXECUTOR=YES|NO
+  ROOT_MAP_EXPECTED_PATH_OR_EQUIVALENT=<source-grounded result>
+  ROOT_MAP_CREATION_GATE=<source-grounded result or UNKNOWN>
+
+For diagnostic preservation:
+  A_EXEC_LOG_PRESERVED=YES
+  A_EVIDENCE_INVENTORY_PRESERVED=YES
+  A_STRUCTURED_EVIDENCE_PRESERVED=YES when present
+  A_RC_PRESERVED=YES
+
+Scope:
+  A_CASES_IMPLEMENTED=4
+  REMAINING_NOT_IMPLEMENTED=32
+  SELF_LINEAGE_REGRESSION=NOT_IMPLEMENTED
+  T05-T10=EXECUTION_LOCKED
+
+======================================================================
+RERUN RULING
+======================================================================
+
+NO RERUN AUTHORIZED BY THIS DIRECTIVE.
+
+After Boss exact-byte review of the diagnostic patch and the executor evidence
+surface diagnosis, Boss will decide whether a second bounded A-slice run is
+needed and safe.
+
+======================================================================
+LOCKS
+======================================================================
+
+first A-slice run                       ACCEPTED AS FAIL-CLOSED DIAGNOSTIC
+A01-A04 certification credit           NONE
+A-slice diagnostic patch               AUTHORIZED
+A-slice rerun                           NOT AUTHORIZED
+I/D/S/C/T fixture implementation       NOT AUTHORIZED
+full self-lineage regression           NOT AUTHORIZED
+T05-T10                                EXECUTION-LOCKED
+SP01                                   NOT AUTHORIZED
+executor 583cfdbc...                   NOT CERTIFIED
+launcher                               NOT AUTHORIZED
+restart                                NOT AUTHORIZED
+broadcast                              LOCKED
+capital                                UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

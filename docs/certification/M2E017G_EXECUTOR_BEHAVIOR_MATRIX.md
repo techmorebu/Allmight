@@ -159,3 +159,33 @@ Recorded as BUG-010 (S2).
 R28 also specifies a **SELF-LINEAGE / PROCESS-SELECTION REGRESSION** section
 immediately after T10. It is mandatory and is carried in the R80 plan alongside the
 42 numbered cases.
+
+
+---
+
+## PRESERVATION OVERLAY 2 — 2026-09-12T00:53:58Z
+**Authority:** Boss R80CB / R80CC · **Transaction:** `M2E017G-PRESV-002`
+**Baseline HEAD:** `4133fd9dd5b84565c3903e85ef04c6d6325aa2f4`
+
+Content above is preserved verbatim; where superseded, this section controls.
+
+### Case disposition as of this preservation
+
+```
+ACCEPTED / PASS-CREDIT  14   A01-A04 · I01-I03 · D01 · S02-S06 · S08
+BLOCKED_REACHABILITY     7   I04 I05 · D02 D03 D04 D06 · S01
+BLOCKED_LAUNCHER_BOUNDARY 1  S07
+BLOCKED_CERT_CONTRACT    2   I06 · D05
+TOTAL NON-CREDIT BLOCKED 10
+NOT_STARTED             12   C01-C08 · T01-T04
+EXECUTION_LOCKED         6   T05-T10
+```
+
+`4 + 6 + 6 + 8 + 8 + 10 = 42` unchanged. Blocked cases remain **defined R28
+obligations**; blocked is never NOT_IMPLEMENTED and never PASS.
+
+BLOCKED_LAUNCHER_BOUNDARY is a distinct class from BLOCKED_REACHABILITY and must
+not be collapsed into it (Boss R80CA/R80CD).
+
+The mandatory **SELF-LINEAGE / PROCESS-SELECTION REGRESSION** remains
+`NOT_IMPLEMENTED` and gates any global PASS.

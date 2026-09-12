@@ -1,0 +1,377 @@
+BOSS M2E-017G R80AK — V10 STATIC REVIEW / I06 OWNERSHIP + VERIFIER + CLEANUP CORRECTIONS REQUIRED
+
+TARGET RUNNER REVIEWED
+
+  r80_runner_v10.sh
+
+Exact uploaded bytes independently verified:
+
+  SHA256     13ef42dc6d670010497afe3f9eb7073873291560bea04a692fc95f27223e68ab
+  BYTES      67022
+  LINE_COUNT 1141
+  bash -n    PASS
+
+Target executor remains:
+
+  583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+
+v9 44a7a90a... is superseded by v10 for build review only.
+
+======================================================================
+ACCEPTED STATIC ELEMENTS
+======================================================================
+
+The following v10 design elements are materially present and accepted:
+
+  I_CASES_BUILDABLE=4
+    I01
+    I02
+    I03
+    I06
+
+  I_CASES_BLOCKED_REACHABILITY=2
+    I04  NO_AUTHORIZED_G2_TO_G10_PROC_ROOT_MUTATION_SEAM
+    I05  G9_EXCLUDES_BASELINE_ROOT
+
+  I01 expected gate:
+    G2_IDENTITY_MISMATCH
+
+  I02 expected gate:
+    G2_SIGNATURE_MISMATCH
+
+  I03 expected gate:
+    G2_IDENTITY_MISMATCH
+
+  I06 expected gate:
+    G8_SECOND_STACK
+
+I03 includes a preserved same-PID S1 -> S2 construction and refuses executor
+execution if the PID is not invariant or the starttime did not change.
+
+BLOCKED_REACHABILITY is represented as a distinct class and is included in the
+global no-PASS condition.
+
+The new I06 runner-owned cleanup TERM is DISCLOSED rather than hidden:
+
+  direct runner kill site:
+    kill -TERM "$I06_QPID"
+
+The safety surface expects exactly one runner direct signal site and separately
+requires zero pattern kills.
+
+That disclosure approach is correct in principle.
+
+======================================================================
+BLOCKER 1 — P5 / OWNERSHIP RESULTS ARE NOT ADMISSION GATES
+======================================================================
+
+Current I06 flow:
+
+  - starts real fixture process;
+  - computes I06_OWN from a subset of local checks;
+  - calls ownership_check(...);
+  - emits P5 fields;
+  - but does NOT make executor admission depend on OW_VERDICT or the required
+    P5 ownership predicates;
+  - then runs the executor whenever I06_OWN == YES.
+
+Therefore the current statements:
+
+  ownership proven before executor run
+  P5 ownership predicates applied
+  fixture-owned non-governed
+
+are stronger than the actual gate.
+
+The P5 call is currently observational, not controlling.
+
+REQUIRED CORRECTION:
+
+Before a_run_executor I06 may execute, require a single fail-closed I06
+admission predicate incorporating all required ownership results.
+
+At minimum it must gate on the certified P5 outcome and the R80AJ containment
+predicates required for this fixture.
+
+Do not infer success merely because a field was emitted.
+
+Required evidence should distinguish:
+
+  I06_LOCAL_ADMISSION
+  I06_P5_VERDICT
+  I06_P5_REASON
+  I06_FINAL_OWNERSHIP_ADMISSION
+
+Expected:
+  I06_FINAL_OWNERSHIP_ADMISSION=YES
+
+Only that final admission may authorize:
+  a_run_executor I06
+
+If P5 returns FAIL, UNKNOWN, missing fields, or contradictory evidence:
+  BLOCK
+  no executor run
+
+IMPORTANT:
+If exact P5 semantics conflict with a governed-looking I06 fixture signature,
+do not weaken P5. Return that conflict to Boss.
+
+======================================================================
+BLOCKER 2 — I-SLICE "INDEPENDENT VERIFIER" IS NOT INDEPENDENT
+======================================================================
+
+Current i_record():
+
+  got = STOP_GATE from executor TSV via ag()
+
+  ver = STOP_GATE from:
+        $OUT/A_<id>_diag/case_status.tsv
+
+But case_status.tsv is created by a_run_executor() by reading STOP_GATE from
+the SAME executor TSV.
+
+Therefore:
+
+  executor_actual source = executor TSV
+  verifier_actual source = copy of executor TSV field
+
+This is not an independent verifier.
+It is duplicated executor evidence.
+
+R80 requires:
+  fixture/input condition
+  expected behavior
+  executor actual
+  independent verifier actual
+  consistency
+
+REQUIRED CORRECTION:
+
+For I01/I02/I03/I06, derive verifier_actual from evidence independent of the
+executor STOP_GATE field.
+
+Examples of acceptable independent basis:
+
+I01:
+  fixture stat + synthetic baseline expectation prove:
+    PID present
+    observed starttime != expected starttime
+    signature valid
+    no reuse transition
+  independent predicted gate:
+    G2_IDENTITY_MISMATCH
+
+I02:
+  fixture stat proves starttime match
+  fixture cmdline independently proves signature mismatch
+  independent predicted gate:
+    G2_SIGNATURE_MISMATCH
+
+I03:
+  preserved BEFORE/AFTER stat snapshots prove:
+    same numeric PID
+    S1 != S2
+    post-transition identity observed before executor invocation
+  independent predicted gate:
+    G2_IDENTITY_MISMATCH
+
+I06:
+  real fixture /proc evidence + ownership admission proves:
+    governed-signature PID exists
+    PID is not live baseline root
+    PID is not frozen descendant
+    PID is fixture-owned and admissible
+  independent predicted gate:
+    G8_SECOND_STACK
+
+The verifier must not obtain its predicted gate from:
+  STOP_GATE
+  STOP_REASON
+  case_status copied from STOP_GATE
+  any other executor-produced terminal classification field.
+
+The executor field and independent prediction may then be compared.
+
+case_status.tsv remains useful as immutable executor diagnostic evidence, but
+it is NOT the independent verifier.
+
+======================================================================
+BLOCKER 3 — EXACT PID CLEANUP IS NOT IDENTITY-REVALIDATED
+======================================================================
+
+Current cleanup gate:
+
+  numeric I06_QPID
+  /proc/I06_QPID exists
+  -> kill -TERM "$I06_QPID"
+
+That is exact-PID targeting, but exact PID alone is insufficient if the
+captured process exits and the numeric PID is reused before cleanup.
+
+The runner already treats PID reuse as a safety-critical identity problem.
+
+REQUIRED CORRECTION:
+
+At fixture creation, capture immutable cleanup identity evidence for Q:
+
+  PID
+  starttime
+  cmdline/signature
+  ownership/lineage identity sufficient to bind Q to the fixture
+
+Immediately before the runner-owned TERM:
+
+  re-read PID identity;
+  require same captured PID;
+  require same starttime;
+  require expected fixture cmdline/signature;
+  require bounded fixture ownership still holds.
+
+Only if all revalidation predicates pass may the runner call:
+
+  kill -TERM "$I06_QPID"
+
+If process is already absent:
+  no syscall
+  record VANISHED/ALREADY_ABSENT fixture cleanup state.
+
+If PID exists but identity differs or ownership is no longer proven:
+  NO SIGNAL
+  record FIXTURE_CLEANUP_IDENTITY_MISMATCH / BLOCK
+  preserve evidence.
+
+No kill escalation.
+No pattern kill.
+
+The safety scanner may still expect exactly one textual direct runner
+kill -TERM site after this correction, provided it remains behind the complete
+identity-revalidation gate.
+
+======================================================================
+ADDITIONAL TIGHTENING — PARENT / LINEAGE CLAIM
+======================================================================
+
+v10 emits:
+
+  I06_FIXTURE_PARENT_IS_RUNNER
+
+but current I06_OWN does not itself fail when that emitted value is NO.
+
+Do not emit a stronger claim than the admission gate enforces.
+
+Either:
+
+  A) make direct-parent equality a required admission predicate;
+
+or
+
+  B) explicitly define the accepted ownership predicate as descendant/lineage
+     ownership and stop claiming direct-parent equality is required.
+
+Use the exact P5/R79 ownership contract already accepted; do not invent a
+weaker ownership model.
+
+======================================================================
+PATCH SCOPE AUTHORIZED
+======================================================================
+
+AUTHORIZED PATCH ONLY:
+
+  1. make P5/ownership results controlling admission for I06;
+  2. replace the self-referential I verifier with a genuinely independent
+     fixture-derived verifier;
+  3. add pre-TERM identity/ownership revalidation for I06 exact-PID cleanup;
+  4. reconcile parent-vs-descendant ownership wording/gating;
+  5. update static evidence labels/counters needed for those corrections.
+
+Retain:
+
+  I04 BLOCKED_REACHABILITY
+  I05 BLOCKED_REACHABILITY
+  4/2 I-slice accounting
+  exact executor gate expectations
+  I03 transition proof
+  one disclosed direct runner kill -TERM site
+  zero pattern kills
+  canonical nonmutation
+  T05-T10 lock
+  global INCOMPLETE / NOT_CERTIFIED posture
+
+NOT AUTHORIZED:
+
+  host execution
+  automatic test run on AllMight host
+  new reachability seam
+  I04 or I05 alternate path
+  D/S/C/T fixture work
+  full self-lineage implementation
+  SP01
+  launcher/start_all
+  restart
+  canonical repo mutation
+  broadcast
+  capital
+
+======================================================================
+REQUIRED RETURN
+======================================================================
+
+Return revised runner and static report:
+
+  RUNNER_FILENAME
+  RUNNER_SHA256
+  RUNNER_BYTES
+  LINE_COUNT
+  bash -n
+
+I verifier:
+  I_VERIFIER_SOURCE=FIXTURE_DERIVED
+  I_VERIFIER_USES_EXECUTOR_STOP_GATE=NO
+  I_VERIFIER_USES_COPIED_STOP_GATE=NO
+
+I06 admission:
+  I06_P5_VERDICT_GATED=YES
+  I06_FINAL_OWNERSHIP_ADMISSION_GATED=YES
+  I06_EXECUTOR_RUN_REQUIRES_FINAL_ADMISSION=YES
+
+I06 cleanup:
+  I06_CLEANUP_CAPTURED_STARTTIME=YES
+  I06_CLEANUP_PRETERM_STARTTIME_REVALIDATED=YES
+  I06_CLEANUP_PRETERM_SIGNATURE_REVALIDATED=YES
+  I06_CLEANUP_PRETERM_OWNERSHIP_REVALIDATED=YES
+  I06_CLEANUP_IDENTITY_MISMATCH_NO_SIGNAL=YES
+  RUNNER_PATTERN_KILL_SITES=0
+  REAL_KILL_CALL_SITES=1
+
+Scope:
+  I01/I02/I03/I06 BUILT
+  I04/I05 BLOCKED_REACHABILITY
+  no execution performed
+
+After Boss exact-byte review:
+  Boss decides whether one bounded I-slice host execution is authorized.
+
+======================================================================
+LOCKS
+======================================================================
+
+v10 13ef42dc...                 STATIC REVIEWED / NOT RUN-AUTHORIZED
+A01-A04                         ACCEPTED / CLOSED
+I01-I03                         BUILT / STATIC PATCH REQUIRED
+I04                             BLOCKED_REACHABILITY
+I05                             BLOCKED_REACHABILITY
+I06                             BUILT / STATIC PATCH REQUIRED
+I-slice host execution          NOT AUTHORIZED
+D/S/C/T fixture work            NOT AUTHORIZED
+full self-lineage               NOT AUTHORIZED
+T05-T10                         EXECUTION-LOCKED
+SP01                            NOT AUTHORIZED
+executor 583cfdbc...            NOT CERTIFIED
+launcher                        NOT AUTHORIZED
+restart                         NOT AUTHORIZED
+broadcast                       LOCKED
+capital                         UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

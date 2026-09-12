@@ -862,3 +862,136 @@ automatically authorized. The exact next step is Boss review of the completed
 preservation commit and remote-verification evidence.
 
 **STOP after remote verification.**
+
+
+---
+---
+
+# ══════════════════════════════════════════════════════════════════
+# M2E-017G PRESERVATION OVERLAY 2 — POST-R80P CERTIFICATION STATE
+# ══════════════════════════════════════════════════════════════════
+
+**Appended:** 2026-09-12T00:53:58Z · **Authority:** Boss R80CB / R80CC
+**Transaction:** `M2E017G-PRESV-002` · **Baseline HEAD:** `4133fd9dd5b84565c3903e85ef04c6d6325aa2f4`
+
+> Everything above is preserved history, retained verbatim. Where it describes
+> certification state it is **SUPERSEDED** by this overlay. Nothing above was
+> deleted, reordered or rewritten. The final preservation commit SHA is recorded
+> in the post-commit verification report, not embedded here — a document cannot
+> contain the hash of the commit that carries it.
+
+## P1. WHY THIS OVERLAY EXISTS
+
+The first preservation commit `4133fd9d…` archived rulings **R28 → R80N**. The
+arc then continued for a further **67 rulings** (R80O → R80CC) before this
+transaction. A prior Boss context loss occurred during that window, and the
+handover revealed the repository was ~49 rulings behind. This overlay closes
+that gap and records the current controlling state.
+
+## P2. EXECUTOR
+
+```
+executor                583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+certification state     NOT_CERTIFIED
+bytes                   PRESERVE EXACT — no modification authorized
+```
+
+## P3. MATRIX — ACCEPTED / PASS-CREDIT (14)
+
+```
+A01 A02 A03 A04     I01 I02 I03     D01     S02 S03 S04 S05 S06 S08
+```
+
+## P4. BLOCKED CASES
+
+Three distinct non-credit classes. BLOCKED_LAUNCHER_BOUNDARY is NOT a
+reachability class: S07 *reached* its target behaviour and was stopped at the
+launcher boundary, which is the opposite of unreachable. Boss R80CA/R80CD
+require the classes to stay separate.
+
+```
+BLOCKED_REACHABILITY  7
+  I04  NO_AUTHORIZED_G2_TO_G10_PROC_ROOT_MUTATION_SEAM
+  I05  G9_EXCLUDES_BASELINE_ROOT
+  D02  NO_AUTHORIZED_POST_G7_PARENT_DISAPPEARANCE_SEAM
+  D03  PT_ROOT_SURVIVOR_PREEMPTS_DESCENDANT_VANISH_OBSERVATION
+  D04  NO_AUTHORIZED_G7_TO_REVALIDATION_IDENTITY_MUTATION_SEAM
+  D06  NO_AUTHORIZED_G7_TO_REVALIDATION_IDENTITY_MUTATION_SEAM
+  S01  NO_AUTHORIZED_G2_TO_SIGNAL_ONE_ENTRY_MUTATION_SEAM
+
+BLOCKED_LAUNCHER_BOUNDARY  1
+  S07  see P5 — teardown behaviour demonstrated, stopped at canonical start
+
+BLOCKED_CERTIFICATION_CONTRACT  2
+  I06  P5_NOT_GOVERNED_CONFLICT
+  D05  P5_NOT_GOVERNED_CONFLICT
+
+TOTAL NON-CREDIT BLOCKED  10
+```
+
+## P5. S07 — FINAL DISPOSITION
+
+```
+S07  BLOCKED_LAUNCHER_BOUNDARY
+     TEARDOWN_BEHAVIOR_DEMONSTRATED   YES
+     CERTIFICATION_PASS_CREDIT        NO
+     RERUN_REQUIRED_OFFLINE           NO
+```
+
+S07 is the only case to have cleared post-teardown proof. Its hook removed the
+synthetic mirror, roots and descendants became absent, `PT_ROOT_SURVIVOR`,
+`PT_DESC_SURVIVOR`, `POSTTEARDOWN` monotonic and `PT_CENSUS_NONEMPTY` all
+cleared, the historical-session precondition was satisfied, and the executor
+entered control-file transition and then the canonical start block at line 686.
+The runner's 120 s timeout ended it there (rc 124) before any terminal
+classification was emitted.
+
+No pre-launch test-stop seam exists in the certified executor, and none is
+authorized. S07 is closed for the offline arc.
+
+## P6. NOT STARTED / LOCKED
+
+```
+C01-C08                NOT_STARTED   next technical item = DESIGN REVIEW only
+T01-T04                NOT_STARTED   REACHABILITY_REVIEW_REQUIRED
+T05-T10                EXECUTION_LOCKED (launcher dependency)
+self-lineage regression NOT_IMPLEMENTED — gates any global PASS
+```
+
+## P7. ACTIVE LOCKS
+
+```
+launcher NOT_AUTHORIZED · SP01 NOT_AUTHORIZED · restart NOT_AUTHORIZED
+broadcast LOCKED · capital UNTOUCHED
+executor bytes PRESERVE EXACT
+
+governed runtime state   NOT_REOBSERVED_BY_PRESERVATION_TRANSACTION
+runtime action           NOT_AUTHORIZED
+```
+
+### Provenance note on runtime state
+
+This transaction is documentation-only and performs **no runtime census**. Any
+earlier quiescence finding belongs to the run that observed it and is not
+restated here as a present-tense fact. A fresh session must observe runtime
+state itself before relying on it.
+
+## P8. EVIDENCE PRESERVED
+
+```
+R80BB aborted-D01 evidence hold   /home/allmight/r80_a_fixture/D01/   1453 files
+  archive c93bc279…  manifest a9e2899b…   IMMUTABLE, not a fixture source
+S-slice evidence packages         PRESERVE UNCHANGED
+```
+
+## P9. NEXT AUTHORIZED TECHNICAL STEP — SUPERSEDES ANY EARLIER NEXT-STEP SECTION
+
+```
+C01-C08 DESIGN REVIEW
+  NOT implementation
+  NOT execution
+```
+
+Nothing else is authorized. A fresh session asks Boss for the current directive.
+
+**STOP.**

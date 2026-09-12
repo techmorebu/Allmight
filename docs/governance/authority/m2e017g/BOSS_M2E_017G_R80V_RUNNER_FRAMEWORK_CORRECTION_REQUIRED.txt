@@ -1,0 +1,250 @@
+BOSS M2E-017G R80V — RUNNER FRAMEWORK REVIEW / CORRECTION BEFORE FIXTURE SLICES
+
+FILE REVIEWED
+
+  r80_runner.sh
+
+Observed:
+  SHA256     43b35473113e155331721f6cd5c35172986e6181251f780bf5e1874c6d6888bd
+  BYTES      20850
+  LINES      365
+  bash -n    PASS
+
+STATUS
+
+  R80U scope structure is correctly represented:
+    MATRIX_DEFINED_CASE_COUNT=42
+    MATRIX_CURRENT_EXECUTABLE_CASE_COUNT=36
+    MATRIX_LOCKED_CASE_COUNT=6
+    LOCKED_CASES=T05,T06,T07,T08,T09,T10
+
+  The decision to leave all 36 case fixtures NOT_IMPLEMENTED rather than fake PASS
+  is ACCEPTED.
+
+  The proposed six bounded fixture slices:
+    A -> I -> D -> S -> C -> T01-T04
+  are ACCEPTED IN PRINCIPLE.
+
+  HOWEVER, fixture implementation is NOT YET AUTHORIZED.
+
+  Three framework defects must be corrected first so every later slice inherits a
+  trustworthy harness.
+
+======================================================================
+BLOCKER 1 — INCOMPLETE / FAILED RUN CAN EXIT 0
+======================================================================
+
+Current final result logic prints:
+
+  R80_OFFLINE_NONLAUNCHER_MATRIX=INCOMPLETE
+
+when any case is NOT_IMPLEMENTED, any case fails, an audit fails, or the expected
+36 PASS condition is not met.
+
+But the script then calls pack, prints STOP, reaches end-of-file, and returns shell
+exit status 0.
+
+That is a false-pass process-status seam.
+
+Required correction:
+
+  PASS path:
+    R80_OFFLINE_NONLAUNCHER_MATRIX=PASS
+    exit 0
+
+  Any non-PASS path:
+    R80_OFFLINE_NONLAUNCHER_MATRIX=INCOMPLETE or FAIL
+    print deterministic reason/counters
+    pack evidence
+    exit NONZERO
+
+At the current scaffold stage, with 36 NOT_IMPLEMENTED:
+  expected process exit MUST be nonzero.
+
+Suggested distinction:
+  INCOMPLETE because fixture coverage is intentionally absent -> dedicated nonzero
+  FAIL because an implemented behavioral case/audit failed -> different nonzero
+
+Exact numeric codes are implementation detail; semantics are not.
+
+======================================================================
+BLOCKER 2 — TWO SELF-LINEAGE CHECKS ARE VACUOUS
+======================================================================
+
+Current self-lineage section contains:
+
+  sl "EXECUTOR_EXCLUDES_SELF_LINEAGE" \
+     "$(grep -c 'SELF_EXCLUDE' "$PATH_EXEC")" \
+     "$(grep -c 'SELF_EXCLUDE' "$PATH_EXEC")"
+
+Actual and expected are generated from the SAME expression.
+
+It cannot fail.
+
+It also contains:
+
+  sl "RUNNER_EXCLUDES_SELF_FROM_SCAN" "PRESENT" "PRESENT"
+
+This is entirely hard-coded and cannot fail.
+
+Both are BUG-009-class verifier defects.
+
+The later P5 behavioral checks against the runner and ancestor are useful and should
+remain, but they do not make the two vacuous assertions acceptable.
+
+Required correction:
+
+  Replace both with independent predicates whose expected value is fixed by
+  authority/specification, not derived from the same observation.
+
+Examples of acceptable shape:
+
+  - prove the exact executor self/ancestor exclusion construction expected by the
+    reviewed current bytes and compare against a fixed expectation;
+  - prove the runner's own helper/scanner processes cannot enter the candidate set
+    using an independent behavioral observation;
+  - or remove a redundant claim entirely if it adds no independent evidence.
+
+Never use:
+  observation == same observation
+or:
+  literal PRESENT == literal PRESENT
+
+as certification evidence.
+
+======================================================================
+BLOCKER 3 — SAFETY SURFACE IS REPORTED, NOT VERIFIED
+======================================================================
+
+Current safety section emits:
+
+  REAL_LAUNCHER_CALL_SITES=0
+  START_ALL_CALL_SITES=0
+  REAL_KILL_CALL_SITES=0
+  SP01_CALL_SITES=0
+  GIT_MUTATION_CALL_SITES=0
+
+as hard-coded constants.
+
+Those values do not inspect the runner bytes.
+
+As fixture groups are added, the runner will change substantially. A future accidental
+launcher, kill, SP01, or git-mutation call could therefore coexist with a printed
+zero.
+
+That is another false-assurance seam.
+
+Required correction:
+
+  Derive each safety-surface result mechanically from the runner's actual bytes,
+  using R40-style command-position semantics rather than naive textual grep where
+  appropriate.
+
+At minimum verify actual executable call positions for:
+
+  start_all / launcher invocation
+  real kill / pkill / killall signal primitives in runner-owned code
+  SP01 invocation
+  git add
+  git commit
+  git push
+  git reset
+  git checkout
+  git fetch
+  git pull
+
+Be explicit about sourced certified helpers:
+  if a helper contains a signal primitive but is only callable against bounded
+  non-governed fixtures, distinguish CAPABILITY PRESENT from UNAUTHORIZED CALL SITE.
+
+The audit itself must have known-positive controls so a broken regex cannot return
+all zeros and pass vacuously.
+
+Required shape:
+
+  SAFETY_AUDIT_KNOWN_POSITIVE=PASS
+  REAL_LAUNCHER_CALL_SITES=<measured>
+  START_ALL_CALL_SITES=<measured>
+  ...
+  SAFETY_SURFACE_AUDIT=PASS|FAIL
+
+Any audit failure contributes to nonzero runner exit.
+
+======================================================================
+WHAT IS ACCEPTED
+======================================================================
+
+Accepted framework elements include:
+
+  - exact 42-case registry
+  - exact 36/6 executable/locked split
+  - T05-T10 locked-case guard
+  - no attempt to claim FULL_R80_CERTIFICATION
+  - NOT_IMPLEMENTED accounting
+  - target executor SHA
+  - content-addressed artifact location
+  - canonical HEAD gate
+  - required authority presence at pinned canonical HEAD
+  - per-case evidence schema
+  - R40 command-position audit concept
+  - R40 verifier-consistency audit concept
+  - synthetic-baseline overlay concept
+  - PID-0/1 P5 behavioral checks
+  - self/ancestor P5 behavioral checks
+  - evidence packaging
+  - six-slice fixture strategy
+
+No certification credit is granted by this review.
+
+======================================================================
+NEXT AUTHORIZED STEP
+======================================================================
+
+CPT may patch ONLY the runner framework to close the three blockers above.
+
+Do NOT implement A fixtures yet.
+
+Return:
+
+  NEW_RUNNER_SHA256
+  RUNNER_BYTES
+  LINE_COUNT
+  bash -n result
+
+and proof that:
+
+  scaffold INCOMPLETE exits nonzero
+  implemented behavioral/audit failure exits nonzero
+  PASS is the only path to exit 0
+  no self-comparison verifier remains in self-lineage
+  no hard-coded PRESENT/PRESENT verifier remains
+  safety-surface values are measured from actual runner bytes
+  safety audit contains at least one known-positive verifier control
+  T05-T10 remain locked
+  case counts remain 42 / 36 / 6
+  no fixture group has yet been implemented
+
+After corrected-framework Boss byte review:
+  first fixture slice will be A01-A04 only.
+
+======================================================================
+LOCKS
+======================================================================
+
+r80_runner.sh 43b35473...              NOT APPROVED FOR EXECUTION
+runner framework correction             AUTHORIZED
+A fixture slice                          NOT AUTHORIZED YET
+I/D/S/C/T fixture slices                 NOT AUTHORIZED
+runner host execution                    NOT AUTHORIZED
+T05-T10                                  EXECUTION-LOCKED
+INCIDENT 022                             RESTART-BLOCKING
+SP01                                     NOT AUTHORIZED
+executor 583cfdbc...                     NOT CERTIFIED
+launcher                                 NOT AUTHORIZED
+restart                                  NOT AUTHORIZED
+broadcast                                LOCKED
+capital                                  UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

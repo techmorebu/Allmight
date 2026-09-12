@@ -1,0 +1,495 @@
+BOSS M2E-017G R80AP — V14 ACCEPTED / D01-D06 BUILD AUTHORIZED
+
+TARGET RUNNER REVIEWED
+
+  r80_runner_v14.sh
+
+Exact delivered-file measurements independently verified:
+
+  SHA256     79a3dee8ed26de331e13394cdf0d58833f228c8a8fddc204f7a6b9f068a424b0
+  BYTES      66200
+  wc -l      1129
+  bash -n    PASS
+
+Target executor remains:
+
+  583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+
+v13 7c27985b... is superseded for runner development.
+
+======================================================================
+R80AO EVIDENCE-ORDERING DEFECT — CLOSED
+======================================================================
+
+The finalization order is corrected in the exact delivered bytes.
+
+Observed sequence:
+
+  RUNNER_EXIT_CODE is computed once from MATRIX_OK
+  emit "RUNNER_EXIT" "$RUNNER_EXIT_CODE"
+  emit "RUNNER_EXIT_EMITTED_BEFORE_PACK" "YES"
+  pack
+  branch terminal message
+  exit "$RUNNER_EXIT_CODE"
+
+Both shell exit sites use the same computed variable.
+
+Therefore:
+
+  RUNNER_EXIT_DECIDED_BEFORE_PACK=YES
+  RUNNER_EXIT_EMITTED_BEFORE_PACK=YES
+  PACKAGED_RUNNER_EXIT_CAN_MATCH_PROCESS_EXIT=YES
+  DUPLICATE_LITERAL_EXIT_CONSTANTS_REMOVED=YES
+
+The specific v13 defect where the ZIP omitted RUNNER_EXIT is closed.
+
+======================================================================
+CURRENT CERTIFICATION STATUS
+======================================================================
+
+Accepted / closed:
+
+  A01-A04
+  I01-I03
+
+Blocked obligations:
+
+  I04 BLOCKED_REACHABILITY
+      NO_AUTHORIZED_G2_TO_G10_PROC_ROOT_MUTATION_SEAM
+
+  I05 BLOCKED_REACHABILITY
+      G9_EXCLUDES_BASELINE_ROOT
+
+  I06 BLOCKED_CERTIFICATION_CONTRACT
+      P5_NOT_GOVERNED_CONFLICT
+
+Still ordinary NOT_IMPLEMENTED:
+
+  D01-D06
+  S01-S08
+  C01-C08
+  T01-T04
+
+Still required:
+
+  full self-lineage / process-selection regression
+
+Execution locked:
+
+  T05-T10
+
+Executor:
+
+  583cfdbc... NOT CERTIFIED
+
+======================================================================
+NEXT SLICE — D01-D06 BUILD AUTHORIZED
+======================================================================
+
+CPT may now build the D01-D06 fixture implementations.
+
+HOST EXECUTION IS NOT AUTHORIZED.
+
+The D-slice must remain bounded to descendant-closure behavior only.
+
+R28 definitions:
+
+  D01  descendant closure captured before census
+  D02  captured descendant survives parent and remains eligible
+  D03  captured descendant vanishes unsignalled
+  D04  captured descendant PID reused -> STOP
+  D05  new governed descendant after closure -> STOP
+  D06  captured descendant identity mismatch -> STOP
+
+======================================================================
+SOURCE-GROUNDING REQUIREMENT
+======================================================================
+
+Before encoding any exact D expected gate, STOP_REASON, counter, or timing
+assumption, read the exact executor bytes.
+
+For each D01-D06 return:
+
+  SOURCE_FUNCTION
+  SOURCE_LINE_OR_REGION
+  EXPECTED_STOP_GATE_OR_TERMINAL_STATE
+  EXACT_TRIGGER_CONDITION
+  INTERVENING_GATES
+  REQUIRED_FIXTURE_MUTATION_TIMING
+  WHETHER_REAL_/proc_OR_PROC_ROOT_IS_OBSERVED
+  WHETHER_SIGNAL_ADAPTER_IS_RELEVANT
+
+Do not carry gate names from memory or prior artifacts if the exact bytes use
+different names.
+
+If a D case is unreachable under the current authorized seam:
+
+  mark it BLOCKED_REACHABILITY
+  preserve the source reason
+  do not add a new seam merely to reach it
+
+======================================================================
+DESCENDANT-CLOSURE INVARIANTS
+======================================================================
+
+The D fixtures must respect the existing executor doctrine:
+
+  - G7 descendant closure is frozen before G8 census;
+  - descendants are exact captured descendants, not pattern-selected processes;
+  - identity is PID + starttime + signature;
+  - frozen descendants remain eligible after parent exit only if identity holds;
+  - newly appearing descendants after closure are unauthorized;
+  - PID reuse or identity change is a STOP condition;
+  - real governed runtime must never be used as a fixture;
+  - no process may enter the fixture merely because its cmdline matches.
+
+For every real fixture PID:
+
+  ownership/provenance must be machine-proven before executor exposure.
+
+Reuse the accepted R79/P5 ownership model unchanged.
+
+Do not weaken P5.
+
+======================================================================
+FIXTURE OWNERSHIP REQUIREMENTS
+======================================================================
+
+Any real process used by D01-D06 must satisfy all accepted ownership gates.
+
+At minimum:
+
+  PID_DESCENDS_FROM_FIXTURE_ROOT=YES
+  PID_NOT_BASELINE_ROOT=YES
+  PID_NOT_CANONICAL_PIDFILE_MEMBER=YES
+  PID_NOT_EXECUTOR_PID=YES
+  PID_NOT_EXECUTOR_ANCESTOR=YES
+  PID_NOT_REAL_GOVERNED_RUNTIME=YES
+
+Required:
+
+  exact PID capture
+  starttime capture
+  cmdline/signature capture
+  lineage proof
+  parent/descendant relation proof
+  exact-PID cleanup only
+  TERM only
+  no pattern kill
+  no escalation
+
+If a D case requires a governed-looking signature that conflicts with P5 in
+the same way as I06:
+
+  STOP the design
+  report BLOCKED_CERTIFICATION_CONTRACT
+  do not waive any predicate
+
+======================================================================
+CASE DESIGN EXPECTATIONS
+======================================================================
+
+D01
+
+Goal:
+  prove descendant closure is captured before the later governed census.
+
+Required evidence:
+  fixture root PID
+  captured descendant PID
+  direct or proven lineage
+  closure timestamp/evidence
+  later census timestamp/evidence
+  closure-before-census ordering
+  exact captured set
+  independent verifier of lineage and ordering
+
+D02
+
+Goal:
+  captured descendant survives parent disappearance and remains eligible.
+
+Required:
+  descendant already inside frozen closure before parent disappears
+  parent absence demonstrated after closure
+  descendant PID/starttime/signature unchanged
+  eligibility remains based on frozen provenance
+  no new descendant substitution
+
+D03
+
+Goal:
+  captured descendant vanishes without signal.
+
+Required:
+  descendant in frozen closure
+  no executor signal delivered to it
+  later absence independently observed
+  correct VANISHED_UNSIGNALLED behavior/counter if source requires it
+  no PID reuse
+
+D04
+
+Goal:
+  captured descendant numeric PID is reused.
+
+Required:
+  preserved BEFORE identity
+  same numeric PID AFTER
+  changed starttime
+  transition machine-proven
+  no mere static mismatch relabeled as reuse
+  expected executor STOP source-grounded
+
+D05
+
+Goal:
+  a new governed descendant appears after closure.
+
+Required:
+  closure set frozen first
+  new PID absent from frozen set
+  new process appears after closure
+  lineage shows it is a descendant in the relevant tree
+  executor detects it as unauthorized/new
+  expected STOP source-grounded
+
+D06
+
+Goal:
+  captured descendant identity mismatch.
+
+Required:
+  descendant was legitimately captured
+  later PID remains present
+  starttime and/or signature no longer matches the frozen identity
+  distinguish from D04 numeric PID reuse if source treats them differently
+  expected STOP source-grounded
+
+======================================================================
+TEMPORAL MUTATION DISCIPLINE
+======================================================================
+
+Several D cases may require a state transition during one executor invocation.
+
+Do NOT assume the existing seam can provide that transition.
+
+For every case requiring mid-run mutation:
+
+  identify the exact observation interval;
+  identify the currently authorized mutation hook or mechanism;
+  prove it occurs in the required interval;
+  prove it does not expand capability beyond the accepted seam.
+
+If no existing authorized mechanism can create the required transition:
+
+  BLOCKED_REACHABILITY
+
+Do not add:
+  generic background mutator
+  timing poller
+  new hook
+  sleeps solely to race the executor
+  signal interceptor
+
+without a new Boss ruling.
+
+======================================================================
+INDEPENDENT VERIFIER
+======================================================================
+
+For every D case:
+
+  executor_actual
+and
+  verifier_actual
+
+must come from different authorities.
+
+The verifier must derive its result from:
+
+  fixture process facts
+  /proc identity
+  preserved snapshots
+  lineage
+  closure set
+  timestamps/order
+  fixture-owned transition evidence
+
+It may NOT derive its expected/actual classification by rereading:
+
+  STOP_GATE
+  STOP_REASON
+  RESULT
+  a copied executor terminal field
+
+Executor terminal fields are authoritative executor evidence, not the
+independent verifier.
+
+======================================================================
+SIGNAL / MUTATION BOUNDARY
+======================================================================
+
+The D cases must explicitly state whether they are pre-signal or teardown-path
+cases.
+
+If source says a case must STOP before signal:
+
+  TERM_ATTEMPTED_COUNT=0
+  CONTROL_FILES_CHANGED=0
+  START_ATTEMPTED=0
+
+must be observed and gated.
+
+Absent != zero.
+
+If a case legitimately reaches signal/teardown logic:
+
+  expected counters must be source-grounded
+  TEST_ADAPTER effects must be explicit
+  no real governed process may be signaled
+
+======================================================================
+RUN-SCOPE ARCHITECTURE
+======================================================================
+
+The next D runner revision must NOT rerun accepted A or I cases.
+
+Represent prior accepted cases distinctly:
+
+  A01-A04 = ACCEPTED_PRIOR
+  I01-I03 = ACCEPTED_PRIOR
+
+No fresh PASS credit.
+
+Represent blocked I cases distinctly:
+
+  I04/I05 = BLOCKED_REACHABILITY
+  I06     = BLOCKED_CERTIFICATION_CONTRACT
+
+The runner must execute no A or I certification case while building/testing
+the D slice.
+
+D host execution remains locked until a later Boss ruling.
+
+======================================================================
+ACCOUNTING FOR THE NEXT BUILD
+======================================================================
+
+Expected static disposition after a complete D build return:
+
+  A_ACCEPTED_PRIOR=4
+  I_ACCEPTED_PRIOR=3
+
+  I_BLOCKED_REACHABILITY=2
+  I_BLOCKED_CERTIFICATION_CONTRACT=1
+
+  D01-D06=<BUILT or explicit BLOCKED_* per source reality>
+
+  S01-S08=NOT_IMPLEMENTED
+  C01-C08=NOT_IMPLEMENTED
+  T01-T04=NOT_IMPLEMENTED
+
+  SELF_LINEAGE_REGRESSION=NOT_IMPLEMENTED
+  T05-T10=EXECUTION_LOCKED
+
+Do not force a 6/0 D build count if source reality makes any case unreachable.
+
+======================================================================
+SAFETY REQUIREMENTS
+======================================================================
+
+Retain:
+
+  REAL_LAUNCHER_CALL_SITES=0
+  START_ALL_CALL_SITES=0
+  SP01_CALL_SITES=0
+  GIT_CANONICAL_STATE_CHANGE_SITES=0
+  GIT_CANONICAL_MUTATION_CALL_SITES=0
+
+Any direct runner TERM introduced for fixture cleanup must be:
+
+  disclosed
+  exact-PID
+  identity-revalidated
+  ownership-revalidated
+  separately counted from executor TERM_ATTEMPTED_COUNT
+
+Pattern kills remain forbidden.
+
+If no direct runner signal site is needed:
+
+  REAL_KILL_CALL_SITES must remain 0.
+
+======================================================================
+REQUIRED RETURN BEFORE D EXECUTION
+======================================================================
+
+Return the revised runner plus static/source report:
+
+  RUNNER_FILENAME
+  RUNNER_SHA256
+  RUNNER_BYTES
+  wc -l
+  bash -n
+
+Prior state:
+  A_CASES_ACCEPTED_PRIOR=4
+  A_CASES_EXECUTED_THIS_RUN=0
+  I_CASES_ACCEPTED_PRIOR=3
+  I_CASES_EXECUTED_THIS_RUN=0
+
+For each D01-D06:
+  STATUS=BUILT|BLOCKED_REACHABILITY|BLOCKED_CERTIFICATION_CONTRACT
+  EXPECTED_GATE_OR_STATE
+  SOURCE_FUNCTION
+  SOURCE_LINE_OR_REGION
+  TRIGGER_CONDITION
+  TEMPORAL_MUTATION_REQUIRED=YES|NO
+  EXISTING_AUTHORIZED_SEAM_SUFFICIENT=YES|NO
+  INDEPENDENT_VERIFIER_PRESENT=YES
+  OWNERSHIP_GATE_PRESENT=YES if real process
+  EVIDENCE_PRESERVATION_PRESENT=YES
+
+Safety:
+  REAL_KILL_CALL_SITES=<measured>
+  RUNNER_PATTERN_KILL_SITES=0
+  REAL_LAUNCHER_CALL_SITES=0
+  START_ALL_CALL_SITES=0
+  SP01_CALL_SITES=0
+  GIT_CANONICAL_MUTATION_CALL_SITES=0
+
+Finalization:
+  RUNNER_EXIT emitted before pack
+  package contains RUNNER_EXIT
+
+After exact-byte Boss review:
+  Boss decides whether one bounded D-slice offline host execution is authorized.
+
+======================================================================
+LOCKS
+======================================================================
+
+v14 79a3dee8...                 STATIC ACCEPTED
+A01-A04                         ACCEPTED / CLOSED
+I01-I03                         ACCEPTED / CLOSED
+I04                             BLOCKED_REACHABILITY
+I05                             BLOCKED_REACHABILITY
+I06                             BLOCKED_CERTIFICATION_CONTRACT
+D01-D06 build                   AUTHORIZED
+D01-D06 host execution          NOT AUTHORIZED
+S01-S08                         NOT AUTHORIZED
+C01-C08                         NOT AUTHORIZED
+T01-T04                         NOT AUTHORIZED
+full self-lineage               NOT AUTHORIZED
+T05-T10                         EXECUTION-LOCKED
+SP01                            NOT AUTHORIZED
+executor 583cfdbc...            NOT CERTIFIED
+launcher                        NOT AUTHORIZED
+restart                         NOT AUTHORIZED
+broadcast                       LOCKED
+capital                         UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

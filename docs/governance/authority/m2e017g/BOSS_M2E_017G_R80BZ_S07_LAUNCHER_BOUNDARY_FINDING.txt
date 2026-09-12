@@ -1,0 +1,320 @@
+BOSS M2E-017G R80BZ — S07 LAUNCHER-BOUNDARY FINDING / CERTIFICATION DISPOSITION
+
+STATUS
+======
+
+S-SLICE rerun evidence reviewed.
+
+Evidence package:
+  M2E017G_R80_EVIDENCE_20260911T221640Z.zip
+
+Reported package SHA256:
+  ab0db3a4f811c450c73e76901a6dda7f09e717c70fed8679cedde1cd4061f485
+
+Global result:
+  CASES_PASS                 7
+  CASES_FAIL                 1
+  CASES_BLOCKED_TOTAL        9
+  SAFETY_SURFACE             PASS
+  SLICE_SUM_CHECK            CONSISTENT
+  RUNNER_EXIT                13
+  EXECUTOR_CERTIFICATION     NOT_CERTIFIED
+
+This ruling concerns S07 only and the newly exposed launcher boundary.
+
+======================================================================
+1. S06
+======================================================================
+
+S06 remains PASS.
+
+Observed:
+  hook_ran=YES
+  starttime_changed=YES
+  stop_is_reused_pid=YES
+  consistent=YES
+
+No contradiction found.
+
+======================================================================
+2. S07 TEARDOWN PROPERTY
+======================================================================
+
+The preserved S07 executor evidence demonstrates the intended teardown behavior:
+
+  target root              4190055
+  revalidation             OK
+  TERM_ATTEMPTED           YES
+  syscall_rc               0
+  syscall_errno            0
+  TERM_DELIVERED           YES
+  outcome                  TERMINATED_BY_US
+  gone_after_sec           0
+
+Post-teardown executor evidence also records:
+
+  SURVIVING_BASELINE_ROOTS         NONE
+  SURVIVING_FROZEN_DESCENDANTS     NONE
+  MONOTONIC_POSTTEARDOWN           CLEAN
+  POSTTEARDOWN_GOVERNED_CENSUS     EMPTY
+  CONTROL_FILES_REMOVED            YES
+  HISTORICAL_SESSION_DIR_UNTOUCHED YES
+
+The post-syscall hook observation also identifies the S07 target PID.
+
+Therefore:
+
+  S07_TEARDOWN_PROPERTY_OBSERVED = YES
+
+This is a real behavioral observation and must be preserved.
+
+======================================================================
+3. S07 DOES NOT RECEIVE PASS CREDIT
+======================================================================
+
+The executor never emitted a terminal RESULT or STOP_GATE for S07.
+
+Preserved case status:
+
+  rc          124
+  result      ABSENT
+  stop_gate   ABSENT
+  stop_reason ABSENT
+
+The run was terminated by the runner's 120-second timeout after entering the
+canonical-start phase.
+
+Therefore:
+
+  S07_CERTIFICATION_VERDICT = NO_PASS_CREDIT
+
+Do NOT relabel the case PASS from the teardown artifact alone.
+
+Reason:
+  the authorized case runner did not reach its terminal classification boundary,
+  and the run crossed into a separately locked execution domain before timeout.
+
+Recommended classification:
+
+  S07 = BLOCKED_LAUNCHER_BOUNDARY
+
+with subordinate observation:
+
+  TEARDOWN_BEHAVIOR_DEMONSTRATED = YES
+
+This is not the same as FAIL.
+
+The prior S07 FAIL is superseded as a certification interpretation:
+it is a boundary-crossing/incomplete-run result, not evidence that
+TERMINATED_BY_US behavior was wrong.
+
+======================================================================
+4. LAUNCHER INVOCATION IS NOW PROVEN, NOT MERELY SUSPECTED
+======================================================================
+
+The fixture builder establishes pre-executor control state with:
+
+  session = 20260904_2239
+
+and synthetic baseline role PIDs in the 41900xx namespace.
+
+The preserved S07 post-run control files contain:
+
+  session = 20260911_1718
+
+and a new PID namespace:
+
+  fetcher             2669169
+  activator           2669181
+  volatility          2669183
+  heat                2669184
+  watchdog            2669443
+  notification_router 2669444
+  shadow_engine       2669445
+
+The executor log ends with:
+
+  -- control-file transition --
+  -- canonical start (once) --
+
+Taken together, this is stronger than merely reaching the source line.
+
+The fixture control files were transitioned into a freshly started stack state.
+The canonical start path executed far enough to advance the session and populate
+new real PIDs.
+
+Therefore:
+
+  CANONICAL_START_BLOCK_ENTERED       YES
+  FIXTURE_LAUNCHER_ACTUALLY_INVOKED   YES
+  NEW_FIXTURE_SESSION_CREATED         YES
+  NEW_FIXTURE_PID_NAMESPACE_CREATED   YES
+
+This is a newly discovered boundary crossing.
+
+======================================================================
+5. GOVERNANCE SIGNIFICANCE
+======================================================================
+
+The R80 runner declares:
+
+  - real launcher invocation forbidden
+  - T05-T10 defined but EXECUTION-LOCKED
+
+S07 reaching canonical start means the offline S-case fixture path was not
+bounded tightly enough to stop after the S07 property was established.
+
+That is a RUNNER SCOPE DEFECT.
+
+It is NOT evidence of:
+  - canonical-host restart
+  - canonical repo mutation
+  - live trading activation
+  - broadcast
+  - capital movement
+
+The launcher operated inside the disposable fixture repository/environment.
+
+Nevertheless, it crossed an execution boundary that was explicitly reserved for
+T05-T10.
+
+Classification:
+
+  R80_S07_POST_PROPERTY_FALLTHROUGH_TO_LOCKED_T_BOUNDARY
+
+This must be treated as a certification-governance finding.
+
+======================================================================
+6. TIMEOUT RULING
+======================================================================
+
+DO NOT increase the 120-second timeout.
+
+The timeout exposed the boundary defect safely.
+
+A longer timeout would authorize more behavior in the locked launcher domain
+without first establishing a bounded T-window.
+
+Therefore:
+
+  EXTEND_TIMEOUT = NOT_AUTHORIZED
+
+======================================================================
+7. REQUIRED DESIGN CORRECTION
+======================================================================
+
+Do not patch S07's expected predicate.
+
+Do not weaken the T05-T10 lock.
+
+Instead, before another S07 execution, source-read the exact executor and design
+a bounded TEST-ONLY stop seam that terminates the executor immediately after the
+S07 property has been fully recorded and before canonical-start invocation.
+
+The seam must satisfy all of the following:
+
+  1. TEST_MODE_ONLY.
+  2. Not reachable in production/default mode.
+  3. Fires only after the S07 teardown/post-teardown evidence required for the
+     S07 verdict is durable.
+  4. Fires before control-file transition and before canonical start.
+  5. Emits an explicit terminal test classification.
+  6. Does not alter S07 behavioral logic.
+  7. Does not simulate or stub TERMINATED_BY_US.
+  8. Does not execute start_all.sh.
+  9. Does not unlock T05-T10.
+ 10. Static exact-byte review required before host execution.
+
+If the exact executor has no existing authorized seam capable of this, report
+that fact. Do not invent or repurpose SP01 without a separate ruling.
+
+======================================================================
+8. T05-T10
+======================================================================
+
+This accidental fixture start does NOT earn T05-T10 certification credit.
+
+It was not:
+  - authorized as a bounded launcher test,
+  - instrumented under the T-case predicates,
+  - allowed to run to a controlled terminal classification.
+
+Therefore:
+
+  T05-T10_CREDIT_FROM_S07 = NONE
+
+However, it is useful design evidence:
+the executor naturally transitions from successful teardown into the canonical
+start phase, exactly where the locked T-group begins.
+
+======================================================================
+9. PRESERVATION
+======================================================================
+
+Preserve the uploaded S-slice evidence package unchanged.
+
+The S07 diagnostics are now important because they prove both:
+
+  a) the S07 teardown property; and
+  b) the first observed crossing into the locked launcher boundary.
+
+Do not rewrite the package to change S07 from FAIL to BLOCKED.
+Record the corrected disposition in the next ledger/documentation mutation
+instead, so historical evidence remains historical.
+
+======================================================================
+10. CURRENT CASE ACCOUNTING
+======================================================================
+
+Controlling interpretation:
+
+  S01-S06   PASS where previously accepted
+  S07       BLOCKED_LAUNCHER_BOUNDARY
+             TEARDOWN_BEHAVIOR_DEMONSTRATED=YES
+             CERTIFICATION_PASS_CREDIT=NO
+  S08       PASS where previously accepted
+
+The numeric runner output remains historical evidence from that run and is not
+rewritten.
+
+Executor 583cfdbc... remains NOT CERTIFIED.
+
+======================================================================
+11. NEXT AUTHORIZED ACTION
+======================================================================
+
+AUTHORIZED:
+  READ-ONLY / STATIC source diagnosis of the exact executor transition from:
+
+    post-teardown proof
+      ->
+    control-file transition
+      ->
+    canonical start
+
+and design of the narrow pre-launch test-only stop seam described above.
+
+NOT AUTHORIZED:
+  S07 rerun
+  timeout extension
+  launcher rerun
+  start_all.sh invocation
+  T05-T10 execution
+  SP01 execution
+  restart
+  canonical repo mutation
+  broadcast
+  capital movement
+
+======================================================================
+CORNELIUS
+======================================================================
+
+Nothing to run.
+
+Do not rerun S07.
+Do not extend the timeout.
+Do not invoke the launcher.
+Preserve the evidence package.
+
+Return the source-grounded pre-launch seam design for review.

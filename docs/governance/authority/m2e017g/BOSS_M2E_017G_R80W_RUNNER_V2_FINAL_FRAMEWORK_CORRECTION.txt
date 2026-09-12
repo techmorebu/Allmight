@@ -1,0 +1,255 @@
+BOSS M2E-017G R80W — RUNNER V2 FINAL FRAMEWORK CORRECTION
+
+FILE REVIEWED
+
+  r80_runner_v2.sh
+
+Observed:
+  SHA256  5e741e040d482bdf3d877dc3411034ded4bdf11d79ff7a28e93891986cb34e73
+  BYTES   23718
+  LINES   412
+  bash -n PASS
+
+STATUS
+
+R80V Defect 1 — fail-closed exit semantics:
+  CLOSED.
+
+R80V Defect 3 — hard-coded runner safety counters:
+  SUBSTANTIALLY CLOSED, but one helper-capability disclosure is required below.
+
+R80V Defect 2 — vacuous self-lineage verifier:
+  IMPROVED BUT NOT FULLY CLOSED.
+
+r80_runner_v2.sh is NOT approved for host execution.
+A01-A04 fixture implementation is NOT yet authorized.
+
+======================================================================
+BLOCKER 1 — EXECUTOR_CONSULTS_EXCLUDE_SET FALSE-POSITIVE VERIFIER
+======================================================================
+
+Current verifier:
+
+  SE_USE=$(grep -cE \
+    'grep -q " \$[a-z_]+ "|== \*" \$[a-z_]+ "\*' \
+    "$PATH_EXEC")
+
+and then:
+
+  EXECUTOR_CONSULTS_EXCLUDE_SET = YES if SE_USE >= 1
+
+Boss tested that exact regex against the exact executor bytes
+583cfdbc...
+
+It returned 5 matches.
+
+Those matches are membership checks involving:
+
+  SB_ROLE_ALLOWLIST
+  SB_SEEN
+  EXEC_ANC
+  FROZEN_DESC
+  FROZEN_DESC
+
+They do NOT prove that the production SELF_EXCLUDE set is consulted.
+
+The exact executor contains the actual production exclusion helper:
+
+  excluded(){ [[ " $SELF_EXCLUDE " == *" $1 "* ]]; }
+
+Therefore the current verifier can report YES even if that SELF_EXCLUDE
+consultation were deleted, as long as unrelated membership tests remained.
+
+That is still BUG-009-class verifier imprecision.
+
+REQUIRED CORRECTION
+
+Replace the broad generic-variable predicate with a predicate tied specifically
+to the SELF_EXCLUDE construction/use being certified.
+
+At minimum separately prove:
+
+  SELF_EXCLUDE is constructed
+  the `excluded()` helper specifically consults SELF_EXCLUDE
+  governed process-selection paths actually call `excluded` where required
+
+Expected values must be fixed by the reviewed authority/current-byte design, not
+derived from the same observation.
+
+Add a negative control showing the same targeted probe returns NO against a file
+without the construct.
+
+======================================================================
+BLOCKER 2 — RUNNER_SELF_REFERENCE_PRESENT DOES NOT PROVE EXCLUSION
+======================================================================
+
+Current check:
+
+  RUNNER_SELF=$(grep -cE 'SELF_EXCLUDE|\$\$' "${BASH_SOURCE[0]}")
+  RUNNER_SELF_REFERENCE_PRESENT = YES if count >= 1
+
+This proves only that the runner text contains SELF_EXCLUDE or $$.
+
+It does NOT prove the R28 requirement that:
+
+  executor/test processes
+  shells
+  grep/pgrep/ps helpers
+  ancestors
+
+cannot enter the governed census or cleanup target set.
+
+The P5 behavioral checks against the runner PID and one ancestor are useful and
+remain accepted evidence, but they cover only part of the required self-lineage /
+process-selection regression.
+
+REQUIRED CORRECTION
+
+Do not label the full:
+
+  SELF_LINEAGE_REGRESSION=PASS
+
+until the mandatory regression is actually implemented.
+
+For the scaffold, either:
+
+  A. mark the unimplemented remainder explicitly:
+       SELF_LINEAGE_REGRESSION=NOT_IMPLEMENTED
+     and ensure it cannot contribute PASS credit;
+
+or
+
+  B. implement an independent bounded behavioral probe proving the required
+     process classes cannot enter governed census/cleanup selection.
+
+Option A is preferred now because R80V authorized framework correction only,
+not expansion into a new behavioral fixture slice.
+
+Preserve the already-valid P5 self/ancestor checks as:
+  PARTIAL_SELF_LINEAGE_EVIDENCE
+
+Do not convert partial evidence into a full regression PASS.
+
+======================================================================
+HELPER CAPABILITY DISCLOSURE — SAFETY SURFACE
+======================================================================
+
+The measured runner-owned call-site audit is useful and may remain.
+
+However, the runner sources certified P3 and calls:
+
+  lineage_cleanup
+
+from its cleanup path.
+
+Certified P3 contains a real:
+
+  kill -TERM "$p"
+
+primitive, bounded to captured fixture PIDs.
+
+Therefore:
+
+  REAL_KILL_CALL_SITES=0
+
+is true only for DIRECT runner-source command positions.
+
+It is not a statement that the effective sourced runtime has zero real signal
+capability.
+
+Required reporting distinction:
+
+  DIRECT_RUNNER_REAL_KILL_CALL_SITES=0
+  SOURCED_HELPER_REAL_KILL_CAPABILITY=PRESENT
+  SOURCED_HELPER_SIGNAL_SCOPE=BOUNDED_NON_GOVERNED_FIXTURE_ONLY
+
+and mechanically prove the P3 identity before relying on that characterization.
+
+This is not a prohibition on P3 fixture cleanup. R80U prohibits signaling REAL
+GOVERNED processes; bounded non-governed fixture cleanup remains compatible with
+the offline model.
+
+The safety audit must fail if a direct unauthorized signal call appears in the
+runner or if the sourced helper identity is not the expected certified P3.
+
+======================================================================
+WHAT IS NOW ACCEPTED
+======================================================================
+
+Accepted:
+
+  - 42 / 36 / 6 registry and lock set
+  - locked-case execution guard
+  - fail-closed exit 13 for current incomplete scaffold
+  - exit 0 only through complete matrix PASS condition
+  - measured direct runner safety counters
+  - safety known-positive control
+  - P5 PID 0/1/self/ancestor behavioral checks
+  - SELF_EXCLUDE negative-control concept
+  - honest 36x NOT_IMPLEMENTED state
+  - six-slice fixture build strategy
+
+No certification credit is granted yet.
+
+======================================================================
+NEXT AUTHORIZED STEP
+======================================================================
+
+CPT may patch ONLY:
+
+  1. targeted SELF_EXCLUDE-use verifier;
+  2. self-lineage scaffold status so partial evidence cannot become full PASS;
+  3. helper-aware safety reporting for certified P3 signal capability.
+
+Do not implement A01-A04 yet.
+
+Return:
+
+  NEW_RUNNER_SHA256
+  RUNNER_BYTES
+  LINE_COUNT
+  bash -n result
+
+plus evidence:
+
+  SELF_EXCLUDE_BUILD_PROBE
+  SELF_EXCLUDE_USE_PROBE
+  GOVERNED_SELECTION_EXCLUDED_CALL_PROBE
+  SELF_EXCLUDE_NEGATIVE_CONTROL
+
+  PARTIAL_SELF_LINEAGE_EVIDENCE=PASS|FAIL
+  SELF_LINEAGE_REGRESSION=NOT_IMPLEMENTED
+
+  DIRECT_RUNNER_REAL_KILL_CALL_SITES
+  SOURCED_HELPER_REAL_KILL_CAPABILITY
+  SOURCED_HELPER_SIGNAL_SCOPE
+  P3_SHA_VERIFIED
+
+  scaffold exit != 0
+  case counts still 42 / 36 / 6
+  T05-T10 unchanged and locked
+  all 36 numbered fixtures still NOT_IMPLEMENTED
+
+After Boss byte review of the corrected framework:
+  A01-A04 will be the first authorized fixture slice.
+
+======================================================================
+LOCKS
+======================================================================
+
+r80_runner_v2 5e741e04...              NOT APPROVED FOR EXECUTION
+framework correction                    AUTHORIZED
+A01-A04 fixtures                         NOT AUTHORIZED YET
+other numbered fixture slices            NOT AUTHORIZED
+runner host execution                    NOT AUTHORIZED
+T05-T10                                  EXECUTION-LOCKED
+SP01                                     NOT AUTHORIZED
+executor 583cfdbc...                     NOT CERTIFIED
+launcher                                 NOT AUTHORIZED
+restart                                  NOT AUTHORIZED
+broadcast                                LOCKED
+capital                                 UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

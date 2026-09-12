@@ -81,3 +81,27 @@ PASS · both R40 audits PASS · both overlays PASS · evidence verifier PASS ·
 executor/verifier consistency PASS · immutable hashes exact · no unauthorized surface
 exercised · post-run integrity PASS. **A generic completion is not a pass.**
 Certification would still not authorize SP01, restart, launcher, broadcast or capital.
+
+
+---
+
+## PRESERVATION OVERLAY 2 — 2026-09-12T00:53:58Z
+**Authority:** Boss R80CB / R80CC · **Transaction:** `M2E017G-PRESV-002`
+**Baseline HEAD:** `4133fd9dd5b84565c3903e85ef04c6d6325aa2f4`
+
+Content above is preserved verbatim; where superseded, this section controls.
+
+### Plan status
+
+```
+A-slice  COMPLETE      I-slice  COMPLETE      D-slice  COMPLETE
+S-slice  COMPLETE / CLOSED
+C-slice  DESIGN REVIEW is the next technical item — not implementation
+T01-T04  reachability review required before any build
+T05-T10  EXECUTION_LOCKED
+self-lineage regression  NOT_IMPLEMENTED
+```
+
+R40 command-position and verifier-consistency audits, both change-overlays and
+the safety surface have passed on every executed run. Full R80 certification
+remains open.

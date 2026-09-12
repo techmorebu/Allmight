@@ -1,0 +1,253 @@
+BOSS M2E-017G R80AO — I01-I03 ACCEPTED / EVIDENCE-PACKAGING DEFECT / D-SLICE BUILD HELD
+
+EVIDENCE REVIEWED
+
+  M2E017G_R80_EVIDENCE_20260911T013205Z.zip
+
+Exact package SHA256:
+
+  c090415b97c9054d44f0c4319c669bf1ca679fb899f6ff606127f52ff9b51714
+
+Embedded runner:
+
+  SHA256 7c27985b8bee1e438019467b353d433f4fc1743894ec32076e012a3bdd01ddac
+  BYTES  65795
+  wc -l  1124
+
+This is the exact v13 runner authorized by R80AN.
+
+======================================================================
+RULING — I01 / I02 / I03
+======================================================================
+
+I01-I03 are ACCEPTED as passing offline certification cases.
+
+Machine evidence:
+
+  I01
+    STOP_GATE=G2_IDENTITY_MISMATCH
+    signals=0
+    mutations=0
+    starts=0
+    consistent=YES
+    verifier independent of executor terminal fields=YES
+    static mismatch=YES
+    reuse transition proof=NO
+
+  I02
+    STOP_GATE=G2_SIGNATURE_MISMATCH
+    signals=0
+    mutations=0
+    starts=0
+    consistent=YES
+    verifier independent of executor terminal fields=YES
+    starttime match=YES
+    signature match=NO
+
+  I03
+    STOP_GATE=G2_IDENTITY_MISMATCH
+    signals=0
+    mutations=0
+    starts=0
+    consistent=YES
+    verifier independent of executor terminal fields=YES
+    same numeric PID=YES
+    starttime changed=YES
+    reuse transition proof=YES
+
+I03 preserved:
+
+  PID before 4190023
+  PID after  4190023
+  starttime before 71590023
+  starttime after  71594265
+
+The I01/I03 shared-gate ruling is satisfied by distinct machine-proven fixture
+construction, not by invented gate labels.
+
+======================================================================
+A-SLICE RUN-SCOPE
+======================================================================
+
+Accepted:
+
+  A_CASES_ACCEPTED_PRIOR=4
+  A_CASES_EXECUTED_THIS_RUN=0
+
+R80_CASES.tsv contains A01-A04 only as ACCEPTED_PRIOR.
+
+No A certification rerun occurred.
+
+======================================================================
+BLOCKED I CASES
+======================================================================
+
+Preserved exactly:
+
+  I04 BLOCKED_REACHABILITY
+      expected G10_RESURRECTED
+
+  I05 BLOCKED_REACHABILITY
+      expected G9_ROLE_SUBSTITUTED
+
+  I06 BLOCKED_CERTIFICATION_CONTRACT
+      expected G8_SECOND_STACK
+
+Execution credit for all three remains NONE.
+
+======================================================================
+ACCOUNTING
+======================================================================
+
+Packaged evidence confirms:
+
+  CASES_RUN=29
+  CASES_PASS=3
+  CASES_FAIL=0
+  CASES_NOT_IMPLEMENTED=26
+
+  I_CASES_BUILT=3
+  I_CASES_BLOCKED_REACHABILITY=2
+  I_CASES_BLOCKED_CERTIFICATION_CONTRACT=1
+  I_CASES_BLOCKED_TOTAL=3
+
+  R80_OFFLINE_NONLAUNCHER_MATRIX=INCOMPLETE
+  EXECUTOR_CERTIFICATION_STATE=NOT_CERTIFIED
+  FULL_R80_CERTIFICATION=NOT_CLAIMED
+
+Framework:
+
+  R40_COMMAND_POSITION_AUDIT=PASS
+  R40_VERIFIER_CONSISTENCY_AUDIT=PASS
+  SYNTHETIC_BASELINE_OVERLAY=PASS
+  PID01_ANCESTOR_OVERLAY=PASS
+  SAFETY_SURFACE=PASS
+  GIT_PROBE_KNOWN_POSITIVE_CONTROL=PASS
+  LOCKED_CASE_SELECTION_ATTEMPTS=0
+  SELF_LINEAGE_REGRESSION=NOT_IMPLEMENTED
+
+Safety:
+
+  REAL_KILL_CALL_SITES=0
+  RUNNER_PATTERN_KILL_SITES=0
+
+======================================================================
+NEW DEFECT — RUNNER_EXIT PACKAGING ORDER
+======================================================================
+
+The ZIP's R80_EVIDENCE.tsv does NOT contain RUNNER_EXIT.
+
+Source cause:
+
+  pack
+
+is called before:
+
+  emit "RUNNER_EXIT" "0"
+or
+  emit "RUNNER_EXIT" "13"
+
+Therefore the final RUNNER_EXIT field is emitted only after the evidence
+package has already been created.
+
+Classification:
+
+  BUG_CLASS=EVIDENCE_ORDERING
+  SEVERITY=VERIFIER_PRECISION / BUG-009 FAMILY
+  CASE_CREDIT_IMPACT=NONE for I01-I03
+  GLOBAL_CERTIFICATION_IMPACT=BLOCK NEXT RUN UNTIL FIXED
+
+This defect does NOT negate the I01-I03 PASS evidence because their case rows,
+gates, independent predictions, zero-boundary fields, and framework audits are
+already inside the package.
+
+However, packaged evidence cannot independently prove the final shell exit
+field.
+
+======================================================================
+PATCH AUTHORIZED
+======================================================================
+
+Before any D-slice build/run progression, patch only the evidence-finalization
+order so RUNNER_EXIT is written before packaging.
+
+Preferred pattern:
+
+  determine final exit code
+  emit RUNNER_EXIT
+  pack
+  print final terminal message
+  exit with same code
+
+Required invariant:
+
+  PACKAGED_RUNNER_EXIT == ACTUAL_SHELL_EXIT
+
+The packaged field must exist for both:
+  success path 0
+  incomplete path 13
+
+No semantic case logic changes are authorized in this patch.
+
+======================================================================
+D-SLICE
+======================================================================
+
+D01-D06 BUILD IS NOT YET AUTHORIZED.
+
+Reason:
+  finish the small evidence-ordering correction first and exact-byte review the
+  revised runner before expanding into the next certification slice.
+
+After that correction is accepted, the next architectural slice remains:
+
+  D01-D06
+
+No D fixture implementation has begun.
+
+======================================================================
+CURRENT CERTIFICATION STATE
+======================================================================
+
+Accepted:
+
+  A01-A04
+  I01-I03
+
+Blocked:
+
+  I04 BLOCKED_REACHABILITY
+  I05 BLOCKED_REACHABILITY
+  I06 BLOCKED_CERTIFICATION_CONTRACT
+
+Unimplemented ordinary numbered cases:
+
+  D01-D06
+  S01-S08
+  C01-C08
+  T01-T04
+
+Still required:
+  full self-lineage / process-selection regression
+
+Locked:
+  T05-T10
+
+Executor:
+  583cfdbc... NOT CERTIFIED
+
+Launcher:
+  NOT AUTHORIZED
+
+Restart:
+  NOT AUTHORIZED
+
+Broadcast:
+  LOCKED
+
+Capital:
+  UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

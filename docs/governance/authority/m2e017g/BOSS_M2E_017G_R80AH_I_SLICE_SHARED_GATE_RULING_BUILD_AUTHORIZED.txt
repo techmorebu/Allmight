@@ -1,0 +1,358 @@
+BOSS M2E-017G R80AH — I-SLICE SHARED-GATE RULING / I01-I06 BUILD AUTHORIZED
+
+TARGET EXECUTOR
+
+  SHA256
+  583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+
+SOURCE DIAGNOSIS PRESENTED BY CPT
+
+  I01  G2_IDENTITY_MISMATCH
+  I02  G2_SIGNATURE_MISMATCH
+  I03  G2_IDENTITY_MISMATCH
+  I04  G10_RESURRECTED
+  I05  G9_ROLE_SUBSTITUTED
+  I06  G8_SECOND_STACK
+
+No alternate gate names are to be invented.
+
+======================================================================
+RULING 1 — I01 AND I03 MAY SHARE G2_IDENTITY_MISMATCH
+======================================================================
+
+ACCEPTED.
+
+R28 defines two certification cases whose exact executor implementation
+converges on the same fail-closed gate.
+
+That is not itself a defect.
+
+Certification case identity does NOT require a one-to-one mapping between:
+  semantic case -> unique STOP_GATE name.
+
+It requires:
+  distinct authorized input condition
+  exact executor execution
+  source-grounded expected behavior
+  independent proof that the intended input condition was actually constructed
+  no accidental triggering of a different case condition
+  consistent executor/verifier outcome
+
+Therefore I01 and I03 may both expect:
+
+  STOP_GATE=G2_IDENTITY_MISMATCH
+
+No executor marker may be invented merely to make their labels unique.
+
+======================================================================
+RULING 2 — REQUIRED DISTINCTION BETWEEN I01 AND I03
+======================================================================
+
+STOP_GATE is NOT the distinguishing predicate.
+
+STOP_REASON text may be preserved as executor evidence, but it MUST NOT be the
+sole proof of semantic distinction if the executor wording is shared or
+ambiguous.
+
+The distinction must come from machine-verifiable fixture construction.
+
+I01 — STATIC STARTTIME MISMATCH
+
+Construct:
+  - one intended baseline role
+  - same intended numeric PID
+  - process present
+  - signature/cmdline valid
+  - expected starttime != observed starttime
+  - mismatch exists from fixture construction time
+  - no demonstrated prior identity transition for that PID
+
+Required distinguishing evidence:
+  I01_PID
+  I01_EXPECTED_STARTTIME
+  I01_OBSERVED_STARTTIME
+  I01_SIGNATURE_MATCH=YES
+  I01_STATIC_MISMATCH=YES
+  I01_REUSE_TRANSITION_PROOF=NO
+  I01_ALTERNATE_ROLE_PID_PRESENT=NO
+  I01_SECOND_STACK_PRESENT=NO
+
+Expected:
+  STOP_GATE=G2_IDENTITY_MISMATCH
+  TERM_ATTEMPTED_COUNT=0
+  CONTROL_FILES_CHANGED=0
+  START_ATTEMPTED=0
+
+I03 — PROVEN PID REUSE
+
+I03 must not be merely a second copy of I01 with a different case label.
+
+Construct and preserve a temporal identity transition for the SAME numeric PID:
+
+  state A:
+    PID=P
+    starttime=S1
+    intended baseline identity
+
+  state B before executor G2 observation:
+    PID=P
+    starttime=S2
+    S2 != S1
+
+The fixture must preserve evidence of both identities and the transition.
+
+Acceptable synthetic proof:
+  - write/preserve a pre-transition stat/cmdline snapshot for PID P;
+  - mutate the synthetic proc entry for the same PID P to a new starttime;
+  - preserve the post-transition stat/cmdline snapshot;
+  - run the exact executor only after the transition;
+  - independently verify P stayed numerically identical while starttime changed.
+
+Required distinguishing evidence:
+  I03_PID_BEFORE=P
+  I03_PID_AFTER=P
+  I03_STARTTIME_BEFORE=S1
+  I03_STARTTIME_AFTER=S2
+  I03_SAME_NUMERIC_PID=YES
+  I03_STARTTIME_CHANGED=YES
+  I03_REUSE_TRANSITION_PROOF=YES
+  I03_SIGNATURE_STATE=<observed and explicit>
+  I03_ALTERNATE_ROLE_PID_PRESENT=NO
+  I03_SECOND_STACK_PRESENT=NO
+
+Expected:
+  STOP_GATE=G2_IDENTITY_MISMATCH
+  TERM_ATTEMPTED_COUNT=0
+  CONTROL_FILES_CHANGED=0
+  START_ATTEMPTED=0
+
+If the fixture cannot produce and preserve that temporal transition honestly:
+
+  I03 = BLOCKED
+
+Do not relabel an ordinary static mismatch as PID reuse.
+
+======================================================================
+RULING 3 — I02
+======================================================================
+
+I02 remains distinct by preserving:
+
+  starttime match = YES
+  signature/cmdline match = NO
+
+Expected:
+  STOP_GATE=G2_SIGNATURE_MISMATCH
+
+Required distinguishing evidence:
+  I02_EXPECTED_STARTTIME
+  I02_OBSERVED_STARTTIME
+  I02_STARTTIME_MATCH=YES
+  I02_SIGNATURE_MATCH=NO
+  I02_REUSE_TRANSITION_PROOF=NO
+  I02_SECOND_STACK_PRESENT=NO
+
+Pre-signal zero fields remain mandatory.
+
+======================================================================
+RULING 4 — I04 G10 DEPTH
+======================================================================
+
+I04 may be built, but no fixture is allowed to fake passage through G3-G9.
+
+The case must honestly reach the executor's real G10 monotonic check.
+
+Required construction principle:
+
+  1. establish a role as DEAD_AT_BASELINE at G2;
+  2. satisfy every real intervening gate honestly;
+  3. cause that exact dead-baseline PID/identity condition to be present at the
+     executor-defined monotonic recheck;
+  4. independently prove the resurrection transition;
+  5. expect G10_RESURRECTED.
+
+CPT must source-read and enumerate the exact prerequisites needed to pass:
+  G3
+  G4
+  G5
+  G6
+  G7
+  G8
+  G9
+
+before encoding the I04 fixture.
+
+If an intervening executor gate cannot be cleared under the authorized
+synthetic seam without expanding capability:
+
+  I04 = BLOCKED
+  report the exact blocking gate and evidence
+
+Do not alter the executor, stub gates, suppress a legitimate STOP, or expand
+the seam just to reach G10.
+
+A build that honestly represents I04 but is statically expected to BLOCK at an
+earlier unavoidable gate may be returned for Boss ruling before execution.
+
+======================================================================
+RULING 5 — I05 / I06 MUST REMAIN DISTINCT
+======================================================================
+
+I05:
+  expected STOP_GATE=G9_ROLE_SUBSTITUTED
+
+Must prove:
+  - expected root role identity is the target condition;
+  - alternate governed PID/process is present;
+  - alternate is non-baseline;
+  - alternate is not a frozen descendant;
+  - condition is role substitution specifically;
+  - fixture is not merely the generic second-stack condition.
+
+I06:
+  expected STOP_GATE=G8_SECOND_STACK
+
+Must prove:
+  - governed-signature PID exists;
+  - PID is not a live baseline root;
+  - PID is not a frozen descendant;
+  - PID constitutes the executor's second-stack census condition;
+  - fixture is not merely I05 role substitution.
+
+Because G8 executes before G9, I05 construction must be source-grounded so the
+intended substitute does not simply terminate as I06 first.
+
+If exact executor ordering makes the proposed I05 construction unreachable
+without first triggering G8:
+
+  do not force it;
+  return I05=BLOCKED with source/evidence explanation for Boss ruling.
+
+======================================================================
+RULING 6 — PRE-SIGNAL EVIDENCE
+======================================================================
+
+For I01-I06, required zero-boundary fields are:
+
+  TERM_ATTEMPTED_COUNT=0
+  CONTROL_FILES_CHANGED=0
+  START_ATTEMPTED=0
+
+Absent field != zero.
+
+If a required field is absent:
+  BLOCK
+
+Do not default absent evidence to success.
+
+======================================================================
+RULING 7 — BUILD AUTHORIZATION
+======================================================================
+
+I01-I06 fixture BUILD remains AUTHORIZED.
+
+This ruling resolves the I01/I03 shared-gate question.
+
+CPT may now implement I01-I06 under R80AG plus this ruling.
+
+No host execution is authorized.
+
+The runner must preserve for every I case:
+  fixture condition
+  case-specific distinguishing predicates
+  exact executor actual
+  STOP_GATE
+  STOP_REASON
+  executor RC
+  evidence reference
+  independent verifier actual
+  consistency
+  signal count
+  mutation count
+  start-attempt count
+  verdict/block reason
+  per-case immutable diagnostic snapshot
+
+======================================================================
+SECOND-RUN GOVERNANCE
+======================================================================
+
+Accepted correction:
+
+  22:27:39Z run = authorized A-slice certification evidence
+  23:09:01Z run = outside authorized run count, certification credit NONE
+
+The later run is preserved, not rewritten or deleted.
+
+CPT's stated process correction is accepted:
+
+  after a round-trip artifact verification, do not re-issue an execution
+  instruction that has already been consumed.
+
+This is a workflow discipline correction only.
+It does not alter A01-A04 certification status.
+
+======================================================================
+RETURN BEFORE I-SLICE EXECUTION
+======================================================================
+
+Return the new runner plus static/source report.
+
+At minimum:
+
+  RUNNER_FILENAME
+  RUNNER_SHA256
+  RUNNER_BYTES
+  LINE_COUNT
+  bash -n
+
+  A_CASES_IMPLEMENTED=4
+  I_CASES_IMPLEMENTED=6
+  REMAINING_NOT_IMPLEMENTED=26
+  SELF_LINEAGE_REGRESSION=NOT_IMPLEMENTED
+
+For each I01-I06:
+  EXPECTED_STOP_GATE
+  EXPECTED_GATE_SOURCE_GROUNDED=YES
+  FIXTURE_DISTINGUISHER
+  DISTINGUISHING_PREDICATES_PRESENT=YES
+  PRE_SIGNAL_ZERO_GATED=YES
+  PER_CASE_STATUS_SNAPSHOT_PRESENT=YES
+  EVIDENCE_PRESERVATION_PRESENT=YES
+
+Special:
+  I01_I03_SHARED_GATE=G2_IDENTITY_MISMATCH
+  I01_I03_GATE_NAME_DISTINCTION_REQUIRED=NO
+  I01_I03_FIXTURE_DISTINCTION_REQUIRED=YES
+  I03_REUSE_TRANSITION_PROOF_PRESENT=YES
+  I04_INTERVENING_GATES_ENUMERATED=YES
+  I04_G10_REACHABILITY=<SOURCE_GROUNDED_RESULT>
+  I05_G8_PREEMPTION_ANALYZED=YES
+
+After exact-byte Boss review:
+  Boss decides whether one bounded I01-I06 offline execution is authorized.
+
+======================================================================
+LOCKS
+======================================================================
+
+A01-A04                         ACCEPTED / CLOSED
+A rerun                         NOT AUTHORIZED
+I01-I06 fixture build           AUTHORIZED
+I01-I06 host execution          NOT AUTHORIZED
+D01-D06                         NOT AUTHORIZED
+S01-S08                         NOT AUTHORIZED
+C01-C08                         NOT AUTHORIZED
+T01-T04                         NOT AUTHORIZED
+full self-lineage               NOT AUTHORIZED
+T05-T10                         EXECUTION-LOCKED
+SP01                            NOT AUTHORIZED
+executor 583cfdbc...            NOT CERTIFIED
+launcher                        NOT AUTHORIZED
+restart                         NOT AUTHORIZED
+broadcast                       LOCKED
+capital                         UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

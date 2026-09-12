@@ -1,0 +1,262 @@
+BOSS M2E-017G R80Z — A-SLICE V5 BYTE REVIEW / FINAL CORRECTIONS BEFORE EXECUTION
+
+FILE REVIEWED
+
+  r80_runner_v5.sh
+
+Exact uploaded bytes independently verified:
+  SHA256  65d97d36510ab571ec458e32c7ea9749c3a2ae872d4466dcc72a55268c9b6df5
+  BYTES   43949
+  LINES   755 source lines / 756 physical line count including terminal split
+  bash -n PASS
+
+STATUS
+
+R80Y corrections are substantially implemented, but the A-slice is still
+NOT APPROVED FOR HOST EXECUTION.
+
+Exact-byte review found three remaining deterministic defects.
+
+======================================================================
+BLOCKER 1 — A04 REFERENCES REMOVED/UNDEFINED POST-HASH VARIABLES
+======================================================================
+
+v5 correctly introduced:
+
+  A04_PIDF_PRE
+  A04_SESS_PRE
+  A04_PIDF_POST
+  A04_SESS_POST
+
+and compares PRE == POST.
+
+But two later evidence lines still reference the old variable names:
+
+  A04_PIDF_NOW
+  A04_SESS_NOW
+
+Those names are not assigned anywhere in r80_runner_v5.sh.
+
+Because the runner uses:
+
+  set -u
+
+A04 can terminate on an unbound-variable error before it records its case verdict.
+
+REQUIRED CORRECTION
+
+Delete the stale evidence lines or change them to the already-defined POST variables.
+
+There must be one canonical naming set only:
+
+  A04_PIDFILE_SHA_PRE
+  A04_PIDFILE_SHA_POST
+  A04_SESSION_SHA_PRE
+  A04_SESSION_SHA_POST
+  A04_CONTROL_FILES_UNCHANGED
+
+Add a static undefined-variable regression for these A04 names if practical.
+
+======================================================================
+BLOCKER 2 — PID ALLOCATOR DEPENDS ON UNDEFINED SELFSET
+======================================================================
+
+a_alloc_pid contains:
+
+  printf '%s' " $SELFSET " | grep -q " $c " && continue
+
+r80_runner_v5.sh contains no assignment to SELFSET.
+
+Under set -u this is another potential unbound-variable abort.
+
+Even if a sourced P1-P5 helper happens to define a variable with that name,
+the A fixture must not depend on accidental global leakage from a sourced
+certification helper.
+
+REQUIRED CORRECTION
+
+The runner must explicitly construct and own its exclusion set before PID
+allocation.
+
+It must include at minimum:
+
+  runner PID
+  complete runner ancestor chain
+  PID 1
+  PID 0
+
+and retain existing exclusions for:
+  historical baseline PIDs
+  canonical pidfile members
+  real /proc occupancy
+
+Use an A-slice-specific variable name, e.g.:
+
+  A_SELF_EXCLUDE
+
+and initialize it deterministically before the first a_alloc_pid call.
+
+Then mechanically prove for every allocated PID:
+
+  PID_NOT_REAL_PROC
+  PID_NOT_HISTORICAL_BASELINE
+  PID_NOT_CANONICAL_PIDFILE_MEMBER
+  PID_NOT_RUNNER
+  PID_NOT_RUNNER_ANCESTOR
+
+Do not rely on globals supplied incidentally by sourced verifier files.
+
+======================================================================
+BLOCKER 3 — DEAD ROLE SET IS DERIVED BUT NOT IN PASS COMPARISON
+======================================================================
+
+v5 now derives:
+
+  v_live_set
+  v_dead_set
+  exp_live_set
+  exp_dead_set
+
+and emits both observed/expected sets.
+
+However the normalized strings passed to record() are:
+
+  unified_exec =
+    live=<...> dead=<...> liveset[...] pidmm=<...>
+
+  unified_verif =
+    live=<...> dead=<...> liveset[...] pidmm=<...>
+
+  expected =
+    live=<...> dead=<...> liveset[...] pidmm=0
+
+There is no:
+
+  deadset[...]
+
+in the PASS comparison.
+
+Therefore the exact dead-role identity requirement is still presentation
+evidence, not a certification predicate.
+
+R80Y Blocker 3 required exact live AND dead sets.
+
+REQUIRED CORRECTION
+
+All three normalized forms must contain both:
+
+  liveset[...]
+  deadset[...]
+
+Example shape:
+
+  expected =
+    live=5 dead=3
+    liveset[activator,fetcher,monitor,shadow_engine,volatility]
+    deadset[heat,notification_router,watchdog]
+    pidmm=0
+
+  executor_actual =
+    executor cardinality + executor live-role set
+    AND independently derived dead-role set only if explicitly labeled as such
+
+  verifier_actual =
+    ROOT_MAP-derived cardinality, live set, dead set, role->PID identity
+
+Important:
+Do not pretend the executor directly emitted a dead-role set if it did not.
+Preserve provenance.
+
+A clean normalization may use a case verdict predicate rather than forcing
+different evidence sources into one identical prose string. The existing
+record() equality model must not erase provenance merely to make strings equal.
+
+======================================================================
+ADDITIONAL ACCEPTED R80Y CORRECTIONS
+======================================================================
+
+Accepted from v5:
+
+  canonical governance HEAD and executor fixture HEAD are separated;
+  disposable fixture checks out 923dd504... only;
+  canonical repo remains untouched;
+  allocator no longer advances through command substitution;
+  uniqueness proof requires 8 allocated / 8 unique / 0 duplicate;
+  ROOT_MAP is required for independent role-set verification;
+  role->PID mismatch counter exists;
+  A04 PRE/POST hash equality predicate exists;
+  A04 missing zero-boundary evidence no longer defaults to zero;
+  direct kill disclosure and safety gate now use the same SCAN_SRC universe;
+  T05-T10 remain execution-locked;
+  32 non-A executable cases remain NOT_IMPLEMENTED;
+  SELF_LINEAGE_REGRESSION remains NOT_IMPLEMENTED;
+  global matrix remains incapable of PASS in this stage.
+
+No A-case certification credit is granted yet.
+
+======================================================================
+NEXT AUTHORIZED STEP
+======================================================================
+
+CPT may patch ONLY these three remaining defects:
+
+  1. stale A04 *_NOW references;
+  2. explicit A_SELF_EXCLUDE construction / allocator ownership proof;
+  3. make exact dead-role identity a real A01-A03 PASS predicate while
+     preserving evidence provenance.
+
+No new fixture group is authorized.
+No host execution is authorized.
+
+Return the corrected runner with:
+
+  RUNNER_FILENAME
+  RUNNER_SHA256
+  RUNNER_BYTES
+  LINE_COUNT
+  bash -n result
+
+and static evidence:
+
+  A04_STALE_NOW_REFERENCES=0
+
+  A_SELF_EXCLUDE_DEFINED=YES
+  A_SELF_EXCLUDE_INCLUDES_RUNNER=YES
+  A_SELF_EXCLUDE_INCLUDES_FULL_ANCESTOR_CHAIN=YES
+  A_ALLOCATOR_UNDECLARED_GLOBAL_DEPENDENCIES=0
+
+  A01-A03_EXPECTED_DEAD_SET_PREDICATE=YES
+  A01-A03_OBSERVED_DEAD_SET_PREDICATE=YES
+  A01-A03_DEAD_SET_CONTRIBUTES_TO_VERDICT=YES
+
+  registry=42/36/6
+  A_CASES_IMPLEMENTED=4
+  REMAINING_NOT_IMPLEMENTED=32
+  SELF_LINEAGE_REGRESSION=NOT_IMPLEMENTED
+  T05-T10=EXECUTION_LOCKED
+
+Safety invariants remain unchanged.
+
+After exact-byte Boss review of that correction, Boss will decide whether the
+A-slice is safe to execute offline on the host.
+
+======================================================================
+LOCKS
+======================================================================
+
+r80_runner_v5 65d97d36...               NOT APPROVED FOR EXECUTION
+A-slice final correction                 AUTHORIZED
+A01-A04 host execution                   NOT AUTHORIZED
+I/D/S/C/T fixture implementation         NOT AUTHORIZED
+full self-lineage regression             NOT AUTHORIZED
+T05-T10                                  EXECUTION-LOCKED
+SP01                                     NOT AUTHORIZED
+executor 583cfdbc...                     NOT CERTIFIED
+launcher                                 NOT AUTHORIZED
+restart                                  NOT AUTHORIZED
+broadcast                                LOCKED
+capital                                  UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

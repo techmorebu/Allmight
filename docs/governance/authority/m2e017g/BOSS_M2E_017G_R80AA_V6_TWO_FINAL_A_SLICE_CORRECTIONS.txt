@@ -1,0 +1,200 @@
+BOSS M2E-017G R80AA — V6 PRE-EXECUTION BYTE REVIEW / TWO FINAL A-SLICE CORRECTIONS
+
+FILE REVIEWED
+
+  r80_runner_v6.sh
+
+Exact uploaded bytes independently verified:
+
+  SHA256  90476228a5d59803277b4f670719b5261fba26cd9421fc1825f34d493cd60f0c
+  BYTES   46737
+  LINE_COUNT 798 newline-terminated source lines
+  bash -n PASS
+
+STATUS
+
+R80Z's three requested corrections are present.
+
+A04_LSET is NOT an unbound-variable defect:
+  it is assigned on both the readable-ROOT_MAP branch and the ROOTMAP_ABSENT
+  branch before use.
+
+However, two material pre-execution defects remain.
+
+The A-slice is NOT APPROVED FOR HOST EXECUTION.
+
+======================================================================
+BLOCKER 1 — PARTIAL ANCESTOR WALK DOES NOT FAIL CLOSED
+======================================================================
+
+The runner now owns A_SELF_EXCLUDE and performs a bounded ancestor walk.
+
+It emits:
+
+  A_SELF_EXCLUDE_INCLUDES_FULL_ANCESTOR_CHAIN =
+    YES      if the walk reaches PID 1
+    PARTIAL  otherwise
+
+But a PARTIAL result does not stop fixture construction or PID allocation.
+
+Therefore the proof claim:
+
+  A_SELF_EXCLUDE_INCLUDES_FULL_ANCESTOR_CHAIN=YES
+
+is observational only, not an admission gate.
+
+R80Z required the allocator to own and prove the complete runner ancestor
+exclusion chain before allocating synthetic PIDs.
+
+REQUIRED CORRECTION
+
+Before any A fixture allocation:
+
+  require A_SELF_EXCLUDE_INCLUDES_FULL_ANCESTOR_CHAIN == YES
+
+Otherwise fail closed / mark A fixture construction BLOCKED.
+
+Do not continue with a partial chain.
+
+Also preserve:
+  PID 0
+  PID 1
+  runner PID
+  every observed intermediate ancestor
+
+The bounded 64-hop limit may remain.
+
+======================================================================
+BLOCKER 2 — A04 OMITS ROLE->PID IDENTITY FROM ITS VERDICT
+======================================================================
+
+A01-A03 now correctly compute:
+
+  ROLE_PID_IDENTITY_MISMATCHES
+
+from ROOT_MAP against the fixture role->PID map, and pidmm=0 contributes to
+their PASS predicate.
+
+A04 is a separate code path.
+
+Its verdict compares:
+
+  liveset
+  deadset
+  zero-live marker
+  signals
+  mutations
+  starts
+  control-file unchanged
+
+but does NOT perform the ROOT_MAP role->PID identity comparison.
+
+R80Y required role->PID fixture-map identity verification for A01-A04.
+
+Therefore A04 can currently pass with the correct eight dead role names but
+incorrect ROOT_MAP PID bindings.
+
+REQUIRED CORRECTION
+
+Apply the same ROOT_MAP role->PID identity check to A04.
+
+Require:
+
+  A_A04_ROLE_PID_IDENTITY_MISMATCHES=0
+
+and include pidmm=0 in the A04 expected / executor-evidence-normalized /
+verifier predicate used for the case verdict.
+
+If ROOT_MAP contains:
+  missing role
+  duplicate role
+  wrong PID
+  unexpected role
+
+A04 must not PASS.
+
+Prefer factoring the role/PID verification into one shared A-slice helper so
+A01-A04 use the same verifier implementation.
+
+======================================================================
+ACCEPTED V6 CORRECTIONS
+======================================================================
+
+Accepted:
+
+  - stale A04 *_NOW references removed
+  - A04_LSET/A04_DSET have defined branch assignments
+  - runner-owned A_SELF_EXCLUDE exists
+  - allocator no longer depends on SELFSET
+  - parent-shell PID allocation retained
+  - exact live AND dead role sets contribute to A01-A03 verdict
+  - dead-set provenance remains explicit
+  - fixture repo uses executor-required HEAD 923dd504...
+  - canonical governance HEAD remains 4133fd9...
+  - A04 PRE/POST control-file hashes are real and compared
+  - absent A04 zero-boundary evidence cannot default to zero
+  - direct kill disclosure and safety gate share SCAN_SRC
+  - registry remains 42/36/6
+  - 32 non-A cases remain NOT_IMPLEMENTED
+  - SELF_LINEAGE_REGRESSION remains NOT_IMPLEMENTED
+  - T05-T10 remain execution-locked
+
+No A-case certification credit is granted by this static review.
+
+======================================================================
+NEXT AUTHORIZED STEP
+======================================================================
+
+CPT may patch ONLY:
+
+  1. fail closed if the A ancestor walk is not complete to PID 1;
+  2. add A04 ROOT_MAP role->PID identity verification as a verdict predicate.
+
+No I/D/S/C/T fixture construction.
+No self-lineage expansion.
+No host execution.
+
+Return:
+
+  RUNNER_FILENAME
+  RUNNER_SHA256
+  RUNNER_BYTES
+  LINE_COUNT
+  bash -n result
+
+Static evidence:
+
+  A_ANCESTOR_CHAIN_COMPLETION_IS_GATE=YES
+  A_PARTIAL_ANCESTOR_CHAIN_CAN_CONTINUE=NO
+
+  A_A04_ROLE_PID_IDENTITY_MISMATCHES predicate present
+  A04_PIDMM_CONTRIBUTES_TO_VERDICT=YES
+
+  A_CASES_IMPLEMENTED=4
+  REMAINING_NOT_IMPLEMENTED=32
+  SELF_LINEAGE_REGRESSION=NOT_IMPLEMENTED
+  T05-T10=EXECUTION_LOCKED
+
+After exact-byte Boss review of that correction, Boss will make the
+offline A01-A04 host-execution ruling.
+
+======================================================================
+LOCKS
+======================================================================
+
+r80_runner_v6 90476228...               NOT APPROVED FOR EXECUTION
+A-slice two-defect correction            AUTHORIZED
+A01-A04 host execution                  NOT AUTHORIZED
+I/D/S/C/T fixture implementation        NOT AUTHORIZED
+full self-lineage regression            NOT AUTHORIZED
+T05-T10                                 EXECUTION-LOCKED
+SP01                                    NOT AUTHORIZED
+executor 583cfdbc...                    NOT CERTIFIED
+launcher                                NOT AUTHORIZED
+restart                                 NOT AUTHORIZED
+broadcast                               LOCKED
+capital                                 UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

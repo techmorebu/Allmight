@@ -50,3 +50,32 @@ audit + synthetic-seam overlay + PID-0/1 overlay. No seam-only delta certificati
 - **INFERRED, not observed:** zero real signal syscalls under TEST_ADAPTER.
 - **UNAVAILABLE:** predecessor bytes for differential audit.
 - **OPEN S2+ bugs affecting the executor:** see `BUG_AND_INCIDENT_LEDGER.md`.
+
+
+---
+
+## PRESERVATION OVERLAY 2 — 2026-09-12T00:53:58Z
+**Authority:** Boss R80CB / R80CC · **Transaction:** `M2E017G-PRESV-002`
+**Baseline HEAD:** `4133fd9dd5b84565c3903e85ef04c6d6325aa2f4`
+
+Content above is preserved verbatim; where superseded, this section controls.
+
+### Slice history since the first preservation
+
+```
+A-slice   A01-A04 accepted      evidence 20260910T222739Z
+I-slice   I01-I03 accepted      evidence 20260911T013205Z
+D-slice   D01 accepted          evidence bce78d6a…
+S-slice   S02-S06, S08 accepted evidence ab0db3a4…
+          S01 BLOCKED_REACHABILITY · S07 BLOCKED_LAUNCHER_BOUNDARY
+```
+
+Executor `583cfdbc…` remains **NOT CERTIFIED**: 12 cases not started, 6
+launcher-locked, 10 blocked, self-lineage regression unimplemented.
+
+**Standing design rulings:** P5's six-predicate contract is never waived per
+case (R80AL) · verifier independence requires temporal precommitment as well as
+data independence (R80BG) · `post_syscall_hook` is existing certified capability
+exercisable as documented, never generalized (R80BL) · `PRE_REVAL_HOOK`/SP01
+reuse refused (R80AH) · artifact identity uses a fixed VERIFIER_ROOT with
+LOC_N==1 (R80BI).

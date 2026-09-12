@@ -1,0 +1,359 @@
+BOSS M2E-017G R80AW — V19 STATIC REVIEW / D01 SIGNAL-BOUNDARY PREDICATE CORRECTION REQUIRED
+
+TARGET RUNNER REVIEWED
+
+  r80_runner_v19.sh
+
+Exact delivered-file measurements independently verified:
+
+  SHA256     3e43018a347896696ecd7c9031ed8eec039e05e005699fe4052fdea4fe040584
+  BYTES      81247
+  wc -l      1347
+  bash -n    PASS
+
+Target executor remains:
+
+  583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+
+======================================================================
+R80AV CORRECTIONS — ACCEPTED
+======================================================================
+
+The three R80AV corrections and cleanup are materially present.
+
+1. ROOT LIVE_VERIFIED PREDICATE
+
+The independent verifier now derives the root-side G2 prerequisite from:
+
+  exact role -> PID map identity
+  synthetic root starttime
+  map starttime
+  baseline role signature
+  synthetic root cmdline
+
+and only accepts the root mirror prerequisite when starttime and signature both
+match.
+
+2. DESC_SIGS SOURCE BINDING
+
+The exact executor DESC_SIGS definition is now:
+
+  counted
+  required unique
+  extracted from PATH_EXEC
+  applied to the synthetic descendant cmdline
+
+The known-negative control is gating.
+
+A non-unique definition or a negative-control match forces:
+
+  SIGNATURE_PROBE_UNTRUSTWORTHY
+
+which cannot satisfy the D01 closure prediction.
+
+3. ACCOUNTING
+
+The previous arithmetic defect is corrected:
+
+  I blocked reachability   = 2
+  I blocked contract       = 1
+  D blocked reachability   = 4
+  D blocked contract       = 1
+
+Global:
+
+  reachability = 6
+  contract     = 2
+  total        = 8
+
+Accepted-prior A/I values are also separated from the global prior counter.
+
+4. SAFETY CLEANUP
+
+RUNNER_PATTERN_KILL_SITES is measured once.
+
+The runner still owns exactly one disclosed direct TERM site for bounded D01
+fixture cleanup.
+
+======================================================================
+REMAINING BLOCKER — D01 IS NOT A ZERO-SIGNAL CASE
+======================================================================
+
+v19 currently defines D01 expected/verifier strings as:
+
+  closure=FROZEN
+  frozen_contains_desc=YES
+  order=CLOSURE_BEFORE_CENSUS
+  signals=0
+  mutations=0
+  starts=0
+
+This is not source-grounded to the R28 D01 obligation.
+
+R28 D01 certifies:
+
+  descendant closure captured before census
+
+D01 is an ordering/provenance case.
+
+It is NOT defined as:
+
+  STOP before signal
+
+and it is not a zero-signal boundary case.
+
+The exact executor may correctly:
+
+  establish G7 closure;
+  emit G7_CLOSURE=FROZEN;
+  enter the later G8 census;
+  continue beyond the point D01 certifies;
+  eventually enter teardown / signal-adapter logic.
+
+Under TEST_ADAPTER, a later executor TERM attempt can legitimately increment:
+
+  TERM_ATTEMPTED_COUNT
+
+even though no real signal is delivered.
+
+Therefore requiring:
+
+  signals=0
+
+can falsely FAIL a correct D01 certification run for behavior occurring AFTER
+the D01 property has already been demonstrated.
+
+The same principle applies to mutation/start counters unless exact source
+analysis establishes they are part of the D01 certification boundary.
+
+======================================================================
+RULING — D01 VERDICT MUST BE BOUNDED TO D01'S ACTUAL PROPERTY
+======================================================================
+
+D01 certification verdict should compare only the property D01 is intended to
+certify:
+
+  closure=FROZEN
+  frozen_contains_desc=YES
+  order=CLOSURE_BEFORE_CENSUS
+
+The independent verifier must derive those three values from fixture/source
+facts as already implemented.
+
+Executor actual must derive those three values from authoritative G7/G8
+runtime evidence.
+
+Do NOT make later teardown signal-attempt counters part of the D01 PASS
+predicate unless the exact R28/source contract explicitly requires them.
+
+Preserve the counters as observation evidence:
+
+  TERM_ATTEMPTED_COUNT
+  TERM_DELIVERED_COUNT
+  TERM_ESRCH_COUNT
+  TERM_EPERM_COUNT
+  TERM_OTHER_ERROR_COUNT
+  CONTROL_FILES_CHANGED
+  START_ATTEMPTED
+
+but label them:
+
+  D01_POST_PROPERTY_OBSERVED_*
+
+or equivalent.
+
+Their values must not be silently defaulted.
+
+If a field is absent:
+
+  record ABSENT
+
+Do not convert ABSENT to 0.
+
+======================================================================
+TEST_ADAPTER DISCLOSURE
+======================================================================
+
+For D01, the runner must explicitly distinguish:
+
+  EXECUTOR_SIGNAL_ATTEMPT
+from
+  REAL_SIGNAL_DELIVERY
+
+The current test adapter is intended to prevent real governed signaling.
+
+Required evidence should include:
+
+  D01_TEST_ADAPTER_MODE
+  D01_TERM_ATTEMPTED_COUNT
+  D01_TERM_DELIVERED_COUNT
+
+A nonzero TERM_ATTEMPTED_COUNT is not by itself a D01 failure.
+
+Any evidence of unauthorized REAL delivery to a governed process remains a
+safety failure.
+
+The runner-owned D01 fixture cleanup TERM remains a separate, disclosed
+capability and must not be conflated with executor TERM counters.
+
+======================================================================
+ACCOUNTING LABEL PRECISION
+======================================================================
+
+The repaired arithmetic is accepted.
+
+For the next revision, prefer the canonical labels requested in R80AV:
+
+  A_CASES_ACCEPTED_PRIOR=4
+  I_CASES_ACCEPTED_PRIOR=3
+  CASES_ACCEPTED_PRIOR_TOTAL=7
+
+  I_CASES_BLOCKED_REACHABILITY=2
+  I_CASES_BLOCKED_CERTIFICATION_CONTRACT=1
+  I_CASES_BLOCKED_TOTAL=3
+
+  D_CASES_BLOCKED_REACHABILITY=4
+  D_CASES_BLOCKED_CERTIFICATION_CONTRACT=1
+  D_CASES_BLOCKED_TOTAL=5
+
+  CASES_BLOCKED_REACHABILITY_TOTAL=6
+  CASES_BLOCKED_CERTIFICATION_CONTRACT_TOTAL=2
+  CASES_BLOCKED_TOTAL=8
+
+The current *_SLICE / GLOBAL_* labels are not a certification blocker because
+their meaning is explicit and their arithmetic is cross-checked, but canonical
+labels should be normalized now to reduce future ambiguity.
+
+======================================================================
+PATCH SCOPE AUTHORIZED
+======================================================================
+
+AUTHORIZED PATCH ONLY:
+
+  1. remove signals/mutations/starts from the D01 certification comparison
+     unless exact source authority proves a D01-specific requirement;
+  2. preserve all available executor counters as non-defaulted observational
+     evidence;
+  3. explicitly disclose TEST_ADAPTER attempted-vs-delivered signal state;
+  4. normalize the accepted-prior and blocked accounting labels to the canonical
+     names above;
+  5. update D01 evidence labels required by those corrections.
+
+Retain unchanged:
+
+  root LIVE_VERIFIED independent verifier
+  unique exact-source DESC_SIGS binding
+  negative-control gate
+  P5 six predicates + OW_VERDICT
+  exact PPID cleanup revalidation
+  pre-TERM cleanup P5 revalidation
+  one disclosed runner-owned fixture TERM site
+  exact-kill probe fail-closed gate
+  A/I ACCEPTED_PRIOR execution scope
+  D01 as sole fresh D execution path
+  D02/D03/D04/D06 BLOCKED_REACHABILITY
+  D05 BLOCKED_CERTIFICATION_CONTRACT
+  no launcher/start_all/SP01/canonical mutation
+  RUNNER_EXIT-before-pack
+
+NOT AUTHORIZED:
+
+  D01 host execution
+  automatic run
+  D02-D06 implementation
+  new temporal seam
+  SP01 repurposing
+  S/C/T work
+  full self-lineage work
+  launcher/restart
+  broadcast
+  capital
+
+======================================================================
+REQUIRED RETURN
+======================================================================
+
+Return revised runner:
+
+  RUNNER_FILENAME
+  RUNNER_SHA256
+  RUNNER_BYTES
+  wc -l
+  bash -n
+
+D01 verdict:
+
+  D01_EXPECTED_PROPERTY=
+    closure=FROZEN frozen_contains_desc=YES order=CLOSURE_BEFORE_CENSUS
+
+  D01_VERIFIER_PROPERTY=
+    fixture-derived equivalent
+
+  D01_SIGNAL_COUNTERS_IN_PASS_PREDICATE=NO
+  D01_MUTATION_COUNTERS_IN_PASS_PREDICATE=NO
+  D01_START_COUNTER_IN_PASS_PREDICATE=NO
+
+Observations:
+
+  D01_TERM_ATTEMPTED_COUNT=<observed|ABSENT>
+  D01_TERM_DELIVERED_COUNT=<observed|ABSENT>
+  D01_TERM_ESRCH_COUNT=<observed|ABSENT>
+  D01_CONTROL_FILES_CHANGED=<observed|ABSENT>
+  D01_START_ATTEMPTED=<observed|ABSENT>
+  D01_TEST_ADAPTER_MODE=<observed>
+
+Accounting canonicalized:
+
+  A_CASES_ACCEPTED_PRIOR=4
+  I_CASES_ACCEPTED_PRIOR=3
+  CASES_ACCEPTED_PRIOR_TOTAL=7
+
+  I_CASES_BLOCKED_REACHABILITY=2
+  I_CASES_BLOCKED_CERTIFICATION_CONTRACT=1
+  I_CASES_BLOCKED_TOTAL=3
+
+  D_CASES_BLOCKED_REACHABILITY=4
+  D_CASES_BLOCKED_CERTIFICATION_CONTRACT=1
+  D_CASES_BLOCKED_TOTAL=5
+
+  CASES_BLOCKED_REACHABILITY_TOTAL=6
+  CASES_BLOCKED_CERTIFICATION_CONTRACT_TOTAL=2
+  CASES_BLOCKED_TOTAL=8
+
+After exact-byte Boss review:
+  Boss decides whether ONE bounded D01 offline host execution is authorized.
+
+======================================================================
+LOCKS
+======================================================================
+
+v19 3e43018a...                 STATIC REVIEWED / NOT RUN-AUTHORIZED
+A01-A04                         ACCEPTED / CLOSED
+I01-I03                         ACCEPTED / CLOSED
+I04/I05                         BLOCKED_REACHABILITY
+I06                             BLOCKED_CERTIFICATION_CONTRACT
+
+D01                             BUILT / VERDICT-BOUNDARY PATCH REQUIRED
+D02                             BLOCKED_REACHABILITY
+D03                             BLOCKED_REACHABILITY
+D04                             BLOCKED_REACHABILITY
+D05                             BLOCKED_CERTIFICATION_CONTRACT
+D06                             BLOCKED_REACHABILITY
+
+D host execution                NOT AUTHORIZED
+SP01                            NOT AUTHORIZED
+new temporal mutation seam      NOT AUTHORIZED
+S01-S08                         NOT AUTHORIZED
+C01-C08                         NOT AUTHORIZED
+T01-T04                         NOT AUTHORIZED
+full self-lineage               NOT AUTHORIZED
+T05-T10                         EXECUTION-LOCKED
+executor 583cfdbc...            NOT CERTIFIED
+launcher                        NOT AUTHORIZED
+restart                         NOT AUTHORIZED
+broadcast                       LOCKED
+capital                         UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

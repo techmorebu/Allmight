@@ -1,0 +1,356 @@
+BOSS M2E-017G R80AG — A-SLICE ACCEPTED / I-SLICE BUILD AUTHORIZED
+
+EVIDENCE REVIEWED
+
+Authorized first run:
+  M2E017G_R80_EVIDENCE_20260910T222739Z.zip
+  RUN_UTC 2026-09-10T22:27:39Z
+  embedded runner SHA256:
+    44a7a90aed6f50df39305b9b89132387dde61690a28fd7575281ef77b8488e06
+
+Second uploaded run:
+  M2E017G_R80_EVIDENCE_20260910T230901Z.zip
+  RUN_UTC 2026-09-10T23:09:01Z
+  ZIP SHA256:
+    ef16130cd75b74948b79c854b5d0f7f778d5f9d4ed503f46cebaba98b0042f24
+
+======================================================================
+RULING — A01-A04
+======================================================================
+
+A01-A04 are ACCEPTED as passing offline certification cases based on the
+authorized first run.
+
+Authorized-run accounting:
+
+  CASES_RUN                         36
+  CASES_PASS                        4
+  CASES_FAIL                        0
+  CASES_NOT_IMPLEMENTED             32
+  R80_OFFLINE_NONLAUNCHER_MATRIX    INCOMPLETE
+  EXECUTOR_CERTIFICATION_STATE      NOT_CERTIFIED
+  FULL_R80_CERTIFICATION            NOT_CLAIMED
+
+A01:
+  live=8
+  dead=0
+  exact 8-role live set
+  pidmm=0
+  consistent=YES
+
+A02:
+  live=5
+  dead=3
+  live exact:
+    activator
+    fetcher
+    monitor
+    shadow_engine
+    volatility
+  dead exact:
+    heat
+    notification_router
+    watchdog
+  pidmm=0
+  consistent=YES
+
+A03:
+  live=1
+  dead=7
+  live exact:
+    shadow_engine
+  dead exact:
+    activator
+    fetcher
+    heat
+    monitor
+    notification_router
+    volatility
+    watchdog
+  pidmm=0
+  consistent=YES
+
+A04:
+  live set empty
+  all 8 roles dead
+  pidmm=0
+  ZERO_LIVE_CLEAN_START_REQUIRED observed
+  TERM_ATTEMPTED_COUNT=0
+  CONTROL_FILES_CHANGED=0
+  START_ATTEMPTED=0
+  pidfile unchanged
+  session unchanged
+  consistent=YES
+
+The source-grounded BASELINE map locator resolved by:
+  EVIDENCE_KEY_BASELINE_MAP
+for all four cases.
+
+Per-case state snapshots are preserved independently:
+  A01 STOP G4_WATCHDOG_ALIVE
+  A02 STOP PT_ROOT_SURVIVOR
+  A03 STOP PT_ROOT_SURVIVOR
+  A04 STOP G3z_ZERO_LIVE
+
+Framework:
+  R40_COMMAND_POSITION_AUDIT        PASS
+  R40_VERIFIER_CONSISTENCY_AUDIT   PASS
+  SYNTHETIC_BASELINE_OVERLAY        PASS
+  PID01_ANCESTOR_OVERLAY            PASS
+  SAFETY_SURFACE                    PASS
+  GIT_FIXTURE_CLONE_SITES           1
+  GIT_FIXTURE_CLONE_CHECKOUT_SITES  1
+  GIT_CANONICAL_STATE_CHANGE_SITES  0
+  GIT_CANONICAL_MUTATION_CALL_SITES 0
+  GIT_PROBE_KNOWN_POSITIVE_CONTROL  PASS
+  LOCKED_CASE_SELECTION_ATTEMPTS    0
+
+A-SLICE STATUS:
+  ACCEPTED / CLOSED
+
+======================================================================
+SECOND RUN GOVERNANCE DISPOSITION
+======================================================================
+
+R80AF authorized exactly ONE bounded A-slice rerun.
+
+Two complete v9 evidence packages were uploaded with distinct RUN_UTC values.
+
+Therefore:
+  FIRST RUN  22:27:39Z  = AUTHORIZED
+  SECOND RUN 23:09:01Z  = OUTSIDE AUTHORIZED RUN COUNT
+
+The second run is preserved as machine evidence but receives:
+  CERTIFICATION_CREDIT = NONE
+  AUTHORITY_EFFECT      = NONE
+
+Its matching result may be noted as corroborative only.
+
+Do not delete or rewrite either package.
+
+No further A-slice rerun is authorized.
+
+======================================================================
+NEXT SLICE — I01-I06 BUILD ONLY
+======================================================================
+
+The accepted build order advances to I01-I06.
+
+AUTHORIZED:
+  Build the I01-I06 fixture implementations into a new runner revision.
+
+NOT AUTHORIZED:
+  Host execution of I01-I06.
+  Any A-slice rerun.
+  D/S/C/T fixture implementation.
+  Full self-lineage implementation.
+  T05-T10.
+  SP01.
+  Launcher/start_all.
+  Restart.
+  Canonical repo mutation.
+  Broadcast.
+  Capital.
+
+I-slice cases to implement exactly from R28:
+
+  I01  live baseline starttime mismatch -> STOP
+  I02  live baseline signature mismatch -> STOP
+  I03  baseline PID reuse -> STOP
+  I04  dead baseline PID resurrection -> STOP
+  I05  root-role substitution alternate PID -> STOP
+  I06  second governed stack/process -> STOP
+
+======================================================================
+I-SLICE IMPLEMENTATION REQUIREMENTS
+======================================================================
+
+1. REUSE THE ACCEPTED A-SLICE FIXTURE FOUNDATION
+
+Do not fork a second fixture architecture unnecessarily.
+
+Retain:
+  exact executor SHA binding
+  disposable fixture repo at executor-required historical HEAD
+  synthetic PROC_ROOT
+  synthetic baseline map
+  P1-P5 identities
+  TEST_ADAPTER seam
+  per-case immutable status snapshots
+  evidence preservation before fixture deletion
+  canonical-host nonmutation rules
+  git safety probes
+  fail-closed missing evidence handling
+
+2. EACH I CASE MUST EXERCISE THE EXACT EXECUTOR
+
+No reimplementation of the executor decision in the verifier.
+
+Fixture controls inputs.
+Executor produces authoritative actual behavior.
+Independent verifier observes the fixture/evidence separately.
+
+3. PRE-SIGNAL PROOF
+
+R28 requires I01-I06 identity violations to STOP before signal.
+
+For every I case record and gate on:
+  TERM_ATTEMPTED_COUNT=0
+  CONTROL_FILES_CHANGED=0
+  START_ATTEMPTED=0
+
+If a required field is absent:
+  BLOCK
+not zero-by-default.
+
+4. CASE-SPECIFIC EVIDENCE
+
+I01:
+  one intended live baseline role has mismatched actual starttime
+  mismatch is exact and isolated
+  expected STOP gate/reason source-grounded from executor bytes
+
+I02:
+  one intended live baseline role has nonmatching signature/cmdline
+  starttime remains matching
+  expected STOP source-grounded
+
+I03:
+  baseline PID is present but represents a reused identity
+  fixture must prove the reuse condition rather than merely making a PID absent
+  expected STOP source-grounded
+
+I04:
+  role marked dead at baseline is made to reappear in the executor-defined
+  resurrection observation window
+  do not collapse this into ordinary live-at-baseline mismatch
+  expected STOP source-grounded
+
+I05:
+  expected root role is absent/substituted by an alternate governed PID/process
+  fixture must demonstrate role substitution, not a generic second stack
+  expected STOP source-grounded
+
+I06:
+  construct a distinct second governed stack/process condition
+  keep it distinguishable from I05
+  expected STOP source-grounded
+
+5. EXPECTED GATES MUST BE SOURCE-GROUNDED
+
+Before encoding exact STOP_GATE or STOP_REASON strings for I01-I06:
+  read the exact executor bytes;
+  identify the actual gate and evidence field;
+  report line/function grounding.
+
+Do not carry forward names from earlier artifacts or memory.
+
+6. INDEPENDENT VERIFIER
+
+For each case provide:
+  fixture condition
+  expected executor behavior
+  executor actual
+  executor evidence reference
+  independent verifier actual
+  consistency
+  exit
+  signal count
+  mutation count
+  start attempts
+  verdict
+
+7. NEGATIVE / DISTINGUISHING CONTROLS
+
+The I fixtures must prove that each case is testing its intended identity defect
+and not accidentally another I-case condition.
+
+At minimum emit case-specific predicates sufficient to distinguish:
+  starttime mismatch
+  signature mismatch
+  PID reuse
+  dead-role resurrection
+  root-role substitution
+  second governed stack
+
+8. CURRENT GLOBAL RESULT REMAINS INCOMPLETE
+
+After I01-I06 implementation, but before I execution:
+  A01-A04 remain implemented
+  I01-I06 become implemented
+  D/S/C/T01-T04 remain NOT_IMPLEMENTED
+  self-lineage remains NOT_IMPLEMENTED
+  T05-T10 remain LOCKED
+
+No runner may claim full or nonlauncher certification before execution evidence
+exists for every required case.
+
+======================================================================
+REQUIRED RETURN BEFORE EXECUTION
+======================================================================
+
+Return new runner artifact and static report:
+
+  RUNNER_FILENAME
+  RUNNER_SHA256
+  RUNNER_BYTES
+  LINE_COUNT
+  bash -n
+
+Registry:
+  MATRIX_DEFINED_CASE_COUNT=42
+  MATRIX_CURRENT_EXECUTABLE_CASE_COUNT=36
+  MATRIX_LOCKED_CASE_COUNT=6
+  LOCKED_CASES=T05,T06,T07,T08,T09,T10
+
+Implementation:
+  A_CASES_IMPLEMENTED=4
+  I_CASES_IMPLEMENTED=6
+  REMAINING_NOT_IMPLEMENTED=26
+  SELF_LINEAGE_REGRESSION=NOT_IMPLEMENTED
+
+For I01-I06:
+  FIXTURE_DEFINED=YES
+  EXPECTED_GATE_SOURCE_GROUNDED=YES
+  PRE_SIGNAL_ZERO_GATED=YES
+  CASE_DISTINGUISHING_PREDICATES_PRESENT=YES
+  PER_CASE_STATUS_SNAPSHOT_PRESENT=YES
+  EVIDENCE_PRESERVATION_PRESENT=YES
+
+Safety:
+  REAL_LAUNCHER_CALL_SITES=0
+  START_ALL_CALL_SITES=0
+  DIRECT_RUNNER_REAL_KILL_CALL_SITES=0
+  SP01_CALL_SITES=0
+  GIT_CANONICAL_STATE_CHANGE_SITES=0
+  GIT_CANONICAL_MUTATION_CALL_SITES=0
+  GIT_PROBE_KNOWN_POSITIVE_CONTROL=PASS
+
+After Boss exact-byte review:
+  Boss will decide whether one bounded I01-I06 offline host execution is
+  authorized.
+
+======================================================================
+LOCKS
+======================================================================
+
+A01-A04                                 ACCEPTED / CLOSED
+A rerun                                 NOT AUTHORIZED
+I01-I06 fixture build                   AUTHORIZED
+I01-I06 host execution                  NOT AUTHORIZED
+D01-D06                                 NOT AUTHORIZED
+S01-S08                                 NOT AUTHORIZED
+C01-C08                                 NOT AUTHORIZED
+T01-T04                                 NOT AUTHORIZED
+full self-lineage                       NOT AUTHORIZED
+T05-T10                                 EXECUTION-LOCKED
+SP01                                    NOT AUTHORIZED
+executor 583cfdbc...                    NOT CERTIFIED
+launcher                                NOT AUTHORIZED
+restart                                 NOT AUTHORIZED
+broadcast                               LOCKED
+capital                                 UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

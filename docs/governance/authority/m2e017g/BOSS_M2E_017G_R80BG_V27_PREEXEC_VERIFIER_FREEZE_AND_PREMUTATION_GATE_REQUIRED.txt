@@ -1,0 +1,382 @@
+BOSS M2E-017G R80BG — V27 STATIC REVIEW / PRE-EXECUTION VERIFIER FREEZE + TRUE PRE-MUTATION COLLISION GATE REQUIRED
+
+TARGET
+
+  r80_runner_v27.sh
+
+Independent delivered-file identity:
+
+  SHA256
+    2b31e046298e5fe05e89ea0296eb57d55047799b3b2eb95e2f0f8a639e309962
+
+  BYTES
+    94368
+
+  wc -l
+    1548
+
+  bash -n
+    PASS
+
+v25 ac9dd664... is superseded for further revision work.
+v24 e9f5957d... remains revoked and must not be run.
+
+======================================================================
+R80BF THREE MECHANICAL PATCHES — ACCEPTED
+======================================================================
+
+1. EVIDENCE-HOLD NAMESPACE ISOLATION
+
+Accepted:
+
+  PRESERVED_EVIDENCE_HOLD="/home/allmight/r80_a_fixture"
+  A_FXBASE="/home/allmight/r80_r80bc_fixture"
+
+The active D01 fixture path no longer aliases:
+
+  /home/allmight/r80_a_fixture/D01
+
+The preserved R80BB evidence tree remains untouched by the active fixture
+namespace.
+
+2. SHARED VARIABLE-AUDIT NEGATIVE CONTROL
+
+Accepted:
+
+  the negative-control source is written to a temporary file;
+  SCAN_SRC is temporarily redirected to that file;
+  var_audit() itself is called;
+  its VA_ASSIGN / VA_REF / VA_OK outputs are captured;
+  the control requires:
+      assignment count = 0
+      reference count >= 1
+      defined-before-first-use = NO
+
+This closes the parallel-handwritten-regex weakness.
+
+3. UNIQUE G7/G8 SOURCE AUTHORITIES
+
+Accepted:
+
+  D01_V_C7 counts anchored executor-source G7_CLOSURE emits
+  D01_V_C8 counts anchored executor-source G8_CENSUS emits
+
+Line authorities are admitted only if:
+
+  D01_V_C7 == 1
+  D01_V_C8 == 1
+
+Then numeric source order is checked.
+
+This closes the head-first-match authority weakness.
+
+======================================================================
+BLOCKER 1 — INDEPENDENT D01 PREDICTION IS STILL BUILT AFTER EXECUTION
+======================================================================
+
+Exact v27 source order:
+
+  a_run_executor D01
+    line 977
+
+Then only AFTER executor completion:
+
+  D01_V_MIRST
+    line 1043
+
+  D01_V_CL
+    lines 1055-1056
+
+  D01_V_CONTAINS
+    line 1058
+
+  D01_V_ORDER
+    lines 1074-1075
+
+The verifier does not read runtime G7/G8 outcome fields, which is good.
+
+However, the prediction is not temporally frozen before the system under test
+runs.
+
+For certification, "independent" must mean both:
+
+  DATA-INDEPENDENT
+    prediction does not derive from executor outcome evidence
+
+AND
+
+  TEMPORALLY PRECOMMITTED
+    the expected verifier result is fully constructed before executor invocation
+
+Current v27 satisfies the first but not the second.
+
+Classification:
+
+  VERIFIER_PRECOMMITMENT_GAP
+  BUG-009 CLASS
+  EXECUTION-BLOCKING STATIC DEFECT
+
+======================================================================
+REQUIRED PATCH — FREEZE COMPLETE D01 VERIFIER BEFORE EXECUTOR
+======================================================================
+
+Move construction of the independent D01 verifier prediction to BEFORE:
+
+  a_run_executor D01
+
+The complete pre-execution verifier must derive only from:
+
+  fixture facts
+  captured real fixture identity facts
+  synthetic mirror facts
+  exact executor source structure
+
+Before executor invocation, freeze at minimum:
+
+  D01_V_PRE_ROOTMAP
+  D01_V_PRE_ROOTMIR
+  D01_V_PRE_DESCMIR
+  D01_V_PRE_PARENT
+  D01_V_MIRST
+  D01_V_CL
+  D01_V_CONTAINS
+  D01_V_C7
+  D01_V_C8
+  D01_V_L7
+  D01_V_L8
+  D01_V_ORDER
+
+Preferred:
+
+  D01_VER_FROZEN="closure=$D01_V_CL frozen_contains_desc=$D01_V_CONTAINS order=$D01_V_ORDER"
+
+Then emit before execution:
+
+  D01_VERIFIER_PRECOMMITTED=YES
+  D01_VERIFIER_PRECOMMITTED_VALUE="$D01_VER_FROZEN"
+
+Only after those fields are frozen may:
+
+  a_run_executor D01
+
+be invoked.
+
+After executor invocation:
+
+  construct D01_EXEC from executor evidence;
+  compare D01_EXEC against D01_VER_FROZEN;
+  do NOT recompute verifier prediction scalars.
+
+Required static proof:
+
+  D01_EXECUTOR_CALL_COUNT=1
+  D01_EXECUTOR_CALL_LINE=<line>
+
+  D01_VERIFIER_FROZEN_ASSIGNMENT_COUNT=1
+  D01_VERIFIER_FROZEN_ASSIGNMENT_LINE=<line>
+
+  D01_VERIFIER_FROZEN_BEFORE_EXECUTOR=YES
+
+For every certification-critical D01 verifier scalar:
+
+  LAST_ASSIGNMENT_LINE < D01_EXECUTOR_CALL_LINE
+
+or equivalently prove no verifier-scalar assignment occurs after the executor
+call.
+
+Required:
+
+  D01_VERIFIER_POST_EXECUTOR_REASSIGNMENT_COUNT=0
+
+Fail closed if not zero.
+
+This is a STATIC authority proof; no host run is needed to validate it.
+
+======================================================================
+BLOCKER 2 — COLLISION GATE IS NOT ACTUALLY PRE-MUTATION
+======================================================================
+
+v27 computes EVID_COLLIDE before output initialization, but then performs:
+
+  mkdir -p "$OUT"
+  : > "$EV"
+
+before enforcing:
+
+  [[ "$EVID_COLLIDE" == "NO" ]] || die ...
+
+Therefore the runner has already mutated the filesystem before a collision can
+fail closed.
+
+This does NOT threaten the preserved R80BB tree in the current non-colliding
+configuration.
+
+But it violates the R80BF requirement:
+
+  fail closed BEFORE any mutation if the active namespace can alias the hold
+
+Required correction:
+
+  evaluate the evidence-hold collision entirely before:
+    mkdir
+    touch
+    redirect-to-file
+    emit
+    pack
+    cleanup
+    any fixture mutation
+
+If collision is detected at this earliest stage:
+
+  print a direct stderr/stdout STOP line
+  exit nonzero immediately
+
+Do not call die() if die() depends on evidence-output state that has not yet
+been initialized.
+
+Only after:
+
+  EVID_COLLIDE=NO
+
+may OUT / EV be created.
+
+Then emit the ordinary evidence fields:
+
+  PRESERVED_ABORTED_D01_EVIDENCE_PATH
+  ACTIVE_FIXTURE_ROOT
+  ACTIVE_FIXTURE_COLLIDES_WITH_EVIDENCE_HOLD=NO
+
+Required static proof:
+
+  EVIDENCE_COLLISION_GATE_LINE=<line>
+  FIRST_FILESYSTEM_MUTATION_LINE=<line>
+  EVIDENCE_COLLISION_GATE_PRECEDES_FIRST_MUTATION=YES
+
+======================================================================
+RETAIN ALL ACCEPTED V27 WORK
+======================================================================
+
+Do not regress:
+
+  exact-one artifact locator policy
+  duplicate-path reporting
+  fresh fixture namespace
+  evidence-hold non-aliasing
+  variable assignment/reference audit
+  shared var_audit negative control
+  root LIVE_VERIFIED predicate
+  descendant mirror starttime predicate
+  six-predicate P5 + OW_VERDICT
+  DESC_SIGS uniqueness + negative control
+  G7/G8 source authority uniqueness
+  branch-bounded SAFETY_FAIL increment proof
+  one SAFETY_FAIL initialization
+  lifetime order
+  final safety count emitted after lifetime gate
+  D01 three-property verdict boundary
+  TEST_ADAPTER TERM-attempt observational boundary
+  exact cleanup identity revalidation
+  one direct fixture TERM site
+  no pattern kill
+  no launcher/start_all/SP01 execution
+  no canonical repo mutation
+  RUNNER_EXIT before pack
+  A/I accepted-prior treatment
+  D02-D06 blocked dispositions
+  T05-T10 execution lock
+
+======================================================================
+CURRENT RULING
+======================================================================
+
+v27 static status:
+
+  R80BF_NAMESPACE_PATCH                  ACCEPTED
+  R80BF_SHARED_VAR_NEGATIVE_CONTROL      ACCEPTED
+  R80BF_G7_G8_UNIQUENESS                 ACCEPTED
+  D01_VERIFIER_DATA_INDEPENDENCE         ACCEPTED
+  D01_VERIFIER_TEMPORAL_PRECOMMITMENT    NOT SATISFIED
+  PRE-MUTATION_COLLISION_GATE            NOT SATISFIED
+
+Therefore:
+
+  v27 HOST EXECUTION = NOT AUTHORIZED
+  v27 D01 RETRY      = NOT AUTHORIZED
+  STATIC PATCH       = REQUIRED
+
+======================================================================
+NEXT AUTHORIZED REVISION
+======================================================================
+
+One STATIC-ONLY revision is authorized to:
+
+  1. freeze the complete D01 independent prediction before a_run_executor D01;
+
+  2. prove no certification-critical verifier scalar is reassigned after
+     executor invocation;
+
+  3. move the evidence-hold collision exit gate before every filesystem
+     mutation;
+
+  4. retain all accepted v27 behavior without expansion.
+
+No other scope is authorized.
+
+======================================================================
+LOCKS
+======================================================================
+
+R80BB preserved evidence tree
+  /home/allmight/r80_a_fixture/D01
+  EVIDENCE HOLD — DO NOT TOUCH
+
+v27 2b31e046...
+  STATIC PARTIAL ACCEPT
+  PATCH REQUIRED
+  NOT RUN-AUTHORIZED
+
+D01 retry
+  NOT AUTHORIZED
+
+duplicate artifact deletion/rename
+  NOT AUTHORIZED
+
+A/I rerun
+  NOT AUTHORIZED
+
+D02-D06 execution
+  NOT AUTHORIZED
+
+S01-S08
+  NOT AUTHORIZED
+
+C01-C08
+  NOT AUTHORIZED
+
+T01-T04
+  NOT AUTHORIZED
+
+T05-T10
+  EXECUTION-LOCKED
+
+SP01
+  NOT AUTHORIZED
+
+launcher
+  NOT AUTHORIZED
+
+restart
+  NOT AUTHORIZED
+
+broadcast
+  LOCKED
+
+capital
+  UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.
+Nothing to delete.
+Do not touch the R80BB evidence hold.
+Return the next static revision only.

@@ -1,0 +1,264 @@
+BOSS M2E-017G R80Q — R80P TRANSACTION BLOCK CORRECTION REQUIRED
+
+FILE REVIEWED
+
+  R80P_BLOCK.sh
+
+Observed SHA256:
+
+  e55ff3d855e7219ca2470a14815ac6d4bf7b52342c9f3d6bd479fc222a5e04d3
+
+Observed:
+
+  180 lines
+  bash -n PASS
+
+STATUS
+
+  R80P transaction authority remains ACTIVE.
+  R80P_BLOCK.sh is REVIEWED but NOT APPROVED FOR EXECUTION.
+
+Cornelius must NOT run the current block.
+
+======================================================================
+BLOCKER 1 — EXACT AUTHORIZED PATH-SET EQUALITY IS NOT PROVEN
+======================================================================
+
+Current G9 proves only:
+
+  STAGED_PATH_COUNT == 29
+  every staged path is under docs/
+  every staged path has .md or .txt extension
+  executable-extension count == 0
+
+Current G10 proves only:
+
+  COMMITTED_PATH_COUNT == 29
+
+This is weaker than R80P.
+
+R80P requires:
+
+  STAGED_PATH_SET == exact authorized 29-path set
+  COMMITTED_PATH_SET == exact authorized 29-path set
+
+A count of 29 does not prove identity.
+
+Required correction:
+
+  Build a canonical sorted AUTHORIZED_PATHS set from the exact R80P list
+  or from the accepted package-backed set plus the one checkpoint path,
+  then compare byte-for-byte / line-for-line against:
+
+    git diff --cached --name-only | sort
+
+  before commit, and:
+
+    git show --name-only --pretty=format: "$NEWHEAD" | sed '/^$/d' | sort
+
+  after commit.
+
+Use a deterministic comparison such as cmp/diff against generated sorted files.
+
+Required gates:
+
+  STAGED_PATH_SET_MATCH=YES
+  COMMITTED_PATH_SET_MATCH=YES
+
+Any mismatch:
+
+  STOP
+  exit nonzero
+
+Also add a pre-stage index check before canonical writes/staging:
+
+  PREEXISTING_STAGED_PATH_COUNT=0
+
+If the index is not empty before this transaction:
+
+  STOP
+
+Do not silently absorb an inherited staged change.
+
+======================================================================
+BLOCKER 2 — G11 CAN EXIT 0 AFTER RAW GITHUB VERIFICATION FAILURE
+======================================================================
+
+Current G11 counts RAWOK/RAWBAD and prints PASS/FAIL, but does not terminate
+nonzero when:
+
+  RAWBAD > 0
+  RAWOK != 29
+  raw checkpoint SHA != FINAL_MERGED_SHA
+
+Therefore the script can finish at line 180 with process exit status 0 even though
+GOV-CHK-001 raw verification failed.
+
+That violates the fail-closed transaction contract and can let an operator or caller
+interpret the preservation transaction as successful.
+
+Required correction:
+
+After all G11 observations are printed, require:
+
+  RAWOK == 29
+  RAWBAD == 0
+  RAW_CHECKPOINT_SHA == FINAL_MERGED_SHA
+
+If any fails:
+
+  print a deterministic final state such as:
+
+    POST_PUSH_REMOTE_VERIFICATION=FAIL
+    STOP: commit may already be remote; do not retry or mutate anything
+
+  exit nonzero.
+
+If all pass:
+
+  POST_PUSH_REMOTE_VERIFICATION=PASS
+  exit 0 only after the final STOP/report line.
+
+Important:
+
+  A post-push verification failure does NOT authorize a second push or rollback.
+  It means the remote commit state is uncertain/unverified and must be returned to
+  Boss exactly as observed.
+
+======================================================================
+BLOCKER 3 — CANONICAL FILE WRITES ARE NOT ATOMIC PER FILE
+======================================================================
+
+Current G7 uses direct:
+
+  cp source destination
+
+for each canonical documentation path.
+
+If interrupted during a copy, a destination file can be left partially written.
+If a later copy fails, earlier files remain modified in the working tree.
+
+R80P required bounded/atomic canonical writes.
+
+Required correction:
+
+For each destination:
+
+  1. create destination parent if needed;
+  2. copy source to a temporary sibling file in the SAME destination directory;
+  3. verify temporary sibling SHA against expected source SHA;
+  4. atomically rename/mv the verified sibling onto the destination.
+
+Use the same method for PROJECT_RECOVERY_CHECKPOINT.md.
+
+This provides per-file atomic replacement.
+
+The overall 29-file transaction remains bounded by Git and the explicit staged-set
+gate; do not attempt an unsafe rollback script if a later file fails.
+
+On any write failure:
+
+  STOP
+  report which paths were already replaced
+  do not stage
+  do not commit
+  do not restore unrelated state
+
+======================================================================
+ACCEPTED PARTS OF THE CURRENT BLOCK
+======================================================================
+
+The following design elements are accepted:
+
+  - package selection by SHA256 rather than filename
+  - addendum selection by SHA256
+  - addendum byte-count anchor
+  - package manifest verification
+  - HEAD/origin-main anchor check
+  - final overlay = accepted overlay + exact R80P addendum
+  - base recovered with git show HEAD:
+  - prefix and suffix merge proof
+  - expected 28 package-backed + 1 merged checkpoint construction
+  - documentation-only extension constraint
+  - post-write SHA verification concept
+  - explicit per-path git add
+  - one commit
+  - one push
+  - no retry loop
+  - pinned raw GitHub verification at exact commit
+  - content-addressed handling of duplicate Downloads filenames
+  - no launcher/signals/restart/broadcast/capital operations
+
+======================================================================
+PUBLIC-REMOTE / SENSITIVITY NOTE
+======================================================================
+
+The user's disclosure that the preservation commit will publish the archived
+governance documents is acknowledged.
+
+No credential material has been identified in the reviewed preservation package
+during the prior R80N/R80O/R80P review arc.
+
+This ruling does not broaden authorization to publish any file outside the exact
+29-path documentation set.
+
+The publication boundary is therefore controlled by exact path-set equality, which
+is one reason BLOCKER 1 must be corrected before execution.
+
+======================================================================
+NEXT AUTHORIZED STEP
+======================================================================
+
+CPT is AUTHORIZED to patch R80P_BLOCK.sh only.
+
+Required return:
+
+  NEW_BLOCK_SHA
+  LINE_COUNT
+  bash -n result
+
+and machine-readable proof / excerpts showing:
+
+  PREEXISTING_STAGED_PATH_COUNT gate
+  STAGED_PATH_SET_MATCH gate
+  COMMITTED_PATH_SET_MATCH gate
+  per-file temporary-sibling SHA verification + atomic rename
+  RAWOK == 29 gate
+  RAWBAD == 0 gate
+  RAW_CHECKPOINT_SHA == FINAL_MERGED_SHA gate
+  explicit nonzero exit on post-push verification failure
+  no retry push path
+
+Also repeat the surface audit:
+
+  git add invocations
+  prohibited git add patterns
+  git reset/checkout/fetch/pull
+  kill/sudo/rm -rf/start_all
+  git commit count
+  git push count
+
+No other behavior or scope change is authorized.
+
+STOP for Boss review.
+
+======================================================================
+LOCKS
+======================================================================
+
+R80P transaction authority              ACTIVE
+R80P_BLOCK e55ff3d...                   NOT APPROVED FOR EXECUTION
+block correction                         AUTHORIZED
+canonical documentation mutation         NOT AUTHORIZED YET
+git add / commit / push                  NOT AUTHORIZED YET
+executor 583cfdbc...                     NOT CERTIFIED
+launcher                                 NOT AUTHORIZED
+SP01                                     NOT AUTHORIZED
+restart                                  NOT AUTHORIZED
+broadcast                                LOCKED
+capital                                  UNTOUCHED
+
+CORNELIUS
+
+Do not run R80P_BLOCK.sh e55ff3d...
+Wait for the corrected block and Boss approval.

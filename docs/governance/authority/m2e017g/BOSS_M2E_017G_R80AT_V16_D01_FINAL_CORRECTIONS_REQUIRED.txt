@@ -1,0 +1,400 @@
+BOSS M2E-017G R80AT — V16 STATIC REVIEW / D01 FINAL CORRECTIONS REQUIRED
+
+TARGET RUNNER REVIEWED
+
+  r80_runner_v16.sh
+
+Exact delivered-file measurements independently verified:
+
+  SHA256     a9ec36dba1e4ba45f1b220beaa62730f20cc31e877bc9cd1e390f9e0aa87ed99
+  BYTES      73789
+  wc -l      1241
+  bash -n    PASS
+
+Target executor remains:
+
+  583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+
+======================================================================
+R80AS CORRECTIONS — MATERIAL PROGRESS ACCEPTED
+======================================================================
+
+Accepted improvements in v16:
+
+  - OW_DESCENDS is now included in the six-predicate loop.
+  - no P5 predicate waiver exists.
+  - D01 verifier no longer rereads runtime G7/G8 fields for its verifier_actual.
+  - cleanup rechecks starttime in addition to cmdline.
+  - stale zero-direct-signal declarations were removed.
+  - REAL_KILL_CALL_SITES expectation is now 1.
+  - A/I prior-only scope remains intact.
+  - D02-D06 remain declaration-only.
+
+However, v16 is NOT run-authorized yet.
+
+======================================================================
+BLOCKER 1 — CERTIFIED P5 VERDICT ITSELF IS NOT GATED
+======================================================================
+
+v16 calls:
+
+  ownership_check "$_q" "$$" "$CANON/logs/allmight.pid" "$$"
+
+and checks six individual fields:
+
+  OW_DESCENDS
+  OW_NOT_BASELINE
+  OW_NOT_PIDFILE
+  OW_NOT_EXECUTOR
+  OW_NOT_EXEC_ANCESTOR
+  OW_NOT_GOVERNED
+
+That closes the previous five-vs-six defect.
+
+But R80AS also required:
+
+  certified P5 verdict
+  certified P5 reason
+
+to be emitted and to control admission.
+
+v16 does not gate on:
+
+  OW_VERDICT=PASS
+
+and does not preserve:
+
+  OW_REASON
+
+for each D01 real fixture PID.
+
+REQUIRED CORRECTION:
+
+For each of D01_RR and D01_RD emit:
+
+  D01_P5_<pid>_VERDICT
+  D01_P5_<pid>_REASON
+
+and require:
+
+  all six predicates == YES
+  AND
+  OW_VERDICT == PASS
+
+before D01 executor admission.
+
+If the six fields and OW_VERDICT disagree:
+
+  BLOCK
+  preserve evidence
+  no executor run
+
+Required final labels:
+
+  D01_P5_ROOT_ALL_SIX=YES
+  D01_P5_DESC_ALL_SIX=YES
+  D01_P5_ROOT_VERDICT=PASS
+  D01_P5_DESC_VERDICT=PASS
+  D01_P5_WAIVER_USED=NO
+
+======================================================================
+BLOCKER 2 — INDEPENDENT CLOSURE VERIFIER STILL ASSERTS FROZEN
+======================================================================
+
+v16 correctly stops rereading runtime G7/G8 fields for verifier_actual.
+
+However it assigns:
+
+  D01_V_CL="FROZEN"
+
+as a constant.
+
+That is the expected answer, not an independently derived fixture verdict.
+
+The verifier's frozen-descendant prediction must be derived from the complete
+fixture-side prerequisites used by exact G7 source logic.
+
+At minimum the independent fixture verifier must establish, without reading
+runtime G7/G8 evidence:
+
+  real parent PID exists
+  real child PID exists
+  real pgrep-parent relationship is exact
+  synthetic child PROC_ROOT entry exists
+  synthetic child starttime equals captured real child starttime
+  synthetic child cmdline matches the exact source-grounded DESC_SIGS condition
+  required ownership/admission predicates are satisfied
+  static executor source orders G7 freeze before G8 census
+
+Then derive:
+
+  D01_V_CL=FROZEN
+  D01_V_CONTAINS=YES
+  D01_V_ORDER=CLOSURE_BEFORE_CENSUS
+
+only if those fixture facts all pass.
+
+Otherwise verifier_actual must become a nonmatching value such as:
+
+  FIXTURE_CLOSURE_PREREQUISITES_NOT_PROVEN
+
+Do not hard-code FROZEN.
+
+Also ensure the DESC_SIGS test uses the exact executor/source predicate rather
+than a runner-invented approximation.
+
+Required labels:
+
+  D01_VERIFIER_SOURCE=FIXTURE_DERIVED
+  D01_VERIFIER_SYNTH_PRESENT_PROVEN=YES
+  D01_VERIFIER_STARTTIME_MATCH_PROVEN=YES
+  D01_VERIFIER_DESC_SIG_EXACT_SOURCE_PREDICATE=YES
+  D01_VERIFIER_PARENTAGE_PROVEN=YES
+  D01_VERIFIER_P5_ADMISSION_PROVEN=YES
+  D01_VERIFIER_USES_EXECUTOR_G7_FIELDS=NO
+  D01_VERIFIER_USES_EXECUTOR_G8_FIELDS=NO
+  D01_VERIFIER_USES_EXECUTOR_TERMINAL_FIELDS=NO
+
+======================================================================
+BLOCKER 3 — ROOT CLEANUP LINEAGE IS NOT EXACTLY REVALIDATED
+======================================================================
+
+For the descendant, v16 requires:
+
+  current PPID == D01_RR
+
+which is exact.
+
+For the root, v16 instead accepts:
+
+  current PPID is ANY member of A_SELF_EXCLUDE
+
+That is broader than the captured fixture identity.
+
+A root process reparented to another runner ancestor could still receive TERM.
+
+Additionally, the pre-TERM cleanup path does not rerun certified P5 ownership.
+
+REQUIRED CORRECTION:
+
+At D01 fixture creation capture, for BOTH real processes:
+
+  PID
+  starttime
+  cmdline
+  exact PPID
+  certified P5 verdict / ownership identity
+
+Immediately before TERM require:
+
+  same numeric PID
+  same starttime
+  expected cmdline marker
+  current PPID == captured PPID
+  certified P5 still PASS under the same ownership arguments
+
+For descendant:
+  captured PPID should be the exact D01 root PID.
+
+For root:
+  capture its actual PPID at creation and require the same exact PPID at cleanup.
+  Do NOT use membership in A_SELF_EXCLUDE as a substitute for equality.
+
+If absent:
+  ALREADY_ABSENT_NO_SYSCALL
+
+If any identity/lineage/P5 predicate differs:
+  IDENTITY_MISMATCH_NO_SIGNAL
+  no TERM
+
+No escalation.
+No pattern kill.
+
+Required labels:
+
+  D01_CLEANUP_ROOT_PPID_CAPTURED=YES
+  D01_CLEANUP_DESC_PPID_CAPTURED=YES
+  D01_CLEANUP_PRETERM_EXACT_PPID_REVALIDATED=YES
+  D01_CLEANUP_PRETERM_P5_REVALIDATED=YES
+  D01_CLEANUP_IDENTITY_MISMATCH_NO_SIGNAL=YES
+
+======================================================================
+BLOCKER 4 — REVALIDATED-KILL PROBE CANNOT FIRE
+======================================================================
+
+v16 currently computes:
+
+  RK_EXACT=$(grep -cE '${CMDPOS}kill -TERM "\$_q"' "$SCAN_SRC" || true)
+
+The pattern is single-quoted.
+
+Therefore `${CMDPOS}` is passed literally to grep and is NOT expanded.
+
+This is a BUG-009 verifier-precision defect.
+
+The probe can falsely report zero even though the direct TERM site exists.
+
+Worse, the resulting:
+
+  RUNNER_KILL_IS_REVALIDATED_FIXTURE_PID_ONLY
+
+is descriptive only; a NO result does not increment SAFETY_FAIL.
+
+REQUIRED CORRECTION:
+
+Use the same measured code-only source universe as the primary kill gate.
+
+Construct the exact-site probe so CMDPOS is actually applied, or use a
+fixed-string/source-position method that cannot be broken by shell/ERE
+expansion.
+
+Known positive:
+  the one authorized D01 kill -TERM "$_q" site must be found exactly once.
+
+Required:
+
+  D01_EXACT_REVALIDATED_KILL_SITE_COUNT=1
+  RUNNER_KILL_IS_REVALIDATED_FIXTURE_PID_ONLY=YES
+
+and this MUST be a gating safety predicate:
+
+  if count != 1:
+    SAFETY_FAIL++
+
+The safety surface must therefore require:
+
+  REAL_KILL_CALL_SITES=1
+  D01_EXACT_REVALIDATED_KILL_SITE_COUNT=1
+  RUNNER_PATTERN_KILL_SITES=0
+  SIGNAL_DISCLOSURE_EQ_GATE=YES
+
+Do not allow an advisory NO to coexist with SAFETY_SURFACE=PASS.
+
+======================================================================
+PATCH SCOPE AUTHORIZED
+======================================================================
+
+AUTHORIZED PATCH ONLY:
+
+  1. gate D01 admission on certified P5 OW_VERDICT=PASS plus all six fields;
+  2. derive D01 closure/frozen verifier result from complete fixture facts;
+  3. capture and exactly revalidate root + descendant PPID and rerun P5 before
+     cleanup TERM;
+  4. repair and gate the exact revalidated-kill-site safety probe;
+  5. update labels/evidence required by those corrections.
+
+Retain:
+
+  A01-A04 ACCEPTED_PRIOR
+  I01-I03 ACCEPTED_PRIOR
+  D01 only fresh executable D case
+  D02/D03/D04/D06 BLOCKED_REACHABILITY
+  D05 BLOCKED_CERTIFICATION_CONTRACT
+  one direct runner TERM site maximum
+  no pattern kill
+  no launcher/start_all/SP01/canonical mutation
+  RUNNER_EXIT emitted before pack
+
+NOT AUTHORIZED:
+
+  D01 host execution
+  automatic run
+  D02-D06 fixture implementation
+  new temporal seam
+  SP01 repurposing
+  S/C/T fixture work
+  full self-lineage implementation
+  launcher/restart
+  broadcast
+  capital
+
+======================================================================
+REQUIRED RETURN
+======================================================================
+
+Return revised runner and static report:
+
+  RUNNER_FILENAME
+  RUNNER_SHA256
+  RUNNER_BYTES
+  wc -l
+  bash -n
+
+P5:
+  D01_P5_ROOT_ALL_SIX=YES
+  D01_P5_DESC_ALL_SIX=YES
+  D01_P5_ROOT_VERDICT=PASS
+  D01_P5_DESC_VERDICT=PASS
+  D01_P5_WAIVER_USED=NO
+
+Verifier:
+  D01_VERIFIER_SOURCE=FIXTURE_DERIVED
+  D01_VERIFIER_CLOSURE_DERIVED_NOT_CONSTANT=YES
+  D01_VERIFIER_SYNTH_PRESENT_PROVEN=YES
+  D01_VERIFIER_STARTTIME_MATCH_PROVEN=YES
+  D01_VERIFIER_DESC_SIG_EXACT_SOURCE_PREDICATE=YES
+  D01_VERIFIER_PARENTAGE_PROVEN=YES
+  D01_VERIFIER_P5_ADMISSION_PROVEN=YES
+  D01_VERIFIER_USES_EXECUTOR_G7_FIELDS=NO
+  D01_VERIFIER_USES_EXECUTOR_G8_FIELDS=NO
+  D01_VERIFIER_USES_EXECUTOR_TERMINAL_FIELDS=NO
+
+Cleanup:
+  D01_CLEANUP_ROOT_PPID_CAPTURED=YES
+  D01_CLEANUP_DESC_PPID_CAPTURED=YES
+  D01_CLEANUP_PRETERM_STARTTIME_REVALIDATED=YES
+  D01_CLEANUP_PRETERM_CMDLINE_REVALIDATED=YES
+  D01_CLEANUP_PRETERM_EXACT_PPID_REVALIDATED=YES
+  D01_CLEANUP_PRETERM_P5_REVALIDATED=YES
+  D01_CLEANUP_IDENTITY_MISMATCH_NO_SIGNAL=YES
+
+Safety:
+  REAL_KILL_CALL_SITES=1
+  D01_EXACT_REVALIDATED_KILL_SITE_COUNT=1
+  RUNNER_KILL_IS_REVALIDATED_FIXTURE_PID_ONLY=YES
+  RUNNER_PATTERN_KILL_SITES=0
+  SIGNAL_DISCLOSURE_EQ_GATE=YES
+
+Scope:
+  A execution=0
+  I execution=0
+  D01 execution path=1
+  D02-D06 execution paths=0
+
+After exact-byte Boss review:
+  Boss decides whether ONE bounded D01 offline host execution is authorized.
+
+======================================================================
+LOCKS
+======================================================================
+
+v16 a9ec36db...                 STATIC REVIEWED / NOT RUN-AUTHORIZED
+A01-A04                         ACCEPTED / CLOSED
+I01-I03                         ACCEPTED / CLOSED
+I04/I05                         BLOCKED_REACHABILITY
+I06                             BLOCKED_CERTIFICATION_CONTRACT
+
+D01                             BUILT / STATIC PATCH REQUIRED
+D02                             BLOCKED_REACHABILITY
+D03                             BLOCKED_REACHABILITY
+D04                             BLOCKED_REACHABILITY
+D05                             BLOCKED_CERTIFICATION_CONTRACT
+D06                             BLOCKED_REACHABILITY
+
+D host execution                NOT AUTHORIZED
+SP01                            NOT AUTHORIZED
+new temporal mutation seam      NOT AUTHORIZED
+S01-S08                         NOT AUTHORIZED
+C01-C08                         NOT AUTHORIZED
+T01-T04                         NOT AUTHORIZED
+full self-lineage               NOT AUTHORIZED
+T05-T10                         EXECUTION-LOCKED
+executor 583cfdbc...            NOT CERTIFIED
+launcher                        NOT AUTHORIZED
+restart                         NOT AUTHORIZED
+broadcast                       LOCKED
+capital                         UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

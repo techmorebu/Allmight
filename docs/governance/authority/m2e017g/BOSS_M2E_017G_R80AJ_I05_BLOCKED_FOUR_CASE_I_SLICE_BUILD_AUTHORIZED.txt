@@ -1,0 +1,284 @@
+BOSS M2E-017G R80AJ — I05 BLOCKED / FOUR-CASE I-SLICE BUILD AUTHORIZED
+
+TARGET EXECUTOR
+
+  SHA256
+  583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+
+SOURCE PROOF ACCEPTED
+
+I05 narrow-path proof was evaluated against the exact executor predicates.
+
+Condition 1:
+  G8 authorized_pid admission is role-agnostic.
+  PASS.
+
+Condition 2:
+  G9 root exclusion is GLOBAL across ROLE_ORDER.
+  FAIL for the proposed cross-role baseline-root construction.
+
+Observed predicate:
+
+  is_root=0
+  for r2 in $ROLE_ORDER; do
+    [[ "${B_PID[$r2]}" == "$q" ]] && is_root=1
+  done
+  [[ "$is_root" -eq 1 ]] && continue
+
+Therefore any candidate Q that is a baseline root for ANY role is excluded from
+the G9 substitution test before G9_ROLE_SUBSTITUTED can fire.
+
+Conversely, a governed-signature PID that is not a baseline root is exposed to
+G8_SECOND_STACK first.
+
+======================================================================
+RULING 1 — I05
+======================================================================
+
+I05 is BLOCKED under the current authorized seam.
+
+  I05_STATUS=BLOCKED
+  I05_BLOCKING_REASON=G9_EXCLUDES_BASELINE_ROOT
+  I05_EXPECTED_STOP_GATE=G9_ROLE_SUBSTITUTED
+  I05_EXECUTION_CREDIT=NONE
+
+Do not encode the disproven cross-role-root construction.
+
+Do not invent an alternate reachability path without a new Boss ruling.
+
+This ruling does NOT assert G9_ROLE_SUBSTITUTED is globally dead code in all
+possible runtime states. It establishes only:
+
+  - the authorized narrow construction fails;
+  - a non-root governed PID is preempted by G8;
+  - an any-role baseline-root PID is globally skipped by G9;
+  - no currently authorized fixture path to I05 has been proven.
+
+That is sufficient to mark the certification case BLOCKED for this slice.
+
+======================================================================
+RULING 2 — I-SLICE FINAL DESIGN DISPOSITION
+======================================================================
+
+The I-slice is frozen as:
+
+  I01  BUILDABLE
+       expected gate G2_IDENTITY_MISMATCH
+       static starttime skew
+       signature valid
+       no reuse transition
+
+  I02  BUILDABLE
+       expected gate G2_SIGNATURE_MISMATCH
+       starttime exact
+       cmdline/signature mismatch
+
+  I03  BUILDABLE
+       expected gate G2_IDENTITY_MISMATCH
+       same numeric PID
+       preserved S1 -> S2 transition
+       REUSE_TRANSITION_PROOF=YES
+
+  I04  BLOCKED
+       NO_AUTHORIZED_G2_TO_G10_PROC_ROOT_MUTATION_SEAM
+
+  I05  BLOCKED
+       G9_EXCLUDES_BASELINE_ROOT
+
+  I06  BUILDABLE
+       expected gate G8_SECOND_STACK
+       bounded real fixture process
+       ownership/provenance proven
+
+Accounting:
+
+  I_CASES_BUILDABLE=4
+  I_CASES_BLOCKED=2
+
+Correction:
+  The prior summary said "three buildable, three blocked", but the listed
+  disposition contains FOUR buildable cases:
+    I01
+    I02
+    I03
+    I06
+  and TWO blocked cases:
+    I04
+    I05
+
+Use 4/2 in all runner accounting and documentation.
+
+======================================================================
+RULING 3 — BUILD AUTHORIZATION
+======================================================================
+
+CPT may now encode only:
+
+  I01
+  I02
+  I03
+  I06
+
+into the next runner revision.
+
+I04 and I05 remain defined R28 cases but must be represented explicitly as:
+
+  BLOCKED_REACHABILITY
+
+They must NOT be counted as:
+  PASS
+  FAIL
+  IMPLEMENTED
+  NOT_IMPLEMENTED
+
+They are:
+  defined certification obligations whose honest execution fixture is not
+  currently reachable under the authorized seam.
+
+======================================================================
+RULING 4 — I06 REAL FIXTURE PROCESS
+======================================================================
+
+I06 may use a bounded real fixture process only if all containment requirements
+from R80AI are implemented.
+
+Required:
+  exact PID capture
+  parent/ownership provenance
+  P5 ownership predicates
+  not historical baseline root
+  not canonical pidfile member
+  not executor PID
+  not executor ancestor
+  not real governed runtime
+  exact governed-looking cmdline/signature recorded
+  TERM-only exact-PID cleanup
+  no pattern kill
+  no persistent daemon
+  no canonical mutation
+
+The executor's TERM_ATTEMPTED_COUNT remains separate from fixture cleanup
+signals.
+
+No I06 process may be started yet because host execution remains locked.
+
+======================================================================
+RULING 5 — PRE-SIGNAL EVIDENCE
+======================================================================
+
+For I01/I02/I03/I06:
+
+  TERM_ATTEMPTED_COUNT=0
+  CONTROL_FILES_CHANGED=0
+  START_ATTEMPTED=0
+
+All three are mandatory evidence fields.
+
+Absent != zero.
+
+Missing field => BLOCK.
+
+======================================================================
+RULING 6 — RUNNER ACCOUNTING
+======================================================================
+
+After the build, the runner should distinguish:
+
+  A_CASES_ACCEPTED=4
+  I_CASES_BUILT=4
+  I_CASES_BLOCKED_REACHABILITY=2
+  REMAINING_ORDINARY_NOT_IMPLEMENTED=26
+  SELF_LINEAGE_REGRESSION=NOT_IMPLEMENTED
+  T05-T10=EXECUTION_LOCKED
+
+Do not collapse BLOCKED_REACHABILITY into NOT_IMPLEMENTED.
+
+Global certification remains:
+
+  R80_OFFLINE_NONLAUNCHER_MATRIX=INCOMPLETE
+  EXECUTOR_CERTIFICATION_STATE=NOT_CERTIFIED
+  FULL_R80_CERTIFICATION=NOT_CLAIMED
+
+======================================================================
+REQUIRED RETURN BEFORE ANY I-SLICE EXECUTION
+======================================================================
+
+Return:
+
+  RUNNER_FILENAME
+  RUNNER_SHA256
+  RUNNER_BYTES
+  LINE_COUNT
+  bash -n
+
+Status:
+  I01_STATUS=BUILT
+  I02_STATUS=BUILT
+  I03_STATUS=BUILT
+  I04_STATUS=BLOCKED_REACHABILITY
+  I05_STATUS=BLOCKED_REACHABILITY
+  I06_STATUS=BUILT
+
+I04:
+  I04_BLOCKING_REASON=NO_AUTHORIZED_G2_TO_G10_PROC_ROOT_MUTATION_SEAM
+  I04_NEW_SEAM_ADDED=NO
+
+I05:
+  I05_BLOCKING_REASON=G9_EXCLUDES_BASELINE_ROOT
+  I05_G8_AUTHORIZED_PID_ROLE_AGNOSTIC=YES
+  I05_G9_ROOT_EXCLUSION_ROLE_RELATIVE=NO
+  I05_G9_ROOT_EXCLUSION_GLOBAL=YES
+  I05_ALTERNATE_PATH_INVENTED=NO
+
+I01/I02/I03:
+  EXPECTED_GATE_SOURCE_GROUNDED=YES
+  CASE_DISTINGUISHING_PREDICATES_PRESENT=YES
+  PRE_SIGNAL_ZERO_GATED=YES
+  PER_CASE_STATUS_SNAPSHOT_PRESENT=YES
+  EVIDENCE_PRESERVATION_PRESENT=YES
+
+I06:
+  EXPECTED_STOP_GATE=G8_SECOND_STACK
+  REAL_FIXTURE_OWNERSHIP_GATE_PRESENT=YES
+  REAL_FIXTURE_EXACT_PID_CLEANUP_PRESENT=YES
+  REAL_FIXTURE_PATTERN_KILL_SITES=0
+  REAL_FIXTURE_CANONICAL_MUTATION=0
+  PRE_SIGNAL_ZERO_GATED=YES
+
+Safety:
+  no launcher/start_all
+  no restart
+  no canonical repo mutation
+  no broadcast
+  no capital
+
+After exact-byte Boss review:
+  Boss will decide whether one bounded I01/I02/I03/I06 offline host execution
+  is authorized.
+
+======================================================================
+LOCKS
+======================================================================
+
+A01-A04                         ACCEPTED / CLOSED
+I01-I03 build                   AUTHORIZED
+I04                             BLOCKED_REACHABILITY
+I05                             BLOCKED_REACHABILITY
+I06 build                       AUTHORIZED
+I-slice host execution          NOT AUTHORIZED
+D01-D06                         NOT AUTHORIZED
+S01-S08                         NOT AUTHORIZED
+C01-C08                         NOT AUTHORIZED
+T01-T04                         NOT AUTHORIZED
+full self-lineage               NOT AUTHORIZED
+T05-T10                         EXECUTION-LOCKED
+SP01                            NOT AUTHORIZED
+executor 583cfdbc...            NOT CERTIFIED
+launcher                        NOT AUTHORIZED
+restart                         NOT AUTHORIZED
+broadcast                       LOCKED
+capital                         UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

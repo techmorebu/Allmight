@@ -1,0 +1,243 @@
+BOSS M2E-017G R80O — FINAL PRE-STAGE PACKAGE ACCEPTANCE / MERGE RE-PROOF AUTHORIZATION
+
+PACKAGE REVIEWED
+
+  PRESERVATION_REVIEW__feda4afd.zip
+
+Observed ZIP SHA256:
+
+  feda4afd312dc8d2b7aef6aace2e81426cdb86c3aeb99705097e47c4afa6a595
+
+======================================================================
+INDEPENDENT VERIFICATION
+======================================================================
+
+Boss independently verified:
+
+  MANIFEST_ENTRY_COUNT      31
+  MANIFEST_MISMATCH_COUNT   0
+
+New checkpoint overlay:
+
+  SHA256
+    31408c1006471639ab6c49da1714de3b352f28de0159b5715e803a6ad33daf0c
+
+  BYTES
+    10482
+
+Staged authority originals:
+
+  21
+
+Staged documentation files:
+
+  28
+
+Proposed canonical path count including merged checkpoint:
+
+  29
+
+R80L, R80M, and R80N authority originals in the package were compared directly
+against the Boss-issued source files and are byte-identical.
+
+The package correctly records:
+
+  CHECKPOINT_OVERLAY_CHANGED=YES
+  PRIOR_MERGED_SHA_STILL_VALID=NO
+  MERGE_REPROOF_REQUIRED=YES
+
+======================================================================
+CORRECTION TO R80N SELF-REFERENCE REQUIREMENT
+======================================================================
+
+R80N §4 was over-specified.
+
+A file cannot be required to contain its own final SHA while simultaneously using
+that SHA as an immutable verification anchor, because inserting the SHA changes the
+file bytes and therefore changes the SHA.
+
+The same circularity applies to embedding the final merged checkpoint SHA inside the
+checkpoint overlay when the merged artifact includes that overlay.
+
+Therefore the literal R80N requirement that CHECKPOINT_OVERLAY.md itself carry:
+
+  OVERLAY_SHA
+  MERGED_DESTINATION_SHA
+
+is WITHDRAWN.
+
+Correct rule:
+
+  self-referential artifact hashes MUST be stored externally to the bytes they
+  authenticate.
+
+Accepted external locations include:
+
+  BUILD_AND_CERTIFICATION_LEDGER.md
+  package manifest
+  preservation-state/evidence record
+  Boss verification directive
+  commit/push verification evidence
+
+The overlay may carry non-self-referential source anchors and proof states such as:
+
+  BASE_CHECKPOINT_SHA
+  BASE_BYTES
+  HOST_MERGE_PROOF
+  BASE_PREFIX_MATCH
+  OVERLAY_SUFFIX_MATCH
+  CANONICAL_REPO_CHANGED_BY_MERGE_CONSTRUCTION
+
+The new overlay correctly embeds neither its own SHA nor a merged destination SHA.
+
+======================================================================
+R80N FINAL PACKAGE VERDICT
+======================================================================
+
+  FINAL_PRE_STAGE_PACKAGE=ACCEPTED
+  SELF_REFERENCE_CORRECTION=ACCEPTED
+  MERGE_REPROOF_REQUIRED=YES
+
+The prior merged SHA:
+
+  e6ab75929ee412941dd02a603cb48dad9222815da4eb3927cdb0a9ee6bf1a4dd
+
+is VOID for final staging because it authenticated the previous overlay:
+
+  713ecfbf...
+
+The new approved overlay is:
+
+  31408c1006471639ab6c49da1714de3b352f28de0159b5715e803a6ad33daf0c
+
+Expected final merge size:
+
+  34793 + 10482 = 45275 bytes
+
+======================================================================
+NEXT AUTHORIZED STEP — FRESH HOST MERGE RE-PROOF ONLY
+======================================================================
+
+Cornelius/CPT may now perform a fresh merge proof on the canonical host.
+
+The merge MUST be reconstructed from:
+
+  git show HEAD:docs/recovery/PROJECT_RECOVERY_CHECKPOINT.md
+
+plus the exact new overlay bytes from the accepted package:
+
+  PRESERVATION_REVIEW__feda4afd.zip
+
+Do not reuse the previous /tmp merge artifact.
+
+Required anchors:
+
+  BASE_CHECKPOINT_SHA =
+    87af009366a887640d1e84a98955c6aee195eddbc2fcbc2e887017cf94cd19f3
+
+  BASE_BYTES =
+    34793
+
+  OVERLAY_SHA =
+    31408c1006471639ab6c49da1714de3b352f28de0159b5715e803a6ad33daf0c
+
+  OVERLAY_BYTES =
+    10482
+
+  EXPECTED_MERGED_BYTES =
+    45275
+
+======================================================================
+REQUIRED RE-PROOF
+======================================================================
+
+Return:
+
+  BASE_ACTUAL_SHA
+  BASE_BYTES
+  OVERLAY_ACTUAL_SHA
+  OVERLAY_BYTES
+  MERGED_SHA
+  MERGED_BYTES
+  BASE_PREFIX_SHA
+  BASE_PREFIX_MATCH
+  OVERLAY_SUFFIX_SHA
+  OVERLAY_SUFFIX_MATCH
+  MERGED_ARTIFACT_PATH
+  git status --short after construction
+
+Required:
+
+  BASE_ACTUAL_SHA == expected base SHA
+  BASE_BYTES == 34793
+  OVERLAY_ACTUAL_SHA == expected overlay SHA
+  OVERLAY_BYTES == 10482
+  MERGED_BYTES == 45275
+  BASE_PREFIX_MATCH == YES
+  OVERLAY_SUFFIX_MATCH == YES
+  CANONICAL_REPO_CHANGED_BY_MERGE_CONSTRUCTION == NO
+
+The resulting MERGED_SHA becomes the candidate final destination SHA for:
+
+  docs/recovery/PROJECT_RECOVERY_CHECKPOINT.md
+
+but remains an EXTERNAL verification anchor.
+
+======================================================================
+INVARIANTS
+======================================================================
+
+Accepted pre-stage invariants:
+
+  EXECUTABLE_FILE_CHANGE_COUNT=0
+  NON_DOCUMENT_FILE_CHANGE_COUNT=0
+  AUTHORITY_BYTE_MUTATION_COUNT=0
+  UNRESOLVED_DOC_CONFLICT_COUNT=0
+
+These must remain true through the re-proof.
+
+======================================================================
+NOT AUTHORIZED
+======================================================================
+
+Do not:
+
+  write into canonical docs/
+  overwrite canonical checkpoint
+  git add
+  git commit
+  git push
+  git fetch
+  git pull
+  modify executable source
+  modify launcher
+  invoke launcher
+  execute R80 certification
+  run SP01
+  restart governed runtime
+  broadcast
+  touch capital
+
+======================================================================
+LOCKS
+======================================================================
+
+R80 documentation Stage 1             ACCEPTED
+final pre-stage package                ACCEPTED
+R80N self-reference wording           CORRECTED BY R80O
+new overlay 31408c10...                ACCEPTED
+fresh merge re-proof                   AUTHORIZED
+canonical repo mutation               NOT AUTHORIZED
+git add / commit / push               NOT AUTHORIZED
+executor 583cfdbc...                   NOT CERTIFIED
+R80 host behavioral execution         NOT AUTHORIZED
+launcher                              NOT AUTHORIZED
+SP01                                  NOT AUTHORIZED
+restart                               NOT AUTHORIZED
+broadcast                             LOCKED
+capital                               UNTOUCHED
+
+CORNELIUS
+
+Reconstruct and re-prove the merge from committed HEAD plus the new accepted overlay.
+Return the required evidence and STOP.

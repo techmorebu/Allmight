@@ -1,0 +1,312 @@
+BOSS M2E-017G R80AM — V12 STATIC RECONCILIATION ACCEPTED / I-SLICE RUN-SCOPE PATCH REQUIRED
+
+TARGET RUNNER REVIEWED
+
+  r80_runner_v12.sh
+
+Exact uploaded bytes independently verified:
+
+  SHA256     79539481bcd62cdd44a39cbb07d0696ff53e88ca83008a03861936c19a2b4372
+  BYTES      68706
+  wc -l      1163
+  bash -n    PASS
+
+IMPORTANT METADATA CORRECTION
+
+The reported SHA256 is exact and matches the uploaded bytes.
+
+The reported size/line metadata does not:
+
+  REPORTED_BYTES      68804
+  OBSERVED_BYTES      68706
+
+  REPORTED_LINE_COUNT 1165
+  OBSERVED_wc_-l      1163
+
+This is classified as:
+
+  REPORTING_METADATA_DRIFT=YES
+  ARTIFACT_IDENTITY_CONFLICT=NO
+  SHA_IDENTITY_MATCH=YES
+
+Do not rewrite the uploaded artifact merely to make the old byte/line report
+true. Correct the metadata in the next return.
+
+======================================================================
+R80AL RECONCILIATION — ACCEPTED
+======================================================================
+
+The P5 accommodation has been removed.
+
+Accepted static state:
+
+  I06_P5_CONTRACT_SATISFIED=NO
+  I06_P5_CONFLICTING_PREDICATE=PID_NOT_REAL_GOVERNED_RUNTIME
+  I06_P5_WEAKENED=NO
+  I06_FINAL_OWNERSHIP_ADMISSION=NO
+  I06_EXECUTOR_RUN_AUTHORIZED=NO
+  I06_FIXTURE_PROCESS_STARTED=NO
+
+There is no:
+  exec -a I06 fixture process
+  a_run_executor I06
+  direct I06 cleanup TERM
+  OW_NOT_GOVERNED expected-NO waiver
+
+I06 is represented as:
+
+  BLOCKED_CERTIFICATION_CONTRACT
+  expected gate G8_SECOND_STACK
+  execution credit NONE
+
+This is accepted.
+
+======================================================================
+SAFETY SURFACE — RESTORED ZERO DIRECT SIGNAL
+======================================================================
+
+Because no I06 fixture process is created, v12 correctly restores:
+
+  REAL_KILL_CALL_SITES=0
+  RUNNER_PATTERN_KILL_SITES=0
+  RUNNER_OWNS_NO_DIRECT_SIGNAL_SITE=YES
+
+The sourced certified P3 helper capability remains separately disclosed and is
+not confused with a direct runner signal site.
+
+This is accepted.
+
+======================================================================
+I-SLICE STATIC STATUS — ACCEPTED
+======================================================================
+
+  I01  BUILT
+       G2_IDENTITY_MISMATCH
+
+  I02  BUILT
+       G2_SIGNATURE_MISMATCH
+
+  I03  BUILT
+       G2_IDENTITY_MISMATCH
+
+  I04  BLOCKED_REACHABILITY
+       NO_AUTHORIZED_G2_TO_G10_PROC_ROOT_MUTATION_SEAM
+
+  I05  BLOCKED_REACHABILITY
+       G9_EXCLUDES_BASELINE_ROOT
+
+  I06  BLOCKED_CERTIFICATION_CONTRACT
+       P5_NOT_GOVERNED_CONFLICT
+
+Accounting:
+
+  I_CASES_BUILT=3
+  I_CASES_BLOCKED_REACHABILITY=2
+  I_CASES_BLOCKED_CERTIFICATION_CONTRACT=1
+  I_CASES_BLOCKED_TOTAL=3
+
+The independent verifier for I01-I03 remains fixture-derived and does not use
+executor terminal fields to generate its prediction.
+
+======================================================================
+PRE-EXECUTION BLOCKER — V12 RE-RUNS A01-A04
+======================================================================
+
+v12 still unconditionally executes:
+
+  A01
+  A02
+  A03
+  A04
+
+before entering the I-slice.
+
+Those cases are already:
+
+  ACCEPTED / CLOSED
+
+and the standing authorization is:
+
+  A rerun = NOT AUTHORIZED
+
+Therefore v12 as currently written is NOT authorized for host execution.
+
+Running it would perform four extra executor fixture executions outside the
+intended I-slice run scope.
+
+This is an execution-scope defect, not an A-case correctness defect.
+
+======================================================================
+PATCH AUTHORIZED — RUN SCOPE ONLY
+======================================================================
+
+Patch v12 only to make the next host run execute I01/I02/I03 and NOT execute
+A01-A04.
+
+Preferred design:
+
+  preserve A fixture helper FUNCTIONS because I01-I03 legitimately reuse the
+  accepted fixture foundation;
+
+  do NOT invoke:
+    a_case A01
+    a_case A02
+    a_case A03
+    A04 execution block
+
+during the next I-only run.
+
+Represent prior A disposition explicitly without re-execution:
+
+  A01_STATUS=ACCEPTED_PRIOR
+  A02_STATUS=ACCEPTED_PRIOR
+  A03_STATUS=ACCEPTED_PRIOR
+  A04_STATUS=ACCEPTED_PRIOR
+
+  A_CASES_ACCEPTED_PRIOR=4
+  A_CASES_EXECUTED_THIS_RUN=0
+
+Do not count ACCEPTED_PRIOR as fresh PASS credit from the current run.
+
+The case ledger may use a distinct verdict such as:
+
+  ACCEPTED_PRIOR
+
+provided it cannot be confused with:
+  PASS
+  FAIL
+  NOT_IMPLEMENTED
+  BLOCKED_REACHABILITY
+  BLOCKED_CERTIFICATION_CONTRACT
+
+======================================================================
+NEXT I-ONLY RUN ACCOUNTING
+======================================================================
+
+For the next bounded run, the current-run executable activity should be:
+
+  I01
+  I02
+  I03
+
+only from the A/I slices.
+
+I04/I05/I06 remain blocked declarations and must not execute.
+
+D/S/C/T01-T04 remain ordinary NOT_IMPLEMENTED and must not execute.
+
+T05-T10 remain LOCKED and must not execute.
+
+Expected current-run successful I result:
+
+  I_CURRENT_RUN_PASS=3
+  I_CURRENT_RUN_FAIL=0
+
+Prior accepted:
+  A_CASES_ACCEPTED_PRIOR=4
+  A_CASES_EXECUTED_THIS_RUN=0
+
+Blocked:
+  I_CASES_BLOCKED_TOTAL=3
+
+Ordinary unimplemented:
+  26
+
+Global result must remain:
+
+  R80_OFFLINE_NONLAUNCHER_MATRIX=INCOMPLETE
+  EXECUTOR_CERTIFICATION_STATE=NOT_CERTIFIED
+  FULL_R80_CERTIFICATION=NOT_CLAIMED
+  RUNNER_EXIT=13
+
+Do not require CASES_PASS=36 for the I-only current-run ledger in a way that
+misrepresents prior accepted cases as newly executed. Preserve a clear
+separation between:
+
+  CURRENT_RUN_PASS
+and
+  ACCEPTED_PRIOR
+
+======================================================================
+SAFETY / SCOPE MUST REMAIN
+======================================================================
+
+  REAL_KILL_CALL_SITES=0
+  RUNNER_PATTERN_KILL_SITES=0
+  REAL_LAUNCHER_CALL_SITES=0
+  START_ALL_CALL_SITES=0
+  SP01_CALL_SITES=0
+  GIT_CANONICAL_STATE_CHANGE_SITES=0
+  GIT_CANONICAL_MUTATION_CALL_SITES=0
+
+No:
+  A execution
+  I04/I05/I06 execution
+  D/S/C/T execution
+  full self-lineage implementation
+  launcher
+  restart
+  canonical repo mutation
+  broadcast
+  capital
+
+======================================================================
+REQUIRED RETURN
+======================================================================
+
+Return revised runner and static report:
+
+  RUNNER_FILENAME
+  RUNNER_SHA256
+  RUNNER_BYTES
+  wc -l
+  bash -n
+
+Scope:
+  RUN_SCOPE=I_ONLY
+  A_CASES_ACCEPTED_PRIOR=4
+  A_CASES_EXECUTED_THIS_RUN=0
+  I_CASES_EXECUTABLE_THIS_RUN=3
+  I04_EXECUTED=NO
+  I05_EXECUTED=NO
+  I06_EXECUTED=NO
+
+Accounting:
+  I_CASES_BLOCKED_REACHABILITY=2
+  I_CASES_BLOCKED_CERTIFICATION_CONTRACT=1
+  I_CASES_BLOCKED_TOTAL=3
+  REMAINING_ORDINARY_NOT_IMPLEMENTED=26
+
+Safety:
+  REAL_KILL_CALL_SITES=0
+  RUNNER_PATTERN_KILL_SITES=0
+
+After exact-byte review, Boss will decide whether ONE bounded I01-I03 offline
+host execution is authorized.
+
+======================================================================
+LOCKS
+======================================================================
+
+v12 79539481...                 STATIC RECONCILIATION ACCEPTED
+v12 host execution              NOT AUTHORIZED
+A01-A04                         ACCEPTED / CLOSED
+A rerun                         NOT AUTHORIZED
+I01-I03                         BUILT
+I04                             BLOCKED_REACHABILITY
+I05                             BLOCKED_REACHABILITY
+I06                             BLOCKED_CERTIFICATION_CONTRACT
+I01-I03 host execution          NOT AUTHORIZED YET
+D/S/C/T fixture work            NOT AUTHORIZED
+full self-lineage               NOT AUTHORIZED
+T05-T10                         EXECUTION-LOCKED
+SP01                            NOT AUTHORIZED
+executor 583cfdbc...            NOT CERTIFIED
+launcher                        NOT AUTHORIZED
+restart                         NOT AUTHORIZED
+broadcast                       LOCKED
+capital                         UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

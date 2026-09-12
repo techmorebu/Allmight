@@ -1,0 +1,388 @@
+BOSS M2E-017G R80BI — DUPLICATE INVENTORY ACCEPTED / LOCATOR SEARCH-SCOPE PATCH REQUIRED
+
+MACHINE EVIDENCE ACCEPTED
+
+Read-only inventory establishes:
+
+  EXEC
+    MATCH_COUNT=1
+    /home/allmight/verifiers/R79F_TOPOLOGY/bin/m2e017g_continuation.sh
+
+  P1
+    MATCH_COUNT=1
+    /home/allmight/verifiers/R79F_TOPOLOGY/bin/p1_parse_stat.sh
+
+  P2
+    MATCH_COUNT=1
+    /home/allmight/verifiers/R79F_TOPOLOGY/bin/p2_walk_ancestry.sh
+
+  P3
+    MATCH_COUNT=1
+    /home/allmight/verifiers/R79F_TOPOLOGY/bin/p3_lineage_lifecycle.sh
+
+  P4
+    MATCH_COUNT=1
+    /home/allmight/verifiers/R79F_TOPOLOGY/bin/p4_ownership_predicates.sh
+
+  P5
+    MATCH_COUNT=1
+    /home/allmight/verifiers/R79F_TOPOLOGY/bin/p5_ownership_gate.sh
+
+  HOOK
+    MATCH_COUNT=2
+
+    historical evidence copy:
+      /home/allmight/r80_a_fixture/D01/hook.sh
+
+    verifier-tool copy:
+      /home/allmight/verifiers/R79F_TOPOLOGY/bin/pre_revalidation_hook.sh
+
+    SHA:
+      fcbb957cf6fb789c7987305d7510449019bb8d78daa4e43c793fdcf1e6cfb4bf
+
+    BYTE_IDENTICAL=YES
+
+Evidence hold:
+
+  /home/allmight/r80_a_fixture/D01
+  FILE_COUNT=1453
+  INTACT=YES
+
+======================================================================
+CORRECTION TO PRIOR HOST-STATE CLAIM
+======================================================================
+
+The earlier statement that EXEC / HOOK / P1-P5 each existed twice on the host is
+withdrawn.
+
+Observed current machine reality:
+
+  EXEC/P1-P5 have one real certification-tool copy each.
+  HOOK has one certification-tool copy plus one historical evidence copy.
+
+The prior all-seven "matches=2" result is explained by locator search overlap:
+
+  locate() searches:
+    "$D"
+    "$HOME/verifiers"
+
+When the runner resides directly under:
+
+  /home/allmight
+
+then:
+
+  "$D" == /home/allmight
+
+and the first recursive find already includes:
+
+  /home/allmight/verifiers/...
+
+The second search root:
+
+  /home/allmight/verifiers
+
+walks those same files again.
+
+Therefore the same physical verifier file can be counted twice through two
+overlapping recursive roots.
+
+Classification:
+
+  LOCATOR_SEARCH_SCOPE_ALIAS
+  not
+  SEVEN_REAL_DUPLICATE_ARTIFACTS
+
+This is another BUG-009-class observation/probe precision defect.
+
+======================================================================
+HOOK DUPLICATE RULING
+======================================================================
+
+The HOOK copy under:
+
+  /home/allmight/r80_a_fixture/D01/hook.sh
+
+is not a stray certification tool.
+
+It is historical evidence staged by the aborted R80BB D01 run and is protected
+by the active evidence hold.
+
+It MUST NOT be:
+
+  deleted
+  renamed
+  moved
+  used as the certification-tool source
+  counted as an admissible verifier artifact
+
+The admissible HOOK is:
+
+  /home/allmight/verifiers/R79F_TOPOLOGY/bin/pre_revalidation_hook.sh
+
+with exact SHA:
+
+  fcbb957cf6fb789c7987305d7510449019bb8d78daa4e43c793fdcf1e6cfb4bf
+
+======================================================================
+RULING — DO NOT SOLVE THIS BY RUNNER PLACEMENT
+======================================================================
+
+The proposed workaround:
+
+  "run v28 from a dedicated directory so $D does not span the evidence hold"
+
+is NOT accepted as the final certification design.
+
+Reason:
+
+  certification-tool identity must not depend on the incidental directory from
+  which the runner file is launched.
+
+The same exact runner bytes should discover the same certified artifact set
+regardless of whether the runner is placed in:
+
+  ~/
+  ~/Downloads/
+  ~/Uploads/
+  ~/verifiers/
+  another operator staging directory
+
+Working-directory or script-location sensitivity at the artifact-identity layer
+is unnecessary nondeterminism.
+
+======================================================================
+AUTHORIZED STATIC PATCH — DETERMINISTIC VERIFIER ROOT
+======================================================================
+
+One STATIC-ONLY revision is authorized.
+
+Replace locator search scope:
+
+  find "$D" "$HOME/verifiers" ...
+
+with a deterministic certification-tool root.
+
+Authorized preferred root:
+
+  VERIFIER_ROOT="$HOME/verifiers/R79F_TOPOLOGY/bin"
+
+Artifact lookup for:
+
+  EXEC
+  HOOK
+  P1
+  P2
+  P3
+  P4
+  P5
+
+must search ONLY that root.
+
+Required:
+
+  [[ -d "$VERIFIER_ROOT" ]] || fail closed
+
+  locate() must not search:
+    "$D"
+    "$HOME"
+    "$HOME/Uploads"
+    "$HOME/Downloads"
+    /home/allmight/r80_a_fixture
+    any preserved evidence tree
+
+Retain:
+
+  locate by exact SHA
+  LOC_N == 1
+  duplicate-path reporting if >1 match exists inside the designated verifier root
+  no filename trust as the identity authority
+
+The expected current machine result after the patch is:
+
+  EXEC_MATCHES=1
+  HOOK_MATCHES=1
+  P1_MATCHES=1
+  P2_MATCHES=1
+  P3_MATCHES=1
+  P4_MATCHES=1
+  P5_MATCHES=1
+
+======================================================================
+SEARCH-SCOPE SELF-AUDIT
+======================================================================
+
+Add a static self-audit proving the locator cannot reintroduce the defect.
+
+Required emitted fields:
+
+  ARTIFACT_LOCATOR_ROOT=/home/allmight/verifiers/R79F_TOPOLOGY/bin
+  ARTIFACT_LOCATOR_USES_RUNNER_DIR=NO
+  ARTIFACT_LOCATOR_SEARCHES_HOME_ROOT=NO
+  ARTIFACT_LOCATOR_SEARCHES_EVIDENCE_HOLD=NO
+  ARTIFACT_LOCATOR_ROOT_OVERLAP_COUNT=0
+  ARTIFACT_LOCATOR_SCOPE_AUDIT=PASS
+
+Fail closed if:
+
+  runner directory is included as a search root
+  home root is included as a search root
+  evidence-hold path is included
+  more than one recursive search root can overlap
+
+Preferred implementation:
+
+  exactly one recursive artifact-search root
+
+That makes overlap structurally impossible.
+
+======================================================================
+NO EVIDENCE-HOLD RELEASE
+======================================================================
+
+Continue preserving:
+
+  /home/allmight/r80_a_fixture/D01/
+
+The fact that its hook bytes equal the certified HOOK does not make the tree
+redundant.
+
+The tree remains historical machine evidence from the aborted R80BB run.
+
+======================================================================
+V28 STATUS
+======================================================================
+
+v28 SHA:
+
+  1a63932e38ba02ae9d2d695c6a66c49c7260caf5b79c3fed26dbc66c31555832
+
+Static D01 design:
+
+  ACCEPTED
+
+Artifact locator:
+
+  SEARCH-SCOPE PATCH REQUIRED
+
+Therefore:
+
+  v28 HOST EXECUTION = NOT AUTHORIZED
+  D01 RETRY          = NOT AUTHORIZED
+
+The next revision changes artifact discovery scope only.
+
+Do not alter:
+
+  D01 verifier
+  verifier precommitment
+  D01 fixture construction
+  evidence-hold collision gate
+  safety logic
+  P5
+  DESC_SIGS
+  G7/G8 authority logic
+  cleanup
+  matrix accounting
+  case dispositions
+  packaging
+
+======================================================================
+REQUIRED RETURN
+======================================================================
+
+Return revised runner with:
+
+  filename
+  SHA256
+  bytes
+  wc -l
+  bash -n
+
+and static evidence:
+
+  VERIFIER_ROOT=<exact path>
+  ARTIFACT_LOCATOR_ROOT_COUNT=1
+  ARTIFACT_LOCATOR_USES_RUNNER_DIR=NO
+  ARTIFACT_LOCATOR_SEARCHES_HOME_ROOT=NO
+  ARTIFACT_LOCATOR_SEARCHES_EVIDENCE_HOLD=NO
+  ARTIFACT_LOCATOR_ROOT_OVERLAP_COUNT=0
+  ARTIFACT_LOCATOR_SCOPE_AUDIT=PASS
+
+plus expected target-class counts from the designated verifier root:
+
+  EXEC=1
+  HOOK=1
+  P1=1
+  P2=1
+  P3=1
+  P4=1
+  P5=1
+
+No runner execution yet.
+
+======================================================================
+LOCKS
+======================================================================
+
+R80BB evidence tree
+  EVIDENCE HOLD / DO NOT TOUCH
+
+v28 1a63932e...
+  D01 STATIC DESIGN ACCEPTED
+  LOCATOR PATCH REQUIRED
+  NOT RUN-AUTHORIZED
+
+duplicate deletion/rename/move
+  NOT AUTHORIZED
+
+runner-placement workaround
+  NOT ACCEPTED AS CERTIFICATION DESIGN
+
+locator static revision
+  AUTHORIZED
+
+D01 retry
+  NOT AUTHORIZED YET
+
+A/I rerun
+  NOT AUTHORIZED
+
+D02-D06 execution
+  NOT AUTHORIZED
+
+S01-S08
+  NOT AUTHORIZED
+
+C01-C08
+  NOT AUTHORIZED
+
+T01-T04
+  NOT AUTHORIZED
+
+T05-T10
+  EXECUTION-LOCKED
+
+SP01
+  NOT AUTHORIZED
+
+executor 583cfdbc...
+  NOT CERTIFIED
+
+launcher
+  NOT AUTHORIZED
+
+restart
+  NOT AUTHORIZED
+
+broadcast
+  LOCKED
+
+capital
+  UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.
+Nothing to delete.
+Return only the static locator-scope revision.

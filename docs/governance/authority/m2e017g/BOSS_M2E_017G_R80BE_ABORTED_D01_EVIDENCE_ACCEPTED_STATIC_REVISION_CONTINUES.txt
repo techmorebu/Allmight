@@ -1,0 +1,280 @@
+BOSS M2E-017G R80BE — ABORTED D01 EVIDENCE ACCEPTED / STATIC REVISION CONTINUES
+
+EVIDENCE PACKAGE
+
+  Archive:
+    M2E017G_R80BB_ABORTED_D01_FIXTURE_EVIDENCE_20260911T033837Z.tar.gz
+    SHA256:
+    c93bc2794cd948d7ebf4ee198fe27b14bb6e7900f86203a9abb8727f077e61de
+
+  Manifest:
+    M2E017G_R80BB_ABORTED_D01_FIXTURE_MANIFEST_20260911T033837Z.sha256
+    SHA256:
+    a9e2899b919a59500b61d90822d56db683f78962a3984b763f6e64d0e4dfea7e
+
+Independent review confirms:
+
+  manifest regular-file entries = 1453
+  archive regular files         = 1453
+  missing manifest entries      = 0
+  extra manifest entries        = 0
+  hash mismatches               = 0
+  archive stored root           = D01/
+
+The archive is internally consistent with the supplied manifest.
+
+======================================================================
+DIAGNOSTIC EVIDENCE — ACCEPTED
+======================================================================
+
+Captured fixture identity:
+
+  root PID = 2615005
+  descendant PID = 2615007
+
+Executor evidence records:
+
+  BASELINE_LIVE_COUNT       1
+  BASELINE_DEAD_COUNT       7
+  BASELINE_LIVE_ROLES       shadow_engine
+
+  G7_FROZEN_DESCENDANTS     2615007
+  G7_FROZEN_COUNT           1
+  G7_CLOSURE                FROZEN
+
+  G8 census                 empty
+  G8_UNAUTHORIZED           NONE
+
+  RESULT                    STOP
+  STOP_GATE                 PT_ROOT_SURVIVOR
+
+  SIGNAL_SYSCALL_MODE       TEST_ADAPTER
+  TERM_ATTEMPTED_COUNT      2
+  TERM_DELIVERED_COUNT      0
+  CONTROL_FILES_CHANGED     0
+  START_ATTEMPTED           0
+  USED_SIGKILL              NO
+
+The executor main evidence TSV orders:
+
+  G7_FROZEN_DESCENDANTS
+  G7_CLOSURE
+  G8_CENSUS
+  G8_UNAUTHORIZED
+
+with G7 closure before G8 census.
+
+The frozen descendant is exactly the captured fixture descendant:
+
+  2615007
+
+The descendant evidence also records:
+
+  owning_role   shadow_engine
+  root_pid      2615005
+  desc_pid      2615007
+  depth         1
+  governed      YES
+  synthetic cmdline  sleep 300
+
+======================================================================
+RULING ON D01 PROPERTY
+======================================================================
+
+The aborted run DID produce executor-side evidence for all three D01 property
+values:
+
+  closure=FROZEN
+  frozen_contains_desc=YES
+  order=CLOSURE_BEFORE_CENSUS
+
+Therefore:
+
+  D01_FIXTURE_CONSTRUCTION_EXECUTOR_SIDE=SUPPORTED
+
+and:
+
+  R80AW_VERDICT_BOUNDARY_EMPIRICALLY_SUPPORTED=YES
+
+Specifically, the executor reported:
+
+  TERM_ATTEMPTED_COUNT=2
+  TERM_DELIVERED_COUNT=0
+  SIGNAL_SYSCALL_MODE=TEST_ADAPTER
+
+after the D01 property had been demonstrated.
+
+This supports the prior R80AW ruling that TERM_ATTEMPTED_COUNT must NOT be a
+D01 PASS predicate.
+
+A correct D01 property observation can coexist with later adapter-absorbed TERM
+attempts.
+
+======================================================================
+WHAT THIS DOES NOT PROVE
+======================================================================
+
+NO D01 CERTIFICATION CREDIT is granted from this run.
+
+Reason:
+
+  the independent D01 verifier block was absent from the runner;
+  D01_V_CL / D01_V_CONTAINS / D01_V_ORDER were never assigned;
+  the runner aborted under set -u before independent comparison completed.
+
+Therefore:
+
+  D01_EXECUTOR_PROPERTY_OBSERVED = YES
+  D01_INDEPENDENT_VERIFIER_COMPLETED = NO
+  D01_CERTIFICATION_CREDIT = NONE
+
+The aborted run remains diagnostic evidence only.
+
+The executor remains:
+
+  NOT CERTIFIED
+
+======================================================================
+EXECUTOR EVIDENCE ZIP INSIDE FIXTURE
+======================================================================
+
+The fixture archive includes:
+
+  D01/Uploads/M2E017G_EVIDENCE_20260911T031756Z.zip
+
+SHA256:
+
+  27f04af099a8fe7caa9a988047cace4436519171688e1024ac1e28719f2c772e
+
+Preserve it.
+
+It is part of the aborted-run evidence chain.
+
+======================================================================
+SOURCE TREE HOLD
+======================================================================
+
+Continue to preserve:
+
+  /home/allmight/r80_a_fixture/D01/
+
+DO NOT:
+
+  delete
+  rename
+  edit
+  clean the disposable repo
+  alter synthetic proc files
+  rerun executor inside the tree
+
+The uploaded archive is a preservation copy.
+The surviving host tree remains an evidence hold until Boss explicitly releases
+it.
+
+The statement:
+
+  SOURCE_UNCHANGED_AFTER_CAPTURE=YES
+
+is accepted as operator-reported host observation.
+
+It cannot be independently re-observed from the uploaded archive alone.
+
+======================================================================
+R80BC STATIC REVISION — CONTINUE
+======================================================================
+
+Proceed with the already authorized STATIC-ONLY revision:
+
+  1. restore the full independent D01 verifier block;
+  2. restore R80AU descendant synthetic-mirror starttime comparison;
+  3. restore R80AV root LIVE_VERIFIED predicate;
+  4. restore independent fixture/source-derived closure, membership and order;
+  5. add assignment-vs-reference / defined-before-first-use checks;
+  6. add a known-negative control for the variable audit;
+  7. require exact artifact-location match count == 1;
+  8. retain all v24 safety/lifetime/branch-bound hardening.
+
+The aborted evidence may be used as diagnostic context while implementing the
+verifier, but MUST NOT be used as the independent verifier authority.
+
+The verifier must predict from:
+
+  fixture facts
+  synthetic mirror facts
+  exact executor source structure
+
+not from:
+
+  G7_CLOSURE runtime outcome
+  G7_FROZEN_DESCENDANTS runtime outcome
+  G8_CENSUS runtime outcome
+
+Those remain executor-side actual evidence for later comparison.
+
+======================================================================
+NEXT RETURN
+======================================================================
+
+Return:
+
+  revised runner
+  filename
+  SHA256
+  bytes
+  wc -l
+  bash -n
+
+plus static proof that:
+
+  D01_V_CL assigned before use
+  D01_V_CONTAINS assigned before use
+  D01_V_ORDER assigned before use
+  D01_V_MIRST assigned and gated
+  D01_VERIFIER_PREREQS derived and gated
+  D01_VERIFIER_ROOT_LIVE_VERIFIED_PREDICATE derived and gated
+  D01_VERIFIER_SOURCE_ORDER_LINES derived and gated
+
+  variable-audit negative control = PASS
+
+  LOCATE_ACCEPTANCE_RULE=EXACTLY_ONE
+
+Do not execute the revised runner.
+
+======================================================================
+LOCKS
+======================================================================
+
+aborted D01 evidence package       ACCEPTED / DIAGNOSTIC
+source D01 tree                    EVIDENCE HOLD
+D01 executor-side property         OBSERVED
+D01 certification credit           NONE
+
+R80BC revision                      AUTHORIZED / STATIC ONLY
+revised runner execution            NOT AUTHORIZED
+D01 retry                           NOT AUTHORIZED
+duplicate artifact deletion         NOT AUTHORIZED
+
+A01-A04                             ACCEPTED / CLOSED
+I01-I03                             ACCEPTED / CLOSED
+I04/I05                             BLOCKED_REACHABILITY
+I06                                 BLOCKED_CERTIFICATION_CONTRACT
+
+D02/D03/D04/D06                     BLOCKED_REACHABILITY
+D05                                 BLOCKED_CERTIFICATION_CONTRACT
+
+S01-S08                             NOT AUTHORIZED
+C01-C08                             NOT AUTHORIZED
+T01-T04                             NOT AUTHORIZED
+full self-lineage                   NOT AUTHORIZED
+T05-T10                             EXECUTION-LOCKED
+SP01                                NOT AUTHORIZED
+launcher                            NOT AUTHORIZED
+restart                             NOT AUTHORIZED
+broadcast                           LOCKED
+capital                             UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.
+Nothing to delete.
+Continue the static R80BC revision only.

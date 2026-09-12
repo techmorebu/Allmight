@@ -261,3 +261,37 @@ boundary, but affects restart readiness). BUG-009 (S1, CPT tooling).
 **CLOSED_BUGS_RETESTED under R80:** BUG-005, BUG-006, BUG-007.
 **BUG-010** FIX_VALIDATED under R80D — matrix scope corrected to T01-T10.
 **BUG-011** FIX_VALIDATED — verified by Boss R80G, preserved by R80K/R80L.
+
+
+---
+
+## PRESERVATION OVERLAY 2 — 2026-09-12T00:53:58Z
+**Authority:** Boss R80CB / R80CC · **Transaction:** `M2E017G-PRESV-002`
+**Baseline HEAD:** `4133fd9dd5b84565c3903e85ef04c6d6325aa2f4`
+
+Content above is preserved verbatim; where superseded, this section controls.
+
+### Status since the first preservation commit
+
+```
+BUG-004  ROOT_CAUSE_PENDING  S2   heat V8 GC fatal; REGRESSION_TEST NOT_POSSIBLE
+BUG-009  OPEN                S1   CPT verifier-precision class — further
+                                  recurrences recorded across the A/I/D/S arc,
+                                  including literal-YES vs target-PID (S06/S07),
+                                  self-matching probes, and predicates asserting
+                                  more than they check
+INCIDENT 021  OPEN   source-grounded, passive observation
+INCIDENT 022  OPEN   STATE_CONFLICT=YES — RESTART-BLOCKING
+INCIDENT 023  OPEN   wrapper-PID / kill -0 liveness semantics
+INCIDENT 015/020  PARKED  SOURCE_EVIDENCE=NOT_RECOVERED
+```
+
+**BUG-012** — v33 hook-ran predicate compared the executor field to the literal
+`YES` while the executor emits the target PID; S06/S07 recorded false FAIL.
+`FIX_VALIDATED` under R80BV/R80BW (v34), S06 re-adjudicated PASS.
+
+**BUG-013** — the S fixture never created
+`logs/sessions/session_<CUR_SESSION>/`, masked until S07 became the first case
+to clear post-teardown proof. `FIX_VALIDATED` under R80BV (v34).
+
+No open S3/S4 defect affects the executor certification boundary.

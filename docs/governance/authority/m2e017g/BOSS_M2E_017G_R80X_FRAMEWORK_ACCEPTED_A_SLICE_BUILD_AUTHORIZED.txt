@@ -1,0 +1,299 @@
+BOSS M2E-017G R80X — RUNNER FRAMEWORK ACCEPTED / A01-A04 FIXTURE BUILD AUTHORIZED
+
+FILE REVIEWED
+
+  r80_runner_v3.sh
+
+Observed:
+  SHA256  caeefac7c46fe6722ded459c89da90d31b8348b837a18405cc11effa8ada0e3f
+  BYTES   26628
+  LINES   464
+  bash -n PASS
+
+STATUS
+
+The R80 runner framework is ACCEPTED as the scaffold baseline for subsequent
+bounded fixture construction.
+
+This does NOT authorize host execution of the runner and grants NO executor
+certification credit.
+
+======================================================================
+R80W CLOSURE
+======================================================================
+
+1. TARGETED SELF_EXCLUDE PROBES
+   ACCEPTED.
+
+   The verifier now separately checks:
+     SELF_EXCLUDE construction
+     excluded() specifically consulting SELF_EXCLUDE
+     governed selection paths calling excluded
+     negative control against P1
+
+   The broad generic-membership regex from v2 is gone.
+
+2. PARTIAL SELF-LINEAGE STATUS
+   ACCEPTED.
+
+   Current state:
+     PARTIAL_SELF_LINEAGE_EVIDENCE = PASS|FAIL from real P5 checks
+     SELF_LINEAGE_REGRESSION = NOT_IMPLEMENTED
+     SELF_LINEAGE_IMPLEMENTED = 0
+
+   MATRIX_OK explicitly requires SELF_LINEAGE_IMPLEMENTED == 1.
+   Therefore partial evidence cannot become full matrix PASS.
+
+3. HELPER SIGNAL CAPABILITY DISCLOSURE
+   ACCEPTED.
+
+   The runner distinguishes:
+     DIRECT_RUNNER_REAL_KILL_CALL_SITES
+   from:
+     SOURCED_HELPER_REAL_KILL_CAPABILITY
+     SOURCED_HELPER_SIGNAL_SCOPE
+
+   The bounded helper claim is conditioned on exact certified P3 identity.
+
+4. FAIL-CLOSED RESULT
+   RETAINED / ACCEPTED.
+
+   Current scaffold cannot PASS because:
+     all 36 numbered cases remain NOT_IMPLEMENTED
+     SELF_LINEAGE_IMPLEMENTED == 0
+
+   Non-PASS path exits 13.
+   Exit 0 remains reachable only through MATRIX_OK == 1.
+
+======================================================================
+FRAMEWORK BASELINE
+======================================================================
+
+Freeze this exact scaffold identity as the starting point for fixture slices:
+
+  R80_SCAFFOLD_BASE_SHA =
+    caeefac7c46fe6722ded459c89da90d31b8348b837a18405cc11effa8ada0e3f
+
+The following architectural properties must remain invariant through fixture
+construction unless Boss explicitly changes them:
+
+  MATRIX_DEFINED_CASE_COUNT = 42
+  MATRIX_CURRENT_EXECUTABLE_CASE_COUNT = 36
+  MATRIX_LOCKED_CASE_COUNT = 6
+  LOCKED_CASES = T05,T06,T07,T08,T09,T10
+
+  T05-T10 execution lock
+  no real launcher invocation
+  no start_all
+  no restart
+  no SP01 execution
+  no real governed-process signaling
+  no canonical repo mutation
+  no git add/commit/push
+  no broadcast
+  no capital
+
+The full self-lineage regression remains separately NOT_IMPLEMENTED and is not
+part of the A-slice authorization below.
+
+======================================================================
+A-SLICE AUTHORIZATION — A01-A04 ONLY
+======================================================================
+
+CPT is AUTHORIZED to implement fixture logic for exactly:
+
+  A01  8 live, exact identities
+  A02  5 live / known watchdog-router-heat dead
+  A03  1 live
+  A04  0 live -> ZERO_LIVE_CLEAN_START_REQUIRED, no mutation
+
+No I, D, S, C, or T fixture implementation is authorized yet.
+
+No self-lineage expansion is authorized in this slice.
+
+No host execution is authorized.
+
+======================================================================
+A-SLICE TEST MODEL
+======================================================================
+
+The A fixtures must exercise the exact executor bytes:
+
+  583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+
+using the already accepted synthetic-baseline / TEST_ADAPTER certification seam.
+
+The fixtures must not merely synthesize desired output labels.
+
+For each A case, the runner must construct an input world that causes the exact
+executor to observe the intended baseline cardinality and then independently
+verify the resulting authoritative evidence.
+
+Required case semantics:
+
+A01
+  synthetic baseline presents all 8 exact valid identities.
+  Verify executor classifies exactly 8 baseline roots live/verified before any
+  later bounded teardown behavior is considered.
+
+A02
+  synthetic baseline presents exactly 5 valid live roots with the historically
+  known dead set:
+    watchdog
+    notification_router
+    heat
+
+  Verify exact 5-live / 3-dead classification.
+
+A03
+  synthetic baseline presents exactly 1 valid live root and 7 dead.
+  The selected live role must be deterministic and documented in the fixture.
+
+A04
+  synthetic baseline presents zero live roots.
+  Required authoritative result:
+    ZERO_LIVE_CLEAN_START_REQUIRED
+
+  Required mutation boundary:
+    no signal
+    no control-file mutation
+    no start attempt
+
+  A04 must prove those zeros from executor evidence / independent observations,
+  not from hard-coded runner constants.
+
+======================================================================
+PER-CASE EVIDENCE
+======================================================================
+
+Each implemented A case must populate the existing evidence contract with:
+
+  case ID
+  fixture identity / construction
+  expected result
+  executor actual result
+  authoritative executor evidence
+  independent verifier actual result
+  verifier/executor consistency
+  executor process exit status
+  signal counters
+  mutation counters
+  start-attempt counters
+  verdict
+
+Do not normalize unlike concepts into one label merely to satisfy record().
+
+If the executor's natural output vocabulary differs from the R28 expectation text,
+introduce an explicit deterministic case-specific interpretation layer and preserve
+the raw authoritative evidence alongside it.
+
+======================================================================
+FIXTURE HONESTY
+======================================================================
+
+R29 fixture-honesty rules remain controlling.
+
+The A fixtures must:
+
+  use real exact executor control flow
+  use the accepted synthetic seam only at its defined boundary
+  preserve unfavorable observations
+  fail closed on malformed/incomplete synthetic state
+  not stub executor functions to return desired labels
+  not bypass gates required to reach baseline classification
+  not edit canonical repository state
+  not use canonical live process identities as signal targets
+
+If a case cannot be honestly produced through the existing seam, report that
+case as NOT_IMPLEMENTED / BLOCKED with the exact reason rather than expanding
+scope.
+
+======================================================================
+SLICE COMPLETION RULE
+======================================================================
+
+After A01-A04 are implemented:
+
+  expected implemented numbered cases = 4
+  expected NOT_IMPLEMENTED numbered cases = 32
+
+The whole runner must therefore STILL finish:
+
+  R80_OFFLINE_NONLAUNCHER_MATRIX=INCOMPLETE
+  EXECUTOR_CERTIFICATION_STATE=NOT_CERTIFIED
+
+and exit NONZERO.
+
+That is expected.
+
+A01-A04 may each receive bounded PASS/FAIL verdicts without implying the overall
+R80 matrix passed.
+
+======================================================================
+REQUIRED RETURN — NO HOST EXECUTION
+======================================================================
+
+Return the modified runner for exact-byte Boss review with:
+
+  RUNNER_FILENAME
+  RUNNER_SHA256
+  RUNNER_BYTES
+  LINE_COUNT
+  bash -n result
+
+  SCAFFOLD_BASE_SHA
+  A_CASES_IMPLEMENTED
+  REMAINING_NOT_IMPLEMENTED_CASES
+  MATRIX_DEFINED_CASE_COUNT
+  MATRIX_EXECUTABLE_CASE_COUNT
+  MATRIX_LOCKED_CASE_COUNT
+  LOCKED_CASES
+
+For each A01-A04, provide a concise static fixture map:
+  synthetic live roles
+  synthetic dead roles
+  expected authoritative executor marker(s)
+  independent verifier source
+  expected exit behavior
+  expected signal/mutation/start counters
+
+Repeat safety audit:
+  DIRECT_RUNNER_REAL_KILL_CALL_SITES
+  SOURCED_HELPER_REAL_KILL_CAPABILITY
+  SOURCED_HELPER_SIGNAL_SCOPE
+  REAL_LAUNCHER_CALL_SITES
+  START_ALL_CALL_SITES
+  SP01_CALL_SITES
+  GIT_MUTATION_CALL_SITES
+
+Also report:
+  SELF_LINEAGE_REGRESSION=NOT_IMPLEMENTED
+  T05-T10 still execution-locked
+
+Do not run the completed A-slice runner on the host until Boss reviews its exact
+bytes and issues a separate execution authorization.
+
+======================================================================
+LOCKS
+======================================================================
+
+r80_runner_v3 caeefac7...                FRAMEWORK ACCEPTED
+A01-A04 fixture build                    AUTHORIZED
+A01-A04 host execution                   NOT AUTHORIZED
+I01-I06 fixtures                         NOT AUTHORIZED
+D01-D06 fixtures                         NOT AUTHORIZED
+S01-S08 fixtures                         NOT AUTHORIZED
+C01-C08 fixtures                         NOT AUTHORIZED
+T01-T04 fixtures                         NOT AUTHORIZED
+T05-T10                                  EXECUTION-LOCKED
+full self-lineage regression             NOT IMPLEMENTED / NOT AUTHORIZED THIS SLICE
+SP01                                     NOT AUTHORIZED
+executor 583cfdbc...                     NOT CERTIFIED
+launcher                                 NOT AUTHORIZED
+restart                                  NOT AUTHORIZED
+broadcast                                LOCKED
+capital                                  UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

@@ -1,0 +1,346 @@
+BOSS M2E-017G R80CB — PRESERVATION FIRST / C-SLICE DESIGN REVIEW DEFERRED
+
+STATUS
+======
+
+S-slice is closed for executor:
+
+  583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+
+Final S disposition:
+
+  S01  BLOCKED_REACHABILITY
+  S02  PASS
+  S03  PASS
+  S04  PASS
+  S05  PASS
+  S06  PASS
+  S07  BLOCKED_LAUNCHER_BOUNDARY
+       TEARDOWN_BEHAVIOR_DEMONSTRATED=YES
+       CERTIFICATION_PASS_CREDIT=NO
+  S08  PASS
+
+Executor bytes remain preserved.
+
+======================================================================
+1. MATRIX STATE ACCEPTED
+======================================================================
+
+Accepted current matrix summary:
+
+  ACCEPTED / PASS-CREDIT CASES
+    A01-A04
+    I01-I03
+    D01
+    S02-S06
+    S08
+
+  BLOCKED_REACHABILITY
+    8 total
+
+  BLOCKED_CERTIFICATION_CONTRACT
+    2 total
+
+  C01-C08
+    NOT STARTED
+
+  T01-T04
+    NOT STARTED
+
+  T05-T10
+    EXECUTION-LOCKED
+
+  SELF-LINEAGE REGRESSION
+    NOT_IMPLEMENTED
+
+Global certification remains incomplete.
+
+======================================================================
+2. C-SLICE ASSESSMENT
+======================================================================
+
+The proposed C01-C08 characterization is accepted at the design level:
+
+  C01  pidfile mapping drift
+  C02  session drift
+  C03  repo HEAD drift
+  C04  launcher worktree SHA drift
+  C05  launcher blob SHA drift
+  C06  watchdog unexpectedly alive
+  C07  router unexpectedly alive
+  C08  router exit provenance missing/mismatch
+
+These cases are authority/control-drift gates at G1-G6.
+
+They are expected to terminate before:
+
+  descendant teardown
+  control-file transition
+  canonical start
+
+Therefore:
+
+  C_SLICE_LAUNCHER_EXPOSURE_EXPECTED = NO
+
+However, this ruling does NOT yet authorize implementation or execution.
+
+======================================================================
+3. T01-T04 ASSESSMENT
+======================================================================
+
+T01-T04 require a separate reachability review before any build.
+
+Reason:
+
+  their semantics concern no-start behavior at or after teardown/control
+  transition boundaries, and the S07 run proved that successful teardown can
+  naturally fall through into canonical start.
+
+Therefore:
+
+  T01-T04_BUILD = NOT AUTHORIZED
+  T01-T04_EXECUTION = NOT AUTHORIZED
+
+A source-grounded reachability review is required first.
+
+T05-T10 remain execution-locked.
+
+======================================================================
+4. SELF-LINEAGE REGRESSION
+======================================================================
+
+Self-lineage regression remains a defined certification obligation and remains:
+
+  NOT_IMPLEMENTED
+
+It gates any global PASS.
+
+No implementation is authorized by this ruling.
+
+======================================================================
+5. PRIORITY DECISION — PRESERVATION BEFORE C
+======================================================================
+
+Boss chooses:
+
+  NEXT PRIORITY = PRESERVATION
+
+Reason:
+
+  the controlling certification state has advanced materially since the last
+  canonical preservation transaction.
+
+The backlog now includes:
+
+  post-R80P rulings
+  R80BS onward
+  S-slice corrections
+  S06 accepted correction
+  S07 launcher-boundary discovery
+  R80BZ
+  R80CA
+  current matrix/accounting state
+  active locks
+  exact next authorized step
+
+A second context loss before this state is durably recorded would create a
+material recovery risk.
+
+Therefore preservation takes precedence over C-slice design review.
+
+======================================================================
+6. PRESERVATION TRANSACTION SCOPE
+======================================================================
+
+Authorize a NEW DOCUMENTATION-ONLY preservation transaction.
+
+Purpose:
+
+  bring the canonical recovery/governance record current without changing
+  runtime, executor, launcher, certification fixtures, or active trading state.
+
+The transaction must preserve:
+
+  current executor SHA
+  current matrix dispositions
+  all accepted/blocked case states
+  S07 final boundary disposition
+  T05-T10 lock
+  self-lineage NOT_IMPLEMENTED state
+  evidence-hold status
+  preservation of historical evidence packages
+  exact next authorized step:
+      C01-C08 DESIGN REVIEW, after preservation closes
+
+The transaction should update the durable recovery checkpoint and relevant
+governance/certification authority documents only.
+
+======================================================================
+7. PRESERVATION HARD BOUNDARIES
+======================================================================
+
+The preservation transaction MUST NOT:
+
+  modify executor bytes
+  modify runner bytes
+  execute certification cases
+  run launcher
+  run start_all.sh
+  run SP01
+  restart runtime
+  signal governed processes
+  mutate canonical runtime state
+  alter capital/broadcast state
+  delete historical evidence
+  rewrite prior evidence packages
+  perform broad/unbounded repository cleanup
+
+It must be:
+
+  documentation-only
+  exact-path staged
+  hash-audited
+  fail-closed
+  independently verifiable
+
+======================================================================
+8. REQUIRED PRE-PRESERVATION INVENTORY
+======================================================================
+
+Before any commit, return a read-only preservation inventory containing:
+
+  1. current local HEAD
+  2. current remote main
+  3. git status --short
+  4. exact candidate documentation paths to update/add
+  5. count of post-R80P Boss rulings not yet canonically preserved
+  6. exact ruling filenames/IDs proposed for inclusion
+  7. current recovery checkpoint path and SHA
+  8. whether any target documentation path has unrelated local modifications
+  9. proposed staged-path set
+ 10. confirmation that no executable/source/runtime path is in that set
+
+No mutation during this inventory step.
+
+======================================================================
+9. PRESERVATION DESIGN REQUIREMENTS
+======================================================================
+
+The eventual preservation runner/transaction must:
+
+  pin baseline HEAD
+  require local==remote before mutation unless separately ruled
+  pin preimage hashes for every modified canonical document
+  write through deterministic file generation
+  stage exact paths only
+  prohibit git add -A
+  prohibit git add .
+  show staged diff/stat before commit
+  verify staged path set equals authorized set
+  commit once
+  push once
+  verify local==remote afterward
+  verify committed path set exactly
+  preserve dirty unrelated files
+  stop on any drift
+
+No repair of unrelated repository state.
+
+======================================================================
+10. C-SLICE AFTER PRESERVATION
+======================================================================
+
+After the preservation transaction closes successfully:
+
+  NEXT TECHNICAL ITEM = C01-C08 DESIGN REVIEW
+
+Not implementation.
+Not execution.
+
+The C design review should determine:
+
+  exact source gate per case
+  fixture controllability
+  expected terminal reason
+  whether independent observation exists
+  whether any case can cross G6
+  whether any launcher/control-file boundary is reachable
+  case-by-case buildability
+
+Only after static acceptance would a C runner revision be considered.
+
+======================================================================
+11. CURRENT LOCKS
+======================================================================
+
+executor 583cfdbc...
+  PRESERVE EXACT BYTES
+  NOT CERTIFIED
+
+S-slice
+  CLOSED
+
+S07
+  BLOCKED_LAUNCHER_BOUNDARY
+  NO RERUN
+
+C01-C08
+  DESIGN REVIEW DEFERRED UNTIL PRESERVATION CLOSES
+
+T01-T04
+  REACHABILITY REVIEW REQUIRED
+  NOT AUTHORIZED
+
+T05-T10
+  EXECUTION-LOCKED
+
+self-lineage regression
+  NOT_IMPLEMENTED
+
+launcher
+  NOT AUTHORIZED
+
+SP01
+  NOT AUTHORIZED
+
+restart
+  NOT AUTHORIZED
+
+broadcast
+  LOCKED
+
+capital
+  UNTOUCHED
+
+historical evidence
+  PRESERVE
+
+======================================================================
+12. NEXT AUTHORIZED ACTION
+======================================================================
+
+READ-ONLY preservation inventory only.
+
+Return:
+
+  HEAD / remote
+  git status
+  candidate documentation paths
+  post-R80P ruling inventory
+  recovery checkpoint SHA
+  proposed staged path set
+  executable/source path count in proposed stage set
+
+Do not mutate anything yet.
+
+======================================================================
+CORNELIUS
+======================================================================
+
+Nothing to run in certification.
+
+Do not start C-slice work yet.
+Do not touch T-slice.
+Do not modify executor bytes.
+
+Return only the read-only preservation inventory.

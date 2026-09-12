@@ -1,0 +1,182 @@
+BOSS M2E-017G R80AE — V8 DIAGNOSTIC STATE PRESERVATION CORRECTION REQUIRED
+
+ARTIFACT REVIEWED
+
+  r80_runner_v8.sh
+
+Exact uploaded bytes independently verified:
+
+  SHA256     7bbcafe85c1eca35ca415ef01ddfbf77a7e8aa60b416a49e98962934e53003ce
+  BYTES      53305
+  LINE_COUNT 919
+  bash -n    PASS
+
+STATUS
+
+R80AD items 1, 2, and 4 are materially present:
+
+  - BASELINE map locator now uses source-grounded BASELINE_MAP / BASELINE_*.tsv
+  - fixed Overlay A lock-gate authority constant is 1
+  - git probe family now reproduces:
+      fixture clone       = 1
+      fixture checkout    = 1
+      canonical state     = 0
+      add/commit/push      = 0
+
+However, R80AD item 3 is not fully closed.
+
+A rerun is NOT AUTHORIZED yet.
+
+======================================================================
+BLOCKER — PER-CASE EXECUTOR STATE IS NOT PRESERVED CORRECTLY
+======================================================================
+
+The runner uses one global variable:
+
+  A_RC
+
+a_run_executor() overwrites A_RC on every A case.
+
+But a_preserve() is invoked only after A01, A02, A03 and A04 have all run:
+
+  for _c in A01 A02 A03 A04; do a_preserve "$_c"; done
+
+Inside a_preserve(), the preserved RC is emitted as:
+
+  emit "A_${id}_RC_PRESERVED" "${A_RC:-UNKNOWN}"
+
+At that point A_RC contains the most recent executor run's return code,
+normally A04's.
+
+Therefore the current runner can falsely label A01/A02/A03 with A04's RC.
+
+This violates the R80AD requirement that A_RC be preserved per case.
+
+There is a second consequence:
+
+In a_case(), several BLOCK paths return before these fields are emitted:
+
+  A_<id>_EXECUTOR_RESULT
+  A_<id>_EXECUTOR_STOP_REASON
+  A_<id>_EXECUTOR_RC
+  A_<id>_STOP_GATE
+
+For example, if BASELINE map resolution fails, the function returns before the
+later scalar-emission block.
+
+The diagnostic design was specifically intended to preserve those fields even
+when a case BLOCKS.
+
+A04 also does not currently emit the same complete RESULT / STOP_GATE /
+STOP_REASON / RC quartet before its branch decisions.
+
+======================================================================
+REQUIRED CORRECTION
+======================================================================
+
+Capture executor scalar state immediately after EACH a_run_executor invocation,
+before any verifier branch may return.
+
+Use runner-owned per-case state.
+
+Acceptable patterns include:
+
+  - write a small per-case status file immediately after executor return; or
+  - copy into case-keyed associative variables; or
+  - emit the scalar fields immediately and have a_preserve copy them.
+
+For each A01-A04, preserve independently:
+
+  A_<id>_EXECUTOR_RC
+  A_<id>_EXECUTOR_RESULT
+  A_<id>_STOP_GATE
+  A_<id>_EXECUTOR_STOP_REASON
+
+Rules:
+
+  - never reuse a later case's scalar value;
+  - absent structured field must be recorded explicitly as NONE/ABSENT,
+    not inherited from another case;
+  - these fields must survive a verifier BLOCK;
+  - a_preserve() must not depend on the current global A_RC to report an
+    earlier case.
+
+Preferred design:
+
+  Immediately after a_run_executor:
+    read RESULT / STOP_GATE / STOP_REASON from that case's A_TSV;
+    store A_RC and those values into "$A_WORLD/case_status.tsv" or directly
+    into "$OUT/A_<id>_diag/case_status.tsv".
+
+Then all later BLOCK / PASS paths consume or preserve that immutable case-local
+snapshot.
+
+Apply the same mechanism to A04.
+
+======================================================================
+STATIC ACCEPTANCE EVIDENCE REQUIRED
+======================================================================
+
+Return corrected runner with:
+
+  RUNNER_FILENAME
+  RUNNER_SHA256
+  RUNNER_BYTES
+  LINE_COUNT
+  bash -n
+
+And prove:
+
+  PER_CASE_RC_CAPTURED_IMMEDIATELY_AFTER_RUN=YES
+  A01_RC_CANNOT_BE_OVERWRITTEN_BY_A02_A03_A04=YES
+  A02_RC_CANNOT_BE_OVERWRITTEN_BY_A03_A04=YES
+  A03_RC_CANNOT_BE_OVERWRITTEN_BY_A04=YES
+
+  A01_RESULT_STOP_REASON_GATE_PRESERVED_ON_BLOCK=YES
+  A02_RESULT_STOP_REASON_GATE_PRESERVED_ON_BLOCK=YES
+  A03_RESULT_STOP_REASON_GATE_PRESERVED_ON_BLOCK=YES
+  A04_RESULT_STOP_REASON_GATE_PRESERVED_ON_BLOCK=YES
+
+  A_PRESERVE_DOES_NOT_USE_GLOBAL_A_RC_FOR_PRIOR_CASES=YES
+
+Also retain:
+
+  BASELINE_MAP_LOCATOR_USES_EVIDENCE_KEY=YES
+  BASELINE_MAP_LOCATOR_USES_BASELINE_GLOB=YES
+  OVERLAY_A_LOCK_GATE_EXPECTED=1
+  GIT_FIXTURE_CLONE_SITES=1
+  GIT_FIXTURE_CLONE_CHECKOUT_SITES=1
+  GIT_CANONICAL_STATE_CHANGE_SITES=0
+  GIT_PROBE_KNOWN_POSITIVE_CONTROL=PASS
+
+======================================================================
+SCOPE / LOCKS
+======================================================================
+
+Authorized:
+  - patch only the per-case diagnostic scalar preservation defect above.
+
+Not authorized:
+  - A-slice rerun
+  - executor changes
+  - I/D/S/C/T fixture work
+  - self-lineage expansion
+  - T05-T10
+  - SP01
+  - launcher/start_all
+  - restart
+  - canonical repo mutation
+  - broadcast
+  - capital
+
+Current states:
+
+  A_CASES_IMPLEMENTED                 4
+  REMAINING_NOT_IMPLEMENTED           32
+  SELF_LINEAGE_REGRESSION             NOT_IMPLEMENTED
+  T05-T10                             EXECUTION_LOCKED
+  EXECUTOR 583cfdbc...                NOT CERTIFIED
+
+CORNELIUS
+
+Nothing to run.

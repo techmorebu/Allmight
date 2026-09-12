@@ -1,0 +1,265 @@
+BOSS M2E-017G R80R — TRANSACTION BLOCK V2 FINAL IDENTITY GATE CORRECTION
+
+FILE REVIEWED
+
+  R80P_BLOCK_v2.sh
+
+Observed SHA256:
+
+  b027ad1ce65560c739aa5b496e41efec4e7b768d3aa704eafe5f6363e5ca37fd
+
+Observed:
+
+  210 lines
+  bash -n PASS
+
+STATUS
+
+  R80Q blockers 1, 2, and 3 are CLOSED in this version.
+
+  R80P_BLOCK_v2.sh is NOT YET APPROVED FOR EXECUTION because one final
+  publication-identity gate is missing.
+
+Cornelius must NOT run b027ad1c...
+
+======================================================================
+R80Q BLOCKER CLOSURE
+======================================================================
+
+Boss independently verified in the actual uploaded bytes:
+
+1. PREEXISTING INDEX GATE
+   Present.
+
+   PREEXISTING_STAGED_PATH_COUNT is measured before mutation and any nonzero
+   value exits fail-closed.
+
+2. EXACT STAGED SET
+   Present.
+
+   authorized.txt is compared against staged.txt with cmp.
+   Mismatch prints diff and exits nonzero.
+
+3. EXACT COMMITTED SET
+   Present.
+
+   authorized.txt is compared against committed.txt with cmp BEFORE push.
+   Mismatch exits and explicitly leaves the commit local/unpushed.
+
+4. ATOMIC PER-FILE WRITES
+   Present.
+
+   Each destination is written to a temporary sibling in the same directory,
+   the sibling SHA is verified, then mv performs the replacement.
+
+5. POST-PUSH FAIL-CLOSED
+   Present.
+
+   Exit 0 is reachable only when:
+     RAWOK == 29
+     RAWBAD == 0
+     RAW_CHECKPOINT_EQ_FINAL_MERGED == YES
+
+   Otherwise:
+     POST_PUSH_REMOTE_VERIFICATION=FAIL
+     exit 12
+
+6. PUSH RETRY
+   No retry path observed.
+   One git push call site.
+
+These corrections satisfy R80Q.
+
+======================================================================
+FINAL BLOCKER — PUBLICATION TARGET IDENTITY NOT PROVEN
+======================================================================
+
+Current G3 proves:
+
+  HEAD == expected commit
+  origin/main == expected commit
+  index empty
+
+It does NOT prove:
+
+  current checked-out branch == main
+  remote named origin == the intended Allmight repository
+
+This matters because:
+
+  git commit
+
+creates the commit on the current HEAD context, while:
+
+  git push origin main
+
+pushes the local ref named main.
+
+If HEAD is detached at the expected commit, G3 can pass, the documentation commit
+can be created on detached HEAD, and `git push origin main` would not push that new
+detached commit.
+
+Likewise, the raw-verification URL is hardcoded to:
+
+  techmorebu/Allmight
+
+but the push target is whatever Git currently calls:
+
+  origin
+
+Without proving the remote mapping, the transaction has two independently defined
+publication identities.
+
+That is unacceptable for the first public mutation in this arc.
+
+======================================================================
+REQUIRED CORRECTION
+======================================================================
+
+Extend the pre-mutation identity gate BEFORE G7.
+
+A. BRANCH IDENTITY
+
+Require:
+
+  CURRENT_BRANCH=$(git branch --show-current)
+
+and:
+
+  CURRENT_BRANCH == main
+
+If empty (detached HEAD) or any other branch:
+
+  STOP before canonical write.
+
+Report:
+
+  CURRENT_BRANCH
+  BRANCH_IDENTITY_MATCH=YES|NO
+
+B. ORIGIN REMOTE IDENTITY
+
+Read the configured origin URL, for example:
+
+  ORIGIN_URL=$(git remote get-url origin)
+
+Require it to resolve to the intended repository identity:
+
+  techmorebu/Allmight
+
+Accepted protocol forms may include the normal HTTPS or SSH representation, e.g.:
+
+  https://github.com/techmorebu/Allmight.git
+  git@github.com:techmorebu/Allmight.git
+
+Normalize deterministically or explicitly allowlist exact accepted forms.
+
+Do NOT accept an arbitrary URL merely because the remote name is "origin".
+
+Report:
+
+  ORIGIN_URL
+  ORIGIN_IDENTITY_MATCH=YES|NO
+
+Mismatch:
+
+  STOP before canonical write.
+
+C. PUSH CONSISTENCY
+
+The same validated origin must be used by:
+
+  git push origin main
+
+and the raw GitHub verification repository identity must remain:
+
+  techmorebu/Allmight
+
+This closes the publication-target seam.
+
+======================================================================
+WHY HEAD == origin/main IS NOT ENOUGH
+======================================================================
+
+These are commit identities, not ref/topology identities.
+
+The following state can satisfy current v2 G3:
+
+  HEAD = 923dd...
+  origin/main = 923dd...
+  HEAD detached
+
+Yet a subsequent `git commit` would not update local `main`.
+
+Therefore branch proof is a separate invariant.
+
+Similarly:
+
+  origin/main
+
+names a remote-tracking ref in the local repository. It does not, by itself,
+cryptographically or textually prove which repository URL "origin" currently maps to.
+
+Therefore remote URL proof is a separate invariant.
+
+======================================================================
+NEXT AUTHORIZED STEP
+======================================================================
+
+CPT is AUTHORIZED to patch R80P_BLOCK_v2.sh ONLY to add:
+
+  CURRENT_BRANCH == main gate
+  ORIGIN_URL identity allowlist/normalization gate
+
+before canonical writes.
+
+Return:
+
+  NEW_BLOCK_SHA
+  LINE_COUNT
+  bash -n result
+
+and exact excerpts proving:
+
+  CURRENT_BRANCH
+  BRANCH_IDENTITY_MATCH
+  ORIGIN_URL
+  ORIGIN_IDENTITY_MATCH
+  both gates occur before G7 canonical writes
+
+Repeat surface audit:
+
+  git add invocation count
+  prohibited bulk-add patterns
+  reset/checkout/fetch/pull count
+  kill/sudo/rm -rf/start_all count
+  git commit count
+  git push count
+  push retry count
+
+No other behavior or scope change is authorized.
+
+======================================================================
+LOCKS
+======================================================================
+
+R80Q blocker 1                         CLOSED
+R80Q blocker 2                         CLOSED
+R80Q blocker 3                         CLOSED
+publication branch identity            MISSING
+publication remote identity            MISSING
+R80P_BLOCK_v2 b027ad1c...              NOT APPROVED FOR EXECUTION
+block identity-gate correction          AUTHORIZED
+canonical documentation mutation       NOT AUTHORIZED YET
+git add / commit / push                NOT AUTHORIZED YET
+executor 583cfdbc...                   NOT CERTIFIED
+launcher                               NOT AUTHORIZED
+SP01                                   NOT AUTHORIZED
+restart                                NOT AUTHORIZED
+broadcast                              LOCKED
+capital                                UNTOUCHED
+
+CORNELIUS
+
+Do not run R80P_BLOCK_v2.sh b027ad1c...
+Wait for the identity-gated block and Boss approval.

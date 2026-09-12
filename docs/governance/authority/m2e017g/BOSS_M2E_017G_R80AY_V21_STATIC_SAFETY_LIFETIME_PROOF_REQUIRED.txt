@@ -1,0 +1,252 @@
+BOSS M2E-017G R80AY — V21 SAFETY LIFETIME FIX ACCEPTED / STATIC PROOF EVIDENCE STILL REQUIRED
+
+TARGET RUNNER REVIEWED
+
+  r80_runner_v21.sh
+
+Exact delivered-file measurements independently verified:
+
+  SHA256     6327c984f393cdcc4baf45e091ba1c460fd1a9302d069146cfcbec1ddc5adaad
+  BYTES      79614
+  wc -l      1341
+  bash -n    PASS
+
+Target executor remains:
+
+  583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+
+======================================================================
+R80AX BEHAVIORAL CORRECTION — ACCEPTED
+======================================================================
+
+The SAFETY_FAIL lifetime defect is materially corrected.
+
+Exact-byte review confirms:
+
+  SAFETY_FAIL=0 assignment sites:
+    exactly one
+
+  initialization line:
+    199
+
+  D01 real-delivery increment line:
+    992
+
+  later safety increments:
+    continue using the same accumulator
+
+  SAFETY_SURFACE final verdict line:
+    1245
+
+Observed order:
+
+  199 < 992 < 1245
+
+There is no later SAFETY_FAIL=0 reset.
+
+Therefore the runtime defect is closed:
+
+  SAFETY_FAIL_INITIALIZATION_COUNT=1
+  SAFETY_FAIL_RESET_AFTER_CASE_EXECUTION=0
+  SAFETY_FAIL_INIT_BEFORE_D01=YES
+  D01_REAL_DELIVERY_INCREMENTS_SHARED_SAFETY_FAIL=YES
+  SAFETY_SURFACE_USES_SHARED_SAFETY_FAIL=YES
+
+A real-delivery finding can no longer be erased by a later reset, and the
+increment no longer encounters an unbound SAFETY_FAIL under set -u.
+
+======================================================================
+REMAINING BLOCKER — REQUIRED STATIC ORDER PROOF IS NOT EMITTED/GATED
+======================================================================
+
+R80AX required the runner itself to preserve a static proof of the accumulator
+lifetime:
+
+  SAFETY_FAIL_INIT_LINE
+  D01_REAL_DELIVERY_SAFETY_INCREMENT_LINE
+  SAFETY_SURFACE_FINAL_LINE
+  SAFETY_FAIL_LIFETIME_ORDER
+  SAFETY_FAIL_ASSIGN_ZERO_COUNT
+
+v21 does not emit any of those fields.
+
+The current fields:
+
+  SAFETY_FAIL_INIT_DONE
+  SAFETY_FAIL_NEVER_RESET
+  SAFETY_FAIL_FINAL_COUNT
+
+are useful runtime declarations, but they do not mechanically prove the exact
+source-order invariant.
+
+In particular:
+
+  SAFETY_FAIL_NEVER_RESET=YES
+
+is currently asserted as a constant.
+
+It is not derived from a scan proving:
+
+  SAFETY_FAIL=0 assignment count == 1
+
+and it does not independently prove the required line ordering.
+
+This is a verifier/evidence-contract gap, not a runtime safety defect.
+
+======================================================================
+REQUIRED CORRECTION
+======================================================================
+
+Add a fail-closed static source-order proof over the runner's exact bytes.
+
+Required measurements:
+
+  SAFETY_FAIL_ASSIGN_ZERO_COUNT
+    count exact executable assignments:
+      SAFETY_FAIL=0
+    expected exactly 1
+
+  SAFETY_FAIL_INIT_LINE
+    line number of that single initialization
+
+  D01_REAL_DELIVERY_SAFETY_INCREMENT_LINE
+    line number of the D01 real-delivery branch increment only
+
+  SAFETY_SURFACE_FINAL_LINE
+    line number of the final authoritative SAFETY_SURFACE emission/verdict
+
+Required predicate:
+
+  init_line < d01_increment_line < final_line
+
+Emit:
+
+  SAFETY_FAIL_ASSIGN_ZERO_COUNT=<n>
+  SAFETY_FAIL_INIT_LINE=<n>
+  D01_REAL_DELIVERY_SAFETY_INCREMENT_LINE=<n>
+  SAFETY_SURFACE_FINAL_LINE=<n>
+  SAFETY_FAIL_LIFETIME_ORDER=PASS|FAIL
+
+Gate:
+
+  if assignment count != 1:
+    SAFETY_FAIL++
+
+  if any required line cannot be resolved uniquely:
+    SAFETY_FAIL++
+
+  if ordering predicate fails:
+    SAFETY_FAIL++
+
+IMPORTANT:
+
+The static proof must not count comments as executable assignments/increments.
+Use the same code-only observation discipline already used elsewhere in the
+runner, or another mechanically auditable method.
+
+The proof must itself occur early enough that a failure contributes to the
+same shared SAFETY_FAIL accumulator before final SAFETY_SURFACE is emitted.
+
+After this patch:
+
+  SAFETY_FAIL_NEVER_RESET
+
+must be DERIVED from the zero-assignment count and lifetime ordering, not a
+hard-coded YES.
+
+======================================================================
+NO OTHER D01 CHANGES AUTHORIZED
+======================================================================
+
+Retain unchanged:
+
+  D01 three-property ordering/provenance verdict
+  post-property counters as observations only
+  attempt-vs-delivery disclosure
+  root LIVE_VERIFIED independent verifier
+  unique exact-source DESC_SIGS binding
+  negative-control gate
+  six P5 predicates + OW_VERDICT
+  exact PPID/starttime/P5 cleanup revalidation
+  one disclosed runner-owned cleanup TERM site
+  exact-kill probe fail-closed gate
+  canonical A/I/D/global accounting
+  A/I ACCEPTED_PRIOR
+  D01 sole fresh D execution path
+  D02/D03/D04/D06 BLOCKED_REACHABILITY
+  D05 BLOCKED_CERTIFICATION_CONTRACT
+  RUNNER_EXIT-before-pack
+
+NOT AUTHORIZED:
+
+  D01 host execution
+  automatic run
+  D02-D06 implementation
+  new temporal seam
+  SP01 repurposing
+  S/C/T work
+  full self-lineage work
+  launcher/restart
+  broadcast
+  capital
+
+======================================================================
+REQUIRED RETURN
+======================================================================
+
+Return revised runner:
+
+  RUNNER_FILENAME
+  RUNNER_SHA256
+  RUNNER_BYTES
+  wc -l
+  bash -n
+
+Static lifetime proof:
+
+  SAFETY_FAIL_ASSIGN_ZERO_COUNT=1
+  SAFETY_FAIL_INIT_LINE=<line>
+  D01_REAL_DELIVERY_SAFETY_INCREMENT_LINE=<line>
+  SAFETY_SURFACE_FINAL_LINE=<line>
+  SAFETY_FAIL_LIFETIME_ORDER=PASS
+  SAFETY_FAIL_NEVER_RESET=YES  (derived, not asserted)
+
+All prior D01 static proof labels remain unchanged.
+
+After exact-byte Boss review:
+  Boss decides whether ONE bounded D01 offline host execution is authorized.
+
+======================================================================
+LOCKS
+======================================================================
+
+v21 6327c984...                 RUNTIME FIX ACCEPTED / STATIC PROOF PATCH REQUIRED
+A01-A04                         ACCEPTED / CLOSED
+I01-I03                         ACCEPTED / CLOSED
+I04/I05                         BLOCKED_REACHABILITY
+I06                             BLOCKED_CERTIFICATION_CONTRACT
+
+D01                             BUILT / STATIC PROOF PATCH REQUIRED
+D02                             BLOCKED_REACHABILITY
+D03                             BLOCKED_REACHABILITY
+D04                             BLOCKED_REACHABILITY
+D05                             BLOCKED_CERTIFICATION_CONTRACT
+D06                             BLOCKED_REACHABILITY
+
+D host execution                NOT AUTHORIZED
+SP01                            NOT AUTHORIZED
+new temporal mutation seam      NOT AUTHORIZED
+S01-S08                         NOT AUTHORIZED
+C01-C08                         NOT AUTHORIZED
+T01-T04                         NOT AUTHORIZED
+full self-lineage               NOT AUTHORIZED
+T05-T10                         EXECUTION-LOCKED
+executor 583cfdbc...            NOT CERTIFIED
+launcher                        NOT AUTHORIZED
+restart                         NOT AUTHORIZED
+broadcast                       LOCKED
+capital                         UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

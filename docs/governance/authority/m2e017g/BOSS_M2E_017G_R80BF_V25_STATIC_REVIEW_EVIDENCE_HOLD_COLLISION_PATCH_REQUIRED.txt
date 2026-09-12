@@ -1,0 +1,359 @@
+BOSS M2E-017G R80BF — V25 STATIC REVIEW: VERIFIER RESTORE ACCEPTED IN PART / EVIDENCE-HOLD COLLISION BLOCKS EXECUTION
+
+TARGET
+
+  r80_runner_v25.sh
+
+Independent delivered-file identity:
+
+  SHA256
+    ac9dd66436a96dab48cb7be0f947d1957a50a47253c06ebbf26198dc17d18974
+
+  BYTES
+    92270
+
+  wc -l
+    1514
+
+  bash -n
+    PASS
+
+v24 e9f5957d... remains superseded and must not be run.
+
+======================================================================
+R80BC RESTORATION — STATIC FINDINGS
+======================================================================
+
+The D01 independent verifier block is restored.
+
+Exact delivered bytes contain:
+
+  D01 root LIVE_VERIFIED construction
+    mirrored root starttime
+    map starttime
+    role signature
+    mirrored cmdline signature check
+
+  D01 descendant mirrored-starttime comparison
+    D01_V_MIRST vs captured D01_DST
+
+  real-parentage prerequisite
+
+  root-in-baseline-map prerequisite
+
+  closure prediction from all required prerequisites
+
+  fixture-derived descendant-membership prediction
+
+  source-derived G7/G8 ordering prediction
+
+  no use of runtime executor G7/G8 outcome fields to construct D01_VER
+
+The prior v24 unbound-variable defect is corrected in the restored block.
+
+Independent static reproduction of the new assignment/reference scan confirms:
+
+  D01_V_CL
+    assignments=2
+    references=1
+    first assignment before first reference
+
+  D01_V_CONTAINS
+    assignments=1
+    references=1
+    first assignment before first reference
+
+  D01_V_ORDER
+    assignments=2
+    references=1
+    first assignment before first reference
+
+  D01_V_MIRST
+    assignments=1
+    references=2
+    first assignment before first reference
+
+and the remaining audited D01 variables likewise resolve assigned-before-use.
+
+The command-position assignment regex correctly recognizes:
+
+  then D01_V_CL="FROZEN"
+
+Therefore the earlier external report of:
+
+  D01_V_CL assigned=0
+
+was a probe defect, not a v25 source defect.
+
+======================================================================
+LOCATOR — STATIC ACCEPTANCE
+======================================================================
+
+v25 changes artifact admission from:
+
+  LOC_N >= 1
+
+to:
+
+  LOC_N == 1
+
+and emits duplicate paths before failing closed.
+
+This satisfies R80BC artifact-identity tightening in principle.
+
+On the CURRENT host, where EXEC/HOOK/P1-P5 are reported twice, v25 is expected
+to STOP at artifact identity before numbered-case execution.
+
+No duplicate deletion or rename is authorized by this ruling.
+
+======================================================================
+NEW BLOCKER — ACTIVE EVIDENCE-HOLD COLLISION
+======================================================================
+
+R80BD placed the surviving aborted-run tree under explicit evidence hold:
+
+  /home/allmight/r80_a_fixture/D01/
+
+v25 still defines:
+
+  A_FXBASE="/home/allmight/r80_a_fixture"
+
+and a_build_world() includes:
+
+  W="$A_FXBASE/$id"
+  rm -rf "$W"
+
+For D01, that resolves to the exact evidence-hold path:
+
+  /home/allmight/r80_a_fixture/D01
+
+Additionally, immediately before the D-slice, v25 executes:
+
+  rm -rf "$A_FXBASE"
+
+which resolves to:
+
+  rm -rf /home/allmight/r80_a_fixture
+
+Therefore, if v25 ever passes the duplicate-artifact gate and reaches this
+region, it can destroy the preserved R80BB aborted-run evidence tree BEFORE
+constructing the fresh D01 fixture.
+
+This violates the active R80BD evidence hold.
+
+Classification:
+
+  EVIDENCE_PRESERVATION_COLLISION
+  EXECUTION_BLOCKING
+  STATIC PATCH REQUIRED
+
+v25 is NOT host-runnable.
+
+======================================================================
+REQUIRED PATCH — FRESH FIXTURE NAMESPACE
+======================================================================
+
+Do not release or delete the preserved R80BB tree.
+
+The revised runner must use a NEW fixture namespace that cannot alias the
+evidence hold.
+
+Preferred:
+
+  A_FXBASE="/home/allmight/r80_r80bc_fixture"
+
+or another unique version/slice-specific root.
+
+Required static gates:
+
+  A_FXBASE != "/home/allmight/r80_a_fixture"
+
+  "$A_FXBASE/D01" != "/home/allmight/r80_a_fixture/D01"
+
+  no rm -rf target in the revised runner may resolve to:
+    /home/allmight/r80_a_fixture
+    /home/allmight/r80_a_fixture/D01
+
+Emit:
+
+  PRESERVED_ABORTED_D01_EVIDENCE_PATH=/home/allmight/r80_a_fixture/D01
+  ACTIVE_FIXTURE_ROOT=<new path>
+  ACTIVE_FIXTURE_COLLIDES_WITH_EVIDENCE_HOLD=NO
+
+Fail closed before any mutation if collision is YES.
+
+Do not move the evidence hold to solve this.
+Move the NEW fixture namespace instead.
+
+======================================================================
+VARIABLE-AUDIT HARDENING — ONE MORE CORRECTION
+======================================================================
+
+The current negative-control sample uses the same regex family, but it does NOT
+exercise the actual var_audit() function.
+
+That leaves a possible divergence class:
+
+  var_audit() broken
+  negative-control hand-written grep still correct
+  control reports PASS while trusted function is defective
+
+Required:
+
+  run the known-negative sample THROUGH THE SAME audit function or through one
+  single shared primitive used by both production-variable checks and the
+  negative control.
+
+Required output:
+
+  VAR_AUDIT_NEGATIVE_CONTROL_ASSIGNMENT_COUNT=0
+  VAR_AUDIT_NEGATIVE_CONTROL_REFERENCE_COUNT>=1
+  VAR_AUDIT_NEGATIVE_CONTROL_DEFINED_BEFORE_FIRST_USE=NO
+  VAR_AUDIT_NEGATIVE_CONTROL=PASS
+
+The negative control must fail closed if the shared audit primitive reports YES.
+
+======================================================================
+SOURCE-ORDER PROBE HARDENING
+======================================================================
+
+Current verifier source-order logic uses:
+
+  grep ... | head -1
+
+for G7_CLOSURE and G8_CENSUS.
+
+The patterns are anchored and therefore do not self-match the runner probe, which
+is good.
+
+However, first-match selection without uniqueness leaves another verifier
+precision path.
+
+Require exact source authority counts:
+
+  D01_VERIFIER_G7_CLOSURE_SOURCE_EMIT_COUNT=1
+  D01_VERIFIER_G8_CENSUS_SOURCE_EMIT_COUNT=1
+
+Only if BOTH counts equal 1 may source-order lines be admitted.
+
+Then require:
+
+  G7 line numeric
+  G8 line numeric
+  G7 line < G8 line
+
+Otherwise:
+
+  D01_V_ORDER=SOURCE_ORDER_UNPROVEN
+
+Do not use head -1 alone as authority.
+
+======================================================================
+CURRENT RULING
+======================================================================
+
+Accepted in v25:
+
+  delivered-file identity
+  bash syntax
+  D01 independent verifier restoration in principle
+  root LIVE_VERIFIED semantics
+  descendant mirror-starttime semantics
+  fixture-derived D01 closure/member predictions
+  artifact locator exact-one policy
+  command-position variable assignment detection
+  branch-bounded SAFETY_FAIL proof retained
+
+Not yet accepted for execution:
+
+  evidence-hold safety
+  variable-audit negative-control coupling
+  G7/G8 source-authority uniqueness
+
+Therefore:
+
+  v25 STATIC REVIEW = PATCH REQUIRED
+  v25 HOST EXECUTION = NOT AUTHORIZED
+
+======================================================================
+NEXT AUTHORIZED REVISION
+======================================================================
+
+One STATIC-ONLY revision is authorized to:
+
+  1. move fresh runner fixtures to a namespace distinct from the R80BB evidence
+     hold;
+
+  2. add explicit fixture/evidence-hold collision gates;
+
+  3. route the known-negative variable sample through the same audit primitive
+     trusted for D01 variables;
+
+  4. require unique G7_CLOSURE and G8_CENSUS executor source emit authorities;
+
+  5. retain every accepted v25 verifier, safety, locator, P5, cleanup, accounting,
+     and packaging correction.
+
+No other behavioral expansion.
+
+======================================================================
+LOCKS
+======================================================================
+
+R80BB aborted D01 tree
+  /home/allmight/r80_a_fixture/D01
+  EVIDENCE HOLD — DO NOT TOUCH
+
+v25 ac9dd664...
+  STATIC PARTIAL ACCEPT
+  PATCH REQUIRED
+  NOT RUN-AUTHORIZED
+
+v24 e9f5957d...
+  SUPERSEDED
+  DO NOT RUN
+
+duplicate artifact reconciliation
+  PENDING SEPARATE RULING / NO DELETION YET
+
+D01 retry
+  NOT AUTHORIZED
+
+A/I rerun
+  NOT AUTHORIZED
+
+D02-D06
+  NOT AUTHORIZED / existing blocked dispositions unchanged
+
+S01-S08
+  NOT AUTHORIZED
+
+C01-C08
+  NOT AUTHORIZED
+
+T01-T04
+  NOT AUTHORIZED
+
+T05-T10
+  EXECUTION-LOCKED
+
+SP01
+  NOT AUTHORIZED
+
+launcher
+  NOT AUTHORIZED
+
+restart
+  NOT AUTHORIZED
+
+broadcast
+  LOCKED
+
+capital
+  UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.
+Do not delete or modify /home/allmight/r80_a_fixture/D01.
+Return the next static revision only.

@@ -67,3 +67,37 @@ The initial search missed R28 because it searched for the literal phrase
 **Second correction (R80D):** the first transcription of R28 dropped **T10**,
 making the T group 9 cases instead of 10. R28 defines **T01-T10**; the derived
 count is A4 + I6 + D6 + S8 + C8 + T10 = **42**. Recorded as BUG-010 (S2).
+
+
+---
+
+## PRESERVATION OVERLAY 2 — 2026-09-12T00:53:58Z
+**Authority:** Boss R80CB / R80CC · **Transaction:** `M2E017G-PRESV-002`
+**Baseline HEAD:** `4133fd9dd5b84565c3903e85ef04c6d6325aa2f4`
+
+Content above is preserved verbatim; where superseded, this section controls.
+
+### Authority preserved by this transaction
+
+52 further originals added under `docs/governance/authority/m2e017g/`,
+covering **R80O–R80CC** (excluding the chat-only block below). Combined with the
+21 preserved at `4133fd9d…`, canonical authority now spans R28 → R80CC except
+as noted.
+
+### PROVENANCE GAP — chat-only rulings
+
+Fifteen rulings arrived as relayed chat text with **no artifact file**. Their
+substantive rulings are recorded in the ledgers and checkpoint. Their provenance
+is **not** upgraded, and no synthetic file has been created to stand in for them.
+
+```
+RULING_ID                 R80BK R80BL R80BM R80BN R80BO R80BP R80BQ R80BR
+                          R80BS R80BT R80BU R80BV R80BW R80BX R80BY
+PRESERVATION_STATUS       SUMMARY_PRESERVED
+SOURCE_FORM               RELAYED_CHAT_TEXT
+ORIGINAL_ARTIFACT_SHA256  UNAVAILABLE
+```
+
+For every other ruling in this transaction:
+`PRESERVATION_STATUS=ORIGINAL_PRESERVED`, `SOURCE_FORM=BOSS_ARTIFACT_FILE`,
+`ORIGINAL_ARTIFACT_SHA256` as listed in the transaction manifest.

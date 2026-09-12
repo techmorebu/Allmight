@@ -1,0 +1,299 @@
+BOSS M2E-017G R80AF — V9 ACCEPTED / ONE BOUNDED A-SLICE RERUN AUTHORIZED
+
+ARTIFACT REVIEWED
+
+  r80_runner_v9.sh
+
+Exact uploaded bytes independently verified:
+
+  SHA256     44a7a90aed6f50df39305b9b89132387dde61690a28fd7575281ef77b8488e06
+  BYTES      54721
+  LINE_COUNT 943
+  bash -n    PASS
+
+TARGET EXECUTOR
+
+  583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+
+======================================================================
+R80AE BLOCKER — CLOSED
+======================================================================
+
+The per-case diagnostic scalar preservation defect is corrected.
+
+a_run_executor() now receives the case id and, immediately after the exact
+executor returns, snapshots:
+
+  rc
+  RESULT
+  STOP_GATE
+  STOP_REASON
+  evidence_dir
+  evidence TSV
+  resolved BASELINE map
+
+into:
+
+  $OUT/A_<id>_diag/case_status.tsv
+
+The snapshot is written before any caller-side verifier branch can return.
+
+The runner also emits immediately:
+
+  A_<id>_EXECUTOR_RC
+  A_<id>_EXECUTOR_RESULT
+  A_<id>_STOP_GATE
+  A_<id>_EXECUTOR_STOP_REASON
+  A_<id>_CASE_STATUS_SNAPSHOT
+
+a_preserve() later reads the per-case case_status.tsv and does not use the
+current global A_RC to represent earlier cases.
+
+Therefore:
+
+  PER_CASE_RC_CAPTURED_IMMEDIATELY_AFTER_RUN=YES
+  A01_RC_CANNOT_BE_OVERWRITTEN_BY_A02_A03_A04=YES
+  A02_RC_CANNOT_BE_OVERWRITTEN_BY_A03_A04=YES
+  A03_RC_CANNOT_BE_OVERWRITTEN_BY_A04=YES
+
+  A01_RESULT_STOP_REASON_GATE_PRESERVED_ON_BLOCK=YES
+  A02_RESULT_STOP_REASON_GATE_PRESERVED_ON_BLOCK=YES
+  A03_RESULT_STOP_REASON_GATE_PRESERVED_ON_BLOCK=YES
+  A04_RESULT_STOP_REASON_GATE_PRESERVED_ON_BLOCK=YES
+
+  A_PRESERVE_DOES_NOT_USE_GLOBAL_A_RC_FOR_PRIOR_CASES=YES
+
+======================================================================
+RETAINED CORRECTIONS — ACCEPTED
+======================================================================
+
+The following previously accepted corrections remain materially present:
+
+  BASELINE_MAP_LOCATOR_USES_EVIDENCE_KEY=YES
+  BASELINE_MAP_LOCATOR_USES_BASELINE_GLOB=YES
+
+  OVERLAY_A_LOCK_GATE_EXPECTED=1
+
+  GIT_FIXTURE_CLONE_SITES expected=1
+  GIT_FIXTURE_CLONE_CHECKOUT_SITES expected=1
+  GIT_CANONICAL_STATE_CHANGE_SITES expected=0
+  GIT_CANONICAL_MUTATION_CALL_SITES expected=0
+  GIT_PROBE_KNOWN_POSITIVE_CONTROL required=PASS
+
+Registry / scope remains:
+
+  MATRIX_DEFINED_CASE_COUNT=42
+  MATRIX_CURRENT_EXECUTABLE_CASE_COUNT=36
+  MATRIX_LOCKED_CASE_COUNT=6
+  LOCKED_CASES=T05,T06,T07,T08,T09,T10
+
+  A_CASES_IMPLEMENTED=4
+  REMAINING_NOT_IMPLEMENTED=32
+  SELF_LINEAGE_REGRESSION=NOT_IMPLEMENTED
+
+======================================================================
+RULING
+======================================================================
+
+One bounded OFFLINE A01-A04 host rerun is AUTHORIZED for the exact reviewed
+v9 bytes only.
+
+Authorized runner SHA:
+
+  44a7a90aed6f50df39305b9b89132387dde61690a28fd7575281ef77b8488e06
+
+This authorization does NOT extend to:
+
+  - automatic rerun
+  - I01-I06
+  - D01-D06
+  - S01-S08
+  - C01-C08
+  - T01-T04 fixture implementation/execution beyond their current NOT_IMPLEMENTED state
+  - T05-T10
+  - full self-lineage regression
+  - SP01
+  - launcher/start_all
+  - restart
+  - canonical repo mutation
+  - real governed-process signaling
+  - broadcast
+  - capital
+
+======================================================================
+EXPECTED GLOBAL RESULT
+======================================================================
+
+Even if A01-A04 all PASS, the runner is still expected to report:
+
+  R80_OFFLINE_NONLAUNCHER_MATRIX=INCOMPLETE
+  EXECUTOR_CERTIFICATION_STATE=NOT_CERTIFIED
+  FULL_R80_CERTIFICATION=NOT_CLAIMED
+  RUNNER_EXIT=13
+
+Reason:
+
+  32 numbered executable cases remain NOT_IMPLEMENTED
+  SELF_LINEAGE_REGRESSION remains NOT_IMPLEMENTED
+
+Therefore shell exit 13 is expected and is not itself an A-slice failure.
+
+Expected successful A-slice accounting:
+
+  CASES_PASS=4
+  CASES_FAIL=0
+  CASES_NOT_IMPLEMENTED=32
+
+A different count is evidence requiring review.
+
+======================================================================
+PRE-RUN IDENTITY GATE
+======================================================================
+
+Cornelius must execute only the exact reviewed v9 runner.
+
+Verify:
+
+  sha256sum ~/r80_runner_v9.sh
+
+Must equal exactly:
+
+  44a7a90aed6f50df39305b9b89132387dde61690a28fd7575281ef77b8488e06
+
+If different:
+
+  STOP
+  do not execute
+  return path + observed SHA
+
+The runner itself remains responsible for canonical HEAD and artifact identity
+gates.
+
+======================================================================
+ONE RUN ONLY
+======================================================================
+
+If identity matches:
+
+  cd ~/Allmight
+  bash ~/r80_runner_v9.sh
+
+Run once.
+
+Do not rerun automatically.
+
+If any of the following occurs:
+
+  STOP
+  BLOCKED
+  A-case FAIL
+  unexpected CASES_NOT_IMPLEMENTED count
+  safety audit FAIL
+  missing BASELINE map
+  missing evidence package
+  unexpected artifact identity failure
+
+preserve the first-run output and evidence exactly and stop.
+
+Do not repair the host during the run review.
+
+======================================================================
+A-SLICE ACCEPTANCE TARGET
+======================================================================
+
+A01:
+  8 live
+  0 dead
+  exact live role identities
+  exact role->PID identity
+  pidmm=0
+
+A02:
+  live:
+    fetcher
+    activator
+    volatility
+    monitor
+    shadow_engine
+
+  dead:
+    heat
+    watchdog
+    notification_router
+
+  pidmm=0
+
+A03:
+  live:
+    shadow_engine
+
+  dead:
+    fetcher
+    activator
+    volatility
+    heat
+    monitor
+    watchdog
+    notification_router
+
+  pidmm=0
+
+A04:
+  live set empty
+  all 8 roles dead
+  pidmm=0
+  ZERO_LIVE_CLEAN_START_REQUIRED observed
+  TERM_ATTEMPTED_COUNT=0
+  CONTROL_FILES_CHANGED=0
+  START_ATTEMPTED=0
+  pidfile unchanged
+  session unchanged
+
+Also required:
+
+  R40_COMMAND_POSITION_AUDIT=PASS
+  R40_VERIFIER_CONSISTENCY_AUDIT=PASS
+  SYNTHETIC_BASELINE_OVERLAY=PASS
+  PID01_ANCESTOR_OVERLAY=PASS
+  SAFETY_SURFACE=PASS
+  GIT_PROBE_KNOWN_POSITIVE_CONTROL=PASS
+  LOCKED_CASE_SELECTION_ATTEMPTS=0
+
+======================================================================
+RETURN EVIDENCE
+======================================================================
+
+After the single run, upload:
+
+  M2E017G_R80_EVIDENCE_<timestamp>.zip
+
+and terminal output.
+
+The evidence package should now include per-case A01-A04 diagnostic directories
+with immutable case_status.tsv snapshots and copied executor evidence.
+
+Do nothing else after upload.
+
+======================================================================
+LOCKS
+======================================================================
+
+r80_runner_v9 44a7a90a...               APPROVED FOR ONE OFFLINE A-SLICE RERUN
+A01-A04 rerun                            AUTHORIZED ONCE
+automatic rerun                          NOT AUTHORIZED
+I/D/S/C/T fixture expansion              NOT AUTHORIZED
+full self-lineage regression             NOT AUTHORIZED
+T05-T10                                  EXECUTION-LOCKED
+SP01                                     NOT AUTHORIZED
+executor 583cfdbc...                     NOT CERTIFIED
+launcher                                 NOT AUTHORIZED
+restart                                  NOT AUTHORIZED
+broadcast                                LOCKED
+capital                                  UNTOUCHED
+
+CORNELIUS
+
+You may perform the single bounded offline A01-A04 rerun after the v9 SHA
+matches exactly.
+
+Afterward upload the evidence ZIP and terminal output, then stop.

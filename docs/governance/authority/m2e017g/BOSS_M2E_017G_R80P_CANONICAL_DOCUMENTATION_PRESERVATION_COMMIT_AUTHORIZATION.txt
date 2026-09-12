@@ -1,0 +1,366 @@
+BOSS M2E-017G R80P — CANONICAL DOCUMENTATION PRESERVATION COMMIT AUTHORIZATION
+
+STATUS
+
+R80O fresh merge re-proof is ACCEPTED.
+
+Observed:
+
+  BASE_ACTUAL_SHA
+    87af009366a887640d1e84a98955c6aee195eddbc2fcbc2e887017cf94cd19f3
+
+  BASE_BYTES
+    34793
+
+  PRE-ADDENDUM OVERLAY_SHA
+    31408c1006471639ab6c49da1714de3b352f28de0159b5715e803a6ad33daf0c
+
+  PRE-ADDENDUM OVERLAY_BYTES
+    10482
+
+  PRE-ADDENDUM MERGED_SHA
+    1d9fd605c8a6c562eef4b75cb6fbaf0088cf99755c480a10906a381399901249
+
+  PRE-ADDENDUM MERGED_BYTES
+    45275
+
+  BASE_PREFIX_MATCH
+    YES
+
+  OVERLAY_SUFFIX_MATCH
+    YES
+
+  CANONICAL_REPO_CHANGED_BY_MERGE_CONSTRUCTION
+    NO
+
+======================================================================
+COMMIT-BOUND AUTHORITY RULE
+======================================================================
+
+A recovery checkpoint cannot be forced into an infinite freshness loop where every
+new authorization requires another pre-commit authorization to archive itself.
+
+R80P therefore establishes a COMMIT-BOUND AUTHORITY BOUNDARY.
+
+R80P is the final authority required to execute this documentation-preservation
+transaction. R80P itself does NOT have to be archived in the same commit it
+authorizes.
+
+It may be archived in the next governance-preservation cycle.
+
+This does NOT waive GOV-CHK-001. The checkpoint is still updated in the same commit,
+the changed set is derived from git, the commit is pushed, local HEAD must equal
+origin/main, and pinned raw GitHub-served bytes must be verified.
+
+======================================================================
+CHECKPOINT ADDENDUM
+======================================================================
+
+Use the exact Boss-issued file:
+
+  BOSS_M2E_017G_R80P_CHECKPOINT_COMMIT_BOUND_ADDENDUM.md
+
+Expected SHA256:
+
+  4be8787ad2dde09447c875168c78a42814743dd3937ab67d2f577270ce8e6618
+
+Expected bytes:
+
+  2943
+
+This addendum supersedes stale current-action/count statements in checkpoint S8,
+S9b, and S10 while preserving all historical bytes.
+
+The addendum MUST be hash-verified before use.
+
+Do not transcribe or reconstruct it from prose.
+
+======================================================================
+FINAL OVERLAY CONSTRUCTION
+======================================================================
+
+Final overlay is:
+
+  exact accepted R80N CHECKPOINT_OVERLAY.md bytes
+  +
+  exact R80P checkpoint addendum bytes
+
+Base accepted R80N overlay:
+
+  SHA256
+    31408c1006471639ab6c49da1714de3b352f28de0159b5715e803a6ad33daf0c
+
+  bytes
+    10482
+
+After appending the exact R80P addendum:
+
+  compute FINAL_OVERLAY_SHA
+  compute FINAL_OVERLAY_BYTES
+
+The pre-addendum merged SHA 1d9fd605... is then historical only.
+
+Reconstruct final merged checkpoint from:
+
+  git show HEAD:docs/recovery/PROJECT_RECOVERY_CHECKPOINT.md
+  +
+  FINAL_OVERLAY
+
+Required final proof before any canonical write:
+
+  BASE_ACTUAL_SHA ==
+    87af009366a887640d1e84a98955c6aee195eddbc2fcbc2e887017cf94cd19f3
+
+  BASE_BYTES == 34793
+
+  sha256(first 34793 bytes of final merged checkpoint) ==
+    BASE_ACTUAL_SHA
+
+  sha256(bytes 34794..EOF of final merged checkpoint) ==
+    FINAL_OVERLAY_SHA
+
+Return internally:
+
+  FINAL_OVERLAY_SHA
+  FINAL_OVERLAY_BYTES
+  FINAL_MERGED_SHA
+  FINAL_MERGED_BYTES
+  BASE_PREFIX_MATCH=YES
+  FINAL_OVERLAY_SUFFIX_MATCH=YES
+
+Only after those predicates pass may canonical writes begin.
+
+======================================================================
+AUTHORIZED CANONICAL DOCUMENTATION PATH SET
+======================================================================
+
+Exactly 29 canonical documentation paths are authorized:
+
+  docs/governance/M2E017G_GOVERNANCE_AUTHORITY_INDEX.md
+
+  docs/governance/authority/m2e017g/BOSS_M2E_017G_R80F_MANIFEST_INTEGRITY_CORRECTION.txt
+  docs/governance/authority/m2e017g/BOSS_M2E_017G_R40_A04_PASS_VERIFIER_INVARIANT_SP_AUTHORIZED.txt
+  docs/governance/authority/m2e017g/BOSS_M2E_017G_R28_DESIGN_ACCEPT_BUILD_AUTHORIZED.txt
+  docs/governance/authority/m2e017g/BOSS_M2E_017G_R80I_TARGETED_DOC_CONFLICT_INCIDENT_READ.txt
+  docs/governance/authority/m2e017g/BOSS_M2E_017G_R80_FULL_EXECUTOR_RECERTIFICATION_AUDIT_DIRECTIVE.txt
+  docs/governance/authority/m2e017g/BOSS_M2E_017G_R80C_BUG_AND_INCIDENT_TRACKING_STANDARD.txt
+  docs/governance/authority/m2e017g/BOSS_M2E_017G_R79G_HOST_EXECUTION_AUTHORIZATION.txt
+  docs/governance/authority/m2e017g/BOSS_M2E_017G_R80K_PRESERVATION_GOVERNANCE_RULING.txt
+  docs/governance/authority/m2e017g/BOSS_M2E_017G_R80G_STAGE1_ACCEPTANCE_PRESERVATION_PREP.txt
+  docs/governance/authority/m2e017g/BOSS_M2E_017G_R80A_AUTHORITY_RECOVERY_RULING.txt
+  docs/governance/authority/m2e017g/BOSS_M2E_017G_R80L_PRECOMMIT_REVIEW_CORRECTION.txt
+  docs/governance/authority/m2e017g/BOSS_M2E_017G_R29_BUILD_STATUS_CONTINUE_MATRIX.txt
+  docs/governance/authority/m2e017g/BOSS_M2E_017G_R80E_DOCUMENTATION_ACCEPTANCE_WORDING_CORRECTION.txt
+  docs/governance/authority/m2e017g/BOSS_M2E_017G_R80D_DOCUMENTATION_T10_CORRECTION.txt
+  docs/governance/authority/m2e017g/BOSS_M2E_017G_R30_SUBSHELL_STOP_PROPAGATION_DEFECT.txt
+  docs/governance/authority/m2e017g/BOSS_M2E_017G_R33_SP01_SP05_AUTHORIZED.txt
+  docs/governance/authority/m2e017g/BOSS_M2E_017G_R80H_READ_ONLY_CANONICAL_REPO_INSPECTION.txt
+  docs/governance/authority/m2e017g/BOSS_M2E_017G_R80B_BUILD_DOCUMENTATION_AND_AUTHORITY_PRESERVATION.txt
+  docs/governance/authority/m2e017g/BOSS_M2E_017G_R80J_SEGMENTED_CHECKPOINT_READ.txt
+  docs/governance/authority/m2e017g/BOSS_M2E_017G_R80M_HOST_MERGE_CONSTRUCTION_AUTHORIZATION.txt
+  docs/governance/authority/m2e017g/BOSS_M2E_017G_R80N_FINAL_PRESTAGE_DOCUMENTATION_REFRESH.txt
+
+  docs/certification/M2E017G_EXECUTOR_CERTIFICATION_HISTORY.md
+  docs/certification/M2E017G_EXECUTOR_BEHAVIOR_MATRIX.md
+  docs/certification/M2E017G_R80_RECERTIFICATION_PLAN.md
+  docs/certification/M2E017G_R79_TOPOLOGY_PROOF.md
+
+  docs/recovery/BUILD_AND_CERTIFICATION_LEDGER.md
+  docs/recovery/BUG_AND_INCIDENT_LEDGER.md
+  docs/recovery/PROJECT_RECOVERY_CHECKPOINT.md
+
+No other path is authorized.
+
+======================================================================
+CANONICAL WRITE / STAGE GATE
+======================================================================
+
+Before writing:
+
+  verify current HEAD ==
+    923dd5041e645c22ad025a3f8335a03880f89b99
+
+  verify origin/main ==
+    923dd5041e645c22ad025a3f8335a03880f89b99
+
+  verify the accepted package SHA ==
+    feda4afd312dc8d2b7aef6aace2e81426cdb86c3aeb99705097e47c4afa6a595
+
+  verify package MANIFEST mismatch count == 0
+
+  verify FINAL merged checkpoint proof == PASS
+
+If any anchor differs:
+
+  STOP
+  STATE_DIVERGENCE
+
+Canonical writes must be atomic/bounded and only target the 29 paths above.
+
+After writing but BEFORE git add:
+
+  compute actual hashes of all 29 destinations
+  verify the 28 package-backed destinations against the accepted package bytes
+  verify PROJECT_RECOVERY_CHECKPOINT.md against FINAL_MERGED_SHA
+
+If any mismatch:
+
+  STOP before staging.
+
+======================================================================
+EXPLICIT STAGING RULE
+======================================================================
+
+Stage ONLY the exact 29 authorized paths.
+
+Do not use:
+
+  git add .
+  git add -A
+  git add docs
+  git commit -a
+
+After staging, derive the actual staged set with git itself.
+
+Required:
+
+  STAGED_PATH_COUNT=29
+
+  STAGED_PATH_SET ==
+    exact authorized path set above
+
+  EXECUTABLE_FILE_CHANGE_COUNT=0
+  NON_DOCUMENT_FILE_CHANGE_COUNT=0
+  AUTHORITY_BYTE_MUTATION_COUNT=0
+  UNRESOLVED_DOC_CONFLICT_COUNT=0
+
+Existing unrelated dirty/untracked paths must remain outside the index.
+
+If the staged set differs by even one path:
+
+  STOP
+  do not commit.
+
+======================================================================
+COMMIT / PUSH AUTHORIZATION
+======================================================================
+
+If every pre-stage and staged-set predicate passes:
+
+  one documentation-only commit is AUTHORIZED.
+
+Recommended commit message:
+
+  docs(m2e017g): preserve certification and governance record
+
+Then:
+
+  push once to origin/main.
+
+No retry loop.
+
+If commit or push fails:
+
+  STOP and report actual state.
+
+Do not repair unrelated repository state.
+
+======================================================================
+GOV-CHK-001 POST-COMMIT VERIFICATION
+======================================================================
+
+After successful push:
+
+1. record local HEAD
+
+2. record origin/main
+
+3. require:
+
+     local HEAD == origin/main
+
+4. derive committed path set from:
+
+     git show --name-only --format= HEAD
+
+5. require committed path set == exact 29 authorized paths
+
+6. for every committed path, compare local committed bytes from:
+
+     git show HEAD:<path>
+
+   against pinned raw GitHub-served bytes at that exact commit.
+
+7. require:
+
+     RAW_GITHUB_VERIFIED_PATH_COUNT=29
+     RAW_GITHUB_MISMATCH_COUNT=0
+
+8. verify the pushed checkpoint SHA from raw GitHub equals FINAL_MERGED_SHA.
+
+9. verify no executable/non-document path was committed.
+
+10. report unchanged unrelated dirty-tree paths separately.
+
+A working-tree read does not satisfy the pinned raw GitHub requirement.
+
+======================================================================
+POST-COMMIT STOP
+======================================================================
+
+Successful documentation preservation does NOT authorize any runtime action.
+
+After remote verification:
+
+  STOP for Boss review.
+
+Still NOT AUTHORIZED:
+
+  executor behavioral execution
+  launcher
+  SP01
+  restart
+  signals
+  broadcast
+  capital
+
+======================================================================
+DOWNLOAD DUPLICATE NOTE
+======================================================================
+
+The host may contain multiple filenames such as:
+
+  PRESERVATION_REVIEW__feda4afd.zip
+  PRESERVATION_REVIEW__feda4afd-1.zip
+
+Selection MUST remain content-addressed by SHA256, never by filename alone.
+
+Accepted package SHA:
+
+  feda4afd312dc8d2b7aef6aace2e81426cdb86c3aeb99705097e47c4afa6a595
+
+======================================================================
+LOCKS
+======================================================================
+
+R80O merge re-proof                      PASS
+R80P commit-bound authority              ACTIVE
+final overlay re-proof                   REQUIRED BEFORE WRITE
+canonical documentation write            AUTHORIZED IF GATES PASS
+explicit git staging                     AUTHORIZED IF GATES PASS
+single documentation commit              AUTHORIZED IF GATES PASS
+single push to origin/main                AUTHORIZED IF GATES PASS
+pinned raw GitHub verification           REQUIRED
+unrelated dirty tree                      PRESERVE / DO NOT TOUCH
+executor 583cfdbc...                      NOT CERTIFIED
+launcher                                 NOT AUTHORIZED
+SP01                                     NOT AUTHORIZED
+restart                                  NOT AUTHORIZED
+broadcast                                LOCKED
+capital                                  UNTOUCHED
+
+CORNELIUS
+
+CPT should produce one bounded, fail-closed operator block implementing this
+transaction. Run only that approved block. On any STOP or mismatch, return the
+output and do not improvise.

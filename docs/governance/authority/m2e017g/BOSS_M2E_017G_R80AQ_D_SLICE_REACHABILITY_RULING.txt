@@ -1,0 +1,411 @@
+BOSS M2E-017G R80AQ — D-SLICE REACHABILITY RULING / D01-D02 BUILD / D03 CONDITIONAL / D04-D06 BLOCKED
+
+TARGET EXECUTOR
+
+  SHA256
+  583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+
+SOURCE DIAGNOSIS ACCEPTED
+
+Key D-slice structural fact:
+
+  G7 descendant discovery:
+    real pgrep -P parentage
+
+  descendant identity:
+    PROC_ROOT-aware present/cmdline/starttime
+
+Therefore D fixtures require a hybrid model:
+
+  REAL process topology for parent/child discovery
+  SYNTHETIC PROC_ROOT identity for executor-observed descendant identity
+
+This is materially different from the A/I fictional-PID-only fixture model.
+
+======================================================================
+RULING 1 — D05 INHERITS THE I06 P5 CONTRACT CONFLICT
+======================================================================
+
+D05 is BLOCKED_CERTIFICATION_CONTRACT under the current certified ownership
+doctrine.
+
+Reason:
+
+  A new governed descendant appearing after G7 closure is not in FROZEN_DESC.
+
+  G8 authorized_pid therefore rejects it unless it is otherwise an authorized
+  live baseline root.
+
+  To provoke the governed census condition through real pgrep -f, the real
+  process must carry a governed-looking signature.
+
+  Certified P5 requires:
+
+    PID_NOT_REAL_GOVERNED_RUNTIME=YES
+
+  A deliberately governed-looking real fixture process conflicts with that
+  predicate in the same way already ruled for I06.
+
+No P5 predicate may be waived.
+
+Therefore:
+
+  D05_STATUS=BLOCKED_CERTIFICATION_CONTRACT
+  D05_BLOCKING_REASON=P5_NOT_GOVERNED_CONFLICT
+  D05_EXPECTED_GATE=G8_SECOND_STACK
+  D05_EXECUTION_CREDIT=NONE
+
+This ruling does NOT prove G8_SECOND_STACK unreachable in all possible runtime
+states.
+
+It proves the currently authorized fixture model cannot both:
+  provoke the required real governed census condition
+and
+  satisfy certified P5 unchanged.
+
+Do not invent an ownership exception.
+
+======================================================================
+RULING 2 — D04 / D06 MAY NOT REPURPOSE SP01
+======================================================================
+
+D04 and D06 are BLOCKED_REACHABILITY under the current D-slice authorization.
+
+Accepted source requirement:
+
+  identity is captured at G7 closure
+  identity must differ later at teardown revalidation / signal_one
+
+This requires a temporal mutation between:
+  G7 freeze
+and
+  descendant revalidation
+
+The existing SP01 pre-revalidation hook is indeed architecturally adjacent to
+that requirement.
+
+However:
+
+  - SP01 remains separately NOT AUTHORIZED under R80U;
+  - the hook is byte-frozen to its prior certification purpose;
+  - R80AH already established that a frozen hook may not be repurposed as a
+    general mutation seam merely because its timing is convenient;
+  - D-slice build authorization did not expand SP01 authority.
+
+Therefore the hook may NOT be invoked, rebound, generalized, or treated as an
+implicitly authorized D04/D06 mutation mechanism.
+
+D04:
+
+  D04_STATUS=BLOCKED_REACHABILITY
+  D04_BLOCKING_REASON=NO_AUTHORIZED_G7_TO_REVALIDATION_IDENTITY_MUTATION_SEAM
+  D04_EXPECTED_GATE=TD_IDENTITY_MISMATCH
+  D04_EXECUTION_CREDIT=NONE
+
+D06:
+
+  D06_STATUS=BLOCKED_REACHABILITY
+  D06_BLOCKING_REASON=NO_AUTHORIZED_G7_TO_REVALIDATION_IDENTITY_MUTATION_SEAM
+  D06_EXPECTED_GATE=TD_IDENTITY_MISMATCH
+  D06_EXECUTION_CREDIT=NONE
+
+Do not add:
+  generic background mutator
+  polling mutator
+  new revalidation hook
+  SP01 rebinding
+  race/sleep choreography
+
+without a new Boss ruling.
+
+======================================================================
+RULING 3 — D01
+======================================================================
+
+D01 remains BUILDABLE.
+
+D01 is not a STOP-gate case.
+
+Its certification target is ordering/provenance:
+
+  G7 closure is formed
+  closure is frozen
+  later governed census occurs after closure
+
+Required independent proof:
+
+  REAL parent PID
+  REAL child PID
+  proven parent/child lineage
+  child mirrored in PROC_ROOT
+  child synthetic identity accepted
+  frozen descendant set contains child
+  closure evidence precedes later census evidence
+  no real governed runtime is used
+
+Expected state should be source-grounded as an ordering invariant rather than
+inventing a STOP_GATE.
+
+D01 may be encoded.
+
+======================================================================
+RULING 4 — D02
+======================================================================
+
+D02 remains BUILDABLE IN PRINCIPLE.
+
+Required condition:
+
+  descendant is legitimately captured in FROZEN_DESC before parent disappears
+
+then:
+
+  parent becomes absent
+  descendant remains present
+  descendant PID/starttime/signature remain unchanged
+  frozen provenance continues to authorize that descendant
+
+D02 must not be simulated by merely marking the parent absent in synthetic
+PROC_ROOT if the executor's relevant parent-survival/descendant eligibility
+logic depends on real process state.
+
+Before encoding D02, CPT must identify exactly:
+
+  which parent-presence observation is real /proc vs PROC_ROOT;
+  when parent disappearance must occur;
+  whether current authorized fixture cleanup/control can create that state
+  without adding a new temporal mutation seam.
+
+If that exact transition can be produced using an already accepted fixture
+mechanism:
+  D02=BUILT
+
+If it requires a new mid-run mutator:
+  D02=BLOCKED_REACHABILITY
+
+Do not assume buildability solely from the conceptual case definition.
+
+======================================================================
+RULING 5 — D03 REMAINS CONDITIONAL, NOT YET BLOCKED
+======================================================================
+
+D03 is NOT yet declared unreachable.
+
+D03 requires:
+
+  descendant captured in frozen closure
+  no executor TERM delivered to it
+  descendant later absent
+  executor classifies the disappearance as unsignalled according to exact
+  source behavior
+
+The current concern is that prior fixture runs stopped at:
+
+  PT_ROOT_SURVIVOR
+
+before reaching the teardown observation required for D03.
+
+CPT must source-prove the exact path needed to get from the D03 starting state
+through all intervening gates to the relevant descendant observation.
+
+Before encoding D03 return:
+
+  D03_SOURCE_FUNCTION
+  D03_TARGET_OBSERVATION_REGION
+  D03_INTERVENING_GATES
+  D03_PT_ROOT_SURVIVOR_PRECONDITION
+  D03_REQUIRED_PARENT_STATE
+  D03_REQUIRED_DESCENDANT_STATE
+  D03_SIGNAL_ADAPTER_EFFECT
+  D03_TEMPORAL_MUTATION_REQUIRED
+  D03_EXISTING_AUTHORIZED_MECHANISM_SUFFICIENT
+
+If the exact source path can be satisfied without a new seam:
+  D03=BUILDABLE
+
+If not:
+  D03=BLOCKED_REACHABILITY
+
+Do not force teardown reachability.
+
+======================================================================
+RULING 6 — REAL TOPOLOGY FIXTURE OWNERSHIP
+======================================================================
+
+D01-D03 real parent/child fixture processes must use the accepted R79/P5 model
+unchanged.
+
+Every real fixture PID exposed to the executor must satisfy:
+
+  PID_DESCENDS_FROM_FIXTURE_ROOT=YES
+  PID_NOT_BASELINE_ROOT=YES
+  PID_NOT_CANONICAL_PIDFILE_MEMBER=YES
+  PID_NOT_EXECUTOR_PID=YES
+  PID_NOT_EXECUTOR_ANCESTOR=YES
+  PID_NOT_REAL_GOVERNED_RUNTIME=YES
+
+Important distinction:
+
+  REAL cmdline may remain non-governed
+  while
+  SYNTHETIC PROC_ROOT cmdline may satisfy descendant-signature expectations
+
+That is acceptable only where the executor actually reads descendant identity
+through PROC_ROOT.
+
+Do not claim the real process itself carries a governed signature if it does
+not.
+
+Preserve provenance explicitly:
+
+  REAL_TOPOLOGY_SOURCE=real /proc
+  SYNTHETIC_IDENTITY_SOURCE=PROC_ROOT
+
+======================================================================
+RULING 7 — D-SLICE CURRENT DISPOSITION
+======================================================================
+
+Current design state:
+
+  D01  BUILDABLE
+
+  D02  CONDITIONAL_BUILDABLE
+       requires exact parent-disappearance source proof
+
+  D03  CONDITIONAL_BUILDABLE
+       requires exact teardown/PT_ROOT_SURVIVOR reachability proof
+
+  D04  BLOCKED_REACHABILITY
+       NO_AUTHORIZED_G7_TO_REVALIDATION_IDENTITY_MUTATION_SEAM
+
+  D05  BLOCKED_CERTIFICATION_CONTRACT
+       P5_NOT_GOVERNED_CONFLICT
+
+  D06  BLOCKED_REACHABILITY
+       NO_AUTHORIZED_G7_TO_REVALIDATION_IDENTITY_MUTATION_SEAM
+
+Do not report a final built/blocked count until D02 and D03 source proofs are
+complete.
+
+======================================================================
+BUILD AUTHORIZATION
+======================================================================
+
+AUTHORIZED NOW:
+
+  D01 implementation
+
+  D02 implementation ONLY IF exact source proof shows its required transition
+  can be produced by the existing authorized fixture mechanisms.
+
+  D03 implementation ONLY IF exact source proof shows teardown reachability
+  without a new seam.
+
+BLOCKED FROM IMPLEMENTATION:
+
+  D04
+  D05
+  D06
+
+Those three should be represented explicitly in the runner as their blocked
+classes, with no fixture execution path.
+
+======================================================================
+RUN-SCOPE REQUIREMENT
+======================================================================
+
+The next D runner revision must not re-execute accepted A or I cases.
+
+Represent:
+
+  A01-A04 = ACCEPTED_PRIOR
+  I01-I03 = ACCEPTED_PRIOR
+
+Represent:
+
+  I04/I05 = prior blocked reachability
+  I06     = prior blocked contract
+
+D04/D06:
+  BLOCKED_REACHABILITY
+
+D05:
+  BLOCKED_CERTIFICATION_CONTRACT
+
+Only actually built D cases may have executor invocation paths.
+
+No D host execution is authorized yet.
+
+======================================================================
+REQUIRED RETURN BEFORE D EXECUTION
+======================================================================
+
+Return revised source/design report first.
+
+For D02:
+
+  D02_PARENT_PRESENCE_SOURCE
+  D02_PARENT_DISAPPEARANCE_WINDOW
+  D02_TEMPORAL_MUTATION_REQUIRED
+  D02_EXISTING_AUTHORIZED_MECHANISM_SUFFICIENT
+  D02_FINAL_STATUS
+
+For D03:
+
+  D03_SOURCE_FUNCTION
+  D03_TARGET_OBSERVATION_REGION
+  D03_INTERVENING_GATES
+  D03_PT_ROOT_SURVIVOR_PRECONDITION
+  D03_REQUIRED_PARENT_STATE
+  D03_REQUIRED_DESCENDANT_STATE
+  D03_SIGNAL_ADAPTER_EFFECT
+  D03_TEMPORAL_MUTATION_REQUIRED
+  D03_EXISTING_AUTHORIZED_MECHANISM_SUFFICIENT
+  D03_FINAL_STATUS
+
+Then, if D01/D02/D03 are honestly buildable, return runner:
+
+  RUNNER_FILENAME
+  RUNNER_SHA256
+  RUNNER_BYTES
+  wc -l
+  bash -n
+
+with per-case statuses and safety measurements.
+
+After exact-byte review:
+  Boss decides whether one bounded D-slice host execution is authorized.
+
+======================================================================
+LOCKS
+======================================================================
+
+A01-A04                       ACCEPTED / CLOSED
+I01-I03                       ACCEPTED / CLOSED
+I04/I05                       BLOCKED_REACHABILITY
+I06                           BLOCKED_CERTIFICATION_CONTRACT
+
+D01                           BUILD AUTHORIZED
+D02                           CONDITIONAL BUILD
+D03                           CONDITIONAL BUILD
+D04                           BLOCKED_REACHABILITY
+D05                           BLOCKED_CERTIFICATION_CONTRACT
+D06                           BLOCKED_REACHABILITY
+
+D-slice host execution        NOT AUTHORIZED
+SP01                          NOT AUTHORIZED
+new temporal mutation seam    NOT AUTHORIZED
+S01-S08                       NOT AUTHORIZED
+C01-C08                       NOT AUTHORIZED
+T01-T04                       NOT AUTHORIZED
+full self-lineage             NOT AUTHORIZED
+T05-T10                       EXECUTION-LOCKED
+executor 583cfdbc...          NOT CERTIFIED
+launcher                      NOT AUTHORIZED
+restart                       NOT AUTHORIZED
+broadcast                     LOCKED
+capital                       UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.

@@ -1,0 +1,200 @@
+BOSS M2E-017G R80BJ — D01 CERTIFICATION CREDIT ACCEPTED / S-SLICE DESIGN REVIEW AUTHORIZED
+
+EVIDENCE REVIEW
+
+Package:
+  M2E017G_R80_EVIDENCE_20260911T062214Z.zip
+
+Independent package SHA256:
+  bce78d6a3426a02574325e6061f8e69530b09b5fc3e626b90d01c0d36ecca8b3
+
+RULING:
+  D01 = PASS / ACCEPTED / CLOSED
+
+Independent review of the uploaded evidence confirms:
+
+  expected:
+    closure=FROZEN
+    frozen_contains_desc=YES
+    order=CLOSURE_BEFORE_CENSUS
+
+  executor actual:
+    closure=FROZEN
+    frozen_contains_desc=YES
+    order=CLOSURE_BEFORE_CENSUS
+
+  independent verifier:
+    closure=FROZEN
+    frozen_contains_desc=YES
+    order=CLOSURE_BEFORE_CENSUS
+
+  consistent=YES
+  verdict=PASS
+
+PRECOMMITMENT
+
+Confirmed:
+  D01_VERIFIER_PRECOMMITTED=YES
+  D01_EXECUTOR_CALL_COUNT=1
+  D01_VERIFIER_FROZEN_BEFORE_EXECUTOR=YES
+  D01_VERIFIER_POST_EXECUTOR_REASSIGNMENT_COUNT=0
+
+The independent prediction was frozen before executor invocation and was not
+recomputed after the system under test ran.
+
+LOCATOR
+
+Confirmed:
+  ARTIFACT_LOCATOR_ROOT=/home/allmight/verifiers/R79F_TOPOLOGY/bin
+  ARTIFACT_LOCATOR_ROOT_OVERLAP_COUNT=0
+  exact-one artifact admission succeeded for EXEC/HOOK/P1-P5
+
+The historical R80BB evidence-hold hook was not admitted as a certification
+tool source.
+
+D01 PROPERTY / SIGNAL BOUNDARY
+
+Confirmed:
+  G7_CLOSURE=FROZEN
+  G7_FROZEN_DESCENDANTS=2621911
+  G8_CENSUS_COUNT=0
+  SIGNAL_SYSCALL_MODE=TEST_ADAPTER
+  TERM_ATTEMPTED_COUNT=2
+  TERM_DELIVERED_COUNT=0
+
+This is consistent with the accepted R80AW boundary:
+  TERM attempts are post-property observations;
+  real delivery remains a safety condition;
+  attempt count is not a D01 PASS predicate.
+
+ACCOUNTING
+
+Confirmed:
+  CASES_RUN=21
+  CASES_PASS=1
+  CASES_FAIL=0
+  CASES_NOT_IMPLEMENTED=20
+  CASES_ACCEPTED_PRIOR_TOTAL=7
+  CASES_BLOCKED_TOTAL=8
+  SAFETY_SURFACE=PASS
+  RUNNER_EXIT=13
+  RUNNER_EXIT_EMITTED_BEFORE_PACK=YES
+  R80_OFFLINE_NONLAUNCHER_MATRIX=INCOMPLETE
+  EXECUTOR_CERTIFICATION_STATE=NOT_CERTIFIED
+
+D-SLICE FINAL DISPOSITION
+
+  D01  PASS / ACCEPTED / CLOSED
+  D02  BLOCKED_REACHABILITY
+  D03  BLOCKED_REACHABILITY
+  D04  BLOCKED_REACHABILITY
+  D05  BLOCKED_CERTIFICATION_CONTRACT
+  D06  BLOCKED_REACHABILITY
+
+No D02-D06 execution is authorized by this ruling.
+
+CURRENT EXECUTOR STATUS
+
+  executor SHA:
+    583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+
+  state:
+    NOT CERTIFIED
+
+D01 closure does not authorize:
+  launcher
+  restart
+  broadcast
+  capital
+  SP01
+  T05-T10
+
+NEXT SLICE — S01-S08
+
+The next matrix slice is S01-S08.
+
+AUTHORIZED NOW:
+  source-grounded S-slice design/reachability review only.
+
+CPT may:
+  inspect exact executor source;
+  map S01-S08 to existing gates/branches;
+  classify each as BUILDABLE, BLOCKED_REACHABILITY, or
+  BLOCKED_CERTIFICATION_CONTRACT;
+  identify the minimum fixture/seam requirements;
+  identify expected authoritative executor evidence and independent verifier
+  for each case;
+  return a proposed S-slice implementation plan.
+
+NOT AUTHORIZED YET:
+  S fixture implementation
+  runner modification for S cases
+  S host execution
+  new temporal mutation seam
+  SP01 repurposing
+  launcher/start_all
+  restart
+
+S CASE AUTHORITY
+
+  S01 vanishes before revalidation
+      expected VANISHED_UNSIGNALLED, no syscall
+
+  S02 ESRCH after revalidation
+
+  S03 EPERM -> STOP
+
+  S04 other signal failure -> STOP
+
+  S05 same PID/starttime -> observation window
+
+  S06 changed starttime -> SIGNALLED_REUSED_PID / STOP
+
+  S07 absent after TERM -> TERMINATED_BY_US
+
+  S08 survivor at 60s -> TERM_TIMEOUT_NOT_PROVEN_REFUSED
+
+The review must use exact current executor bytes and must not assume these
+semantic cases remain independently reachable merely because R28 names them.
+
+EVIDENCE HOLD
+
+Continue preserving:
+  /home/allmight/r80_a_fixture/D01/
+
+No release or deletion is authorized.
+
+LOCKS
+
+  D01                              ACCEPTED / CLOSED
+  D02/D03/D04/D06                  BLOCKED_REACHABILITY
+  D05                              BLOCKED_CERTIFICATION_CONTRACT
+
+  S01-S08 design/reachability      AUTHORIZED
+  S01-S08 implementation           NOT AUTHORIZED
+  S01-S08 host execution           NOT AUTHORIZED
+  new temporal seam                NOT AUTHORIZED
+  SP01                             NOT AUTHORIZED
+
+  A01-A04                          ACCEPTED / CLOSED
+  I01-I03                          ACCEPTED / CLOSED
+  I04/I05                          BLOCKED_REACHABILITY
+  I06                              BLOCKED_CERTIFICATION_CONTRACT
+
+  C01-C08                          NOT AUTHORIZED
+  T01-T04                          NOT AUTHORIZED
+  T05-T10                          EXECUTION-LOCKED
+  full self-lineage                NOT AUTHORIZED
+
+  executor 583cfdbc...             NOT CERTIFIED
+  launcher                         NOT AUTHORIZED
+  restart                          NOT AUTHORIZED
+  broadcast                        LOCKED
+  capital                          UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.
+
+CPT: perform the S01-S08 source-grounded reachability/design review only and
+return the findings to Boss.

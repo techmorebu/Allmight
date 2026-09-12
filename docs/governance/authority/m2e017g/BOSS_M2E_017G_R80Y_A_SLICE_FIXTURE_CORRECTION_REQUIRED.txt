@@ -1,0 +1,390 @@
+BOSS M2E-017G R80Y — A-SLICE BYTE REVIEW / FIXTURE CORRECTION REQUIRED
+
+FILE REVIEWED
+
+  r80_runner_v4.sh
+
+Observed from exact uploaded bytes:
+  SHA256  b2c09c7726e50d511b72f982f2ee142ce3396f05d83b4fd0f0df497982231c17
+  BYTES   37126
+  LINES   655
+  bash -n PASS
+
+STATUS
+
+The A-slice is NOT approved for host execution.
+
+The general approach remains accepted:
+  - synthetic PROC_ROOT baseline worlds
+  - exact executor bytes
+  - disposable clone
+  - no executor-function stubbing
+  - independent ROOT_MAP verification concept
+  - A04 no-mutation boundary concept
+
+However, exact-byte review found five material defects that must be corrected
+before any A01-A04 execution.
+
+======================================================================
+BLOCKER 1 — G1 HEAD BINDING PREVENTS REACHING G2
+======================================================================
+
+The target executor remains:
+
+  583cfdbc4dff6a3351136dc98257f19ed1c2735348c6eb553c2ee8e66d50eae7
+
+Its preserved current-byte constants bind EXP_COMMIT to:
+
+  923dd5041e645c22ad025a3f8335a03880f89b99
+
+The A fixture currently does:
+
+  git clone ... "$CANON" "$W/repo"
+  git -C "$W/repo" checkout --detach "$EXP_HEAD"
+
+where runner EXP_HEAD is:
+
+  4133fd9dd5b84565c3903e85ef04c6d6325aa2f4
+
+Therefore the disposable executor repo is at 4133fd9..., while the exact executor
+expects 923dd504... at G1.
+
+Absent some exact-byte fact proving otherwise, this fixture should STOP at G1
+before baseline cardinality G2 is reached.
+
+This is the post-preservation HEAD/executor binding issue that R80T explicitly
+reserved for synchronization/ruling.
+
+REQUIRED CORRECTION
+
+Do NOT change the executor.
+
+Do NOT silently change its expected commit.
+
+For A-group certification, construct the disposable executor repo at the commit
+identity required by the exact executor bytes:
+
+  923dd5041e645c22ad025a3f8335a03880f89b99
+
+while separately retaining the runner's canonical-host governance gate that current
+canonical HEAD is:
+
+  4133fd9dd5b84565c3903e85ef04c6d6325aa2f4
+
+These are different claims and must be reported separately:
+
+  CANONICAL_GOVERNANCE_HEAD=4133fd9...
+  EXECUTOR_FIXTURE_REQUIRED_HEAD=923dd504...
+  EXECUTOR_G1_HEAD_OBSERVED=<fixture repo HEAD>
+  EXECUTOR_G1_HEAD_MATCH=YES|NO
+
+This use of the historical commit is authorized ONLY inside the disposable A
+fixture because it is the exact commit contract embedded in the executor under
+certification.
+
+No canonical checkout/reset is authorized.
+
+======================================================================
+BLOCKER 2 — PID ALLOCATOR STATE IS LOST IN COMMAND SUBSTITUTION
+======================================================================
+
+Current loop:
+
+  pid=$(a_alloc_pid)
+
+Inside a_alloc_pid:
+
+  c=$A_NEXTPID
+  A_NEXTPID=$((A_NEXTPID+1))
+  printf '%s' "$c"
+
+Bash command substitution executes the function in a subshell. The update to
+A_NEXTPID does not persist in the parent shell.
+
+Boss reproduced the shell behavior independently:
+
+  call 1 -> 4190000, parent next remains 4190000
+  call 2 -> 4190000, parent next remains 4190000
+  call 3 -> 4190000, parent next remains 4190000
+
+Therefore all eight role allocations may reuse the same fictional PID.
+
+That invalidates exact root identity and can collapse the synthetic topology.
+
+REQUIRED CORRECTION
+
+Allocate in the parent shell.
+
+Acceptable pattern:
+  a_alloc_pid sets a global/result variable, e.g. A_ALLOCATED_PID,
+  then caller reads that variable without command substitution.
+
+After world construction mechanically prove:
+
+  FIXTURE_PID_COUNT=8
+  FIXTURE_UNIQUE_PID_COUNT=8
+  FIXTURE_DUPLICATE_PID_COUNT=0
+
+and fail closed otherwise.
+
+Each PID must still be proven:
+  absent from real /proc
+  not a historical governed baseline PID
+  not canonical pidfile member
+  not executor PID
+  not executor ancestor
+
+======================================================================
+BLOCKER 3 — A01/A02/A03 VERIFY CARDINALITY, NOT REQUIRED ROLE SET
+======================================================================
+
+Current PASS comparison for A01-A03 is only:
+
+  expected = live=<N> dead=<N>
+  executor_actual = live=<N> dead=<N>
+  verifier_actual = recount LIVE_VERIFIED / DEAD_AT_BASELINE rows
+
+That can PASS with the wrong identities.
+
+Examples:
+  A02 could classify any five live and any three dead and still PASS.
+  A03 could classify any one live role and still PASS even if it is not the
+  deterministic shadow_engine role.
+
+R28 semantics require:
+
+  A01  8 live, exact identities
+  A02  exact five live and known dead watchdog/router/heat set
+  A03  exact deterministic one-live role
+  A04  exact zero-live/eight-dead set
+
+REQUIRED CORRECTION
+
+The independent verifier must derive exact observed role sets from ROOT_MAP.
+
+For every A case compare:
+
+  OBSERVED_LIVE_ROLE_SET
+  OBSERVED_DEAD_ROLE_SET
+
+against fixed case expectations.
+
+Required:
+  A01 live = all 8, dead = empty
+  A02 live = fetcher,activator,volatility,monitor,shadow_engine
+      dead = heat,watchdog,notification_router
+  A03 live = shadow_engine
+      dead = other 7
+  A04 live = empty
+      dead = all 8
+
+Use canonical ordering before comparison so ordering alone cannot create a false
+failure.
+
+Also verify ROOT_MAP role->PID identity against the fixture map, not only status
+counts.
+
+======================================================================
+BLOCKER 4 — A04 "UNCHANGED" PROOF HAS NO PRE-RUN HASH
+======================================================================
+
+Current A04 comments say:
+
+  "independent observation: the fixture control files must be byte-unchanged"
+
+But only post-run hashes are computed:
+
+  A04_PIDF_NOW
+  A04_SESS_NOW
+
+There is no captured pre-run hash and no equality comparison.
+
+A post-state hash alone cannot prove unchanged.
+
+REQUIRED CORRECTION
+
+Immediately after world construction and BEFORE executor invocation capture:
+
+  A04_PIDFILE_SHA_PRE
+  A04_SESSION_SHA_PRE
+
+After executor completion capture:
+
+  A04_PIDFILE_SHA_POST
+  A04_SESSION_SHA_POST
+
+Then require:
+
+  PIDFILE_PRE == PIDFILE_POST
+  SESSION_PRE == SESSION_POST
+
+The independent A04 verifier must also independently derive:
+  observed live role set = empty
+  observed dead role set = all 8
+
+Do not default missing executor counters into success.
+
+Current forms such as:
+
+  A04_LIVE:-0
+  A04_DEAD:-8
+  missing TERM_ATTEMPTED_COUNT -> 0
+  missing CONTROL_FILES_CHANGED -> 0
+  missing START_ATTEMPTED -> 0
+
+must not permit PASS when evidence is absent.
+
+For a required A04 zero-boundary field:
+  absent evidence = BLOCKED/FAIL
+  explicit observed zero = zero
+
+No "missing means zero" certification semantics.
+
+======================================================================
+BLOCKER 5 — DIRECT KILL DISCLOSURE REINTRODUCES REGISTRY FALSE HITS
+======================================================================
+
+The corrected safety `measure()` uses SCAN_SRC, which excludes registry data.
+
+But later the runner emits:
+
+  DIRECT_RUNNER_REAL_KILL_CALL_SITES =
+    grep ... "$SELF_SRC"
+
+That re-scans the full source, including the registry text:
+
+  S02|S|kill returns ESRCH...
+  S03|S|kill returns EPERM...
+
+The same false-positive class therefore survives in the disclosure field even
+though the gating measure uses SCAN_SRC.
+
+REQUIRED CORRECTION
+
+Derive DIRECT_RUNNER_REAL_KILL_CALL_SITES from the same code-only SCAN_SRC used
+by the safety gate.
+
+The emitted disclosure and the gating measurement must be one observation, not
+two different scans with different universes.
+
+Required invariant:
+
+  DIRECT_RUNNER_REAL_KILL_CALL_SITES
+    == REAL_KILL_CALL_SITES
+
+and both must equal 0 for this slice.
+
+======================================================================
+WHAT REMAINS ACCEPTED
+======================================================================
+
+Accepted and should be preserved:
+
+  - scaffold base lineage
+  - registry 42 / 36 / 6
+  - T05-T10 execution lock
+  - no launcher/start_all/SP01
+  - fixture clone concept
+  - synthetic PROC_ROOT presence/absence classification concept
+  - exact executor invocation
+  - ROOT_MAP as independent verifier source
+  - safety code/data separation concept
+  - certified P3 helper-capability disclosure
+  - remaining 32 cases NOT_IMPLEMENTED
+  - full self-lineage regression remains NOT_IMPLEMENTED
+  - global runner result remains INCOMPLETE/nonzero
+
+No certification credit is granted by this review.
+
+======================================================================
+NEXT AUTHORIZED STEP
+======================================================================
+
+CPT may patch ONLY the A-slice and safety-disclosure defects above.
+
+Authorized changes:
+
+  1. separate canonical governance HEAD from executor fixture G1 HEAD;
+  2. parent-shell unique PID allocation;
+  3. exact observed live/dead role-set verification for A01-A04;
+  4. role->PID fixture-map identity verification;
+  5. true A04 pre/post control-file hash comparison;
+  6. required A04 counters fail on absence rather than default-to-zero;
+  7. unify direct-kill disclosure with code-only safety scan.
+
+Do not implement I fixtures.
+Do not implement the full self-lineage regression.
+Do not execute the runner on the host.
+
+======================================================================
+REQUIRED RETURN
+======================================================================
+
+Return:
+
+  RUNNER_FILENAME
+  RUNNER_SHA256
+  RUNNER_BYTES
+  LINE_COUNT
+  bash -n result
+
+  SCAFFOLD_BASE_SHA
+  PRIOR_A_SLICE_SHA
+
+  CANONICAL_GOVERNANCE_HEAD
+  EXECUTOR_FIXTURE_REQUIRED_HEAD
+
+  FIXTURE_PID_COUNT
+  FIXTURE_UNIQUE_PID_COUNT
+  FIXTURE_DUPLICATE_PID_COUNT
+
+For A01-A04:
+  EXPECTED_LIVE_ROLE_SET
+  EXPECTED_DEAD_ROLE_SET
+  observed-set verifier source
+  role->PID identity verifier source
+
+For A04:
+  PIDFILE_SHA_PRE capture present
+  PIDFILE_SHA_POST capture present
+  PIDFILE_SHA_EQUAL predicate present
+  SESSION_SHA_PRE capture present
+  SESSION_SHA_POST capture present
+  SESSION_SHA_EQUAL predicate present
+  required zero counters absent=>non-PASS
+
+Safety:
+  REAL_KILL_CALL_SITES
+  DIRECT_RUNNER_REAL_KILL_CALL_SITES
+  equality predicate between them
+  REAL_LAUNCHER_CALL_SITES
+  START_ALL_CALL_SITES
+  SP01_CALL_SITES
+  canonical git mutation/state-change sites
+
+Scope:
+  A_CASES_IMPLEMENTED=4
+  REMAINING_NOT_IMPLEMENTED=32
+  SELF_LINEAGE_REGRESSION=NOT_IMPLEMENTED
+  T05-T10 execution-locked
+
+======================================================================
+LOCKS
+======================================================================
+
+r80_runner_v4 b2c09c77...               NOT APPROVED FOR EXECUTION
+A-slice correction                       AUTHORIZED
+A01-A04 host execution                   NOT AUTHORIZED
+I/D/S/C/T fixture implementation         NOT AUTHORIZED
+full self-lineage regression             NOT AUTHORIZED
+T05-T10                                  EXECUTION-LOCKED
+SP01                                     NOT AUTHORIZED
+executor 583cfdbc...                     NOT CERTIFIED
+launcher                                 NOT AUTHORIZED
+restart                                  NOT AUTHORIZED
+broadcast                                LOCKED
+capital                                  UNTOUCHED
+
+CORNELIUS
+
+Nothing to run.
